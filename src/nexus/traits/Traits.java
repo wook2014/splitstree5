@@ -66,9 +66,7 @@ public interface Traits {
         ps.println(Usage);
     }
 
-
     /*** GETTER AND SETTER ***/
-
 
     Format getFormat() ;
     int getNtax() ;
