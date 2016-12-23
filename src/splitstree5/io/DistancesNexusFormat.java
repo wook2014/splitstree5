@@ -25,7 +25,7 @@ import java.io.IOException;
  * Distances format
  * Created by huson on 12/22/16.
  */
-public class DistancesFormat {
+public class DistancesNexusFormat {
     private String triangle;
     private boolean labels;
     private boolean diagonal;
@@ -34,7 +34,7 @@ public class DistancesFormat {
     /**
      * the Constructor
      */
-    public DistancesFormat() {
+    public DistancesNexusFormat() {
         triangle = "both";
         labels = true;
         diagonal = true;

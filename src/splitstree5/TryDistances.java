@@ -29,7 +29,7 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.filters.TaxaFilter;
 import splitstree5.core.topfilters.DistancesTopFilter;
-import splitstree5.io.DistancesBlockNexus;
+import splitstree5.io.DistancesNexusIO;
 
 import java.io.FileReader;
 import java.io.StringWriter;
@@ -51,9 +51,9 @@ public class TryDistances extends Application {
         final ADataNode<DistancesBlock> distancesNode = new ADataNode<>(new DistancesBlock("WorkingDistances"));
         final DistancesTopFilter distancesTopFilter = new DistancesTopFilter(origTaxaNode, taxaNode, origDistancesNode, distancesNode);
 
-        DistancesBlockNexus distancesBlockNexus = new DistancesBlockNexus(origDistancesNode.getDataBlock());
-        distancesBlockNexus.read(new FileReader("examples/distances.nex"), origTaxaNode.getDataBlock());
-        origTaxaNode.getDataBlock().addTaxaByNames(distancesBlockNexus.getTaxonNamesFound());
+        DistancesNexusIO distancesNexusIO = new DistancesNexusIO(origDistancesNode.getDataBlock());
+        distancesNexusIO.read(new FileReader("examples/distances.nex"), origTaxaNode.getDataBlock());
+        origTaxaNode.getDataBlock().addTaxaByNames(distancesNexusIO.getTaxonNamesFound());
 
 
         final ADataNode<TreesBlock> treesNode = new ADataNode<>(new TreesBlock());
@@ -65,7 +65,7 @@ public class TryDistances extends Application {
 
         Thread.sleep(500);
         StringWriter w = new StringWriter();
-        distancesBlockNexus.write(w, taxaNode.getDataBlock());
+        distancesNexusIO.write(w, taxaNode.getDataBlock());
         System.err.println(w.toString());
 
         /*

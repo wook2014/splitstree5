@@ -33,7 +33,7 @@ import java.util.List;
  * Distance block nexus implementation
  * Created by huson on 12/22/16.
  */
-public class DistancesBlockNexus extends NexusBlock implements IBlockReaderWriter {
+public class DistancesNexusIO extends NexusBlock implements IBlockReaderWriter {
     private static final String NAME = "DISTANCES";
 
     public static final String SYNTAX = "BEGIN DISTANCES;\n" +
@@ -49,7 +49,7 @@ public class DistancesBlockNexus extends NexusBlock implements IBlockReaderWrite
             "END;\n";
 
     private final DistancesBlock distancesBlock;
-    private final DistancesFormat format;
+    private final DistancesNexusFormat format;
 
     private final ObservableList<String> taxonNamesFound = FXCollections.observableArrayList();
 
@@ -58,9 +58,9 @@ public class DistancesBlockNexus extends NexusBlock implements IBlockReaderWrite
      *
      * @param distancesBlock
      */
-    public DistancesBlockNexus(DistancesBlock distancesBlock) {
+    public DistancesNexusIO(DistancesBlock distancesBlock) {
         this.distancesBlock = distancesBlock;
-        format = new DistancesFormat();
+        format = new DistancesNexusFormat();
     }
 
     @Override
@@ -318,7 +318,7 @@ public class DistancesBlockNexus extends NexusBlock implements IBlockReaderWrite
         return SYNTAX;
     }
 
-    public DistancesFormat getFormat() {
+    public DistancesNexusFormat getFormat() {
         return format;
     }
 }

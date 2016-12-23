@@ -19,7 +19,7 @@
 
 package splitstree5.core.datablocks;
 
-import splitstree5.io.DistancesBlockNexus;
+import splitstree5.io.DistancesNexusIO;
 
 /**
  * A distances block
@@ -30,7 +30,7 @@ public class DistancesBlock extends DataBlock {
 
     public DistancesBlock() {
         data = new double[0][0];
-        setReaderWriter(new DistancesBlockNexus(this));
+        setReaderWriter(new DistancesNexusIO(this));
     }
 
     public DistancesBlock(String name) {
