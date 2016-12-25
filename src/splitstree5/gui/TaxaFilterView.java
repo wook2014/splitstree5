@@ -130,6 +130,10 @@ public class TaxaFilterView {
         controller.getCloseMenuItem().setOnAction((e) -> TaxaFilterView.this.stage.close());
 
         controller.getCancelButton().setOnAction((e) -> {
+            TaxaFilterView.this.stage.close();
+        });
+
+        controller.getResetButton().setOnAction((e) -> {
             syncModel2Controller();
             undoManager.clear();
         });

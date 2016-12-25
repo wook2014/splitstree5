@@ -72,6 +72,11 @@
     <bottom>
         <ButtonBar minHeight="40.0" prefHeight="40.0" BorderPane.alignment="CENTER">
             <buttons>
+                <Button fx:id="resetButton" mnemonicParsing="false" text="Reset">
+                    <opaqueInsets>
+                        <Insets/>
+                    </opaqueInsets>
+                </Button>
                 <Button fx:id="cancelButton" mnemonicParsing="false" text="Cancel"/>
                 <Button fx:id="applyButton" mnemonicParsing="false" text="Apply"/>
             </buttons>

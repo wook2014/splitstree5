@@ -58,6 +58,9 @@ public class TaxaFilterController {
     @FXML // fx:id="redoMenuItem"
     private MenuItem redoMenuItem; // Value injected by FXMLLoader
 
+    @FXML // fx:id="resetButton"
+    private Button resetButton; // Value injected by FXMLLoader
+
     @FXML // fx:id="cancelButton"
     private Button cancelButton; // Value injected by FXMLLoader
 
@@ -123,4 +126,9 @@ public class TaxaFilterController {
     public Button getCancelButton() {
         return cancelButton;
     }
+
+    public Button getResetButton() {
+        return resetButton;
+    }
+
 }
