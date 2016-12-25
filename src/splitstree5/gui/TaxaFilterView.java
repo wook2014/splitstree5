@@ -91,12 +91,14 @@ public class TaxaFilterView {
         });
 
         controller.getActiveList().getItems().addListener((ListChangeListener<Taxon>) c -> {
-            final UndoableChangeListViews2<Taxon> change = new UndoableChangeListViews2<>("Change Active Taxa", controller.getActiveList(), prevActiveTaxa, controller.getInactiveList(), prevInactiveTaxa);
-            final boolean isInitialLoad = (prevActiveTaxa.isEmpty() && prevInactiveTaxa.isEmpty()); // don't want user to undo original load of taxa
-            prevActiveTaxa = change.getItemsA();
-            prevInactiveTaxa = change.getItemsB();
-            if (!isInitialLoad)
-                undoManager.addUndoableChange(change);
+            if (!undoManager.isPerformingUndoOrRedo()) { // for performance reasons, check this here. Is also checked in addUndoableChange, but why make a change object if we don't need it...
+                final UndoableChangeListViews2<Taxon> change = new UndoableChangeListViews2<>("Change Active Taxa", controller.getActiveList(), prevActiveTaxa, controller.getInactiveList(), prevInactiveTaxa);
+                final boolean isInitialLoad = (prevActiveTaxa.isEmpty() && prevInactiveTaxa.isEmpty()); // don't want user to undo original load of taxa
+                prevActiveTaxa = change.getItemsA();
+                prevInactiveTaxa = change.getItemsB();
+                if (!isInitialLoad)
+                    undoManager.addUndoableChange(change);
+            }
         });
 
         controller.getUndoMenuItem().setOnAction((e) -> {

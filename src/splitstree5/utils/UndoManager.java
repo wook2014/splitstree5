@@ -82,14 +82,15 @@ public class UndoManager {
     /**
      * add an undoable property change
      *
-     * @param name     to be used in undo/redo menu
+     * @param name is used in undo/redo menu
      * @param property
      * @param oldValue
      * @param newValue
      * @param <T>
      */
     public <T> void addUndoableChange(String name, Property<T> property, T oldValue, T newValue) {
-        addUndoableChange(new UndoableChangeProperty<T>(name, property, oldValue, newValue));
+        if (!isPerformingUndoOrRedo())
+            addUndoableChange(new UndoableChangeProperty<T>(name, property, oldValue, newValue));
     }
 
     /**
@@ -216,8 +217,8 @@ public class UndoManager {
     private void updateProperties() {
         canUndo.set(canUndo());
         canRedo.set(canRedo());
-        undoName.set(canUndo() ? "Undo " + currentNode.change.getName() : "Undo");
-        redoName.set(canRedo() ? "Redo " + currentNode.next.change.getName() : "Redo");
+        undoName.set(canUndo() ? "Undo" + (currentNode.change.getName().length() > 0 ? " " + currentNode.change.getName() : "") : "Undo");
+        redoName.set(canRedo() ? "Redo" + (currentNode.next.change.getName().length() > 0 ? " " + currentNode.next.change.getName() : "") : "Redo");
 
     }
 
