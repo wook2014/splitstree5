@@ -32,9 +32,12 @@ import splitstree5.core.misc.Taxon;
 import splitstree5.core.misc.UpdateState;
 import splitstree5.utils.ExtendedFXMLLoader;
 import splitstree5.utils.UndoManager;
+import splitstree5.utils.UndoableChangeListViews2;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * dialog for filtering taxa
@@ -66,11 +69,16 @@ public class TaxaFilterView {
         undoManager = new UndoManager();
         setupController();
 
-        // if parent state changes, need to updat this:
-        taxaFilter.getParent().stateProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue != UpdateState.VALID && newValue == UpdateState.VALID)
+        // if  state changes, need to update this:
+        taxaFilter.stateProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue != UpdateState.VALID && newValue == UpdateState.VALID) {
                 syncModel2Controller();
-            undoManager.clear();
+            }
+            final Set<Taxon> allPrevious = new HashSet<>(prevActiveTaxa);
+            allPrevious.addAll(prevInactiveTaxa);
+            final Set<Taxon> allCurrent = new HashSet<>(taxaFilter.getParent().getDataBlock().getTaxa());
+            if (!allCurrent.equals(allPrevious))
+                undoManager.clear();
         });
     }
 
@@ -78,20 +86,24 @@ public class TaxaFilterView {
      * setup controller
      */
     private void setupController() {
+        controller.getIgnoreButton().selectedProperty().addListener((observable, oldValue, newValue) -> {
+            undoManager.addUndoableChange(newValue ? "Set Ignore" : "Unset Ignore", controller.getIgnoreButton().selectedProperty(), oldValue, newValue);
+        });
 
         controller.getActiveList().getItems().addListener((ListChangeListener<Taxon>) c -> {
-            if (!undoManager.isPerformingUndoOrRedo()) { // avoid bounce
-                final UndoableChangeOfActiveTaxa change = new UndoableChangeOfActiveTaxa(controller.getActiveList(), prevActiveTaxa, controller.getInactiveList(), prevInactiveTaxa);
-                prevActiveTaxa = change.getActiveTaxa();
-                prevInactiveTaxa = change.getInactiveTaxa();
-                undoManager.addChangeable(change);
-            }
+            final UndoableChangeListViews2<Taxon> change = new UndoableChangeListViews2<>("Change Active Taxa", controller.getActiveList(), prevActiveTaxa, controller.getInactiveList(), prevInactiveTaxa);
+            final boolean isInitialLoad = (prevActiveTaxa.isEmpty() && prevInactiveTaxa.isEmpty()); // don't want user to undo original load of taxa
+            prevActiveTaxa = change.getItemsA();
+            prevInactiveTaxa = change.getItemsB();
+            if (!isInitialLoad)
+                undoManager.addUndoableChange(change);
         });
 
         controller.getUndoMenuItem().setOnAction((e) -> {
             undoManager.undo();
         });
         controller.getUndoMenuItem().disableProperty().bind(new SimpleBooleanProperty(false).isEqualTo(undoManager.canUndoProperty()));
+        controller.getUndoMenuItem().textProperty().bind(undoManager.undoNameProperty());
         controller.getRedoMenuItem().setOnAction((e) -> {
             undoManager.redo();
         });
@@ -99,6 +111,7 @@ public class TaxaFilterView {
 
         controller.getActiveList().disableProperty().bind(taxaFilter.disableProperty());
         controller.getInactiveList().disableProperty().bind(taxaFilter.disableProperty());
+        controller.getRedoMenuItem().textProperty().bind(undoManager.redoNameProperty());
 
 
         controller.getInactivateAllButton().setOnAction((e) -> {
@@ -139,7 +152,6 @@ public class TaxaFilterView {
         });
 
         controller.getApplyButton().setOnAction((e) -> {
-            System.err.println("APPLY!");
             syncController2Model();
         });
         controller.getApplyButton().disableProperty().bind(Bindings.isEmpty(controller.getActiveList().getItems()).or(document.updatingProperty()).or(undoManager.canUndoProperty().not()));

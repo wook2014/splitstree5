@@ -20,10 +20,7 @@
 package splitstree5.utils;
 
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 
 /**
  * Undoable change manager
@@ -36,9 +33,8 @@ public class UndoManager {
     private BooleanProperty performingUndoOrRedo = new SimpleBooleanProperty(false);
     private BooleanProperty canUndo = new SimpleBooleanProperty(false);
     private BooleanProperty canRedo = new SimpleBooleanProperty(false);
-    private StringProperty undoName = new SimpleStringProperty();
-    private StringProperty redoName = new SimpleStringProperty();
-
+    private StringProperty undoName = new SimpleStringProperty("Undo");
+    private StringProperty redoName = new SimpleStringProperty("Redo");
 
     /**
      * default constructor
@@ -68,16 +64,44 @@ public class UndoManager {
     }
 
     /**
-     * add a change item
+     * add a change item, if not currently in an undo or redo execution (in which case we don't want to record a change...)
+     * If item equals() current undoable item, then not added
      *
-     * @param changeable
+     * @param change
      */
-    public void addChangeable(UndoableChange changeable) {
-        final ListNode node = new ListNode(changeable);
-        currentNode.next = node;
-        node.prev = currentNode;
-        currentNode = node;
-        updateProperties();
+    public void addUndoableChange(UndoableChange change) {
+        if (!isPerformingUndoOrRedo() && (currentNode == parentNode || !currentNode.change.equals(change))) {
+            final ListNode node = new ListNode(change);
+            currentNode.next = node;
+            node.prev = currentNode;
+            currentNode = node;
+            updateProperties();
+        }
+    }
+
+    /**
+     * add an undoable property change
+     *
+     * @param property
+     * @param oldValue
+     * @param newValue
+     * @param <T>
+     */
+    public <T> void addUndoableChange(Property<T> property, T oldValue, T newValue) {
+        addUndoableChange(new UndoableChangeProperty<T>(property, oldValue, newValue));
+    }
+
+    /**
+     * add an undoable property change
+     *
+     * @param name     to be used in undo/redo menu
+     * @param property
+     * @param oldValue
+     * @param newValue
+     * @param <T>
+     */
+    public <T> void addUndoableChange(String name, Property<T> property, T oldValue, T newValue) {
+        addUndoableChange(new UndoableChangeProperty<T>(name, property, oldValue, newValue));
     }
 
     /**
@@ -204,8 +228,8 @@ public class UndoManager {
     private void updateProperties() {
         canUndo.set(canUndo());
         canRedo.set(canRedo());
-        undoName.set(canUndo() ? currentNode.change.getName() : "");
-        redoName.set(canRedo() ? currentNode.next.change.getName() : "");
+        undoName.set(canUndo() ? "Undo " + currentNode.change.getName() : "Undo");
+        redoName.set(canRedo() ? "Redo " + currentNode.next.change.getName() : "Redo");
 
     }
 

@@ -72,6 +72,7 @@
     <bottom>
         <ButtonBar minHeight="40.0" prefHeight="40.0" BorderPane.alignment="CENTER">
             <buttons>
+                <CheckBox fx:id="ignoreButton" mnemonicParsing="false" text="Ignore"/>
                 <Button fx:id="resetButton" mnemonicParsing="false" text="Reset">
                     <opaqueInsets>
                         <Insets/>

@@ -34,7 +34,6 @@ import splitstree5.gui.TaxaFilterView;
 import splitstree5.io.DistancesNexusIO;
 
 import java.io.FileReader;
-import java.io.StringWriter;
 
 /**
  * try some ideas
@@ -49,10 +48,6 @@ public class TryDistances extends Application {
         final ADataNode<TaxaBlock> taxaNode = new ADataNode<>(document, new TaxaBlock("WorkingTaxa"));
         final TaxaFilter taxaFilter = new TaxaFilter(document, origTaxaNode, taxaNode);
 
-        final TaxaFilterView taxaFilterView = new TaxaFilterView(document, taxaFilter);
-        taxaFilterView.show();
-
-
         final ADataNode<DistancesBlock> origDistancesNode = new ADataNode<>(document, new DistancesBlock("OrigDistances"));
         final ADataNode<DistancesBlock> distancesNode = new ADataNode<>(document, new DistancesBlock("WorkingDistances"));
         final DistancesTopFilter distancesTopFilter = new DistancesTopFilter(document, origTaxaNode, taxaNode, origDistancesNode, distancesNode);
@@ -60,51 +55,20 @@ public class TryDistances extends Application {
         DistancesNexusIO distancesNexusIO = new DistancesNexusIO(origDistancesNode.getDataBlock());
         distancesNexusIO.read(new FileReader("examples/distances.nex"), origTaxaNode.getDataBlock());
         origTaxaNode.getDataBlock().addTaxaByNames(distancesNexusIO.getTaxonNamesFound());
-        origTaxaNode.forceUpdate();
 
+
+        final TaxaFilterView taxaFilterView = new TaxaFilterView(document, taxaFilter);
+        taxaFilterView.show();
+
+        {
+            final TaxaFilterView taxaFilterView2 = new TaxaFilterView(document, taxaFilter);
+            taxaFilterView2.show();
+        }
 
         final ADataNode<TreesBlock> treesNode = new ADataNode<>(document, new TreesBlock());
 
         final AConnectorNode<DistancesBlock, TreesBlock> dist2trees = new AConnectorNode<>(document, taxaNode.getDataBlock(), distancesNode, treesNode);
         dist2trees.setAlgorithm(new NeighborJoining());
 
-        taxaFilter.forceRecompute();
-
-        Thread.sleep(500);
-        StringWriter w = new StringWriter();
-        distancesNexusIO.write(w, taxaNode.getDataBlock());
-        System.err.println(w.toString());
-
-        /*
-        final ADataNode<TreesBlock> filteredTreesNode = new ADataNode<>(new TreesBlock("FilteredTrees"));
-        final TreesFilter treesFilter = new TreesFilter(taxaNode.getDataBlock(),treesNode, filteredTreesNode);
-
-        final ADataNode<SplitsBlock> splitsNode = new ADataNode<>(new SplitsBlock());
-        final ADataNode<SplitsBlock> filteredSplitsNode = new ADataNode<>(new SplitsBlock("Filtered Splits"));
-        final SplitsFilter splitsFilter = new SplitsFilter(taxaNode.getDataBlock(), splitsNode, filteredSplitsNode);
-
-
-        final AConnectorNode<TreesBlock, SplitsBlock> trees2splits = new AConnectorNode<>(taxaNode.getDataBlock(), treesNode, splitsNode);
-        trees2splits.setAlgorithm(new ConsensusSplits());
-
-
-        //distancesNode.setState(ANode.State.VALID);
-        origTaxaNode.setState(ANode.State.VALID);
-
-
-        Thread thread=new Thread(() -> {
-            try {
-                Thread.sleep(5000);
-                Platform.runLater(() -> {
-                    System.err.println("+++++++++ TRY - select taxa");
-                    taxaFilter.forceRecompute();
-
-                });
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-        thread.start();
-        */
     }
 }

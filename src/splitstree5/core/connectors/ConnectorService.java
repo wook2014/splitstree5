@@ -46,9 +46,6 @@ public class ConnectorService<P extends DataBlock, C extends DataBlock> extends 
                 System.err.println("--- Compute " + getMethodName() + " called");
                 methodNode.getAlgorithm().compute(methodNode.getTaxaBlock(), methodNode.getParent().getDataBlock(), methodNode.getChild().getDataBlock());
                 System.err.println("--- Compute " + getMethodName() + " done");
-                methodNode.setState(UpdateState.VALID);
-                methodNode.getChild().setState(UpdateState.VALID); // child is presumably valid once method has completed...
-
                 return true;
             }
 
@@ -68,6 +65,8 @@ public class ConnectorService<P extends DataBlock, C extends DataBlock> extends 
             protected void succeeded() {
                 if (verbose)
                     System.err.println("Compute " + getMethodName() + " task succeeded");
+                methodNode.setState(UpdateState.VALID);
+                methodNode.getChild().setState(UpdateState.VALID); // child is presumably valid once method has completed...
             }
 
             @Override

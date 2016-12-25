@@ -53,12 +53,12 @@ public class DistancesTopFilter extends TopFilter<DistancesBlock> {
 
                     for (Taxon a : modifiedTaxaBlock.getTaxa()) {
                         final int originalI = originalTaxaBlock.indexOf(a);
-                        final int modifiedI = originalTaxaBlock.indexOf(a);
+                        final int modifiedI = modifiedTaxaBlock.indexOf(a);
                         for (Taxon b : modifiedTaxaBlock.getTaxa()) {
                             final int originalJ = originalTaxaBlock.indexOf(b);
                             final int modifiedJ = modifiedTaxaBlock.indexOf(b);
                             modified.set(modifiedI, modifiedJ, original.get(originalI, originalJ));
-                            System.err.println(String.format("set (%d,%d)=%f", modifiedI, modifiedJ, original.get(originalI, originalJ)));
+                            //System.err.println(String.format("set (%d,%d)=%f", modifiedI, modifiedJ, original.get(originalI, originalJ)));
                         }
                     }
                 } catch (Exception ex) {

@@ -19,57 +19,50 @@
 
 package splitstree5.utils;
 
+import javafx.beans.property.Property;
+
 /**
- * A undo-redoable actiom
+ * An undoable property change
  * Created by huson on 12/25/16.
  */
-
-abstract public class UndoableChange {
-    private String name;
+public class UndoableChangeProperty<T> extends UndoableChange {
+    private final Property<T> property;
+    private final T oldValue;
+    private final T newValue;
 
     /**
-     * default constructor
+     * constructor
+     *
+     * @param property
+     * @param oldValue
+     * @param newValue
      */
-    public UndoableChange() {
-        name = "";
+    public UndoableChangeProperty(Property<T> property, T oldValue, T newValue) {
+        this("", property, oldValue, newValue);
     }
 
     /**
-     * named constructor
+     * constructor
      *
      * @param name
+     * @param property
+     * @param oldValue
+     * @param newValue
      */
-    public UndoableChange(String name) {
-        this.name = name;
+    public UndoableChangeProperty(String name, Property<T> property, T oldValue, T newValue) {
+        super(name);
+        this.property = property;
+        this.oldValue = oldValue;
+        this.newValue = newValue;
     }
 
-    /**
-     * get name to display
-     *
-     * @return name
-     */
-    public String getName() {
-        return name;
+    @Override
+    public void undo() {
+        property.setValue(oldValue);
     }
 
-    /**
-     * set name to display
-     *
-     * @param name
-     */
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    public void redo() {
+        property.setValue(newValue);
     }
-
-    /**
-     * undo action
-     */
-    abstract public void undo();
-
-    /**
-     * redo action
-     */
-    abstract public void redo();
-
 }
-

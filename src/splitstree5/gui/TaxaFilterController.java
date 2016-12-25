@@ -58,6 +58,9 @@ public class TaxaFilterController {
     @FXML // fx:id="redoMenuItem"
     private MenuItem redoMenuItem; // Value injected by FXMLLoader
 
+    @FXML // fx:id="ignoreButton"
+    private CheckBox ignoreButton; // Value injected by FXMLLoader
+
     @FXML // fx:id="resetButton"
     private Button resetButton; // Value injected by FXMLLoader
 
@@ -131,4 +134,7 @@ public class TaxaFilterController {
         return resetButton;
     }
 
+    public CheckBox getIgnoreButton() {
+        return ignoreButton;
+    }
 }
