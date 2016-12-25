@@ -23,19 +23,20 @@ package splitstree5.core.connectors;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.concurrent.Service;
+import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ANode;
+import splitstree5.core.misc.UpdateState;
 
 /**
  * an algorithm node
  * Created by huson on 12/21/16.
  */
 public class AConnectorNode<P extends DataBlock, C extends DataBlock> extends ANode {
-    private final Service<Boolean> service;
+    private final ConnectorService<P, C> service;
 
     private final TaxaBlock taxaBlock;
     private final ADataNode<P> parent;
@@ -43,15 +44,16 @@ public class AConnectorNode<P extends DataBlock, C extends DataBlock> extends AN
 
     private Algorithm<P, C> algorithm;
 
-    private final BooleanProperty disabled = new SimpleBooleanProperty(true);
+    private final BooleanProperty disable = new SimpleBooleanProperty(true);
 
-    public AConnectorNode(TaxaBlock taxaBlock, ADataNode<P> parent, ADataNode<C> child) {
+    public AConnectorNode(Document document, TaxaBlock taxaBlock, ADataNode<P> parent, ADataNode<C> child) {
+        super(document);
         this.taxaBlock = taxaBlock;
         this.parent = parent;
         parent.getChildren().add(this);
         this.child = child;
-        disabled.bind(stateProperty().isEqualTo(State.VALID).not());
-        service = new ConnectorService(this);
+        disable.bind(stateProperty().isEqualTo(UpdateState.VALID).not());
+        service = new ConnectorService<>(this);
     }
 
     public void disconnect() {
@@ -82,21 +84,21 @@ public class AConnectorNode<P extends DataBlock, C extends DataBlock> extends AN
             algorithm.setTaxa(getTaxaBlock());
             algorithm.setParent(getParent().getDataBlock());
             algorithm.setChild(getChild().getDataBlock());
-            algorithm.disabledProperty().bind(disabled);
+            algorithm.disabledProperty().bind(disable);
         }
     }
 
-    public boolean getDisabled() {
-        return disabled.get();
+    public boolean getDisable() {
+        return disable.get();
     }
 
-    public BooleanProperty disabledProperty() {
-        return disabled;
+    public BooleanProperty disableProperty() {
+        return disable;
     }
 
     @Override
-    public void setState(State state) {
-        final State oldState = getState();
+    public void setState(UpdateState state) {
+        final UpdateState oldState = getState();
 
         switch (state) {
             case INVALID:
@@ -105,22 +107,25 @@ public class AConnectorNode<P extends DataBlock, C extends DataBlock> extends AN
                 else
                     Platform.runLater(service::cancel);
 
-                child.setState(State.INVALID);
-                if (getParent().getState() == State.VALID) {
-                    System.err.println(getAlgorithm().getName() + " " + oldState + " -> " + State.COMPUTING);
-                    super.setState(State.COMPUTING);
+                child.setState(UpdateState.INVALID);
+                if (getParent().getState() == UpdateState.VALID) {
+                    System.err.println(getAlgorithm().getName() + " " + oldState + " -> " + UpdateState.COMPUTING);
+                    super.setState(UpdateState.COMPUTING);
                     if (Platform.isFxApplicationThread())
                         service.restart();
                     else
                         Platform.runLater(service::restart);
                 } else
-                    super.setState(State.INVALID);
+                    super.setState(UpdateState.INVALID);
                 break;
             case VALID:
-                super.setState(State.VALID);
+                super.setState(UpdateState.VALID);
                 break;
             case COMPUTING:
                 throw new RuntimeException("Should never happen");
+            case FAILED:
+                System.err.println(getName() + ": " + state);
+                break;
         }
     }
 
@@ -128,7 +133,7 @@ public class AConnectorNode<P extends DataBlock, C extends DataBlock> extends AN
      * force a recompute
      */
     public void forceRecompute() {
-        setState(State.INVALID);
-        setState(State.VALID);
+        setState(UpdateState.INVALID);
+        setState(UpdateState.VALID);
     }
 }

@@ -21,28 +21,50 @@ package splitstree5.core.misc;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import splitstree5.core.Document;
 
 /**
  * a node
  * Created by huson on 12/21/16.
  */
 abstract public class ANode extends Named {
-    public enum State {VALID, COMPUTING, INVALID}
+    private final Document document;
 
-    private final ObjectProperty<State> state = new SimpleObjectProperty<>(State.VALID);
+    private final ObjectProperty<UpdateState> state = new SimpleObjectProperty<>(UpdateState.VALID);
 
-    public ANode() {
+    public ANode(Document document) {
+        this.document = document;
     }
 
-    public State getState() {
+    public UpdateState getState() {
         return state.get();
     }
 
-    public void setState(State state) {
+    public void setState(UpdateState state) {
+        if (state != UpdateState.VALID && state != UpdateState.FAILED) {
+            if (!document.invalidNodes().contains(this))
+                document.invalidNodes().add(this);
+        } else {
+            if (document.invalidNodes().contains(this))
+                document.invalidNodes().remove(this);
+        }
+
         this.state.set(state);
     }
 
-    public ObjectProperty<State> stateProperty() {
+    public ObjectProperty<UpdateState> stateProperty() {
         return state;
     }
+
+    public void forceUpdate() {
+        if (state.get() == UpdateState.VALID) {
+            setState(UpdateState.INVALID);
+            setState(UpdateState.VALID);
+        }
+    }
+
+    public Document getDocument() {
+        return document;
+    }
+
 }

@@ -75,4 +75,8 @@ public class Taxon {
     public void setUserData(Object userData) {
         this.userData.set(userData);
     }
+
+    public String toString() {
+        return getName();
+    }
 }

@@ -21,7 +21,9 @@ package splitstree5.core.datablocks;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import splitstree5.core.Document;
 import splitstree5.core.misc.ANode;
+import splitstree5.core.misc.UpdateState;
 
 /**
  * a data node
@@ -34,10 +36,11 @@ public class ADataNode<D extends DataBlock> extends ANode {
     /**
      * constructor
      *
+     * @param document
      * @param dataBlock
      */
-    public ADataNode(D dataBlock) {
-        super();
+    public ADataNode(Document document, D dataBlock) {
+        super(document);
         this.dataBlock = dataBlock;
         this.children = FXCollections.observableArrayList();
 
@@ -47,11 +50,11 @@ public class ADataNode<D extends DataBlock> extends ANode {
         return dataBlock;
     }
 
-    public void setState(State state) {
+    public void setState(UpdateState state) {
         System.err.println(getDataBlock().getName() + " " + getState() + " -> " + state);
         super.setState(state);
         for (ANode child : getChildren()) {
-            child.setState(State.INVALID);
+            child.setState(UpdateState.INVALID);
         }
     }
 

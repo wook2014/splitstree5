@@ -21,6 +21,7 @@ package splitstree5;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import splitstree5.core.Document;
 import splitstree5.core.algorithms.NeighborJoining;
 import splitstree5.core.connectors.AConnectorNode;
 import splitstree5.core.datablocks.ADataNode;
@@ -29,6 +30,7 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.filters.TaxaFilter;
 import splitstree5.core.topfilters.DistancesTopFilter;
+import splitstree5.gui.TaxaFilterView;
 import splitstree5.io.DistancesNexusIO;
 
 import java.io.FileReader;
@@ -41,24 +43,29 @@ import java.io.StringWriter;
 public class TryDistances extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
+        Document document = new Document();
 
-        final ADataNode<TaxaBlock> origTaxaNode = new ADataNode<>(new TaxaBlock("OrigTaxa"));
-        final ADataNode<TaxaBlock> taxaNode = new ADataNode<>(new TaxaBlock("WorkingTaxa"));
-        final TaxaFilter taxaFilter = new TaxaFilter(origTaxaNode, taxaNode);
+        final ADataNode<TaxaBlock> origTaxaNode = new ADataNode<>(document, new TaxaBlock("OrigTaxa"));
+        final ADataNode<TaxaBlock> taxaNode = new ADataNode<>(document, new TaxaBlock("WorkingTaxa"));
+        final TaxaFilter taxaFilter = new TaxaFilter(document, origTaxaNode, taxaNode);
+
+        final TaxaFilterView taxaFilterView = new TaxaFilterView(document, taxaFilter);
+        taxaFilterView.show();
 
 
-        final ADataNode<DistancesBlock> origDistancesNode = new ADataNode<>(new DistancesBlock("OrigDistances"));
-        final ADataNode<DistancesBlock> distancesNode = new ADataNode<>(new DistancesBlock("WorkingDistances"));
-        final DistancesTopFilter distancesTopFilter = new DistancesTopFilter(origTaxaNode, taxaNode, origDistancesNode, distancesNode);
+        final ADataNode<DistancesBlock> origDistancesNode = new ADataNode<>(document, new DistancesBlock("OrigDistances"));
+        final ADataNode<DistancesBlock> distancesNode = new ADataNode<>(document, new DistancesBlock("WorkingDistances"));
+        final DistancesTopFilter distancesTopFilter = new DistancesTopFilter(document, origTaxaNode, taxaNode, origDistancesNode, distancesNode);
 
         DistancesNexusIO distancesNexusIO = new DistancesNexusIO(origDistancesNode.getDataBlock());
         distancesNexusIO.read(new FileReader("examples/distances.nex"), origTaxaNode.getDataBlock());
         origTaxaNode.getDataBlock().addTaxaByNames(distancesNexusIO.getTaxonNamesFound());
+        origTaxaNode.forceUpdate();
 
 
-        final ADataNode<TreesBlock> treesNode = new ADataNode<>(new TreesBlock());
+        final ADataNode<TreesBlock> treesNode = new ADataNode<>(document, new TreesBlock());
 
-        final AConnectorNode<DistancesBlock, TreesBlock> dist2trees = new AConnectorNode<>(taxaNode.getDataBlock(), distancesNode, treesNode);
+        final AConnectorNode<DistancesBlock, TreesBlock> dist2trees = new AConnectorNode<>(document, taxaNode.getDataBlock(), distancesNode, treesNode);
         dist2trees.setAlgorithm(new NeighborJoining());
 
         taxaFilter.forceRecompute();

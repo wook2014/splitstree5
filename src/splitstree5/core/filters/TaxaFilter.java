@@ -22,6 +22,7 @@ package splitstree5.core.filters;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.connectors.AConnectorNode;
 import splitstree5.core.datablocks.ADataNode;
@@ -42,11 +43,12 @@ public class TaxaFilter extends AConnectorNode<TaxaBlock, TaxaBlock> {
      * /**
      * constructor
      *
+     * @param document
      * @param parent
      * @param child
      */
-    public TaxaFilter(ADataNode<TaxaBlock> parent, ADataNode<TaxaBlock> child) {
-        super(parent.getDataBlock(), parent, child);
+    public TaxaFilter(Document document, ADataNode<TaxaBlock> parent, ADataNode<TaxaBlock> child) {
+        super(document, parent.getDataBlock(), parent, child);
 
         enabledData.addAll(parent.getDataBlock().getTaxa());
         parent.getDataBlock().getTaxa().addListener(new ListChangeListener<Taxon>() {

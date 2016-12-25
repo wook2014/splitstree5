@@ -19,6 +19,7 @@
 
 package splitstree5.core.analysis;
 
+import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.connectors.AConnectorNode;
 import splitstree5.core.datablocks.ADataNode;
@@ -36,8 +37,8 @@ public class SimpleTaxaAnalysis extends AConnectorNode<TaxaBlock, AnalysisResult
      * @param parent
      * @param child
      */
-    public SimpleTaxaAnalysis(ADataNode<TaxaBlock> parent, ADataNode<AnalysisResultBlock> child) {
-        super(null, parent, child);
+    public SimpleTaxaAnalysis(Document document, ADataNode<TaxaBlock> parent, ADataNode<AnalysisResultBlock> child) {
+        super(document, null, parent, child);
 
         setAlgorithm(new Algorithm<TaxaBlock, AnalysisResultBlock>() {
             @Override

@@ -19,10 +19,12 @@
 
 package splitstree5.core.topfilters;
 
+import splitstree5.core.Document;
 import splitstree5.core.connectors.AConnectorNode;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.misc.UpdateState;
 
 /**
  * top filter
@@ -30,11 +32,11 @@ import splitstree5.core.datablocks.TaxaBlock;
  */
 public class TopFilter<D extends DataBlock> extends AConnectorNode<D, D> {
 
-    public TopFilter(ADataNode<TaxaBlock> originalTaxaNode, ADataNode<TaxaBlock> modifiedTaxaNode, ADataNode<D> parent, ADataNode<D> child) {
-        super(originalTaxaNode.getDataBlock(), parent, child);
+    public TopFilter(Document document, ADataNode<TaxaBlock> originalTaxaNode, ADataNode<TaxaBlock> modifiedTaxaNode, ADataNode<D> parent, ADataNode<D> child) {
+        super(document, originalTaxaNode.getDataBlock(), parent, child);
 
         modifiedTaxaNode.stateProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue != State.VALID && newValue == State.VALID) {
+            if (oldValue != UpdateState.VALID && newValue == UpdateState.VALID) {
                 forceRecompute();
             }
         });

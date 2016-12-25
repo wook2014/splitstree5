@@ -19,6 +19,7 @@
 
 package splitstree5.core.topfilters;
 
+import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -36,13 +37,14 @@ public class TreesTopFilter extends TopFilter<TreesBlock> {
      * /**
      * constructor
      *
+     * @param document
      * @param originalTaxaNode
      * @param modifiedTaxaNode
      * @param parentBlock
      * @param childBlock
      */
-    public TreesTopFilter(ADataNode<TaxaBlock> originalTaxaNode, ADataNode<TaxaBlock> modifiedTaxaNode, ADataNode<TreesBlock> parentBlock, ADataNode<TreesBlock> childBlock) {
-        super(originalTaxaNode, modifiedTaxaNode, parentBlock, childBlock);
+    public TreesTopFilter(Document document, ADataNode<TaxaBlock> originalTaxaNode, ADataNode<TaxaBlock> modifiedTaxaNode, ADataNode<TreesBlock> parentBlock, ADataNode<TreesBlock> childBlock) {
+        super(document, originalTaxaNode, modifiedTaxaNode, parentBlock, childBlock);
 
         setAlgorithm(new Algorithm<TreesBlock, TreesBlock>() {
             public void compute(TaxaBlock taxaBlock, TreesBlock parentBlock, TreesBlock childBlock) {

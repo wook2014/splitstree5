@@ -22,8 +22,8 @@ package splitstree5.core.connectors;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import splitstree5.core.datablocks.DataBlock;
-import splitstree5.core.misc.ANode;
 import splitstree5.core.misc.ProgramExecutorService;
+import splitstree5.core.misc.UpdateState;
 
 /**
  * a service used by a method node
@@ -46,8 +46,8 @@ public class ConnectorService<P extends DataBlock, C extends DataBlock> extends 
                 System.err.println("--- Compute " + getMethodName() + " called");
                 methodNode.getAlgorithm().compute(methodNode.getTaxaBlock(), methodNode.getParent().getDataBlock(), methodNode.getChild().getDataBlock());
                 System.err.println("--- Compute " + getMethodName() + " done");
-                methodNode.setState(ANode.State.VALID);
-                methodNode.getChild().setState(ANode.State.VALID); // child is presumably valid once method has completed...
+                methodNode.setState(UpdateState.VALID);
+                methodNode.getChild().setState(UpdateState.VALID); // child is presumably valid once method has completed...
 
                 return true;
             }
@@ -74,14 +74,14 @@ public class ConnectorService<P extends DataBlock, C extends DataBlock> extends 
             protected void failed() {
                 if (verbose)
                     System.err.println("Compute " + getMethodName() + " task failed: " + getException());
-                methodNode.setState(ANode.State.INVALID);
+                methodNode.setState(UpdateState.FAILED);
             }
 
             @Override
             protected void cancelled() {
                 if (verbose)
                     System.err.println("Compute " + getMethodName() + " task canceled");
-                methodNode.setState(ANode.State.INVALID);
+                methodNode.setState(UpdateState.FAILED);
             }
         };
 

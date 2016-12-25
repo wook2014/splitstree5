@@ -50,7 +50,7 @@ public class TaxaBlock extends DataBlock {
             name2taxon.clear();
             for (int t = 1; t <= getNtax(); t++) {
                 final Taxon taxon = taxa.get(t - 1);
-                taxon2index.put(taxon, t);
+                taxon2index.put(taxon, t - 1);
                 name2taxon.put(taxon.getName(), taxon);
             }
         });
@@ -79,7 +79,7 @@ public class TaxaBlock extends DataBlock {
 
     public int indexOf(Taxon taxon) {
         if (taxon2index.containsKey(taxon))
-            return taxon2index.get(taxon);
+            return taxon2index.get(taxon) + 1;
         else
             return -1;
     }
