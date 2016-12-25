@@ -82,18 +82,6 @@ public class UndoManager {
     /**
      * add an undoable property change
      *
-     * @param property
-     * @param oldValue
-     * @param newValue
-     * @param <T>
-     */
-    public <T> void addUndoableChange(Property<T> property, T oldValue, T newValue) {
-        addUndoableChange(new UndoableChangeProperty<T>(property, oldValue, newValue));
-    }
-
-    /**
-     * add an undoable property change
-     *
      * @param name     to be used in undo/redo menu
      * @param property
      * @param oldValue

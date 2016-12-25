@@ -28,13 +28,6 @@ abstract public class UndoableChange {
     private String name;
 
     /**
-     * default constructor
-     */
-    public UndoableChange() {
-        name = "";
-    }
-
-    /**
      * named constructor
      *
      * @param name
