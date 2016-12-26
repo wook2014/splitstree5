@@ -19,64 +19,51 @@
 
 package splitstree5.core.misc;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import java.io.Serializable;
 
 /**
  * a taxon
  * Created by huson on Dec-2016
  */
-public class Taxon {
-    private final StringProperty name = new SimpleStringProperty();
-    private final StringProperty info = new SimpleStringProperty();
-    private final ObjectProperty<Object> userData = new SimpleObjectProperty<>();
+public class Taxon implements Serializable {
+    private String name;
+    private String info;
 
     public Taxon() {
     }
 
     public Taxon(String name) {
-        this.name.set(name);
+        setName(name);
     }
 
     public String getName() {
-        return name.get();
-    }
-
-    public StringProperty nameProperty() {
         return name;
     }
 
+
     public void setName(String name) {
-        this.name.set(name);
+        this.name = name;
     }
 
     public String getInfo() {
-        return info.get();
-    }
-
-    public StringProperty infoProperty() {
         return info;
     }
 
+
     public void setInfo(String info) {
-        this.info.set(info);
-    }
-
-    public Object getUserData() {
-        return userData.get();
-    }
-
-    public ObjectProperty userDataProperty() {
-        return userData;
-    }
-
-    public void setUserData(Object userData) {
-        this.userData.set(userData);
+        this.info = info;
     }
 
     public String toString() {
         return getName();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof Taxon) {
+            Taxon that = (Taxon) other;
+            return this.getName().equals(that.getName());
+        } else
+            return false;
     }
 }

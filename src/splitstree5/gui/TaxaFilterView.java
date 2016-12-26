@@ -30,9 +30,10 @@ import splitstree5.core.Document;
 import splitstree5.core.filters.TaxaFilter;
 import splitstree5.core.misc.Taxon;
 import splitstree5.core.misc.UpdateState;
+import splitstree5.undo.UndoManager;
+import splitstree5.undo.UndoableChangeListViews2;
+import splitstree5.utils.DragAndDropSupportListView2;
 import splitstree5.utils.ExtendedFXMLLoader;
-import splitstree5.utils.UndoManager;
-import splitstree5.utils.UndoableChangeListViews2;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -99,6 +100,8 @@ public class TaxaFilterView {
                 if (!isInitialLoad)
                     undoManager.addUndoableChange(change);
             }
+
+            DragAndDropSupportListView2.setup(controller.getActiveList(), controller.getInactiveList(), undoManager, "Change Active Taxa");
         });
 
         controller.getUndoMenuItem().setOnAction((e) -> {
@@ -130,15 +133,17 @@ public class TaxaFilterView {
         controller.getInactivateSelectedButton().disableProperty().bind(Bindings.isEmpty(controller.getActiveList().getSelectionModel().getSelectedIndices()));
 
         controller.getActivateAllButton().setOnAction((e) -> {
-            controller.getActiveList().getItems().addAll(controller.getInactiveList().getItems());
+            final ArrayList<Taxon> list = new ArrayList<>(controller.getInactiveList().getItems());
             controller.getInactiveList().getItems().clear();
+            controller.getActiveList().getItems().addAll(list);
         });
         controller.getActivateAllButton().disableProperty().bind(Bindings.isEmpty(controller.getInactiveList().getItems()));
 
 
         controller.getActivateSelectedButton().setOnAction((e) -> {
-            controller.getActiveList().getItems().addAll(controller.getInactiveList().getSelectionModel().getSelectedItems());
-            controller.getInactiveList().getItems().removeAll(controller.getInactiveList().getSelectionModel().getSelectedItems());
+            final ArrayList<Taxon> list = new ArrayList<>(controller.getInactiveList().getSelectionModel().getSelectedItems());
+            controller.getInactiveList().getItems().removeAll(list);
+            controller.getActiveList().getItems().addAll(list);
         });
         controller.getActivateSelectedButton().disableProperty().bind(Bindings.isEmpty(controller.getInactiveList().getSelectionModel().getSelectedIndices()));
 

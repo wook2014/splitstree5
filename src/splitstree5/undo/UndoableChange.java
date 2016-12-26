@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.utils;
+package splitstree5.undo;
 
 /**
  * A undo-redoable actiom

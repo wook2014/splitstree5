@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.utils;
+package splitstree5.undo;
 
 
 import javafx.beans.property.*;
@@ -35,6 +35,8 @@ public class UndoManager {
     private BooleanProperty canRedo = new SimpleBooleanProperty(false);
     private StringProperty undoName = new SimpleStringProperty("Undo");
     private StringProperty redoName = new SimpleStringProperty("Redo");
+
+    private boolean recordChanges = true;
 
     /**
      * default constructor
@@ -70,7 +72,7 @@ public class UndoManager {
      * @param change
      */
     public void addUndoableChange(UndoableChange change) {
-        if (!isPerformingUndoOrRedo() && (currentNode == parentNode || !currentNode.change.equals(change))) {
+        if (isRecordChanges() && !isPerformingUndoOrRedo() && (currentNode == parentNode || !currentNode.change.equals(change))) {
             final ListNode node = new ListNode(change);
             currentNode.next = node;
             node.prev = currentNode;
@@ -89,7 +91,7 @@ public class UndoManager {
      * @param <T>
      */
     public <T> void addUndoableChange(String name, Property<T> property, T oldValue, T newValue) {
-        if (!isPerformingUndoOrRedo())
+        if (isRecordChanges() && !isPerformingUndoOrRedo())
             addUndoableChange(new UndoableChangeProperty<T>(name, property, oldValue, newValue));
     }
 
@@ -256,5 +258,14 @@ public class UndoManager {
         public ListNode() {
             change = null;
         }
+    }
+
+
+    public void setRecordChanges(boolean recordChanges) {
+        this.recordChanges = recordChanges;
+    }
+
+    public boolean isRecordChanges() {
+        return recordChanges;
     }
 }
