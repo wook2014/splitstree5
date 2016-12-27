@@ -17,47 +17,31 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.datablocks;
+package splitstree5.io.nexus;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import splitstree5.core.misc.Named;
+import jloda.util.parse.NexusStreamParser;
+import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.IBlockReaderWriter;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * A data block
- * Created by huson on 12/21/16.
+ * Nexus block
+ * Created by huson on 12/22/16.
  */
-public class DataBlock extends Named implements IBlockReaderWriter {
-    private ObjectProperty<IBlockReaderWriter> readerWriter = new SimpleObjectProperty<>();
-
-    public IBlockReaderWriter getReaderWriter() {
-        return readerWriter.get();
-    }
-
-    public ObjectProperty<IBlockReaderWriter> readerWriterProperty() {
-        return readerWriter;
-    }
-
-    public void setReaderWriter(IBlockReaderWriter readerWriter) {
-        this.readerWriter.set(readerWriter);
-    }
-
+abstract public class NexusBlock implements IBlockReaderWriter {
+    protected final ArrayList<String> taxonNamesFound = new ArrayList<>();
 
     /**
-     * write
+     * parses nexus format
      *
-     * @param w
+     * @param np
      * @throws IOException
      */
-    public void write(Writer w, TaxaBlock taxaBlock) throws IOException {
-        if (readerWriter.get() != null)
-            readerWriter.get().write(w, taxaBlock);
-    }
+    abstract void parse(NexusStreamParser np, TaxaBlock taxaBlock) throws IOException;
 
     /**
      * read
@@ -66,8 +50,17 @@ public class DataBlock extends Named implements IBlockReaderWriter {
      * @throws IOException
      */
     public void read(Reader r, TaxaBlock taxaBlock) throws IOException {
-        if (readerWriter.get() != null)
-            readerWriter.get().read(r, taxaBlock);
+        parse(new NexusStreamParser(r), taxaBlock);
     }
 
+    /**
+     * gets the list of taxon names found. We need this when inferring the list of taxa when it is not explicitly given
+     *
+     * @return names found
+     */
+    public List<String> getTaxonNamesFound() {
+        return taxonNamesFound;
+    }
+
+    abstract public String getSyntax();
 }

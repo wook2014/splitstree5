@@ -17,38 +17,33 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.datablocks;
+package splitstree5.io.nexus;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import splitstree5.core.misc.ITree;
+import jloda.util.parse.NexusStreamParser;
+import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.io.IBlockReaderWriter;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
- * A trees block
- * Created by huson on 12/21/16.
+ * nexus block i/o interface
+ * Created by huson on 12/27/16.
  */
-public class TreesBlock extends ADataBlock {
-    private final ObservableList<ITree> trees;
-
-    public TreesBlock() {
-        trees = FXCollections.observableArrayList();
-    }
-
-    public TreesBlock(String name) {
-        this();
-        setName(name);
-    }
+abstract public interface INexusIO extends IBlockReaderWriter {
+    /**
+     * parse a file in nexus format
+     *
+     * @param np
+     * @param taxaBlock
+     */
+    public void parse(NexusStreamParser np, TaxaBlock taxaBlock) throws IOException;
 
     /**
-     * access the trees
+     * get the list of taxon names found while parsing the block
      *
-     * @return trees
+     * @return list of taxon names found
      */
-    public ObservableList<ITree> getTrees() {
-        return trees;
-    }
+    public List<String> getTaxonNamesFound();
 
-    public String getInfo() {
-        return "Number of trees: " + getTrees().size();
-    }
 }

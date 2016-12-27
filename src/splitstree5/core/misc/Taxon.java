@@ -66,4 +66,9 @@ public class Taxon implements Serializable {
         } else
             return false;
     }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
 }

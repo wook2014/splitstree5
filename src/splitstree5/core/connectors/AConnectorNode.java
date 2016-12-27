@@ -25,8 +25,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
+import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.datablocks.ADataNode;
-import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ANode;
 import splitstree5.core.misc.UpdateState;
@@ -35,7 +35,7 @@ import splitstree5.core.misc.UpdateState;
  * an algorithm node
  * Created by huson on 12/21/16.
  */
-public class AConnectorNode<P extends DataBlock, C extends DataBlock> extends ANode {
+public class AConnectorNode<P extends ADataBlock, C extends ADataBlock> extends ANode {
     private final ConnectorService<P, C> service;
 
     private final TaxaBlock taxaBlock;

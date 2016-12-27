@@ -36,8 +36,6 @@ import java.util.List;
  */
 public class DragAndDropSupportListView2<T> {
     private ListView<T> fromList;
-    private T lastVisitedItemA;
-    private T lastVisitedItemB;
 
     /**
      * setup drag and drop support between a pair of list views
@@ -62,7 +60,7 @@ public class DragAndDropSupportListView2<T> {
         listViewA.setOnDragDetected(event -> {
             fromList = listViewA;
             final Dragboard dragBoard = listViewA.startDragAndDrop(TransferMode.MOVE);
-            ClipboardContent content = new ClipboardContent();
+            final ClipboardContent content = new ClipboardContent();
             content.put(dataFormat, new ArrayList<T>(listViewA.getSelectionModel().getSelectedItems()));
             content.putString(Basic.toString(listViewA.getSelectionModel().getSelectedItems(), "\n"));
             dragBoard.setContent(content);
@@ -71,7 +69,7 @@ public class DragAndDropSupportListView2<T> {
         listViewB.setOnDragDetected(event -> {
             fromList = listViewB;
             final Dragboard dragBoard = listViewA.startDragAndDrop(TransferMode.MOVE);
-            ClipboardContent content = new ClipboardContent();
+            final ClipboardContent content = new ClipboardContent();
             content.put(dataFormat, new ArrayList<T>(listViewB.getSelectionModel().getSelectedItems()));
             content.putString(Basic.toString(listViewB.getSelectionModel().getSelectedItems(), "\n"));
 
@@ -179,7 +177,6 @@ public class DragAndDropSupportListView2<T> {
                                 break;
                             }
                             count++;
-
                         }
                     }
                 }

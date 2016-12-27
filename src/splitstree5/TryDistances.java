@@ -23,6 +23,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.NeighborJoining;
+import splitstree5.core.algorithms.Report;
 import splitstree5.core.connectors.AConnectorNode;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.DistancesBlock;
@@ -31,7 +32,7 @@ import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.filters.TaxaFilter;
 import splitstree5.core.topfilters.DistancesTopFilter;
 import splitstree5.gui.TaxaFilterView;
-import splitstree5.io.DistancesNexusIO;
+import splitstree5.io.nexus.DistancesNexusIO;
 
 import java.io.FileReader;
 
@@ -55,6 +56,8 @@ public class TryDistances extends Application {
         DistancesNexusIO distancesNexusIO = new DistancesNexusIO(origDistancesNode.getDataBlock());
         distancesNexusIO.read(new FileReader("examples/distances.nex"), origTaxaNode.getDataBlock());
         origTaxaNode.getDataBlock().addTaxaByNames(distancesNexusIO.getTaxonNamesFound());
+
+        new Report<>(document, taxaNode.getDataBlock(), distancesNode);
 
 
         final TaxaFilterView taxaFilterView = new TaxaFilterView(document, taxaFilter);

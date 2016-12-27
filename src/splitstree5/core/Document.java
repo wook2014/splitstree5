@@ -20,12 +20,10 @@
 package splitstree5.core;
 
 import javafx.beans.InvalidationListener;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
-import splitstree5.core.datablocks.DataBlock;
+import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ANode;
 
@@ -37,8 +35,10 @@ public class Document {
     private final ObservableSet<ANode> invalidNodes = FXCollections.observableSet();
     private final BooleanProperty updating = new SimpleBooleanProperty();
 
-    private TaxaBlock topTaxaBlock; // original input taxa
-    private DataBlock topDataBlock; // original input data
+    private ADataNode<TaxaBlock> originalTaxaNode; // original input taxa
+    private ADataNode originalDataNode; // original input data
+
+    private final StringProperty fileName = new SimpleStringProperty();
 
     /**
      * constructor
@@ -54,39 +54,39 @@ public class Document {
 
 
     /**
-     * get the top taxa block
+     * gets the original taxa node
      *
-     * @return original taxa
+     * @return original taxa node
      */
-    public TaxaBlock getTopTaxaBlock() {
-        return topTaxaBlock;
+    public ADataNode<TaxaBlock> getOriginalTaxaNode() {
+        return originalTaxaNode;
     }
 
     /**
      * set the top taxa block
      *
-     * @param topTaxaBlock
+     * @param topTaxaNode
      */
-    public void setTopTaxaBlock(TaxaBlock topTaxaBlock) {
-        this.topTaxaBlock = topTaxaBlock;
+    public void setOriginalTaxaNode(ADataNode<TaxaBlock> topTaxaNode) {
+        this.originalTaxaNode = topTaxaNode;
     }
 
     /**
-     * get the top datablock
+     * gets original data node
      *
-     * @return top datablock
+     * @return original data node
      */
-    public DataBlock getTopDataBlock() {
-        return topDataBlock;
+    public ADataNode getOriginalDataNode() {
+        return originalDataNode;
     }
 
     /**
-     * set the top data block
+     * set the original data node
      *
-     * @param topDataBlock
+     * @param originalDataNode
      */
-    public void setTopDataBlock(DataBlock topDataBlock) {
-        this.topDataBlock = topDataBlock;
+    public void setOriginalDataNode(ADataNode originalDataNode) {
+        this.originalDataNode = originalDataNode;
     }
 
     public boolean getUpdating() {
@@ -101,4 +101,15 @@ public class Document {
         return invalidNodes;
     }
 
+    public String getFileName() {
+        return fileName.get();
+    }
+
+    public StringProperty fileNameProperty() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName.set(fileName);
+    }
 }

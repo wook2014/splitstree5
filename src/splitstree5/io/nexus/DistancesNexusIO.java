@@ -17,10 +17,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.io;
+package splitstree5.io.nexus;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -33,25 +31,19 @@ import java.util.List;
  * Distance block nexus implementation
  * Created by huson on 12/22/16.
  */
-public class DistancesNexusIO extends NexusBlock implements IBlockReaderWriter {
+public class DistancesNexusIO extends NexusBlock implements INexusIO {
     private static final String NAME = "DISTANCES";
 
-    public static final String SYNTAX = "BEGIN DISTANCES;\n" +
-            "\t[DIMENSIONS [NTAX=number-of-taxaBlock];]\n" +
-            "\t[FORMAT\n" +
-            "\t    [TRIANGLE={LOWER|UPPER|BOTH}]\n" +
-            "\t    [[NO] DIAGONAL]\n" +
-            "\t    [LABELS={LEFT|NO}]\n" +
-            "\t;]\n" +
-            "\tMATRIX\n" +
-            "\t    distance data in specified format\n" +
-            "\t;\n" +
+    public static final String SYNTAX = "BEGIN TAXA;\n" +
+            "\tDIMENSIONS NTAX=number-of-taxa;\n" +
+            "\t[TAXLABELS taxon_1 taxon_2 ... taxon_ntax;]\n" +
+            "\t[TAXINFO info_1 info_2 ... info_ntax;]\n" +
             "END;\n";
+
 
     private final DistancesBlock distancesBlock;
     private final DistancesNexusFormat format;
 
-    private final ObservableList<String> taxonNamesFound = FXCollections.observableArrayList();
 
     /**
      * constructor
@@ -64,8 +56,8 @@ public class DistancesNexusIO extends NexusBlock implements IBlockReaderWriter {
     }
 
     @Override
-    void parse(NexusStreamParser np, TaxaBlock taxaBlock) throws IOException {
-        taxonNamesFound.clear();
+    public void parse(NexusStreamParser np, TaxaBlock taxaBlock) throws IOException {
+        getTaxonNamesFound().clear();
 
         if (np.peekMatchIgnoreCase("#nexus"))
             np.matchIgnoreCase("#nexus"); // skip header line if it is the first line
@@ -117,7 +109,7 @@ public class DistancesNexusIO extends NexusBlock implements IBlockReaderWriter {
             String label = np.getLabelRespectCase();
             if (taxaBlock.getNtax() > 0)
                 np.matchLabelRespectCase(label);
-            taxonNamesFound.add(label);
+            getTaxonNamesFound().add(label);
 
             distancesBlock.set(t, t, 0);
 
@@ -155,15 +147,6 @@ public class DistancesNexusIO extends NexusBlock implements IBlockReaderWriter {
                 System.err.println("Warning: Distance matrix not symmetric: averaging between upper and lower parts");
             }
         }
-    }
-
-    /**
-     * gets the list of taxon names found. We need this when inferring the list of taxa when it is not explicitly given
-     *
-     * @return names found
-     */
-    public ObservableList<String> getTaxonNamesFound() {
-        return taxonNamesFound;
     }
 
     /**

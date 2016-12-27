@@ -17,36 +17,13 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.io;
+package splitstree5.core.datablocks;
 
-import jloda.util.parse.NexusStreamParser;
-import splitstree5.core.datablocks.TaxaBlock;
-
-import java.io.IOException;
-import java.io.Reader;
+import splitstree5.core.misc.Named;
 
 /**
- * Nexus block
- * Created by huson on 12/22/16.
+ * A data block
+ * Created by huson on 12/21/16.
  */
-abstract public class NexusBlock implements IBlockReaderWriter {
-    /**
-     * parses nexus format
-     *
-     * @param np
-     * @throws IOException
-     */
-    abstract void parse(NexusStreamParser np, TaxaBlock taxaBlock) throws IOException;
-
-    /**
-     * read
-     *
-     * @param r
-     * @throws IOException
-     */
-    public void read(Reader r, TaxaBlock taxaBlock) throws IOException {
-        parse(new NexusStreamParser(r), taxaBlock);
-    }
-
-    abstract public String getSyntax();
+public class ADataBlock extends Named {
 }

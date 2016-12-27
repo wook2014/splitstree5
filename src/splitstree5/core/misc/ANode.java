@@ -24,7 +24,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import splitstree5.core.Document;
 
 /**
- * a node
+ * A processing graph node
  * Created by huson on 12/21/16.
  */
 abstract public class ANode extends Named {
@@ -56,15 +56,7 @@ abstract public class ANode extends Named {
         return state;
     }
 
-    public void forceUpdate() {
-        if (state.get() == UpdateState.VALID) {
-            setState(UpdateState.INVALID);
-            setState(UpdateState.VALID);
-        }
-    }
-
     public Document getDocument() {
         return document;
     }
-
 }

@@ -27,7 +27,7 @@ import splitstree5.core.misc.ISplit;
  * A splits block
  * Created by huson on 12/21/16.
  */
-public class SplitsBlock extends DataBlock {
+public class SplitsBlock extends ADataBlock {
     private final ObservableList<ISplit> splits;
 
     public SplitsBlock() {

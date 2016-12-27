@@ -29,7 +29,7 @@ import splitstree5.core.misc.UpdateState;
  * a data node
  * Created by huson on 12/21/16.
  */
-public class ADataNode<D extends DataBlock> extends ANode {
+public class ADataNode<D extends ADataBlock> extends ANode {
     private final D dataBlock;
     private final ObservableList<ANode> children;
 

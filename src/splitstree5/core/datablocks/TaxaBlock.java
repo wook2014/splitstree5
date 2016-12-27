@@ -25,6 +25,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import splitstree5.core.misc.Taxon;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +34,7 @@ import java.util.Map;
  * A taxa block
  * Created by huson on 12/21/16.
  */
-public class TaxaBlock extends DataBlock {
+public class TaxaBlock extends ADataBlock {
     private final ObservableList<Taxon> taxa;
     private final ObservableMap<Taxon, Integer> taxon2index;
     private final ObservableMap<String, Taxon> name2taxon;
@@ -111,5 +112,17 @@ public class TaxaBlock extends DataBlock {
             }
         }
         return map;
+    }
+
+    /**
+     * adds a taxon. Throws an exception if name already present
+     *
+     * @param taxon
+     * @throws IOException taxon name already present
+     */
+    public void add(Taxon taxon) throws IOException {
+        if (taxa.contains(taxon))
+            throw new IOException("Duplicate taxon name: " + taxon.getName());
+        taxa.add(taxon);
     }
 }

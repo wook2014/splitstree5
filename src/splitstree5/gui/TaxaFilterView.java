@@ -139,7 +139,6 @@ public class TaxaFilterView {
         });
         controller.getActivateAllButton().disableProperty().bind(Bindings.isEmpty(controller.getInactiveList().getItems()));
 
-
         controller.getActivateSelectedButton().setOnAction((e) -> {
             final ArrayList<Taxon> list = new ArrayList<>(controller.getInactiveList().getSelectionModel().getSelectedItems());
             controller.getInactiveList().getItems().removeAll(list);
@@ -156,6 +155,9 @@ public class TaxaFilterView {
         controller.getResetButton().setOnAction((e) -> {
             syncModel2Controller();
             undoManager.clear();
+
+            // todo: this is just for debugging:
+            document.invalidNodes().clear();
         });
 
         controller.getApplyButton().setOnAction((e) -> {

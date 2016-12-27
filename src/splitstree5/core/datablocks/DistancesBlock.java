@@ -19,18 +19,15 @@
 
 package splitstree5.core.datablocks;
 
-import splitstree5.io.DistancesNexusIO;
-
 /**
  * A distances block
  * Created by huson on 12/21/16.
  */
-public class DistancesBlock extends DataBlock {
+public class DistancesBlock extends ADataBlock {
     private double[][] data;
 
     public DistancesBlock() {
         data = new double[0][0];
-        setReaderWriter(new DistancesNexusIO(this));
     }
 
     public DistancesBlock(String name) {

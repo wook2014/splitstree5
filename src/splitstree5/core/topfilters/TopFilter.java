@@ -21,8 +21,8 @@ package splitstree5.core.topfilters;
 
 import splitstree5.core.Document;
 import splitstree5.core.connectors.AConnectorNode;
+import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.datablocks.ADataNode;
-import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.UpdateState;
 
@@ -30,7 +30,7 @@ import splitstree5.core.misc.UpdateState;
  * top filter
  * Created by huson on 12/21/16.
  */
-public class TopFilter<D extends DataBlock> extends AConnectorNode<D, D> {
+public class TopFilter<D extends ADataBlock> extends AConnectorNode<D, D> {
 
     public TopFilter(Document document, ADataNode<TaxaBlock> originalTaxaNode, ADataNode<TaxaBlock> modifiedTaxaNode, ADataNode<D> parent, ADataNode<D> child) {
         super(document, originalTaxaNode.getDataBlock(), parent, child);

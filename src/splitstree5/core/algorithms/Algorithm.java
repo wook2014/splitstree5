@@ -21,7 +21,7 @@ package splitstree5.core.algorithms;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import splitstree5.core.datablocks.DataBlock;
+import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Named;
 
@@ -29,7 +29,7 @@ import splitstree5.core.misc.Named;
  * A method
  * Created by huson on 12/21/16.
  */
-abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extends Named {
+abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> extends Named {
     private TaxaBlock taxa;
     private P parent;
     private C child;

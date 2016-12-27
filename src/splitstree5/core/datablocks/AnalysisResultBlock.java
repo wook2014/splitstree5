@@ -24,5 +24,5 @@ package splitstree5.core.datablocks;
  * This block saves the result of an analysis in its info variable
  * Created by huson on 12/22/16.
  */
-public class AnalysisResultBlock extends DataBlock {
+public class AnalysisResultBlock extends ADataBlock {
 }

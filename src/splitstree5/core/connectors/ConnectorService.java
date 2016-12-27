@@ -21,7 +21,7 @@ package splitstree5.core.connectors;
 
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import splitstree5.core.datablocks.DataBlock;
+import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.misc.ProgramExecutorService;
 import splitstree5.core.misc.UpdateState;
 
@@ -29,7 +29,7 @@ import splitstree5.core.misc.UpdateState;
  * a service used by a method node
  * Created by huson on 12/21/16.
  */
-public class ConnectorService<P extends DataBlock, C extends DataBlock> extends Service<Boolean> {
+public class ConnectorService<P extends ADataBlock, C extends ADataBlock> extends Service<Boolean> {
     public static boolean verbose = true;
     private AConnectorNode<P, C> methodNode;
 
