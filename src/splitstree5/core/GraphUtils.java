@@ -31,8 +31,10 @@ import splitstree5.core.misc.ANode;
  */
 public class GraphUtils {
     public static void print(ADataNode<TaxaBlock> originalTaxonNode, ADataNode originalDataNode) {
+        System.err.println("+++ Document update graph:");
         printRec(originalTaxonNode, true, 0);
         printRec(originalDataNode, false, 0);
+        System.err.println("+++ end");
     }
 
     /**
@@ -47,9 +49,12 @@ public class GraphUtils {
             for (int i = 0; i < level; i++)
                 System.err.print("--");
 
-            System.err.print("Data " + Basic.getShortName(((ADataNode) node).getDataBlock().getClass()) + "[" + node.getUid() + "]: c=");
-            for (Object b : that.getChildren()) {
-                System.err.print(" " + ((ANode) b).getUid());
+            System.err.print("Data " + Basic.getShortName(((ADataNode) node).getDataBlock().getClass()) + "[" + node.getUid() + "]");
+            if (that.getChildren().size() > 0) {
+                System.err.print(": c=");
+                for (Object b : that.getChildren()) {
+                    System.err.print(" " + ((ANode) b).getUid());
+                }
             }
             System.err.println();
             for (Object b : that.getChildren()) {

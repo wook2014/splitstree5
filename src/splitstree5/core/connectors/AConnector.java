@@ -156,5 +156,6 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
      */
     public void forceRecompute() {
         setState(UpdateState.VALID);
+        setState(UpdateState.INVALID);
     }
 }

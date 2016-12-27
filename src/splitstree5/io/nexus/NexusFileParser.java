@@ -22,14 +22,13 @@ package splitstree5.io.nexus;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Report;
-import splitstree5.core.datablocks.ADataBlock;
-import splitstree5.core.datablocks.ADataNode;
-import splitstree5.core.datablocks.DistancesBlock;
-import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.datablocks.*;
 import splitstree5.core.filters.TaxaFilter;
 import splitstree5.core.misc.Taxon;
 import splitstree5.core.misc.UpdateState;
-import splitstree5.core.topfilters.ATopFilterConnector;
+import splitstree5.core.topfilters.DistancesTopFilter;
+import splitstree5.core.topfilters.SplitsTopFilter;
+import splitstree5.core.topfilters.TreesTopFilter;
 import splitstree5.gui.TaxaFilterView;
 
 import java.io.FileReader;
@@ -58,29 +57,29 @@ public class NexusFileParser {
                 System.err.println("Not implemented");
             } else { // this is a user input file
 
-                final TaxaBlock originalTaxaBlock = new TaxaBlock("OriginalTaxa");
-                document.setTopTaxaNode(new ADataNode<>(document, originalTaxaBlock));
+                final TaxaBlock topTaxaBlock = new TaxaBlock("TopTaxa");
+                document.setTopTaxaNode(new ADataNode<>(document, topTaxaBlock));
 
                 boolean needToDetectTaxa = true;
 
                 if (np.peekMatchIgnoreCase("begin taxa;")) {
-                    final TaxaNexusIO io = new TaxaNexusIO(originalTaxaBlock);
+                    final TaxaNexusIO io = new TaxaNexusIO(topTaxaBlock);
                     io.parse(np, null);
-                    needToDetectTaxa = (originalTaxaBlock.getTaxa().size() == 0);
+                    needToDetectTaxa = (topTaxaBlock.getTaxa().size() == 0);
                 }
                 final ArrayList<String> namesFound = new ArrayList<>();
-                final ADataBlock originalDataBlock = parseBlock(np, originalTaxaBlock, namesFound);
+                final ADataBlock originalDataBlock = parseBlock(np, topTaxaBlock, namesFound);
                 if (needToDetectTaxa) {
                     if (namesFound.size() == 0)
                         throw new IOException("Couldn't detect taxon names in input file");
                     for (String name : namesFound) {
-                        originalTaxaBlock.add(new Taxon(name));
+                        topTaxaBlock.add(new Taxon(name));
                     }
                 }
                 document.getTopTaxaNode().setState(UpdateState.VALID);
 
-                final ADataNode originalDataNode = new ADataNode<>(document, originalDataBlock);
-                document.setTopDataNode(originalDataNode);
+                final ADataNode topDataNode = new ADataNode<>(document, originalDataBlock);
+                document.setTopDataNode(topDataNode);
                 document.getTopDataNode().setState(UpdateState.VALID);
 
                 final ADataNode workingDataNode = new ADataNode<>(document, originalDataBlock.newInstance());
@@ -98,8 +97,13 @@ public class NexusFileParser {
                     taxaFilterView.show();
                 }
 
-                new ATopFilterConnector(document, document.getTopTaxaNode(), workingTaxaNode, document.getTopDataNode(), workingDataNode);
-
+                if (document.getTopDataNode().getDataBlock() instanceof DistancesBlock) {
+                    new DistancesTopFilter(document, document.getTopTaxaNode(), workingTaxaNode, document.getTopDataNode(), workingDataNode);
+                } else if (document.getTopDataNode().getDataBlock() instanceof SplitsBlock) {
+                    new SplitsTopFilter(document, document.getTopTaxaNode(), workingTaxaNode, document.getTopDataNode(), workingDataNode);
+                } else if (document.getTopDataNode().getDataBlock() instanceof TreesBlock) {
+                    new TreesTopFilter(document, document.getTopTaxaNode(), workingTaxaNode, document.getTopDataNode(), workingDataNode);
+                }
             }
         }
     }

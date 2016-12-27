@@ -19,7 +19,9 @@
 
 package splitstree5.core.topfilters;
 
+import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
+import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ITree;
@@ -30,27 +32,35 @@ import java.util.Map;
  * splits top taxon filter
  * Created by huson on 12/12/16.
  */
-public class TreesTopFilter extends Algorithm<TreesBlock, TreesBlock> {
-    private final TaxaBlock modifiedTaxaBlock;
-
+public class TreesTopFilter extends ATopFilter<TreesBlock> {
     /**
+     * /**
      * constructor
-     * @param modifiedTaxaBlock
+     *
+     * @param document
+     * @param originalTaxaNode
+     * @param modifiedTaxaNode
+     * @param parentBlock
+     * @param childBlock
      */
-    public TreesTopFilter(TaxaBlock modifiedTaxaBlock) {
-        this.modifiedTaxaBlock = modifiedTaxaBlock;
-    }
+    public TreesTopFilter(Document document, ADataNode<TaxaBlock> originalTaxaNode, ADataNode<TaxaBlock> modifiedTaxaNode, ADataNode<TreesBlock> parentBlock, ADataNode<TreesBlock> childBlock) {
+        super(document, originalTaxaNode, modifiedTaxaNode, parentBlock, childBlock);
 
-    public void compute(TaxaBlock originalTaxaBlock, TreesBlock parentBlock, TreesBlock childBlock) {
-        childBlock.getTrees().clear();
+        setAlgorithm(new Algorithm<TreesBlock, TreesBlock>("TopFilter") {
+            public void compute(TaxaBlock taxaBlock, TreesBlock parentBlock, TreesBlock childBlock) {
+                final TaxaBlock originalTaxaBlock = originalTaxaNode.getDataBlock();
 
-        final Map<Integer, Integer> originalIndex2ModifiedIndex = originalTaxaBlock.computeIndexMap(modifiedTaxaBlock);
+                childBlock.getTrees().clear();
 
-        for (ITree tree : parentBlock.getTrees()) {
-            ITree induced = computeInducedTree(tree, originalIndex2ModifiedIndex, modifiedTaxaBlock.getNtax());
-            if (induced != null)
-                childBlock.getTrees().add(induced);
-        }
+                final Map<Integer, Integer> originalIndex2ModifiedIndex = originalTaxaBlock.computeIndexMap(taxaBlock);
+
+                for (ITree tree : parentBlock.getTrees()) {
+                    ITree induced = computeInducedTree(tree, originalIndex2ModifiedIndex, taxaBlock.getNtax());
+                    if (induced != null)
+                        childBlock.getTrees().add(induced);
+                }
+            }
+        });
     }
 
     /**

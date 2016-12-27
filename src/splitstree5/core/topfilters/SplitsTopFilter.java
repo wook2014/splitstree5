@@ -19,7 +19,9 @@
 
 package splitstree5.core.topfilters;
 
+import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
+import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ISplit;
@@ -32,31 +34,36 @@ import java.util.Map;
  * splits top taxon filter
  * Created by huson on 12/12/16.
  */
-public class SplitsTopFilter extends Algorithm<SplitsBlock, SplitsBlock> {
-    private final TaxaBlock modifiedTaxaBlock;
-
+public class SplitsTopFilter extends ATopFilter<SplitsBlock> {
     /**
      * /**
      * constructor
      *
-     * @param modifiedTaxaBlock
+     * @param document
+     * @param originalTaxaNode
+     * @param modifiedTaxaNode
+     * @param parent
+     * @param child
      */
-    public SplitsTopFilter(TaxaBlock modifiedTaxaBlock) {
-        this.modifiedTaxaBlock = modifiedTaxaBlock;
+    public SplitsTopFilter(Document document, ADataNode<TaxaBlock> originalTaxaNode, ADataNode<TaxaBlock> modifiedTaxaNode, ADataNode<SplitsBlock> parent, ADataNode<SplitsBlock> child) {
+        super(document, originalTaxaNode, modifiedTaxaNode, parent, child);
+
+        setAlgorithm(new Algorithm<SplitsBlock, SplitsBlock>("TopFilter") {
+            public void compute(TaxaBlock originalTaxaBlock, SplitsBlock original, SplitsBlock modified) {
+                final TaxaBlock modifiedTaxaBlock = modifiedTaxaNode.getDataBlock();
+
+                modified.getSplits().clear();
+
+                final Map<Integer, Integer> originalIndex2ModifiedIndex = originalTaxaBlock.computeIndexMap(modifiedTaxaBlock);
+
+                for (ISplit split : original.getSplits()) {
+                    ISplit induced = computeInducedSplit(split, originalIndex2ModifiedIndex, modifiedTaxaBlock.getNtax());
+                    if (induced != null)
+                        modified.getSplits().add(induced);
+                }
+            }
+        });
     }
-
-    public void compute(TaxaBlock originalTaxaBlock, SplitsBlock original, SplitsBlock modified) {
-        modified.getSplits().clear();
-
-        final Map<Integer, Integer> originalIndex2ModifiedIndex = originalTaxaBlock.computeIndexMap(modifiedTaxaBlock);
-
-        for (ISplit split : original.getSplits()) {
-            ISplit induced = computeInducedSplit(split, originalIndex2ModifiedIndex, modifiedTaxaBlock.getNtax());
-            if (induced != null)
-                modified.getSplits().add(induced);
-        }
-    }
-
 
     /**
      * compute an induced split

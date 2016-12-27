@@ -30,7 +30,7 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.filters.TaxaFilter;
-import splitstree5.core.topfilters.ATopFilterConnector;
+import splitstree5.core.topfilters.DistancesTopFilter;
 import splitstree5.gui.TaxaFilterView;
 import splitstree5.io.nexus.DistancesNexusIO;
 
@@ -45,21 +45,20 @@ public class TryDistances extends Application {
     public void start(Stage primaryStage) throws Exception {
         Document document = new Document();
 
-        final ADataNode<TaxaBlock> origTaxaNode = new ADataNode<>(document, new TaxaBlock("OrigTaxa"));
-        final ADataNode<TaxaBlock> taxaNode = new ADataNode<>(document, new TaxaBlock("WorkingTaxa"));
-        final TaxaFilter taxaFilter = new TaxaFilter(document, origTaxaNode, taxaNode);
+        final ADataNode<TaxaBlock> topTaxaNode = new ADataNode<>(document, new TaxaBlock("TopTaxa"));
+        final ADataNode<TaxaBlock> taxaNode = new ADataNode<>(document, new TaxaBlock("Taxa"));
+        final TaxaFilter taxaFilter = new TaxaFilter(document, topTaxaNode, taxaNode);
 
-        final ADataNode<DistancesBlock> origDistancesNode = new ADataNode<>(document, new DistancesBlock("OrigDistances"));
-        final ADataNode<DistancesBlock> distancesNode = new ADataNode<>(document, new DistancesBlock("WorkingDistances"));
+        final ADataNode<DistancesBlock> topDistancesNode = new ADataNode<>(document, new DistancesBlock("TopDistances"));
+        final ADataNode<DistancesBlock> distancesNode = new ADataNode<>(document, new DistancesBlock("Distances"));
 
-        new ATopFilterConnector<>(document, origTaxaNode, taxaNode, origDistancesNode, distancesNode);
+        new DistancesTopFilter(document, topTaxaNode, taxaNode, topDistancesNode, distancesNode);
 
-        DistancesNexusIO distancesNexusIO = new DistancesNexusIO(origDistancesNode.getDataBlock());
-        distancesNexusIO.read(new FileReader("examples/distances.nex"), origTaxaNode.getDataBlock());
-        origTaxaNode.getDataBlock().addTaxaByNames(distancesNexusIO.getTaxonNamesFound());
+        DistancesNexusIO distancesNexusIO = new DistancesNexusIO(topDistancesNode.getDataBlock());
+        distancesNexusIO.read(new FileReader("examples/distances.nex"), topTaxaNode.getDataBlock());
+        topTaxaNode.getDataBlock().addTaxaByNames(distancesNexusIO.getTaxonNamesFound());
 
         new Report<>(document, taxaNode.getDataBlock(), distancesNode);
-
 
         final TaxaFilterView taxaFilterView = new TaxaFilterView(document, taxaFilter);
         taxaFilterView.show();

@@ -20,7 +20,9 @@
 package splitstree5.core.topfilters;
 
 
+import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
+import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
@@ -29,37 +31,40 @@ import splitstree5.core.misc.Taxon;
  * distances top taxon filter
  * Created by huson on 12/12/16.
  */
-public class DistancesTopFilter extends Algorithm<DistancesBlock, DistancesBlock> {
-    private final TaxaBlock modifiedTaxaBlock;
-
+public class DistancesTopFilter extends ATopFilter<DistancesBlock> {
     /**
      * constructor
+     *
+     * @param originalTaxaNode
+     * @param modifiedTaxaNode
+     * @param parent
+     * @param child
      */
-    public DistancesTopFilter(TaxaBlock modifiedTaxaBlock) {
-        this.modifiedTaxaBlock = modifiedTaxaBlock;
-        setName("TopFilter");
-    }
+    public DistancesTopFilter(Document document, ADataNode<TaxaBlock> originalTaxaNode, ADataNode<TaxaBlock> modifiedTaxaNode, ADataNode<DistancesBlock> parent, ADataNode<DistancesBlock> child) {
+        super(document, originalTaxaNode, modifiedTaxaNode, parent, child);
 
-    public void compute(TaxaBlock originalTaxaBlock, DistancesBlock original, DistancesBlock modified) {
-        try {
-            if (modified.getNtax() != modifiedTaxaBlock.getNtax())
-                modified.setNtax(modifiedTaxaBlock.getNtax());
+        setAlgorithm(new Algorithm<DistancesBlock, DistancesBlock>("TopFilter") {
+            public void compute(TaxaBlock originalTaxaBlock, DistancesBlock original, DistancesBlock modified) {
+                try {
+                    final TaxaBlock modifiedTaxaBlock = modifiedTaxaNode.getDataBlock();
 
-            for (Taxon a : modifiedTaxaBlock.getTaxa()) {
-                final int originalI = originalTaxaBlock.indexOf(a);
-                final int modifiedI = modifiedTaxaBlock.indexOf(a);
-                for (Taxon b : modifiedTaxaBlock.getTaxa()) {
-                    final int originalJ = originalTaxaBlock.indexOf(b);
-                    final int modifiedJ = modifiedTaxaBlock.indexOf(b);
-                    modified.set(modifiedI, modifiedJ, original.get(originalI, originalJ));
-                    //System.err.println(String.format("set (%d,%d)=%f", modifiedI, modifiedJ, original.get(originalI, originalJ)));
+                    modified.setNtax(modifiedTaxaBlock.getNtax());
+
+                    for (Taxon a : modifiedTaxaBlock.getTaxa()) {
+                        final int originalI = originalTaxaBlock.indexOf(a);
+                        final int modifiedI = modifiedTaxaBlock.indexOf(a);
+                        for (Taxon b : modifiedTaxaBlock.getTaxa()) {
+                            final int originalJ = originalTaxaBlock.indexOf(b);
+                            final int modifiedJ = modifiedTaxaBlock.indexOf(b);
+                            modified.set(modifiedI, modifiedJ, original.get(originalI, originalJ));
+                            //System.err.println(String.format("set (%d,%d)=%f", modifiedI, modifiedJ, original.get(originalI, originalJ)));
+                        }
+                    }
+                } catch (Exception ex) {
+                    throw ex;
                 }
             }
-        } catch (Exception ex) {
-            throw ex;
-        }
+        });
 
     }
-
-
 }
