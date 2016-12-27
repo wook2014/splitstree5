@@ -24,7 +24,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.connectors.AConnectorNode;
+import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
@@ -36,7 +36,7 @@ import java.util.ArrayList;
  * trees filter
  * Created by huson on 12/12/16.
  */
-public class TreesFilter extends AConnectorNode<TreesBlock, TreesBlock> {
+public class TreesFilter extends AConnector<TreesBlock, TreesBlock> {
     private final ObservableList<ITree> enabledData = FXCollections.observableArrayList();
     private final ObservableList<ITree> disabledData = FXCollections.observableArrayList();
 

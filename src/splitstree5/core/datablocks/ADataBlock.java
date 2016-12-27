@@ -19,6 +19,7 @@
 
 package splitstree5.core.datablocks;
 
+import jloda.util.Basic;
 import splitstree5.core.misc.Named;
 
 /**
@@ -26,4 +27,13 @@ import splitstree5.core.misc.Named;
  * Created by huson on 12/21/16.
  */
 public class ADataBlock extends Named {
+
+    public ADataBlock newInstance() {
+        try {
+            return getClass().newInstance();
+        } catch (Exception e) {
+            Basic.caught(e);
+            return null;
+        }
+    }
 }

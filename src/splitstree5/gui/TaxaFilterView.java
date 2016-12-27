@@ -164,6 +164,23 @@ public class TaxaFilterView {
             syncController2Model();
         });
         controller.getApplyButton().disableProperty().bind(Bindings.isEmpty(controller.getActiveList().getItems()).or(document.updatingProperty()).or(undoManager.canUndoProperty().not()));
+
+        if (false) {
+            // this would allow us to edit taxon labels, but we need to figure out how to write this back to the original taxa
+            controller.getActiveList().setEditable(true);
+            controller.getActiveList().setCellFactory(TaxonListCell.forListView());
+            controller.getActiveList().setOnEditCommit((e) -> {
+                // make sure new value is unique:
+                for (int i = 0; i < controller.getActiveList().getItems().size(); i++) {
+                    if (i != e.getIndex() && controller.getActiveList().getItems().get(i).equals(e.getNewValue())) {
+                        System.err.println("Error: name exists");
+                        //undoManager.undoAndForget();
+                        return;
+                    }
+                    controller.getActiveList().getItems().set(e.getIndex(), e.getNewValue());
+                }
+            });
+        }
     }
 
     /**
@@ -195,8 +212,10 @@ public class TaxaFilterView {
         final ListView<Taxon> activeList = controller.getActiveList();
         final ListView<Taxon> inactiveList = controller.getInactiveList();
 
-        taxaFilter.getEnabledData().setAll(activeList.getItems());
-        taxaFilter.getDisabledData().setAll(inactiveList.getItems());
+        taxaFilter.getEnabledData().clear();
+        taxaFilter.getEnabledData().addAll(activeList.getItems());
+        taxaFilter.getDisabledData().clear();
+        taxaFilter.getDisabledData().addAll(inactiveList.getItems());
         taxaFilter.setState(UpdateState.INVALID);
     }
 }

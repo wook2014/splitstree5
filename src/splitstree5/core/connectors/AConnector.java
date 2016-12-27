@@ -32,10 +32,10 @@ import splitstree5.core.misc.ANode;
 import splitstree5.core.misc.UpdateState;
 
 /**
- * an algorithm node
+ * A connector between data nodes. THis is where algorithms are run
  * Created by huson on 12/21/16.
  */
-public class AConnectorNode<P extends ADataBlock, C extends ADataBlock> extends ANode {
+public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANode {
     private final ConnectorService<P, C> service;
 
     private final TaxaBlock taxaBlock;
@@ -46,7 +46,15 @@ public class AConnectorNode<P extends ADataBlock, C extends ADataBlock> extends 
 
     private final BooleanProperty disable = new SimpleBooleanProperty(true);
 
-    public AConnectorNode(Document document, TaxaBlock taxaBlock, ADataNode<P> parent, ADataNode<C> child) {
+    /**
+     * constructor
+     *
+     * @param document
+     * @param taxaBlock
+     * @param parent
+     * @param child
+     */
+    public AConnector(Document document, TaxaBlock taxaBlock, ADataNode<P> parent, ADataNode<C> child) {
         super(document);
         this.taxaBlock = taxaBlock;
         this.parent = parent;
@@ -54,6 +62,20 @@ public class AConnectorNode<P extends ADataBlock, C extends ADataBlock> extends 
         this.child = child;
         disable.bind(stateProperty().isEqualTo(UpdateState.VALID).not());
         service = new ConnectorService<>(this);
+    }
+
+    /**
+     * constructor
+     *
+     * @param document
+     * @param taxaBlock
+     * @param parent
+     * @param child
+     * @param algorithm
+     */
+    public AConnector(Document document, TaxaBlock taxaBlock, ADataNode<P> parent, ADataNode<C> child, Algorithm<P, C> algorithm) {
+        this(document, taxaBlock, parent, child);
+        this.algorithm = algorithm;
     }
 
     public void disconnect() {
@@ -133,7 +155,6 @@ public class AConnectorNode<P extends ADataBlock, C extends ADataBlock> extends 
      * force a recompute
      */
     public void forceRecompute() {
-        setState(UpdateState.INVALID);
         setState(UpdateState.VALID);
     }
 }

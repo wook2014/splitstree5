@@ -94,7 +94,7 @@ public class DistancesNexusIO extends NexusBlock implements INexusIO {
             np.findIgnoreCase(format, "missing=", null, '?');
 
             if (format.size() != 0)
-                throw new IOException("line " + np.lineno() + ": `" + format + "' unexpected in FORMAT");
+                throw new IOException("line " + np.lineno() + ": '" + format + "' unexpected in FORMAT");
         }
 
         np.matchIgnoreCase("MATRIX");
@@ -107,8 +107,8 @@ public class DistancesNexusIO extends NexusBlock implements INexusIO {
 
         for (int t = 1; t <= distancesBlock.getNtax(); t++) {
             String label = np.getLabelRespectCase();
-            if (taxaBlock.getNtax() > 0)
-                np.matchLabelRespectCase(label);
+            if (taxaBlock.getNtax() > 0 && !taxaBlock.get(t).getName().equals(label))
+                throw new IOException("line " + np.lineno() + ": expected '" + taxaBlock.get(t).getName() + "', found: '" + label + "'");
             getTaxonNamesFound().add(label);
 
             distancesBlock.set(t, t, 0);

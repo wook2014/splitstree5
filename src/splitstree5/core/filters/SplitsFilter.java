@@ -24,7 +24,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.connectors.AConnectorNode;
+import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -36,7 +36,7 @@ import java.util.ArrayList;
  * splits filter
  * Created by huson on 12/12/16.
  */
-public class SplitsFilter extends AConnectorNode<SplitsBlock, SplitsBlock> {
+public class SplitsFilter extends AConnector<SplitsBlock, SplitsBlock> {
     private final ObservableList<ISplit> enabledData = FXCollections.observableArrayList();
     private final ObservableList<ISplit> disabledData = FXCollections.observableArrayList();
 

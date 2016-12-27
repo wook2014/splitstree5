@@ -35,8 +35,8 @@ public class Document {
     private final ObservableSet<ANode> invalidNodes = FXCollections.observableSet();
     private final BooleanProperty updating = new SimpleBooleanProperty();
 
-    private ADataNode<TaxaBlock> originalTaxaNode; // original input taxa
-    private ADataNode originalDataNode; // original input data
+    private ADataNode<TaxaBlock> topTaxaNode; // original input taxa
+    private ADataNode topDataNode; // original input data
 
     private final StringProperty fileName = new SimpleStringProperty();
 
@@ -54,12 +54,12 @@ public class Document {
 
 
     /**
-     * gets the original taxa node
+     * gets the top taxa node
      *
-     * @return original taxa node
+     * @return top taxa node
      */
-    public ADataNode<TaxaBlock> getOriginalTaxaNode() {
-        return originalTaxaNode;
+    public ADataNode<TaxaBlock> getTopTaxaNode() {
+        return topTaxaNode;
     }
 
     /**
@@ -67,26 +67,26 @@ public class Document {
      *
      * @param topTaxaNode
      */
-    public void setOriginalTaxaNode(ADataNode<TaxaBlock> topTaxaNode) {
-        this.originalTaxaNode = topTaxaNode;
+    public void setTopTaxaNode(ADataNode<TaxaBlock> topTaxaNode) {
+        this.topTaxaNode = topTaxaNode;
     }
 
     /**
-     * gets original data node
+     * gets top data node
      *
-     * @return original data node
+     * @return top data node
      */
-    public ADataNode getOriginalDataNode() {
-        return originalDataNode;
+    public ADataNode getTopDataNode() {
+        return topDataNode;
     }
 
     /**
-     * set the original data node
+     * set the top data node
      *
-     * @param originalDataNode
+     * @param topDataNode
      */
-    public void setOriginalDataNode(ADataNode originalDataNode) {
-        this.originalDataNode = originalDataNode;
+    public void setTopDataNode(ADataNode topDataNode) {
+        this.topDataNode = topDataNode;
     }
 
     public boolean getUpdating() {

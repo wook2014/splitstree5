@@ -31,9 +31,9 @@ import splitstree5.core.misc.UpdateState;
  */
 public class ConnectorService<P extends ADataBlock, C extends ADataBlock> extends Service<Boolean> {
     public static boolean verbose = true;
-    private AConnectorNode<P, C> methodNode;
+    private AConnector<P, C> methodNode;
 
-    public ConnectorService(AConnectorNode<P, C> methodNode) {
+    public ConnectorService(AConnector<P, C> methodNode) {
         this.methodNode = methodNode;
         executorProperty().set(ProgramExecutorService.getExecutorService());
     }

@@ -24,13 +24,13 @@ import javafx.stage.Stage;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.NeighborJoining;
 import splitstree5.core.algorithms.Report;
-import splitstree5.core.connectors.AConnectorNode;
+import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.filters.TaxaFilter;
-import splitstree5.core.topfilters.DistancesTopFilter;
+import splitstree5.core.topfilters.ATopFilterConnector;
 import splitstree5.gui.TaxaFilterView;
 import splitstree5.io.nexus.DistancesNexusIO;
 
@@ -51,7 +51,8 @@ public class TryDistances extends Application {
 
         final ADataNode<DistancesBlock> origDistancesNode = new ADataNode<>(document, new DistancesBlock("OrigDistances"));
         final ADataNode<DistancesBlock> distancesNode = new ADataNode<>(document, new DistancesBlock("WorkingDistances"));
-        final DistancesTopFilter distancesTopFilter = new DistancesTopFilter(document, origTaxaNode, taxaNode, origDistancesNode, distancesNode);
+
+        new ATopFilterConnector<>(document, origTaxaNode, taxaNode, origDistancesNode, distancesNode);
 
         DistancesNexusIO distancesNexusIO = new DistancesNexusIO(origDistancesNode.getDataBlock());
         distancesNexusIO.read(new FileReader("examples/distances.nex"), origTaxaNode.getDataBlock());
@@ -70,7 +71,7 @@ public class TryDistances extends Application {
 
         final ADataNode<TreesBlock> treesNode = new ADataNode<>(document, new TreesBlock());
 
-        final AConnectorNode<DistancesBlock, TreesBlock> dist2trees = new AConnectorNode<>(document, taxaNode.getDataBlock(), distancesNode, treesNode);
+        final AConnector<DistancesBlock, TreesBlock> dist2trees = new AConnector<>(document, taxaNode.getDataBlock(), distancesNode, treesNode);
         dist2trees.setAlgorithm(new NeighborJoining());
 
     }

@@ -21,7 +21,7 @@ package splitstree5.core.analysis;
 
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.connectors.AConnectorNode;
+import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.AnalysisResultBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -30,7 +30,7 @@ import splitstree5.core.datablocks.TaxaBlock;
  * Taxa analysis
  * Created by huson on 12/22/16.
  */
-public class SimpleTaxaAnalysis extends AConnectorNode<TaxaBlock, AnalysisResultBlock> {
+public class SimpleTaxaAnalysis extends AConnector<TaxaBlock, AnalysisResultBlock> {
     /**
      * constructor
      *

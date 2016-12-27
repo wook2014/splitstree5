@@ -84,7 +84,7 @@ public class UndoManager {
     /**
      * add an undoable property change
      *
-     * @param name is used in undo/redo menu
+     * @param name     is used in undo/redo menu
      * @param property
      * @param oldValue
      * @param newValue
@@ -97,8 +97,10 @@ public class UndoManager {
 
     /**
      * performs current undo
+     *
+     * @return true, if undo performed
      */
-    public void undo() {
+    public boolean undo() {
         if (!performingUndoOrRedo.get()) {
             performingUndoOrRedo.set(true);
             try {
@@ -107,17 +109,20 @@ public class UndoManager {
                 currentNode.change.undo();
                 movePrev();
                 updateProperties();
+                return true;
             } finally {
                 performingUndoOrRedo.set(false);
             }
         }
+        return false;
     }
-
 
     /**
      * performs current redo
+     *
+     * @return true, if redo performed
      */
-    public void redo() {
+    public boolean redo() {
         if (!performingUndoOrRedo.get()) {
             performingUndoOrRedo.set(true);
             try {
@@ -126,9 +131,20 @@ public class UndoManager {
                 moveNext();
                 currentNode.change.redo();
                 updateProperties();
+                return true;
             } finally {
                 performingUndoOrRedo.set(false);
             }
+        }
+        return false;
+    }
+
+    /**
+     * undo current change and then forget it (and any changes that came after it)
+     */
+    public void undoAndForget() {
+        if (undo()) {
+            currentNode.next = null;
         }
     }
 

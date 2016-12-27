@@ -21,7 +21,7 @@ package splitstree5.core.algorithms;
 
 import jloda.util.Basic;
 import splitstree5.core.Document;
-import splitstree5.core.connectors.AConnectorNode;
+import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.*;
 import splitstree5.io.nexus.DistancesNexusIO;
 import splitstree5.io.nexus.TaxaNexusIO;
@@ -33,7 +33,7 @@ import java.io.StringWriter;
  * report the content of a block
  * Created by huson on 12/26/16.
  */
-public class Report<D extends ADataBlock> extends AConnectorNode<D, AnalysisResultBlock> {
+public class Report<D extends ADataBlock> extends AConnector<D, AnalysisResultBlock> {
     /**
      * report the block
      *

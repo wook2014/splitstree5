@@ -28,12 +28,23 @@ import splitstree5.core.Document;
  * Created by huson on 12/21/16.
  */
 abstract public class ANode extends Named {
+    private static int created = 0;
+    private static final Object lock = new Object();
+    private final int uid;
     private final Document document;
 
     private final ObjectProperty<UpdateState> state = new SimpleObjectProperty<>(UpdateState.VALID);
 
+    /**
+     * create a node
+     *
+     * @param document
+     */
     public ANode(Document document) {
         this.document = document;
+        synchronized (lock) {
+            this.uid = (++created);
+        }
     }
 
     public UpdateState getState() {
@@ -58,5 +69,14 @@ abstract public class ANode extends Named {
 
     public Document getDocument() {
         return document;
+    }
+
+    /**
+     * gets the unique id of this node
+     *
+     * @return unique id
+     */
+    public int getUid() {
+        return uid;
     }
 }

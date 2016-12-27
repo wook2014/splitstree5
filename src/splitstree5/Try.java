@@ -22,7 +22,8 @@ package splitstree5;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import splitstree5.core.Document;
-import splitstree5.io.nexus.NexusFileIO;
+import splitstree5.core.GraphUtils;
+import splitstree5.io.nexus.NexusFileParser;
 
 /**
  * try some ideas
@@ -32,8 +33,10 @@ public class Try extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         final Document document = new Document();
-        document.setFileName("examples/distances.nex");
+        document.setFileName("examples/distances2.nex");
 
-        NexusFileIO.parse(document);
+        NexusFileParser.parse(document);
+
+        GraphUtils.print(document.getTopTaxaNode(), document.getTopDataNode());
     }
 }

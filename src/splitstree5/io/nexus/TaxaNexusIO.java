@@ -93,6 +93,7 @@ public class TaxaNexusIO extends NexusBlock implements INexusIO {
                         throw new IOException((np.lineno() > 1 ? "Line " + np.lineno() + ":" : "") + " taxon name '" + taxonName + "' appears multiple times, at " + taxaBlock.indexOf(taxon) + " and " + t);
                     }
                     taxaBlock.add(taxon);
+                    getTaxonNamesFound().add(taxon.getName());
                 }
                 labelsDetected = true;
             }

@@ -19,12 +19,10 @@
 
 package splitstree5.core.filters;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.connectors.AConnectorNode;
+import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
@@ -35,9 +33,9 @@ import java.util.ArrayList;
  * taxon filter
  * Created by huson on 12/12/16.
  */
-public class TaxaFilter extends AConnectorNode<TaxaBlock, TaxaBlock> {
-    private final ObservableList<Taxon> enabledData = FXCollections.observableArrayList();
-    private final ObservableList<Taxon> disabledData = FXCollections.observableArrayList();
+public class TaxaFilter extends AConnector<TaxaBlock, TaxaBlock> {
+    private final ArrayList<Taxon> enabledData = new ArrayList<>();
+    private final ArrayList<Taxon> disabledData = new ArrayList<>();
 
     /**
      * /**
@@ -88,7 +86,7 @@ public class TaxaFilter extends AConnectorNode<TaxaBlock, TaxaBlock> {
      *
      * @return list of explicitly enabledData taxa
      */
-    public ObservableList<Taxon> getEnabledData() {
+    public ArrayList<Taxon> getEnabledData() {
         return enabledData;
     }
 
@@ -97,7 +95,7 @@ public class TaxaFilter extends AConnectorNode<TaxaBlock, TaxaBlock> {
      *
      * @return disabledData
      */
-    public ObservableList<Taxon> getDisabledData() {
+    public ArrayList<Taxon> getDisabledData() {
         return disabledData;
     }
 }
