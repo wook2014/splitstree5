@@ -25,25 +25,29 @@ import java.util.BitSet;
  * simple split implementation
  * Created by huson on 12/9/16.
  */
-public final class SimpleSplit implements ISplit {
+public final class ASplit {
     private final BitSet A;
     private final int ntax;
     private float weight;
 
-    public SimpleSplit(BitSet A, int ntax, float weight) {
+    /**
+     * constructor
+     *
+     * @param A
+     * @param ntax
+     * @param weight
+     */
+    public ASplit(BitSet A, int ntax, float weight) {
         this.ntax = ntax;
         this.A = new BitSet();
         this.A.or(A);
         this.weight = weight;
-
     }
 
-    @Override
     public int ntax() {
         return ntax;
     }
 
-    @Override
     public int size() {
         return Math.min(A.cardinality(), ntax - A.cardinality());
     }
@@ -60,10 +64,25 @@ public final class SimpleSplit implements ISplit {
         this.weight = weight;
     }
 
-    public SimpleSplit clone() {
+    /**
+     * is this equal to the given split in terms of ntax, set A and weight?
+     *
+     * @param obj
+     * @return true, if obj is instance of SimpleSplit and has the same ntax, set A and weight
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ASplit) {
+            final ASplit that = (ASplit) obj;
+            return this.ntax == that.ntax && this.A.equals(that.A) && this.weight == that.weight;
+        } else
+            return false;
+    }
+
+    public ASplit clone() {
         // todo: test this
         try {
-            return (SimpleSplit) super.clone();
+            return (ASplit) super.clone();
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
             return null;

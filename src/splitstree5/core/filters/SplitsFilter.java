@@ -28,7 +28,7 @@ import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.misc.ISplit;
+import splitstree5.core.misc.ASplit;
 
 import java.util.ArrayList;
 
@@ -37,8 +37,8 @@ import java.util.ArrayList;
  * Created by huson on 12/12/16.
  */
 public class SplitsFilter extends AConnector<SplitsBlock, SplitsBlock> {
-    private final ObservableList<ISplit> enabledData = FXCollections.observableArrayList();
-    private final ObservableList<ISplit> disabledData = FXCollections.observableArrayList();
+    private final ObservableList<ASplit> enabledData = FXCollections.observableArrayList();
+    private final ObservableList<ASplit> disabledData = FXCollections.observableArrayList();
 
     /**
      * /**
@@ -51,9 +51,9 @@ public class SplitsFilter extends AConnector<SplitsBlock, SplitsBlock> {
         super(document, taxaBlock, parent, child);
 
         enabledData.addAll(parent.getDataBlock().getSplits());
-        parent.getDataBlock().getSplits().addListener(new ListChangeListener<ISplit>() {
+        parent.getDataBlock().getSplits().addListener(new ListChangeListener<ASplit>() {
             @Override
-            public void onChanged(Change<? extends ISplit> c) {
+            public void onChanged(Change<? extends ASplit> c) {
                 while (c.next()) {
                     if (c.getRemovedSize() > 0)
                         enabledData.removeAll(c.getRemoved());
@@ -67,14 +67,14 @@ public class SplitsFilter extends AConnector<SplitsBlock, SplitsBlock> {
             public void compute(TaxaBlock taxaBlock, SplitsBlock original, SplitsBlock modified) {
                 modified.getSplits().clear();
 
-                final ArrayList<ISplit> list = new ArrayList<>();
+                final ArrayList<ASplit> list = new ArrayList<>();
                 if (enabledData.size() == 0)
                     list.addAll(original.getSplits());
                 else
                     list.addAll(enabledData);
                 list.removeAll(disabledData);
 
-                for (ISplit split : list) {
+                for (ASplit split : list) {
                     if (!getDisabledData().contains(split) && parent.getDataBlock().getSplits().contains(split)) {
                         modified.getSplits().add(split);
                     }
@@ -88,7 +88,7 @@ public class SplitsFilter extends AConnector<SplitsBlock, SplitsBlock> {
      *
      * @return list of explicitly enabledData taxa
      */
-    public ObservableList<ISplit> getEnabledData() {
+    public ObservableList<ASplit> getEnabledData() {
         return enabledData;
     }
 
@@ -97,7 +97,7 @@ public class SplitsFilter extends AConnector<SplitsBlock, SplitsBlock> {
      *
      * @return disabledData
      */
-    public ObservableList<ISplit> getDisabledData() {
+    public ObservableList<ASplit> getDisabledData() {
         return disabledData;
     }
 }

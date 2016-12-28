@@ -24,8 +24,7 @@ import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.misc.ISplit;
-import splitstree5.core.misc.SimpleSplit;
+import splitstree5.core.misc.ASplit;
 
 import java.util.BitSet;
 import java.util.Map;
@@ -56,8 +55,8 @@ public class SplitsTopFilter extends ATopFilter<SplitsBlock> {
 
                 final Map<Integer, Integer> originalIndex2ModifiedIndex = originalTaxaBlock.computeIndexMap(modifiedTaxaBlock);
 
-                for (ISplit split : original.getSplits()) {
-                    ISplit induced = computeInducedSplit(split, originalIndex2ModifiedIndex, modifiedTaxaBlock.getNtax());
+                for (ASplit split : original.getSplits()) {
+                    ASplit induced = computeInducedSplit(split, originalIndex2ModifiedIndex, modifiedTaxaBlock.getNtax());
                     if (induced != null)
                         modified.getSplits().add(induced);
                 }
@@ -73,7 +72,7 @@ public class SplitsTopFilter extends ATopFilter<SplitsBlock> {
      * @param inducedNtax
      * @return induced split or null
      */
-    private static ISplit computeInducedSplit(ISplit originalSplit, Map<Integer, Integer> originalIndex2ModifiedIndex, int inducedNtax) {
+    private static ASplit computeInducedSplit(ASplit originalSplit, Map<Integer, Integer> originalIndex2ModifiedIndex, int inducedNtax) {
         final BitSet originalA = originalSplit.getA();
 
         final BitSet inducedA = new BitSet();
@@ -82,7 +81,7 @@ public class SplitsTopFilter extends ATopFilter<SplitsBlock> {
                 inducedA.set(originalIndex2ModifiedIndex.get(t));
         }
         if (inducedA.cardinality() < inducedNtax) {
-            return new SimpleSplit(inducedA, inducedNtax, originalSplit.getWeight());
+            return new ASplit(inducedA, inducedNtax, originalSplit.getWeight());
         } else
             return null;
     }
