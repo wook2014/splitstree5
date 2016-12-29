@@ -19,6 +19,7 @@
 
 package splitstree5.core.analysis;
 
+import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
@@ -41,7 +42,7 @@ public class SimpleTaxaAnalysis extends AConnector<TaxaBlock, AnalysisResultBloc
 
         setAlgorithm(new Algorithm<TaxaBlock, AnalysisResultBlock>() {
             @Override
-            public void compute(TaxaBlock ignored, TaxaBlock parent, AnalysisResultBlock child) throws InterruptedException {
+            public void compute(ProgressListener progressListener, TaxaBlock ignored, TaxaBlock parent, AnalysisResultBlock child) throws InterruptedException {
                 child.setInfo("Number of taxa: " + parent.getTaxa().size());
             }
         });

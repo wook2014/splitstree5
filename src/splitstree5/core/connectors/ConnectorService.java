@@ -21,6 +21,8 @@ package splitstree5.core.connectors;
 
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import jloda.util.CanceledException;
+import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.misc.ProgramExecutorService;
 import splitstree5.core.misc.UpdateState;
@@ -40,54 +42,157 @@ public class ConnectorService<P extends ADataBlock, C extends ADataBlock> extend
 
     @Override
     protected Task<Boolean> createTask() {
-        return new Task<Boolean>() {
-            @Override
-            protected Boolean call() throws Exception {
-                System.err.println("--- Compute " + getMethodName() + " called");
-                methodNode.getAlgorithm().compute(methodNode.getTaxaBlock(), methodNode.getParent().getDataBlock(), methodNode.getChild().getDataBlock());
-                System.err.println("--- Compute " + getMethodName() + " done");
-                return true;
-            }
-
-            @Override
-            protected void running() {
-                if (verbose)
-                    System.err.println("Compute " + getMethodName() + " task running");
-            }
-
-            @Override
-            protected void scheduled() {
-                if (verbose)
-                    System.err.println("Compute " + getMethodName() + " task scheduled");
-            }
-
-            @Override
-            protected void succeeded() {
-                if (verbose)
-                    System.err.println("Compute " + getMethodName() + " task succeeded");
-                methodNode.setState(UpdateState.VALID);
-                methodNode.getChild().setState(UpdateState.VALID); // child is presumably valid once method has completed...
-            }
-
-            @Override
-            protected void failed() {
-                if (verbose)
-                    System.err.println("Compute " + getMethodName() + " task failed: " + getException());
-                methodNode.setState(UpdateState.FAILED);
-            }
-
-            @Override
-            protected void cancelled() {
-                if (verbose)
-                    System.err.println("Compute " + getMethodName() + " task canceled");
-                methodNode.setState(UpdateState.FAILED);
-            }
-        };
-
+        return new MyTask();
     }
 
     public String getMethodName() {
         return methodNode.getAlgorithm().getName();
+    }
+
+    /**
+     * create a task that also provides support for the old progress listener interface
+     */
+    private class MyTask extends Task<Boolean> {
+        @Override
+        protected Boolean call() throws Exception {
+            System.err.println("--- Compute " + getMethodName() + " called");
+            try {
+                methodNode.getAlgorithm().compute(getProgressListener(), methodNode.getTaxaBlock(), methodNode.getParent().getDataBlock(), methodNode.getChild().getDataBlock());
+            } catch (CanceledException ex) {
+                System.err.println("USER CANCELED");
+            }
+            System.err.println("--- Compute " + getMethodName() + " done");
+            return true;
+        }
+
+        @Override
+        protected void running() {
+            if (verbose)
+                System.err.println("Compute " + getMethodName() + " task running");
+        }
+
+        @Override
+        protected void scheduled() {
+            if (verbose)
+                System.err.println("Compute " + getMethodName() + " task scheduled");
+        }
+
+        @Override
+        protected void succeeded() {
+            if (verbose)
+                System.err.println("Compute " + getMethodName() + " task succeeded");
+            methodNode.setState(UpdateState.VALID);
+            methodNode.getChild().setState(UpdateState.VALID); // child is presumably valid once method has completed...
+        }
+
+        @Override
+        protected void failed() {
+            if (verbose)
+                System.err.println("Compute " + getMethodName() + " task failed: " + getException());
+            methodNode.setState(UpdateState.FAILED);
+        }
+
+        @Override
+        protected void cancelled() {
+            if (verbose)
+                System.err.println("Compute " + getMethodName() + " task canceled");
+            methodNode.setState(UpdateState.FAILED);
+        }
+
+        public ProgressListener getProgressListener() {
+            return new ProgressListener() {
+                private long currentProgress = 0;
+                private long maxProgress = 0;
+                private boolean cancelable = true;
+                private boolean isCanceled = false;
+                private boolean debug = false;
+
+                @Override
+                public void setMaximum(long maxProgress) {
+                    if (debug)
+                        System.err.println("progress.setMaximum(" + maxProgress + ")");
+                    this.maxProgress = maxProgress;
+                    MyTask.this.updateProgress(currentProgress, maxProgress);
+                }
+
+                @Override
+                public void setProgress(long currentProgress) throws CanceledException {
+                    checkForCancel();
+                    this.currentProgress = currentProgress;
+                    if (debug)
+                        System.err.println("progress.setProgress(" + currentProgress + ")");
+                    MyTask.this.updateProgress(currentProgress, maxProgress);
+                }
+
+                @Override
+                public long getProgress() {
+                    return currentProgress;
+                }
+
+                @Override
+                public void checkForCancel() throws CanceledException {
+                    isCanceled = MyTask.this.cancel();
+                    if (cancelable && isCanceled) {
+                        if (debug)
+                            System.err.println("progress.checkForCancel()=true");
+                        throw new CanceledException();
+                    }
+                }
+
+                @Override
+                public void setTasks(String taskName, String subtaskName) {
+                    MyTask.this.updateTitle(taskName);
+                    MyTask.this.updateMessage(subtaskName);
+                    if (debug)
+                        System.err.println("progress.setTasks(" + taskName + "," + subtaskName + ")");
+                }
+
+                @Override
+                public void setSubtask(String subtaskName) {
+                    MyTask.this.updateMessage(subtaskName);
+                    if (debug)
+                        System.err.println("progress.setSubtask(" + subtaskName + ")");
+                }
+
+                @Override
+                public void setCancelable(boolean enabled) {
+                    this.cancelable = enabled;
+                }
+
+                @Override
+                public boolean isUserCancelled() {
+                    return false;
+                }
+
+                @Override
+                public void setUserCancelled(boolean userCancelled) {
+                    this.isCanceled = userCancelled;
+                }
+
+                @Override
+                public void incrementProgress() throws CanceledException {
+                    if (debug)
+                        System.err.println("progress.incrementProgress()");
+                    MyTask.this.updateProgress(++currentProgress, maxProgress);
+                }
+
+                @Override
+                public void close() {
+                    if (debug)
+                        System.err.println("progress.close()");
+                }
+
+                @Override
+                public boolean isCancelable() {
+                    return cancelable;
+                }
+
+                @Override
+                public void setDebug(boolean debug) {
+                    this.debug = debug;
+                }
+            };
+        }
     }
 
 }

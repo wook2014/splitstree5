@@ -20,6 +20,8 @@
 package splitstree5.core.algorithms;
 
 
+import jloda.util.CanceledException;
+import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
@@ -36,13 +38,20 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> {
      *
      * @throws InterruptedException
      */
-    public void compute(TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees) throws InterruptedException {
+    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees) throws InterruptedException, CanceledException {
+        progressListener.setDebug(true);
         System.err.println(getName() + ": not implemented, will wait for 4 seconds and then return a dummy tree...");
 
         System.err.println("Start waiting");
-        Thread.sleep(4000);
+        progressListener.setTasks("Simulating NJ", "Waiting...");
+        progressListener.setMaximum(10);
+        for (int i = 0; i < 10; i++) {
+            Thread.sleep(400);
+            progressListener.incrementProgress();
+        }
+
         System.err.println("Done waiting");
-        getChild().getTrees().setAll(new DummyTree(5, 6));
+        trees.getTrees().setAll(new DummyTree(5, 6));
     }
 }
 

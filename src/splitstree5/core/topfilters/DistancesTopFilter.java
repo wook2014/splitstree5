@@ -20,6 +20,7 @@
 package splitstree5.core.topfilters;
 
 
+import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.DistancesBlock;
@@ -43,7 +44,7 @@ public class DistancesTopFilter extends ATopFilter<DistancesBlock> {
         super(originalTaxaNode, modifiedTaxaNode, parent, child);
 
         setAlgorithm(new Algorithm<DistancesBlock, DistancesBlock>("TopFilter") {
-            public void compute(TaxaBlock originalTaxaBlock, DistancesBlock original, DistancesBlock modified) {
+            public void compute(ProgressListener progressListener, TaxaBlock originalTaxaBlock, DistancesBlock original, DistancesBlock modified) {
                 try {
                     final TaxaBlock modifiedTaxaBlock = modifiedTaxaNode.getDataBlock();
 

@@ -22,6 +22,7 @@ package splitstree5.core.filters;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
@@ -63,7 +64,7 @@ public class TreesFilter extends AConnector<TreesBlock, TreesBlock> {
         });
 
         setAlgorithm(new Algorithm<TreesBlock, TreesBlock>() {
-            public void compute(TaxaBlock taxaBlock, TreesBlock original, TreesBlock modified) {
+            public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock original, TreesBlock modified) {
                 modified.getTrees().clear();
 
                 final ArrayList<ITree> list = new ArrayList<>();

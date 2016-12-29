@@ -21,10 +21,9 @@ package splitstree5.io.nexus;
 
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.Document;
+import splitstree5.core.algorithms.NeighborJoining;
 import splitstree5.core.algorithms.Report;
-import splitstree5.core.datablocks.ADataBlock;
-import splitstree5.core.datablocks.DistancesBlock;
-import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.datablocks.*;
 import splitstree5.core.misc.Taxon;
 import splitstree5.core.misc.UpdateState;
 import splitstree5.gui.TaxaFilterView;
@@ -86,6 +85,13 @@ public class NexusFileParser {
                 {
                     final TaxaFilterView taxaFilterView = new TaxaFilterView(document, document.getDag().getTaxaFilter());
                     taxaFilterView.show();
+                }
+
+                // todo: for debugging, add fake NJ and trees node:
+                if (document.getDag().getWorkingDataNode().getDataBlock() instanceof DistancesBlock) {
+                    ADataNode<TreesBlock> treesNode = document.getDag().createDataNode(new TreesBlock());
+                    document.getDag().createConnector(document.getDag().getWorkingDataNode(), treesNode, new NeighborJoining());
+                    document.getDag().addConnector(new Report<>(document.getDag().getWorkingTaxaNode().getDataBlock(), treesNode));
                 }
             }
         }

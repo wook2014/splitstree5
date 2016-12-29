@@ -19,6 +19,7 @@
 
 package splitstree5.core.topfilters;
 
+import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -45,7 +46,7 @@ public class TreesTopFilter extends ATopFilter<TreesBlock> {
         super(originalTaxaNode, modifiedTaxaNode, parentBlock, childBlock);
 
         setAlgorithm(new Algorithm<TreesBlock, TreesBlock>("TopFilter") {
-            public void compute(TaxaBlock taxaBlock, TreesBlock parentBlock, TreesBlock childBlock) {
+            public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock parentBlock, TreesBlock childBlock) {
                 final TaxaBlock originalTaxaBlock = originalTaxaNode.getDataBlock();
 
                 childBlock.getTrees().clear();

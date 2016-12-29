@@ -20,6 +20,7 @@
 package splitstree5.core.algorithms;
 
 import jloda.util.Basic;
+import jloda.util.ProgressListener;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.datablocks.ADataNode;
@@ -46,7 +47,7 @@ public class Report<D extends ADataBlock> extends AConnector<D, AnalysisResultBl
 
         setAlgorithm(new Algorithm<D, AnalysisResultBlock>() {
             @Override
-            public void compute(TaxaBlock taxaBlock, D parent, AnalysisResultBlock child) throws InterruptedException {
+            public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, D parent, AnalysisResultBlock child) throws InterruptedException {
                 try (final StringWriter w = new StringWriter()) {
                     w.write("### " + parent.getName() + (parent.getInfo() != null ? ", " + parent.getInfo() + "\n" : "\n"));
                     NexusFileWriter.write(w, taxaBlock, parent);

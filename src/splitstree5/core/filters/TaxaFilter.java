@@ -20,6 +20,7 @@
 package splitstree5.core.filters;
 
 import javafx.collections.ListChangeListener;
+import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
@@ -60,7 +61,7 @@ public class TaxaFilter extends AConnector<TaxaBlock, TaxaBlock> {
         });
 
         setAlgorithm(new Algorithm<TaxaBlock, TaxaBlock>("TaxaFilter") {
-            public void compute(TaxaBlock ignored, TaxaBlock originalTaxa, TaxaBlock modifiedTaxa) {
+            public void compute(ProgressListener progressListener, TaxaBlock ignored, TaxaBlock originalTaxa, TaxaBlock modifiedTaxa) {
                 modifiedTaxa.getTaxa().clear();
 
                 final ArrayList<Taxon> list = new ArrayList<>();

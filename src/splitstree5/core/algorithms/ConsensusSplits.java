@@ -20,6 +20,7 @@
 package splitstree5.core.algorithms;
 
 import javafx.beans.property.SimpleObjectProperty;
+import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
@@ -45,7 +46,7 @@ public class ConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> {
         this.consensus.set(consensus);
     }
 
-    public void compute(TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock) {
+    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock) {
         System.err.println(getName() + ": not implemented");
     }
 }
