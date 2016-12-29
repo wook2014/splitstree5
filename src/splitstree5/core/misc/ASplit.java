@@ -29,6 +29,8 @@ public final class ASplit {
     private final BitSet A;
     private final int ntax;
     private float weight;
+    private float confidence;
+    private String label;
 
     /**
      * constructor
@@ -62,6 +64,22 @@ public final class ASplit {
 
     public void setWeight(float weight) {
         this.weight = weight;
+    }
+
+    public float getConfidence() {
+        return confidence;
+    }
+
+    public void setConfidence(float confidence) {
+        this.confidence = confidence;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     /**

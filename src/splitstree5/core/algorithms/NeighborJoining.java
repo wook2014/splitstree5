@@ -40,17 +40,13 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> {
      */
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees) throws InterruptedException, CanceledException {
         progressListener.setDebug(true);
-        System.err.println(getName() + ": not implemented, will wait for 4 seconds and then return a dummy tree...");
-
-        System.err.println("Start waiting");
         progressListener.setTasks("Simulating NJ", "Waiting...");
         progressListener.setMaximum(10);
         for (int i = 0; i < 10; i++) {
             Thread.sleep(400);
             progressListener.incrementProgress();
         }
-
-        System.err.println("Done waiting");
+        progressListener.close();
         trees.getTrees().setAll(new DummyTree(5, 6));
     }
 }

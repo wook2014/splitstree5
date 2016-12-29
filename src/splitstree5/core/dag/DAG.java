@@ -17,11 +17,13 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core;
+package splitstree5.core.dag;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.property.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.beans.value.WeakChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
@@ -30,7 +32,6 @@ import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.*;
 import splitstree5.core.filters.TaxaFilter;
-import splitstree5.core.misc.ANode;
 import splitstree5.core.misc.UpdateState;
 import splitstree5.core.topfilters.ATopFilter;
 import splitstree5.core.topfilters.DistancesTopFilter;
@@ -80,6 +81,13 @@ public class DAG {
                 size.set(connectorNodes.size() + dataNodes.size());
             }
         });
+
+        updatingProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                System.err.println("UPDATING: " + newValue);
+            }
+        });
     }
 
     /**
@@ -124,7 +132,7 @@ public class DAG {
      * @param dataNode
      */
     public <D extends ADataBlock> ADataNode<D> addDataNode(ADataNode<D> dataNode) {
-        if (dataNodes.contains(dataNode))
+        if (!dataNodes.contains(dataNode))
             register(dataNode);
         return dataNode;
     }
@@ -150,7 +158,7 @@ public class DAG {
      * @param connector
      */
     public <P extends ADataBlock, C extends ADataBlock> AConnector<P, C> addConnector(AConnector<P, C> connector) {
-        if (connectorNodes.contains(connector))
+        if (!connectorNodes.contains(connector))
             register(connector);
         return connector;
     }

@@ -26,10 +26,10 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import splitstree5.core.algorithms.Algorithm;
+import splitstree5.core.dag.ANode;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.misc.ANode;
 import splitstree5.core.misc.UpdateState;
 
 /**

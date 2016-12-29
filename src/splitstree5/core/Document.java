@@ -22,6 +22,7 @@ package splitstree5.core;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import splitstree5.core.dag.DAG;
 
 /**
  * a document

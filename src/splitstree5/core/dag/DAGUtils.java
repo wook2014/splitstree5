@@ -17,13 +17,12 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core;
+package splitstree5.core.dag;
 
 import jloda.util.Basic;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.misc.ANode;
 
 /**
  * some utilities for working with the DAG

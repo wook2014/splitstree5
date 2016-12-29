@@ -21,8 +21,8 @@ package splitstree5;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import splitstree5.core.DAGUtils;
 import splitstree5.core.Document;
+import splitstree5.core.dag.DAGUtils;
 import splitstree5.io.nexus.NexusFileParser;
 
 /**

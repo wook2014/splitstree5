@@ -22,7 +22,7 @@ package splitstree5.core.datablocks;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import splitstree5.core.connectors.AConnector;
-import splitstree5.core.misc.ANode;
+import splitstree5.core.dag.ANode;
 import splitstree5.core.misc.UpdateState;
 
 /**
