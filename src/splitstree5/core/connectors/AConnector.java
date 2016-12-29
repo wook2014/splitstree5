@@ -23,7 +23,8 @@ package splitstree5.core.connectors;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import splitstree5.core.Document;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.datablocks.ADataNode;
@@ -41,6 +42,7 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
     private final TaxaBlock taxaBlock;
     private final ADataNode<P> parent;
     private final ADataNode<C> child;
+    private final ObservableList<ADataNode> children;
 
     private Algorithm<P, C> algorithm;
 
@@ -49,17 +51,16 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
     /**
      * constructor
      *
-     * @param document
      * @param taxaBlock
      * @param parent
      * @param child
      */
-    public AConnector(Document document, TaxaBlock taxaBlock, ADataNode<P> parent, ADataNode<C> child) {
-        super(document);
+    public AConnector(TaxaBlock taxaBlock, ADataNode<P> parent, ADataNode<C> child) {
         this.taxaBlock = taxaBlock;
         this.parent = parent;
         parent.getChildren().add(this);
         this.child = child;
+        this.children = FXCollections.unmodifiableObservableList(FXCollections.observableArrayList(child));
         disable.bind(stateProperty().isEqualTo(UpdateState.VALID).not());
         service = new ConnectorService<>(this);
     }
@@ -67,14 +68,13 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
     /**
      * constructor
      *
-     * @param document
      * @param taxaBlock
      * @param parent
      * @param child
      * @param algorithm
      */
-    public AConnector(Document document, TaxaBlock taxaBlock, ADataNode<P> parent, ADataNode<C> child, Algorithm<P, C> algorithm) {
-        this(document, taxaBlock, parent, child);
+    public AConnector(TaxaBlock taxaBlock, ADataNode<P> parent, ADataNode<C> child, Algorithm<P, C> algorithm) {
+        this(taxaBlock, parent, child);
         this.algorithm = algorithm;
     }
 
@@ -92,6 +92,11 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
 
     public ADataNode<C> getChild() {
         return child;
+    }
+
+    @Override
+    public ObservableList<ADataNode> getChildren() {
+        return children;
     }
 
     public Algorithm<P, C> getAlgorithm() {

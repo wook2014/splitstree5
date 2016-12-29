@@ -155,9 +155,6 @@ public class TaxaFilterView {
         controller.getResetButton().setOnAction((e) -> {
             syncModel2Controller();
             undoManager.clear();
-
-            // todo: this is just for debugging:
-            document.invalidNodes().clear();
         });
 
         controller.getApplyButton().setOnAction((e) -> {

@@ -22,13 +22,11 @@ package splitstree5.io.nexus;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Report;
-import splitstree5.core.datablocks.*;
-import splitstree5.core.filters.TaxaFilter;
+import splitstree5.core.datablocks.ADataBlock;
+import splitstree5.core.datablocks.DistancesBlock;
+import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
 import splitstree5.core.misc.UpdateState;
-import splitstree5.core.topfilters.DistancesTopFilter;
-import splitstree5.core.topfilters.SplitsTopFilter;
-import splitstree5.core.topfilters.TreesTopFilter;
 import splitstree5.gui.TaxaFilterView;
 
 import java.io.FileReader;
@@ -49,6 +47,7 @@ public class NexusFileParser {
      * @throws IOException
      */
     public static void parse(Document document) throws IOException {
+        document.getDag().clear();
 
         try (NexusStreamParser np = new NexusStreamParser(new FileReader(document.getFileName()))) {
             np.matchIgnoreCase("#nexus");
@@ -58,17 +57,15 @@ public class NexusFileParser {
             } else { // this is a user input file
 
                 final TaxaBlock topTaxaBlock = new TaxaBlock("TopTaxa");
-                document.setTopTaxaNode(new ADataNode<>(document, topTaxaBlock));
 
                 boolean needToDetectTaxa = true;
 
                 if (np.peekMatchIgnoreCase("begin taxa;")) {
-                    final TaxaNexusIO io = new TaxaNexusIO(topTaxaBlock);
-                    io.parse(np, null);
+                    TaxaNexusIO.parse(np, topTaxaBlock);
                     needToDetectTaxa = (topTaxaBlock.getTaxa().size() == 0);
                 }
                 final ArrayList<String> namesFound = new ArrayList<>();
-                final ADataBlock originalDataBlock = parseBlock(np, topTaxaBlock, namesFound);
+                final ADataBlock topDataBlock = parseBlock(np, topTaxaBlock, namesFound);
                 if (needToDetectTaxa) {
                     if (namesFound.size() == 0)
                         throw new IOException("Couldn't detect taxon names in input file");
@@ -76,33 +73,19 @@ public class NexusFileParser {
                         topTaxaBlock.add(new Taxon(name));
                     }
                 }
-                document.getTopTaxaNode().setState(UpdateState.VALID);
 
-                final ADataNode topDataNode = new ADataNode<>(document, originalDataBlock);
-                document.setTopDataNode(topDataNode);
-                document.getTopDataNode().setState(UpdateState.VALID);
-
-                final ADataNode workingDataNode = new ADataNode<>(document, originalDataBlock.newInstance());
-
-                ADataNode<TaxaBlock> workingTaxaNode = new ADataNode<>(document, new TaxaBlock("Taxa"));
-                TaxaFilter taxaFilter = new TaxaFilter(document, document.getTopTaxaNode(), workingTaxaNode);
+                document.getDag().setupTopAndWorkingNodes(topTaxaBlock, topDataBlock);
+                document.getDag().getTopTaxaNode().setState(UpdateState.VALID);
+                document.getDag().getTopDataNode().setState(UpdateState.VALID);
 
                 // todo: just for debugging, report on changes of working taxa and changes of distances:
-                new Report<>(document, workingTaxaNode.getDataBlock(), workingTaxaNode);
-                new Report<>(document, workingTaxaNode.getDataBlock(), workingDataNode);
+                document.getDag().addConnector(new Report<>(document.getDag().getWorkingTaxaNode().getDataBlock(), document.getDag().getWorkingTaxaNode()));
+                document.getDag().addConnector(new Report<>(document.getDag().getWorkingTaxaNode().getDataBlock(), document.getDag().getWorkingDataNode()));
 
                 // todo: just for debugging, open taxa filter view here:
                 {
-                    final TaxaFilterView taxaFilterView = new TaxaFilterView(document, taxaFilter);
+                    final TaxaFilterView taxaFilterView = new TaxaFilterView(document, document.getDag().getTaxaFilter());
                     taxaFilterView.show();
-                }
-
-                if (document.getTopDataNode().getDataBlock() instanceof DistancesBlock) {
-                    new DistancesTopFilter(document, document.getTopTaxaNode(), workingTaxaNode, document.getTopDataNode(), workingDataNode);
-                } else if (document.getTopDataNode().getDataBlock() instanceof SplitsBlock) {
-                    new SplitsTopFilter(document, document.getTopTaxaNode(), workingTaxaNode, document.getTopDataNode(), workingDataNode);
-                } else if (document.getTopDataNode().getDataBlock() instanceof TreesBlock) {
-                    new TreesTopFilter(document, document.getTopTaxaNode(), workingTaxaNode, document.getTopDataNode(), workingDataNode);
                 }
             }
         }
@@ -120,14 +103,11 @@ public class NexusFileParser {
         if (np.peekMatchIgnoreCase("begin")) {
             if (np.peekMatchIgnoreCase("begin taxa;")) {
                 final TaxaBlock taxaBlock2 = new TaxaBlock();
-                TaxaNexusIO taxaBlockIO = new TaxaNexusIO(taxaBlock2);
-                taxaBlockIO.parse(np, null);
+                TaxaNexusIO.parse(np, taxaBlock2);
                 return taxaBlock2;
             } else if (np.peekMatchIgnoreCase("begin distances;")) {
                 final DistancesBlock distances = new DistancesBlock();
-                DistancesNexusIO distancesIO = new DistancesNexusIO(distances);
-                distancesIO.parse(np, taxaBlock);
-                taxonNamesFound.addAll(distancesIO.getTaxonNamesFound());
+                taxonNamesFound.addAll(DistancesNexusIO.parse(np, taxaBlock, distances, null));
                 return distances;
             } else {
                 final String blockName = np.skipBlock();

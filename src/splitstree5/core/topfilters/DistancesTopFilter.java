@@ -20,7 +20,6 @@
 package splitstree5.core.topfilters;
 
 
-import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.DistancesBlock;
@@ -40,8 +39,8 @@ public class DistancesTopFilter extends ATopFilter<DistancesBlock> {
      * @param parent
      * @param child
      */
-    public DistancesTopFilter(Document document, ADataNode<TaxaBlock> originalTaxaNode, ADataNode<TaxaBlock> modifiedTaxaNode, ADataNode<DistancesBlock> parent, ADataNode<DistancesBlock> child) {
-        super(document, originalTaxaNode, modifiedTaxaNode, parent, child);
+    public DistancesTopFilter(ADataNode<TaxaBlock> originalTaxaNode, ADataNode<TaxaBlock> modifiedTaxaNode, ADataNode<DistancesBlock> parent, ADataNode<DistancesBlock> child) {
+        super(originalTaxaNode, modifiedTaxaNode, parent, child);
 
         setAlgorithm(new Algorithm<DistancesBlock, DistancesBlock>("TopFilter") {
             public void compute(TaxaBlock originalTaxaBlock, DistancesBlock original, DistancesBlock modified) {

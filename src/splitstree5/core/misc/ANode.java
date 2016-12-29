@@ -21,7 +21,7 @@ package splitstree5.core.misc;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import splitstree5.core.Document;
+import javafx.collections.ObservableList;
 
 /**
  * A processing graph node
@@ -31,17 +31,13 @@ abstract public class ANode extends Named {
     private static int created = 0;
     private static final Object lock = new Object();
     private final int uid;
-    private final Document document;
 
     private final ObjectProperty<UpdateState> state = new SimpleObjectProperty<>(UpdateState.VALID);
 
     /**
-     * create a node
-     *
-     * @param document
+     * constructor
      */
-    public ANode(Document document) {
-        this.document = document;
+    public ANode() {
         synchronized (lock) {
             this.uid = (++created);
         }
@@ -52,23 +48,11 @@ abstract public class ANode extends Named {
     }
 
     public void setState(UpdateState state) {
-        if (state != UpdateState.VALID && state != UpdateState.FAILED) {
-            if (!document.invalidNodes().contains(this))
-                document.invalidNodes().add(this);
-        } else {
-            if (document.invalidNodes().contains(this))
-                document.invalidNodes().remove(this);
-        }
-
         this.state.set(state);
     }
 
     public ObjectProperty<UpdateState> stateProperty() {
         return state;
-    }
-
-    public Document getDocument() {
-        return document;
     }
 
     /**
@@ -79,4 +63,16 @@ abstract public class ANode extends Named {
     public int getUid() {
         return uid;
     }
+
+    /**
+     * disconnect this node
+     */
+    abstract public void disconnect();
+
+    /**
+     * get all children of this node
+     *
+     * @return children
+     */
+    abstract public ObservableList<? extends ANode> getChildren();
 }

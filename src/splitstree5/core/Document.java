@@ -19,86 +19,27 @@
 
 package splitstree5.core;
 
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableSet;
-import splitstree5.core.datablocks.ADataNode;
-import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.misc.ANode;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 /**
  * a document
  * Created by huson on 12/25/16.
  */
 public class Document {
-    private final ObservableSet<ANode> invalidNodes = FXCollections.observableSet();
-    private final BooleanProperty updating = new SimpleBooleanProperty();
-
-    private ADataNode<TaxaBlock> topTaxaNode; // original input taxa
-    private ADataNode topDataNode; // original input data
-
+    private final DAG dag;
     private final StringProperty fileName = new SimpleStringProperty();
 
     /**
      * constructor
      */
     public Document() {
-        invalidNodes.addListener(new InvalidationListener() {
-            public void invalidated(javafx.beans.Observable observable) {
-                updating.set(invalidNodes.size() > 0);
-                System.err.println("Document updating: " + updating.get());
-            }
-        });
+        dag = new DAG();
     }
 
-
-    /**
-     * gets the top taxa node
-     *
-     * @return top taxa node
-     */
-    public ADataNode<TaxaBlock> getTopTaxaNode() {
-        return topTaxaNode;
-    }
-
-    /**
-     * set the top taxa block
-     *
-     * @param topTaxaNode
-     */
-    public void setTopTaxaNode(ADataNode<TaxaBlock> topTaxaNode) {
-        this.topTaxaNode = topTaxaNode;
-    }
-
-    /**
-     * gets top data node
-     *
-     * @return top data node
-     */
-    public ADataNode getTopDataNode() {
-        return topDataNode;
-    }
-
-    /**
-     * set the top data node
-     *
-     * @param topDataNode
-     */
-    public void setTopDataNode(ADataNode topDataNode) {
-        this.topDataNode = topDataNode;
-    }
-
-    public boolean getUpdating() {
-        return updating.get();
-    }
-
-    public ReadOnlyBooleanProperty updatingProperty() {
-        return ReadOnlyBooleanProperty.readOnlyBooleanProperty(updating);
-    }
-
-    public ObservableSet<ANode> invalidNodes() {
-        return invalidNodes;
+    public DAG getDag() {
+        return dag;
     }
 
     public String getFileName() {
@@ -112,4 +53,9 @@ public class Document {
     public void setFileName(String fileName) {
         this.fileName.set(fileName);
     }
+
+    public ReadOnlyBooleanProperty updatingProperty() {
+        return dag.updatingProperty();
+    }
+
 }

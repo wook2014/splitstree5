@@ -26,10 +26,10 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ANode;
 
 /**
- * some utilities for working with the graph
+ * some utilities for working with the DAG
  * Created by huson on 12/27/16.
  */
-public class GraphUtils {
+public class DAGUtils {
     public static void print(ADataNode<TaxaBlock> originalTaxonNode, ADataNode originalDataNode) {
         System.err.println("+++ Document update graph:");
         printRec(originalTaxonNode, true, 0);

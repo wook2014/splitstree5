@@ -22,7 +22,6 @@ package splitstree5.core.filters;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
@@ -47,8 +46,8 @@ public class SplitsFilter extends AConnector<SplitsBlock, SplitsBlock> {
      * @param parent
      * @param child
      */
-    public SplitsFilter(Document document, TaxaBlock taxaBlock, ADataNode<SplitsBlock> parent, ADataNode<SplitsBlock> child) {
-        super(document, taxaBlock, parent, child);
+    public SplitsFilter(TaxaBlock taxaBlock, ADataNode<SplitsBlock> parent, ADataNode<SplitsBlock> child) {
+        super(taxaBlock, parent, child);
 
         enabledData.addAll(parent.getDataBlock().getSplits());
         parent.getDataBlock().getSplits().addListener(new ListChangeListener<ASplit>() {

@@ -20,11 +20,12 @@
 package splitstree5.core.algorithms;
 
 import jloda.util.Basic;
-import splitstree5.core.Document;
 import splitstree5.core.connectors.AConnector;
-import splitstree5.core.datablocks.*;
-import splitstree5.io.nexus.DistancesNexusIO;
-import splitstree5.io.nexus.TaxaNexusIO;
+import splitstree5.core.datablocks.ADataBlock;
+import splitstree5.core.datablocks.ADataNode;
+import splitstree5.core.datablocks.AnalysisResultBlock;
+import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.io.nexus.NexusFileWriter;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -37,35 +38,23 @@ public class Report<D extends ADataBlock> extends AConnector<D, AnalysisResultBl
     /**
      * report the block
      *
-     * @param document
      * @param taxaBlock
      * @param parent
      */
-    public Report(Document document, TaxaBlock taxaBlock, ADataNode<D> parent) {
-        super(document, taxaBlock, parent, new ADataNode<AnalysisResultBlock>(document, new AnalysisResultBlock()));
+    public Report(TaxaBlock taxaBlock, ADataNode<D> parent) {
+        super(taxaBlock, parent, new ADataNode<>(new AnalysisResultBlock()));
 
         setAlgorithm(new Algorithm<D, AnalysisResultBlock>() {
             @Override
             public void compute(TaxaBlock taxaBlock, D parent, AnalysisResultBlock child) throws InterruptedException {
-                if (parent instanceof DistancesBlock) {
-                    try (final StringWriter w = new StringWriter()) {
-                        final DistancesNexusIO io = new DistancesNexusIO((DistancesBlock) getParent());
-                        io.write(w, taxaBlock);
-                        child.setInfo(w.toString());
-                        System.err.println(child.getInfo());
-                    } catch (IOException e) {
+                try (final StringWriter w = new StringWriter()) {
+                    w.write("### " + parent.getName() + (parent.getInfo() != null ? ", " + parent.getInfo() + "\n" : "\n"));
+                    NexusFileWriter.write(w, taxaBlock, parent);
+                    child.setInfo(w.toString());
+                    System.err.println(child.getInfo());
+                } catch (IOException e) {
                         Basic.caught(e);
                     }
-                } else if (parent instanceof TaxaBlock) {
-                    try (final StringWriter w = new StringWriter()) {
-                        final TaxaNexusIO io = new TaxaNexusIO((TaxaBlock) getParent());
-                        io.write(w, taxaBlock);
-                        child.setInfo(w.toString());
-                        System.err.println(child.getInfo());
-                    } catch (IOException e) {
-                        Basic.caught(e);
-                    }
-                }
             }
         });
     }

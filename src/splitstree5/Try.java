@@ -21,8 +21,8 @@ package splitstree5;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import splitstree5.core.DAGUtils;
 import splitstree5.core.Document;
-import splitstree5.core.GraphUtils;
 import splitstree5.io.nexus.NexusFileParser;
 
 /**
@@ -37,6 +37,6 @@ public class Try extends Application {
 
         NexusFileParser.parse(document);
 
-        GraphUtils.print(document.getTopTaxaNode(), document.getTopDataNode());
+        DAGUtils.print(document.getDag().getTopTaxaNode(), document.getDag().getTopDataNode());
     }
 }

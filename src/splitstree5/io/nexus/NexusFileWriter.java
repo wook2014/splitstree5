@@ -19,13 +19,17 @@
 
 package splitstree5.io.nexus;
 
+import jloda.util.Basic;
 import splitstree5.core.Document;
+import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.datablocks.DistancesBlock;
+import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.filters.TaxaFilter;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 
 /**
  * writes a document in nexus format
@@ -42,20 +46,38 @@ public class NexusFileWriter {
             writer.write("#nexus\n");
 
             // taxa block:
-            (new TaxaNexusIO(document.getTopTaxaNode().getDataBlock())).write(writer, null);
+            TaxaNexusIO.write(writer, document.getDag().getTopTaxaNode().getDataBlock());
+
+            // top data-block
+            write(writer, document.getDag().getTopTaxaNode().getDataBlock(), document.getDag().getTopDataNode().getDataBlock());
 
             // taxa filter and second block, if necessary:
-            final TaxaFilter taxaFilter = (TaxaFilter) document.getTopTaxaNode().getChildren().get(0);
+            final TaxaFilter taxaFilter = (TaxaFilter) document.getDag().getTopTaxaNode().getChildren().get(0);
             if (taxaFilter.getDisabledData().size() > 0) { // some taxa have been filtered
                 writer.write("[NEED to report taxa filter]\n");
             }
 
-            if (document.getTopDataNode().getDataBlock() instanceof DistancesBlock) {
-                (new DistancesNexusIO((DistancesBlock) document.getTopDataNode().getDataBlock())).write(writer, null);
-
-            }
+            // need to report the rest of the blocks
         }
 
+    }
+
+    /**
+     * writes a datablock in nexus format
+     *
+     * @param w
+     * @param taxaBlock
+     * @param dataBlock
+     * @throws IOException
+     */
+    public static void write(Writer w, TaxaBlock taxaBlock, ADataBlock dataBlock) throws IOException {
+        if (dataBlock instanceof TaxaBlock) {
+            TaxaNexusIO.write(w, (TaxaBlock) dataBlock);
+        } else if (dataBlock instanceof DistancesBlock) {
+            DistancesNexusIO.write(w, taxaBlock, (DistancesBlock) dataBlock, null);
+        } else {
+            System.err.println("Nexus write not implemented for block of type " + Basic.getShortName(dataBlock.getClass()));
+        }
     }
 
 }

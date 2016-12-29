@@ -25,12 +25,13 @@ import splitstree5.core.misc.Taxon;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 
 /**
- * Distance block nexus implementation
+ * Taxa block block nexus implementation
  * Created by huson on 12/22/16.
  */
-public class TaxaNexusIO extends NexusBlock implements INexusIO {
+public class TaxaNexusIO {
     private static final String NAME = "TAXA";
 
     public static final String SYNTAX = "BEGIN DISTANCES;\n" +
@@ -45,25 +46,24 @@ public class TaxaNexusIO extends NexusBlock implements INexusIO {
             "\t;\n" +
             "END;\n";
 
-    private final TaxaBlock taxaBlock;
 
     /**
-     * constructor
-     *
-     * @param taxaBlock
+     * gets syntax
+     * @return syntax message
      */
-    public TaxaNexusIO(TaxaBlock taxaBlock) {
-        this.taxaBlock = taxaBlock;
+    public static String getSyntax() {
+        return SYNTAX;
     }
 
     /**
      * parse a taxa block
-     *
      * @param np
+     * @param taxaBlock
+     * @return list of taxon names found
      * @throws IOException
      */
-    public void parse(NexusStreamParser np, TaxaBlock ignored) throws IOException {
-        getTaxonNamesFound().clear();
+    public static ArrayList<String> parse(NexusStreamParser np, TaxaBlock taxaBlock) throws IOException {
+        final ArrayList<String> taxonNamesFound = new ArrayList<>();
 
         taxaBlock.getTaxa().clear();
 
@@ -93,7 +93,7 @@ public class TaxaNexusIO extends NexusBlock implements INexusIO {
                         throw new IOException((np.lineno() > 1 ? "Line " + np.lineno() + ":" : "") + " taxon name '" + taxonName + "' appears multiple times, at " + taxaBlock.indexOf(taxon) + " and " + t);
                     }
                     taxaBlock.add(taxon);
-                    getTaxonNamesFound().add(taxon.getName());
+                    taxonNamesFound.add(taxon.getName());
                 }
                 labelsDetected = true;
             }
@@ -112,6 +112,7 @@ public class TaxaNexusIO extends NexusBlock implements INexusIO {
             np.matchIgnoreCase(";");
         }
         np.matchEndBlock();
+        return taxonNamesFound;
     }
 
 
@@ -119,18 +120,17 @@ public class TaxaNexusIO extends NexusBlock implements INexusIO {
      * writes the taxa block in nexus format
      *
      * @param w
-     * @param ignored
+     * @param taxaBlock
      * @throws IOException
      */
-    @Override
-    public void write(Writer w, TaxaBlock ignored) throws IOException {
+    public static void write(Writer w, TaxaBlock taxaBlock) throws IOException {
         w.write("\nBEGIN " + NAME + ";\n");
         w.write("DIMENSIONS ntax=" + taxaBlock.getNtax() + ";\n");
         w.write("TAXLABELS\n");
         for (int i = 1; i <= taxaBlock.getNtax(); i++)
             w.write("[" + i + "] '" + taxaBlock.get(i).getName() + "'\n");
         w.write(";\n");
-        if (hasInfos()) {
+        if (hasInfos(taxaBlock)) {
             w.write("TAXINFO\n");
             for (int i = 1; i <= taxaBlock.getNtax(); i++)
                 w.write("[" + i + "] '" + taxaBlock.get(i).getInfo() + "'\n");
@@ -144,15 +144,11 @@ public class TaxaNexusIO extends NexusBlock implements INexusIO {
      *
      * @return true, if some taxon has info
      */
-    private boolean hasInfos() {
+    private static boolean hasInfos(TaxaBlock taxaBlock) {
         for (int t = 1; t <= taxaBlock.getNtax(); t++)
             if (taxaBlock.get(t).getInfo() != null && taxaBlock.get(t).getInfo().length() > 0)
                 return true;
         return false;
     }
 
-    @Override
-    public String getSyntax() {
-        return SYNTAX;
-    }
 }
