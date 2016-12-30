@@ -37,7 +37,7 @@ import java.util.List;
  * Created by huson on 12/28/16.
  */
 public class SplitsNexusIO {
-    public static final String NAME = "ST_SPLITS";
+    public static final String NAME = "SPLITS";
 
     public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
             "\t[DIMENSIONS [NTAX=number-of-taxa] [NSPLITS=number-of-splits];]\n" +
@@ -91,7 +91,7 @@ public class SplitsNexusIO {
         np.matchBeginBlock(NAME);
 
         final int ntax = taxaBlock.getNtax();
-        np.matchIgnoreCase("dimensions ntax=" + ntax + ";");
+        np.matchIgnoreCase("dimensions ntax=" + ntax);
         int nsplits = 0;
         if (np.peekMatchIgnoreCase("nsplits=")) {
             np.matchIgnoreCase("nsplits=");
@@ -110,6 +110,10 @@ public class SplitsNexusIO {
             splitsNexusFormat.setConfidences(np.findIgnoreCase(formatTokens, "confidences=no", false, splitsNexusFormat.isConfidences()));
             splitsNexusFormat.setConfidences(np.findIgnoreCase(formatTokens, "confidences=yes", true, splitsNexusFormat.isConfidences()));
 
+            // for backward compatiblity, we never used this in SplitsTree4...
+            np.findIgnoreCase(formatTokens, "intervals=no", false, false);
+            np.findIgnoreCase(formatTokens, "intervals=true", true, false);
+
             // for backward compatibility:
             splitsNexusFormat.setLabels(np.findIgnoreCase(formatTokens, "no labels", false, splitsNexusFormat.isLabels()));
             splitsNexusFormat.setLabels(np.findIgnoreCase(formatTokens, "labels", true, splitsNexusFormat.isLabels()));
@@ -120,6 +124,9 @@ public class SplitsNexusIO {
             splitsNexusFormat.setConfidences(np.findIgnoreCase(formatTokens, "no confidences", false, splitsNexusFormat.isConfidences()));
             splitsNexusFormat.setConfidences(np.findIgnoreCase(formatTokens, "confidences", true, splitsNexusFormat.isConfidences()));
 
+            // for backward compatiblity, we never used this in SplitsTree4...
+            np.findIgnoreCase(formatTokens, "no intervals", false, false);
+            np.findIgnoreCase(formatTokens, "intervals", true, false);
             if (formatTokens.size() != 0)
                 throw new IOException("line " + np.lineno() + ": '" + formatTokens + "' unexpected in FORMAT");
 
@@ -279,13 +286,12 @@ public class SplitsNexusIO {
                 w.write(" " + cycle[i]);
             w.write(";\n");
         }
-        
+
         w.write("MATRIX\n");
 
-        for (int i = 1; i <= nsplits; i++) {
-            final ASplit split = splitsBlock.getSplits().get(i);
-
-            w.write("[" + i + ", size=" + split.size() + "]" + " \t");
+        int t = 1;
+        for (ASplit split : splitsBlock.getSplits()) {
+            w.write("[" + (t++) + ", size=" + split.size() + "]" + " \t");
             if (splitsNexusFormat.isLabels()) {
                 String lab = split.getLabel();
                 w.write(" '" + lab + "'" + " \t");
@@ -297,7 +303,6 @@ public class SplitsNexusIO {
                 w.write(" " + split.getConfidence() + " \t");
             }
             w.write(" " + Basic.toString(split.getA(), ' ') + ",\n");
-
         }
         w.write(";\n");
         w.write("END; [" + NAME + "]\n");

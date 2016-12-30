@@ -23,7 +23,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import splitstree5.core.misc.Named;
-import splitstree5.core.misc.UpdateState;
 
 /**
  * A processing graph node

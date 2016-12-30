@@ -32,7 +32,6 @@ import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.*;
 import splitstree5.core.filters.TaxaFilter;
-import splitstree5.core.misc.UpdateState;
 import splitstree5.core.topfilters.ATopFilter;
 import splitstree5.core.topfilters.DistancesTopFilter;
 import splitstree5.core.topfilters.SplitsTopFilter;

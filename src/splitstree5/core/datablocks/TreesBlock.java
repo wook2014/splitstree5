@@ -21,14 +21,16 @@ package splitstree5.core.datablocks;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import splitstree5.core.misc.ITree;
+import jloda.phylo.PhyloTree;
 
 /**
  * A trees block
  * Created by huson on 12/21/16.
  */
 public class TreesBlock extends ADataBlock {
-    private final ObservableList<ITree> trees;
+    private final ObservableList<PhyloTree> trees;
+    private boolean partial = false; // are partial trees present?
+    private boolean rooted = false; // are the trees explicitly rooted?
 
     public TreesBlock() {
         trees = FXCollections.observableArrayList();
@@ -44,11 +46,31 @@ public class TreesBlock extends ADataBlock {
      *
      * @return trees
      */
-    public ObservableList<ITree> getTrees() {
+    public ObservableList<PhyloTree> getTrees() {
         return trees;
+    }
+
+    public int getNTrees() {
+        return trees.size();
     }
 
     public String getInfo() {
         return "Number of trees: " + getTrees().size();
+    }
+
+    public boolean isPartial() {
+        return partial;
+    }
+
+    public void setPartial(boolean partial) {
+        this.partial = partial;
+    }
+
+    public boolean isRooted() {
+        return rooted;
+    }
+
+    public void setRooted(boolean rooted) {
+        this.rooted = rooted;
     }
 }

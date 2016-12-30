@@ -23,7 +23,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.dag.ANode;
-import splitstree5.core.misc.UpdateState;
+import splitstree5.core.dag.UpdateState;
 
 /**
  * a data node

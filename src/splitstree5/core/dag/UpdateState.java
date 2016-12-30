@@ -17,40 +17,12 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.misc;
-
+package splitstree5.core.dag;
 
 /**
- * dummy tree class
- * Created by huson on 12/9/16.
+ * update state
+ * Created by huson on 12/25/16.
  */
-public class DummyTree implements ITree {
-    private int nodes;
-    private int edges;
-
-    public DummyTree(int nodes, int edges) {
-        this.nodes = nodes;
-        this.edges = edges;
-
-    }
-
-    @Override
-    public int getNumberOfNodes() {
-        return nodes;
-    }
-
-    @Override
-    public int getNumberOEdges() {
-        return edges;
-    }
-
-    public DummyTree clone() {
-        // todo: test this
-        try {
-            return (DummyTree) super.clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+public enum UpdateState {
+    VALID, COMPUTING, INVALID, FAILED
 }

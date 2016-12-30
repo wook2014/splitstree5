@@ -22,13 +22,13 @@ package splitstree5.core.filters;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import jloda.phylo.PhyloTree;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.core.misc.ITree;
 
 import java.util.ArrayList;
 
@@ -37,8 +37,8 @@ import java.util.ArrayList;
  * Created by huson on 12/12/16.
  */
 public class TreesFilter extends AConnector<TreesBlock, TreesBlock> {
-    private final ObservableList<ITree> enabledData = FXCollections.observableArrayList();
-    private final ObservableList<ITree> disabledData = FXCollections.observableArrayList();
+    private final ObservableList<PhyloTree> enabledData = FXCollections.observableArrayList();
+    private final ObservableList<PhyloTree> disabledData = FXCollections.observableArrayList();
 
     /**
      * /**
@@ -51,9 +51,9 @@ public class TreesFilter extends AConnector<TreesBlock, TreesBlock> {
         super(taxaBlock, parent, child);
 
         enabledData.addAll(parent.getDataBlock().getTrees());
-        parent.getDataBlock().getTrees().addListener(new ListChangeListener<ITree>() {
+        parent.getDataBlock().getTrees().addListener(new ListChangeListener<PhyloTree>() {
             @Override
-            public void onChanged(Change<? extends ITree> c) {
+            public void onChanged(Change<? extends PhyloTree> c) {
                 while (c.next()) {
                     if (c.getRemovedSize() > 0)
                         enabledData.removeAll(c.getRemoved());
@@ -67,14 +67,14 @@ public class TreesFilter extends AConnector<TreesBlock, TreesBlock> {
             public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock original, TreesBlock modified) {
                 modified.getTrees().clear();
 
-                final ArrayList<ITree> list = new ArrayList<>();
+                final ArrayList<PhyloTree> list = new ArrayList<>();
                 if (enabledData.size() == 0)
                     list.addAll(original.getTrees());
                 else
                     list.addAll(enabledData);
                 list.removeAll(disabledData);
 
-                for (ITree tree : list) {
+                for (PhyloTree tree : list) {
                     if (!getDisabledData().contains(tree) && original.getTrees().contains(tree)) {
                         modified.getTrees().add(tree);
                     }
@@ -88,7 +88,7 @@ public class TreesFilter extends AConnector<TreesBlock, TreesBlock> {
      *
      * @return list of explicitly enabledData taxa
      */
-    public ObservableList<ITree> getEnabledData() {
+    public ObservableList<PhyloTree> getEnabledData() {
         return enabledData;
     }
 
@@ -97,7 +97,7 @@ public class TreesFilter extends AConnector<TreesBlock, TreesBlock> {
      *
      * @return disabledData
      */
-    public ObservableList<ITree> getDisabledData() {
+    public ObservableList<PhyloTree> getDisabledData() {
         return disabledData;
     }
 }

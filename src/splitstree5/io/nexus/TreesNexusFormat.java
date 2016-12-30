@@ -17,17 +17,29 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.misc;
+package splitstree5.io.nexus;
 
 /**
- * Phylogenetic tree interface
- * Created by huson on Dec-2016
+ * trees block nexus format
+ * Created by huson on 12/30/16.
  */
-public interface ITree extends Cloneable {
-    int getNumberOfNodes();
+public class TreesNexusFormat {
+    private boolean translate = true; // use translation table
+    private boolean showWeights = true;
 
-    int getNumberOEdges();
+    public boolean isTranslate() {
+        return translate;
+    }
 
-    ITree clone();
+    public void setTranslate(boolean translate) {
+        this.translate = translate;
+    }
 
+    public boolean isShowWeights() {
+        return showWeights;
+    }
+
+    public void setShowWeights(boolean showWeights) {
+        this.showWeights = showWeights;
+    }
 }

@@ -20,12 +20,12 @@
 package splitstree5.core.algorithms;
 
 
+import jloda.phylo.PhyloTree;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.core.misc.DummyTree;
 
 /**
  * Neighbor joining algorithm
@@ -47,7 +47,7 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> {
             progressListener.incrementProgress();
         }
         progressListener.close();
-        trees.getTrees().setAll(new DummyTree(5, 6));
+        trees.getTrees().setAll(new PhyloTree());
     }
 }
 

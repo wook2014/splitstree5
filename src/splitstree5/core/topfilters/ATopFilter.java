@@ -20,10 +20,10 @@
 package splitstree5.core.topfilters;
 
 import splitstree5.core.connectors.AConnector;
+import splitstree5.core.dag.UpdateState;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.misc.UpdateState;
 
 /**
  * top filter

@@ -27,10 +27,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.dag.ANode;
+import splitstree5.core.dag.UpdateState;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.misc.UpdateState;
 
 /**
  * A connector between data nodes. THis is where algorithms are run

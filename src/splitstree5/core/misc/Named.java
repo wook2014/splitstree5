@@ -24,7 +24,7 @@ import javafx.beans.property.StringProperty;
 import jloda.util.Basic;
 
 /**
- * A named read-writable class
+ * A named  class
  * Created by huson on 12/21/16.
  */
 public class Named {

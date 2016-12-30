@@ -19,12 +19,12 @@
 
 package splitstree5.core.topfilters;
 
+import jloda.phylo.PhyloTree;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.core.misc.ITree;
 
 import java.util.Map;
 
@@ -53,8 +53,8 @@ public class TreesTopFilter extends ATopFilter<TreesBlock> {
 
                 final Map<Integer, Integer> originalIndex2ModifiedIndex = originalTaxaBlock.computeIndexMap(taxaBlock);
 
-                for (ITree tree : parentBlock.getTrees()) {
-                    ITree induced = computeInducedTree(tree, originalIndex2ModifiedIndex, taxaBlock.getNtax());
+                for (PhyloTree tree : parentBlock.getTrees()) {
+                    PhyloTree induced = computeInducedTree(tree, originalIndex2ModifiedIndex, taxaBlock.getNtax());
                     if (induced != null)
                         childBlock.getTrees().add(induced);
                 }
@@ -70,7 +70,7 @@ public class TreesTopFilter extends ATopFilter<TreesBlock> {
      * @param inducedNtax
      * @return induced tree or null
      */
-    private static ITree computeInducedTree(ITree originalTree, Map<Integer, Integer> originalIndex2ModifiedIndex, int inducedNtax) {
+    private static PhyloTree computeInducedTree(PhyloTree originalTree, Map<Integer, Integer> originalIndex2ModifiedIndex, int inducedNtax) {
         // todo: implement
         return null;
     }
