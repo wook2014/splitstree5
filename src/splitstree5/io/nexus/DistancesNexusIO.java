@@ -36,10 +36,16 @@ import java.util.List;
 public class DistancesNexusIO {
     public static final String NAME = "DISTANCES";
 
-    public static final String SYNTAX = "BEGIN TAXA;\n" +
-            "\tDIMENSIONS NTAX=number-of-taxa;\n" +
-            "\t[TAXLABELS taxon_1 taxon_2 ... taxon_ntax;]\n" +
-            "\t[TAXINFO info_1 info_2 ... info_ntax;]\n" +
+    public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
+            "\t[DIMENSIONS [NTAX=number-of-taxa];]\n" +
+            "\t[FORMAT\n" +
+            "\t    [TRIANGLE={LOWER|UPPER|BOTH}]\n" +
+            "\t    [[NO] DIAGONAL]\n" +
+            "\t    [LABELS={LEFT|NO}]\n" +
+            "\t;]\n" +
+            "\tMATRIX\n" +
+            "\t    distance data in specified format\n" +
+            "\t;\n" +
             "END;\n";
 
     /**
@@ -83,6 +89,12 @@ public class DistancesNexusIO {
             distancesNexusFormat.setLabels(np.findIgnoreCase(formatTokens, "labels=left", true, distancesNexusFormat.getLabels()));
             distancesNexusFormat.setLabels(np.findIgnoreCase(formatTokens, "labels=no", false, distancesNexusFormat.getLabels())); //DJB 14mar03
 
+
+            distancesNexusFormat.setDiagonal(np.findIgnoreCase(formatTokens, "diagonal=no", false, distancesNexusFormat.getDiagonal()));
+            distancesNexusFormat.setDiagonal(np.findIgnoreCase(formatTokens, "diagonal=yes", true, distancesNexusFormat.getDiagonal()));
+
+            distancesNexusFormat.setTriangle(np.findIgnoreCase(formatTokens, "triangle=", "both upper lower", distancesNexusFormat.getTriangle()));
+
             // backward compatibility:
             distancesNexusFormat.setLabels(np.findIgnoreCase(formatTokens, "no labels", false, distancesNexusFormat.getLabels()));
             distancesNexusFormat.setLabels(np.findIgnoreCase(formatTokens, "nolabels", false, distancesNexusFormat.getLabels())); //DJB 14mar03
@@ -90,9 +102,7 @@ public class DistancesNexusIO {
 
             distancesNexusFormat.setDiagonal(np.findIgnoreCase(formatTokens, "no diagonal", false, distancesNexusFormat.getDiagonal()));
             distancesNexusFormat.setDiagonal(np.findIgnoreCase(formatTokens, "diagonal", true, distancesNexusFormat.getDiagonal()));
-            distancesNexusFormat.setDiagonal(np.findIgnoreCase(formatTokens, "nodiagonal", false, distancesNexusFormat.getDiagonal())); //DJB 14mar03
-
-            distancesNexusFormat.setTriangle(np.findIgnoreCase(formatTokens, "triangle=", "both upper lower", distancesNexusFormat.getTriangle()));
+            distancesNexusFormat.setDiagonal(np.findIgnoreCase(formatTokens, "noDiagonal", false, distancesNexusFormat.getDiagonal())); //DJB 14mar03
 
             // for compatibilty with splitstree3, swallow missing=?
             np.findIgnoreCase(formatTokens, "missing=", null, '?');
