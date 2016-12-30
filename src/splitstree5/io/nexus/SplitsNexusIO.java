@@ -259,7 +259,7 @@ public class SplitsNexusIO {
         w.write(";\n");
         if (splitsBlock.getThreshold() != 0)
             w.write("THRESHOLD=" + splitsBlock.getThreshold() + "; \n");
-        w.write("PROPERTIES fit=" + splitsBlock.getFit());
+        w.write(String.format("PROPERTIES fit=%.2f", (splitsBlock.isLeastSquares() ? splitsBlock.getLeastSquaresFit() : splitsBlock.getFit())));
         if (splitsBlock.isLeastSquares())
             w.write(" leastsquares");
         switch (splitsBlock.getCompatibility()) {

@@ -58,6 +58,40 @@ public final class ASplit {
         return A;
     }
 
+    /**
+     * get complement
+     *
+     * @return complement
+     */
+    public BitSet getComplement() {
+        BitSet result = (BitSet) A.clone();
+        result.flip(1, ntax);
+        return result;
+    }
+
+    /**
+     * get complement
+     *
+     * @param ntax
+     * @return complement
+     */
+    public BitSet getComplement(int ntax) {
+        BitSet result = new BitSet();
+        for (int t = A.nextClearBit(1); t != -1 && t <= ntax; t = A.nextClearBit(t + 1))
+            result.set(t);
+        return result;
+    }
+
+    /**
+     * does the set A contain the given taxon
+     *
+     * @param t in range 1 to ntax
+     * @return true, if contained
+     */
+    public boolean isContainedInA(int t) {
+        return A.get(t + 1);
+    }
+
     public float getWeight() {
         return weight;
     }

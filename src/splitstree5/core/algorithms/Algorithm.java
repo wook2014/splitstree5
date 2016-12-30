@@ -32,10 +32,6 @@ import splitstree5.core.misc.Named;
  * Created by huson on 12/21/16.
  */
 abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> extends Named {
-    private TaxaBlock taxa;
-    private P parent;
-    private C child;
-
     private final BooleanProperty disabled = new SimpleBooleanProperty(true);
 
     /**
@@ -57,30 +53,6 @@ abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> exte
      * perform the computation
      */
     abstract public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, P parent, C child) throws InterruptedException, CanceledException;
-
-    public TaxaBlock getTaxa() {
-        return taxa;
-    }
-
-    public void setTaxa(TaxaBlock taxa) {
-        this.taxa = taxa;
-    }
-
-    public void setParent(P parent) {
-        this.parent = parent;
-    }
-
-    public P getParent() {
-        return parent;
-    }
-
-    public C getChild() {
-        return child;
-    }
-
-    public void setChild(C child) {
-        this.child = child;
-    }
 
     public boolean getDisabled() {
         return disabled.get();

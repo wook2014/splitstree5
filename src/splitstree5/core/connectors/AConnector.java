@@ -108,9 +108,6 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
             this.algorithm.disabledProperty().unbind();
         this.algorithm = algorithm;
         if (algorithm != null) {
-            algorithm.setTaxa(getTaxaBlock());
-            algorithm.setParent(getParent().getDataBlock());
-            algorithm.setChild(getChild().getDataBlock());
             algorithm.disabledProperty().bind(disable);
         }
     }
