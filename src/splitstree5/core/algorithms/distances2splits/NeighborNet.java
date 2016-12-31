@@ -23,10 +23,13 @@ import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import jloda.util.ProgressSilent;
 import splitstree5.core.algorithms.Algorithm;
+import splitstree5.core.algorithms.distances2splits.utils.NeighborNetSplitWeightOptimizer;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ASplit;
+import splitstree5.core.misc.Compatibility;
+import splitstree5.core.misc.SplitsUtilities;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,7 +68,7 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> {
 
         final ArrayList<ASplit> splits = NeighborNetSplitWeightOptimizer.computeWeightedSplits(cycle, distancesBlock, optionCutOff, optionLeastSquares, optionRegularization, optionLambdaFrac);
 
-        if (SplitsUtilities.isCompatible(splits))
+        if (Compatibility.isCompatible(splits))
             splitsBlock.setCompatibility(SplitsBlock.COMPATIBILITY.compatible);
         else {
 

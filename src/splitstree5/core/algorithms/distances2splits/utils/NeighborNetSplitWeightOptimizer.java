@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 David Bryant and Daniel H. Huson
+ *  Copyright (C) 2016 Daniel H. Huson
  *  
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *  
@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.algorithms.distances2splits;
+package splitstree5.core.algorithms.distances2splits.utils;
 
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.misc.ASplit;

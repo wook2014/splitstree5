@@ -22,23 +22,37 @@ package splitstree5.core.filters;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.filters.utils.ClosestTree;
+import splitstree5.core.filters.utils.GreedyCompatible;
+import splitstree5.core.filters.utils.GreedyWeaklyCompatible;
 import splitstree5.core.misc.ASplit;
+import splitstree5.core.misc.Compatibility;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * splits filter
  * Created by huson on 12/12/16.
  */
 public class SplitsFilter extends AConnector<SplitsBlock, SplitsBlock> {
+    public enum Filter {GreedyCompatible, ClosestTree, GreedyWeaklyCompatible, WeightThreshold, ConfidenceThreshold, MaximumDimension, None}
+
     private final ObservableList<ASplit> enabledData = FXCollections.observableArrayList();
     private final ObservableList<ASplit> disabledData = FXCollections.observableArrayList();
+
+    private boolean optionModifyWeightsUsingLeastSquares = false;
+    private Filter optionSelectSplitsUsingFilter = Filter.MaximumDimension;
+
+    private float optionWeightThreshold = 0;
+    private float optionCondifidenceThreshold = 0;
+    private int optionMaximumDimension = 4;
 
     /**
      * /**
@@ -64,20 +78,63 @@ public class SplitsFilter extends AConnector<SplitsBlock, SplitsBlock> {
         });
 
         setAlgorithm(new Algorithm<SplitsBlock, SplitsBlock>() {
-            public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, SplitsBlock original, SplitsBlock modified) {
-                modified.getSplits().clear();
+            public void compute(ProgressListener progress, TaxaBlock taxaBlock, SplitsBlock original, SplitsBlock modified) throws CanceledException {
+                boolean changed = false;
+                List<ASplit> splits = original.getSplits();
+                if (optionModifyWeightsUsingLeastSquares) {
+                    // modify weights least squares
+                    // reset
+                    changed = true;
+                }
+                Compatibility compatibility = Compatibility.unknown;
 
-                final ArrayList<ASplit> list = new ArrayList<>();
-                if (enabledData.size() == 0)
-                    list.addAll(original.getSplits());
-                else
-                    list.addAll(enabledData);
-                list.removeAll(disabledData);
+                switch (optionSelectSplitsUsingFilter) {
+                    case GreedyCompatible:
+                        splits = GreedyCompatible.apply(progress, splits);
+                        compatibility = Compatibility.compatible;
+                        changed = true;
+                        break;
+                    case ClosestTree:
+                        changed = true;
+                        splits = ClosestTree.apply(progress, taxaBlock.getNtax(), splits, original.getCycle());
+                        compatibility = Compatibility.compatible;
+                        break;
+                    case GreedyWeaklyCompatible:
+                        splits = GreedyWeaklyCompatible.apply(progress, splits);
+                        changed = true;
+                        break;
+                    case WeightThreshold:
+                        changed = true;
+                        break;
+                    case ConfidenceThreshold:
+                        changed = true;
+                        break;
+                    case MaximumDimension:
+                        changed = true;
+                        break;
+                    default:
+                    case None:
+                        break;
+                }
 
-                for (ASplit split : list) {
-                    if (!getDisabledData().contains(split) && parent.getDataBlock().getSplits().contains(split)) {
-                        modified.getSplits().add(split);
-                    }
+                if (disabledData.size() > 0) {
+                    splits.removeAll(disabledData);
+                    changed = true;
+                }
+
+                modified.getSplits().addAll(splits);
+                if (!changed) {
+                    modified.setCycle(original.getCycle());
+                    modified.setFit(original.getFit());
+                    modified.setCompatibility(original.getCompatibility());
+                    modified.setThreshold(original.getThreshold());
+                } else {
+                    modified.setCycle(original.getCycle());
+                    modified.setFit(-1);
+                    if (compatibility == Compatibility.unknown)
+                        compatibility = Compatibility.compute(taxaBlock.getNtax(), modified.getSplits(), modified.getCycle());
+                    modified.setCompatibility(compatibility);
+                    modified.setThreshold(original.getThreshold());
                 }
             }
         });

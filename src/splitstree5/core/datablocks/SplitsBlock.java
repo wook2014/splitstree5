@@ -22,6 +22,8 @@ package splitstree5.core.datablocks;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import splitstree5.core.misc.ASplit;
+import splitstree5.core.misc.Compatibility;
+import splitstree5.core.misc.SplitsUtilities;
 
 import java.util.BitSet;
 
@@ -32,12 +34,7 @@ import java.util.BitSet;
 public class SplitsBlock extends ADataBlock {
     private final ObservableList<ASplit> splits;
 
-    // some properties that a set of splits has:
-    public enum COMPATIBILITY {
-        compatible, cyclic, weaklyCompatible, incompatible, unknown
-    }
-
-    private COMPATIBILITY compatibility = COMPATIBILITY.unknown;
+    private Compatibility compatibility = Compatibility.unknown;
     private float fit = -1;
 
     private float threshold = 0; // todo: this belongs in SplitsFilter?
@@ -70,7 +67,7 @@ public class SplitsBlock extends ADataBlock {
     public void clear() {
         splits.clear();
         cycle = null;
-        compatibility = COMPATIBILITY.unknown;
+        compatibility = Compatibility.unknown;
         fit = -1;
         threshold = 0;
         setInfo("");
@@ -92,11 +89,11 @@ public class SplitsBlock extends ADataBlock {
         return "Number of splits: " + getSplits().size();
     }
 
-    public COMPATIBILITY getCompatibility() {
+    public Compatibility getCompatibility() {
         return compatibility;
     }
 
-    public void setCompatibility(COMPATIBILITY compatibility) {
+    public void setCompatibility(Compatibility compatibility) {
         this.compatibility = compatibility;
     }
 
@@ -120,15 +117,25 @@ public class SplitsBlock extends ADataBlock {
         return cycle;
     }
 
+    /**
+     * set the cycle (and normalize it)
+     *
+     * @param cycle
+     */
     public void setCycle(int[] cycle) {
         if (cycle != null) {
             BitSet set = new BitSet();
             for (int i : cycle) {
                 set.set(i);
             }
-            if (set.cardinality() != cycle.length)
+            if (set.cardinality() != cycle.length) {
                 System.err.println("Internal error: setCycle() failed: wrong cardinality");
+                cycle = null;
+            } else {
+                cycle = SplitsUtilities.normalizeCycle(cycle);
+            }
         }
-        this.cycle = cycle;
+        this.cycle=cycle;
     }
+
 }
