@@ -25,6 +25,7 @@ import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ASplit;
+import splitstree5.core.misc.Compatibility;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -141,20 +142,20 @@ public class SplitsNexusIO {
 
             splitsBlock.setFit((float) np.findIgnoreCase(p, "fit=", -1.0, 100.0, splitsBlock.getFit()));
 
-            if (np.findIgnoreCase(p, "weakly compatible", true, splitsBlock.getCompatibility() == SplitsBlock.COMPATIBILITY.weaklyCompatible))
-                splitsBlock.setCompatibility(SplitsBlock.COMPATIBILITY.weaklyCompatible);
+            if (np.findIgnoreCase(p, "weakly compatible", true, splitsBlock.getCompatibility() == Compatibility.weaklyCompatible))
+                splitsBlock.setCompatibility(Compatibility.weaklyCompatible);
 
-            if (np.findIgnoreCase(p, "non compatible", true, splitsBlock.getCompatibility() == SplitsBlock.COMPATIBILITY.incompatible))
-                splitsBlock.setCompatibility(SplitsBlock.COMPATIBILITY.incompatible);
+            if (np.findIgnoreCase(p, "non compatible", true, splitsBlock.getCompatibility() == Compatibility.incompatible))
+                splitsBlock.setCompatibility(Compatibility.incompatible);
 
-            if (np.findIgnoreCase(p, "compatible", true, splitsBlock.getCompatibility() == SplitsBlock.COMPATIBILITY.compatible))
-                splitsBlock.setCompatibility(SplitsBlock.COMPATIBILITY.compatible);
+            if (np.findIgnoreCase(p, "compatible", true, splitsBlock.getCompatibility() == Compatibility.compatible))
+                splitsBlock.setCompatibility(Compatibility.compatible);
 
-            if (np.findIgnoreCase(p, "cyclic", true, splitsBlock.getCompatibility() == SplitsBlock.COMPATIBILITY.cyclic))
-                splitsBlock.setCompatibility(SplitsBlock.COMPATIBILITY.cyclic);
+            if (np.findIgnoreCase(p, "cyclic", true, splitsBlock.getCompatibility() == Compatibility.cyclic))
+                splitsBlock.setCompatibility(Compatibility.cyclic);
 
-            if (np.findIgnoreCase(p, "incompatible", true, splitsBlock.getCompatibility() == SplitsBlock.COMPATIBILITY.incompatible))
-                splitsBlock.setCompatibility(SplitsBlock.COMPATIBILITY.incompatible);
+            if (np.findIgnoreCase(p, "incompatible", true, splitsBlock.getCompatibility() == Compatibility.incompatible))
+                splitsBlock.setCompatibility(Compatibility.incompatible);
 
             // for compatiblity with splitstree4
             np.findIgnoreCase(p, "leastsquares", true, false);

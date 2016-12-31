@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.gui;
+package splitstree5.gui.taxaview;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -104,20 +104,13 @@ public class TaxaFilterView {
             DragAndDropSupportListView2.setup(controller.getActiveList(), controller.getInactiveList(), undoManager, "Change Active Taxa");
         });
 
-        controller.getUndoMenuItem().setOnAction((e) -> {
-            undoManager.undo();
-        });
+        controller.getUndoMenuItem().setOnAction((e) -> undoManager.undo());
         controller.getUndoMenuItem().disableProperty().bind(new SimpleBooleanProperty(false).isEqualTo(undoManager.canUndoProperty()));
         controller.getUndoMenuItem().textProperty().bind(undoManager.undoNameProperty());
-        controller.getRedoMenuItem().setOnAction((e) -> {
-            undoManager.redo();
-        });
+
+        controller.getRedoMenuItem().setOnAction((e) -> undoManager.redo());
         controller.getRedoMenuItem().disableProperty().bind(new SimpleBooleanProperty(false).isEqualTo(undoManager.canRedoProperty()));
-
-        controller.getActiveList().disableProperty().bind(taxaFilter.disableProperty());
-        controller.getInactiveList().disableProperty().bind(taxaFilter.disableProperty());
         controller.getRedoMenuItem().textProperty().bind(undoManager.redoNameProperty());
-
 
         controller.getInactivateAllButton().setOnAction((e) -> {
             controller.getInactiveList().getItems().addAll(controller.getActiveList().getItems());
@@ -198,8 +191,8 @@ public class TaxaFilterView {
         final ListView<Taxon> activeList = controller.getActiveList();
         final ListView<Taxon> inactiveList = controller.getInactiveList();
 
-        activeList.getItems().setAll(taxaFilter.getEnabledData());
-        inactiveList.getItems().setAll(taxaFilter.getDisabledData());
+        activeList.getItems().setAll(taxaFilter.getEnabled());
+        inactiveList.getItems().setAll(taxaFilter.getDisabled());
     }
 
     /**
@@ -209,10 +202,10 @@ public class TaxaFilterView {
         final ListView<Taxon> activeList = controller.getActiveList();
         final ListView<Taxon> inactiveList = controller.getInactiveList();
 
-        taxaFilter.getEnabledData().clear();
-        taxaFilter.getEnabledData().addAll(activeList.getItems());
-        taxaFilter.getDisabledData().clear();
-        taxaFilter.getDisabledData().addAll(inactiveList.getItems());
+        taxaFilter.getEnabled().clear();
+        taxaFilter.getEnabled().addAll(activeList.getItems());
+        taxaFilter.getDisabled().clear();
+        taxaFilter.getDisabled().addAll(inactiveList.getItems());
         taxaFilter.setState(UpdateState.INVALID);
     }
 }

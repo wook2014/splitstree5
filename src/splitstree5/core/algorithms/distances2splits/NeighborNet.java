@@ -69,10 +69,10 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> {
         final ArrayList<ASplit> splits = NeighborNetSplitWeightOptimizer.computeWeightedSplits(cycle, distancesBlock, optionCutOff, optionLeastSquares, optionRegularization, optionLambdaFrac);
 
         if (Compatibility.isCompatible(splits))
-            splitsBlock.setCompatibility(SplitsBlock.COMPATIBILITY.compatible);
+            splitsBlock.setCompatibility(Compatibility.compatible);
         else {
 
-            splitsBlock.setCompatibility(SplitsBlock.COMPATIBILITY.cyclic);
+            splitsBlock.setCompatibility(Compatibility.cyclic);
         }
         splitsBlock.setCycle(cycle);
         splitsBlock.setFit(SplitsUtilities.computeLeastSquaresFit(distancesBlock, splits));

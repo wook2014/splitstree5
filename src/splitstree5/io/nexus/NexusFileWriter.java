@@ -53,7 +53,7 @@ public class NexusFileWriter {
 
             // taxa filter and second block, if necessary:
             final TaxaFilter taxaFilter = (TaxaFilter) document.getDag().getTopTaxaNode().getChildren().get(0);
-            if (taxaFilter.getDisabledData().size() > 0) { // some taxa have been filtered
+            if (taxaFilter.getDisabled().size() > 0) { // some taxa have been filtered
                 writer.write("[NEED to report taxa filter]\n");
             }
 

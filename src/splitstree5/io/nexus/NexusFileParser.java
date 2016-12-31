@@ -26,7 +26,7 @@ import splitstree5.core.algorithms.distances2trees.NeighborJoining;
 import splitstree5.core.dag.UpdateState;
 import splitstree5.core.datablocks.*;
 import splitstree5.core.misc.Taxon;
-import splitstree5.gui.TaxaFilterView;
+import splitstree5.gui.taxaview.TaxaFilterView;
 
 import java.io.FileReader;
 import java.io.IOException;

@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.gui;
+package splitstree5.gui.taxaview;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -69,7 +69,6 @@ public class TaxaFilterController {
 
     @FXML // fx:id="applyButton"
     private Button applyButton; // Value injected by FXMLLoader
-
 
     @FXML
         // This method is called by the FXMLLoader when initialization is complete

@@ -34,8 +34,8 @@ import java.util.ArrayList;
  * Created by huson on 12/12/16.
  */
 public class TaxaFilter extends AConnector<TaxaBlock, TaxaBlock> {
-    private final ArrayList<Taxon> enabledData = new ArrayList<>();
-    private final ArrayList<Taxon> disabledData = new ArrayList<>();
+    private final ArrayList<Taxon> enabled = new ArrayList<>(); // these should be placed inside the algorithm?
+    private final ArrayList<Taxon> disabled = new ArrayList<>();
 
     /**
      * /**
@@ -47,15 +47,15 @@ public class TaxaFilter extends AConnector<TaxaBlock, TaxaBlock> {
     public TaxaFilter(ADataNode<TaxaBlock> parent, ADataNode<TaxaBlock> child) {
         super(parent.getDataBlock(), parent, child);
 
-        enabledData.addAll(parent.getDataBlock().getTaxa());
+        enabled.addAll(parent.getDataBlock().getTaxa());
         parent.getDataBlock().getTaxa().addListener(new ListChangeListener<Taxon>() {
             @Override
             public void onChanged(Change<? extends Taxon> c) {
                 while (c.next()) {
                     if (c.getRemovedSize() > 0)
-                        enabledData.removeAll(c.getRemoved());
+                        enabled.removeAll(c.getRemoved());
                     if (c.getAddedSize() > 0)
-                        enabledData.addAll(c.getAddedSubList());
+                        enabled.addAll(c.getAddedSubList());
                 }
             }
         });
@@ -65,14 +65,14 @@ public class TaxaFilter extends AConnector<TaxaBlock, TaxaBlock> {
                 modifiedTaxa.getTaxa().clear();
 
                 final ArrayList<Taxon> list = new ArrayList<>();
-                if (enabledData.size() == 0)
+                if (enabled.size() == 0)
                     list.addAll(originalTaxa.getTaxa());
                 else
-                    list.addAll(enabledData);
-                list.removeAll(disabledData);
+                    list.addAll(enabled);
+                list.removeAll(disabled);
 
                 for (Taxon taxon : list) {
-                    if (!getDisabledData().contains(taxon) && originalTaxa.getTaxa().contains(taxon)) {
+                    if (!TaxaFilter.this.getDisabled().contains(taxon) && originalTaxa.getTaxa().contains(taxon)) {
                         modifiedTaxa.getTaxa().add(taxon);
                     }
                 }
@@ -81,20 +81,20 @@ public class TaxaFilter extends AConnector<TaxaBlock, TaxaBlock> {
     }
 
     /**
-     * get the set of enabledData data.
+     * get the set of enabled data.
      *
-     * @return list of explicitly enabledData taxa
+     * @return list of explicitly enabled taxa
      */
-    public ArrayList<Taxon> getEnabledData() {
-        return enabledData;
+    public ArrayList<Taxon> getEnabled() {
+        return enabled;
     }
 
     /**
-     * gets disabledData taxa
+     * gets disabled taxa
      *
-     * @return disabledData
+     * @return disabled
      */
-    public ArrayList<Taxon> getDisabledData() {
-        return disabledData;
+    public ArrayList<Taxon> getDisabled() {
+        return disabled;
     }
 }

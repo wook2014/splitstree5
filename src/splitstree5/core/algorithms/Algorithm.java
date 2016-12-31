@@ -54,7 +54,7 @@ abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> exte
      */
     abstract public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, P parent, C child) throws InterruptedException, CanceledException;
 
-    public boolean getDisabled() {
+    public boolean isDisabled() {
         return disabled.get();
     }
 

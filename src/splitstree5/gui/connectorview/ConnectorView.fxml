@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~  Copyright (C) 2016 Daniel H. Huson
+  ~
+  ~  (Some files contain contributions from other authors, who are then mentioned separately.)
+  ~
+  ~  This program is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.layout.*?>
+<BorderPane prefHeight="350.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.111"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="splitstree5.gui.connectorview.ConnectorViewController">
+    <bottom>
+        <ButtonBar minHeight="40.0" prefHeight="40.0" BorderPane.alignment="CENTER">
+            <buttons>
+                <Button fx:id="resetButton" mnemonicParsing="false" text="Reset">
+                    <opaqueInsets>
+                        <Insets/>
+                    </opaqueInsets>
+                </Button>
+                <Button fx:id="cancelButton" mnemonicParsing="false" text="Cancel"/>
+                <Button fx:id="applyButton" mnemonicParsing="false" text="Apply"/>
+            </buttons>
+            <padding>
+                <Insets right="10.0"/>
+            </padding>
+        </ButtonBar>
+    </bottom>
+    <top>
+        <MenuBar BorderPane.alignment="CENTER">
+            <menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                        <MenuItem fx:id="closeMenuItem" mnemonicParsing="false" text="Close">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="W" control="UP" meta="UP" shift="UP"
+                                                    shortcut="DOWN"/>
+                            </accelerator>
+                        </MenuItem>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                    <items>
+                        <MenuItem fx:id="undoMenuItem" mnemonicParsing="false" text="Undo">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="Z" control="UP" meta="UP" shift="UP"
+                                                    shortcut="DOWN"/>
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem fx:id="redoMenuItem" mnemonicParsing="false" text="Redo">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="Z" control="UP" meta="UP" shift="DOWN"
+                                                    shortcut="DOWN"/>
+                            </accelerator>
+                        </MenuItem>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                        <MenuItem fx:id="aboutMenuItem" mnemonicParsing="false" text="About"/>
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </top>
+    <center>
+        <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <top>
+                <ChoiceBox fx:id="algorithmChoiceBox" prefWidth="150.0" BorderPane.alignment="CENTER"/>
+            </top>
+            <center>
+                <Pane fx:id="centerPane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER"/>
+            </center>
+        </BorderPane>
+    </center>
+</BorderPane>

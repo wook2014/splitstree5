@@ -17,28 +17,32 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.filters;
+package splitstree5.gui.connectorview;
 
-import splitstree5.core.connectors.AConnector;
+import javafx.application.Application;
+import javafx.stage.Stage;
+import splitstree5.core.Document;
 import splitstree5.core.datablocks.ADataNode;
+import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.datablocks.TreesBlock;
+import splitstree5.core.filters.SplitsFilter;
 
 /**
- * trees filter
- * Created by huson on 12/12/16.
+ * test the connector view
+ * Created by huson on 12/31/16.
  */
-public class TreesFilter extends AConnector<TreesBlock, TreesBlock> {
-    /**
-     * /**
-     * constructor
-     *
-     * @param parent
-     * @param child
-     */
-    public TreesFilter(TaxaBlock taxaBlock, ADataNode<TreesBlock> parent, ADataNode<TreesBlock> child) {
-        super(taxaBlock, parent, child);
+public class ConnectorViewTest extends Application {
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        Document document = new Document();
+        TaxaBlock taxaBlock = new TaxaBlock();
+        SplitsBlock splitsBlock1 = new SplitsBlock();
+        SplitsBlock splitsBlock2 = new SplitsBlock();
 
-        setAlgorithm(new TreesFilterAlgorithm(parent.getDataBlock()));
+        SplitsFilter splitsFilter = new SplitsFilter(taxaBlock, new ADataNode<>(splitsBlock1), new ADataNode<>(splitsBlock2));
+
+        ConnectorView<SplitsBlock, SplitsBlock> connectorView = new ConnectorView<>(document, splitsFilter);
+
+        connectorView.show();
     }
 }
