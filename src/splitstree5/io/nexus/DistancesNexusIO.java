@@ -39,13 +39,16 @@ public class DistancesNexusIO {
     public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
             "\t[DIMENSIONS [NTAX=number-of-taxa];]\n" +
             "\t[FORMAT\n" +
-            "\t    [TRIANGLE={LOWER|UPPER|BOTH}]\n" +
-            "\t    [[NO] DIAGONAL]\n" +
-            "\t    [LABELS={LEFT|NO}]\n" +
+            "\t\t[TRIANGLE={LOWER|UPPER|BOTH}]\n" +
+            "\t\t[[NO] DIAGONAL]\n" +
+            "\t\t[LABELS={LEFT|NO}]\n" +
             "\t;]\n" +
             "\tMATRIX\n" +
-            "\t    distance data in specified format\n" +
+            "\t\tdistance data in specified format\n" +
             "\t;\n" +
+            "\t[VARMATRIX\n" +
+            "\t\tvariance data in same specified format\n" +
+            "\t;]\n" +
             "END;\n";
 
     /**
@@ -67,7 +70,7 @@ public class DistancesNexusIO {
      * @throws IOException
      */
     public static ArrayList<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, DistancesBlock distancesBlock, @Nullable DistancesNexusFormat distancesNexusFormat) throws IOException {
-        final ArrayList<String> taxonNamesFound = new ArrayList<>();
+        distancesBlock.clear();
 
         if (distancesNexusFormat == null)
             distancesNexusFormat = new DistancesNexusFormat();
@@ -111,48 +114,90 @@ public class DistancesNexusIO {
                 throw new IOException("line " + np.lineno() + ": '" + formatTokens + "' unexpected in FORMAT");
         }
 
-        np.matchIgnoreCase("MATRIX");
+        final boolean both = distancesNexusFormat.getTriangle().equals("both");
+        final boolean upper = distancesNexusFormat.getTriangle().equals("upper");
+        final boolean lower = distancesNexusFormat.getTriangle().equals("lower");
+        final int diag = distancesNexusFormat.getDiagonal() ? 0 : 1;
 
-        boolean both = distancesNexusFormat.getTriangle().equals("both");
-        boolean upper = distancesNexusFormat.getTriangle().equals("upper");
-        boolean lower = distancesNexusFormat.getTriangle().equals("lower");
+        final ArrayList<String> taxonNamesFound = new ArrayList<>();
 
-        int diag = distancesNexusFormat.getDiagonal() ? 0 : 1;
+        {
+            np.matchIgnoreCase("MATRIX");
+            for (int t = 1; t <= distancesBlock.getNtax(); t++) {
+                String label = np.getLabelRespectCase();
+                if (taxaBlock.getNtax() > 0 && !taxaBlock.get(t).getName().equals(label))
+                    throw new IOException("line " + np.lineno() + ": expected '" + taxaBlock.get(t).getName() + "', found: '" + label + "'");
+                taxonNamesFound.add(label);
 
-        for (int t = 1; t <= distancesBlock.getNtax(); t++) {
-            String label = np.getLabelRespectCase();
-            if (taxaBlock.getNtax() > 0 && !taxaBlock.get(t).getName().equals(label))
-                throw new IOException("line " + np.lineno() + ": expected '" + taxaBlock.get(t).getName() + "', found: '" + label + "'");
-            taxonNamesFound.add(label);
+                distancesBlock.set(t, t, 0);
 
-            distancesBlock.set(t, t, 0);
+                int left;
+                int right;
 
-            int left;
-            int right;
+                if (lower) {
+                    left = 1;
+                    right = t - diag;
+                } else if (upper) {
+                    left = t + diag;
+                    right = distancesBlock.getNtax();
+                } else // both
+                {
+                    left = 1;
+                    right = distancesBlock.getNtax();
+                }
 
-            if (lower) {
-                left = 1;
-                right = t - diag;
-            } else if (upper) {
-                left = t + diag;
-                right = distancesBlock.getNtax();
-            } else // both
-            {
-                left = 1;
-                right = distancesBlock.getNtax();
+                for (int q = left; q <= right; q++) {
+                    double z = np.getDouble();
+
+                    if (both)
+                        distancesBlock.set(t, q, z);
+                    else
+                        distancesBlock.setBoth(t, q, z);
+
+                }
             }
-
-            for (int q = left; q <= right; q++) {
-                double z = np.getDouble();
-
-                if (both)
-                    distancesBlock.set(t, q, z);
-                else
-                    distancesBlock.setBoth(t, q, z);
-
-            }
+            np.matchIgnoreCase(";");
         }
-        np.matchIgnoreCase(";");
+
+        if (np.peekMatchIgnoreCase("VARMATRIX")) {
+            np.matchIgnoreCase("VARMATRIX");
+            for (int t = 1; t <= distancesBlock.getNtax(); t++) {
+                String label = np.getLabelRespectCase();
+                if (taxaBlock.getNtax() > 0 && !taxaBlock.get(t).getName().equals(label))
+                    throw new IOException("line " + np.lineno() + ": expected '" + taxaBlock.get(t).getName() + "', found: '" + label + "'");
+
+                if (distancesNexusFormat.isVariancesIO())
+                    distancesBlock.setVariance(t, t, 0);
+
+                int left;
+                int right;
+
+                if (lower) {
+                    left = 1;
+                    right = t - diag;
+                } else if (upper) {
+                    left = t + diag;
+                    right = distancesBlock.getNtax();
+                } else // both
+                {
+                    left = 1;
+                    right = distancesBlock.getNtax();
+                }
+
+                for (int q = left; q <= right; q++) {
+                    double z = np.getDouble();
+
+                    if (distancesNexusFormat.isVariancesIO()) {
+                        if (both)
+                            distancesBlock.setVariance(t, q, z);
+                        else
+                            distancesBlock.setVariance(t, q, z);
+                    }
+                }
+            }
+            np.matchIgnoreCase(";");
+        }
+
         np.matchEndBlock();
 
         if (both) {
@@ -189,48 +234,93 @@ public class DistancesNexusIO {
             w.write(" no diagonal");
 
         w.write(" triangle=" + distancesNexusFormat.getTriangle());
-
         w.write(";\n");
-        w.write("MATRIX\n");
 
-        int diag = distancesNexusFormat.getDiagonal() ? 0 : 1;
+        final int diag = distancesNexusFormat.getDiagonal() ? 0 : 1;
 
-        for (int t = 1; t <= distancesBlock.getNtax(); t++) {
-            if (distancesNexusFormat.getLabels()) {
-                w.write("[" + t + "]");
-                w.write(" '" + taxaBlock.get(t).getName() + "'");
-                pad(w, taxaBlock, t);
+        // write matrix:
+        {
+            w.write("MATRIX\n");
 
+            for (int t = 1; t <= distancesBlock.getNtax(); t++) {
+                if (distancesNexusFormat.getLabels()) {
+                    w.write("[" + t + "]");
+                    w.write(" '" + taxaBlock.get(t).getName() + "'");
+                    pad(w, taxaBlock, t);
+
+                }
+                int left;
+                int right;
+
+                switch (distancesNexusFormat.getTriangle()) {
+                    case "lower":
+                        left = 1;//1;
+
+                        right = t - diag;//t-1+diag;
+
+                        break;
+                    case "upper":
+                        left = t + diag;//t-1+diag;
+
+                        right = distancesBlock.getNtax();
+                        for (int i = 1; i < t; i++)
+                            w.write("      ");
+                        break;
+                    default: // both
+                        left = 1;
+                        right = distancesBlock.getNtax();
+                        break;
+                }
+
+                for (int q = left; q <= right; q++) {
+                    w.write(" " + (float) (distancesBlock.get(t, q)));
+                }
+                w.write("\n");
             }
-            int left;
-            int right;
-
-            switch (distancesNexusFormat.getTriangle()) {
-                case "lower":
-                    left = 1;//1;
-
-                    right = t - diag;//t-1+diag;
-
-                    break;
-                case "upper":
-                    left = t + diag;//t-1+diag;
-
-                    right = distancesBlock.getNtax();
-                    for (int i = 1; i < t; i++)
-                        w.write("      ");
-                    break;
-                default: // both
-                    left = 1;
-                    right = distancesBlock.getNtax();
-                    break;
-            }
-
-            for (int q = left; q <= right; q++) {
-                w.write(" " + (float) (distancesBlock.get(t, q)));
-            }
-            w.write("\n");
+            w.write(";\n");
         }
-        w.write(";\n");
+
+        // write variances, if present
+        if (distancesNexusFormat.isVariancesIO() && distancesBlock.isVariances()) {
+            w.write("VARMATRIX\n");
+
+            for (int t = 1; t <= distancesBlock.getNtax(); t++) {
+                if (distancesNexusFormat.getLabels()) {
+                    w.write("[" + t + "]");
+                    w.write(" '" + taxaBlock.get(t).getName() + "'");
+                    pad(w, taxaBlock, t);
+
+                }
+                int left;
+                int right;
+
+                switch (distancesNexusFormat.getTriangle()) {
+                    case "lower":
+                        left = 1;//1;
+
+                        right = t - diag;//t-1+diag;
+
+                        break;
+                    case "upper":
+                        left = t + diag;//t-1+diag;
+
+                        right = distancesBlock.getNtax();
+                        for (int i = 1; i < t; i++)
+                            w.write("      ");
+                        break;
+                    default: // both
+                        left = 1;
+                        right = distancesBlock.getNtax();
+                        break;
+                }
+
+                for (int q = left; q <= right; q++) {
+                    w.write(" " + (float) (distancesBlock.getVariance(t, q)));
+                }
+                w.write("\n");
+            }
+            w.write(";\n");
+        }
         w.write("END; [" + NAME + "]\n");
     }
 

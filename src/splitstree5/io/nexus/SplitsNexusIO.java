@@ -156,10 +156,8 @@ public class SplitsNexusIO {
             if (np.findIgnoreCase(p, "incompatible", true, splitsBlock.getCompatibility() == SplitsBlock.COMPATIBILITY.incompatible))
                 splitsBlock.setCompatibility(SplitsBlock.COMPATIBILITY.incompatible);
 
-            if (np.findIgnoreCase(p, "leastsquares", true, splitsBlock.isLeastSquares()))
-                splitsBlock.setLeastSquares(true);
-            else
-                splitsBlock.setLeastSquares(false);
+            // for compatiblity with splitstree4
+            np.findIgnoreCase(p, "leastsquares", true, false);
         }
 
         if (np.peekMatchIgnoreCase("CYCLE")) {
@@ -259,9 +257,7 @@ public class SplitsNexusIO {
         w.write(";\n");
         if (splitsBlock.getThreshold() != 0)
             w.write("THRESHOLD=" + splitsBlock.getThreshold() + "; \n");
-        w.write(String.format("PROPERTIES fit=%.2f", (splitsBlock.isLeastSquares() ? splitsBlock.getLeastSquaresFit() : splitsBlock.getFit())));
-        if (splitsBlock.isLeastSquares())
-            w.write(" leastsquares");
+        w.write(String.format("PROPERTIES fit=%.2f", splitsBlock.getFit()));
         switch (splitsBlock.getCompatibility()) {
             case compatible:
                 w.write(" compatible");

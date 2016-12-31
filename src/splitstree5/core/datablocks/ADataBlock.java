@@ -26,7 +26,7 @@ import splitstree5.core.misc.Named;
  * A data block
  * Created by huson on 12/21/16.
  */
-public class ADataBlock extends Named {
+abstract public class ADataBlock extends Named {
 
     public ADataBlock newInstance() {
         try {
@@ -36,4 +36,16 @@ public class ADataBlock extends Named {
             return null;
         }
     }
+
+    /**
+     * gets the size of this data block
+     *
+     * @return size
+     */
+    abstract public int size();
+
+    /**
+     * clear
+     */
+    abstract public void clear();
 }

@@ -41,6 +41,19 @@ public class TreesBlock extends ADataBlock {
         setName(name);
     }
 
+    @Override
+    public int size() {
+        return trees.size();
+    }
+
+    @Override
+    public void clear() {
+        trees.clear();
+        partial = false;
+        rooted = false;
+        setInfo("");
+    }
+
     /**
      * access the trees
      *

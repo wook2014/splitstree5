@@ -23,7 +23,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import splitstree5.core.misc.ASplit;
 
-import java.io.IOException;
 import java.util.BitSet;
 
 /**
@@ -40,9 +39,6 @@ public class SplitsBlock extends ADataBlock {
 
     private COMPATIBILITY compatibility = COMPATIBILITY.unknown;
     private float fit = -1;
-    private boolean leastSquares = false;
-    private float leastSquaresFit = -1;
-    private boolean weightsRepresentLeastSquares = false;
 
     private float threshold = 0; // todo: this belongs in SplitsFilter?
 
@@ -63,6 +59,21 @@ public class SplitsBlock extends ADataBlock {
     public SplitsBlock(String name) {
         this();
         setName(name);
+    }
+
+    @Override
+    public int size() {
+        return splits.size();
+    }
+
+    @Override
+    public void clear() {
+        splits.clear();
+        cycle = null;
+        compatibility = COMPATIBILITY.unknown;
+        fit = -1;
+        threshold = 0;
+        setInfo("");
     }
 
     public int getNsplits() {
@@ -97,30 +108,6 @@ public class SplitsBlock extends ADataBlock {
         this.fit = fit;
     }
 
-    public boolean isLeastSquares() {
-        return leastSquares;
-    }
-
-    public void setLeastSquares(boolean leastSquares) {
-        this.leastSquares = leastSquares;
-    }
-
-    public float getLeastSquaresFit() {
-        return leastSquaresFit;
-    }
-
-    public void setLeastSquaresFit(float leastSquaresFit) {
-        this.leastSquaresFit = leastSquaresFit;
-    }
-
-    public boolean isWeightsRepresentLeastSquares() {
-        return weightsRepresentLeastSquares;
-    }
-
-    public void setWeightsRepresentLeastSquares(boolean weightsRepresentLeastSquares) {
-        this.weightsRepresentLeastSquares = weightsRepresentLeastSquares;
-    }
-
     public float getThreshold() {
         return threshold;
     }
@@ -133,14 +120,14 @@ public class SplitsBlock extends ADataBlock {
         return cycle;
     }
 
-    public void setCycle(int[] cycle) throws IOException {
+    public void setCycle(int[] cycle) {
         if (cycle != null) {
             BitSet set = new BitSet();
             for (int i : cycle) {
                 set.set(i);
             }
             if (set.cardinality() != cycle.length)
-                throw new IOException("setCycle() failed: wrong cardinality");
+                System.err.println("Internal error: setCycle() failed: wrong cardinality");
         }
         this.cycle = cycle;
     }

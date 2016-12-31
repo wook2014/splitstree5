@@ -21,8 +21,8 @@ package splitstree5.io.nexus;
 
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.Document;
-import splitstree5.core.algorithms.NeighborJoining;
 import splitstree5.core.algorithms.Report;
+import splitstree5.core.algorithms.distances2trees.NeighborJoining;
 import splitstree5.core.dag.UpdateState;
 import splitstree5.core.datablocks.*;
 import splitstree5.core.misc.Taxon;

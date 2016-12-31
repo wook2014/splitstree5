@@ -33,10 +33,10 @@ import splitstree5.core.misc.ProgramExecutorService;
  */
 public class ConnectorService<P extends ADataBlock, C extends ADataBlock> extends Service<Boolean> {
     public static boolean verbose = true;
-    private AConnector<P, C> methodNode;
+    private AConnector<P, C> connectorNode;
 
-    public ConnectorService(AConnector<P, C> methodNode) {
-        this.methodNode = methodNode;
+    public ConnectorService(AConnector<P, C> connectorNode) {
+        this.connectorNode = connectorNode;
         executorProperty().set(ProgramExecutorService.getExecutorService());
     }
 
@@ -46,7 +46,7 @@ public class ConnectorService<P extends ADataBlock, C extends ADataBlock> extend
     }
 
     public String getMethodName() {
-        return methodNode.getAlgorithm().getName();
+        return connectorNode.getAlgorithm().getName();
     }
 
     /**
@@ -57,7 +57,8 @@ public class ConnectorService<P extends ADataBlock, C extends ADataBlock> extend
         protected Boolean call() throws Exception {
             System.err.println("--- Compute " + getMethodName() + " called");
             try {
-                methodNode.getAlgorithm().compute(getProgressListener(), methodNode.getTaxaBlock(), methodNode.getParent().getDataBlock(), methodNode.getChild().getDataBlock());
+                connectorNode.getChild().getDataBlock().clear();
+                connectorNode.getAlgorithm().compute(getProgressListener(), connectorNode.getTaxaBlock(), connectorNode.getParent().getDataBlock(), connectorNode.getChild().getDataBlock());
             } catch (CanceledException ex) {
                 System.err.println("USER CANCELED");
             }
@@ -81,22 +82,22 @@ public class ConnectorService<P extends ADataBlock, C extends ADataBlock> extend
         protected void succeeded() {
             if (verbose)
                 System.err.println("Compute " + getMethodName() + " task succeeded");
-            methodNode.setState(UpdateState.VALID);
-            methodNode.getChild().setState(UpdateState.VALID); // child is presumably valid once method has completed...
+            connectorNode.setState(UpdateState.VALID);
+            connectorNode.getChild().setState(UpdateState.VALID); // child is presumably valid once method has completed...
         }
 
         @Override
         protected void failed() {
             if (verbose)
                 System.err.println("Compute " + getMethodName() + " task failed: " + getException());
-            methodNode.setState(UpdateState.FAILED);
+            connectorNode.setState(UpdateState.FAILED);
         }
 
         @Override
         protected void cancelled() {
             if (verbose)
                 System.err.println("Compute " + getMethodName() + " task canceled");
-            methodNode.setState(UpdateState.FAILED);
+            connectorNode.setState(UpdateState.FAILED);
         }
 
         public ProgressListener getProgressListener() {

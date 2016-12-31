@@ -17,12 +17,13 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.algorithms;
+package splitstree5.core.algorithms.distances2trees;
 
 
 import jloda.phylo.PhyloTree;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
+import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;

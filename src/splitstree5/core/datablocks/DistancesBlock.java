@@ -19,15 +19,18 @@
 
 package splitstree5.core.datablocks;
 
+import com.sun.istack.internal.NotNull;
+
 /**
  * A distances block
  * Created by huson on 12/21/16.
  */
 public class DistancesBlock extends ADataBlock {
-    private double[][] data;
+    private double[][] distances;
+    private double[][] variances;
 
     public DistancesBlock() {
-        data = new double[0][0];
+        distances = new double[0][0];
     }
 
     public DistancesBlock(String name) {
@@ -35,19 +38,29 @@ public class DistancesBlock extends ADataBlock {
         setName(name);
     }
 
+    public void clear() {
+        distances = new double[0][0];
+        variances = null;
+        setInfo("");
+    }
+
+    public int size() {
+        return distances.length;
+    }
+
     public void setNtax(int n) {
-        data = new double[n][n];
+        distances = new double[n][n];
     }
 
     /**
      * gets the value for i and j
      *
-     * @param i in range 1-nTax
-     * @param j in range 1-nTax
+     * @param i in range 1..nTax
+     * @param j in range 1..nTax
      * @return value
      */
     public double get(int i, int j) {
-        return data[i - 1][j - 1];
+        return distances[i - 1][j - 1];
     }
 
     /**
@@ -58,35 +71,97 @@ public class DistancesBlock extends ADataBlock {
      * @param value
      */
     public void set(int i, int j, double value) {
-        data[i - 1][j - 1] = value;
+        distances[i - 1][j - 1] = value;
     }
 
     public int getNtax() {
-        return data.length;
+        return distances.length;
     }
 
     /**
-     * sets the value data[row][col]=data[col][row]=value
+     * sets the value distances[row][col]=distances[col][row]=value
      *
+     * @param i in range 1..nTax
+     * @param j in range 1..nTax
+     * @param value
+     */
+    public void setBoth(int i, int j, double value) {
+        distances[i - 1][j - 1] = distances[j - 1][i - 1] = value;
+    }
+
+    /**
+     * gets the variances
+     * @param i
+     * @param j
+     * @return variances or -1, if not set
+     */
+    public double getVariance(int i, int j) {
+        if (variances != null)
+            return variances[i][j];
+        else
+            return -1;
+    }
+
+    /**
+     * sets the variances
      * @param i
      * @param j
      * @param value
      */
-    public void setBoth(int i, int j, double value) {
-        data[i - 1][j - 1] = data[j - 1][i - 1] = value;
+    public void setVariance(int i, int j, double value) {
+        synchronized (this) {
+            if (variances == null) {
+                variances = new double[distances.length][distances.length];
+            }
+        }
+        variances[i - 1][j - 1] = value;
     }
+
+    public void clearVariances() {
+        variances = null;
+    }
+
+    public boolean isVariances() {
+        return variances != null;
+    }
+
+    /**
+     * set distances, change dimensions if necessary. If dimensions are changed, delete variances
+     *
+     * @param distances
+     */
+    public void set(double[][] distances) {
+        if (this.distances.length != distances.length) {
+            this.distances = new double[distances.length][distances.length];
+            variances = null;
+        }
+
+        for (int i = 0; i < distances.length; i++) {
+            System.arraycopy(distances[i], 0, this.distances[i], 0, distances.length);
+        }
+    }
+
 
     /**
      * set values, change dimensions if necessary
      *
-     * @param values
+     * @param distances
+     * @param variances
      */
-    public void set(double[][] values) {
-        if (data.length != values.length)
-            data = new double[values.length][values.length];
+    public void set(@NotNull double[][] distances, @NotNull double[][] variances) {
+        if (this.distances == null || this.distances.length != distances.length)
+            this.distances = new double[distances.length][distances.length];
 
-        for (int i = 0; i < values.length; i++) {
-            System.arraycopy(values[i], 0, data[i], 0, values.length);
+        if (this.variances == null || this.variances.length != variances.length)
+            this.variances = new double[variances.length][variances.length];
+
+        for (int i = 0; i < distances.length; i++) {
+            System.arraycopy(distances[i], 0, this.distances[i], 0, distances.length);
+            System.arraycopy(variances[i], 0, this.variances[i], 0, distances.length);
         }
+    }
+
+    public double[][] getDistances() {
+        return distances;
     }
 }

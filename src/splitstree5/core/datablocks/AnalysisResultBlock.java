@@ -25,4 +25,13 @@ package splitstree5.core.datablocks;
  * Created by huson on 12/22/16.
  */
 public class AnalysisResultBlock extends ADataBlock {
+    @Override
+    public int size() {
+        return getInfo().length();
+    }
+
+    @Override
+    public void clear() {
+        setInfo("");
+    }
 }

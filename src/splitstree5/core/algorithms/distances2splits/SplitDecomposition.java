@@ -17,10 +17,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.algorithms;
+package splitstree5.core.algorithms.distances2splits;
 
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
+import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -28,6 +29,7 @@ import splitstree5.core.misc.ASplit;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.List;
 
 /**
  * split decomposition
@@ -98,12 +100,8 @@ public class SplitDecomposition extends Algorithm<DistancesBlock, SplitsBlock> {
 
 
         // copy splits to splits
+        splitsBlock.setFit(computeFit(distancesBlock, previousSplits));
         splitsBlock.getSplits().addAll(previousSplits);
-        //System.err.println(" "+splits.splits.getNsplits());
-        float[] fit = computeFit(distancesBlock, splitsBlock);
-        splitsBlock.setFit(fit[0]);
-        splitsBlock.setLeastSquares(false);
-        splitsBlock.setLeastSquaresFit(fit[1]);
 
         progress.setProgress(ntax);   //set progress to 100%
     }
@@ -156,18 +154,15 @@ public class SplitDecomposition extends Algorithm<DistancesBlock, SplitsBlock> {
     }
 
     /**
-     * computes the fit, ls fit and stress
+     * computes the fit
      *
      * @param distancesBlock
-     * @param splitsBlock
+     * @param splits
      * @return fit, ls fit and stress
      */
-    public static float[] computeFit(DistancesBlock distancesBlock, SplitsBlock splitsBlock) {
+    public static float computeFit(DistancesBlock distancesBlock, List<ASplit> splits) {
         double dsum = 0;
         double ssum = 0;
-        double dsumSquare = 0;
-        double ssumSquare = 0;
-        double netsumSquare = 0;
 
         final int ntax = distancesBlock.getNtax();
         final double[][] sdist = new double[ntax + 1][ntax + 1];
@@ -175,38 +170,14 @@ public class SplitDecomposition extends Algorithm<DistancesBlock, SplitsBlock> {
         for (int i = 1; i <= ntax; i++) {
             for (int j = i + 1; j <= ntax; j++) {
                 double dij = 0.0;
-                for (ASplit split : splitsBlock.getSplits()) {
+                for (ASplit split : splits) {
                     if (split.isContainedInA(i) != split.isContainedInA(j))
                         dij += split.getWeight();
                 }
                 sdist[i][j] = sdist[j][i] = dij;
             }
         }
-        for (int i = 1; i <= ntax; i++) {
-            for (int j = i + 1; j <= ntax; j++) {
-                double sij = sdist[i][j];
-                double dij = distancesBlock.get(i, j);
-                double x = Math.abs(sij - dij);
-                ssum += x;
-                ssumSquare += x * x;
-                dsum += dij;
-                dsumSquare += dij * dij;
-                netsumSquare += sij * sij;
-            }
-        }
-        double fit = 100 * (1.0 - ssum / dsum);
-        fit = Math.max(fit, 0.0);
-
-        double lsfit = 100.0 * (1.0 - ssumSquare / dsumSquare);
-
-
-        lsfit = Math.max(lsfit, 0.0);
-
-        double stress = Math.sqrt(ssumSquare / netsumSquare);
-
-        System.err.println("\nRecomputed fit:\n\tfit = " + fit + "\n\tLS fit =" + lsfit + "\n\tstress =" + stress + "\n");
-
-        return new float[]{(float) fit, (float) lsfit, (float) stress};
-
+        return (float) Math.max(100 * (1.0 - ssum / dsum), 0.0);
     }
+
 }

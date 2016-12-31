@@ -62,6 +62,19 @@ public class TaxaBlock extends ADataBlock {
         setName(name);
     }
 
+    @Override
+    public int size() {
+        return taxa.size();
+    }
+
+    @Override
+    public void clear() {
+        taxa.clear();
+        taxon2index.clear();
+        name2taxon.clear();
+        setInfo("");
+    }
+
     public int getNtax() {
         return taxa.size();
     }

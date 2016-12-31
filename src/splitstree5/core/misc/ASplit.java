@@ -43,6 +43,8 @@ public final class ASplit {
         this.ntax = ntax;
         this.A = new BitSet();
         this.A.or(A);
+        if (!this.A.get(1))
+            this.A.flip(1, ntax + 1); // always want A to be the set containing 1...
         this.weight = weight;
     }
 
@@ -65,7 +67,7 @@ public final class ASplit {
      */
     public BitSet getComplement() {
         BitSet result = (BitSet) A.clone();
-        result.flip(1, ntax);
+        result.flip(1, ntax + 1);
         return result;
     }
 
@@ -114,6 +116,19 @@ public final class ASplit {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public String toString() {
+        final StringBuilder buf = new StringBuilder();
+        boolean first = true;
+        for (int t = A.nextSetBit(0); t != -1; t = A.nextSetBit(t + 1)) {
+            if (first)
+                first = false;
+            else
+                buf.append(" ");
+            buf.append(t);
+        }
+        return buf.toString();
     }
 
     /**

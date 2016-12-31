@@ -29,6 +29,7 @@ public class DistancesNexusFormat {
     private String triangle;
     private boolean labels;
     private boolean diagonal;
+    private boolean VariancesIO = true;
     private String varType = "ols";
 
     /**
@@ -113,5 +114,18 @@ public class DistancesNexusFormat {
      */
     public void setVarType(String val) {
         this.varType = val;
+    }
+
+    /**
+     * in and output variances, if they have been defined
+     *
+     * @return true, if want defined variances to in and output
+     */
+    public boolean isVariancesIO() {
+        return VariancesIO;
+    }
+
+    public void setVariancesIO(boolean variancesIO) {
+        this.VariancesIO = variancesIO;
     }
 }
