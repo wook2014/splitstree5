@@ -22,13 +22,13 @@ package splitstree5.core.dag;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
-import splitstree5.core.misc.Named;
+import splitstree5.utils.Optionable;
 
 /**
  * A processing graph node
  * Created by huson on 12/21/16.
  */
-abstract public class ANode extends Named {
+abstract public class ANode extends Optionable {
     private static int created = 0;
     private static final Object lock = new Object();
     private final int uid;

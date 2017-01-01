@@ -20,9 +20,14 @@
 package splitstree5.gui.connectorview;
 
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -114,15 +119,18 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
         controller.getResetButton().setOnAction((e) -> {
             syncModel2Controller();
             undoManager.clear();
+            setupCenterPane();
         });
     }
 
     private void setupCenterPane() {
         final Pane centerPane = controller.getCenterPane();
         final GridPane grid = new GridPane();
+        grid.setPadding(new Insets(10, 5, 10, 5));
+        grid.setHgap(20);
         centerPane.getChildren().setAll(grid);
 
-        int row = 0;
+        int row = 1;
         try {
             for (Option option : options) {
                 final String text = Basic.fromCamelCase(option.getName());
@@ -135,56 +143,114 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
                             undoManager.addUndoableChange(text, control.selectedProperty(), oldValue, newValue);
                             option.holdValue(newValue);
                         });
+                        if (option.getInfo() != null)
+                            control.setTooltip(new Tooltip(option.getInfo()));
                         grid.add(control, 1, row);
                         break;
                     }
                     case "int": {
                         javafx.scene.control.TextField control = new TextField();
+                        control.addEventFilter(KeyEvent.ANY, e -> {
+                            if (e.getCode() == KeyCode.Z && e.isShortcutDown()) {
+                                e.consume();
+                                control.getParent().fireEvent(e);
+                            }
+                        });
+
                         control.setTextFormatter(new TextFormatter<>(new IntegerStringConverter()));
                         control.setText(option.getValue().toString());
                         control.textProperty().addListener((observable, oldValue, newValue) -> {
-                            if (newValue.length() > 0 && Basic.isInteger(newValue)) {
+                            if (newValue.length() == 0)
+                                newValue = "0";
+                            if (Basic.isInteger(newValue)) {
                                 undoManager.addUndoableChange(text, control.textProperty(), oldValue, newValue);
                                 option.holdValue(Basic.parseInt(newValue));
                             }
                         });
+                        if (option.getInfo() != null)
+                            control.setTooltip(new Tooltip(option.getInfo()));
                         grid.add(control, 1, row);
                         break;
                     }
                     case "double": {
                         javafx.scene.control.TextField control = new TextField();
+                        control.addEventFilter(KeyEvent.ANY, e -> {
+                            if (e.getCode() == KeyCode.Z && e.isShortcutDown()) {
+                                e.consume();
+                                control.getParent().fireEvent(e);
+                            }
+                        });
+
                         control.setTextFormatter(new TextFormatter<>(new DoubleStringConverter()));
                         control.setText(option.getValue().toString());
                         control.textProperty().addListener((observable, oldValue, newValue) -> {
-                            if (newValue.length() > 0 && Basic.isDouble(newValue)) {
+                            if (newValue.length() == 0)
+                                newValue = "0";
+                            if (Basic.isDouble(newValue)) {
                                 undoManager.addUndoableChange(text, control.textProperty(), oldValue, newValue);
                                 option.holdValue(Basic.parseDouble(newValue));
                             }
                         });
+                        if (option.getInfo() != null)
+                            control.setTooltip(new Tooltip(option.getInfo()));
                         grid.add(control, 1, row);
                         break;
                     }
                     case "float": {
                         javafx.scene.control.TextField control = new TextField();
+                        control.addEventFilter(KeyEvent.ANY, e -> {
+                            if (e.getCode() == KeyCode.Z && e.isShortcutDown()) {
+                                e.consume();
+                                control.getParent().fireEvent(e);
+                            }
+                        });
+
                         control.setTextFormatter(new TextFormatter<>(new FloatStringConverter()));
                         control.setText(option.getValue().toString());
                         control.textProperty().addListener((observable, oldValue, newValue) -> {
-                            if (newValue.length() > 0 && Basic.isFloat(newValue)) {
+                            if (newValue.length() == 0)
+                                newValue = "0";
+                            if (Basic.isFloat(newValue)) {
                                 undoManager.addUndoableChange(text, control.textProperty(), oldValue, newValue);
                                 option.holdValue(Basic.isFloat(newValue));
                             }
                         });
+                        if (option.getInfo() != null)
+                            control.setTooltip(new Tooltip(option.getInfo()));
                         grid.add(control, 1, row);
                         break;
                     }
-                    case "String": {
-                        javafx.scene.control.TextField control = new TextField();
-                        control.setText(option.getValue().toString());
-                        control.textProperty().addListener((observable, oldValue, newValue) -> {
-                            if (newValue.length() > 0 && newValue.length() > 0)
-                                undoManager.addUndoableChange(text, control.textProperty(), oldValue, newValue);
-                            option.holdValue(newValue);
-                        });
+                    case "java.lang.String": {
+                        final Control control;
+                        if (option.getLegalValues() != null) {
+                            final ChoiceBox<String> choiceBox = new ChoiceBox<>();
+                            choiceBox.getItems().addAll(option.getLegalValues());
+                            choiceBox.setValue(option.getValue().toString());
+                            choiceBox.valueProperty().addListener(new ChangeListener<String>() {
+                                @Override
+                                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                                    undoManager.addUndoableChange(text, choiceBox.valueProperty(), oldValue, newValue);
+                                    option.holdValue(newValue);
+                                }
+                            });
+                            control = choiceBox;
+                        } else {
+                            final TextField textField = new TextField();
+                            textField.addEventFilter(KeyEvent.ANY, e -> {
+                                if (e.getCode() == KeyCode.Z && e.isShortcutDown()) {
+                                    e.consume();
+                                    textField.getParent().fireEvent(e);
+                                }
+                            });
+
+                            textField.setText(option.getValue().toString());
+                            textField.textProperty().addListener((observable, oldValue, newValue) -> {
+                                option.holdValue(newValue);
+                            });
+                            control = textField;
+                        }
+                        if (option.getInfo() != null)
+                            control.setTooltip(new Tooltip(option.getInfo()));
                         grid.add(control, 1, row);
                         break;
                     }

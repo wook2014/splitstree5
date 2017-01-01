@@ -34,6 +34,7 @@ import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -47,11 +48,15 @@ public class SplitsFilterAlgorithm extends Algorithm<SplitsBlock, SplitsBlock> {
     private final ArrayList<ASplit> disabledSplits = new ArrayList<>();
 
     private boolean optionModifyWeightsUsingLeastSquares = false;
-    private Filter optionSelectSplitsUsingFilter = Filter.MaximumDimension;
+    private Filter optionFilter = Filter.MaximumDimension;
 
     private float optionWeightThreshold = 0;
     private float optionConfidenceThreshold = 0;
     private int optionMaximumDimension = 4;
+
+    public List<String> listOptions() {
+        return Arrays.asList("optionFilter", "optionWeightThreshold", "optionConfidenceThreshold", "optionMaximumDimension");
+    }
 
     /**
      * constructor
@@ -59,6 +64,7 @@ public class SplitsFilterAlgorithm extends Algorithm<SplitsBlock, SplitsBlock> {
      * @param parent
      */
     public SplitsFilterAlgorithm(SplitsBlock parent) {
+        super("Splits Filter");
         enabledSplits.addAll(parent.getSplits());
         parent.getSplits().addListener(new WeakListChangeListener<>(new ListChangeListener<ASplit>() {
             @Override
@@ -95,7 +101,7 @@ public class SplitsFilterAlgorithm extends Algorithm<SplitsBlock, SplitsBlock> {
         }
         Compatibility compatibility = Compatibility.unknown;
 
-        switch (optionSelectSplitsUsingFilter) {
+        switch (optionFilter) {
             case GreedyCompatible: {
                 final int oldSize = splits.size();
                 splits = GreedyCompatible.apply(progress, splits);
@@ -198,12 +204,12 @@ public class SplitsFilterAlgorithm extends Algorithm<SplitsBlock, SplitsBlock> {
         this.optionModifyWeightsUsingLeastSquares = optionModifyWeightsUsingLeastSquares;
     }
 
-    public Filter getOptionSelectSplitsUsingFilter() {
-        return optionSelectSplitsUsingFilter;
+    public Filter getOptionFilter() {
+        return optionFilter;
     }
 
-    public void setOptionSelectSplitsUsingFilter(Filter optionSelectSplitsUsingFilter) {
-        this.optionSelectSplitsUsingFilter = optionSelectSplitsUsingFilter;
+    public void setOptionFilter(Filter optionFilter) {
+        this.optionFilter = optionFilter;
     }
 
     public float getOptionWeightThreshold() {

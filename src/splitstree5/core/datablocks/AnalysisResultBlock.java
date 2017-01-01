@@ -27,11 +27,11 @@ package splitstree5.core.datablocks;
 public class AnalysisResultBlock extends ADataBlock {
     @Override
     public int size() {
-        return getInfo().length();
+        return getShortDescription().length();
     }
 
     @Override
     public void clear() {
-        setInfo("");
+        setShortDescription("");
     }
 }

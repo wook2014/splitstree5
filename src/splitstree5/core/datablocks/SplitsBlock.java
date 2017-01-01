@@ -70,7 +70,7 @@ public class SplitsBlock extends ADataBlock {
         compatibility = Compatibility.unknown;
         fit = -1;
         threshold = 0;
-        setInfo("");
+        setShortDescription("");
     }
 
     public int getNsplits() {
@@ -85,7 +85,7 @@ public class SplitsBlock extends ADataBlock {
         return splits;
     }
 
-    public String getInfo() {
+    public String getShortDescription() {
         return "Number of splits: " + getSplits().size();
     }
 

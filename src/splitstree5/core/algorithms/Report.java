@@ -49,10 +49,10 @@ public class Report<D extends ADataBlock> extends AConnector<D, AnalysisResultBl
             @Override
             public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, D parent, AnalysisResultBlock child) throws InterruptedException {
                 try (final StringWriter w = new StringWriter()) {
-                    w.write("### " + parent.getName() + (parent.getInfo() != null ? ", " + parent.getInfo() + "\n" : "\n"));
+                    w.write("### " + parent.getName() + (parent.getShortDescription() != null ? ", " + parent.getShortDescription() + "\n" : "\n"));
                     NexusFileWriter.write(w, taxaBlock, parent);
-                    child.setInfo(w.toString());
-                    System.err.println(child.getInfo());
+                    child.setShortDescription(w.toString());
+                    System.err.println(child.getShortDescription());
                 } catch (IOException e) {
                         Basic.caught(e);
                     }

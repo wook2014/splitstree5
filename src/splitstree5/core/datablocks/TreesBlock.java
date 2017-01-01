@@ -51,7 +51,7 @@ public class TreesBlock extends ADataBlock {
         trees.clear();
         partial = false;
         rooted = false;
-        setInfo("");
+        setShortDescription("");
     }
 
     /**
@@ -67,7 +67,7 @@ public class TreesBlock extends ADataBlock {
         return trees.size();
     }
 
-    public String getInfo() {
+    public String getShortDescription() {
         return "Number of trees: " + getTrees().size();
     }
 

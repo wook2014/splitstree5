@@ -72,7 +72,7 @@ public class TaxaBlock extends ADataBlock {
         taxa.clear();
         taxon2index.clear();
         name2taxon.clear();
-        setInfo("");
+        setShortDescription("");
     }
 
     public int getNtax() {

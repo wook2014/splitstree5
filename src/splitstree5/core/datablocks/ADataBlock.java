@@ -20,13 +20,13 @@
 package splitstree5.core.datablocks;
 
 import jloda.util.Basic;
-import splitstree5.core.misc.Named;
+import splitstree5.utils.Optionable;
 
 /**
  * A data block
  * Created by huson on 12/21/16.
  */
-abstract public class ADataBlock extends Named {
+abstract public class ADataBlock extends Optionable {
 
     public ADataBlock newInstance() {
         try {

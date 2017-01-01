@@ -33,6 +33,7 @@ import splitstree5.core.misc.SplitsUtilities;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Stack;
 
 /**
@@ -40,13 +41,17 @@ import java.util.Stack;
  * Created by huson on 12/30/16.
  */
 public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> {
-
     private double optionCutOff = 0.000001; // min weight of split that we consider
     private NeighborNetSplitWeightOptimizer.LeastSquares optionLeastSquares = NeighborNetSplitWeightOptimizer.LeastSquares.ols;
     private NeighborNetSplitWeightOptimizer.Regularization optionRegularization = NeighborNetSplitWeightOptimizer.Regularization.nnls;
     private double optionLambdaFrac = 1.0;
 
-    public final static String DESCRIPTION = "Computes the Neighbor-Net network (Bryant and Moulton 2004)";
+    /**
+     * constructor
+     */
+    public NeighborNet() {
+        super("Neighbor net", "Neighbor-Net algorithm (Bryant and Moulton 2004)");
+    }
 
     /**
      * run the neighbor net algorithm
@@ -110,6 +115,10 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> {
 
     public void setOptionLambdaFrac(double optionLambdaFrac) {
         this.optionLambdaFrac = optionLambdaFrac;
+    }
+
+    public List<String> listOptions() {
+        return Arrays.asList("CutOff", "ListSquares", "Regularization", "LambdaFrac");
     }
 
     /**

@@ -41,7 +41,7 @@ public class DistancesBlock extends ADataBlock {
     public void clear() {
         distances = new double[0][0];
         variances = null;
-        setInfo("");
+        setShortDescription("");
     }
 
     public int size() {
