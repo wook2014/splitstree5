@@ -53,6 +53,10 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> {
         super("Neighbor net", "Neighbor-Net algorithm (Bryant and Moulton 2004)");
     }
 
+    public List<String> listOptions() {
+        return Arrays.asList("optionCutOff", "optionLeastSquares", "optionRegularization", "optionLambdaFrac");
+    }
+
     /**
      * run the neighbor net algorithm
      *
@@ -116,11 +120,7 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> {
     public void setOptionLambdaFrac(double optionLambdaFrac) {
         this.optionLambdaFrac = optionLambdaFrac;
     }
-
-    public List<String> listOptions() {
-        return Arrays.asList("CutOff", "ListSquares", "Regularization", "LambdaFrac");
-    }
-
+    
     /**
      * A scaled down version of NeighborNet that only returns the ordering, and does not
      * access the document or progress bar.

@@ -22,7 +22,10 @@ package splitstree5.gui.connectorview;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import splitstree5.core.Document;
+import splitstree5.core.algorithms.distances2splits.NeighborNet;
+import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
+import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.filters.SplitsFilter;
@@ -36,13 +39,21 @@ public class ConnectorViewTest extends Application {
     public void start(Stage primaryStage) throws Exception {
         Document document = new Document();
         TaxaBlock taxaBlock = new TaxaBlock();
+        DistancesBlock distancesBlock = new DistancesBlock();
         SplitsBlock splitsBlock1 = new SplitsBlock();
         SplitsBlock splitsBlock2 = new SplitsBlock();
 
-        SplitsFilter splitsFilter = new SplitsFilter(taxaBlock, new ADataNode<>(splitsBlock1), new ADataNode<>(splitsBlock2));
+        {
+            final AConnector<DistancesBlock, SplitsBlock> nnet = new AConnector<DistancesBlock, SplitsBlock>(taxaBlock, new ADataNode<>(distancesBlock), new ADataNode<>(splitsBlock1),
+                    new NeighborNet());
+            ConnectorView<DistancesBlock, SplitsBlock> connectorView = new ConnectorView<>(document, nnet);
+            connectorView.show();
+        }
 
-        ConnectorView<SplitsBlock, SplitsBlock> connectorView = new ConnectorView<>(document, splitsFilter);
-
-        connectorView.show();
+        {
+            final SplitsFilter splitsFilter = new SplitsFilter(taxaBlock, new ADataNode<>(splitsBlock1), new ADataNode<>(splitsBlock2));
+            ConnectorView<SplitsBlock, SplitsBlock> connectorView = new ConnectorView<>(document, splitsFilter);
+            connectorView.show();
+        }
     }
 }
