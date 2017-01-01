@@ -120,7 +120,7 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> {
     public void setOptionLambdaFrac(double optionLambdaFrac) {
         this.optionLambdaFrac = optionLambdaFrac;
     }
-    
+
     /**
      * A scaled down version of NeighborNet that only returns the ordering, and does not
      * access the document or progress bar.

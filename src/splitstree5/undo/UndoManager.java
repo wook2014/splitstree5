@@ -140,15 +140,6 @@ public class UndoManager {
     }
 
     /**
-     * undo current change and then forget it (and any changes that came after it)
-     */
-    public void undoAndForget() {
-        if (undo()) {
-            currentNode.next = null;
-        }
-    }
-
-    /**
      * is a undo or redo currently being performed?
      *
      * @return true, if currently performing undo or redo
@@ -171,8 +162,8 @@ public class UndoManager {
      *
      * @return property
      */
-    public BooleanProperty canUndoProperty() {
-        return canUndo;
+    public ReadOnlyBooleanProperty canUndoProperty() {
+        return ReadOnlyBooleanProperty.readOnlyBooleanProperty(canUndo);
     }
 
     /**
@@ -189,8 +180,8 @@ public class UndoManager {
      *
      * @return property
      */
-    public BooleanProperty canRedoProperty() {
-        return canRedo;
+    public ReadOnlyBooleanProperty canRedoProperty() {
+        return ReadOnlyBooleanProperty.readOnlyBooleanProperty(canRedo);
     }
 
     /**
