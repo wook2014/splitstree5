@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.gui.taxaview;
+package splitstree5.gui.customized.taxaview;
 
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -27,6 +27,7 @@ import javafx.util.StringConverter;
 import splitstree5.core.misc.Taxon;
 
 /**
+ * taxon list cell
  * Created by huson on 12/27/16.
  */
 public class TaxonListCell {

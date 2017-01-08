@@ -33,7 +33,7 @@ public class OptionTest {
     public void testGetAllOptions() throws Exception {
         SplitsFilterAlgorithm splitsFilterAlgorithm = new SplitsFilterAlgorithm(new SplitsBlock());
 
-        for (Option option : Option.getAllOptions(splitsFilterAlgorithm)) {
+        for (Option option : OptionsAccessor.getAllOptions(splitsFilterAlgorithm)) {
             System.err.println(option);
             System.err.println("Before: " + option.getValue());
             switch (option.getType().getTypeName()) {

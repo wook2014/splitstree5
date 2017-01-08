@@ -25,13 +25,13 @@ import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.utils.Optionable;
+import splitstree5.utils.OptionableBase;
 
 /**
  * A method
  * Created by huson on 12/21/16.
  */
-abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> extends Optionable {
+abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> extends OptionableBase {
     private final BooleanProperty disabled = new SimpleBooleanProperty(true);
 
     /**

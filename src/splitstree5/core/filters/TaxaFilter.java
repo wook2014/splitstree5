@@ -20,22 +20,27 @@
 package splitstree5.core.filters;
 
 import javafx.collections.ListChangeListener;
+import jloda.util.Basic;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
+import splitstree5.gui.connectorview.CustomizedControl;
+import splitstree5.gui.customized.taxaview.TaxaFilterPane;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * taxon filter
  * Created by huson on 12/12/16.
  */
 public class TaxaFilter extends AConnector<TaxaBlock, TaxaBlock> {
-    private final ArrayList<Taxon> enabled = new ArrayList<>(); // these should be placed inside the algorithm?
-    private final ArrayList<Taxon> disabled = new ArrayList<>();
+    private final ArrayList<Taxon> enabledTaxa = new ArrayList<>(); // these should be placed inside the algorithm?
+    private final ArrayList<Taxon> disabledTaxa = new ArrayList<>();
 
     /**
      * /**
@@ -47,15 +52,15 @@ public class TaxaFilter extends AConnector<TaxaBlock, TaxaBlock> {
     public TaxaFilter(ADataNode<TaxaBlock> parent, ADataNode<TaxaBlock> child) {
         super(parent.getDataBlock(), parent, child);
 
-        enabled.addAll(parent.getDataBlock().getTaxa());
+        enabledTaxa.addAll(parent.getDataBlock().getTaxa());
         parent.getDataBlock().getTaxa().addListener(new ListChangeListener<Taxon>() {
             @Override
             public void onChanged(Change<? extends Taxon> c) {
                 while (c.next()) {
                     if (c.getRemovedSize() > 0)
-                        enabled.removeAll(c.getRemoved());
+                        enabledTaxa.removeAll(c.getRemoved());
                     if (c.getAddedSize() > 0)
-                        enabled.addAll(c.getAddedSubList());
+                        enabledTaxa.addAll(c.getAddedSubList());
                 }
             }
         });
@@ -65,28 +70,39 @@ public class TaxaFilter extends AConnector<TaxaBlock, TaxaBlock> {
                 modifiedTaxa.getTaxa().clear();
 
                 final ArrayList<Taxon> list = new ArrayList<>();
-                if (enabled.size() == 0)
+                if (enabledTaxa.size() == 0)
                     list.addAll(originalTaxa.getTaxa());
                 else
-                    list.addAll(enabled);
-                list.removeAll(disabled);
+                    list.addAll(enabledTaxa);
+                list.removeAll(disabledTaxa);
 
                 for (Taxon taxon : list) {
-                    if (!TaxaFilter.this.getDisabled().contains(taxon) && originalTaxa.getTaxa().contains(taxon)) {
+                    if (!TaxaFilter.this.getDisabledTaxa().contains(taxon) && originalTaxa.getTaxa().contains(taxon)) {
                         modifiedTaxa.getTaxa().add(taxon);
                     }
                 }
             }
+
+            @Override
+            public CustomizedControl getControl() {
+                try {
+                    return new TaxaFilterPane(TaxaFilter.this);
+                } catch (IOException e) {
+                    Basic.caught(e);
+                    return null;
+                }
+            }
         });
     }
+
 
     /**
      * get the set of enabled data.
      *
      * @return list of explicitly enabled taxa
      */
-    public ArrayList<Taxon> getEnabled() {
-        return enabled;
+    public List<Taxon> getEnabledTaxa() {
+        return enabledTaxa;
     }
 
     /**
@@ -94,7 +110,7 @@ public class TaxaFilter extends AConnector<TaxaBlock, TaxaBlock> {
      *
      * @return disabled
      */
-    public ArrayList<Taxon> getDisabled() {
-        return disabled;
+    public List<Taxon> getDisabledTaxa() {
+        return disabledTaxa;
     }
 }

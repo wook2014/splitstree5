@@ -45,7 +45,7 @@ public class Report<D extends ADataBlock> extends AConnector<D, AnalysisResultBl
     public Report(TaxaBlock taxaBlock, ADataNode<D> parent) {
         super(taxaBlock, parent, new ADataNode<>(new AnalysisResultBlock()));
 
-        setAlgorithm(new Algorithm<D, AnalysisResultBlock>() {
+        setAlgorithm(new Algorithm<D, AnalysisResultBlock>("Report") {
             @Override
             public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, D parent, AnalysisResultBlock child) throws InterruptedException {
                 try (final StringWriter w = new StringWriter()) {

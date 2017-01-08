@@ -26,7 +26,7 @@ import splitstree5.core.algorithms.distances2trees.NeighborJoining;
 import splitstree5.core.dag.UpdateState;
 import splitstree5.core.datablocks.*;
 import splitstree5.core.misc.Taxon;
-import splitstree5.gui.taxaview.TaxaFilterView;
+import splitstree5.gui.connectorview.ConnectorView;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -83,8 +83,8 @@ public class NexusFileParser {
 
                 // todo: just for debugging, open taxa filter view here:
                 {
-                    final TaxaFilterView taxaFilterView = new TaxaFilterView(document, document.getDag().getTaxaFilter());
-                    taxaFilterView.show();
+                    ConnectorView<TaxaBlock, TaxaBlock> connectorView = new ConnectorView<>(document, document.getDag().getTaxaFilter());
+                    connectorView.show();
                 }
 
                 // todo: for debugging, add fake NJ and trees node:

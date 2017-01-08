@@ -17,35 +17,45 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.datablocks;
+package splitstree5.gui.connectorview;
 
-import jloda.util.Basic;
-import splitstree5.utils.OptionableBase;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.layout.Pane;
+import splitstree5.undo.UndoManager;
 
 /**
- * A data block
- * Created by huson on 12/21/16.
+ * A customized control for an algorithm
+ * Created by huson on 1/8/17.
  */
-abstract public class ADataBlock extends OptionableBase {
+public class CustomizedControl extends Pane {
+    /**
+     * sets the undo manager
+     *
+     * @param undoManager
+     */
+    public void setUndoManager(UndoManager undoManager) {
+    }
 
-    public ADataBlock newInstance() {
-        try {
-            return getClass().newInstance();
-        } catch (Exception e) {
-            Basic.caught(e);
-            return null;
-        }
+    public BooleanProperty applicableProperty() {
+        return new SimpleBooleanProperty();
     }
 
     /**
-     * gets the size of this data block
-     *
-     * @return size
+     * setup
      */
-    abstract public int size();
+    public void setup() {
+    }
 
     /**
-     * clear
+     * syncs the model to the view
      */
-    abstract public void clear();
+    public void syncModel2Controller() {
+    }
+
+    /**
+     * syncs the view to the model
+     */
+    public void syncController2Model() {
+    }
 }

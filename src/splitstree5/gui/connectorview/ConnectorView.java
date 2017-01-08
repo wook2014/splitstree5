@@ -42,6 +42,7 @@ import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.undo.UndoManager;
 import splitstree5.utils.ExtendedFXMLLoader;
 import splitstree5.utils.Option;
+import splitstree5.utils.OptionsAccessor;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,6 +56,7 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
     private final Parent root;
     private final ConnectorViewController controller;
     private final UndoManager undoManager;
+    private final CustomizedControl customizedControl;
     private Stage stage;
 
     private final ArrayList<Option> options = new ArrayList<>();
@@ -67,6 +69,8 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
     public ConnectorView(Document document, AConnector<P, C> connector) throws IOException {
         this.document = document;
         this.connector = connector;
+        this.customizedControl = connector.getAlgorithm().getControl();
+
         final ExtendedFXMLLoader<ConnectorViewController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         root = extendedFXMLLoader.getRoot();
         controller = extendedFXMLLoader.getController();
@@ -81,6 +85,13 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
             }
             undoManager.clear();
         });
+
+        if (customizedControl != null) {
+            customizedControl.setUndoManager(undoManager);
+            customizedControl.prefHeightProperty().bind(controller.getCenterPane().heightProperty());
+            customizedControl.prefWidthProperty().bind(controller.getCenterPane().widthProperty());
+            customizedControl.setup();
+        }
     }
 
     /**
@@ -110,7 +121,11 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
         controller.getRedoMenuItem().textProperty().bind(undoManager.redoNameProperty());
 
         controller.getApplyButton().setOnAction((e) -> syncController2Model());
-        controller.getApplyButton().disableProperty().bind(document.updatingProperty());
+
+        if (customizedControl == null)
+            controller.getApplyButton().disableProperty().bind(document.updatingProperty());
+        else
+            controller.getApplyButton().disableProperty().bind(customizedControl.applicableProperty().not().or(document.updatingProperty()));
 
         controller.getCancelButton().setOnAction((e) -> {
             ConnectorView.this.stage.close();
@@ -125,6 +140,14 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
 
     private void setupCenterPane() {
         final Pane centerPane = controller.getCenterPane();
+
+        // check whether connector has own pane and if so, use it
+        {
+            if (customizedControl != null) {
+                centerPane.getChildren().setAll(customizedControl);
+                return;
+            }
+        }
         final GridPane grid = new GridPane();
         grid.setPadding(new Insets(10, 5, 10, 5));
         grid.setHgap(20);
@@ -262,6 +285,8 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
         }
     }
 
+    private static int windowCount = 0;
+
     /**
      * show this view
      */
@@ -269,6 +294,11 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
         stage = new Stage();
         stage.setTitle("Algorithm - SplitsTree5");
         stage.setScene(new Scene(root, 450, 450));
+
+        stage.setX(100 + windowCount * 40);
+        stage.setY(200 + windowCount * 40);
+        windowCount++;
+
         stage.show();
         syncModel2Controller();
     }
@@ -277,14 +307,18 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
      * sync model to controller
      */
     private void syncModel2Controller() {
+        if (customizedControl != null)
+            customizedControl.syncModel2Controller();
         options.clear();
-        options.addAll(Option.getAllOptions(connector.getAlgorithm()));
+        options.addAll(OptionsAccessor.getAllOptions(connector.getAlgorithm()));
     }
 
     /**
      * sync controller to model
      */
     private void syncController2Model() {
+        if (customizedControl != null)
+            customizedControl.syncController2Model();
         for (Option option : options) {
             try {
                 option.setValue();
