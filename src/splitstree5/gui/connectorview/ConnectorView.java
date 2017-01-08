@@ -134,7 +134,7 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
     public void show() {
         stage = new Stage();
         stage.setTitle("Algorithm - SplitsTree5");
-        stage.setScene(new Scene(root, 450, 450));
+        stage.setScene(new Scene(root, 500, 450));
 
         stage.setX(100 + windowCount * 40);
         stage.setY(200 + windowCount * 40);

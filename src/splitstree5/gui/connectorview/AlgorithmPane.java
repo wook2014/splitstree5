@@ -28,7 +28,7 @@ import splitstree5.undo.UndoManager;
  * An algorithm controller pane
  * Created by huson on 1/8/17.
  */
-public class AlgorithmPane extends Pane {
+public abstract class AlgorithmPane extends Pane {
     /**
      * sets the undo manager
      *
@@ -44,18 +44,15 @@ public class AlgorithmPane extends Pane {
     /**
      * setup
      */
-    public void setup() {
-    }
+    abstract public void setup();
 
     /**
      * syncs the model to the view
      */
-    public void syncModel2Controller() {
-    }
+    abstract public void syncModel2Controller();
 
     /**
      * syncs the view to the model
      */
-    public void syncController2Model() {
-    }
+    abstract public void syncController2Model();
 }
