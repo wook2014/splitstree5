@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.gui.customized.taxaview;
+package splitstree5.gui.taxaview;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;

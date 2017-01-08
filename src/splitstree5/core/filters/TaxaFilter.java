@@ -27,8 +27,8 @@ import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
-import splitstree5.gui.connectorview.CustomizedControl;
-import splitstree5.gui.customized.taxaview.TaxaFilterPane;
+import splitstree5.gui.connectorview.AlgorithmPane;
+import splitstree5.gui.taxaview.TaxaFilterPane;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -84,7 +84,7 @@ public class TaxaFilter extends AConnector<TaxaBlock, TaxaBlock> {
             }
 
             @Override
-            public CustomizedControl getControl() {
+            public AlgorithmPane getControl() {
                 try {
                     return new TaxaFilterPane(TaxaFilter.this);
                 } catch (IOException e) {

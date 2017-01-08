@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.gui.customized.taxaview;
+package splitstree5.gui.taxaview;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -27,7 +27,7 @@ import javafx.scene.control.ListView;
 import splitstree5.core.dag.UpdateState;
 import splitstree5.core.filters.TaxaFilter;
 import splitstree5.core.misc.Taxon;
-import splitstree5.gui.connectorview.CustomizedControl;
+import splitstree5.gui.connectorview.AlgorithmPane;
 import splitstree5.undo.UndoManager;
 import splitstree5.undo.UndoableChangeListViews2;
 import splitstree5.utils.DragAndDropSupportListView2;
@@ -37,10 +37,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * dialog for filtering taxa
+ * taxon filter pane
  * Created by huson on 12/23/16.
  */
-public class TaxaFilterPane extends CustomizedControl {
+public class TaxaFilterPane extends AlgorithmPane {
     private final TaxaFilter taxaFilter;
     private final TaxaFilterPaneController controller;
     private UndoManager undoManager = new UndoManager();
@@ -58,8 +58,8 @@ public class TaxaFilterPane extends CustomizedControl {
      */
     public TaxaFilterPane(TaxaFilter taxaFilter) throws IOException {
         this.taxaFilter = taxaFilter;
-        final ExtendedFXMLLoader<TaxaFilterPaneController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
-        controller = extendedFXMLLoader.getController();
+        final ExtendedFXMLLoader extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
+        controller = (TaxaFilterPaneController) extendedFXMLLoader.getController();
         this.getChildren().add(extendedFXMLLoader.getRoot());
         undoManager = new UndoManager();
     }

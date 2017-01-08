@@ -19,7 +19,7 @@
 
 package splitstree5.utils;
 
-import splitstree5.gui.connectorview.CustomizedControl;
+import splitstree5.gui.connectorview.AlgorithmPane;
 
 import java.util.List;
 
@@ -80,5 +80,5 @@ public interface IOptionable {
      *
      * @return pane or null
      */
-    CustomizedControl getControl();
+    AlgorithmPane getControl();
 }

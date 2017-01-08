@@ -25,10 +25,10 @@ import javafx.scene.layout.Pane;
 import splitstree5.undo.UndoManager;
 
 /**
- * A customized control for an algorithm
+ * An algorithm controller pane
  * Created by huson on 1/8/17.
  */
-public class CustomizedControl extends Pane {
+public class AlgorithmPane extends Pane {
     /**
      * sets the undo manager
      *
