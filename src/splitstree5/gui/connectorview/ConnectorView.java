@@ -75,6 +75,7 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
             undoManager.clear();
         });
 
+        algorithmPane.setDocument(document);
         algorithmPane.setUndoManager(undoManager);
         algorithmPane.prefHeightProperty().bind(controller.getCenterPane().heightProperty());
         algorithmPane.prefWidthProperty().bind(controller.getCenterPane().widthProperty());

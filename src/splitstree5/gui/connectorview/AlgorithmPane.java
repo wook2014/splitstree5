@@ -22,6 +22,7 @@ package splitstree5.gui.connectorview;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.layout.Pane;
+import splitstree5.core.Document;
 import splitstree5.undo.UndoManager;
 
 /**
@@ -29,6 +30,14 @@ import splitstree5.undo.UndoManager;
  * Created by huson on 1/8/17.
  */
 public abstract class AlgorithmPane extends Pane {
+    /**
+     * sets the document
+     *
+     * @param document
+     */
+    public void setDocument(Document document) {
+    }
+
     /**
      * sets the undo manager
      *

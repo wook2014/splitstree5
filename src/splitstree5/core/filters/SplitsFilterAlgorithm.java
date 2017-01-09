@@ -20,7 +20,6 @@
 package splitstree5.core.filters;
 
 import javafx.collections.ListChangeListener;
-import javafx.collections.WeakListChangeListener;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
@@ -66,17 +65,14 @@ public class SplitsFilterAlgorithm extends Algorithm<SplitsBlock, SplitsBlock> {
     public SplitsFilterAlgorithm(SplitsBlock parent) {
         super("Splits Filter");
         enabledSplits.addAll(parent.getSplits());
-        parent.getSplits().addListener(new WeakListChangeListener<>(new ListChangeListener<ASplit>() {
-            @Override
-            public void onChanged(Change<? extends ASplit> c) {
-                while (c.next()) {
-                    if (c.getRemovedSize() > 0)
-                        enabledSplits.removeAll(c.getRemoved());
-                    if (c.getAddedSize() > 0)
-                        enabledSplits.addAll(c.getAddedSubList());
-                }
+        parent.getSplits().addListener((ListChangeListener<ASplit>) c -> {
+            while (c.next()) {
+                if (c.getRemovedSize() > 0)
+                    enabledSplits.removeAll(c.getRemoved());
+                if (c.getAddedSize() > 0)
+                    enabledSplits.addAll(c.getAddedSubList());
             }
-        }));
+        });
     }
 
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, SplitsBlock original, SplitsBlock modified) throws CanceledException {

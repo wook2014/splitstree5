@@ -20,7 +20,6 @@
 package splitstree5.core.filters;
 
 import javafx.collections.ListChangeListener;
-import javafx.collections.WeakListChangeListener;
 import jloda.phylo.PhyloTree;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
@@ -45,17 +44,14 @@ public class TreesFilterAlgorithm extends Algorithm<TreesBlock, TreesBlock> {
 
     public TreesFilterAlgorithm(TreesBlock parent) {
         enabledTrees.addAll(parent.getTrees());
-        parent.getTrees().addListener(new WeakListChangeListener<>(new ListChangeListener<PhyloTree>() {
-            @Override
-            public void onChanged(Change<? extends PhyloTree> c) {
-                while (c.next()) {
-                    if (c.getRemovedSize() > 0)
-                        enabledTrees.removeAll(c.getRemoved());
-                    if (c.getAddedSize() > 0)
-                        disabledTrees.addAll(c.getAddedSubList());
-                }
+        parent.getTrees().addListener((ListChangeListener<PhyloTree>) c -> {
+            while (c.next()) {
+                if (c.getRemovedSize() > 0)
+                    enabledTrees.removeAll(c.getRemoved());
+                if (c.getAddedSize() > 0)
+                    disabledTrees.addAll(c.getAddedSubList());
             }
-        }));
+        });
     }
 
     @Override

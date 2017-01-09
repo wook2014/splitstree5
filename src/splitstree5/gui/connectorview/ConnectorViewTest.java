@@ -46,7 +46,11 @@ public class ConnectorViewTest extends Application {
         final SplitsBlock splitsBlock1 = new SplitsBlock();
         final SplitsBlock splitsBlock2 = new SplitsBlock();
 
+        document.getDag().setupTopAndWorkingNodes(taxaBlock, distancesBlock);
+
         taxaBlock.getTaxa().addAll(new Taxon("First"), new Taxon("Second"), new Taxon("Third"), new Taxon("Fourth"), new Taxon("Fifth"), new Taxon("Sixth"));
+
+        document.setupTaxonSelectionModel();
 
         {
             final AConnector<DistancesBlock, SplitsBlock> nnet = new AConnector<>(taxaBlock, new ADataNode<>(distancesBlock), new ADataNode<>(splitsBlock1), new NeighborNet());
@@ -61,13 +65,11 @@ public class ConnectorViewTest extends Application {
         }
 
         {
-            TaxaBlock taxablock2 = new TaxaBlock();
-            ADataNode<TaxaBlock> taxaNode2 = new ADataNode<>(taxablock2);
-            TaxaFilter taxaFilter = new TaxaFilter(new ADataNode<>(taxaBlock), taxaNode2);
+            TaxaFilter taxaFilter = new TaxaFilter(document.getDag().getTopTaxaNode(), document.getDag().getWorkingTaxaNode());
             ConnectorView<TaxaBlock, TaxaBlock> connectorView = new ConnectorView<>(document, taxaFilter);
             connectorView.show();
 
-            new Report<>(taxablock2, taxaNode2);
+            new Report<>(document.getDag().getWorkingTaxaNode().getDataBlock(), document.getDag().getWorkingTaxaNode());
         }
     }
 }

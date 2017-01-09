@@ -20,11 +20,8 @@
 package splitstree5.core.dag;
 
 import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.beans.property.*;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.beans.value.WeakChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import jloda.util.Basic;
@@ -50,12 +47,12 @@ public class DAG {
     private final ObservableSet<AConnector> connectorNodes = FXCollections.observableSet();
     private final ObservableSet<ADataNode> dataNodes = FXCollections.observableSet();
 
-    private ADataNode<TaxaBlock> topTaxaNode;
+    private final ObjectProperty<ADataNode<TaxaBlock>> topTaxaNode = new SimpleObjectProperty<>();
     private TaxaFilter taxaFilter;
-    private ADataNode<TaxaBlock> workingTaxaNode;
-    private ADataNode topDataNode;
+    private final ObjectProperty<ADataNode<TaxaBlock>> workingTaxaNode = new SimpleObjectProperty<>();
+    private final ObjectProperty<ADataNode> topDataNode = new SimpleObjectProperty<>();
     private ATopFilter<? extends ADataBlock> topFilter;
-    private ADataNode workingDataNode;
+    private final ObjectProperty<ADataNode> workingDataNode = new SimpleObjectProperty<>();
 
     private final BooleanProperty updating = new SimpleBooleanProperty();
     private final ObservableSet<ANode> invalidNodes = FXCollections.observableSet();
@@ -64,29 +61,14 @@ public class DAG {
      * constructor
      */
     public DAG() {
-        invalidNodes.addListener(new InvalidationListener() {
-            public void invalidated(javafx.beans.Observable observable) {
-                updating.set(invalidNodes.size() > 0);
-                System.err.println("DAG updating: " + updating.get());
-            }
+        invalidNodes.addListener((InvalidationListener) observable -> {
+            updating.set(invalidNodes.size() > 0);
+            System.err.println("DAG updating: " + updating.get());
         });
-        dataNodes.addListener(new InvalidationListener() {
-            public void invalidated(Observable observable) {
-                size.set(connectorNodes.size() + dataNodes.size());
-            }
-        });
-        connectorNodes.addListener(new InvalidationListener() {
-            public void invalidated(Observable observable) {
-                size.set(connectorNodes.size() + dataNodes.size());
-            }
-        });
+        dataNodes.addListener((InvalidationListener) observable -> size.set(connectorNodes.size() + dataNodes.size()));
+        connectorNodes.addListener((InvalidationListener) observable -> size.set(connectorNodes.size() + dataNodes.size()));
 
-        updatingProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                System.err.println("UPDATING: " + newValue);
-            }
-        });
+        updatingProperty().addListener((observable, oldValue, newValue) -> System.err.println("UPDATING: " + newValue));
     }
 
     /**
@@ -96,19 +78,19 @@ public class DAG {
      * @param topDataBlock
      */
     public void setupTopAndWorkingNodes(TaxaBlock topTaxaBlock, ADataBlock topDataBlock) {
-        topTaxaNode = createDataNode(topTaxaBlock);
-        workingTaxaNode = createDataNode((TaxaBlock) topTaxaBlock.newInstance());
-        taxaFilter = new TaxaFilter(topTaxaNode, workingTaxaNode);
+        topTaxaNode.set(createDataNode(topTaxaBlock));
+        workingTaxaNode.set(createDataNode((TaxaBlock) topTaxaBlock.newInstance()));
+        taxaFilter = new TaxaFilter(getTopTaxaNode(), getWorkingDataNode());
         register(taxaFilter);
-        topDataNode = createDataNode(topDataBlock);
-        workingDataNode = createDataNode(topDataBlock.newInstance());
+        setTopDataNode(createDataNode(topDataBlock));
+        setWorkingDataNode(createDataNode(topDataBlock.newInstance()));
 
         if (topDataBlock instanceof DistancesBlock) {
-            topFilter = new DistancesTopFilter(topTaxaNode, workingTaxaNode, topDataNode, workingDataNode);
+            topFilter = new DistancesTopFilter(getTopTaxaNode(), getWorkingTaxaNode(), getTopDataNode(), getWorkingDataNode());
         } else if (topDataBlock instanceof SplitsBlock) {
-            topFilter = new SplitsTopFilter(topTaxaNode, workingTaxaNode, topDataNode, workingDataNode);
+            topFilter = new SplitsTopFilter(getTopTaxaNode(), getWorkingTaxaNode(), getTopDataNode(), getWorkingDataNode());
         } else if (topDataBlock instanceof TreesBlock) {
-            topFilter = new TreesTopFilter(topTaxaNode, workingTaxaNode, topDataNode, workingDataNode);
+            topFilter = new TreesTopFilter(getTopTaxaNode(), getWorkingTaxaNode(), getTopDataNode(), getWorkingDataNode());
         } else
             throw new RuntimeException("No top filter for block of type: " + Basic.getShortName(topDataBlock.getClass()));
         register(topFilter);
@@ -136,7 +118,6 @@ public class DAG {
         return dataNode;
     }
 
-
     /**
      * creates a new connector node
      *
@@ -148,7 +129,7 @@ public class DAG {
      * @return connector node
      */
     public <P extends ADataBlock, C extends ADataBlock> AConnector createConnector(ADataNode<P> parent, ADataNode<C> child, Algorithm<P, C> algorithm) {
-        return addConnector(new AConnector<>(workingTaxaNode.getDataBlock(), parent, child, algorithm));
+        return addConnector(new AConnector<>(getWorkingTaxaNode().getDataBlock(), parent, child, algorithm));
     }
 
     /**
@@ -163,28 +144,57 @@ public class DAG {
     }
 
     public ADataNode<TaxaBlock> getTopTaxaNode() {
+        return topTaxaNode.get();
+    }
+
+    public ObjectProperty<ADataNode<TaxaBlock>> topTaxaNodeProperty() {
         return topTaxaNode;
+    }
+
+    public void setTopTaxaNode(ADataNode<TaxaBlock> topTaxaNode) {
+        this.topTaxaNode.set(topTaxaNode);
+    }
+
+    public ADataNode<TaxaBlock> getWorkingTaxaNode() {
+        return workingTaxaNode.get();
+    }
+
+    public ObjectProperty<ADataNode<TaxaBlock>> workingTaxaNodeProperty() {
+        return workingTaxaNode;
+    }
+
+    public void setWorkingTaxaNode(ADataNode<TaxaBlock> workingTaxaNode) {
+        this.workingTaxaNode.set(workingTaxaNode);
+    }
+
+    public ADataNode getTopDataNode() {
+        return topDataNode.get();
+    }
+
+    public ObjectProperty<ADataNode> topDataNodeProperty() {
+        return topDataNode;
+    }
+
+    public void setTopDataNode(ADataNode topDataNode) {
+        this.topDataNode.set(topDataNode);
+    }
+
+    public ADataNode getWorkingDataNode() {
+        return workingDataNode.get();
+    }
+
+    public ObjectProperty<ADataNode> workingDataNodeProperty() {
+        return workingDataNode;
+    }
+
+    public void setWorkingDataNode(ADataNode workingDataNode) {
+        this.workingDataNode.set(workingDataNode);
     }
 
     public TaxaFilter getTaxaFilter() {
         return taxaFilter;
     }
 
-    public ADataNode<TaxaBlock> getWorkingTaxaNode() {
-        return workingTaxaNode;
-    }
-
-    public ADataNode getTopDataNode() {
-        return topDataNode;
-    }
-
-    public ATopFilter<? extends ADataBlock> getTopFilter() {
-        return topFilter;
-    }
-
-    public ADataNode getWorkingDataNode() {
-        return workingDataNode;
-    }
 
     /**
      * is the graph currently being updated?
@@ -224,8 +234,8 @@ public class DAG {
      * clear the whole DAG
      */
     public void clear() {
-        topTaxaNode = null;
-        topDataNode = null;
+        setTopTaxaNode(null);
+        setTopDataNode(null);
         final ArrayList<ANode> toRemove = new ArrayList<>(dataNodes);
         toRemove.addAll(connectorNodes);
         for (ANode node : toRemove)
@@ -243,7 +253,7 @@ public class DAG {
             dataNodes.add((ADataNode) node);
         else
             connectorNodes.add((AConnector) node);
-        node.stateProperty().addListener(new WeakChangeListener<>((observable, oldValue, newValue) -> {
+        node.stateProperty().addListener((ObservableValue<? extends UpdateState> observable, UpdateState oldValue, UpdateState newValue) -> {
             if (newValue != UpdateState.VALID && newValue != UpdateState.FAILED) {
                 if (!invalidNodes.contains(node))
                     invalidNodes.add(node);
@@ -251,7 +261,7 @@ public class DAG {
                 if (invalidNodes.contains(node))
                     invalidNodes.remove(node);
             }
-        }));
+        });
     }
 
     public int getNumberOfDataNodes() {

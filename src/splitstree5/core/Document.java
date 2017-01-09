@@ -22,7 +22,13 @@ package splitstree5.core;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.ListChangeListener;
+import jloda.util.Basic;
 import splitstree5.core.dag.DAG;
+import splitstree5.core.misc.Taxon;
+import splitstree5.utils.ASelectionModel;
+
+import java.util.List;
 
 /**
  * a document
@@ -31,6 +37,7 @@ import splitstree5.core.dag.DAG;
 public class Document {
     private final DAG dag;
     private final StringProperty fileName = new SimpleStringProperty();
+    private final ASelectionModel<Taxon> taxaSelectionModel = new ASelectionModel<>();
 
     /**
      * constructor
@@ -38,6 +45,25 @@ public class Document {
     public Document() {
         dag = new DAG();
     }
+
+    /**
+     * setup the taxon selection model (after top and working taxa nodes have been set)
+     */
+    public void setupTaxonSelectionModel() {
+        if (dag.getTopTaxaNode() != null) {
+            dag.getTopTaxaNode().stateProperty().addListener((observable, oldValue, newValue) -> {
+                final List<Taxon> taxa = dag.getTopTaxaNode().getDataBlock().getTaxa();
+                taxaSelectionModel.setItems(taxa.toArray(new Taxon[taxa.size()]));
+            });
+            final List<Taxon> taxa = dag.getTopTaxaNode().getDataBlock().getTaxa();
+            taxaSelectionModel.setItems(taxa.toArray(new Taxon[taxa.size()]));
+        }
+
+        // todo: for debugging:
+        taxaSelectionModel.getSelectedItems().addListener((ListChangeListener<Taxon>) c -> System.err.println("Taxa selection changed: " +
+                Basic.toString(taxaSelectionModel.getSelectedItems(), ",")));
+    }
+
 
     public DAG getDag() {
         return dag;
@@ -59,4 +85,7 @@ public class Document {
         return dag.updatingProperty();
     }
 
+    public ASelectionModel<Taxon> getTaxaSelectionModel() {
+        return taxaSelectionModel;
+    }
 }

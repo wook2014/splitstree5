@@ -24,6 +24,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.ListView;
+import splitstree5.core.Document;
 import splitstree5.core.dag.UpdateState;
 import splitstree5.core.filters.TaxaFilter;
 import splitstree5.core.misc.Taxon;
@@ -43,8 +44,8 @@ import java.util.ArrayList;
 public class TaxaFilterPane extends AlgorithmPane {
     private final TaxaFilter taxaFilter;
     private final TaxaFilterPaneController controller;
+    private Document document = null;
     private UndoManager undoManager = new UndoManager();
-
 
     private ArrayList<Taxon> prevActiveTaxa = new ArrayList<>(); // used to facilitate undo/redo, do not modify
     private ArrayList<Taxon> prevInactiveTaxa = new ArrayList<>(); // used to facilitate undo/redo, do not modify
@@ -69,11 +70,19 @@ public class TaxaFilterPane extends AlgorithmPane {
         this.undoManager = undoManager;
     }
 
+    @Override
+    public void setDocument(Document document) {
+        this.document = document;
+    }
+
+    private boolean inUpdateSelection = false;
+
     /**
      * setup controller
      */
     public void setup() {
-        controller.getActiveList().getItems().addListener((ListChangeListener<Taxon>) c -> {
+        System.err.println("setup");
+        controller.getActiveList().getItems().addListener((ListChangeListener.Change<? extends Taxon> c) -> {
             if (!undoManager.isPerformingUndoOrRedo()) { // for performance reasons, check this here. Is also checked in addUndoableChange, but why make a change object if we don't need it...
                 final UndoableChangeListViews2<Taxon> change = new UndoableChangeListViews2<>("Change Active Taxa", controller.getActiveList(), prevActiveTaxa, controller.getInactiveList(), prevInactiveTaxa);
                 final boolean isInitialLoad = (prevActiveTaxa.isEmpty() && prevInactiveTaxa.isEmpty()); // don't want user to undo original load of taxa
@@ -88,8 +97,36 @@ public class TaxaFilterPane extends AlgorithmPane {
 
             controller.getActiveList().prefWidthProperty().bind(this.prefWidthProperty().subtract(180).divide(2));
             controller.getInactiveList().prefWidthProperty().bind(this.prefWidthProperty().subtract(180).divide(2));
-
             DragAndDropSupportListView2.setup(controller.getActiveList(), controller.getInactiveList(), undoManager, "Change Active Taxa");
+            updateSelection();
+        });
+
+        controller.getInactiveList().getItems().addListener((ListChangeListener.Change<? extends Taxon> c) -> updateSelection());
+
+        controller.getActiveList().getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends Taxon> c) -> updateSelection());
+
+        controller.getInactiveList().getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends Taxon> c) -> updateSelection());
+
+        document.getTaxaSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends Taxon> c) -> {
+            if (!inUpdateSelection) {
+                inUpdateSelection = true;
+                try {
+                    controller.getActiveList().getSelectionModel().clearSelection();
+                    for (Taxon taxon : controller.getActiveList().getItems()) {
+                        if (document.getTaxaSelectionModel().getSelectedItems().contains(taxon)) {
+                            controller.getActiveList().getSelectionModel().select(taxon);
+                        }
+                    }
+                    controller.getInactiveList().getSelectionModel().clearSelection();
+                    for (Taxon taxon : controller.getInactiveList().getItems()) {
+                        if (document.getTaxaSelectionModel().getSelectedItems().contains(taxon)) {
+                            controller.getInactiveList().getSelectionModel().select(taxon);
+                        }
+                    }
+                } finally {
+                    inUpdateSelection = false;
+                }
+            }
         });
 
         controller.getInactivateAllButton().setOnAction((e) -> {
@@ -138,6 +175,31 @@ public class TaxaFilterPane extends AlgorithmPane {
         }
 
         applicableProperty.bind(Bindings.isEmpty(controller.getActiveList().getItems()).not().and(undoManager.canUndoProperty()));
+    }
+
+    /**
+     * updates selection
+     */
+    private void updateSelection() {
+        if (!inUpdateSelection) {
+            inUpdateSelection = true;
+            try {
+                for (Taxon taxon : controller.getActiveList().getItems()) {
+                    if (controller.getActiveList().getSelectionModel().getSelectedItems().contains(taxon))
+                        document.getTaxaSelectionModel().select(taxon);
+                    else
+                        document.getTaxaSelectionModel().clearSelect(taxon);
+                }
+                for (Taxon taxon : controller.getInactiveList().getItems()) {
+                    if (controller.getInactiveList().getSelectionModel().getSelectedItems().contains(taxon))
+                        document.getTaxaSelectionModel().select(taxon);
+                    else
+                        document.getTaxaSelectionModel().clearSelect(taxon);
+                }
+            } finally {
+                inUpdateSelection = false;
+            }
+        }
     }
 
     public BooleanProperty applicableProperty() {
