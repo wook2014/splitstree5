@@ -9,17 +9,25 @@ import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
+import splitstree5.core.misc.Taxon;
 
 public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> {
     @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees)
             throws InterruptedException, CanceledException {
 
-        //PhyloTree tree = makeUPGMATree(taxaBlock, distances);
+        //todo progressListener - interface?
+        progressListener.setDebug(true);
+        progressListener.setTasks("computing UPGMA tree", "creating nodes...");
+        progressListener.setMaximum(taxaBlock.getNtax());
 
+        //PhyloTree tree = makeUPGMATree(progressListener, taxaBlock, distances);
+        //trees.getTrees().addAll(tree);
+
+        progressListener.close();
     }
 
-    private PhyloTree makeUPGMATree(TaxaBlock taxaBlock, DistancesBlock distances) throws CanceledException {
+    public static/*private*/ PhyloTree makeUPGMATree(/*ProgressListener progressListener*/ TaxaBlock taxaBlock, DistancesBlock distances) /*throws CanceledException*/ {
 
         PhyloTree tree = new PhyloTree();
         int ntax = distances.getNtax();
@@ -98,6 +106,7 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> {
             }
 
             steps += actual;
+            //progressListener.incrementProgress();
         }
 
         int sister = 2;
@@ -110,6 +119,7 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> {
 
         // root ???
         Node root = tree.newNode();
+        tree.setLabel(root, "root");
         Edge left = tree.newEdge(root, subtrees[1]);
         Edge right = tree.newEdge(root, subtrees[sister]);
         tree.setWeight(left,  d[1][sister]/2.0);
@@ -117,5 +127,50 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> {
         tree.setRoot(root);
 
         return tree;
+    }
+
+    // TESTING
+    public static void testApply(TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees){
+        PhyloTree tree = makeUPGMATree(taxaBlock, distances);
+        //PhyloTree tree = new PhyloTree();
+        System.out.println("output: "+tree.toString());
+    }
+
+    public static void main(String[] args) {
+        String[] names = {"a","b","c","d","e"};
+        Taxon[] taxons = new Taxon[5];
+        TaxaBlock taxaBlock = new TaxaBlock();
+        DistancesBlock distancesBlock = new DistancesBlock();
+        TreesBlock treesBlock = new TreesBlock();
+
+        for(int i=0; i<names.length; i++){
+            taxons[i] = new Taxon();
+            taxons[i].setName(names[i]);
+            taxaBlock.getTaxa().add(taxons[i]);
+        }
+
+        double[][] dist = {{0, 17, 21, 31, 23},
+                {17, 0,	30,	34,	21},
+                {21, 30, 0, 28, 39},
+                {31, 34, 28, 0, 43},
+                { 23, 21, 39, 43, 0}};
+
+        distancesBlock.set(dist);
+
+        testApply(taxaBlock,distancesBlock,treesBlock);
+
+        /*PhyloTree tree = new PhyloTree();
+        Node a = tree.newNode();
+        Node b = tree.newNode();
+        Node c = tree.newNode();
+        Node d = tree.newNode();
+        Node Ncd = tree.newNode();
+
+        Edge ab = tree.newEdge(a, b);
+        Edge cN = tree.newEdge(Ncd, c);
+        Edge dN = tree.newEdge(Ncd, d);
+        Edge acd = tree.newEdge(a, Ncd);
+
+        System.out.println("output: "+tree.toString());*/
     }
 }
