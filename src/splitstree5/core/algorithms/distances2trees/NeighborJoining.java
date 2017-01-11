@@ -48,7 +48,7 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> {
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees) throws InterruptedException, CanceledException {
         progressListener.setDebug(true);
         progressListener.setTasks("Simulating NJ", "Waiting...");
-        progressListener.setMaximum(10);
+        progressListener.setMaximum(distances.getNtax());
         /*for (int i = 0; i < 10; i++) {
             Thread.sleep(400);
             progressListener.incrementProgress();
