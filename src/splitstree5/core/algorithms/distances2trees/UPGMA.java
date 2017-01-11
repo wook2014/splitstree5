@@ -48,7 +48,13 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> {
         //Compute the closest values for each taxa.
         for (int i = 1; i <= ntax; i++) {
             for (int j = i + 1; j <= ntax; j++) {
-                d[i][j] = d[j][i] = (distances.get(i, j) + distances.get(j, i)) / 2.0;
+                //d[i][j] = d[j][i] = (distances.get(i, j) + distances.get(j, i)) / 2.0;
+                double sum = distances.get(i, j) + distances.get(j, i);
+                if(sum == distances.get(i, j) || sum == distances.get(j, i)){
+                    d[i][j] = d[j][i] = sum;
+                }else {
+                    d[i][j] = d[j][i] = sum / 2.0;
+                }
             }
         }
 
@@ -155,6 +161,12 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> {
                 {31, 34, 28, 0, 43},
                 { 23, 21, 39, 43, 0}};
 
+        /*double[][] dist = {{0, 0, 0, 0, 0},
+                {17, 0,	0,	0,	0},
+                {21, 30, 0, 0, 0},
+                {31, 34, 28, 0, 0},
+                { 23, 21, 39, 43, 0}};*/
+
         distancesBlock.set(dist);
 
         testApply(taxaBlock,distancesBlock,treesBlock);
@@ -172,5 +184,7 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> {
         Edge acd = tree.newEdge(a, Ncd);
 
         System.out.println("output: "+tree.toString());*/
+
+        //output: (((a:8.5,b:8.5):2.5,e:11.0):16.5,(d:14.0,c:14.0):16.5)root
     }
 }
