@@ -21,7 +21,6 @@ package splitstree5.core.algorithms;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -61,7 +60,7 @@ abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> exte
     /**
      * perform the computation
      */
-    abstract public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, P parent, C child) throws InterruptedException, CanceledException;
+    abstract public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, P parent, C child) throws Exception;
 
     public boolean isDisabled() {
         return disabled.get();

@@ -24,6 +24,7 @@ import splitstree5.core.Document;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.filters.TaxaFilter;
 
 import java.io.BufferedWriter;
@@ -75,6 +76,9 @@ public class NexusFileWriter {
             TaxaNexusIO.write(w, (TaxaBlock) dataBlock);
         } else if (dataBlock instanceof DistancesBlock) {
             DistancesNexusIO.write(w, taxaBlock, (DistancesBlock) dataBlock, null);
+        } else if (dataBlock instanceof TreesBlock) {
+            TreesNexusIO.write(w, taxaBlock, (TreesBlock) dataBlock, null);
+
         } else {
             System.err.println("Nexus write not implemented for block of type " + Basic.getShortName(dataBlock.getClass()));
         }

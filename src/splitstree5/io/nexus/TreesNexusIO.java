@@ -150,7 +150,7 @@ public class TreesNexusIO {
                 np.matchRespectCase("*"); // don't know why PAUP puts this star in the file....
 
             String name = np.getWordRespectCase();
-            name = name.replaceAll("[ \t\b]+", "_");
+            name = name.replaceAll("\\s+", "_");
             name = name.replaceAll("[:;,]+", ".");
             name = name.replaceAll("\\[", "(");
             name = name.replaceAll("\\]", ")");
@@ -228,12 +228,11 @@ public class TreesNexusIO {
 
         final Map<String, String> translator;
         if (treesNexusFormat.isTranslate()) {
-            translator = computeTranslation(taxaBlock);
+            translator = computeTranslationName2Number(taxaBlock);
             w.write("TRANSLATE\n");
-            Set<String> keys = translator.keySet();
 
-            for (String key : keys) {
-                w.write("'" + key + "' '" + translator.get(key) + "',\n");
+            for (int t = 1; t <= taxaBlock.getNtax(); t++) {
+                w.write(t + " '" + taxaBlock.getLabel(t) + "',\n");
             }
             w.write(";\n");
         } else
@@ -265,16 +264,15 @@ public class TreesNexusIO {
     }
 
     /**
-     * compute translation from taxon numbers to names
+     * compute translation from taxon names to number
      *
      * @param taxaBlock
      * @return translation
      */
-    private static Map<String, String> computeTranslation(TaxaBlock taxaBlock) {
+    private static Map<String, String> computeTranslationName2Number(TaxaBlock taxaBlock) {
         final Map<String, String> translation = new HashMap<>();
-        int t = 1;
         for (Taxon taxon : taxaBlock.getTaxa()) {
-            translation.put("" + (t++), taxon.getName());
+            translation.put(taxon.getName(), "" + taxaBlock.indexOf(taxon));
         }
         return translation;
     }

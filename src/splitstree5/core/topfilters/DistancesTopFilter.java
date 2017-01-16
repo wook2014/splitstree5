@@ -41,20 +41,18 @@ public class DistancesTopFilter extends ATopFilter<DistancesBlock> {
      * @param child
      */
     public DistancesTopFilter(ADataNode<TaxaBlock> originalTaxaNode, ADataNode<TaxaBlock> modifiedTaxaNode, ADataNode<DistancesBlock> parent, ADataNode<DistancesBlock> child) {
-        super(originalTaxaNode, modifiedTaxaNode, parent, child);
+        super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parent, child);
 
         setAlgorithm(new Algorithm<DistancesBlock, DistancesBlock>("TopFilter") {
-            public void compute(ProgressListener progressListener, TaxaBlock originalTaxaBlock, DistancesBlock original, DistancesBlock modified) {
+            public void compute(ProgressListener progressListener, TaxaBlock modifiedTaxaBlock, DistancesBlock original, DistancesBlock modified) {
                 try {
-                    final TaxaBlock modifiedTaxaBlock = modifiedTaxaNode.getDataBlock();
-
                     modified.setNtax(modifiedTaxaBlock.getNtax());
 
                     for (Taxon a : modifiedTaxaBlock.getTaxa()) {
-                        final int originalI = originalTaxaBlock.indexOf(a);
+                        final int originalI = getOriginalTaxaBlock().indexOf(a);
                         final int modifiedI = modifiedTaxaBlock.indexOf(a);
                         for (Taxon b : modifiedTaxaBlock.getTaxa()) {
-                            final int originalJ = originalTaxaBlock.indexOf(b);
+                            final int originalJ = getOriginalTaxaBlock().indexOf(b);
                             final int modifiedJ = modifiedTaxaBlock.indexOf(b);
                             modified.set(modifiedI, modifiedJ, original.get(originalI, originalJ));
                             //System.err.println(String.format("set (%d,%d)=%f", modifiedI, modifiedJ, original.get(originalI, originalJ)));

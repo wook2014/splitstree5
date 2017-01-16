@@ -30,14 +30,20 @@ import splitstree5.core.datablocks.TaxaBlock;
  * Created by huson on 12/21/16.
  */
 public class ATopFilter<D extends ADataBlock> extends AConnector<D, D> {
+    private final TaxaBlock originalTaxaBlock;
 
-    public ATopFilter(ADataNode<TaxaBlock> originalTaxaNode, ADataNode<TaxaBlock> modifiedTaxaNode, ADataNode<D> parent, ADataNode<D> child) {
-        super(originalTaxaNode.getDataBlock(), parent, child);
+    public ATopFilter(TaxaBlock originalTaxaBlock, ADataNode<TaxaBlock> modifiedTaxaNode, ADataNode<D> parent, ADataNode<D> child) {
+        super(modifiedTaxaNode.getDataBlock(), parent, child);
+        this.originalTaxaBlock = originalTaxaBlock;
 
         modifiedTaxaNode.stateProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue != UpdateState.VALID && newValue == UpdateState.VALID) {
                 forceRecompute();
             }
         });
+    }
+
+    public TaxaBlock getOriginalTaxaBlock() {
+        return originalTaxaBlock;
     }
 }

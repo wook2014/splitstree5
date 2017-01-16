@@ -23,17 +23,14 @@ package splitstree5.core.algorithms.distances2trees;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
-import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.core.misc.Taxon;
 
 import java.util.HashMap;
-import java.util.Vector;
 
 /**
  * Neighbor joining algorithm
@@ -48,25 +45,19 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> {
      */
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees) throws InterruptedException, CanceledException {
         progressListener.setDebug(true);
-        progressListener.setTasks("Simulating NJ", "Waiting...");
+        progressListener.setTasks("Neighbor Joining", "Init.");
         progressListener.setMaximum(distances.getNtax());
-        /*for (int i = 0; i < 10; i++) {
-            Thread.sleep(400);
-            progressListener.incrementProgress();
-        }*/
+
         PhyloTree tree = computeNJTree(taxaBlock, distances);
         progressListener.close();
         trees.getTrees().setAll(tree);
     }
 
     public static PhyloTree computeNJTree(TaxaBlock taxaBlock, DistancesBlock distances){
-
         int nTax = distances.getNtax();
         PhyloTree tree = new PhyloTree();
         HashMap<String, Node> Taxa2Nodes = new HashMap<>();
         StringBuffer TaxaLabels[] = new StringBuffer[nTax + 1];
-
-        try {
 
             initialize(nTax, taxaBlock, tree, Taxa2Nodes, TaxaLabels);
 
@@ -201,11 +192,6 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> {
             // generate Edges from two Taxa that are merged to one:
             edge2i = tree.newEdge(Taxa2Nodes.get(mergedTaxa_i.toString()), Taxa2Nodes.get(mergedTaxa_j.toString()));
             tree.setWeight(edge2i, Math.max(distanceMatrix[i_min][j_min], 0.0));
-        } catch (Exception ex) {
-            Basic.caught(ex);
-            System.err.println(ex);
-        }
-
         return tree;
     }
 
@@ -246,6 +232,7 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> {
         return distanceMatrix;
     }
 
+    // todo: use or delete
     public static PhyloTree setInitialTree(TaxaBlock taxaBlock){
         PhyloTree tree = new PhyloTree();
         for(int i = 0; i<taxaBlock.getNtax(); i++){
@@ -255,7 +242,7 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> {
         return tree;
     }
 
-    //divergences
+    // todo: use or delete
     private static double[] computeDivergences(double[][] distances){
         double[] divergences = new double[distances.length];
         for(int i = 1; i< divergences.length; i++){
@@ -266,39 +253,5 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> {
         return  divergences;
     }
 
-    // TESTING
-
-    public static void testApply(TaxaBlock taxaBlock, DistancesBlock distances){
-        PhyloTree tree = computeNJTree(taxaBlock, distances);
-        //PhyloTree tree = new PhyloTree();
-        System.out.println("output: "+tree.toString());
-    }
-
-
-    public static void main(String[] args) {
-
-        String[] names = {"a","b","c","d","e", "f"};
-        Taxon[] taxons = new Taxon[6];
-        TaxaBlock taxaBlock = new TaxaBlock();
-        DistancesBlock distancesBlock = new DistancesBlock();
-
-        for(int i=0; i<names.length; i++){
-            taxons[i] = new Taxon();
-            taxons[i].setName(names[i]);
-            taxaBlock.getTaxa().add(taxons[i]);
-        }
-
-        double[][] dist =
-                {{0, 5, 4, 7, 6, 8},
-                {5, 0,	7, 10, 9, 11},
-                {4, 7, 0, 7, 6, 8},
-                {7, 10, 7, 0, 5, 9},
-                {6, 9, 6, 5, 0, 8},
-                {8, 11, 8, 9, 8, 0}};
-
-        distancesBlock.set(dist);
-
-        testApply(taxaBlock,distancesBlock);
-    }
 }
 

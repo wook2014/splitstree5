@@ -3,7 +3,6 @@ package splitstree5.core.algorithms.distances2trees;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
-import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
@@ -19,7 +18,7 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> {
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees)
             throws InterruptedException, CanceledException {
         progressListener.setDebug(true);
-        progressListener.setTasks("Computing BioNJ tree", "creating nodes...");
+        progressListener.setTasks("BioNJ", "Creating nodes...");
         progressListener.setMaximum(distances.getNtax());
         PhyloTree tree = computeBioNJTree(progressListener, taxaBlock, distances);
         progressListener.close();
@@ -30,7 +29,6 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> {
             throws InterruptedException, CanceledException {
 
         PhyloTree tree = new PhyloTree();
-        try {
             HashMap TaxaHashMap = new HashMap();
             int nbNtax = distances.getNtax();
             StringBuffer tax[] = new StringBuffer[nbNtax + 1];
@@ -217,10 +215,7 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> {
             e = tree.newEdge((Node) TaxaHashMap.get(tax_old_k.toString()), v);
             tree.setWeight(e, 0.5 * (h[i_min][k_min] + h[j_min][k_min] - h[i_min][j_min]));
 
-        } catch (Exception ex) {
-            Basic.caught(ex);
-            System.err.println(ex);
-        }
+
         return tree;
     }
 }

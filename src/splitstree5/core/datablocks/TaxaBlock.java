@@ -26,6 +26,7 @@ import javafx.collections.ObservableMap;
 import splitstree5.core.misc.Taxon;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -137,5 +138,18 @@ public class TaxaBlock extends ADataBlock {
         if (taxa.contains(taxon))
             throw new IOException("Duplicate taxon name: " + taxon.getName());
         taxa.add(taxon);
+    }
+
+    /**
+     * get all taxon labels
+     *
+     * @return labels
+     */
+    public ArrayList<String> getLabels() {
+        final ArrayList<String> labels = new ArrayList<>(taxa.size());
+        for (Taxon taxon : taxa) {
+            labels.add(taxon.getName());
+        }
+        return labels;
     }
 }

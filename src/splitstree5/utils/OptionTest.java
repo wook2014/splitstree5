@@ -24,7 +24,7 @@ import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.filters.SplitsFilterAlgorithm;
 
 /**
- * test otion
+ * test option
  * Created by huson on 12/31/16.
  */
 public class OptionTest {
@@ -35,7 +35,6 @@ public class OptionTest {
 
         for (Option option : OptionsAccessor.getAllOptions(splitsFilterAlgorithm)) {
             System.err.println(option);
-            System.err.println("Before: " + option.getValue());
             switch (option.getType().getTypeName()) {
                 case "boolean": {
                     option.holdValue(!(boolean) option.getValue());
@@ -59,7 +58,6 @@ public class OptionTest {
                 }
             }
             option.setValue();
-            System.err.println("After:  " + option.getValue());
         }
     }
 }

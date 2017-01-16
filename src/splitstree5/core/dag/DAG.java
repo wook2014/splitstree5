@@ -68,6 +68,7 @@ public class DAG {
         dataNodes.addListener((InvalidationListener) observable -> size.set(connectorNodes.size() + dataNodes.size()));
         connectorNodes.addListener((InvalidationListener) observable -> size.set(connectorNodes.size() + dataNodes.size()));
 
+
         updatingProperty().addListener((observable, oldValue, newValue) -> System.err.println("UPDATING: " + newValue));
     }
 
@@ -78,11 +79,13 @@ public class DAG {
      * @param topDataBlock
      */
     public void setupTopAndWorkingNodes(TaxaBlock topTaxaBlock, ADataBlock topDataBlock) {
-        topTaxaNode.set(createDataNode(topTaxaBlock));
-        workingTaxaNode.set(createDataNode((TaxaBlock) topTaxaBlock.newInstance()));
-        taxaFilter = new TaxaFilter(getTopTaxaNode(), getWorkingDataNode());
+        setTopTaxaNode(createDataNode(topTaxaBlock));
+        getTopTaxaNode().getDataBlock().setName("Orig" + getTopTaxaNode().getDataBlock().getName());
+        setWorkingTaxaNode(createDataNode((TaxaBlock) topTaxaBlock.newInstance()));
+        taxaFilter = new TaxaFilter(getTopTaxaNode(), getWorkingTaxaNode());
         register(taxaFilter);
         setTopDataNode(createDataNode(topDataBlock));
+        getTopDataNode().getDataBlock().setName("Orig" + getTopDataNode().getDataBlock().getName());
         setWorkingDataNode(createDataNode(topDataBlock.newInstance()));
 
         if (topDataBlock instanceof DistancesBlock) {

@@ -22,11 +22,13 @@ package splitstree5.io.nexus;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Report;
-import splitstree5.core.algorithms.distances2trees.NeighborJoining;
+import splitstree5.core.dag.DAGUtils;
 import splitstree5.core.dag.UpdateState;
-import splitstree5.core.datablocks.*;
+import splitstree5.core.datablocks.ADataBlock;
+import splitstree5.core.datablocks.DistancesBlock;
+import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.Taxon;
-import splitstree5.gui.connectorview.ConnectorView;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -74,25 +76,14 @@ public class NexusFileParser {
                 }
 
                 document.getDag().setupTopAndWorkingNodes(topTaxaBlock, topDataBlock);
+                document.setupTaxonSelectionModel();
+
+                // todo: for debugging:
+                new Report<>(document.getDag().getWorkingTaxaNode().getDataBlock(), document.getDag().getWorkingDataNode());
+
                 document.getDag().getTopTaxaNode().setState(UpdateState.VALID);
-                document.getDag().getTopDataNode().setState(UpdateState.VALID);
 
-                // todo: just for debugging, report on changes of working taxa and changes of distances:
-                document.getDag().addConnector(new Report<>(document.getDag().getWorkingTaxaNode().getDataBlock(), document.getDag().getWorkingTaxaNode()));
-                document.getDag().addConnector(new Report<>(document.getDag().getWorkingTaxaNode().getDataBlock(), document.getDag().getWorkingDataNode()));
-
-                // todo: just for debugging, open taxa filter view here:
-                {
-                    ConnectorView<TaxaBlock, TaxaBlock> connectorView = new ConnectorView<>(document, document.getDag().getTaxaFilter());
-                    connectorView.show();
-                }
-
-                // todo: for debugging, add fake NJ and trees node:
-                if (document.getDag().getWorkingDataNode().getDataBlock() instanceof DistancesBlock) {
-                    ADataNode<TreesBlock> treesNode = document.getDag().createDataNode(new TreesBlock());
-                    document.getDag().createConnector(document.getDag().getWorkingDataNode(), treesNode, new NeighborJoining());
-                    document.getDag().addConnector(new Report<>(document.getDag().getWorkingTaxaNode().getDataBlock(), treesNode));
-                }
+                DAGUtils.print(document.getDag().getTopTaxaNode(), document.getDag().getTopDataNode());
             }
         }
     }
@@ -115,6 +106,10 @@ public class NexusFileParser {
                 final DistancesBlock distances = new DistancesBlock();
                 taxonNamesFound.addAll(DistancesNexusIO.parse(np, taxaBlock, distances, null));
                 return distances;
+            } else if (np.peekMatchIgnoreCase("begin trees;")) {
+                final TreesBlock treesBlock = new TreesBlock();
+                taxonNamesFound.addAll(TreesNexusIO.parse(np, taxaBlock, treesBlock, null));
+                return treesBlock;
             } else {
                 final String blockName = np.skipBlock();
                 System.err.println("Parse nexus block: " + blockName + ": not implemented;");

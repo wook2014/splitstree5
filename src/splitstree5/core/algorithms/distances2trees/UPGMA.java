@@ -3,7 +3,6 @@ package splitstree5.core.algorithms.distances2trees;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
-import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
@@ -17,9 +16,8 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> {
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees)
             throws InterruptedException, CanceledException {
 
-        //todo progressListener - interface?
         progressListener.setDebug(true);
-        progressListener.setTasks("computing UPGMA tree", "creating nodes...");
+        progressListener.setTasks("UPGMA", "creating nodes...");
         progressListener.setMaximum(taxaBlock.getNtax());
 
         //PhyloTree tree = makeUPGMATree(progressListener, taxaBlock, distances);
@@ -36,7 +34,6 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> {
         Node[] subtrees = new Node[ntax + 1];
         int[] sizes = new int[ntax + 1];
         double[] heights = new double[ntax + 1];
-        try {
             for (int i = 1; i <= ntax; i++) {
                 subtrees[i] = tree.newNode();
                 tree.setLabel(subtrees[i], taxaBlock.getLabel(i));
@@ -74,16 +71,14 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> {
                             d_min = dij;
                         }
                     }
-
                 }
-
 
                 double height = d_min / 2.0;
 
                 Node v = tree.newNode();
-                Edge e = tree.newEdge(subtrees[i_min], v);
+                Edge e = tree.newEdge(v, subtrees[i_min]);
                 tree.setWeight(e, Math.max(height - heights[i_min], 0.0));
-                Edge f = tree.newEdge(subtrees[j_min], v);
+                Edge f = tree.newEdge(v, subtrees[j_min]);
                 tree.setWeight(f, Math.max(height - heights[j_min], 0.0));
 
                 subtrees[i_min] = v;
@@ -120,26 +115,17 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> {
             while (subtrees[sister] == null)
                 sister++;
 
-            //ToDo: fix phyloTree and get this to return a rooted tree.
-            //Edge e = tree.newEdge(subtrees[1], subtrees[sister]);
-            //tree.setWeight(e, d[1][sister]);
-
-            // root ???
-            Node root = tree.newNode();
-            tree.setLabel(root, "root");
-            Edge left = tree.newEdge(root, subtrees[1]);
-            Edge right = tree.newEdge(root, subtrees[sister]);
+        final Node root = tree.newNode();
+        final Edge left = tree.newEdge(root, subtrees[1]);
+        final Edge right = tree.newEdge(root, subtrees[sister]);
             tree.setWeight(left, d[1][sister] / 2.0);
             tree.setWeight(right, d[1][sister] / 2.0);
             tree.setRoot(root);
-        } catch (Exception ex) {
-            Basic.caught(ex);
-            System.err.println(ex);
-        }
 
         return tree;
     }
 
+    // todo: create test class
     // TESTING
     public static void testApply(TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees){
         PhyloTree tree = makeUPGMATree(taxaBlock, distances);

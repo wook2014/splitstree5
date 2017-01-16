@@ -19,6 +19,8 @@
 
 package splitstree5.core.topfilters;
 
+import jloda.graph.Edge;
+import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
@@ -26,7 +28,9 @@ import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * splits top taxon filter
@@ -43,20 +47,15 @@ public class TreesTopFilter extends ATopFilter<TreesBlock> {
      * @param childBlock
      */
     public TreesTopFilter(ADataNode<TaxaBlock> originalTaxaNode, ADataNode<TaxaBlock> modifiedTaxaNode, ADataNode<TreesBlock> parentBlock, ADataNode<TreesBlock> childBlock) {
-        super(originalTaxaNode, modifiedTaxaNode, parentBlock, childBlock);
+        super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parentBlock, childBlock);
 
         setAlgorithm(new Algorithm<TreesBlock, TreesBlock>("TopFilter") {
-            public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock parentBlock, TreesBlock childBlock) {
-                final TaxaBlock originalTaxaBlock = originalTaxaNode.getDataBlock();
-
-                childBlock.getTrees().clear();
-
-                final Map<Integer, Integer> originalIndex2ModifiedIndex = originalTaxaBlock.computeIndexMap(taxaBlock);
-
+            public void compute(ProgressListener progressListener, TaxaBlock modifiedTaxaBlock, TreesBlock parentBlock, TreesBlock childBlock) {
                 for (PhyloTree tree : parentBlock.getTrees()) {
-                    PhyloTree induced = computeInducedTree(tree, originalIndex2ModifiedIndex, taxaBlock.getNtax());
-                    if (induced != null)
+                    PhyloTree induced = computeInducedTree(tree, modifiedTaxaBlock.getLabels());
+                    if (induced != null) {
                         childBlock.getTrees().add(induced);
+                    }
                 }
             }
         });
@@ -66,12 +65,81 @@ public class TreesTopFilter extends ATopFilter<TreesBlock> {
      * compute an induced tree
      *
      * @param originalTree
-     * @param originalIndex2ModifiedIndex
-     * @param inducedNtax
+     * @param keep
      * @return induced tree or null
      */
-    private static PhyloTree computeInducedTree(PhyloTree originalTree, Map<Integer, Integer> originalIndex2ModifiedIndex, int inducedNtax) {
-        // todo: implement
-        return null;
+    private PhyloTree computeInducedTree(PhyloTree originalTree, ArrayList<String> keep) {
+        final PhyloTree inducedTree = new PhyloTree();
+        inducedTree.copy(originalTree);
+
+        final List<Node> nakedLeaves = new LinkedList<>();
+
+        for (Node v : inducedTree.getNodes()) {
+            if (inducedTree.getLabel(v) == null || !keep.contains(inducedTree.getLabel(v))) {
+                if (v.getOwner() != null && inducedTree.getLabel(v) != null) // not yet deleted
+                {
+                    if (v.getOutDegree() > 0) {
+                        inducedTree.setLabel(v, null);
+                    } else {
+                        for (Edge e = v.getFirstInEdge(); e != null; e = v.getNextInEdge(e)) {
+                            Node w = e.getSource();
+                            if (w.getOutDegree() == 1 && inducedTree.getLabel(w) == null) {
+                                nakedLeaves.add(w);
+                            }
+                        }
+                        if (inducedTree.getRoot() == v)
+                            inducedTree.setRoot(null);
+                        inducedTree.deleteNode(v);
+                    }
+                }
+            }
+        }
+
+        while (nakedLeaves.size() > 0) {
+            final Node v = nakedLeaves.remove(0);
+            for (Edge e = v.getFirstInEdge(); e != null; e = v.getNextInEdge(e)) {
+                final Node w = e.getSource();
+                if (w.getOutDegree() == 1 && inducedTree.getLabel(w) == null) {
+                    nakedLeaves.add(w);
+                }
+            }
+            if (inducedTree.getRoot() == v)
+                inducedTree.setRoot(null);
+            inducedTree.deleteNode(v);
+        }
+
+        final List<Node> diVertices = new LinkedList<>();
+        for (Node v = inducedTree.getFirstNode(); v != null; v = v.getNext()) {
+            if (v.getInDegree() == 1 && v.getOutDegree() == 1)
+                diVertices.add(v);
+        }
+        for (Node v : diVertices) {
+            inducedTree.delDivertex(v);
+            if (inducedTree.getRoot() == v)
+                inducedTree.setRoot(null);
+        }
+
+        Node root = inducedTree.getRoot();
+
+        if (root == null || root.getOwner() == null) {
+            inducedTree.setRoot((Node) null);
+            for (Node v = inducedTree.getFirstNode(); v != null; v = v.getNext()) {
+                if (v.getInDegree() == 0) {
+                    inducedTree.setRoot(v);
+                    root = v;
+                    break;
+                }
+            }
+        }
+
+        if (root != null) {
+            if (root.getOutDegree() == 1 && inducedTree.getLabel(root) == null) {
+                final Node newRoot = root.getFirstOutEdge().getTarget();
+                inducedTree.deleteNode(root);
+                inducedTree.setRoot(newRoot);
+            }
+        }
+
+        return inducedTree;
     }
 }

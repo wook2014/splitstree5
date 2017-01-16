@@ -21,6 +21,7 @@ package splitstree5.gui.connectorview;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import org.junit.Test;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Report;
 import splitstree5.core.algorithms.distances2splits.NeighborNet;
@@ -38,6 +39,12 @@ import splitstree5.core.misc.Taxon;
  * Created by huson on 12/31/16.
  */
 public class ConnectorViewTest extends Application {
+    @Test
+    public void test() throws Exception {
+        init();
+        launch();
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         final Document document = new Document();
@@ -70,6 +77,12 @@ public class ConnectorViewTest extends Application {
             connectorView.show();
 
             new Report<>(document.getDag().getWorkingTaxaNode().getDataBlock(), document.getDag().getWorkingTaxaNode());
+        }
+
+        {
+            TaxaFilter taxaFilter = new TaxaFilter(document.getDag().getTopTaxaNode(), document.getDag().getWorkingTaxaNode());
+            ConnectorView<TaxaBlock, TaxaBlock> connectorView = new ConnectorView<>(document, taxaFilter);
+            connectorView.show();
         }
     }
 }

@@ -122,34 +122,36 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
 
     @Override
     public void setState(UpdateState state) {
-        final UpdateState oldState = getState();
+        synchronized (this) {
+            final UpdateState oldState = getState();
 
-        switch (state) {
-            case INVALID:
-                if (Platform.isFxApplicationThread())
-                    service.cancel();
-                else
-                    Platform.runLater(service::cancel);
-
-                child.setState(UpdateState.INVALID);
-                if (getParent().getState() == UpdateState.VALID) {
-                    System.err.println(getAlgorithm().getName() + " " + oldState + " -> " + UpdateState.COMPUTING);
-                    super.setState(UpdateState.COMPUTING);
+            switch (state) {
+                case INVALID:
                     if (Platform.isFxApplicationThread())
-                        service.restart();
+                        service.cancel();
                     else
-                        Platform.runLater(service::restart);
-                } else
-                    super.setState(UpdateState.INVALID);
-                break;
-            case VALID:
-                super.setState(UpdateState.VALID);
-                break;
-            case COMPUTING:
-                throw new RuntimeException("Should never happen");
-            case FAILED:
-                System.err.println(getName() + ": " + state);
-                break;
+                        Platform.runLater(service::cancel);
+
+                    child.setState(UpdateState.INVALID);
+                    if (getParent().getState() == UpdateState.VALID) {
+                        System.err.println(getAlgorithm().getName() + " " + oldState + " -> " + UpdateState.COMPUTING);
+                        super.setState(UpdateState.COMPUTING);
+                        if (Platform.isFxApplicationThread())
+                            service.restart();
+                        else
+                            Platform.runLater(service::restart);
+                    } else
+                        super.setState(UpdateState.INVALID);
+                    break;
+                case VALID:
+                    super.setState(UpdateState.VALID);
+                    break;
+                case COMPUTING:
+                    throw new RuntimeException("Should never happen");
+                case FAILED:
+                    System.err.println(getName() + ": " + state);
+                    break;
+            }
         }
     }
 
@@ -157,7 +159,6 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
      * force a recompute
      */
     public void forceRecompute() {
-        setState(UpdateState.VALID);
         setState(UpdateState.INVALID);
     }
 }

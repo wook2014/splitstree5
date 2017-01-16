@@ -1,7 +1,7 @@
 package nexus.characters;
 
 import jloda.util.parse.NexusStreamTokenizer;
-import splitstree.core.SplitsException;
+import splitstree4.core.SplitsException;
 
 /**
  * Created by Daria on 04.10.2016.

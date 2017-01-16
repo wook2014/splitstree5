@@ -44,15 +44,13 @@ public class SplitsTopFilter extends ATopFilter<SplitsBlock> {
      * @param child
      */
     public SplitsTopFilter(ADataNode<TaxaBlock> originalTaxaNode, ADataNode<TaxaBlock> modifiedTaxaNode, ADataNode<SplitsBlock> parent, ADataNode<SplitsBlock> child) {
-        super(originalTaxaNode, modifiedTaxaNode, parent, child);
+        super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parent, child);
 
         setAlgorithm(new Algorithm<SplitsBlock, SplitsBlock>("TopFilter") {
-            public void compute(ProgressListener progressListener, TaxaBlock originalTaxaBlock, SplitsBlock original, SplitsBlock modified) {
-                final TaxaBlock modifiedTaxaBlock = modifiedTaxaNode.getDataBlock();
-
+            public void compute(ProgressListener progressListener, TaxaBlock modifiedTaxaBlock, SplitsBlock original, SplitsBlock modified) {
                 modified.getSplits().clear();
 
-                final Map<Integer, Integer> originalIndex2ModifiedIndex = originalTaxaBlock.computeIndexMap(modifiedTaxaBlock);
+                final Map<Integer, Integer> originalIndex2ModifiedIndex = getOriginalTaxaBlock().computeIndexMap(modifiedTaxaBlock);
 
                 for (ASplit split : original.getSplits()) {
                     ASplit induced = computeInducedSplit(split, originalIndex2ModifiedIndex, modifiedTaxaBlock.getNtax());

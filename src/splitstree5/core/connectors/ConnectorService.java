@@ -33,10 +33,10 @@ import splitstree5.core.misc.ProgramExecutorService;
  */
 public class ConnectorService<P extends ADataBlock, C extends ADataBlock> extends Service<Boolean> {
     public static boolean verbose = true;
-    private AConnector<P, C> connectorNode;
+    private AConnector<P, C> connector;
 
-    public ConnectorService(AConnector<P, C> connectorNode) {
-        this.connectorNode = connectorNode;
+    public ConnectorService(AConnector<P, C> connector) {
+        this.connector = connector;
         executorProperty().set(ProgramExecutorService.getExecutorService());
     }
 
@@ -46,7 +46,7 @@ public class ConnectorService<P extends ADataBlock, C extends ADataBlock> extend
     }
 
     public String getMethodName() {
-        return connectorNode.getAlgorithm().getName();
+        return connector.getAlgorithm().getName();
     }
 
     /**
@@ -55,15 +55,21 @@ public class ConnectorService<P extends ADataBlock, C extends ADataBlock> extend
     private class MyTask extends Task<Boolean> {
         @Override
         protected Boolean call() throws Exception {
-            System.err.println("--- Compute " + getMethodName() + " called");
-            try {
-                connectorNode.getChild().getDataBlock().clear();
-                connectorNode.getAlgorithm().compute(getProgressListener(), connectorNode.getTaxaBlock(), connectorNode.getParent().getDataBlock(), connectorNode.getChild().getDataBlock());
-            } catch (CanceledException ex) {
-                System.err.println("USER CANCELED");
+            synchronized (connector.getChild().getDataBlock()) { // make sure that we only ever have one task working on a given datablock
+                try {
+                    System.err.println("--- Compute " + getMethodName() + " called");
+                    connector.getChild().stateProperty().set(UpdateState.INVALID);
+                    connector.stateProperty().set(UpdateState.COMPUTING);
+
+                    connector.getChild().getDataBlock().clear(); // always start with a fresh datablock
+                    connector.getAlgorithm().compute(getProgressListener(), connector.getTaxaBlock(), connector.getParent().getDataBlock(), connector.getChild().getDataBlock());
+                } catch (CanceledException ex) {
+                    System.err.println("USER CANCELED");
+                } finally {
+                    System.err.println("--- Compute " + getMethodName() + " done");
+                }
+                return true;
             }
-            System.err.println("--- Compute " + getMethodName() + " done");
-            return true;
         }
 
         @Override
@@ -82,22 +88,22 @@ public class ConnectorService<P extends ADataBlock, C extends ADataBlock> extend
         protected void succeeded() {
             if (verbose)
                 System.err.println("Compute " + getMethodName() + " task succeeded");
-            connectorNode.setState(UpdateState.VALID);
-            connectorNode.getChild().setState(UpdateState.VALID); // child is presumably valid once method has completed...
+            connector.setState(UpdateState.VALID);
+            connector.getChild().setState(UpdateState.VALID); // child is presumably valid once method has completed...
         }
 
         @Override
         protected void failed() {
             if (verbose)
                 System.err.println("Compute " + getMethodName() + " task failed: " + getException());
-            connectorNode.setState(UpdateState.FAILED);
+            connector.setState(UpdateState.FAILED);
         }
 
         @Override
         protected void cancelled() {
             if (verbose)
                 System.err.println("Compute " + getMethodName() + " task canceled");
-            connectorNode.setState(UpdateState.FAILED);
+            connector.setState(UpdateState.FAILED);
         }
 
         public ProgressListener getProgressListener() {
@@ -195,5 +201,4 @@ public class ConnectorService<P extends ADataBlock, C extends ADataBlock> extend
             };
         }
     }
-
 }
