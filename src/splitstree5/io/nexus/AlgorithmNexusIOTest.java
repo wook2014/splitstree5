@@ -20,15 +20,45 @@
 package splitstree5.io.nexus;
 
 
+import jloda.util.parse.NexusStreamParser;
 import org.junit.Test;
+import splitstree5.core.algorithms.distances2splits.NeighborNet;
+
+import java.io.StringReader;
+import java.io.StringWriter;
+
+import static junit.framework.Assert.assertEquals;
 
 /**
+ * test algorithm io
  * Created by huson on 12/30/16.
  */
 public class AlgorithmNexusIOTest {
 
     @Test
     public void testParse() throws Exception {
+        NeighborNet neighborNet = new NeighborNet();
 
+        System.err.println("Usage: " + AlgorithmNexusIO.getUsage(neighborNet));
+
+        StringWriter w = new StringWriter();
+        AlgorithmNexusIO.write(neighborNet, w);
+        String output = w.toString();
+        System.err.println(output);
+
+        output = output.replaceAll("ols", "estimated");
+        System.err.println("Edited:");
+        //output=output.replaceAll("estimated;","estimated;\nbla=bla;");
+        System.err.println(output);
+
+        StringReader reader = new StringReader(output);
+        AlgorithmNexusIO.parse(neighborNet, new NexusStreamParser(reader), false);
+
+        StringWriter w2 = new StringWriter();
+        AlgorithmNexusIO.write(neighborNet, w2);
+        String output2 = w2.toString();
+        System.err.println(output2);
+
+        assertEquals(output, output2);
     }
 }

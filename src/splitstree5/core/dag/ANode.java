@@ -25,7 +25,7 @@ import javafx.collections.ObservableList;
 import splitstree5.core.misc.ANamed;
 
 /**
- * A processing graph node
+ * A DAG node
  * Created by huson on 12/21/16.
  */
 abstract public class ANode extends ANamed {

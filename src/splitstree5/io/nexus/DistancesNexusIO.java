@@ -87,31 +87,31 @@ public class DistancesNexusIO {
         }
 
         if (np.peekMatchIgnoreCase("FORMAT")) {
-            final List<String> formatTokens = np.getTokensLowerCase("format", ";");
+            final List<String> tokens = np.getTokensLowerCase("format", ";");
 
-            distancesNexusFormat.setLabels(np.findIgnoreCase(formatTokens, "labels=left", true, distancesNexusFormat.getLabels()));
-            distancesNexusFormat.setLabels(np.findIgnoreCase(formatTokens, "labels=no", false, distancesNexusFormat.getLabels())); //DJB 14mar03
+            distancesNexusFormat.setLabels(np.findIgnoreCase(tokens, "labels=left", true, distancesNexusFormat.getLabels()));
+            distancesNexusFormat.setLabels(np.findIgnoreCase(tokens, "labels=no", false, distancesNexusFormat.getLabels())); //DJB 14mar03
 
 
-            distancesNexusFormat.setDiagonal(np.findIgnoreCase(formatTokens, "diagonal=no", false, distancesNexusFormat.getDiagonal()));
-            distancesNexusFormat.setDiagonal(np.findIgnoreCase(formatTokens, "diagonal=yes", true, distancesNexusFormat.getDiagonal()));
+            distancesNexusFormat.setDiagonal(np.findIgnoreCase(tokens, "diagonal=no", false, distancesNexusFormat.getDiagonal()));
+            distancesNexusFormat.setDiagonal(np.findIgnoreCase(tokens, "diagonal=yes", true, distancesNexusFormat.getDiagonal()));
 
-            distancesNexusFormat.setTriangle(np.findIgnoreCase(formatTokens, "triangle=", "both upper lower", distancesNexusFormat.getTriangle()));
+            distancesNexusFormat.setTriangle(np.findIgnoreCase(tokens, "triangle=", "both upper lower", distancesNexusFormat.getTriangle()));
 
             // backward compatibility:
-            distancesNexusFormat.setLabels(np.findIgnoreCase(formatTokens, "no labels", false, distancesNexusFormat.getLabels()));
-            distancesNexusFormat.setLabels(np.findIgnoreCase(formatTokens, "nolabels", false, distancesNexusFormat.getLabels())); //DJB 14mar03
-            distancesNexusFormat.setLabels(np.findIgnoreCase(formatTokens, "labels", true, distancesNexusFormat.getLabels()));
+            distancesNexusFormat.setLabels(np.findIgnoreCase(tokens, "no labels", false, distancesNexusFormat.getLabels()));
+            distancesNexusFormat.setLabels(np.findIgnoreCase(tokens, "nolabels", false, distancesNexusFormat.getLabels())); //DJB 14mar03
+            distancesNexusFormat.setLabels(np.findIgnoreCase(tokens, "labels", true, distancesNexusFormat.getLabels()));
 
-            distancesNexusFormat.setDiagonal(np.findIgnoreCase(formatTokens, "no diagonal", false, distancesNexusFormat.getDiagonal()));
-            distancesNexusFormat.setDiagonal(np.findIgnoreCase(formatTokens, "diagonal", true, distancesNexusFormat.getDiagonal()));
-            distancesNexusFormat.setDiagonal(np.findIgnoreCase(formatTokens, "noDiagonal", false, distancesNexusFormat.getDiagonal())); //DJB 14mar03
+            distancesNexusFormat.setDiagonal(np.findIgnoreCase(tokens, "no diagonal", false, distancesNexusFormat.getDiagonal()));
+            distancesNexusFormat.setDiagonal(np.findIgnoreCase(tokens, "diagonal", true, distancesNexusFormat.getDiagonal()));
+            distancesNexusFormat.setDiagonal(np.findIgnoreCase(tokens, "noDiagonal", false, distancesNexusFormat.getDiagonal())); //DJB 14mar03
 
             // for compatibilty with splitstree3, swallow missing=?
-            np.findIgnoreCase(formatTokens, "missing=", null, '?');
+            np.findIgnoreCase(tokens, "missing=", null, '?');
 
-            if (formatTokens.size() != 0)
-                throw new IOException("line " + np.lineno() + ": '" + formatTokens + "' unexpected in FORMAT");
+            if (tokens.size() != 0)
+                throw new IOException("line " + np.lineno() + ": '" + tokens + "' unexpected in FORMAT");
         }
 
         final boolean both = distancesNexusFormat.getTriangle().equals("both");
@@ -119,7 +119,7 @@ public class DistancesNexusIO {
         final boolean lower = distancesNexusFormat.getTriangle().equals("lower");
         final int diag = distancesNexusFormat.getDiagonal() ? 0 : 1;
 
-        final ArrayList<String> taxonNamesFound = new ArrayList<>();
+        final ArrayList<String> taxonNamesFound = new ArrayList<>(distancesBlock.getNtax());
 
         {
             np.matchIgnoreCase("MATRIX");

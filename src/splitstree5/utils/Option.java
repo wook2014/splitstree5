@@ -19,7 +19,8 @@
 
 package splitstree5.utils;
 
-import java.lang.reflect.InvocationTargetException;
+import jloda.util.Basic;
+
 import java.lang.reflect.Type;
 
 /**
@@ -39,7 +40,8 @@ public class Option {
 
     /**
      * constructors an option
-     *  @param name
+     *
+     * @param name
      * @param optionable
      * @param getMethod
      * @param setMethod
@@ -93,19 +95,20 @@ public class Option {
      * gets the value of an option
      *
      * @return value
-     * @throws InvocationTargetException
-     * @throws IllegalAccessException
      */
-    public Object getValue() throws InvocationTargetException, IllegalAccessException {
-        return getMethod.invoke(optionable);
+    public Object getValue() {
+        try {
+            return getMethod.invoke(optionable);
+        } catch (Exception e) {
+            Basic.caught(e);
+            return null;
+        }
     }
 
     /**
      * sets a new value for the option, but does not write it back. Need to call setValue() for this value to be set
      *
      * @param newValue
-     * @throws InvocationTargetException
-     * @throws IllegalAccessException
      */
     public void holdValue(Object newValue) {
         this.newValue = newValue;
@@ -113,25 +116,29 @@ public class Option {
 
     /**
      * writes back a new value, if it was set
-     *
-     * @throws InvocationTargetException
-     * @throws IllegalAccessException
      */
-    public void setValue() throws InvocationTargetException, IllegalAccessException {
-        if (newValue != null)
-            setMethod.invoke(optionable, newValue);
+    public void setValue() {
+        if (newValue != null) {
+            try {
+                setMethod.invoke(optionable, newValue);
+            } catch (Exception e) {
+                Basic.caught(e);
+            }
+        }
     }
 
     /**
      * writes back the given value
      *
      * @param newValue
-     * @throws InvocationTargetException
-     * @throws IllegalAccessException
      */
-    public void setValue(Object newValue) throws InvocationTargetException, IllegalAccessException {
-        holdValue(newValue);
-        setValue();
+    public void setValue(Object newValue) {
+        try {
+            holdValue(newValue);
+            setValue();
+        } catch (Exception e) {
+            Basic.caught(e);
+        }
     }
 
     /**
@@ -153,6 +160,7 @@ public class Option {
 
     /**
      * get method interface
+     *
      * @param <O> object type
      * @param <V> return value type
      */

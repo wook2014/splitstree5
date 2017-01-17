@@ -32,7 +32,7 @@ import java.util.*;
 public class OptionsAccessor {
     /**
      * gets all options associated with an optionable.
-     * An option is given by a getOption/setOption pair of methods
+     * An option is given by a getOption/setOptionValue pair of methods
      *
      * @param optionable
      * @return options
@@ -48,11 +48,7 @@ public class OptionsAccessor {
             if ((name.startsWith("getOption") || name.startsWith("isOption")) && method.getParameterCount() == 0) {
                 name = (name.startsWith("getOption") ? name.substring("getOption".length()) : name.substring("isOption".length()));
                 if (name.length() > 0) {
-                    AnOption anOption = name2AnOption.get(name);
-                    if (anOption == null) {
-                        anOption = new AnOption();
-                        name2AnOption.put(name, anOption);
-                    }
+                    final AnOption anOption = name2AnOption.computeIfAbsent(name, k -> new AnOption());
                     anOption.getMethod = (o) -> {
                         try {
                             return method.invoke(o);
@@ -66,11 +62,7 @@ public class OptionsAccessor {
             } else if (name.startsWith("setOption") && method.getParameterCount() == 1) {
                 name = name.substring("setOption".length());
                 if (name.length() > 0) {
-                    AnOption anOption = name2AnOption.get(name);
-                    if (anOption == null) {
-                        anOption = new AnOption();
-                        name2AnOption.put(name, anOption);
-                    }
+                    final AnOption anOption = name2AnOption.computeIfAbsent(name, k -> new AnOption());
                     anOption.setMethod = (o, v) -> {
                         try {
                             method.invoke(o, v);
@@ -82,11 +74,7 @@ public class OptionsAccessor {
             } else if (name.startsWith("getShortDescription") && method.getParameterCount() == 0) {
                 name = name.substring("getShortDescription".length());
                 if (name.length() > 0) {
-                    AnOption anOption = name2AnOption.get(name);
-                    if (anOption == null) {
-                        anOption = new AnOption();
-                        name2AnOption.put(name, anOption);
-                    }
+                    final AnOption anOption = name2AnOption.computeIfAbsent(name, k -> new AnOption());
                     anOption.infoMethod = (o) -> {
                         try {
                             return method.invoke(o).toString();
@@ -100,11 +88,7 @@ public class OptionsAccessor {
             } else if (name.startsWith("getLegalValues") && method.getParameterCount() == 0) {
                 name = name.substring("getLegalValues".length());
                 if (name.length() > 0) {
-                    AnOption anOption = name2AnOption.get(name);
-                    if (anOption == null) {
-                        anOption = new AnOption();
-                        name2AnOption.put(name, anOption);
-                    }
+                    final AnOption anOption = name2AnOption.computeIfAbsent(name, k -> new AnOption());
                     anOption.legalValuesMethod = (o) -> {
                         try {
                             return (String[]) method.invoke(o);
@@ -172,10 +156,14 @@ public class OptionsAccessor {
                                     }
                                 };
 
-
                                 final Option.ISetMethod<IOptionable, Object> theSetMethod = (o, v) -> {
                                     try {
-                                        anOption.setMethod.invoke(o, v);
+                                        for (Object constant : constants) {
+                                            if (constant.toString().equals(v.toString())) {
+                                                anOption.setMethod.invoke(o, constant);
+                                                break;
+                                            }
+                                        }
                                     } catch (Exception e) {
                                         Basic.caught(e);
                                     }
@@ -195,9 +183,43 @@ public class OptionsAccessor {
     }
 
     /**
+     * set an option from a string value
+     *
+     * @param options
+     * @param name
+     * @param value
+     */
+    public static void setOptionValue(List<Option> options, String name, String value) {
+        for (Option option : options) {
+            if (option.getName().equals(name)) {
+                switch (option.getType().getTypeName()) {
+                    case "boolean":
+                        option.setValue(Boolean.parseBoolean(value));
+                        break;
+                    case "int":
+                        option.setValue(Integer.parseInt(value));
+                        break;
+                    case "double":
+                        option.setValue(Double.parseDouble(value));
+                        break;
+                    case "float":
+                        option.setValue(Float.parseFloat(value));
+                        break;
+                    case "java.lang.String":
+                        option.setValue(value);
+                        break;
+                    default:
+                        System.err.println("ERROR: can't set value of type: " + option.getType());
+                }
+                return;
+            }
+        }
+    }
+
+    /**
      * use this to store options in list until ready to process them
      */
-    static class AnOption {
+    private static class AnOption {
         Option.IGetMethod<IOptionable, Object> getMethod;
         Option.ISetMethod<IOptionable, Object> setMethod;
         Option.IGetMethod<IOptionable, String[]> legalValuesMethod;
