@@ -3,6 +3,7 @@ package splitstree5.core.algorithms.distances2trees;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
+import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
@@ -18,14 +19,16 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> {
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees)
             throws InterruptedException, CanceledException {
         progressListener.setDebug(true);
-        progressListener.setTasks("BioNJ", "Creating nodes...");
+        progressListener.setTasks("Computing BioNJ tree", "creating nodes...");
         progressListener.setMaximum(distances.getNtax());
         PhyloTree tree = computeBioNJTree(progressListener, taxaBlock, distances);
         progressListener.close();
         trees.getTrees().setAll(tree);
     }
 
-    private PhyloTree computeBioNJTree(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances)
+
+    //todo: treeSelector, ConsensusTree; junit Tests,
+    public static PhyloTree computeBioNJTree(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances)
             throws InterruptedException, CanceledException {
 
         PhyloTree tree = new PhyloTree();
@@ -61,7 +64,6 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> {
                 active[i] = true;
             }
 
-            //todo: make new matrix initialisation
             for (int i = 1; i <= nbNtax; i++) {
                 h[i][i] = 0.0;
                 for (int j = 1; j <= nbNtax; j++) { //fill up the distance matix h
@@ -214,8 +216,6 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> {
             tree.setWeight(e, 0.5 * (h[i_min][j_min] + h[j_min][k_min] - h[i_min][k_min]));
             e = tree.newEdge((Node) TaxaHashMap.get(tax_old_k.toString()), v);
             tree.setWeight(e, 0.5 * (h[i_min][k_min] + h[j_min][k_min] - h[i_min][j_min]));
-
-
         return tree;
     }
 }
