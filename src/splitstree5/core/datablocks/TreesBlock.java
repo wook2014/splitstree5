@@ -21,7 +21,13 @@ package splitstree5.core.datablocks;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
+import jloda.util.Basic;
+import jloda.util.NotOwnerException;
+import splitstree4.core.TaxaSet;
+
+import java.util.Iterator;
 
 /**
  * A trees block
@@ -85,5 +91,41 @@ public class TreesBlock extends ADataBlock {
 
     public void setRooted(boolean rooted) {
         this.rooted = rooted;
+    }
+
+    // todo: replace classes from splitstree4 (need it for the tree selector)
+
+    /**
+     * returns the set of taxa contained in this tree.
+     *
+     * @param taxa  original taxa
+     * @param which tree
+     * @return set of taxa not present in this tree. Uses original numbering
+     */
+    public TaxaSet getTaxaInTree(TaxaBlock taxa, int which) {
+        PhyloTree tree = getTrees().get(which);
+
+        TaxaSet seen = new TaxaSet();
+        Iterator it = tree.nodeIterator();
+        while (it.hasNext()) {
+            try {
+                String nodeLabel = tree.getLabel((Node) it.next());
+                if (nodeLabel != null) {
+                    //todo: need translate map in splitstree5?
+                    String taxonLabel = tree.getLabel((Node) it.next());//translate.get(nodeLabel);
+                    /*if (taxa.indexOf(taxonLabel) == -1) {
+                        System.err.println("can't find " + nodeLabel + " in ");
+                        Taxa.show("taxa", taxa);
+                        if (taxa.getOriginalTaxa() != null)
+                            Taxa.show("orig", taxa.getOriginalTaxa());
+                    } else
+                        seen.set(taxa.indexOf(taxonLabel));*/
+                        seen.set(taxa.indexOf(taxa.get(taxonLabel)));
+                }
+            } catch (NotOwnerException ex) {
+                Basic.caught(ex);
+            }
+        }
+        return seen;
     }
 }
