@@ -19,7 +19,7 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> {
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees)
             throws InterruptedException, CanceledException {
         progressListener.setDebug(true);
-        progressListener.setTasks("Computing BioNJ tree", "creating nodes...");
+        progressListener.setTasks("BioNJ", "Creating nodes...");
         progressListener.setMaximum(distances.getNtax());
         PhyloTree tree = computeBioNJTree(progressListener, taxaBlock, distances);
         progressListener.close();
@@ -28,8 +28,8 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> {
 
 
     //todo: treeSelector, ConsensusTree; junit Tests,
-    public static PhyloTree computeBioNJTree(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances)
-            throws InterruptedException, CanceledException {
+    private PhyloTree computeBioNJTree(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances)
+            throws InterruptedException, CanceledException{
 
         PhyloTree tree = new PhyloTree();
             HashMap TaxaHashMap = new HashMap();
