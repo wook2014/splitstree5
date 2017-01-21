@@ -3,31 +3,30 @@ package splitstree5.core.algorithms.distances2trees;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
-import jloda.util.Basic;
-import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.core.misc.Taxon;
 
 public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> {
+
     @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees)
-            throws InterruptedException, CanceledException {
+            throws Exception {
 
         progressListener.setDebug(true);
         progressListener.setTasks("UPGMA", "Creating nodes...");
         progressListener.setMaximum(taxaBlock.getNtax());
 
-        //PhyloTree tree = makeUPGMATree(progressListener, taxaBlock, distances);
-        //trees.getTrees().addAll(tree);
+        PhyloTree tree = makeUPGMATree(progressListener, taxaBlock, distances);
+        trees.getTrees().addAll(tree);
 
         progressListener.close();
     }
 
-    public static/*private*/ PhyloTree makeUPGMATree(/*ProgressListener progressListener*/ TaxaBlock taxaBlock, DistancesBlock distances) /*throws CanceledException*/ {
+    private PhyloTree makeUPGMATree(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances)
+        throws Exception {
 
         PhyloTree tree = new PhyloTree();
         int ntax = distances.getNtax();
@@ -58,7 +57,7 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> {
             }
         }
 
-        int steps = 0;
+        //int steps = 0;
         for (int actual = ntax; actual > 2; actual--) {
 
             int i_min = 0, j_min = 0;
@@ -111,8 +110,8 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> {
                 heights[j_min] = heights[actual];
             }
 
-            steps += actual;
-            //progressListener.incrementProgress();
+            //steps += actual;
+            progressListener.incrementProgress();
         }
 
         int sister = 2;
@@ -126,58 +125,5 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> {
         tree.setWeight(right, d[1][sister] / 2.0);
         tree.setRoot(root);
         return tree;
-    }
-
-    // TESTING
-    public static void testApply(TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees){
-        PhyloTree tree = makeUPGMATree(taxaBlock, distances);
-        //PhyloTree tree = new PhyloTree();
-        System.out.println("output: "+tree.toString());
-    }
-
-    public static void main(String[] args) {
-        String[] names = {"a","b","c","d","e"};
-        Taxon[] taxons = new Taxon[5];
-        TaxaBlock taxaBlock = new TaxaBlock();
-        DistancesBlock distancesBlock = new DistancesBlock();
-        TreesBlock treesBlock = new TreesBlock();
-
-        for(int i=0; i<names.length; i++){
-            taxons[i] = new Taxon();
-            taxons[i].setName(names[i]);
-            taxaBlock.getTaxa().add(taxons[i]);
-        }
-
-        double[][] dist = {{0, 17, 21, 31, 23},
-                {17, 0,	30,	34,	21},
-                {21, 30, 0, 28, 39},
-                {31, 34, 28, 0, 43},
-                { 23, 21, 39, 43, 0}};
-
-        /*double[][] dist = {{0, 0, 0, 0, 0},
-                {17, 0,	0,	0,	0},
-                {21, 30, 0, 0, 0},
-                {31, 34, 28, 0, 0},
-                { 23, 21, 39, 43, 0}};*/
-
-        distancesBlock.set(dist);
-
-        testApply(taxaBlock,distancesBlock,treesBlock);
-
-        /*PhyloTree tree = new PhyloTree();
-        Node a = tree.newNode();
-        Node b = tree.newNode();
-        Node c = tree.newNode();
-        Node d = tree.newNode();
-        Node Ncd = tree.newNode();
-
-        Edge ab = tree.newEdge(a, b);
-        Edge cN = tree.newEdge(Ncd, c);
-        Edge dN = tree.newEdge(Ncd, d);
-        Edge acd = tree.newEdge(a, Ncd);
-
-        System.out.println("output: "+tree.toString());*/
-
-        //output: (((a:8.5,b:8.5):2.5,e:11.0):16.5,(d:14.0,c:14.0):16.5)root
     }
 }
