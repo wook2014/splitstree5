@@ -19,11 +19,15 @@
 
 package splitstree5.core.algorithms.distances2trees;
 
-import jloda.phylo.PhyloTree;
+import jloda.util.ProgressListener;
+import jloda.util.ProgressPercentage;
 import org.junit.Test;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.Taxon;
+
+import static junit.framework.Assert.assertEquals;
 
 /**
  * nj test
@@ -31,36 +35,35 @@ import splitstree5.core.misc.Taxon;
  */
 public class NeighborJoiningTest {
 
+    private NeighborJoining nj = new NeighborJoining();
+
     @Test
-    public void runAlgorithm() {
+    public void testCompute() throws Exception{
+
+        String output = "(a:1.0,b:4.0,(c:2.0,(f:5.0,(d:3.0,e:2.0):1.0):1.0):1.0)";
+
         String[] names = {"a", "b", "c", "d", "e", "f"};
         Taxon[] taxons = new Taxon[6];
         TaxaBlock taxaBlock = new TaxaBlock();
-        DistancesBlock distancesBlock = new DistancesBlock();
-
         for (int i = 0; i < names.length; i++) {
             taxons[i] = new Taxon();
             taxons[i].setName(names[i]);
             taxaBlock.getTaxa().add(taxons[i]);
         }
-
-        double[][] dist =
-                {{0, 5, 4, 7, 6, 8},
-                        {5, 0, 7, 10, 9, 11},
-                        {4, 7, 0, 7, 6, 8},
-                        {7, 10, 7, 0, 5, 9},
-                        {6, 9, 6, 5, 0, 8},
-                        {8, 11, 8, 9, 8, 0}};
-
+        DistancesBlock distancesBlock = new DistancesBlock();
+        double[][] dist = {{0, 5, 4, 7, 6, 8},
+                {5, 0, 7, 10, 9, 11},
+                {4, 7, 0, 7, 6, 8},
+                {7, 10, 7, 0, 5, 9},
+                {6, 9, 6, 5, 0, 8},
+                {8, 11, 8, 9, 8, 0}};
         distancesBlock.set(dist);
 
-        // TESTING
+        ProgressListener pl = new ProgressPercentage();
+        TreesBlock treesBlock = new TreesBlock();
 
-        // todo: make this a proper test that compares the result against a known result
-
-        PhyloTree tree = NeighborJoining.computeNJTree(taxaBlock, distancesBlock);
-        //PhyloTree tree = new PhyloTree();
-        System.out.println("output: " + tree.toString());
-
+        nj.compute(pl, taxaBlock, distancesBlock, treesBlock);
+        System.out.println("output: " + treesBlock.getTrees().get(0).toString());
+        assertEquals(output, treesBlock.getTrees().get(0).toString());
     }
 }

@@ -57,7 +57,6 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> {
             }
         }
 
-        //int steps = 0;
         for (int actual = ntax; actual > 2; actual--) {
 
             int i_min = 0, j_min = 0;
@@ -110,7 +109,6 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> {
                 heights[j_min] = heights[actual];
             }
 
-            //steps += actual;
             progressListener.incrementProgress();
         }
 
