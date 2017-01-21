@@ -3,6 +3,7 @@ package splitstree5.core.algorithms.distances2trees;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
+import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.DistancesBlock;
@@ -13,7 +14,7 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> {
 
     @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees)
-            throws Exception {
+            throws InterruptedException, CanceledException {
 
         progressListener.setDebug(true);
         progressListener.setTasks("UPGMA", "Creating nodes...");
@@ -26,7 +27,7 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> {
     }
 
     private PhyloTree makeUPGMATree(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances)
-        throws Exception {
+        throws InterruptedException, CanceledException {
 
         PhyloTree tree = new PhyloTree();
         int ntax = distances.getNtax();

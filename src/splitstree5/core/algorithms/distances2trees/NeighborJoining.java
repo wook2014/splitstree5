@@ -23,6 +23,7 @@ package splitstree5.core.algorithms.distances2trees;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
+import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.DistancesBlock;
@@ -43,7 +44,7 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> {
      * @throws InterruptedException
      */
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees)
-            throws Exception {
+            throws InterruptedException, CanceledException {
         progressListener.setDebug(true);
         progressListener.setTasks("Neighbor Joining", "Init.");
         progressListener.setMaximum(distances.getNtax());
@@ -55,7 +56,7 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> {
     }
 
     private PhyloTree computeNJTree(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances)
-            throws Exception{
+            throws InterruptedException, CanceledException{
         int nTax = distances.getNtax();
         PhyloTree tree = new PhyloTree();
         HashMap<String, Node> Taxa2Nodes = new HashMap<>();
