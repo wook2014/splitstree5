@@ -161,6 +161,18 @@ public class TaxaBlock extends ADataBlock {
     TaxaSet hiddenTaxa;
 
     /**
+     * Returns the set of all taxa
+     *
+     * @return the set 1,2..,ntax
+     */
+    public TaxaSet getTaxaSet() {
+        TaxaSet all = new TaxaSet();
+        all.set(1, getNtax());
+        return all;
+    }
+
+
+    /**
      * additionally hide more taxa. This is used in the presence of partial trees.
      * Note that these numbers are given with respect to the current taxa set,
      * not the original one!

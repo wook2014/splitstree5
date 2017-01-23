@@ -20,6 +20,7 @@
 package splitstree5.core.datablocks;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
@@ -27,7 +28,10 @@ import jloda.util.Basic;
 import jloda.util.NotOwnerException;
 import splitstree4.core.TaxaSet;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A trees block
@@ -38,8 +42,18 @@ public class TreesBlock extends ADataBlock {
     private boolean partial = false; // are partial trees present?
     private boolean rooted = false; // are the trees explicitly rooted?
 
+    // todo need for treeSelector, use od delete
+    final private Map<String, String> translate = new HashMap<>();
+
     public TreesBlock() {
         trees = FXCollections.observableArrayList();
+        // for translate update
+        trees.addListener(new ListChangeListener<PhyloTree>() {
+            @Override
+            public void onChanged(Change<? extends PhyloTree> c) {
+                if(c.wasAdded()) updateTranslate((List<PhyloTree>) c.getAddedSubList());
+            }
+        });
     }
 
     public TreesBlock(String name) {
@@ -55,6 +69,7 @@ public class TreesBlock extends ADataBlock {
     @Override
     public void clear() {
         trees.clear();
+        translate.clear();
         partial = false;
         rooted = false;
         setShortDescription("");
@@ -95,6 +110,46 @@ public class TreesBlock extends ADataBlock {
 
     // todo: replace classes from splitstree4 (need it for the tree selector)
 
+    private void updateTranslate(List<PhyloTree> addedTress){
+
+        //todo update translate field according to adding function from st4
+        /*for(PhyloTree tree : addedTress){
+
+            /*if (translate.size() == 0) // need to setup translation table
+            {
+                for (Node v = tree.getFirstNode(); v != null; v = tree.getNextNode(v)) {
+                    String nodelabel = tree.getLabel(v);
+                    if (nodelabel != null) {
+                        int t = taxa.indexOf(nodelabel);
+                        if (t > 0)
+                            // translate.put(taxa.getLabel(t), nodelabel);
+                            translate.put(nodelabel, taxa.getLabel(t));
+                        else if (!getPartial())
+                            throw new SplitsException("Invalid node label: " + nodelabel);
+                    }
+                }
+            }
+            checkTranslation(tree, this.translate);
+
+            ntrees++;
+            trees.setSize(ntrees);
+            trees.add(ntrees - 1, tree);
+
+            // make sure tree gets unique name
+            names.setSize(ntrees);
+            if (name.length() == 0)
+                name = "tree";
+            if (names.indexOf(name) != -1) {
+                int count = 1;
+                while (names.indexOf(name + "_" + count) != -1)
+                    count++;
+                name += "_" + count;
+            }
+            names.add(ntrees - 1, name);
+            taxasets.add(ntrees - 1, (this.getTaxaInTree(taxa, ntrees)));
+        }*/
+    }
+
     /**
      * returns the set of taxa contained in this tree.
      *
@@ -127,5 +182,30 @@ public class TreesBlock extends ADataBlock {
             }
         }
         return seen;
+    }
+
+    /**
+     * Returns the set of taxa associated with a given node-label
+     *
+     * @param nlab the node label
+     * @return the set of taxa mapped to the given node label
+     */
+    public TaxaSet getTaxaForLabel(TaxaBlock taxa, String nlab) {
+        TaxaSet result = new TaxaSet();
+        try {
+            if (nlab != null)
+                for (int t = 1; t <= taxa.getNtax(); t++) {
+                    if (translate.get(nlab).equals(taxa.getLabel(t))) {
+                        result.set(t);
+                    }
+                }
+        } catch (Exception ex) {
+            Basic.caught(ex);
+        }
+        return result;
+    }
+
+    public Map<String, String> getTranslate(){
+        return this.translate;
     }
 }
