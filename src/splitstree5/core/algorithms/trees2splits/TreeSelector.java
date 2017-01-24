@@ -16,7 +16,6 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 
 public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> {
@@ -33,11 +32,11 @@ public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> {
         progressListener.setDebug(true);
         progressListener.setTasks("Tree selector", "Init.");
         //progressListener.setMaximum(?);
-        //splits.getSplits().addAll(apply(taxaBlock,trees));
+        apply(progressListener, taxaBlock, splits);
         progressListener.close();
     }
 
-    public void apply(ProgressListener progressListener, TaxaBlock taxa, TreesBlock trees, SplitsBlock splits) throws Exception{
+    public void apply(ProgressListener progressListener, TaxaBlock taxa, SplitsBlock splits) throws Exception{
         if (which < 0)
             which = 1;
         if (which > trees.getNTrees())

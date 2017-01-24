@@ -13,7 +13,7 @@ import static junit.framework.Assert.assertEquals;
 
 public class BioNJTest {
 
-    BioNJ bioNJ = new BioNJ();
+    private BioNJ bioNJ = new BioNJ();
 
     @Test
     public void testCompute() throws Exception {

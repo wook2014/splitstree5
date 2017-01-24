@@ -112,7 +112,9 @@ public class TreesBlock extends ADataBlock {
 
     private void updateTranslate(List<PhyloTree> addedTress){
 
-        //todo update translate field according to adding function from st4
+        //todo update translate field according to addTree function from st4
+        //todo get parent taxa, st4 : taxa is got as an input of addTree function
+
         /*for(PhyloTree tree : addedTress){
 
             /*if (translate.size() == 0) // need to setup translation table
