@@ -22,7 +22,7 @@ public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> {
 
     //todo: classes, imported form splitstree4 : TaxaSet, TreesUtilities
 
-    private int which = 1; // which tree is to be converted?
+    private int which = 0; // which tree is to be converted?
     private TreesBlock trees;
 
     @Override
@@ -38,9 +38,9 @@ public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> {
 
     public void apply(ProgressListener progressListener, TaxaBlock taxa, SplitsBlock splits) throws Exception{
         if (which < 0)
-            which = 1;
+            which = 0;
         if (which > trees.getNTrees())
-            which = trees.getNTrees();
+            which = trees.getNTrees()-1;
         setOptionWhich(which);
 
         if (trees.getNTrees() == 0)
@@ -83,8 +83,8 @@ public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> {
         progressListener.setTasks("TreeSelector", "Extracting splits");
         progressListener.incrementProgress();
 
-        //todo
-        //tree2splitsRec(root, null, trees, taxa, splits);
+
+        tree2splitsRec(root, null, trees, taxa, splits);
 
         //splits.getProperties().setCompatibility(Splits.Properties.COMPATIBLE);
         splits.setCompatibility(Compatibility.compatible);

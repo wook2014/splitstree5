@@ -48,12 +48,12 @@ public class TreesBlock extends ADataBlock {
     public TreesBlock() {
         trees = FXCollections.observableArrayList();
         // for translate update
-        trees.addListener(new ListChangeListener<PhyloTree>() {
+        /*trees.addListener(new ListChangeListener<PhyloTree>() {
             @Override
             public void onChanged(Change<? extends PhyloTree> c) {
                 if(c.wasAdded()) updateTranslate((List<PhyloTree>) c.getAddedSubList());
             }
-        });
+        });*/
     }
 
     public TreesBlock(String name) {

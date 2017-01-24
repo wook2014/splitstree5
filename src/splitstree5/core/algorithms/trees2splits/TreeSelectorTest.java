@@ -1,7 +1,10 @@
 package splitstree5.core.algorithms.trees2splits;
 
 import jloda.phylo.PhyloTree;
+import jloda.util.ProgressListener;
+import jloda.util.ProgressPercentage;
 import org.junit.Test;
+import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.Taxon;
@@ -11,7 +14,7 @@ import static org.junit.Assert.*;
 
 public class TreeSelectorTest {
 
-    private TreeSelector treeSelector;
+    private TreeSelector treeSelector = new TreeSelector();
 
     @Test
     public void testCompute() throws Exception {
@@ -29,6 +32,12 @@ public class TreeSelectorTest {
         System.out.print(tree.toString());
         TreesBlock trees = new TreesBlock();
         trees.getTrees().add(tree);
+
+        ProgressListener pl = new ProgressPercentage();
+        SplitsBlock splits = new SplitsBlock();
+        treeSelector.compute(pl, taxaBlock, trees, splits);
+
+        System.out.print(splits.getSplits().get(0));
 
         assertEquals(3,3);
     }
