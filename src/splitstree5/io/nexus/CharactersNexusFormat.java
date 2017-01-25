@@ -24,6 +24,7 @@ package splitstree5.io.nexus;
  * Created by huson on 12/22/16.
  */
 public class CharactersNexusFormat {
+    private boolean respectCase;
     private boolean transpose;
     private boolean interleave;
     private boolean labels;
@@ -84,5 +85,13 @@ public class CharactersNexusFormat {
 
     public void setMatchChar(char matchChar) {
         this.matchChar = matchChar;
+    }
+
+    public boolean isRespectCase() {
+        return respectCase;
+    }
+
+    public void setRespectCase(boolean respectCase) {
+        this.respectCase = respectCase;
     }
 }

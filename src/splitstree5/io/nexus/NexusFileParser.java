@@ -24,10 +24,7 @@ import splitstree5.core.Document;
 import splitstree5.core.algorithms.Report;
 import splitstree5.core.dag.DAGUtils;
 import splitstree5.core.dag.UpdateState;
-import splitstree5.core.datablocks.ADataBlock;
-import splitstree5.core.datablocks.DistancesBlock;
-import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.datablocks.TreesBlock;
+import splitstree5.core.datablocks.*;
 import splitstree5.core.misc.Taxon;
 
 import java.io.FileReader;
@@ -102,6 +99,10 @@ public class NexusFileParser {
                 final TaxaBlock taxaBlock2 = new TaxaBlock();
                 TaxaNexusIO.parse(np, taxaBlock2);
                 return taxaBlock2;
+            } else if (np.peekMatchIgnoreCase("begin characters;")) {
+                final CharactersBlock characters = new CharactersBlock();
+                taxonNamesFound.addAll(CharactersNexusIO.parse(np, taxaBlock, characters, null));
+                return characters;
             } else if (np.peekMatchIgnoreCase("begin distances;")) {
                 final DistancesBlock distances = new DistancesBlock();
                 taxonNamesFound.addAll(DistancesNexusIO.parse(np, taxaBlock, distances, null));

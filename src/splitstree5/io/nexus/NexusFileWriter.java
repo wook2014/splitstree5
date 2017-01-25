@@ -78,7 +78,6 @@ public class NexusFileWriter {
             DistancesNexusIO.write(w, taxaBlock, (DistancesBlock) dataBlock, null);
         } else if (dataBlock instanceof TreesBlock) {
             TreesNexusIO.write(w, taxaBlock, (TreesBlock) dataBlock, null);
-
         } else {
             System.err.println("Nexus write not implemented for block of type " + Basic.getShortName(dataBlock.getClass()));
         }

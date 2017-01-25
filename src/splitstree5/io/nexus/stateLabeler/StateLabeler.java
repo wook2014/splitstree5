@@ -80,4 +80,10 @@ public abstract class StateLabeler {
     abstract public int getMaximumLabelLength();
 
     abstract public String getSymbolsUsed();
+
+    abstract public boolean hasStates(int pos);
+
+    public String[] getStates(int site) {
+        return new String[0];
+    }
 }

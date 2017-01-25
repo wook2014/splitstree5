@@ -89,6 +89,11 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> {
         splitsBlock.getSplits().addAll(splits);
     }
 
+    @Override
+    public boolean isApplicable(TaxaBlock taxaBlock, DistancesBlock parent, SplitsBlock child) {
+        return taxaBlock.getNtax() >= 4;
+    }
+
     public double getOptionCutOff() {
         return optionCutOff;
     }

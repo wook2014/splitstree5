@@ -27,7 +27,7 @@ import java.util.HashMap;
  * Original author: David Bryant
  * Created by Daria on 30.10.2016.
  */
-public class StandardUnknownSL extends StateLabeler {
+public class StandardStateLabeler extends StateLabeler {
 
     private final HashMap<String, Character>[] token2charMaps; //Map from strings to char, one for each site
     private final HashMap<Character, String>[] char2tokenMaps;  //Reverse of the above map
@@ -43,7 +43,7 @@ public class StandardUnknownSL extends StateLabeler {
      * @param matchChar
      * @param gapChar
      */
-    public StandardUnknownSL(int nchar, char missingChar, char matchChar, char gapChar) {
+    public StandardStateLabeler(int nchar, char missingChar, char matchChar, char gapChar) {
         maxState = -1;
 
         availableChars = "1234567890";  //These are the standard ones for paup, mesquite etc.
@@ -75,7 +75,7 @@ public class StandardUnknownSL extends StateLabeler {
      * @param site NUmber of site (character)
      * @return true if states/tokens have been stored for that site.
      */
-    protected boolean hasStates(int site) {
+    public boolean hasStates(int site) {
         return !(token2charMaps.length <= site || token2charMaps[site] == null) && (!token2charMaps[site].isEmpty());
     }
 

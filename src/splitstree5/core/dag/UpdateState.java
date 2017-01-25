@@ -24,5 +24,5 @@ package splitstree5.core.dag;
  * Created by huson on 12/25/16.
  */
 public enum UpdateState {
-    VALID, COMPUTING, INVALID, FAILED
+    VALID, COMPUTING, INVALID, FAILED, NOT_APPLICABLE
 }

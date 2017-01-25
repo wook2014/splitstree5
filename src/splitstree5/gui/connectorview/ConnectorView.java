@@ -110,7 +110,11 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
 
         controller.getApplyButton().setOnAction((e) -> algorithmPane.syncController2Model());
 
-        controller.getApplyButton().disableProperty().bind(algorithmPane.applicableProperty().not().or(document.updatingProperty()));
+        controller.getApplyButton().disableProperty().bind(document.updatingProperty().or(algorithmPane.applicableProperty().not()));
+
+        connector.applicableProperty().addListener((c, o, n) -> {
+            System.err.println(connector.getAlgorithm().getName() + " is applicable: " + n);
+        });
 
         controller.getCancelButton().setOnAction((e) -> {
             ConnectorView.this.stage.close();

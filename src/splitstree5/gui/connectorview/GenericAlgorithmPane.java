@@ -33,6 +33,7 @@ import javafx.util.converter.FloatStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import jloda.util.Basic;
 import splitstree5.core.connectors.AConnector;
+import splitstree5.core.dag.UpdateState;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.undo.UndoManager;
 import splitstree5.utils.Option;
@@ -237,5 +238,6 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
                 Basic.caught(e);
             }
         }
+        connector.setState(UpdateState.INVALID);
     }
 }

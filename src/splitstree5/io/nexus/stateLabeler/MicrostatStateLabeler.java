@@ -26,7 +26,7 @@ import java.util.TreeSet;
  * Original author: David Bryant
  * Created by Daria on 30.10.2016.
  */
-public class MicrosatSL extends StateLabeler {
+public class MicrostatStateLabeler extends StateLabeler {
     private final static int OFFSET = 256; //Offset for chars used to store microsattelite alleles (to avoid conflicts)
     private final TreeSet<Character> charsUsed = new TreeSet<>(); //Set of characters used in microsatelite data.
 
@@ -57,5 +57,10 @@ public class MicrosatSL extends StateLabeler {
             symbols.append(((Character) aCharsUsed).charValue());
         }
         return symbols.toString();
+    }
+
+    @Override
+    public boolean hasStates(int pos) {
+        return false;
     }
 }

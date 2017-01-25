@@ -29,14 +29,14 @@ import java.util.HashMap;
  * Original author: David Bryant
  * Created by Daria on 30.10.2016.
  */
-public class ProteinSL extends StateLabeler {
+public class ProteinStateLabeler extends StateLabeler {
     private final HashMap<String, Character>[] token2charMaps; //Map from strings to char, one for each site
     private final HashMap<Character, String>[] char2tokenMaps;  //Reverse of the above map
 
     /**
      * Constructor
      */
-    public ProteinSL() {
+    public ProteinStateLabeler() {
         final String availableChars = CharactersType.protein.getSymbols();
         final String[] codes = {"ala", "arg", "asn", "asp", "cys", "gln", "glu", "gly", "his", "ile", "leu",
                 "lys", "met", "phe", "pro", "ser", "thr", "trp", "tyr", "val"};
@@ -73,5 +73,10 @@ public class ProteinSL extends StateLabeler {
     @Override
     public String getSymbolsUsed() {
         return CharactersType.protein.getSymbols();
+    }
+
+    @Override
+    public boolean hasStates(int pos) {
+        return pos < token2charMaps.length && token2charMaps[pos] != null && token2charMaps[pos].size() > 0;
     }
 }

@@ -379,7 +379,7 @@ public class DistancesNexusIO {
      * @param taxaBlock
      * @return longer the max length.
      */
-    private static int maxLabelLength(TaxaBlock taxaBlock) {
+    public static int maxLabelLength(TaxaBlock taxaBlock) {
         int len;
         int longer = 0;
 

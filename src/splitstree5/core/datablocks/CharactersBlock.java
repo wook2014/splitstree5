@@ -34,8 +34,8 @@ public class CharactersBlock extends ADataBlock {
     // characters matrix
     private char[][] matrix;
 
-    // set of letters used
-    private String letters = "";
+    // set of symbols used
+    private String symbols = "";
 
     private char gapCharacter = '-';
     private char missingCharacter = '?';
@@ -61,17 +61,17 @@ public class CharactersBlock extends ADataBlock {
 
     // maps every symbol in the matrix to an integer "color" (ignoring the case). This map is fixed for known datatypes.
 
-    private final Map<Character, Integer> letter2color;
-    // maps every color to an array of letters
-    private final Map<Integer, char[]> color2letters;
+    private final Map<Character, Integer> symbol2color;
+    // maps every color to an array of symbols
+    private final Map<Integer, char[]> color2symbols;
 
     /**
      * constructor
      */
     public CharactersBlock() {
         matrix = new char[0][0];
-        letter2color = new HashMap<>();
-        color2letters = new HashMap<>();
+        symbol2color = new HashMap<>();
+        color2symbols = new HashMap<>();
     }
 
     /**
@@ -108,12 +108,12 @@ public class CharactersBlock extends ADataBlock {
     /**
      * gets the value for i and j
      *
-     * @param i in range 1..nTax
-     * @param j in range 1..nchar
+     * @param t in range 1..nTax
+     * @param pos in range 1..nchar
      * @return value
      */
-    public char get(int i, int j) {
-        return matrix[i - 1][j - 1];
+    public char get(int t, int pos) {
+        return matrix[t - 1][pos - 1];
     }
 
     /**
@@ -189,7 +189,7 @@ public class CharactersBlock extends ADataBlock {
 
     public void setDataType(CharactersType dataType) {
         this.dataType = dataType;
-        resetLetters();
+        resetSymbols();
     }
 
     public boolean isHasAmbiguousStates() {
@@ -258,31 +258,25 @@ public class CharactersBlock extends ADataBlock {
         this.pInvar = pInvar;
     }
 
-    public String getLettersForColor() {
-        return letters;
+    public String getSymbolsForColor() {
+        return symbols;
     }
 
-    /**
-     * sets the letters for standard or microsat data.
-     *
-     * @param letters
-     */
-    public void setLettersForStandardOrMicrosatData(String letters) {
-        if (dataType == CharactersType.standard || dataType == CharactersType.microsat || dataType == CharactersType.unknown) {
-            this.letters = letters.replaceAll("\\s", "").toLowerCase();
-        }
-    }
-
-    public void resetLetters() {
+    public void resetSymbols() {
         if (dataType != null)
-            letters = dataType.getSymbols();
+            symbols = dataType.getSymbols();
         else
-            letters = "";
+            symbols = "";
         computeColors();
     }
 
-    public String getLetters() {
-        return letters;
+    public String getSymbols() {
+        return symbols;
+    }
+
+    public void setSymbols(String symbols) {
+        this.symbols = symbols;
+        computeColors();
     }
 
     /**
@@ -300,47 +294,57 @@ public class CharactersBlock extends ADataBlock {
      * @param ch a character
      * @return the color of the character or -1 if the character is not found.
      */
-    public int getColorForLetter(final char ch) {
-        if (letter2color.get(ch) != null)
-            return this.letter2color.get(ch);
+    public int getColor(final char ch) {
+        if (symbol2color.get(ch) != null)
+            return this.symbol2color.get(ch);
         else
             return -1;
     }
 
     /**
-     * Returns the letters associated with a color
+     * get the color for a given taxon and position
+     * @param t
+     * @param pos
+     * @return color
+     */
+    public int getColor(int t, int pos) {
+        return getColor(matrix[t - 1][pos - 1]);
+    }
+
+    /**
+     * Returns the symbols associated with a color
      *
      * @param color a color
      * @return an Array with the List of Symbols matching the color
      */
-    public char[] getLettersForColor(int color) {
-        return this.color2letters.get(color);
+    public char[] getSymbols(int color) {
+        return this.color2symbols.get(color);
     }
 
     /**
-     * Computes the color2letters and letter2color maps
+     * Computes the color2symbols and symbol2color maps
      */
     public void computeColors() {
-        this.letter2color.clear();
-        this.color2letters.clear();
+        this.symbol2color.clear();
+        this.color2symbols.clear();
         int count = 1;
-        if (letters != null) {
+        if (symbols != null) {
 
-            for (byte p = 0; p < letters.length(); p++) {
-                final char lowerCase = Character.toLowerCase(letters.charAt(p));
-                final char upperCase = Character.toUpperCase(letters.charAt(p));
-                if (!this.letter2color.containsKey(lowerCase)) {
-                    this.letter2color.put(lowerCase, count);
+            for (byte p = 0; p < symbols.length(); p++) {
+                final char lowerCase = Character.toLowerCase(symbols.charAt(p));
+                final char upperCase = Character.toUpperCase(symbols.charAt(p));
+                if (!this.symbol2color.containsKey(lowerCase)) {
+                    this.symbol2color.put(lowerCase, count);
                     if (upperCase != lowerCase) {
-                        this.letter2color.put(Character.toUpperCase(lowerCase), count);
-                        this.color2letters.put(count, new char[]{lowerCase, upperCase});
+                        this.symbol2color.put(Character.toUpperCase(lowerCase), count);
+                        this.color2symbols.put(count, new char[]{lowerCase, upperCase});
                     } else
-                        this.color2letters.put(count, new char[]{lowerCase});
+                        this.color2symbols.put(count, new char[]{lowerCase});
                     count++;
                 }
             }
 
         }
-        this.ncolors = this.color2letters.size();
+        this.ncolors = this.color2symbols.size();
     }
 }

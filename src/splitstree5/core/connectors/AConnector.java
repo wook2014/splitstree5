@@ -22,7 +22,10 @@ package splitstree5.core.connectors;
 
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import splitstree5.core.algorithms.Algorithm;
@@ -33,7 +36,7 @@ import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TaxaBlock;
 
 /**
- * A connector between data nodes. THis is where algorithms are run
+ * A connector between data nodes. This is where algorithms are run
  * Created by huson on 12/21/16.
  */
 public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANode {
@@ -46,7 +49,20 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
 
     private Algorithm<P, C> algorithm;
 
-    private final BooleanProperty disable = new SimpleBooleanProperty(true);
+    private BooleanProperty applicable = new SimpleBooleanProperty(false); // algorithm is set and applicable?
+
+    private final ChangeListener<UpdateState> parentStateChangeListener = new ChangeListener<UpdateState>() {
+        @Override
+        public void changed(ObservableValue<? extends UpdateState> observable, UpdateState oldValue, UpdateState newValue) {
+            if (AConnector.this.getAlgorithm() != null) {
+                if (newValue == UpdateState.VALID) {
+                    applicable.set(algorithm != null && algorithm.isApplicable(taxaBlock, parent.getDataBlock(), child.getDataBlock()));
+                } else {
+                    applicable.set(false);
+                }
+            }
+        }
+    };
 
     /**
      * constructor
@@ -61,8 +77,9 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
         parent.getChildren().add(this);
         this.child = child;
         this.children = FXCollections.unmodifiableObservableList(FXCollections.observableArrayList(child));
-        disable.bind(stateProperty().isEqualTo(UpdateState.VALID).not());
         service = new ConnectorService<>(this);
+
+        parent.stateProperty().addListener(parentStateChangeListener);
     }
 
     /**
@@ -75,11 +92,12 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
      */
     public AConnector(TaxaBlock taxaBlock, ADataNode<P> parent, ADataNode<C> child, Algorithm<P, C> algorithm) {
         this(taxaBlock, parent, child);
-        this.algorithm = algorithm;
+        setAlgorithm(algorithm);
     }
 
     public void disconnect() {
         parent.getChildren().remove(this);
+        parent.stateProperty().removeListener(parentStateChangeListener);
     }
 
     public TaxaBlock getTaxaBlock() {
@@ -104,20 +122,11 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
     }
 
     public void setAlgorithm(Algorithm<P, C> algorithm) {
-        if (this.algorithm != null)
+        if (this.algorithm != null) {
             this.algorithm.disabledProperty().unbind();
-        this.algorithm = algorithm;
-        if (algorithm != null) {
-            algorithm.disabledProperty().bind(disable);
         }
-    }
-
-    public boolean getDisable() {
-        return disable.get();
-    }
-
-    public BooleanProperty disableProperty() {
-        return disable;
+        this.algorithm = algorithm;
+        applicable.set(algorithm != null && algorithm.isApplicable(taxaBlock, parent.getDataBlock(), child.getDataBlock()));
     }
 
     @Override
@@ -127,6 +136,10 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
 
             switch (state) {
                 case INVALID:
+                    if (!isApplicable()) {
+                        super.setState(UpdateState.NOT_APPLICABLE);
+                        break;
+                    }
                     if (Platform.isFxApplicationThread())
                         service.cancel();
                     else
@@ -160,5 +173,18 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
      */
     public void forceRecompute() {
         setState(UpdateState.INVALID);
+    }
+
+    /**
+     * is an algorithm set and applicable?
+     *
+     * @return true if set and applicable
+     */
+    public boolean isApplicable() {
+        return applicable.get();
+    }
+
+    public ReadOnlyBooleanProperty applicableProperty() {
+        return ReadOnlyBooleanProperty.readOnlyBooleanProperty(applicable);
     }
 }

@@ -73,4 +73,15 @@ abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> exte
     public void setDisabled(boolean disabled) {
         this.disabled.set(disabled);
     }
+
+    /**
+     * determines whether applicable
+     *
+     * @param taxaBlock
+     * @param parent
+     * @param child
+     */
+    public boolean isApplicable(TaxaBlock taxaBlock, P parent, C child) {
+        return true;
+    }
 }

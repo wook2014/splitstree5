@@ -27,9 +27,9 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.datablocks.characters.CharactersType;
-import splitstree5.io.nexus.stateLabeler.MicrosatSL;
-import splitstree5.io.nexus.stateLabeler.ProteinSL;
-import splitstree5.io.nexus.stateLabeler.StandardUnknownSL;
+import splitstree5.io.nexus.stateLabeler.MicrostatStateLabeler;
+import splitstree5.io.nexus.stateLabeler.ProteinStateLabeler;
+import splitstree5.io.nexus.stateLabeler.StandardStateLabeler;
 import splitstree5.io.nexus.stateLabeler.StateLabeler;
 
 import java.io.IOException;
@@ -83,52 +83,52 @@ public class CharactersNexusIO {
      * parse a distances block
      *
      * @param np
-     * @param taxaBlock
-     * @param charactersBlock
+     * @param taxa
+     * @param characters
      * @param format
      * @return taxon names found in this block
      * @throws IOException
      */
-    public static ArrayList<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, CharactersBlock charactersBlock, @Nullable CharactersNexusFormat format) throws IOException {
-        charactersBlock.clear();
+    public static ArrayList<String> parse(NexusStreamParser np, TaxaBlock taxa, CharactersBlock characters, @Nullable CharactersNexusFormat format) throws IOException {
+        characters.clear();
 
         if (format == null)
             format = new CharactersNexusFormat();
 
         np.matchBeginBlock(NAME);
 
-        if (taxaBlock.getNtax() == 0) {
+        if (taxa.getNtax() == 0) {
             np.matchIgnoreCase("dimensions ntax=");
             int ntax = np.getInt(1, Integer.MAX_VALUE);
             np.matchIgnoreCase("nchar=");
             int nchar = np.getInt(1, Integer.MAX_VALUE);
-            charactersBlock.setDimension(ntax, nchar);
+            characters.setDimension(ntax, nchar);
             np.matchIgnoreCase(";");
         } else {
-            np.matchIgnoreCase("dimensions ntax=" + taxaBlock.getNtax());
+            np.matchIgnoreCase("dimensions ntax=" + taxa.getNtax());
             np.matchIgnoreCase("nchar=");
             int nchar = np.getInt(1, Integer.MAX_VALUE);
-            charactersBlock.setDimension(taxaBlock.getNtax(), nchar);
+            characters.setDimension(taxa.getNtax(), nchar);
             np.matchIgnoreCase(";");
         }
 
 
         if (np.peekMatchIgnoreCase("PROPERTIES")) {
             final List<String> tokens = np.getTokensLowerCase("properties", ";");
-            charactersBlock.setGammaParam(np.findIgnoreCase(tokens, "gammaShape=", Float.MAX_VALUE));
-            charactersBlock.setPInvar(np.findIgnoreCase(tokens, "PINVAR=", Float.MAX_VALUE));
+            characters.setGammaParam(np.findIgnoreCase(tokens, "gammaShape=", Float.MAX_VALUE));
+            characters.setPInvar(np.findIgnoreCase(tokens, "PINVAR=", Float.MAX_VALUE));
             if (tokens.size() != 0)
                 throw new IOException("line " + np.lineno() + ": '" + tokens + "' unexpected in PROPERTIES");
         } else {
-            charactersBlock.setGammaParam(Float.MAX_VALUE);
-            charactersBlock.setPInvar(Float.MAX_VALUE);
+            characters.setGammaParam(Float.MAX_VALUE);
+            characters.setPInvar(Float.MAX_VALUE);
         }
 
         if (np.peekMatchIgnoreCase("FORMAT")) {
-            final List<String> formatTokens = np.getTokensLowerCase("format", ";");
+            final List<String> formatTokens = np.getTokensLowerCase("FORMAT", ";");
             {
                 final String dataType = np.findIgnoreCase(formatTokens, "dataType=", Basic.toString(CharactersType.values(), " "), CharactersType.unknown.toString());
-                charactersBlock.setDataType(CharactersType.valueOfIgnoreCase(dataType));
+                characters.setDataType(CharactersType.valueOfIgnoreCase(dataType));
             }
 
             // we ignore respect case:
@@ -142,8 +142,8 @@ public class CharactersNexusIO {
                             + " All character-states will be converted to lower case");
             }
 
-            charactersBlock.setMissingCharacter(Character.toLowerCase(np.findIgnoreCase(formatTokens, "missing=", null, '?')));
-            charactersBlock.setGapCharacter(Character.toLowerCase(np.findIgnoreCase(formatTokens, "gap=", null, '-')));
+            characters.setMissingCharacter(Character.toLowerCase(np.findIgnoreCase(formatTokens, "missing=", null, '?')));
+            characters.setGapCharacter(Character.toLowerCase(np.findIgnoreCase(formatTokens, "gap=", null, '-')));
 
 
             {
@@ -154,8 +154,10 @@ public class CharactersNexusIO {
             format.setMatchChar(np.findIgnoreCase(formatTokens, "matchChar=", null, (char) 0));
 
             {
-                String symbols = np.findIgnoreCase(formatTokens, "symbols=", "\"", "\"", charactersBlock.getLetters());
-                charactersBlock.setLettersForStandardOrMicrosatData(symbols);
+                String symbols = np.findIgnoreCase(formatTokens, "symbols=", "\"", "\"", characters.getSymbols());
+                if (characters.getDataType() == CharactersType.standard || characters.getDataType() == CharactersType.microsat || characters.getDataType() == CharactersType.unknown) {
+                    characters.setSymbols(symbols.replaceAll("\\s", "").toLowerCase());
+                }
             }
 
             {
@@ -165,7 +167,7 @@ public class CharactersNexusIO {
                 labels = np.findIgnoreCase(formatTokens, "labels", true, labels);
                 format.setLabels(labels);
 
-                if (taxaBlock.getNtax() == 0 && !format.isLabels())
+                if (taxa.getNtax() == 0 && !format.isLabels())
                     throw new IOException("line " + np.lineno() + ": 'no labels' invalid because no taxlabels given in TAXA block");
             }
 
@@ -191,7 +193,7 @@ public class CharactersNexusIO {
                 boolean diploid = np.findIgnoreCase(formatTokens, "diploid=no", false, false);
                 diploid = np.findIgnoreCase(formatTokens, "diploid=yes", true, diploid);
                 diploid = np.findIgnoreCase(formatTokens, "diploid", true, diploid);
-                charactersBlock.setDiploid(diploid);
+                characters.setDiploid(diploid);
             }
 
             if (formatTokens.size() != 0)
@@ -200,28 +202,28 @@ public class CharactersNexusIO {
 
         if (np.peekMatchIgnoreCase("CharWeights")) {
             np.matchIgnoreCase("CharWeights");
-            double[] charWeights = new double[charactersBlock.getNchar() + 1];
-            for (int i = 1; i <= charactersBlock.getNchar(); i++)
+            double[] charWeights = new double[characters.getNchar() + 1];
+            for (int i = 1; i <= characters.getNchar(); i++)
                 charWeights[i] = np.getDouble();
             np.matchIgnoreCase(";");
-            charactersBlock.setCharacterWeights(charWeights);
+            characters.setCharacterWeights(charWeights);
         } else
-            charactersBlock.setCharacterWeights(null);
+            characters.setCharacterWeights(null);
         // adding CharStateLabels
 
         final StateLabeler stateLabeler;
         if (np.peekMatchIgnoreCase("CharStateLabels")) {
             np.matchIgnoreCase("CharStateLabels");
-            switch (charactersBlock.getDataType()) {
+            switch (characters.getDataType()) {
                 case protein:
-                    stateLabeler = new ProteinSL();
+                    stateLabeler = new ProteinStateLabeler();
                     break;
                 case microsat:
-                    stateLabeler = new MicrosatSL();
+                    stateLabeler = new MicrostatStateLabeler();
                     break;
                 default:
                 case unknown:
-                    stateLabeler = new StandardUnknownSL(charactersBlock.getNchar(), charactersBlock.getMissingCharacter(), format.getMatchChar(), charactersBlock.getGapCharacter());
+                    stateLabeler = new StandardStateLabeler(characters.getNchar(), characters.getMissingCharacter(), format.getMatchChar(), characters.getGapCharacter());
                     break;
             }
 
@@ -236,11 +238,11 @@ public class CharactersNexusIO {
         {
             np.matchIgnoreCase("MATRIX");
             if (!format.isTranspose() && !format.isInterleave()) {
-                taxonNamesFound = readMatrix(np, taxaBlock, charactersBlock, format, stateLabeler, unknownStates);
+                taxonNamesFound = readMatrix(np, taxa, characters, format, stateLabeler, unknownStates);
             } else if (format.isTranspose() && !format.isInterleave()) {
-                taxonNamesFound = readMatrixTransposed(np, taxaBlock, charactersBlock, format, stateLabeler, unknownStates);
+                taxonNamesFound = readMatrixTransposed(np, taxa, characters, format, stateLabeler, unknownStates);
             } else if (!format.isTranspose() && format.isInterleave()) {
-                taxonNamesFound = readMatrixInterleaved(np, taxaBlock, charactersBlock, format, stateLabeler, unknownStates);
+                taxonNamesFound = readMatrixInterleaved(np, taxa, characters, format, stateLabeler, unknownStates);
             } else
                 throw new IOException("line " + np.lineno() + ": can't read matrix!");
             np.matchIgnoreCase(";");
@@ -250,7 +252,7 @@ public class CharactersNexusIO {
         if (unknownStates.size() > 0)  // warn that stuff has been replaced!
         {
             new Alert("Unknown states encountered in matrix:\n" + Basic.toString(unknownStates, " ") + "\n"
-                    + "All replaced by the gap-char '" + charactersBlock.getGapCharacter() + "'");
+                    + "All replaced by the gap-char '" + characters.getGapCharacter() + "'");
         }
 
         return taxonNamesFound;
@@ -261,20 +263,20 @@ public class CharactersNexusIO {
      *
      * @param np
      * @param taxa
-     * @param charactersBlock
+     * @param characters
      * @param format
      * @param stateLabeler
      * @param unknownStates
      * @return
      * @throws IOException
      */
-    private static ArrayList<String> readMatrix(NexusStreamParser np, TaxaBlock taxa, CharactersBlock charactersBlock, CharactersNexusFormat format,
+    private static ArrayList<String> readMatrix(NexusStreamParser np, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format,
                                                 StateLabeler stateLabeler, Set<Character> unknownStates) throws IOException {
-        final boolean checkStates = charactersBlock.getDataType() == CharactersType.protein ||
-                charactersBlock.getDataType() == CharactersType.DNA || charactersBlock.getDataType() == CharactersType.RNA;
-        final ArrayList<String> taxonNamesFound = new ArrayList<>(charactersBlock.getNtax());
+        final boolean checkStates = characters.getDataType() == CharactersType.protein ||
+                characters.getDataType() == CharactersType.DNA || characters.getDataType() == CharactersType.RNA;
+        final ArrayList<String> taxonNamesFound = new ArrayList<>(characters.getNtax());
 
-        for (int t = 1; t <= charactersBlock.getNtax(); t++) {
+        for (int t = 1; t <= characters.getNtax(); t++) {
             if (format.isLabels()) {
                 if (taxa.getNtax() > 0) {
                     np.matchLabelRespectCase(taxa.getLabel(t));
@@ -288,7 +290,7 @@ public class CharactersNexusIO {
 
             final List<String> tokenList = (format.isTokens() ? new LinkedList<>() : null);
 
-            while (length < charactersBlock.getNchar()) {
+            while (length < characters.getNchar()) {
                 final String word = np.getWordRespectCase();
                 if (tokenList != null) {
                     tokenList.add(word);
@@ -303,7 +305,7 @@ public class CharactersNexusIO {
             }
 
 
-            if (str.length() != charactersBlock.getNchar())
+            if (str.length() != characters.getNchar())
                 throw new IOException("line " + np.lineno() + ": wrong number of chars: " + str.length());
 
             for (int i = 1; i <= str.length(); i++) {
@@ -319,15 +321,15 @@ public class CharactersNexusIO {
                     if (t == 1)
                         throw new IOException("line " + np.lineno() + " matchchar illegal in first sequence");
                     else
-                        charactersBlock.set(t, i, charactersBlock.get(1, i));
+                        characters.set(t, i, characters.get(1, i));
                 } else {
-                    if (!checkStates || isValidState(charactersBlock, format, ch))
-                        charactersBlock.set(t, i, ch);
+                    if (!checkStates || isValidState(characters, format, ch))
+                        characters.set(t, i, ch);
                     else if (treatUnknownAsError)
                         throw new IOException("line " + np.lineno() + " invalid character: " + ch);
                     else  // don't know this, replace by gap
                     {
-                        charactersBlock.set(t, i, charactersBlock.getGapCharacter());
+                        characters.set(t, i, characters.getGapCharacter());
                         unknownStates.add(ch);
                     }
                 }
@@ -341,21 +343,21 @@ public class CharactersNexusIO {
      *
      * @param np
      * @param taxa
-     * @param charactersBlock
+     * @param characters
      * @param format
      * @param stateLabeler
      * @param unknownStates
      * @return
      * @throws IOException
      */
-    private static ArrayList<String> readMatrixTransposed(NexusStreamParser np, TaxaBlock taxa, CharactersBlock charactersBlock, CharactersNexusFormat format,
+    private static ArrayList<String> readMatrixTransposed(NexusStreamParser np, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format,
                                                           StateLabeler stateLabeler, Set<Character> unknownStates) throws IOException {
-        final boolean checkStates = charactersBlock.getDataType() == CharactersType.protein ||
-                charactersBlock.getDataType() == CharactersType.DNA || charactersBlock.getDataType() == CharactersType.RNA;
-        final ArrayList<String> taxonNamesFound = new ArrayList<>(charactersBlock.getNtax());
+        final boolean checkStates = characters.getDataType() == CharactersType.protein ||
+                characters.getDataType() == CharactersType.DNA || characters.getDataType() == CharactersType.RNA;
+        final ArrayList<String> taxonNamesFound = new ArrayList<>(characters.getNtax());
 
         if (format.isLabels()) {
-            for (int t = 1; t <= charactersBlock.getNtax(); t++) {
+            for (int t = 1; t <= characters.getNtax(); t++) {
                 if (taxa.getNtax() > 0) {
                     np.matchLabelRespectCase(taxa.getLabel(t));
                     taxonNamesFound.add(taxa.getLabel(t));
@@ -364,14 +366,14 @@ public class CharactersNexusIO {
             }
         }
         // read the matrix:
-        for (int i = 1; i <= charactersBlock.getNchar(); i++) {
+        for (int i = 1; i <= characters.getNchar(); i++) {
             String str = "";
             int length = 0;
             List<String> tokenList = null;
             if (format.isTokens())
                 tokenList = new LinkedList<>();
 
-            while (length < charactersBlock.getNtax()) {
+            while (length < characters.getNtax()) {
                 String tmp = np.getWordRespectCase();
                 if (tokenList != null) {
                     tokenList.add(tmp);
@@ -386,10 +388,10 @@ public class CharactersNexusIO {
                 str = stateLabeler.parseSequence(tokenList, i, true);
             }
 
-            if (str.length() != charactersBlock.getNtax())
+            if (str.length() != characters.getNtax())
                 throw new IOException("line " + np.lineno() +
                         ": wrong number of chars: " + str.length());
-            for (int t = 1; t <= charactersBlock.getNtax(); t++) {
+            for (int t = 1; t <= characters.getNtax(); t++) {
                 //char ch = str.getRowSubset(t - 1);
                 // @todo: until we now that respectcase works, fold all characters to lower-case
                 char ch;
@@ -399,18 +401,18 @@ public class CharactersNexusIO {
                     ch = str.charAt(t - 1);
 
                 if (ch == format.getMatchChar()) {
-                    if (i == 1)
-                        throw new IOException("line " + np.lineno() + ": matchchar illegal in first line");
+                    if (t == 1)
+                        throw new IOException("line " + np.lineno() + ": matchchar illegal in first col");
                     else
-                        charactersBlock.set(t, i, charactersBlock.get(t, 1));
+                        characters.set(t, i, characters.get(1, i));
                 } else {
-                    if (!checkStates || isValidState(charactersBlock, format, ch))
-                        charactersBlock.set(t, i, ch);
+                    if (!checkStates || isValidState(characters, format, ch))
+                        characters.set(t, i, ch);
                     else if (treatUnknownAsError)
                         throw new IOException("line " + np.lineno() + " invalid character: " + ch);
                     else  // don't know this, replace by gap
                     {
-                        charactersBlock.set(t, i, charactersBlock.getGapCharacter());
+                        characters.set(t, i, characters.getGapCharacter());
                         unknownStates.add(ch);
                     }
                 }
@@ -424,24 +426,24 @@ public class CharactersNexusIO {
      *
      * @param np
      * @param taxa
-     * @param charactersBlock
+     * @param characters
      * @param format
      * @param stateLabeler
      * @param unknownStates
      * @return
      * @throws IOException
      */
-    private static ArrayList<String> readMatrixInterleaved(NexusStreamParser np, TaxaBlock taxa, CharactersBlock charactersBlock, CharactersNexusFormat format,
+    private static ArrayList<String> readMatrixInterleaved(NexusStreamParser np, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format,
                                                            StateLabeler stateLabeler, Set<Character> unknownStates) throws IOException {
-        final boolean checkStates = charactersBlock.getDataType() == CharactersType.protein ||
-                charactersBlock.getDataType() == CharactersType.DNA || charactersBlock.getDataType() == CharactersType.RNA;
-        final ArrayList<String> taxonNamesFound = new ArrayList<>(charactersBlock.getNtax());
+        final boolean checkStates = characters.getDataType() == CharactersType.protein ||
+                characters.getDataType() == CharactersType.DNA || characters.getDataType() == CharactersType.RNA;
+        final ArrayList<String> taxonNamesFound = new ArrayList<>(characters.getNtax());
 
         try {
             int c = 0;
-            while (c < charactersBlock.getNchar()) {
+            while (c < characters.getNchar()) {
                 int linelength = 0;
-                for (int t = 1; t <= charactersBlock.getNtax(); t++) {
+                for (int t = 1; t <= characters.getNtax(); t++) {
                     if (format.isLabels()) {
                         if (taxa.getNtax() == 0) {
                             taxonNamesFound.add(np.getLabelRespectCase());
@@ -474,12 +476,11 @@ public class CharactersNexusIO {
                     if (t == 1) { // first line in this block
                         linelength = str.length();
                     } else if (linelength != str.length())
-                        throw new IOException("line " + np.lineno() +
-                                ": wrong number of chars: " + str.length() + " should be: " + linelength);
+                        throw new IOException("line " + np.lineno() + ": wrong number of chars: " + str.length() + " should be: " + linelength);
 
                     for (int d = 1; d <= linelength; d++) {
                         int i = c + d;
-                        if (i > charactersBlock.getNchar())
+                        if (i > characters.getNchar())
                             throw new IOException("line " + np.lineno() + ": too many chars");
 
 //char ch = str.getRowSubset(d - 1);
@@ -495,15 +496,15 @@ public class CharactersNexusIO {
                             if (t == 1) {
                                 throw new IOException("line " + np.lineno() + ": matchchar illegal in first sequence");
                             } else
-                                charactersBlock.set(t, i, charactersBlock.get(1, i));
+                                characters.set(t, i, characters.get(1, t));
                         } else {
-                            if (!checkStates || isValidState(charactersBlock, format, ch))
-                                charactersBlock.set(t, i, ch);
+                            if (!checkStates || isValidState(characters, format, ch))
+                                characters.set(t, i, ch);
                             else if (treatUnknownAsError)
                                 throw new IOException("line " + np.lineno() + " invalid character: " + ch);
                             else  // don't know this, replace by gap
                             {
-                                charactersBlock.set(t, i, charactersBlock.getGapCharacter());
+                                characters.set(t, i, characters.getGapCharacter());
                                 unknownStates.add(ch);
                             }
                         }
@@ -558,41 +559,284 @@ public class CharactersNexusIO {
      * @param ch character to check
      * @return boolean  true if character consistent with the symbol list of the block's datatype
      */
-    private static boolean isValidState(CharactersBlock charactersBlock, CharactersNexusFormat format, char ch) {
-        if (charactersBlock.getDataType() == CharactersType.unknown)
+    private static boolean isValidState(CharactersBlock characters, CharactersNexusFormat format, char ch) {
+        if (characters.getDataType() == CharactersType.unknown)
             return true;
-        if (ch == charactersBlock.getMissingCharacter() || ch == charactersBlock.getGapCharacter() || ch == format.getMatchChar())
+        if (ch == characters.getMissingCharacter() || ch == characters.getGapCharacter() || ch == format.getMatchChar())
             return true;
-        if (charactersBlock.getLetters().indexOf(ch) >= 0)
+        if (characters.getSymbols().indexOf(ch) >= 0)
             return true;
-        return charactersBlock.getDataType() == CharactersType.DNA && AmbiguityCodes.getInstance().getDNAForCode(ch) != null;
+        return characters.getDataType() == CharactersType.DNA && AmbiguityCodes.getInstance().getDNAForCode(ch) != null;
     }
-
 
     /**
      * write a block in nexus format
      *
      * @param w
-     * @param taxaBlock
-     * @param charactersBlock
-     * @param charactersNexusFormat - if null
+     * @param taxa
+     * @param characters
+     * @param format - if null
      * @throws IOException
      */
-    public static void write(Writer w, TaxaBlock taxaBlock, CharactersBlock charactersBlock, @Nullable CharactersNexusFormat charactersNexusFormat) throws IOException {
-        if (charactersNexusFormat == null)
-            charactersNexusFormat = new CharactersNexusFormat();
+    public static void write(Writer w, TaxaBlock taxa, CharactersBlock characters, @Nullable CharactersNexusFormat format) throws IOException {
+        if (format == null)
+            format = new CharactersNexusFormat();
 
         w.write("\nBEGIN " + NAME + ";\n");
-        w.write("DIMENSIONS ntax=" + charactersBlock.getNtax() + " nchar=" + charactersBlock.getNchar() + ";\n");
-        w.write("FORMAT");
+        w.write("DIMENSIONS ntax=" + characters.getNtax() + " nchar=" + characters.getNchar() + ";\n");
+        w.write("FORMAT\n");
+        w.write("\tdatatype='" + characters.getDataType().toString() + "'");
 
-        // write matrix:
-        {
-            w.write("MATRIX\n");
+        if (format.isRespectCase())
+            w.write(" respectcase");
 
+        if (characters.getMissingCharacter() != 0)
+            w.write(" missing=" + characters.getMissingCharacter());
+        if (format.getMatchChar() != 0)
+            w.write(" matchChar=" + format.getMatchChar());
+        if (characters.getGapCharacter() != 0)
+            w.write(" gap=" + characters.getGapCharacter());
+        if (characters.isDiploid())
+            w.write(" diploid = yes");
+        if (!characters.getSymbols().equals("") && !format.isTokens()) {
+            w.write(" symbols=\"");
+            for (int i = 0; i < characters.getSymbols().length(); i++) {
+                //if (i > 0)
+                //w.write(" ");
+                w.write(characters.getSymbols().charAt(i));
+            }
+            w.write("\"");
+        }
+
+        if (format.isLabels())
+            w.write(" labels=left");
+        else
+            w.write(" labels=no");
+
+        if (format.isTranspose())
+            w.write(" transpose=yes");
+        else
+            w.write(" transpose=no");
+
+        if (format.isTokens())
+            w.write(" tokens=yes");
+
+        if (format.isInterleave())
+            w.write(" interleave=yes");
+        else
+            w.write(" interleave=no");
+
+        w.write(";\n");
+        if (characters.getCharacterWeights() != null) {
+            w.write("CHARWEIGHTS");
+            double[] charWeights = characters.getCharacterWeights();
+            for (int i = 1; i < charWeights.length; i++)
+                w.write(" " + charWeights[i]);
             w.write(";\n");
         }
 
-        w.write("END; [" + NAME + "]\n");
+        // Writes the CharStateLabels only if I read them in the input
+        if (false) {
+            final Hashtable<Integer, String> charLabeler = new Hashtable<>();
+            StateLabeler stateLabeler = new ProteinStateLabeler();
+
+
+            w.write("CHARSTATELABELS\n");
+
+            for (int i = 1; i <= characters.getNchar(); i++) {
+                if (charLabeler.containsKey(i) || stateLabeler != null) {
+                    w.write("\t" + i + " ");
+                    String label = charLabeler.get(i);
+                    if (label != null)
+                        w.write(label);
+                    if (stateLabeler.hasStates(i)) {
+                        w.write('/');
+                        String[] stateArray = stateLabeler.getStates(i);
+                        for (String aStateArray : stateArray) w.write(" ''" + aStateArray + "''");
+                    }
+                    w.write("\n");
+                }
+            }
+            w.write(";\n");
+        }
+
+        w.write("MATRIX\n");
+        if (characters.getMatrix() != null)
+            if (format.isTranspose() && !format.isInterleave())
+                writeMatrixTranposed(w, taxa, characters, format, null);// todo: setup and pass a state labeler
+            else if (!format.isTranspose() && format.isInterleave())
+                writeMatrixInterleaved(w, taxa, characters, format, null);// todo: setup and pass a state labeler
+            else
+                writeMatrix(w, taxa, characters, format, null); // todo: setup and pass a state labeler
+        w.write(";\nEND; [" + NAME + "]\n");
+    }
+
+    private static void writeMatrix(Writer w, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format, StateLabeler stateLabeler) throws IOException {
+
+        //Determine width of matrix columns (if appropriate) and taxa column (if appropriate)
+        int columnWidth = 0;
+        if (format.isTokens())
+            columnWidth = stateLabeler.getMaximumLabelLength() + 1;
+        int taxaWidth = 0;
+        if (format.isLabels()) {
+            taxaWidth = maxLabelLength(taxa) + 1;
+            if (format.isLabelQuotes())
+                taxaWidth += 2;
+        }
+
+        for (int t = 1; t <= characters.getNtax(); t++) {
+            //Print taxon label
+            if (format.isLabels()) {
+                w.write(padLabel(taxa.getLabel(t), format.isLabelQuotes(), taxaWidth));
+            }
+
+            if (!format.isTokens() || stateLabeler == null) { //Write sequence without tokens
+                for (int c = 1; c <= characters.getNchar(); c++) {
+                    if (format.getMatchChar() == 0 || t == 1 || characters.get(t, c) != characters.get(1, c))
+                        w.write(characters.get(t, c)); // get original?
+                    else
+                        w.write(format.getMatchChar());
+                }
+            } else {  //Write with tokens
+                for (int c = 1; c <= characters.getNchar(); c++) {
+                    if (format.getMatchChar() == 0 || c == 1 || characters.get(t, c) != characters.get(1, c))
+                        w.write(padLabel(stateLabeler.char2token(c, characters.get(t, c)), false, columnWidth));
+                    else
+                        w.write(padLabel("" + format.getMatchChar(), false, columnWidth));
+                }
+            }
+            w.write("\n");
+        }
+    }
+
+    private static void writeMatrixTranposed(Writer w, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format, StateLabeler stateLabeler) throws IOException {
+        //Get the max width of a column, given taxa and token labels
+
+        //Determine width of matrix columns (if appropriate) and taxa column (if appropriate)
+        int columnWidth = 0;
+        if (format.isTokens())
+            columnWidth = stateLabeler.getMaximumLabelLength() + 1;
+        int taxaWidth = 0;
+        if (format.isLabels()) {
+            taxaWidth = maxLabelLength(taxa) + 1;
+            if (format.isLabelQuotes())
+                taxaWidth += 2;
+        }
+        columnWidth = Math.max(taxaWidth, columnWidth); //Taxa printed above columns
+
+        //Print taxa first
+        if (format.isLabels()) {
+            for (int t = 1; t <= characters.getNtax(); t++) {
+                w.write(padLabel(taxa.getLabel(t), true, columnWidth));
+            }
+            w.write("\n");
+        }
+
+        if (!format.isTokens()) {  //No tokens
+            String padString = padLabel("", false, columnWidth - 1); //String of (columnWidth-1) spaces.
+            for (int c = 1; c <= characters.getNchar(); c++) {
+                for (int t = 1; t <= characters.getNtax(); t++) {
+                    if (format.getMatchChar() == 0 || t == 1 || characters.get(t, c) != characters.get(1, c))
+                        w.write(characters.get(t, c)); // todo: get original
+                    else
+                        w.write(format.getMatchChar());
+                    w.write(padString);
+                }
+                w.write("\n");
+            }
+        } else {
+            for (int c = 1; c <= characters.getNchar(); c++) {
+                for (int t = 1; t <= characters.getNtax(); t++) {
+                    if (format.getMatchChar() == 0 || t == 1 || characters.get(t, c) != characters.get(1, c))
+                        w.write(padLabel(stateLabeler.char2token(c, characters.get(t, c)), false, columnWidth));
+                    else
+                        w.write(padLabel("" + format.getMatchChar(), false, columnWidth));
+                }
+                w.write("\n");
+            }
+        }
+    }
+
+    private static void writeMatrixInterleaved(Writer w, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format, StateLabeler stateLabeler) throws IOException {
+        //Determine width of matrix columns (if appropriate) and taxa column (if appropriate)
+        int columnWidth = 1;
+        if (format.isTokens())
+            columnWidth = stateLabeler.getMaximumLabelLength() + 1;
+        int taxaWidth = 0;
+        if (format.isLabels()) {
+            taxaWidth = maxLabelLength(taxa) + 1;
+            if (format.isLabelQuotes())
+                taxaWidth += 2;
+        }
+
+        // will use 60 columns per block
+        int maxColumns = Math.max(1, 60 / columnWidth); //Maximum number of sites to print on one line.
+
+        for (int c0 = 1; c0 <= characters.getNchar(); c0 += maxColumns) {
+            final int cMax = Math.min(c0 + maxColumns - 1, characters.getNchar());
+            for (int t = 1; t <= taxa.getNtax(); t++) {
+                if (format.isLabels()) {
+                    w.write(padLabel(taxa.getLabel(t), format.isLabelQuotes(), taxaWidth));
+                }
+                if (!format.isTokens()) {
+                    for (int c = c0; c <= cMax; c++) {
+                        if (format.getMatchChar() == 0 || t == 1 || characters.get(t, c) != characters.get(1, c))
+                            w.write(characters.get(t, c));
+                        else
+                            w.write(format.getMatchChar());
+                    }
+
+                } else {
+                    for (int c = c0; c <= cMax; c++) {
+                        if (format.getMatchChar() == 0 || t == 1 || characters.get(t, c) != characters.get(1, c))
+                            w.write(padLabel(stateLabeler.char2token(t, characters.get(t, c)), false, columnWidth));
+                        else
+                            w.write(padLabel("" + format.getMatchChar(), false, columnWidth));
+                    }
+                }
+                w.write("\n");
+            }
+            if (c0 < characters.getNchar())
+                w.write("\n");
+        }
+    }
+
+    /**
+     * Formats a label. Adds single quotes if addQuotes set to true.
+     * Appends spaces until the length of the resulting string is at least length.
+     *
+     * @param label     String
+     * @param addQuotes flag: oif true then label is returned surrounded by single quotes
+     * @param length    add spaces to acheive this length
+     * @return String of given length, or longer if the label + quotes exceed the length.
+     */
+    public static String padLabel(String label, boolean addQuotes, int length) {
+        if (addQuotes)
+            label = "'" + label + "'";
+        if (label.length() >= length)
+            return label;
+        char[] padding = new char[length - label.length()];
+        Arrays.fill(padding, ' ');
+        String paddingString = new String(padding);
+        return label + paddingString;
+    }
+
+    /**
+     * Get the max length of all the labels.
+     *
+     * @param taxa
+     * @return longer the max length.
+     */
+    public static int maxLabelLength(TaxaBlock taxa) {
+        int len;
+        int longer = 0;
+
+        for (int i = 1; i <= taxa.getNtax(); i++) {
+            len = taxa.getLabel(i).length();
+            if (longer < len) {
+                longer = len;
+            }
+        }
+        return longer;
     }
 }

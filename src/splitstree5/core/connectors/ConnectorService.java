@@ -138,7 +138,7 @@ public class ConnectorService<P extends ADataBlock, C extends ADataBlock> extend
 
                 @Override
                 public void checkForCancel() throws CanceledException {
-                    isCanceled = MyTask.this.cancel();
+                    isCanceled = MyTask.this.isCancelled();
                     if (cancelable && isCanceled) {
                         if (debug)
                             System.err.println("progress.checkForCancel()=true");
