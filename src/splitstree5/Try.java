@@ -41,6 +41,7 @@ public class Try extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         final Document document = new Document();
+        //document.setFileName("test//nexus//distances7-taxa.nex");
         document.setFileName("examples/distances2.nex");
 
         NexusFileParser.parse(document);

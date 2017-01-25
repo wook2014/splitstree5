@@ -23,6 +23,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
+import jloda.util.Basic;
+import splitstree4.core.SplitsException;
+import splitstree4.core.TaxaSet;
 import splitstree5.core.misc.Taxon;
 
 import java.io.IOException;
@@ -151,5 +154,92 @@ public class TaxaBlock extends ADataBlock {
             labels.add(taxon.getName());
         }
         return labels;
+    }
+
+    // todo: replace classes from splitstree4 (need it for the tree selector)
+    TaxaBlock originalTaxa;
+    TaxaSet hiddenTaxa;
+
+    /**
+     * Returns the set of all taxa
+     *
+     * @return the set 1,2..,ntax
+     */
+    public TaxaSet getTaxaSet() {
+        TaxaSet all = new TaxaSet();
+        all.set(1, getNtax());
+        return all;
+    }
+
+
+    /**
+     * additionally hide more taxa. This is used in the presence of partial trees.
+     * Note that these numbers are given with respect to the current taxa set,
+     * not the original one!
+     *
+     * @param additionalHidden
+     */
+    public void hideAdditionalTaxa(TaxaSet additionalHidden) throws SplitsException {
+        if (originalTaxa == null)
+            originalTaxa = (TaxaBlock) this.clone(); // make a copy
+
+        TaxaSet additionalO = new TaxaSet();
+
+        int ntax = getOriginalTaxa().getNtax();
+        if (additionalHidden != null) {
+            for (int oID = 1; oID <= ntax; oID++) {
+                int nID = indexOf(originalTaxa.get(oID));
+                if (nID != -1 && additionalHidden.get(nID)) {
+                    additionalO.set(oID);
+                }
+            }
+        }
+        if (hiddenTaxa != null && hiddenTaxa.intersects(additionalO))
+            throw new SplitsException("hidden <" + hiddenTaxa + "> and additional <"
+                    + additionalO + "> intersect");
+
+        int count = 0;
+        for (int oID = 1; oID <= ntax; oID++) {
+            if ((hiddenTaxa == null || !hiddenTaxa.get(oID))
+                    && (additionalHidden == null || !additionalO.get(oID))) {
+                ++count;
+            }
+        }
+        //setNtax(count);
+        count = 0;
+        for (int oID = 1; oID <= ntax; oID++) {
+            {
+                if ((hiddenTaxa == null || !hiddenTaxa.get(oID))
+                        && (additionalHidden == null || !additionalO.get(oID))) {
+                    if (getOriginalTaxa() != null) {
+                        //???
+                        //setLabel(++count, getOriginalTaxa().getLabel(oID));
+                        //setInfo(count, getOriginalTaxa().getInfo(oID));
+
+                    }
+                }
+            }
+        }
+    }
+
+    public TaxaBlock getOriginalTaxa() {
+        return originalTaxa;
+    }
+
+    public Object clone()
+    {
+        TaxaBlock result = new TaxaBlock();
+
+        try {
+            //result.setNTax(getNtax());
+            for (int t = 1; t <= getNtax(); t++) {
+                //result.setLabel(t, getLabel(t));
+                //result.setInfo(t, getInfo(t));
+                result.add(get(t));
+            }
+        } catch (Exception ex) {
+            Basic.caught(ex);
+        }
+        return result;
     }
 }
