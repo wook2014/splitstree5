@@ -27,10 +27,30 @@ import java.util.BitSet;
  */
 public final class ASplit {
     private final BitSet A;
-    private final int ntax;
-    private float weight;
-    private float confidence;
+    private final BitSet B;
+    private double weight;
+    private double confidence;
     private String label;
+
+    /**
+     * constructor
+     *
+     * @param A
+     * @param ntax
+     */
+    public ASplit(BitSet A, int ntax) {
+        this(A, ntax, 1, 1);
+    }
+    /**
+     * constructor
+     *
+     * @param A
+     * @param ntax
+     * @param weight
+     */
+    public ASplit(BitSet A, int ntax, double weight) {
+        this(A, ntax, weight, 1);
+    }
 
     /**
      * constructor
@@ -39,74 +59,103 @@ public final class ASplit {
      * @param ntax
      * @param weight
      */
-    public ASplit(BitSet A, int ntax, float weight) {
-        this.ntax = ntax;
+    public ASplit(BitSet A, int ntax, double weight, double confidence) {
         this.A = new BitSet();
-        this.A.or(A);
-        if (!this.A.get(1))
-            this.A.flip(1, ntax + 1); // always want A to be the set containing 1...
+        this.B = new BitSet();
+        if (A.get(1)) {
+            this.A.or(A);
+            this.B.or(A);
+            this.B.flip(1, ntax + 1);
+        } else {
+            this.A.or(A);
+            this.A.flip(1, ntax + 1);
+            this.B.or(A);
+        }
         this.weight = weight;
+        this.confidence = confidence;
+    }
+
+    /**
+     * constructor
+     *
+     * @param A
+     * @param B
+     */
+    public ASplit(BitSet A, BitSet B) {
+        this(A, B, 1, 1);
+    }
+
+    /**
+     * constructor
+     *
+     * @param A
+     * @param B
+     * @param weight
+     */
+    public ASplit(BitSet A, BitSet B, double weight) {
+        this(A, B, weight, 1);
+    }
+
+    /**
+     * constructor
+     *
+     * @param A
+     * @param B
+     * @param weight
+     */
+    public ASplit(BitSet A, BitSet B, double weight, double confidence) {
+        this.A = new BitSet();
+        this.B = new BitSet();
+        if (A.get(1)) {
+            this.A.or(A);
+            this.B.or(B);
+        } else {
+            this.A.or(B);
+            this.B.or(A);
+        }
+        this.weight = weight;
+        this.confidence = confidence;
     }
 
     public int ntax() {
-        return ntax;
+        return A.cardinality() + B.cardinality();
     }
 
     public int size() {
-        return Math.min(A.cardinality(), ntax - A.cardinality());
+        return Math.min(A.cardinality(), B.cardinality());
     }
 
+    /**
+     * get part A
+     *
+     * @return A
+     */
     public BitSet getA() {
         return A;
     }
 
     /**
-     * get complement
+     * get part B
      *
-     * @return complement
+     * @return B
      */
-    public BitSet getComplement() {
-        BitSet result = (BitSet) A.clone();
-        result.flip(1, ntax + 1);
-        return result;
+    public BitSet getB() {
+        return B;
     }
 
-    /**
-     * get complement
-     *
-     * @param ntax
-     * @return complement
-     */
-    public BitSet getComplement(int ntax) {
-        BitSet result = new BitSet();
-        for (int t = A.nextClearBit(1); t != -1 && t <= ntax; t = A.nextClearBit(t + 1))
-            result.set(t);
-        return result;
-    }
-
-    /**
-     * does the set A contain the given taxon
-     *
-     * @param t in range 1 to ntax
-     * @return true, if contained
-     */
-    public boolean isContainedInA(int t) {
-        return A.get(t + 1);
-    }
-
-    public float getWeight() {
+    public double getWeight() {
         return weight;
     }
 
-    public void setWeight(float weight) {
+    public void setWeight(double weight) {
         this.weight = weight;
     }
 
-    public float getConfidence() {
+    public double getConfidence() {
         return confidence;
     }
 
-    public void setConfidence(float confidence) {
+    public void setConfidence(double confidence) {
         this.confidence = confidence;
     }
 
@@ -116,6 +165,26 @@ public final class ASplit {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    /**
+     * is taxon t contained in part A?
+     *
+     * @param t number from 1 to ntax
+     * @return true, if contained
+     */
+    public boolean isContainedInA(int t) {
+        return A.get(t);
+    }
+
+    /**
+     * is taxon t contained in part B?
+     *
+     * @param t number from 1 to ntax
+     * @return true, if contained
+     */
+    public boolean isContainedInB(int t) {
+        return B.get(t);
     }
 
     public String toString() {
@@ -132,16 +201,16 @@ public final class ASplit {
     }
 
     /**
-     * is this equal to the given split in terms of ntax, set A and weight?
+     * is this equal to the given split in terms of A and B
      *
      * @param obj
-     * @return true, if obj is instance of SimpleSplit and has the same ntax, set A and weight
+     * @return true, if obj is instance of ASplit and has the sets A and B
      */
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ASplit) {
             final ASplit that = (ASplit) obj;
-            return this.ntax == that.ntax && this.A.equals(that.A) && this.weight == that.weight;
+            return this.A.equals(that.A) && this.B.equals(that.B);
         } else
             return false;
     }

@@ -39,6 +39,8 @@ public class SplitsBlock extends ADataBlock {
 
     private float threshold = 0; // todo: this belongs in SplitsFilter?
 
+    private boolean partial = false;
+
     private int[] cycle;
 
     /**
@@ -113,6 +115,14 @@ public class SplitsBlock extends ADataBlock {
         this.threshold = threshold;
     }
 
+    public boolean isPartial() {
+        return partial;
+    }
+
+    public void setPartial(boolean partial) {
+        this.partial = partial;
+    }
+
     public int[] getCycle() {
         return cycle;
     }
@@ -137,5 +147,4 @@ public class SplitsBlock extends ADataBlock {
         }
         this.cycle=cycle;
     }
-
 }

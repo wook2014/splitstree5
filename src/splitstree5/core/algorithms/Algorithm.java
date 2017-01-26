@@ -62,6 +62,19 @@ abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> exte
      */
     abstract public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, P parent, C child) throws Exception;
 
+    /**
+     * perform the computation for datablocks of unknown type
+     *
+     * @param progressListener
+     * @param taxaBlock
+     * @param parent
+     * @param child
+     * @throws Exception
+     */
+    public void compute0(ProgressListener progressListener, TaxaBlock taxaBlock, ADataBlock parent, ADataBlock child) throws Exception {
+        compute(progressListener, taxaBlock, (P) parent, (C) child);
+    }
+
     public boolean isDisabled() {
         return disabled.get();
     }

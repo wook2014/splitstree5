@@ -4,69 +4,51 @@ package splitstree5.core.algorithms.trees2splits;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
-import jloda.util.NotOwnerException;
 import jloda.util.ProgressListener;
-import splitstree4.core.TaxaSet;
-import splitstree5.core.misc.Compatibility;
-import splitstree5.utils.nexus.TreesUtilities;
-import splitstree5.utils.nexus.SplitsUtilities;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
+import splitstree5.core.misc.Compatibility;
+import splitstree5.utils.nexus.SplitsUtilities;
+import splitstree5.utils.nexus.TreesUtilities;
 
-import java.util.Iterator;
+import java.util.BitSet;
+import java.util.Collection;
 
+/**
+ * Obtains splits from a selected tree
+ * Daniel Huson, 2005
+ */
 public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> {
-
-    //todo: classes, imported form splitstree4 : TaxaSet, TreesUtilities
-
-    private int which = 0; // which tree is to be converted?
-    private TreesBlock trees;
+    private int optionWhich = 1; // which tree is to be converted?
 
     @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock trees, SplitsBlock splits) throws Exception {
-        //todo check if applicable
-        this.trees = trees;
         progressListener.setDebug(true);
         progressListener.setTasks("Tree selector", "Init.");
-        //progressListener.setMaximum(?);
-        apply(progressListener, taxaBlock, splits);
-        progressListener.close();
-    }
 
-    public void apply(ProgressListener progressListener, TaxaBlock taxa, SplitsBlock splits) throws Exception{
-        if (which < 0)
-            which = 0;
-        if (which > trees.getNTrees())
-            which = trees.getNTrees()-1;
-        setOptionWhich(which);
+        if (optionWhich < 1)
+            optionWhich = 1;
+        if (optionWhich > trees.getNTrees())
+            optionWhich = trees.getNTrees();
+
+        setOptionWhich(optionWhich);
 
         if (trees.getNTrees() == 0)
             return;
-        //return new Splits(taxa.getNtax());
 
-        PhyloTree tree = trees.getTrees().get(which);
-
-        //todo: for partial trees
-        //taxa.hideAdditionalTaxa(null);
-        //TaxaSet taxaInTree = trees.getTaxaInTree(taxa, which);
-        //if (trees.getPartial() || !taxaInTree.equals(taxa.getTaxaSet())) // need to adjust the taxa set!
-        //{
-          //  taxa.hideAdditionalTaxa(taxaInTree.getComplement(taxa.getNtax()));
-        //}
+        final PhyloTree tree = trees.getTrees().get(optionWhich - 1);
 
         if (tree.getNumberOfNodes() == 0)
             return;
-
 
         Node root = tree.getRoot();
         if (root == null) {
             // choose an arbitrary labeled root
             for (Node v = tree.getFirstNode(); v != null; v = tree.getNextNode(v)) {
-                if (trees.getTaxaForLabel(taxa, tree.getLabel(v)).cardinality() > 0
-                        && tree.getDegree(v) == 1) {
+                if (tree.getNode2Taxa(v).size() > 0 && tree.getDegree(v) == 1) {
                     root = v;
                     break;
                 }
@@ -75,57 +57,48 @@ public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> {
         if (root == null) // empty tree?
             return;
 
-        TreesUtilities.verifyTree(trees.getTrees().get(which), trees.getTranslate(), taxa, true);
-        TreesUtilities.setNode2taxa(trees.getTrees().get(which), taxa);
-
-        //if (doc != null)
-            //doc.notifyTasks("TreeSelector", "Extracting splits");
         progressListener.setTasks("TreeSelector", "Extracting splits");
         progressListener.incrementProgress();
 
+        TreesUtilities.setNode2taxa(tree, taxaBlock);
+        final BitSet taxaInTree = TreesUtilities.getTaxa(tree);
+        tree2splitsRec(root, null, tree, taxaInTree, splits);
 
-        tree2splitsRec(root, null, trees, taxa, splits);
+        // normalize cycle:
+        if (taxaBlock.getNtax() > 0) {
+            Node vFirstTaxon;
+            for (vFirstTaxon = tree.getFirstNode(); vFirstTaxon != null; vFirstTaxon = vFirstTaxon.getNext()) {
+                String label = tree.getLabel(vFirstTaxon);
+                if (label != null && label.equals(taxaBlock.getLabel(1)))
+                    break;
+            }
+            if (vFirstTaxon != null)
+                splits.setCycle(tree.getCycle(vFirstTaxon));
+        }
 
-        //splits.getProperties().setCompatibility(Splits.Properties.COMPATIBLE);
+        splits.setPartial(taxaInTree.cardinality() < taxaBlock.getNtax());
         splits.setCompatibility(Compatibility.compatible);
 
-        //if (doc != null)
-            //doc.notifyTasks("TreeSelector", "Computing cycle");
-        progressListener.setTasks("TreeSelector", "Computing cycle");
-        progressListener.incrementProgress();
-
-        //if (doc != null && doc.isValidByName(Assumptions.NAME)
-          //      && doc.getAssumptions().getLayoutStrategy() == Assumptions.RECOMPUTE) {
-            if (taxa.getNtax() > 0) {
-                Node vFirstTaxon;
-                for (vFirstTaxon = trees.getTrees().get(which).getFirstNode(); vFirstTaxon != null; vFirstTaxon = vFirstTaxon.getNext()) {
-                    String label = trees.getTrees().get(which).getLabel(vFirstTaxon);
-                    if (label != null && label.equals(taxa.getLabel(1)))
-                        break;
-                }
-                if (vFirstTaxon != null)
-                    splits.setCycle(trees.getTrees().get(which).getCycle(vFirstTaxon));
-            }
-        //} else {
-            // if in stabilize, use NNet later to compute cycle
-        //}
-        SplitsUtilities.verifySplits(splits, taxa);
+        SplitsUtilities.verifySplits(splits, taxaBlock);
     }
 
-    // recursively compute the splits:
+    /**
+     * recursively extract all splits
+     *
+     * @param v
+     * @param e
+     * @param tree
+     * @param taxaInTree
+     * @param splits
+     * @return
+     */
+    private BitSet tree2splitsRec(final Node v, final Edge e, final PhyloTree tree, BitSet taxaInTree, final SplitsBlock splits) {
+        final BitSet vAndBelowTaxa = asBitSet(tree.getNode2Taxa(v));
 
-    private TaxaSet tree2splitsRec(Node v, Edge e, TreesBlock trees,
-                                   TaxaBlock taxa, SplitsBlock splits) throws NotOwnerException {
-        PhyloTree tree = trees.getTrees().get(which);
-        TaxaSet e_taxa = trees.getTaxaForLabel(taxa, tree.getLabel(v));
-
-        Iterator edges = tree.getAdjacentEdges(v);
-        while (edges.hasNext()) {
-            Edge f = (Edge) edges.next();
-
+        for (Edge f = v.getFirstAdjacentEdge(); f != null; f = v.getNextAdjacentEdge(f)) {
             if (f != e) {
-                TaxaSet f_taxa = tree2splitsRec(tree.getOpposite(v, f), f, trees,
-                        taxa, splits);
+                final Node w = tree.getOpposite(v, f);
+                final BitSet wAndBelowTaxa = tree2splitsRec(w, f, tree, taxaInTree, splits);
 
                 // take care at root of tree,
                 // if root has degree 2, then root will give rise to only
@@ -136,10 +109,9 @@ public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> {
                 double weight = tree.getWeight(f);
                 double confidence = tree.getConfidence(f);
                 Node root = tree.getRoot();
-                if (root != null && (f.getSource() == root || f.getTarget() == root) &&
-                        root.getDegree() == 2 && trees.getTaxaForLabel(taxa, tree.getLabel(root)).cardinality() == 0) {
+                if (root != null && (f.getSource() == root || f.getTarget() == root) && root.getDegree() == 2 && tree.getNode2Taxa(v).size() == 0) {
                     // get the other  edge adjacent to root:
-                    Edge g;
+                    final Edge g;
                     if (root.getFirstAdjacentEdge() != f)
                         g = root.getFirstAdjacentEdge();
                     else
@@ -152,25 +124,38 @@ public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> {
                 }
 
                 if (ok) {
-                    //todo
-                    //if (confidence != 1)
-                        //splits.getFormat().setConfidences(true);
-
-                    //splits.getSplitsSet().add(f_taxa, (float) weight, (float) confidence);
-                    ASplit newSplit = new ASplit(f_taxa.getBits(), taxa.getNtax (), (float) weight);
+                    final BitSet B = new BitSet();
+                    B.or(taxaInTree);
+                    B.andNot(wAndBelowTaxa);
+                    final ASplit newSplit = new ASplit(wAndBelowTaxa, B, weight, confidence);
                     newSplit.setConfidence((float) confidence);
                     splits.getSplits().add(newSplit);
                 }
-                e_taxa.set(f_taxa);
+                vAndBelowTaxa.or(wAndBelowTaxa);
             }
         }
-        return e_taxa;
+
+        return vAndBelowTaxa;
+    }
+
+    @Override
+    public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent, SplitsBlock child) {
+        return 1 <= optionWhich && optionWhich <= parent.getTrees().size();
+    }
+
+    private static BitSet asBitSet(Collection<Integer> integers) {
+        final BitSet bitSet = new BitSet();
+        for (Integer i : integers) {
+            bitSet.set(i);
+        }
+        return bitSet;
     }
 
     public int getOptionWhich() {
-        return which;
+        return optionWhich;
     }
+
     public void setOptionWhich(int which) {
-        this.which = which;
+        this.optionWhich = which;
     }
 }

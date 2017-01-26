@@ -19,6 +19,8 @@
 
 package splitstree5.io.nexus;
 
+import javafx.application.Platform;
+import jloda.util.ProgressPercentage;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Report;
@@ -78,7 +80,20 @@ public class NexusFileParser {
                 // todo: for debugging:
                 new Report<>(document.getDag().getWorkingTaxaNode().getDataBlock(), document.getDag().getWorkingDataNode());
 
-                document.getDag().getTopTaxaNode().setState(UpdateState.VALID);
+                if (Platform.isFxApplicationThread())
+                    document.getDag().getTopTaxaNode().setState(UpdateState.VALID);
+                else {
+                    TaxaBlock topTaxa = document.getDag().getTopTaxaNode().getDataBlock();
+                    TaxaBlock workingTaxa = document.getDag().getWorkingTaxaNode().getDataBlock();
+                    ADataBlock topData = document.getDag().getTopDataNode().getDataBlock();
+                    ADataBlock workingData = document.getDag().getWorkingDataNode().getDataBlock();
+                    try {
+                        document.getDag().getTaxaFilter().getAlgorithm().compute(new ProgressPercentage(), topTaxa, topTaxa, workingTaxa);
+                        document.getDag().getTopFilter().getAlgorithm().compute0(new ProgressPercentage(), topTaxa, topData, workingData);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
 
                 DAGUtils.print(document.getDag().getTopTaxaNode(), document.getDag().getTopDataNode());
             }
@@ -111,6 +126,10 @@ public class NexusFileParser {
                 final TreesBlock treesBlock = new TreesBlock();
                 taxonNamesFound.addAll(TreesNexusIO.parse(np, taxaBlock, treesBlock, null));
                 return treesBlock;
+            } else if (np.peekMatchIgnoreCase("begin splits;")) {
+                final SplitsBlock splitsBlock = new SplitsBlock();
+                taxonNamesFound.addAll(SplitsNexusIO.parse(np, taxaBlock, splitsBlock, null));
+                return splitsBlock;
             } else {
                 final String blockName = np.skipBlock();
                 System.err.println("Parse nexus block: " + blockName + ": not implemented;");

@@ -210,6 +210,9 @@ public class DAG {
         return taxaFilter;
     }
 
+    public ATopFilter<? extends ADataBlock> getTopFilter() {
+        return topFilter;
+    }
 
     /**
      * is the graph currently being updated?

@@ -69,12 +69,12 @@ public class SplitDecomposition extends Algorithm<DistancesBlock, SplitsBlock> {
             // consider all previously computed splits:
             for (final ASplit previousSplit : previousSplits) {
                 final BitSet A = previousSplit.getA();
-                final BitSet B = previousSplit.getComplement(t - 1);
+                final BitSet B = getComplement(previousSplit.getA(), t - 1);
 
                 // is Au{t} vs B a split?
                 {
                     A.set(t);
-                    final float wgt = Math.min(previousSplit.getWeight(), getIsolationIndex(t, A, B, distancesBlock));
+                    final double wgt = Math.min(previousSplit.getWeight(), getIsolationIndex(t, A, B, distancesBlock));
                     if (wgt > 0) {
                         nextSplits.add(new ASplit((BitSet) A.clone(), t, wgt));
 
@@ -85,7 +85,7 @@ public class SplitDecomposition extends Algorithm<DistancesBlock, SplitsBlock> {
                 // is A vs Bu{t} a split?
                 {
                     B.set(t);
-                    final float wgt = Math.min(previousSplit.getWeight(), getIsolationIndex(t, B, A, distancesBlock));
+                    final double wgt = Math.min(previousSplit.getWeight(), getIsolationIndex(t, B, A, distancesBlock));
                     if (wgt > 0) {
                         nextSplits.add(new ASplit((BitSet) B.clone(), t, wgt));
                     }
@@ -178,6 +178,13 @@ public class SplitDecomposition extends Algorithm<DistancesBlock, SplitsBlock> {
             }
         }
         return (float) Math.max(100 * (1.0 - ssum / dsum), 0.0);
+    }
+
+    private static BitSet getComplement(BitSet A, int ntax) {
+        BitSet result = new BitSet();
+        for (int t = A.nextClearBit(1); t != -1 && t <= ntax; t = A.nextClearBit(t + 1))
+            result.set(t);
+        return result;
     }
 
 }

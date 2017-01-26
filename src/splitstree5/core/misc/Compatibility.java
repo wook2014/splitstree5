@@ -84,9 +84,9 @@ public enum Compatibility {
      */
     public static boolean areCompatible(ASplit split1, ASplit split2) {
         final BitSet A1 = split1.getA();
-        final BitSet B1 = split1.getComplement();
+        final BitSet B1 = split1.getB();
         final BitSet A2 = split2.getA();
-        final BitSet B2 = split2.getComplement();
+        final BitSet B2 = split2.getB();
 
         return !A1.intersects(A2) || !A1.intersects(B2) || !B1.intersects(A2) || !B1.intersects(B2);
     }
@@ -118,11 +118,11 @@ public enum Compatibility {
      */
     public static boolean areWeaklyCompatible(ASplit split1, ASplit split2, ASplit split3) {
         final BitSet A1 = split1.getA();
-        final BitSet B1 = split1.getComplement();
+        final BitSet B1 = split1.getB();
         final BitSet A2 = split2.getA();
-        final BitSet B2 = split2.getComplement();
+        final BitSet B2 = split2.getB();
         final BitSet A3 = split3.getA();
-        final BitSet B3 = split3.getComplement();
+        final BitSet B3 = split3.getB();
 
         return !((intersects(A1, A2, A3) && intersects(A1, B2, B3) && intersects(B1, A2, B3) && intersects(B1, B2, A3))
                 || (intersects(B1, B2, B3) && intersects(B1, A2, A3) && intersects(A1, B2, A3) && intersects(A1, A2, B3)));
@@ -161,7 +161,7 @@ public enum Compatibility {
         for (ASplit split : splits) {
             final BitSet A;
             if (split.isContainedInA(cycle[1]))     // avoid wraparound
-                A = split.getComplement();
+                A = split.getB();
             else
                 A = split.getA();
 

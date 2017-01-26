@@ -21,16 +21,10 @@ package splitstree5.io.nexus;
 
 import jloda.util.Basic;
 import splitstree5.core.Document;
-import splitstree5.core.datablocks.ADataBlock;
-import splitstree5.core.datablocks.DistancesBlock;
-import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.datablocks.TreesBlock;
+import splitstree5.core.datablocks.*;
 import splitstree5.core.filters.TaxaFilter;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 
 /**
  * writes a document in nexus format
@@ -78,9 +72,30 @@ public class NexusFileWriter {
             DistancesNexusIO.write(w, taxaBlock, (DistancesBlock) dataBlock, null);
         } else if (dataBlock instanceof TreesBlock) {
             TreesNexusIO.write(w, taxaBlock, (TreesBlock) dataBlock, null);
+        } else if (dataBlock instanceof SplitsBlock) {
+            SplitsNexusIO.write(w, taxaBlock, (SplitsBlock) dataBlock, null);
+        } else if (dataBlock instanceof CharactersBlock) {
+            CharactersNexusIO.write(w, taxaBlock, (CharactersBlock) dataBlock, null);
         } else {
             System.err.println("Nexus write not implemented for block of type " + Basic.getShortName(dataBlock.getClass()));
         }
+    }
+
+    /**
+     * write to string
+     *
+     * @param taxaBlock
+     * @param dataBlock
+     * @return block as string
+     */
+    public static String toString(TaxaBlock taxaBlock, ADataBlock dataBlock) {
+        final StringWriter w = new StringWriter();
+        try {
+            write(w, taxaBlock, dataBlock);
+        } catch (IOException e) {
+            return e.getMessage();
+        }
+        return w.toString();
     }
 
 }

@@ -43,7 +43,7 @@ public class CircularMaxClique {
         for (int i = 1; i <= splits.size(); i++) {
             BitSet sp = splits.get(i - 1).getA();
             if (sp.get(outgroup))
-                sp = splits.get(i - 1).getComplement();
+                sp = splits.get(i - 1).getB();
             map.put(sp, i);
         }
 
