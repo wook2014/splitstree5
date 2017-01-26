@@ -62,6 +62,7 @@ public class DistancesNexusIO {
 
     /**
      * parse a distances block
+     *
      * @param np
      * @param taxaBlock
      * @param distancesBlock
@@ -211,6 +212,7 @@ public class DistancesNexusIO {
 
     /**
      * write a block in nexus format
+     *
      * @param w
      * @param taxaBlock
      * @param distancesBlock

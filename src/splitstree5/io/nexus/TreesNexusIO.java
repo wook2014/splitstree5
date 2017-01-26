@@ -182,7 +182,7 @@ public class TreesNexusIO {
                 tree.changeLabels(translator);
 
             if (hasNumbersOnInternalNodes(tree))
-                changeNumbersOnInternalNodesToEdgeConfidencies(tree);
+                changeNumbersOnInternalNodesToEdgeConfidencies(tree); // todo needs debugging
 
             for (Node v = tree.getFirstNode(); v != null; v = tree.getNextNode(v)) {
                 final String label = tree.getLabel(v);
@@ -242,7 +242,7 @@ public class TreesNexusIO {
         int t = 1;
         for (PhyloTree tree : treesBlock.getTrees()) {
             final String name = (tree.getName() != null && tree.getName().length() > 0 ? tree.getName() : "t" + t);
-            w.write("[" + t + "] tree '" + name + "'=" + getFlags(tree) + " ");
+            w.write("[" + (t++) + "] tree '" + name + "'=" + getFlags(tree) + " ");
             tree.write(w, treesNexusFormat.isShowWeights(), translator);
             w.write(";\n");
         }

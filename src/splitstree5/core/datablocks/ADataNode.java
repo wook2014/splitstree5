@@ -64,4 +64,14 @@ public class ADataNode<D extends ADataBlock> extends ANode {
             connector.disconnect();
         }
     }
+
+    @Override
+    public String getName() {
+        return dataBlock.getName();
+    }
+
+    @Override
+    public void setName(String name) {
+        dataBlock.setName(name);
+    }
 }

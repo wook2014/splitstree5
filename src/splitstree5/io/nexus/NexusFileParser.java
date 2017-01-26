@@ -56,7 +56,7 @@ public class NexusFileParser {
                 System.err.println("Not implemented");
             } else { // this is a user input file
 
-                final TaxaBlock topTaxaBlock = new TaxaBlock("TopTaxa");
+                final TaxaBlock topTaxaBlock = new TaxaBlock("OrigTaxa");
 
                 boolean needToDetectTaxa = true;
 

@@ -50,11 +50,15 @@ public class TreesTopFilter extends ATopFilter<TreesBlock> {
         super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parentBlock, childBlock);
 
         setAlgorithm(new Algorithm<TreesBlock, TreesBlock>("TopFilter") {
-            public void compute(ProgressListener progressListener, TaxaBlock modifiedTaxaBlock, TreesBlock parentBlock, TreesBlock childBlock) {
-                for (PhyloTree tree : parentBlock.getTrees()) {
-                    PhyloTree induced = computeInducedTree(tree, modifiedTaxaBlock.getLabels());
-                    if (induced != null) {
-                        childBlock.getTrees().add(induced);
+            public void compute(ProgressListener progressListener, TaxaBlock modifiedTaxaBlock, TreesBlock original, TreesBlock modified) {
+                if (originalTaxaNode.getDataBlock().getTaxa().equals(modifiedTaxaBlock.getTaxa())) {
+                    modified.copy(original);
+                } else {
+                    for (PhyloTree tree : original.getTrees()) {
+                        PhyloTree induced = computeInducedTree(tree, modifiedTaxaBlock.getLabels());
+                        if (induced != null) {
+                            modified.getTrees().add(induced);
+                        }
                     }
                 }
             }

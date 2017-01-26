@@ -38,18 +38,30 @@ public class DistancesBlock extends ADataBlock {
         setName(name);
     }
 
+    /**
+     * shallow copy
+     *
+     * @param that
+     */
+    public void copy(DistancesBlock that) {
+        distances = that.getDistances();
+        variances = that.getVariances();
+    }
+
     public void clear() {
         distances = new double[0][0];
         variances = null;
         setShortDescription("");
     }
 
-    public int size() {
-        return distances.length;
-    }
-
     public void setNtax(int n) {
         distances = new double[n][n];
+
+    }
+
+    @Override
+    public int size() {
+        return distances == null ? 0 : distances.length;
     }
 
     /**
@@ -81,8 +93,8 @@ public class DistancesBlock extends ADataBlock {
     /**
      * sets the value distances[row][col]=distances[col][row]=value
      *
-     * @param i in range 1..nTax
-     * @param j in range 1..nTax
+     * @param i     in range 1..nTax
+     * @param j     in range 1..nTax
      * @param value
      */
     public void setBoth(int i, int j, double value) {
@@ -91,6 +103,7 @@ public class DistancesBlock extends ADataBlock {
 
     /**
      * gets the variances
+     *
      * @param i
      * @param j
      * @return variances or -1, if not set
@@ -104,6 +117,7 @@ public class DistancesBlock extends ADataBlock {
 
     /**
      * sets the variances
+     *
      * @param i
      * @param j
      * @param value
@@ -139,6 +153,7 @@ public class DistancesBlock extends ADataBlock {
         for (int i = 0; i < distances.length; i++) {
             System.arraycopy(distances[i], 0, this.distances[i], 0, distances.length);
         }
+
     }
 
 
@@ -164,4 +179,9 @@ public class DistancesBlock extends ADataBlock {
     public double[][] getDistances() {
         return distances;
     }
+
+    public double[][] getVariances() {
+        return variances;
+    }
+
 }

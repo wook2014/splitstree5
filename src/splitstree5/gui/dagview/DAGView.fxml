@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
+            prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="splitstree5.gui.dagview.DAGViewController">
+    <bottom>
+        <ToolBar nodeOrientation="RIGHT_TO_LEFT" BorderPane.alignment="CENTER">
+            <items>
+                <Button fx:id="doneButton" mnemonicParsing="false" text="Done">
+                    <opaqueInsets>
+                        <Insets/>
+                    </opaqueInsets>
+                </Button>
+            </items>
+        </ToolBar>
+    </bottom>
+    <center>
+        <FlowPane fx:id="flowPane" hgap="50.0" prefHeight="200.0" prefWidth="200.0" vgap="50.0">
+            <BorderPane.margin>
+                <Insets/>
+            </BorderPane.margin>
+            <padding>
+                <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
+            </padding>
+        </FlowPane>
+    </center>
+    <top>
+        <MenuBar prefHeight="29.0" BorderPane.alignment="CENTER">
+            <menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Close"/>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Delete"/>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="About"/>
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </top>
+</BorderPane>

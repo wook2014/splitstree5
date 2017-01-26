@@ -28,7 +28,7 @@ import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
 import splitstree5.gui.connectorview.AlgorithmPane;
-import splitstree5.gui.taxaview.TaxaFilterPane;
+import splitstree5.gui.taxafilterview.TaxaFilterPane;
 
 import java.io.IOException;
 import java.util.ArrayList;

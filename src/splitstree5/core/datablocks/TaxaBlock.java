@@ -60,18 +60,17 @@ public class TaxaBlock extends ADataBlock {
         this();
         setName(name);
     }
-
-    @Override
-    public int size() {
-        return taxa.size();
-    }
-
     @Override
     public void clear() {
         taxa.clear();
         taxon2index.clear();
         name2taxon.clear();
         setShortDescription("");
+    }
+
+    @Override
+    public int size() {
+        return taxa.size();
     }
 
     public int getNtax() {
@@ -160,8 +159,7 @@ public class TaxaBlock extends ADataBlock {
     }
 
 
-    public Object clone()
-    {
+    public Object clone() {
         TaxaBlock result = new TaxaBlock();
 
         try {

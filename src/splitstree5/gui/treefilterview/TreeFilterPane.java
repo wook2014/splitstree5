@@ -1,0 +1,195 @@
+/*
+ *  Copyright (C) 2016 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package splitstree5.gui.treefilterview;
+
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.ListChangeListener;
+import javafx.scene.control.ListView;
+import jloda.phylo.PhyloTree;
+import splitstree5.core.Document;
+import splitstree5.core.dag.UpdateState;
+import splitstree5.core.filters.TreeFilter;
+import splitstree5.gui.connectorview.AlgorithmPane;
+import splitstree5.undo.UndoManager;
+import splitstree5.undo.UndoableChangeListViews2;
+import splitstree5.utils.DragAndDropSupportListView2;
+import splitstree5.utils.ExtendedFXMLLoader;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
+/**
+ * taxon filter pane
+ * Created by huson on 12/23/16.
+ */
+public class TreeFilterPane extends AlgorithmPane {
+    private final TreeFilter treeFilter;
+    private final TreeFilterPaneController controller;
+    private Document document = null;
+    private UndoManager undoManager = new UndoManager();
+
+    private ArrayList<TreeHolder> prevActiveTrees = new ArrayList<>(); // used to facilitate undo/redo, do not modify
+    private ArrayList<TreeHolder> prevInactiveTrees = new ArrayList<>(); // used to facilitate undo/redo, do not modify
+
+    private ArrayList<PhyloTree> allTrees = new ArrayList<>();
+
+    final SimpleBooleanProperty applicableProperty = new SimpleBooleanProperty();
+
+    /**
+     * constructor
+     *
+     * @param treeFilter
+     */
+    public TreeFilterPane(TreeFilter treeFilter) throws IOException {
+        this.treeFilter = treeFilter;
+        final ExtendedFXMLLoader extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
+        controller = (TreeFilterPaneController) extendedFXMLLoader.getController();
+        this.getChildren().add(extendedFXMLLoader.getRoot());
+        undoManager = new UndoManager();
+    }
+
+    @Override
+    public void setUndoManager(UndoManager undoManager) {
+        this.undoManager = undoManager;
+    }
+
+    @Override
+    public void setDocument(Document document) {
+        this.document = document;
+    }
+
+    private boolean inUpdateSelection = false;
+
+    /**
+     * setup controller
+     */
+    public void setup() {
+        System.err.println("setup");
+        controller.getActiveList().getItems().addListener((ListChangeListener.Change<? extends TreeHolder> c) -> {
+            if (!undoManager.isPerformingUndoOrRedo()) { // for performance reasons, check this here. Is also checked in addUndoableChange, but why make a change object if we don't need it...
+                final UndoableChangeListViews2<TreeHolder> change = new UndoableChangeListViews2<TreeHolder>("Change Active Trees", controller.getActiveList(), prevActiveTrees, controller.getInactiveList(), prevInactiveTrees);
+                final boolean isInitialLoad = (prevActiveTrees.isEmpty() && prevInactiveTrees.isEmpty()); // don't want user to undo original load of taxa
+                prevActiveTrees = change.getItemsA();
+                prevInactiveTrees = change.getItemsB();
+                if (!isInitialLoad)
+                    undoManager.addUndoableChange(change);
+            }
+
+            controller.getActiveList().prefHeightProperty().bind(this.prefHeightProperty().subtract(50));
+            controller.getInactiveList().prefHeightProperty().bind(this.prefHeightProperty().subtract(50));
+
+            controller.getActiveList().prefWidthProperty().bind(this.prefWidthProperty().subtract(180).divide(2));
+            controller.getInactiveList().prefWidthProperty().bind(this.prefWidthProperty().subtract(180).divide(2));
+            DragAndDropSupportListView2.setup(controller.getActiveList(), controller.getInactiveList(), undoManager, "Change Active Trees");
+            updateSelection();
+        });
+
+        controller.getInactiveList().getItems().addListener((ListChangeListener.Change<? extends TreeHolder> c) -> updateSelection());
+
+        controller.getActiveList().getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends TreeHolder> c) -> updateSelection());
+
+        controller.getInactiveList().getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends TreeHolder> c) -> updateSelection());
+
+        controller.getInactivateAllButton().setOnAction((e) -> {
+            controller.getInactiveList().getItems().addAll(controller.getActiveList().getItems());
+            controller.getActiveList().getItems().clear();
+        });
+        controller.getInactivateAllButton().disableProperty().bind(Bindings.isEmpty(controller.getActiveList().getItems()));
+
+
+        controller.getInactivateSelectedButton().setOnAction((e) -> {
+            controller.getInactiveList().getItems().addAll(controller.getActiveList().getSelectionModel().getSelectedItems());
+            controller.getActiveList().getItems().removeAll(controller.getActiveList().getSelectionModel().getSelectedItems());
+        });
+        controller.getInactivateSelectedButton().disableProperty().bind(Bindings.isEmpty(controller.getActiveList().getSelectionModel().getSelectedIndices()));
+
+        controller.getActivateAllButton().setOnAction((e) -> {
+            final ArrayList<TreeHolder> list = new ArrayList<>(controller.getInactiveList().getItems());
+            controller.getInactiveList().getItems().clear();
+            controller.getActiveList().getItems().addAll(list);
+        });
+        controller.getActivateAllButton().disableProperty().bind(Bindings.isEmpty(controller.getInactiveList().getItems()));
+
+        controller.getActivateSelectedButton().setOnAction((e) -> {
+            final ArrayList<TreeHolder> list = new ArrayList<>(controller.getInactiveList().getSelectionModel().getSelectedItems());
+            controller.getInactiveList().getItems().removeAll(list);
+            controller.getActiveList().getItems().addAll(list);
+        });
+        controller.getActivateSelectedButton().disableProperty().bind(Bindings.isEmpty(controller.getInactiveList().getSelectionModel().getSelectedIndices()));
+
+
+        applicableProperty.bind(Bindings.isEmpty(controller.getActiveList().getItems()).not().and(undoManager.canUndoProperty()));
+    }
+
+    /**
+     * updates selection
+     */
+    private void updateSelection() {
+        if (!inUpdateSelection) {
+            inUpdateSelection = true;
+            try {
+            } finally {
+                inUpdateSelection = false;
+            }
+        }
+    }
+
+    public BooleanProperty applicableProperty() {
+        return applicableProperty;
+    }
+
+    /**
+     * sync model to controller
+     */
+    public void syncModel2Controller() {
+        final ListView<TreeHolder> activeList = controller.getActiveList();
+        final ListView<TreeHolder> inactiveList = controller.getInactiveList();
+
+        allTrees.clear();
+        activeList.getItems().clear();
+        for (PhyloTree phyloTree : treeFilter.getEnabledTrees()) {
+            activeList.getItems().add(new TreeHolder(phyloTree, allTrees.size()));
+            allTrees.add(phyloTree);
+        }
+        inactiveList.getItems().clear();
+        for (PhyloTree phyloTree : treeFilter.getDisabledTrees()) {
+            inactiveList.getItems().add(new TreeHolder(phyloTree, allTrees.size()));
+            allTrees.add(phyloTree);
+        }
+    }
+
+    /**
+     * sync controller to model
+     */
+    public void syncController2Model() {
+        treeFilter.getEnabledTrees().clear();
+        for (TreeHolder holder : controller.getActiveList().getItems()) {
+            treeFilter.getEnabledTrees().add(allTrees.get(holder.getRef()));
+        }
+
+        treeFilter.getDisabledTrees().clear();
+        for (TreeHolder holder : controller.getInactiveList().getItems()) {
+            treeFilter.getDisabledTrees().add(allTrees.get(holder.getRef()));
+        }
+        treeFilter.setState(UpdateState.INVALID);
+    }
+}

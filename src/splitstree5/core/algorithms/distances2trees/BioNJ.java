@@ -28,7 +28,7 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> {
     }
 
     private PhyloTree computeBioNJTree(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances)
-            throws InterruptedException, CanceledException{
+            throws InterruptedException, CanceledException {
 
         PhyloTree tree = new PhyloTree();
         HashMap TaxaHashMap = new HashMap();

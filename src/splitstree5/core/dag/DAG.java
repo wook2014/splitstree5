@@ -81,7 +81,7 @@ public class DAG {
      */
     public void setupTopAndWorkingNodes(TaxaBlock topTaxaBlock, ADataBlock topDataBlock) {
         setTopTaxaNode(createDataNode(topTaxaBlock));
-        getTopTaxaNode().getDataBlock().setName("Orig" + getTopTaxaNode().getDataBlock().getName());
+        getTopTaxaNode().getDataBlock().setName(getTopTaxaNode().getDataBlock().getName());
         setWorkingTaxaNode(createDataNode((TaxaBlock) topTaxaBlock.newInstance()));
         taxaFilter = new TaxaFilter(getTopTaxaNode(), getWorkingTaxaNode());
         register(taxaFilter);

@@ -27,7 +27,7 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> {
     }
 
     private PhyloTree makeUPGMATree(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances)
-        throws InterruptedException, CanceledException {
+            throws InterruptedException, CanceledException {
 
         PhyloTree tree = new PhyloTree();
         int ntax = distances.getNtax();

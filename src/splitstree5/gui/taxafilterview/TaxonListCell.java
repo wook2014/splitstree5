@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.gui.taxaview;
+package splitstree5.gui.taxafilterview;
 
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;

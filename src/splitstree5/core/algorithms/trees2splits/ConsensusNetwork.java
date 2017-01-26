@@ -1,17 +1,11 @@
 package splitstree5.core.algorithms.trees2splits;
 
 
-import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.core.misc.ASplit;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> {
 

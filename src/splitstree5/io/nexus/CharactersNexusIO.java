@@ -575,7 +575,7 @@ public class CharactersNexusIO {
      * @param w
      * @param taxa
      * @param characters
-     * @param format - if null
+     * @param format     - if null
      * @throws IOException
      */
     public static void write(Writer w, TaxaBlock taxa, CharactersBlock characters, @Nullable CharactersNexusFormat format) throws IOException {

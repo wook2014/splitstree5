@@ -45,7 +45,9 @@ public class DistancesTopFilter extends ATopFilter<DistancesBlock> {
 
         setAlgorithm(new Algorithm<DistancesBlock, DistancesBlock>("TopFilter") {
             public void compute(ProgressListener progressListener, TaxaBlock modifiedTaxaBlock, DistancesBlock original, DistancesBlock modified) {
-                try {
+                if (originalTaxaNode.getDataBlock().getTaxa().equals(modifiedTaxaBlock.getTaxa())) {
+                    child.getDataBlock().copy(parent.getDataBlock());
+                } else {
                     modified.setNtax(modifiedTaxaBlock.getNtax());
 
                     for (Taxon a : modifiedTaxaBlock.getTaxa()) {
@@ -55,11 +57,10 @@ public class DistancesTopFilter extends ATopFilter<DistancesBlock> {
                             final int originalJ = getOriginalTaxaBlock().indexOf(b);
                             final int modifiedJ = modifiedTaxaBlock.indexOf(b);
                             modified.set(modifiedI, modifiedJ, original.get(originalI, originalJ));
-                            //System.err.println(String.format("set (%d,%d)=%f", modifiedI, modifiedJ, original.get(originalI, originalJ)));
+                            if (original.isVariances())
+                                modified.setVariance(modifiedI, modifiedJ, original.getVariance(originalI, originalJ));
                         }
                     }
-                } catch (Exception ex) {
-                    throw ex;
                 }
             }
         });

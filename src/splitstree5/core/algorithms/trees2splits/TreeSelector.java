@@ -24,6 +24,10 @@ import java.util.Collection;
 public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> {
     private int optionWhich = 1; // which tree is to be converted?
 
+    public TreeSelector() {
+        setName("TreeSelector");
+    }
+
     @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock trees, SplitsBlock splits) throws Exception {
         progressListener.setDebug(true);

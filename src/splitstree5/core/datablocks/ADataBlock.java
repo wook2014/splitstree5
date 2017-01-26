@@ -27,7 +27,6 @@ import splitstree5.utils.OptionableBase;
  * Created by huson on 12/21/16.
  */
 abstract public class ADataBlock extends OptionableBase {
-
     public ADataBlock newInstance() {
         try {
             return getClass().newInstance();
@@ -37,15 +36,12 @@ abstract public class ADataBlock extends OptionableBase {
         }
     }
 
-    /**
-     * gets the size of this data block
-     *
-     * @return size
-     */
-    abstract public int size();
 
     /**
      * clear
      */
     abstract public void clear();
+
+    abstract public int size();
+
 }

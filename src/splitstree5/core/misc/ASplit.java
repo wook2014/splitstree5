@@ -41,6 +41,7 @@ public final class ASplit {
     public ASplit(BitSet A, int ntax) {
         this(A, ntax, 1, 1);
     }
+
     /**
      * constructor
      *

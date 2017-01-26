@@ -38,7 +38,7 @@ public class NeighborJoiningTest {
     private NeighborJoining nj = new NeighborJoining();
 
     @Test
-    public void testCompute() throws Exception{
+    public void testCompute() throws Exception {
 
         String output = "(a:1.0,b:4.0,(c:2.0,(f:5.0,(d:3.0,e:2.0):1.0):1.0):1.0)";
 

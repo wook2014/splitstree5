@@ -38,6 +38,7 @@ import java.util.Set;
  */
 public class AlgorithmNexusIO<P extends ADataBlock, C extends ADataBlock> {
     public static final String NAME = "ST_ALGORITHM";
+
     /**
      * parse a description of the algorithm
      *

@@ -9,13 +9,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- *  Tools for analyzing a splits block
- *  Daniel Huson, 2005
+ * Tools for analyzing a splits block
+ * Daniel Huson, 2005
  * Created by Daria on 23.01.2017.
  */
 public class SplitsUtilities {
 
     //todo : replace classes imported from st4
+
     /**
      * verify that all splits are proper and are contained in the taxon set
      *

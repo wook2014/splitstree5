@@ -22,7 +22,7 @@ public class TreeSelectorTest {
 
         ADataNode<TreesBlock> treesNode = document.getDag().getWorkingDataNode();
         System.err.println(NexusFileWriter.toString(document.getDag().getWorkingTaxaNode().getDataBlock(), treesNode.getDataBlock()));
-        
+
         ADataNode<SplitsBlock> splitsNode = new ADataNode<>(new SplitsBlock());
 
         TreeSelector treeSelector = new TreeSelector();

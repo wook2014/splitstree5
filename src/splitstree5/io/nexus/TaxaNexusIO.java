@@ -49,6 +49,7 @@ public class TaxaNexusIO {
 
     /**
      * gets syntax
+     *
      * @return syntax message
      */
     public static String getSyntax() {
@@ -57,6 +58,7 @@ public class TaxaNexusIO {
 
     /**
      * parse a taxa block
+     *
      * @param np
      * @param taxaBlock
      * @return list of taxon names found

@@ -34,13 +34,6 @@ public class TreesBlock extends ADataBlock {
 
     public TreesBlock() {
         trees = FXCollections.observableArrayList();
-        // for translate update
-        /*trees.addListener(new ListChangeListener<PhyloTree>() {
-            @Override
-            public void onChanged(Change<? extends PhyloTree> c) {
-                if(c.wasAdded()) updateTranslate((List<PhyloTree>) c.getAddedSubList());
-            }
-        });*/
     }
 
     public TreesBlock(String name) {
@@ -48,9 +41,16 @@ public class TreesBlock extends ADataBlock {
         setName(name);
     }
 
-    @Override
-    public int size() {
-        return trees.size();
+    /**
+     * shallow copy
+     *
+     * @param that
+     */
+    public void copy(TreesBlock that) {
+        clear();
+        trees.addAll(that.getTrees());
+        partial = that.isPartial();
+        rooted = that.isRooted();
     }
 
     @Override
@@ -59,6 +59,11 @@ public class TreesBlock extends ADataBlock {
         partial = false;
         rooted = false;
         setShortDescription("");
+    }
+
+    @Override
+    public int size() {
+        return trees.size();
     }
 
     /**
@@ -93,4 +98,5 @@ public class TreesBlock extends ADataBlock {
     public void setRooted(boolean rooted) {
         this.rooted = rooted;
     }
+
 }

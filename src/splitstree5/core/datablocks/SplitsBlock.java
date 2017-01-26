@@ -60,9 +60,19 @@ public class SplitsBlock extends ADataBlock {
         setName(name);
     }
 
-    @Override
-    public int size() {
-        return splits.size();
+    /**
+     * shallow copy
+     *
+     * @param that
+     */
+    public void copy(SplitsBlock that) {
+        clear();
+        splits.addAll(that.getSplits());
+        compatibility = that.getCompatibility();
+        fit = that.getFit();
+        threshold = that.getThreshold();
+        partial = that.isPartial();
+        cycle = that.getCycle();
     }
 
     @Override
@@ -75,9 +85,15 @@ public class SplitsBlock extends ADataBlock {
         setShortDescription("");
     }
 
+    @Override
+    public int size() {
+        return splits.size();
+    }
+
     public int getNsplits() {
         return splits.size();
     }
+
     /**
      * access the splits
      *
@@ -145,6 +161,7 @@ public class SplitsBlock extends ADataBlock {
                 cycle = SplitsUtilities.normalizeCycle(cycle);
             }
         }
-        this.cycle=cycle;
+        this.cycle = cycle;
     }
+
 }

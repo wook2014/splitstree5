@@ -33,7 +33,7 @@ import java.util.ArrayList;
  * Trees filter
  * Created by huson on 12/31/16.
  */
-public class TreesFilterAlgorithm extends Algorithm<TreesBlock, TreesBlock> {
+public class TreeFilterAlgorithm extends Algorithm<TreesBlock, TreesBlock> {
     public enum Consensus {Strict, Majority, Loose, Network, None}
 
     private Consensus optionConsensusMethod = Consensus.None;
@@ -42,7 +42,7 @@ public class TreesFilterAlgorithm extends Algorithm<TreesBlock, TreesBlock> {
     private final ArrayList<PhyloTree> enabledTrees = new ArrayList<>();
     private final ArrayList<PhyloTree> disabledTrees = new ArrayList<>();
 
-    public TreesFilterAlgorithm(TreesBlock parent) {
+    public TreeFilterAlgorithm(TreesBlock parent) {
         enabledTrees.addAll(parent.getTrees());
         parent.getTrees().addListener((ListChangeListener<PhyloTree>) c -> {
             while (c.next()) {

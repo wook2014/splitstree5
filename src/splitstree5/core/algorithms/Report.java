@@ -54,8 +54,8 @@ public class Report<D extends ADataBlock> extends AConnector<D, AnalysisResultBl
                     child.setShortDescription(w.toString());
                     System.err.println(child.getShortDescription());
                 } catch (IOException e) {
-                        Basic.caught(e);
-                    }
+                    Basic.caught(e);
+                }
             }
         });
     }

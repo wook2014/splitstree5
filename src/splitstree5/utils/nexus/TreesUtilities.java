@@ -12,10 +12,10 @@ import java.util.BitSet;
 import java.util.Iterator;
 
 /**
- *  some computations on trees
+ * some computations on trees
  *
  * @author huson Date: 29-Feb-2004
- * Created by Daria on 23.01.2017.
+ *         Created by Daria on 23.01.2017.
  */
 public class TreesUtilities {
 
@@ -36,19 +36,19 @@ public class TreesUtilities {
             try {
                 String taxonLabel = tree.getLabel((Node) it.next());
 
-                    //if (taxa.indexOf(taxonLabel) == -1) {
-                    if(taxa.getLabels().indexOf(taxonLabel) == -1){
-                        if (allowAddTaxa){
-                            //taxa.add(taxonLabel);
-                            Taxon t = new Taxon(taxonLabel);
-                            taxa.add(t);
-                        } else {
-                            //Taxa.show("current taxon block", taxa);
-                            throw new IOException("Taxon-label not contained in taxa-block: " + taxonLabel);
-                        }
+                //if (taxa.indexOf(taxonLabel) == -1) {
+                if (taxa.getLabels().indexOf(taxonLabel) == -1) {
+                    if (allowAddTaxa) {
+                        //taxa.add(taxonLabel);
+                        Taxon t = new Taxon(taxonLabel);
+                        taxa.add(t);
+                    } else {
+                        //Taxa.show("current taxon block", taxa);
+                        throw new IOException("Taxon-label not contained in taxa-block: " + taxonLabel);
                     }
-                    //seen.set(taxa.indexOf(taxonLabel));
-                    seen.set(taxa.getLabels().indexOf(taxonLabel));
+                }
+                //seen.set(taxa.indexOf(taxonLabel));
+                seen.set(taxa.getLabels().indexOf(taxonLabel));
             } catch (NotOwnerException ex) {
                 Basic.caught(ex);
             }

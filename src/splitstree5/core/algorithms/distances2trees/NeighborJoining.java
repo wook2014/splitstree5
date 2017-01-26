@@ -56,7 +56,7 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> {
     }
 
     private PhyloTree computeNJTree(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances)
-            throws InterruptedException, CanceledException{
+            throws InterruptedException, CanceledException {
         int nTax = distances.getNtax();
         PhyloTree tree = new PhyloTree();
         HashMap<String, Node> Taxa2Nodes = new HashMap<>();
@@ -195,7 +195,7 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> {
         return tree;
     }
 
-    private static void initialize(int nTax, TaxaBlock taxa, PhyloTree tree, HashMap<String , Node> Taxa2Nodes, StringBuffer[] Labels){
+    private static void initialize(int nTax, TaxaBlock taxa, PhyloTree tree, HashMap<String, Node> Taxa2Nodes, StringBuffer[] Labels) {
         for (int i = 1; i <= nTax; i++) {
             Labels[i] = new StringBuffer();
             Labels[i].append(taxa.getLabel(i));
@@ -207,12 +207,12 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> {
 
 
     //todo more tests for this function
-    private static double[][] fillDistanceMatrix(int nTax, DistancesBlock distances){
-        double[][] distanceMatrix = new double[nTax+1][nTax+1];
-        for(int i = 1; i<=nTax; i++){
+    private static double[][] fillDistanceMatrix(int nTax, DistancesBlock distances) {
+        double[][] distanceMatrix = new double[nTax + 1][nTax + 1];
+        for (int i = 1; i <= nTax; i++) {
             distanceMatrix[0][i] = 1.0; // with 1.0 marked columns indicate columns/rows
             distanceMatrix[i][0] = 1.0;// that haven't been deleted after merging
-            for(int j = 1; j<=nTax; j++){
+            for (int j = 1; j <= nTax; j++) {
                 if (i < j)
                     distanceMatrix[i][j] = distances.get(i, j);
                 else
