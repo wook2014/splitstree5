@@ -22,6 +22,8 @@ package splitstree5.core.datablocks;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import jloda.phylo.PhyloTree;
+import splitstree5.core.algorithms.interfaces.IFromTrees;
+import splitstree5.core.algorithms.interfaces.IToTrees;
 
 /**
  * A trees block
@@ -99,4 +101,13 @@ public class TreesBlock extends ADataBlock {
         this.rooted = rooted;
     }
 
+    @Override
+    public Class getFromInterface() {
+        return IFromTrees.class;
+    }
+
+    @Override
+    public Class getToInterface() {
+        return IToTrees.class;
+    }
 }

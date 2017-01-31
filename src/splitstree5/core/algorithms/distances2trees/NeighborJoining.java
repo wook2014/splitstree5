@@ -26,6 +26,8 @@ import jloda.phylo.PhyloTree;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
+import splitstree5.core.algorithms.interfaces.IFromDistances;
+import splitstree5.core.algorithms.interfaces.IToTrees;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
@@ -36,7 +38,7 @@ import java.util.HashMap;
  * Neighbor joining algorithm
  * Created by huson on 12/11/16.
  */
-public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> {
+public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> implements IFromDistances, IToTrees {
 
     /**
      * compute the neighbor joining tree

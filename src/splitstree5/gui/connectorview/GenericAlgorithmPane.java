@@ -42,7 +42,7 @@ import splitstree5.utils.OptionsAccessor;
 import java.util.ArrayList;
 
 /**
- * generatics a generic algorithm pane
+ * generates a generic algorithm pane
  * <p>
  * Created by huson on 1/8/17.
  */
@@ -61,6 +61,7 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
      */
     public GenericAlgorithmPane(AConnector<P, C> connector) {
         this.connector = connector;
+        options.addAll(OptionsAccessor.getAllOptions(connector.getAlgorithm()));
     }
 
     @Override
@@ -71,7 +72,7 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
     /**
      * setup the pane
      */
-    public void setup() {
+    public synchronized void setup() {
         final GridPane grid = new GridPane();
         grid.setPadding(new Insets(10, 5, 10, 5));
         grid.setHgap(20);
@@ -79,7 +80,7 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
 
         int row = 1;
         try {
-            for (Option option : options) {
+            for (final Option option : options) {
                 final String text = Basic.fromCamelCase(option.getName());
                 grid.add(new Label(text), 0, row);
                 switch (option.getType().getTypeName()) {
@@ -159,7 +160,7 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
                                 newValue = "0";
                             if (Basic.isFloat(newValue)) {
                                 undoManager.addUndoableChange(text, control.textProperty(), oldValue, newValue);
-                                option.holdValue(Basic.isFloat(newValue));
+                                option.holdValue(Basic.parseFloat(newValue));
                             }
                         });
                         if (option.getInfo() != null)
@@ -223,8 +224,7 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
      * sync model to controller
      */
     public void syncModel2Controller() {
-        options.clear();
-        options.addAll(OptionsAccessor.getAllOptions(connector.getAlgorithm()));
+        // not sure what we must do here...
     }
 
     /**

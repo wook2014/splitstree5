@@ -24,6 +24,8 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import jloda.util.Basic;
+import splitstree5.core.algorithms.interfaces.IFromTaxa;
+import splitstree5.core.algorithms.interfaces.IToTaxa;
 import splitstree5.core.misc.Taxon;
 
 import java.io.IOException;
@@ -179,5 +181,15 @@ public class TaxaBlock extends ADataBlock {
         final BitSet taxa = new BitSet();
         taxa.set(1, getNtax());
         return taxa;
+    }
+
+    @Override
+    public Class getFromInterface() {
+        return IFromTaxa.class;
+    }
+
+    @Override
+    public Class getToInterface() {
+        return IToTaxa.class;
     }
 }

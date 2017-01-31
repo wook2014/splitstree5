@@ -22,6 +22,8 @@ package splitstree5.core.algorithms.distances2splits;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
+import splitstree5.core.algorithms.interfaces.IFromDistances;
+import splitstree5.core.algorithms.interfaces.IToSplits;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -35,7 +37,7 @@ import java.util.List;
  * split decomposition
  * Created by huson on 12/30/16.
  */
-public class SplitDecomposition extends Algorithm<DistancesBlock, SplitsBlock> {
+public class SplitDecomposition extends Algorithm<DistancesBlock, SplitsBlock> implements IFromDistances, IToSplits {
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, DistancesBlock distancesBlock, SplitsBlock splitsBlock) throws InterruptedException, CanceledException {
         splitsBlock.getSplits().clear();

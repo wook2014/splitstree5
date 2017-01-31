@@ -21,6 +21,8 @@ package splitstree5.core.datablocks;
 
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
+import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IToChararacters;
 import splitstree5.core.datablocks.characters.CharactersType;
 
 import java.util.HashMap;
@@ -347,4 +349,17 @@ public class CharactersBlock extends ADataBlock {
         }
         this.ncolors = this.color2symbols.size();
     }
+
+    @Override
+    public Class getFromInterface() {
+        return IFromChararacters.class;
+    }
+
+    @Override
+    public Class getToInterface() {
+        return IToChararacters.class;
+    }
+
 }
+
+

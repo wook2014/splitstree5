@@ -17,34 +17,39 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.datablocks;
+package splitstree5.gui.dagview;
 
-import jloda.util.Basic;
-import splitstree5.utils.OptionableBase;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 
-/**
- * A data block
- * Created by huson on 12/21/16.
- */
-abstract public class ADataBlock extends OptionableBase {
-    public ADataBlock newInstance() {
-        try {
-            return getClass().newInstance();
-        } catch (Exception e) {
-            Basic.caught(e);
-            return null;
-        }
+public class NewNodeDialogController {
+
+    @FXML
+    private ChoiceBox<?> targetDataChoiceBox;
+
+    @FXML
+    private ChoiceBox<?> algorithmChoiceBox;
+
+    @FXML
+    private Button cancelButton;
+
+    @FXML
+    private Button applyButton;
+
+    public ChoiceBox<?> getTargetDataChoiceBox() {
+        return targetDataChoiceBox;
     }
 
+    public ChoiceBox<?> getAlgorithmChoiceBox() {
+        return algorithmChoiceBox;
+    }
 
-    /**
-     * clear
-     */
-    abstract public void clear();
+    public Button getCancelButton() {
+        return cancelButton;
+    }
 
-    abstract public int size();
-
-    abstract public Class getFromInterface();
-
-    abstract public Class getToInterface();
+    public Button getApplyButton() {
+        return applyButton;
+    }
 }

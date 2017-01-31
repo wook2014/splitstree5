@@ -24,12 +24,13 @@ import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
+
 /**
  * splits filter
  * Created by huson on 12/12/16.
  */
 public class SplitsFilter extends AConnector<SplitsBlock, SplitsBlock> {
-
+    private final SplitsFilterAlgorithm splitsFilterAlgorithm;
     /**
      * constructor
      *
@@ -38,6 +39,15 @@ public class SplitsFilter extends AConnector<SplitsBlock, SplitsBlock> {
      */
     public SplitsFilter(TaxaBlock taxaBlock, ADataNode<SplitsBlock> parent, ADataNode<SplitsBlock> child) {
         super(taxaBlock, parent, child);
-        setAlgorithm(new SplitsFilterAlgorithm(parent.getDataBlock()));
+        splitsFilterAlgorithm = new SplitsFilterAlgorithm(parent.getDataBlock());
+        setAlgorithm(splitsFilterAlgorithm);
+    }
+
+    @Override
+    public String getShortDescription() {
+        if (splitsFilterAlgorithm.getDisabledSplits().size() == 0)
+            return "Enabled: " + splitsFilterAlgorithm.getEnabledSplits().size();
+        else
+            return "Enabled: " + splitsFilterAlgorithm.getEnabledSplits().size() + " (of " + (splitsFilterAlgorithm.getEnabledSplits().size() + splitsFilterAlgorithm.getDisabledSplits().size() + ")");
     }
 }

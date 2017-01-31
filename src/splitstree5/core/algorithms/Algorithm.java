@@ -21,13 +21,14 @@ package splitstree5.core.algorithms;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import jloda.util.Basic;
 import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.utils.OptionableBase;
 
 /**
- * A method
+ * An algorithm
  * Created by huson on 12/21/16.
  */
 abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> extends OptionableBase {
@@ -37,6 +38,7 @@ abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> exte
      * constructor
      */
     public Algorithm() {
+        setName(Basic.getShortName(getClass()));
     }
 
     /**
@@ -45,7 +47,7 @@ abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> exte
      * @param name
      */
     public Algorithm(String name) {
-        super(name);
+        setName(name);
     }
 
     /**

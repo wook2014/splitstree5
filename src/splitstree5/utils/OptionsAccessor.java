@@ -183,6 +183,17 @@ public class OptionsAccessor {
     }
 
     /**
+     * get updated options values
+     *
+     * @param options
+     */
+    public static void getUpdatedOptionValues(List<Option> options) {
+        for (Option option : options) {
+            option.getValue();
+        }
+    }
+
+    /**
      * set an option from a string value
      *
      * @param options

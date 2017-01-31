@@ -17,10 +17,13 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.algorithms;
+package splitstree5.core.algorithms.trees2splits;
 
 import javafx.beans.property.SimpleObjectProperty;
 import jloda.util.ProgressListener;
+import splitstree5.core.algorithms.Algorithm;
+import splitstree5.core.algorithms.interfaces.IFromTrees;
+import splitstree5.core.algorithms.interfaces.IToSplits;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
@@ -29,7 +32,7 @@ import splitstree5.core.datablocks.TreesBlock;
  * implements consensus splits
  * Created by huson on 12/11/16.
  */
-public class ConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> {
+public class ConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
     public enum Consensus {STRICT, LOOSE, MAJORITY, NETWORK, ALL}
 
     private final SimpleObjectProperty<Consensus> consensus = new SimpleObjectProperty<>(Consensus.ALL);

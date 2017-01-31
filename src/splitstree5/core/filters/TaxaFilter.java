@@ -95,6 +95,13 @@ public class TaxaFilter extends AConnector<TaxaBlock, TaxaBlock> {
         });
     }
 
+    @Override
+    public String getShortDescription() {
+        if (disabledTaxa.size() == 0)
+            return "Enabled: " + enabledTaxa.size();
+        else
+            return "Enabled: " + enabledTaxa.size() + " (of " + (enabledTaxa.size() + disabledTaxa.size());
+    }
 
     /**
      * get the set of enabled data.

@@ -17,34 +17,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.datablocks;
-
-import jloda.util.Basic;
-import splitstree5.utils.OptionableBase;
+package splitstree5.gui.dagview;
 
 /**
- * A data block
- * Created by huson on 12/21/16.
+ * displays the new node dialog and creates a new node, if desired
+ * Created by huson on 1/31/17.
  */
-abstract public class ADataBlock extends OptionableBase {
-    public ADataBlock newInstance() {
-        try {
-            return getClass().newInstance();
-        } catch (Exception e) {
-            Basic.caught(e);
-            return null;
-        }
-    }
-
-
-    /**
-     * clear
-     */
-    abstract public void clear();
-
-    abstract public int size();
-
-    abstract public Class getFromInterface();
-
-    abstract public Class getToInterface();
+public class NewNodeDialog {
 }

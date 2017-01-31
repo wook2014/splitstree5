@@ -17,34 +17,26 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.datablocks;
+package splitstree5.core.connectors;
 
-import jloda.util.Basic;
-import splitstree5.utils.OptionableBase;
+import org.junit.Test;
+import splitstree5.core.algorithms.Algorithm;
+import splitstree5.core.datablocks.ADataNode;
+import splitstree5.core.datablocks.DistancesBlock;
+import splitstree5.core.datablocks.SplitsBlock;
+import splitstree5.core.datablocks.TaxaBlock;
 
 /**
- * A data block
- * Created by huson on 12/21/16.
+ * test
+ * Created by huson on 1/31/17.
  */
-abstract public class ADataBlock extends OptionableBase {
-    public ADataBlock newInstance() {
-        try {
-            return getClass().newInstance();
-        } catch (Exception e) {
-            Basic.caught(e);
-            return null;
+public class AConnectorTest {
+    @Test
+    public void getAllAlgorithms() throws Exception {
+        AConnector<DistancesBlock, SplitsBlock> aConnector = new AConnector<>(new TaxaBlock(), new ADataNode<>(new DistancesBlock()), new ADataNode<>(new SplitsBlock()));
+
+        for (Algorithm<DistancesBlock, SplitsBlock> algorithm : aConnector.getAllAlgorithms()) {
+            System.err.println(algorithm.getName());
         }
     }
-
-
-    /**
-     * clear
-     */
-    abstract public void clear();
-
-    abstract public int size();
-
-    abstract public Class getFromInterface();
-
-    abstract public Class getToInterface();
 }

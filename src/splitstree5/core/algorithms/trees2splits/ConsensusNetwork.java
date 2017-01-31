@@ -3,11 +3,13 @@ package splitstree5.core.algorithms.trees2splits;
 
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
+import splitstree5.core.algorithms.interfaces.IFromTrees;
+import splitstree5.core.algorithms.interfaces.IToTrees;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 
-public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> {
+public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToTrees {
 
     public final static String MEDIAN = "median";
     public final static String MEAN = "mean";

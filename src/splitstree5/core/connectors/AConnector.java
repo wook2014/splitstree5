@@ -26,14 +26,18 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.beans.value.WeakChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import jloda.util.PluginClassLoader;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.dag.ANode;
 import splitstree5.core.dag.UpdateState;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TaxaBlock;
+
+import java.util.ArrayList;
 
 /**
  * A connector between data nodes. This is where algorithms are run
@@ -79,7 +83,7 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
         this.children = FXCollections.unmodifiableObservableList(FXCollections.observableArrayList(child));
         service = new ConnectorService<>(this);
 
-        parent.stateProperty().addListener(parentStateChangeListener);
+        parent.stateProperty().addListener(new WeakChangeListener<UpdateState>(parentStateChangeListener));
     }
 
     /**
@@ -108,8 +112,16 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
         return parent;
     }
 
+    public P getParentDataBlock() {
+        return parent.getDataBlock();
+    }
+
     public ADataNode<C> getChild() {
         return child;
+    }
+
+    public C getChildDataBlock() {
+        return child.getDataBlock();
     }
 
     @Override
@@ -186,5 +198,34 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
 
     public ReadOnlyBooleanProperty applicableProperty() {
         return ReadOnlyBooleanProperty.readOnlyBooleanProperty(applicable);
+    }
+
+    @Override
+    public String getName() {
+        if (algorithm != null && algorithm.getName() != null)
+            return algorithm.getName();
+        else
+            return super.getName();
+    }
+
+    @Override
+    public String getShortDescription() {
+        if (algorithm == null)
+            return super.getShortDescription();
+        else
+            return algorithm.getShortDescription();
+    }
+
+    /**
+     * gets all algorithms that can be associated with this connector
+     *
+     * @return instances of all algorithms
+     */
+    public ArrayList<Algorithm<P, C>> getAllAlgorithms() {
+        final ArrayList<Algorithm<P, C>> list = new ArrayList<>();
+        for (Object object : PluginClassLoader.getInstances(getParent().getDataBlock().getFromInterface(), getChild().getDataBlock().getToInterface(), "splitstree5.core.algorithms")) {
+            list.add((Algorithm) object);
+        }
+        return list;
     }
 }

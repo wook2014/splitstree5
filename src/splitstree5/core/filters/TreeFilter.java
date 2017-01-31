@@ -91,6 +91,13 @@ public class TreeFilter extends AConnector<TreesBlock, TreesBlock> {
         });
     }
 
+    @Override
+    public String getShortDescription() {
+        if (disabledTrees.size() == 0)
+            return "Enabled: " + enabledTrees.size();
+        else
+            return "Enabled: " + enabledTrees.size() + " (of " + (enabledTrees.size() + disabledTrees.size() + ")");
+    }
 
     public ArrayList<PhyloTree> getEnabledTrees() {
         return enabledTrees;

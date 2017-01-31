@@ -24,6 +24,8 @@ import jloda.util.ProgressListener;
 import jloda.util.ProgressSilent;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.distances2splits.utils.NeighborNetSplitWeightOptimizer;
+import splitstree5.core.algorithms.interfaces.IFromDistances;
+import splitstree5.core.algorithms.interfaces.IToSplits;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -40,7 +42,7 @@ import java.util.Stack;
  * Neighbor net algorithm
  * Created by huson on 12/30/16.
  */
-public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> {
+public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implements IFromDistances, IToSplits {
     private double optionCutOff = 0.000001; // min weight of split that we consider
     private NeighborNetSplitWeightOptimizer.LeastSquares optionLeastSquares = NeighborNetSplitWeightOptimizer.LeastSquares.ols;
     private NeighborNetSplitWeightOptimizer.Regularization optionRegularization = NeighborNetSplitWeightOptimizer.Regularization.nnls;

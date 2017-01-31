@@ -21,6 +21,8 @@ package splitstree5.core.datablocks;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import splitstree5.core.algorithms.interfaces.IFromSplits;
+import splitstree5.core.algorithms.interfaces.IToSplits;
 import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
 import splitstree5.core.misc.SplitsUtilities;
@@ -164,4 +166,13 @@ public class SplitsBlock extends ADataBlock {
         this.cycle = cycle;
     }
 
+    @Override
+    public Class getFromInterface() {
+        return IFromSplits.class;
+    }
+
+    @Override
+    public Class getToInterface() {
+        return IToSplits.class;
+    }
 }

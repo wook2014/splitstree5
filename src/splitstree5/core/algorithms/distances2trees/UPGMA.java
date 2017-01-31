@@ -6,11 +6,13 @@ import jloda.phylo.PhyloTree;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
+import splitstree5.core.algorithms.interfaces.IFromDistances;
+import splitstree5.core.algorithms.interfaces.IToTrees;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 
-public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> {
+public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> implements IFromDistances, IToTrees {
 
     @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees)

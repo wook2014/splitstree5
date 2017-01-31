@@ -28,7 +28,6 @@ import java.lang.reflect.Type;
  * Created by huson on 12/31/16.
  */
 public class Option {
-
     private final String name;
     private final IOptionable optionable;
     private final IGetMethod<IOptionable, String> infoMethod;

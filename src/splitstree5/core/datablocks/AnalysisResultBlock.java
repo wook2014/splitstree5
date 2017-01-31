@@ -20,6 +20,9 @@
 package splitstree5.core.datablocks;
 
 
+import splitstree5.core.algorithms.interfaces.IFromAnalysisResults;
+import splitstree5.core.algorithms.interfaces.IToAnalysisResults;
+
 /**
  * This block saves the result of an analysis in its info variable
  * Created by huson on 12/22/16.
@@ -33,5 +36,15 @@ public class AnalysisResultBlock extends ADataBlock {
     @Override
     public int size() {
         return getShortDescription() == null ? 0 : getShortDescription().length();
+    }
+
+    @Override
+    public Class getFromInterface() {
+        return IFromAnalysisResults.class;
+    }
+
+    @Override
+    public Class getToInterface() {
+        return IToAnalysisResults.class;
     }
 }

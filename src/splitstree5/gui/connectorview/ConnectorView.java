@@ -131,7 +131,7 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
         controller.getCenterPane().getChildren().setAll(algorithmPane);
     }
 
-    private static int windowCount = 0;
+    public static int windowCount = 0;
 
     /**
      * show this view

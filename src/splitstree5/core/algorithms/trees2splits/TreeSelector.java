@@ -1,11 +1,12 @@
 package splitstree5.core.algorithms.trees2splits;
 
-
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
+import splitstree5.core.algorithms.interfaces.IFromTrees;
+import splitstree5.core.algorithms.interfaces.IToTrees;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
@@ -21,8 +22,8 @@ import java.util.Collection;
  * Obtains splits from a selected tree
  * Daniel Huson, 2005
  */
-public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> {
-    private int optionWhich = 1; // which tree is to be converted?
+public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToTrees {
+    private int optionWhich = 1; // which tree is selected?
 
     public TreeSelector() {
         setName("TreeSelector");
@@ -38,8 +39,6 @@ public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> {
         if (optionWhich > trees.getNTrees())
             optionWhich = trees.getNTrees();
 
-        setOptionWhich(optionWhich);
-
         if (trees.getNTrees() == 0)
             return;
 
@@ -48,6 +47,7 @@ public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> {
         if (tree.getNumberOfNodes() == 0)
             return;
 
+        TreesUtilities.setNode2taxa(tree, taxaBlock);
         Node root = tree.getRoot();
         if (root == null) {
             // choose an arbitrary labeled root
@@ -64,7 +64,6 @@ public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> {
         progressListener.setTasks("TreeSelector", "Extracting splits");
         progressListener.incrementProgress();
 
-        TreesUtilities.setNode2taxa(tree, taxaBlock);
         final BitSet taxaInTree = TreesUtilities.getTaxa(tree);
         tree2splitsRec(root, null, tree, taxaInTree, splits);
 
@@ -161,5 +160,10 @@ public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> {
 
     public void setOptionWhich(int which) {
         this.optionWhich = which;
+    }
+
+    @Override
+    public String getShortDescription() {
+        return "which=" + getOptionWhich();
     }
 }

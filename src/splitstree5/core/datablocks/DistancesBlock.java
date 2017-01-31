@@ -20,6 +20,8 @@
 package splitstree5.core.datablocks;
 
 import com.sun.istack.internal.NotNull;
+import splitstree5.core.algorithms.interfaces.IFromDistances;
+import splitstree5.core.algorithms.interfaces.IToDistances;
 
 /**
  * A distances block
@@ -184,4 +186,13 @@ public class DistancesBlock extends ADataBlock {
         return variances;
     }
 
+    @Override
+    public Class getFromInterface() {
+        return IFromDistances.class;
+    }
+
+    @Override
+    public Class getToInterface() {
+        return IToDistances.class;
+    }
 }

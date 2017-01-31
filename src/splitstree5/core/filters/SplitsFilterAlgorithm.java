@@ -41,20 +41,20 @@ import java.util.List;
  * Created by huson on 12/12/16.
  */
 public class SplitsFilterAlgorithm extends Algorithm<SplitsBlock, SplitsBlock> {
-    public enum Filter {GreedyCompatible, ClosestTree, GreedyWeaklyCompatible, WeightThreshold, ConfidenceThreshold, MaximumDimension, None}
+    public enum FilterAlgorithm {None, GreedyCompatible, ClosestTree, GreedyWeaklyCompatible}
 
     private final ArrayList<ASplit> enabledSplits = new ArrayList<>();
     private final ArrayList<ASplit> disabledSplits = new ArrayList<>();
 
     private boolean optionModifyWeightsUsingLeastSquares = false;
-    private Filter optionFilter = Filter.MaximumDimension;
+    private FilterAlgorithm optionFilterAlgorithm = FilterAlgorithm.None;
 
     private float optionWeightThreshold = 0;
     private float optionConfidenceThreshold = 0;
     private int optionMaximumDimension = 4;
 
     public List<String> listOptions() {
-        return Arrays.asList("optionFilter", "optionWeightThreshold", "optionConfidenceThreshold", "optionMaximumDimension");
+        return Arrays.asList("optionFilterAlgorithm", "optionWeightThreshold", "optionConfidenceThreshold", "optionMaximumDimension");
     }
 
     /**
@@ -75,6 +75,15 @@ public class SplitsFilterAlgorithm extends Algorithm<SplitsBlock, SplitsBlock> {
         });
     }
 
+    /**
+     * do the computation
+     *
+     * @param progress
+     * @param taxaBlock
+     * @param original
+     * @param modified
+     * @throws CanceledException
+     */
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, SplitsBlock original, SplitsBlock modified) throws CanceledException {
         boolean changed = false;
         List<ASplit> splits = new ArrayList<>(original.size());
@@ -97,7 +106,7 @@ public class SplitsFilterAlgorithm extends Algorithm<SplitsBlock, SplitsBlock> {
         }
         Compatibility compatibility = Compatibility.unknown;
 
-        switch (optionFilter) {
+        switch (optionFilterAlgorithm) {
             case GreedyCompatible: {
                 final int oldSize = splits.size();
                 splits = GreedyCompatible.apply(progress, splits);
@@ -121,40 +130,34 @@ public class SplitsFilterAlgorithm extends Algorithm<SplitsBlock, SplitsBlock> {
                     changed = true;
                 break;
             }
-            case WeightThreshold: {
-                final int oldSize = splits.size();
-                ArrayList<ASplit> tmp = new ArrayList<>(splits.size());
-                for (ASplit split : splits) {
-                    if (split.getWeight() >= optionWeightThreshold)
-                        tmp.add(split);
-                }
-                splits = tmp;
-                if (splits.size() != oldSize)
-                    changed = true;
-                break;
+        }
+        if (getOptionWeightThreshold()>0) {
+            final int oldSize = splits.size();
+            ArrayList<ASplit> tmp = new ArrayList<>(splits.size());
+            for (ASplit split : splits) {
+                if (split.getWeight() >= optionWeightThreshold)
+                    tmp.add(split);
             }
-            case ConfidenceThreshold: {
-                final int oldSize = splits.size();
-                ArrayList<ASplit> tmp = new ArrayList<>(splits.size());
-                for (ASplit split : splits) {
-                    if (split.getConfidence() >= optionConfidenceThreshold)
-                        tmp.add(split);
-                }
-                splits = tmp;
-                if (splits.size() != oldSize)
-                    changed = true;
-                break;
+            splits = tmp;
+            if (splits.size() != oldSize)
+                changed = true;
+        }
+        if (getOptionConfidenceThreshold()>0) {
+            final int oldSize = splits.size();
+            ArrayList<ASplit> tmp = new ArrayList<>(splits.size());
+            for (ASplit split : splits) {
+                if (split.getConfidence() >= optionConfidenceThreshold)
+                    tmp.add(split);
             }
-            case MaximumDimension: {
-                final int oldSize = splits.size();
-                splits = DimensionFilter.apply(progress, optionMaximumDimension, splits);
-                if (splits.size() != oldSize)
-                    changed = true;
-                break;
-            }
-            default:
-            case None:
-                break;
+            splits = tmp;
+            if (splits.size() != oldSize)
+                changed = true;
+        }
+        if (getOptionMaximumDimension()>0) {
+            final int oldSize = splits.size();
+            splits = DimensionFilter.apply(progress, optionMaximumDimension, splits);
+            if (splits.size() != oldSize)
+                changed = true;
         }
 
         modified.getSplits().addAll(splits);
@@ -200,12 +203,12 @@ public class SplitsFilterAlgorithm extends Algorithm<SplitsBlock, SplitsBlock> {
         this.optionModifyWeightsUsingLeastSquares = optionModifyWeightsUsingLeastSquares;
     }
 
-    public Filter getOptionFilter() {
-        return optionFilter;
+    public FilterAlgorithm getOptionFilterAlgorithm() {
+        return optionFilterAlgorithm;
     }
 
-    public void setOptionFilter(Filter optionFilter) {
-        this.optionFilter = optionFilter;
+    public void setOptionFilterAlgorithm(FilterAlgorithm optionFilterAlgorithm) {
+        this.optionFilterAlgorithm = optionFilterAlgorithm;
     }
 
     public float getOptionWeightThreshold() {
