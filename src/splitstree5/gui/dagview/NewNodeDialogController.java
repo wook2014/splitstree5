@@ -22,14 +22,17 @@ package splitstree5.gui.dagview;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import splitstree5.core.algorithms.Algorithm;
+import splitstree5.core.datablocks.ADataBlock;
 
 public class NewNodeDialogController {
 
     @FXML
-    private ChoiceBox<?> targetDataChoiceBox;
+    private ChoiceBox<ADataBlock> targetDataChoiceBox;
 
     @FXML
-    private ChoiceBox<?> algorithmChoiceBox;
+    private ChoiceBox<Algorithm> algorithmChoiceBox;
 
     @FXML
     private Button cancelButton;
@@ -37,11 +40,14 @@ public class NewNodeDialogController {
     @FXML
     private Button applyButton;
 
-    public ChoiceBox<?> getTargetDataChoiceBox() {
+    @FXML
+    private Label sourceDataLabel;
+
+    public ChoiceBox<ADataBlock> getTargetDataChoiceBox() {
         return targetDataChoiceBox;
     }
 
-    public ChoiceBox<?> getAlgorithmChoiceBox() {
+    public ChoiceBox<? extends Algorithm> getAlgorithmChoiceBox() {
         return algorithmChoiceBox;
     }
 
@@ -51,5 +57,9 @@ public class NewNodeDialogController {
 
     public Button getApplyButton() {
         return applyButton;
+    }
+
+    public Label getSourceDataLabel() {
+        return sourceDataLabel;
     }
 }

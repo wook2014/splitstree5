@@ -26,7 +26,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import jloda.util.Basic;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.algorithms.Report;
+import splitstree5.core.algorithms.ReportNode;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.*;
 import splitstree5.core.filters.TaxaFilter;
@@ -143,7 +143,7 @@ public class DAG {
      * @return connector node
      */
     public <P extends ADataBlock> AConnector createReporter(ADataNode<P> parent) {
-        return addConnector(new Report<P>(getWorkingTaxaNode().getDataBlock(), parent));
+        return addConnector(new ReportNode<P>(getWorkingTaxaNode().getDataBlock(), parent));
     }
 
     /**
@@ -171,6 +171,10 @@ public class DAG {
 
     public ADataNode<TaxaBlock> getWorkingTaxaNode() {
         return workingTaxaNode.get();
+    }
+
+    public TaxaBlock getWorkingTaxaBlock() {
+        return getWorkingTaxaNode().getDataBlock();
     }
 
     public ObjectProperty<ADataNode<TaxaBlock>> workingTaxaNodeProperty() {

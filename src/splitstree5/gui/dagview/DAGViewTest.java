@@ -105,8 +105,8 @@ public class DAGViewTest extends Application {
             }
         }
 
-        dagView.getCenterPane().getChildren().addAll(edgeViews);
-        dagView.getCenterPane().getChildren().addAll(node2nodeView.values());
+        dagView.getEdgeViews().getChildren().addAll(edgeViews);
+        dagView.getNodeViews().getChildren().addAll(node2nodeView.values());
     }
 
     /**

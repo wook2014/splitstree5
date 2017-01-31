@@ -6,7 +6,7 @@ import jloda.phylo.PhyloTree;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
-import splitstree5.core.algorithms.interfaces.IToTrees;
+import splitstree5.core.algorithms.interfaces.IToSplits;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
@@ -22,7 +22,7 @@ import java.util.Collection;
  * Obtains splits from a selected tree
  * Daniel Huson, 2005
  */
-public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToTrees {
+public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
     private int optionWhich = 1; // which tree is selected?
 
     public TreeSelector() {

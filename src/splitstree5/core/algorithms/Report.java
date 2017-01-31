@@ -21,9 +21,8 @@ package splitstree5.core.algorithms;
 
 import jloda.util.Basic;
 import jloda.util.ProgressListener;
-import splitstree5.core.connectors.AConnector;
+import splitstree5.core.algorithms.interfaces.*;
 import splitstree5.core.datablocks.ADataBlock;
-import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.AnalysisResultBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.nexus.NexusFileWriter;
@@ -32,31 +31,20 @@ import java.io.IOException;
 import java.io.StringWriter;
 
 /**
- * report the content of a block
- * Created by huson on 12/26/16.
+ * report on the contents of a block
+ * Created by huson on 1/31/17.
  */
-public class Report<D extends ADataBlock> extends AConnector<D, AnalysisResultBlock> {
-    /**
-     * report the block
-     *
-     * @param taxaBlock
-     * @param parent
-     */
-    public Report(TaxaBlock taxaBlock, ADataNode<D> parent) {
-        super(taxaBlock, parent, new ADataNode<>(new AnalysisResultBlock()));
-
-        setAlgorithm(new Algorithm<D, AnalysisResultBlock>("Report") {
-            @Override
-            public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, D parent, AnalysisResultBlock child) throws InterruptedException {
-                try (final StringWriter w = new StringWriter()) {
-                    w.write("### " + parent.getName() + (parent.getShortDescription() != null ? ", " + parent.getShortDescription() + "\n" : "\n"));
-                    NexusFileWriter.write(w, taxaBlock, parent);
-                    child.setShortDescription(w.toString());
-                    System.err.println(child.getShortDescription());
-                } catch (IOException e) {
-                    Basic.caught(e);
-                }
-            }
-        });
+public class Report extends Algorithm<ADataBlock, AnalysisResultBlock> implements IFromAnalysisResults, IFromChararacters, IFromTrees, IFromNetworks, IFromDistances,
+        IFromSplits, IFromTaxa, IToAnalysisResults {
+    @Override
+    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, ADataBlock parent, AnalysisResultBlock child) throws Exception {
+        try (final StringWriter w = new StringWriter()) {
+            w.write("### " + parent.getName() + (parent.getShortDescription() != null ? ", " + parent.getShortDescription() + "\n" : "\n"));
+            NexusFileWriter.write(w, taxaBlock, parent);
+            child.setShortDescription(w.toString());
+            System.err.println(child.getShortDescription());
+        } catch (IOException e) {
+            Basic.caught(e);
+        }
     }
 }

@@ -128,7 +128,7 @@ public class DagNodeView extends Group {
             getChildren().add(openButton);
         }
 
-        DagNodeViewMouseHandler.install(dagView.getCenterPane(), this);
+        DagNodeViewMouseHandler.install(dagView, dagView.getCenterPane(), this);
     }
 
     public DoubleProperty xProperty() {

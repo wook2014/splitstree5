@@ -20,7 +20,10 @@
 package splitstree5.core.datablocks;
 
 import jloda.util.Basic;
+import jloda.util.PluginClassLoader;
 import splitstree5.utils.OptionableBase;
+
+import java.util.ArrayList;
 
 /**
  * A data block
@@ -47,4 +50,23 @@ abstract public class ADataBlock extends OptionableBase {
     abstract public Class getFromInterface();
 
     abstract public Class getToInterface();
+
+    public String toString() {
+        return getName();
+    }
+
+
+    /**
+     * gets instances of all known datablocks
+     *
+     * @return
+     */
+    public static ArrayList<ADataBlock> getAllDataBlocks() {
+        final ArrayList<ADataBlock> list = new ArrayList<>();
+        for (Object object : PluginClassLoader.getInstances(ADataBlock.class, "splitstree5.core.datablocks")) {
+            list.add((ADataBlock) object);
+        }
+        return list;
+    }
+
 }

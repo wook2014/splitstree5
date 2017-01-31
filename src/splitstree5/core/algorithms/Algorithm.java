@@ -99,4 +99,13 @@ abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> exte
     public boolean isApplicable(TaxaBlock taxaBlock, P parent, C child) {
         return true;
     }
+
+    /**
+     * gets the name of this algorithm
+     *
+     * @return name
+     */
+    public String toString() {
+        return getName();
+    }
 }

@@ -19,6 +19,7 @@
 
 package splitstree5.gui.dagview;
 
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -43,6 +44,9 @@ public class DAGView {
     private final UndoManager undoManager;
     private Stage stage;
 
+    private final Group nodeViews = new Group();
+    private final Group edgeViews = new Group();
+
     private final ArrayList<Option> options = new ArrayList<>();
 
     /**
@@ -56,7 +60,7 @@ public class DAGView {
         controller = extendedFXMLLoader.getController();
         undoManager = new UndoManager();
 
-        setupController();
+        controller.getCenterPane().getChildren().addAll(edgeViews, nodeViews);
         show();
     }
 
@@ -68,11 +72,12 @@ public class DAGView {
         return controller.getCenterPane();
     }
 
+    public Group getNodeViews() {
+        return nodeViews;
+    }
 
-    /**
-     * setup controller
-     */
-    private void setupController() {
+    public Group getEdgeViews() {
+        return edgeViews;
     }
 
     /**

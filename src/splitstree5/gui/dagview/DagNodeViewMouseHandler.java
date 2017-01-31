@@ -22,7 +22,10 @@ package splitstree5.gui.dagview;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import jloda.util.Basic;
 import splitstree5.core.datablocks.ADataNode;
+
+import java.io.IOException;
 
 /**
  * installs a mouse handler
@@ -39,14 +42,16 @@ public class DagNodeViewMouseHandler {
      *
      * @param nodeView
      */
-    private DagNodeViewMouseHandler(Pane world, DagNodeView nodeView) {
+    private DagNodeViewMouseHandler(DAGView dagView, Pane world, DagNodeView nodeView) {
         line.setStroke(Color.DARKGRAY);
 
         nodeView.setOnMousePressed((e) -> {
+            world.getChildren().remove(line);
+
             mouseDownX = e.getSceneX();
             mouseDownY = e.getSceneY();
             shiftDown = e.isShiftDown();
-            if (shiftDown) {
+            if (shiftDown && nodeView.getANode() instanceof ADataNode) {
                 line.setStartX(mouseDownX - world.localToScene(0, 0).getX());
                 line.setStartY(mouseDownY - world.localToScene(0, 0).getY());
                 line.setEndX(mouseDownX);
@@ -69,7 +74,17 @@ public class DagNodeViewMouseHandler {
             }
         });
 
-        nodeView.setOnMouseReleased((e) -> world.getChildren().remove(line));
+        nodeView.setOnMouseReleased((me) -> {
+                    if (shiftDown && nodeView.getANode() instanceof ADataNode) {
+                        try {
+                            new NewNodeDialog(dagView, nodeView, me);
+                        } catch (IOException ex) {
+                            Basic.caught(ex);
+                        }
+                    }
+                    world.getChildren().remove(line);
+                }
+        );
     }
 
     /**
@@ -77,7 +92,7 @@ public class DagNodeViewMouseHandler {
      *
      * @param nodeView
      */
-    public static void install(Pane world, DagNodeView nodeView) {
-        new DagNodeViewMouseHandler(world, nodeView);
+    public static void install(DAGView dagView, Pane world, DagNodeView nodeView) {
+        new DagNodeViewMouseHandler(dagView, world, nodeView);
     }
 }
