@@ -35,7 +35,9 @@ public class DagNodeViewMouseHandler {
     private double mouseDownX;
     private double mouseDownY;
     private boolean shiftDown;
+    private boolean controlDown;
     private final Line line = new Line();
+    private static DagNodeView lock = null;
 
     /**
      * setup the mouse handler
@@ -46,43 +48,53 @@ public class DagNodeViewMouseHandler {
         line.setStroke(Color.DARKGRAY);
 
         nodeView.setOnMousePressed((e) -> {
-            world.getChildren().remove(line);
+            if (lock == null) {
+                lock = nodeView;
+                world.getChildren().remove(line);
 
-            mouseDownX = e.getSceneX();
-            mouseDownY = e.getSceneY();
-            shiftDown = e.isShiftDown();
-            if (shiftDown && nodeView.getANode() instanceof ADataNode) {
-                line.setStartX(mouseDownX - world.localToScene(0, 0).getX());
-                line.setStartY(mouseDownY - world.localToScene(0, 0).getY());
-                line.setEndX(mouseDownX);
-                line.setEndY(mouseDownY);
-                world.getChildren().add(line);
+                mouseDownX = e.getSceneX();
+                mouseDownY = e.getSceneY();
+                shiftDown = e.isShiftDown();
+                controlDown = e.isControlDown();
+
+                if (!controlDown && shiftDown && nodeView.getANode() instanceof ADataNode) {
+                    line.setStartX(mouseDownX - world.localToScene(0, 0).getX());
+                    line.setStartY(mouseDownY - world.localToScene(0, 0).getY());
+                    line.setEndX(mouseDownX);
+                    line.setEndY(mouseDownY);
+                    world.getChildren().add(line);
+                }
             }
         });
 
         nodeView.setOnMouseDragged((e) -> {
-            if (!shiftDown) {
-                nodeView.xProperty().set(nodeView.xProperty().get() + (e.getSceneX() - mouseDownX));
-                nodeView.yProperty().set(nodeView.yProperty().get() + (e.getSceneY() - mouseDownY));
-                mouseDownX = e.getSceneX();
-                mouseDownY = e.getSceneY();
-            }
-            if (shiftDown && nodeView.getANode() instanceof ADataNode) {
-                line.setEndX(e.getSceneX() - world.localToScene(0, 0).getX());
-                line.setEndY(e.getSceneY() - world.localToScene(0, 0).getY());
+            if (nodeView == lock) {
+                if (!controlDown && !shiftDown) {
+                    nodeView.xProperty().set(nodeView.xProperty().get() + (e.getSceneX() - mouseDownX));
+                    nodeView.yProperty().set(nodeView.yProperty().get() + (e.getSceneY() - mouseDownY));
+                    mouseDownX = e.getSceneX();
+                    mouseDownY = e.getSceneY();
+                }
+                if (!controlDown && shiftDown && nodeView.getANode() instanceof ADataNode) {
+                    line.setEndX(e.getSceneX() - world.localToScene(0, 0).getX());
+                    line.setEndY(e.getSceneY() - world.localToScene(0, 0).getY());
 
+                }
             }
         });
 
         nodeView.setOnMouseReleased((me) -> {
-                    if (shiftDown && nodeView.getANode() instanceof ADataNode) {
-                        try {
-                            new NewNodeDialog(dagView, nodeView, me);
-                        } catch (IOException ex) {
-                            Basic.caught(ex);
-                        }
+            if (nodeView == lock) {
+                if (!controlDown && shiftDown && nodeView.getANode() instanceof ADataNode) {
+                    try {
+                        new NewNodeDialog(dagView, nodeView, me);
+                    } catch (IOException ex) {
+                        Basic.caught(ex);
                     }
-                    world.getChildren().remove(line);
+                }
+                world.getChildren().remove(line);
+                lock = null;
+            }
                 }
         );
     }

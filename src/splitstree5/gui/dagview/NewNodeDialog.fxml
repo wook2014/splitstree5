@@ -19,7 +19,7 @@
   ~  along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="190.0"
@@ -41,11 +41,22 @@
         <Label text="Algorithm:" GridPane.rowIndex="3"/>
         <ChoiceBox fx:id="targetDataChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
         <ChoiceBox fx:id="algorithmChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-        <ButtonBar prefHeight="40.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+        <ButtonBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0" GridPane.columnIndex="1"
+                   GridPane.rowIndex="4">
             <buttons>
-                <Button fx:id="cancelButton" mnemonicParsing="false" text="Cancel"/>
-                <Button fx:id="applyButton" mnemonicParsing="false" text="Apply"/>
+                <Button fx:id="applyButton" defaultButton="true" mnemonicParsing="false" text="Apply">
+                    <opaqueInsets>
+                        <Insets/>
+                    </opaqueInsets>
+                </Button>
+                <Button fx:id="cancelButton" cancelButton="true" mnemonicParsing="false" text="Cancel"/>
             </buttons>
+            <opaqueInsets>
+                <Insets/>
+            </opaqueInsets>
+            <GridPane.margin>
+                <Insets/>
+            </GridPane.margin>
         </ButtonBar>
         <Label text="Create New Node" GridPane.columnIndex="1"/>
         <Label text="Source Data:" GridPane.rowIndex="1"/>

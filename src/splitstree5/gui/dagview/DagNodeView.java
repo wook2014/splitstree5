@@ -33,6 +33,7 @@ import splitstree5.core.datablocks.ADataNode;
 import splitstree5.gui.connectorview.ConnectorView;
 import splitstree5.gui.textview.TextView;
 import splitstree5.io.nexus.NexusFileWriter;
+import splitstree5.utils.OptionsAccessor;
 
 import java.io.IOException;
 
@@ -85,20 +86,22 @@ public class DagNodeView extends Group {
             descriptionLabel.setLayoutY(24);
             getChildren().add(descriptionLabel);
 
-            Button openButton = new Button("Open...");
-            openButton.setOnAction((e) -> {
-                try {
-                    ConnectorView view = new ConnectorView(dagView.getDocument(), (AConnector) aNode);
-                    view.show();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-            });
-            openButton.setPrefWidth(70);
-            openButton.setPrefHeight(30);
-            openButton.setLayoutX(rectangle.getWidth() - 83);
-            openButton.setLayoutY(rectangle.getHeight() - 33);
-            getChildren().add(openButton);
+            if (((AConnector) aNode).getAlgorithm().getControl() != null || OptionsAccessor.getAllOptions(((AConnector) aNode).getAlgorithm()).size() > 0) {
+                Button openButton = new Button("Open...");
+                openButton.setOnAction((e) -> {
+                    try {
+                        ConnectorView view = new ConnectorView(dagView.getDocument(), (AConnector) aNode);
+                        view.show();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                });
+                openButton.setPrefWidth(70);
+                openButton.setPrefHeight(30);
+                openButton.setLayoutX(rectangle.getWidth() - 83);
+                openButton.setLayoutY(rectangle.getHeight() - 33);
+                getChildren().add(openButton);
+            }
         } else if (aNode instanceof ADataNode) {
             {
                 Shear sh = new Shear(-0.2, 0, rectangle.getX() + rectangle.getWidth() / 2, rectangle.getY() + rectangle.getHeight() / 2);

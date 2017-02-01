@@ -108,6 +108,6 @@ public class NewNodeDialog {
 
         stage.setAlwaysOnTop(true);
 
-        stage.show();
+        stage.showAndWait();
     }
 }

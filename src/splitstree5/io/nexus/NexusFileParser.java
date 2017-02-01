@@ -114,6 +114,10 @@ public class NexusFileParser {
                 final TaxaBlock taxaBlock2 = new TaxaBlock();
                 TaxaNexusIO.parse(np, taxaBlock2);
                 return taxaBlock2;
+            } else if (np.peekMatchIgnoreCase("begin st_analysis_result;")) {
+                final AnalysisResultBlock analysisResult = new AnalysisResultBlock();
+                taxonNamesFound.addAll(AnalysisResultIO.parse(np, analysisResult));
+                return analysisResult;
             } else if (np.peekMatchIgnoreCase("begin characters;")) {
                 final CharactersBlock characters = new CharactersBlock();
                 taxonNamesFound.addAll(CharactersNexusIO.parse(np, taxaBlock, characters, null));

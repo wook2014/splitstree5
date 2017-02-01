@@ -68,6 +68,8 @@ public class NexusFileWriter {
     public static void write(Writer w, TaxaBlock taxaBlock, ADataBlock dataBlock) throws IOException {
         if (dataBlock instanceof TaxaBlock) {
             TaxaNexusIO.write(w, (TaxaBlock) dataBlock);
+        } else if (dataBlock instanceof AnalysisResultBlock) {
+            AnalysisResultIO.write(w, (AnalysisResultBlock) dataBlock);
         } else if (dataBlock instanceof DistancesBlock) {
             DistancesNexusIO.write(w, taxaBlock, (DistancesBlock) dataBlock, null);
         } else if (dataBlock instanceof TreesBlock) {

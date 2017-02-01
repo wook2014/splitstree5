@@ -23,6 +23,7 @@ package splitstree5.core.datablocks;
 import splitstree5.core.algorithms.interfaces.IFromAnalysisResults;
 import splitstree5.core.algorithms.interfaces.IToAnalysisResults;
 
+
 /**
  * This block saves the result of an analysis in its info variable
  * Created by huson on 12/22/16.
