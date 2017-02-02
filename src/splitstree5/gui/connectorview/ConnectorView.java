@@ -69,10 +69,15 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
         setupController();
 
         connector.stateProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue != UpdateState.VALID && newValue == UpdateState.VALID) {
+            if (newValue == UpdateState.VALID) {
                 algorithmPane.syncModel2Controller();
             }
-            undoManager.clear();
+            // undoManager.clear();
+        });
+
+        connector.getParent().stateProperty().addListener((observable, oldValue, newValue) -> {
+            undoManager.clear(); // if parent changes, have to forget history...
+
         });
 
         algorithmPane.setDocument(document);
@@ -108,9 +113,14 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
         controller.getRedoMenuItem().disableProperty().bind(new SimpleBooleanProperty(false).isEqualTo(undoManager.canRedoProperty()));
         controller.getRedoMenuItem().textProperty().bind(undoManager.redoNameProperty());
 
-        controller.getApplyButton().setOnAction((e) -> algorithmPane.syncController2Model());
+        controller.getApplyButton().setOnAction((e) -> {
+            algorithmPane.syncController2Model();
+            undoManager.addUndoableApply(algorithmPane::syncController2Model);
+        });
 
-        controller.getApplyButton().disableProperty().bind(document.updatingProperty().or(algorithmPane.applicableProperty().not()));
+        controller.getApplyButton().disableProperty().bind(algorithmPane.applicableProperty().not());
+        // controller.getApplyButton().disableProperty().bind(document.updatingProperty().or(algorithmPane.applicableProperty().not()));
+        // todo: need to bind to something that lets us know that something has changed
 
         connector.applicableProperty().addListener((c, o, n) -> {
             System.err.println(connector.getAlgorithm().getName() + " is applicable: " + n);

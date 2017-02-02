@@ -42,7 +42,6 @@ public class Report extends Algorithm<ADataBlock, AnalysisResultBlock> implement
             w.write("### " + parent.getName() + (parent.getShortDescription() != null ? ", " + parent.getShortDescription() + "\n" : "\n"));
             NexusFileWriter.write(w, taxaBlock, parent);
             child.setShortDescription(w.toString());
-            System.err.println(child.getShortDescription());
         } catch (IOException e) {
             Basic.caught(e);
         }

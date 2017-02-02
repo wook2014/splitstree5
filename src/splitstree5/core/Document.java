@@ -60,8 +60,10 @@ public class Document {
         }
 
         // todo: for debugging:
-        taxaSelectionModel.getSelectedItems().addListener((ListChangeListener<Taxon>) c -> System.err.println("Taxa selection changed: " +
-                Basic.toString(taxaSelectionModel.getSelectedItems(), ",")));
+        if (false) {
+            taxaSelectionModel.getSelectedItems().addListener((ListChangeListener<Taxon>) c -> System.err.println("Taxa selection changed: " +
+                    Basic.toString(taxaSelectionModel.getSelectedItems(), ",")));
+        }
     }
 
 

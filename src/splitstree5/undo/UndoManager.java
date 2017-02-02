@@ -228,7 +228,6 @@ public class UndoManager {
         canRedo.set(canRedo());
         undoName.set(canUndo() ? "Undo" + (currentNode.change.getName().length() > 0 ? " " + currentNode.change.getName() : "") : "Undo");
         redoName.set(canRedo() ? "Redo" + (currentNode.next.change.getName().length() > 0 ? " " + currentNode.next.change.getName() : "") : "Redo");
-
     }
 
     /**
@@ -239,7 +238,6 @@ public class UndoManager {
             throw new IllegalStateException("Cannot move prev.");
         currentNode = currentNode.prev;
     }
-
 
     /**
      * move to next
@@ -267,12 +265,50 @@ public class UndoManager {
         }
     }
 
-
     public void setRecordChanges(boolean recordChanges) {
         this.recordChanges = recordChanges;
     }
 
     public boolean isRecordChanges() {
         return recordChanges;
+    }
+
+    /**
+     * adds a undoable apply item. If undo is called on this, then all undos up until the previous undoable apply are performed.
+     * After that, this item is removed from the undo manager, as it is not redoable.
+     *
+     * @param runnable
+     */
+    public void addUndoableApply(Runnable runnable) {
+        addUndoableChange(new UndoableApply(currentNode, runnable));
+    }
+
+    public class UndoableApply extends UndoableChange {
+        private final ListNode prev;
+        private final Runnable runnable;
+
+        public UndoableApply(ListNode lastNode, Runnable runnable) {
+            super("Apply");
+            this.prev = lastNode;
+            this.runnable = runnable;
+        }
+
+        @Override
+        public void undo() {
+            for (ListNode a = prev; a != null; a = a.prev) {
+                if (a.change instanceof UndoableApply)
+                    break;
+                if (a.change != null)
+                    a.change.undo();
+            }
+            runnable.run();
+            updateProperties();
+        }
+
+        @Override
+        public void redo() {
+            runnable.run();
+            updateProperties();
+        }
     }
 }

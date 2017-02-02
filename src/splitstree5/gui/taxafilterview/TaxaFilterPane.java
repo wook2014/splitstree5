@@ -52,6 +52,8 @@ public class TaxaFilterPane extends AlgorithmPane {
 
     final SimpleBooleanProperty applicableProperty = new SimpleBooleanProperty();
 
+    private boolean inSync = false;
+
     /**
      * constructor
      *
@@ -85,10 +87,9 @@ public class TaxaFilterPane extends AlgorithmPane {
         controller.getActiveList().getItems().addListener((ListChangeListener.Change<? extends Taxon> c) -> {
             if (!undoManager.isPerformingUndoOrRedo()) { // for performance reasons, check this here. Is also checked in addUndoableChange, but why make a change object if we don't need it...
                 final UndoableChangeListViews2<Taxon> change = new UndoableChangeListViews2<>("Change Active Taxa", controller.getActiveList(), prevActiveTaxa, controller.getInactiveList(), prevInactiveTaxa);
-                final boolean isInitialLoad = (prevActiveTaxa.isEmpty() && prevInactiveTaxa.isEmpty()); // don't want user to undo original load of taxa
                 prevActiveTaxa = change.getItemsA();
                 prevInactiveTaxa = change.getItemsB();
-                if (!isInitialLoad)
+                if (!inSync)
                     undoManager.addUndoableChange(change);
             }
 
@@ -210,11 +211,16 @@ public class TaxaFilterPane extends AlgorithmPane {
      * sync model to controller
      */
     public void syncModel2Controller() {
-        final ListView<Taxon> activeList = controller.getActiveList();
-        final ListView<Taxon> inactiveList = controller.getInactiveList();
+        inSync = true;
+        try {
+            final ListView<Taxon> activeList = controller.getActiveList();
+            final ListView<Taxon> inactiveList = controller.getInactiveList();
 
-        activeList.getItems().setAll(taxaFilter.getEnabledTaxa());
-        inactiveList.getItems().setAll(taxaFilter.getDisabledTaxa());
+            activeList.getItems().setAll(taxaFilter.getEnabledTaxa());
+            inactiveList.getItems().setAll(taxaFilter.getDisabledTaxa());
+        } finally {
+            inSync = false;
+        }
     }
 
     /**

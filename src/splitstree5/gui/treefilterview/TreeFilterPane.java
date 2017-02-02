@@ -54,6 +54,8 @@ public class TreeFilterPane extends AlgorithmPane {
 
     final SimpleBooleanProperty applicableProperty = new SimpleBooleanProperty();
 
+    private boolean inSync = false;
+
     /**
      * constructor
      *
@@ -83,14 +85,13 @@ public class TreeFilterPane extends AlgorithmPane {
      * setup controller
      */
     public void setup() {
-        System.err.println("setup");
+
         controller.getActiveList().getItems().addListener((ListChangeListener.Change<? extends TreeHolder> c) -> {
             if (!undoManager.isPerformingUndoOrRedo()) { // for performance reasons, check this here. Is also checked in addUndoableChange, but why make a change object if we don't need it...
                 final UndoableChangeListViews2<TreeHolder> change = new UndoableChangeListViews2<TreeHolder>("Change Active Trees", controller.getActiveList(), prevActiveTrees, controller.getInactiveList(), prevInactiveTrees);
-                final boolean isInitialLoad = (prevActiveTrees.isEmpty() && prevInactiveTrees.isEmpty()); // don't want user to undo original load of taxa
                 prevActiveTrees = change.getItemsA();
                 prevInactiveTrees = change.getItemsB();
-                if (!isInitialLoad)
+                if (!inSync)
                     undoManager.addUndoableChange(change);
             }
 
@@ -114,7 +115,6 @@ public class TreeFilterPane extends AlgorithmPane {
             controller.getActiveList().getItems().clear();
         });
         controller.getInactivateAllButton().disableProperty().bind(Bindings.isEmpty(controller.getActiveList().getItems()));
-
 
         controller.getInactivateSelectedButton().setOnAction((e) -> {
             controller.getInactiveList().getItems().addAll(controller.getActiveList().getSelectionModel().getSelectedItems());
@@ -161,19 +161,24 @@ public class TreeFilterPane extends AlgorithmPane {
      * sync model to controller
      */
     public void syncModel2Controller() {
-        final ListView<TreeHolder> activeList = controller.getActiveList();
-        final ListView<TreeHolder> inactiveList = controller.getInactiveList();
+        inSync = true;
+        try {
+            final ListView<TreeHolder> activeList = controller.getActiveList();
+            final ListView<TreeHolder> inactiveList = controller.getInactiveList();
 
-        allTrees.clear();
-        activeList.getItems().clear();
-        for (PhyloTree phyloTree : treeFilter.getEnabledTrees()) {
-            activeList.getItems().add(new TreeHolder(phyloTree, allTrees.size()));
-            allTrees.add(phyloTree);
-        }
-        inactiveList.getItems().clear();
-        for (PhyloTree phyloTree : treeFilter.getDisabledTrees()) {
-            inactiveList.getItems().add(new TreeHolder(phyloTree, allTrees.size()));
-            allTrees.add(phyloTree);
+            allTrees.clear();
+            activeList.getItems().clear();
+            for (PhyloTree phyloTree : treeFilter.getEnabledTrees()) {
+                activeList.getItems().add(new TreeHolder(phyloTree, allTrees.size()));
+                allTrees.add(phyloTree);
+            }
+            inactiveList.getItems().clear();
+            for (PhyloTree phyloTree : treeFilter.getDisabledTrees()) {
+                inactiveList.getItems().add(new TreeHolder(phyloTree, allTrees.size()));
+                allTrees.add(phyloTree);
+            }
+        } finally {
+            inSync = false;
         }
     }
 
