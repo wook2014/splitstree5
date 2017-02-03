@@ -1,0 +1,10 @@
+BEGIN Characters;
+DIMENSIONS ntax=36 nchar=60;
+FORMAT
+	datatype='standard' missing=? gap=- symbols="01" labels=no transpose=no interleave=no;
+MATRIX
+
+
+
+;
+END; [Characters]
