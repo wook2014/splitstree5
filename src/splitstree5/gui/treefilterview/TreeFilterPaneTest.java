@@ -54,10 +54,10 @@ import splitstree5.io.nexus.NexusFileParser;
 import splitstree5.io.nexus.NexusFileWriter;
 
 /**
- * test tree filter view
+ * test tree filter pane
  * Created by huson on 1/26/17.
  */
-public class TreeFilterViewTest extends Application {
+public class TreeFilterPaneTest extends Application {
     @Test
     public void test() throws Exception {
         init();

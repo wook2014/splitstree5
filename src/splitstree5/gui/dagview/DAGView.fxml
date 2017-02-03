@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.*?>
 <BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
             prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111"
@@ -27,7 +28,25 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="Edit">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Delete"/>
+                        <MenuItem fx:id="deleteMenuItem" mnemonicParsing="false" text="Delete">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="BACK_SPACE" control="UP" meta="UP" shift="UP"
+                                                    shortcut="DOWN"/>
+                            </accelerator>
+                        </MenuItem>
+                        <SeparatorMenuItem mnemonicParsing="false"/>
+                        <MenuItem fx:id="undoMenuItem" mnemonicParsing="false" text="Undo">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="Z" control="UP" meta="UP" shift="UP"
+                                                    shortcut="DOWN"/>
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem fx:id="redoMenuItem" mnemonicParsing="false" text="Redo">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="Z" control="UP" meta="UP" shift="DOWN"
+                                                    shortcut="DOWN"/>
+                            </accelerator>
+                        </MenuItem>
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">

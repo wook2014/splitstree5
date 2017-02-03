@@ -92,7 +92,25 @@ public class UndoManager {
      */
     public <T> void addUndoableChange(String name, Property<T> property, T oldValue, T newValue) {
         if (isRecordChanges() && !isPerformingUndoOrRedo())
-            addUndoableChange(new UndoableChangeProperty<T>(name, property, oldValue, newValue));
+            addUndoableChange(new UndoableChangeProperty<>(name, property, oldValue, newValue));
+    }
+
+    /**
+     * add a pair of undoable property changes
+     *
+     * @param name
+     * @param property1
+     * @param oldValue1
+     * @param newValue1
+     * @param property2
+     * @param oldValue2
+     * @param newValue2
+     * @param <S>
+     * @param <T>
+     */
+    public <S, T> void addUndoableChangePair(String name, Property<S> property1, S oldValue1, S newValue1, Property<T> property2, T oldValue2, T newValue2) {
+        if (isRecordChanges() && !isPerformingUndoOrRedo())
+            addUndoableChange(new UndoableChangePropertyPair<>(name, property1, oldValue1, newValue1, property2, oldValue2, newValue2));
     }
 
     /**
@@ -280,7 +298,9 @@ public class UndoManager {
      * @param runnable
      */
     public void addUndoableApply(Runnable runnable) {
-        addUndoableChange(new UndoableApply(currentNode, runnable));
+        if (currentNode.change == null || !(currentNode.change instanceof UndoableApply)) {
+            addUndoableChange(new UndoableApply(currentNode, runnable));
+        }
     }
 
     public class UndoableApply extends UndoableChange {
@@ -298,17 +318,16 @@ public class UndoManager {
             for (ListNode a = prev; a != null; a = a.prev) {
                 if (a.change instanceof UndoableApply)
                     break;
-                if (a.change != null)
+                if (a.change != null) {
                     a.change.undo();
+                }
             }
             runnable.run();
-            updateProperties();
         }
 
         @Override
         public void redo() {
             runnable.run();
-            updateProperties();
         }
     }
 }

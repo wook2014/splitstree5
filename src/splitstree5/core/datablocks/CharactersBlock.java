@@ -23,6 +23,7 @@ import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
 import splitstree5.core.algorithms.interfaces.IToChararacters;
+import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.datablocks.characters.CharactersType;
 
 import java.util.HashMap;
@@ -48,13 +49,14 @@ public class CharactersBlock extends ADataBlock {
     private boolean hasAmbiguousStates = false;
     private boolean diploid = false;
 
+    private boolean respectCase = false; // respectCase==true hasn't been implemented
+
     private CharactersType dataType = CharactersType.unknown;
 
     // todo: SplitsTree4 uses two tables ambigStates and replacedStates to store replaced ambig
 
     private float gammaParam = Float.MAX_VALUE;
     private float pInvar = Float.MAX_VALUE;
-
 
     /**
      * Number of colors used.
@@ -86,47 +88,104 @@ public class CharactersBlock extends ADataBlock {
         setName(name);
     }
 
+    @Override
     public void clear() {
-        matrix = new char[0][0];
+        matrix = new char[1][1];
         setShortDescription("");
     }
 
+    /**
+     * gets the size
+     *
+     * @return number of characters
+     */
     public int size() {
-        return matrix.length;
+        return getNchar();
     }
 
     public void setDimension(int ntax, int nchar) {
-        matrix = new char[ntax][nchar];
-    }
-
-    public int getNtax() {
-        return matrix.length;
-    }
-
-    public int getNchar() {
-        return matrix.length == 0 ? 0 : matrix[0].length;
+        matrix = new char[ntax + 1][nchar+1];
     }
 
     /**
-     * gets the value for i and j
+     * gets the number of taxa
+     * @return taxa
+     */
+    public int getNtax() {
+        return matrix.length-1;
+    }
+
+    /**
+     * gets the number of characters
+     * @return characters
+     */
+    public int getNchar() {
+        return matrix[0].length-1;
+    }
+
+    /**
+     * gets the value for i and j. If the letter is an ambiguity code, then returns the missing character.
+     * In the case of an ambiguity code, use getAmbiguousNucleotides() to get all nucleotides associated with the code
      *
      * @param t in range 1..nTax
      * @param pos in range 1..nchar
      * @return value
      */
     public char get(int t, int pos) {
-        return matrix[t - 1][pos - 1];
+        if (t == 0 || pos == 0)
+            throw new IndexOutOfBoundsException("0");
+        return matrix[t][pos];
+    }
+
+    /**
+     * is the letter at this position an ambiguity code?
+     *
+     * @param t
+     * @param pos
+     * @return true if is amb. code
+     */
+    public boolean isAmbiguityCode(int t, int pos) {
+        if (t == 0 || pos == 0)
+            throw new IndexOutOfBoundsException("0");
+        return isHasAmbiguousStates() && AmbiguityCodes.isAmbiguityCode(matrix[t][pos]);
+    }
+
+    /**
+     * gets all the nucleotides associated with an  ambiguity
+     *
+     * @param t
+     * @param pos
+     * @return all nucleotides or null
+     */
+    public String getNucleotidesForAmbiguityCode(int t, int pos) {
+        if (t == 0 || pos == 0)
+            throw new IndexOutOfBoundsException("0");
+        return AmbiguityCodes.getNucleotides(matrix[t][pos]);
+    }
+
+    /**
+     * gets the sequence associated with taxon t
+     *
+     * @param t between 1 and ntax
+     * @return sequence
+     */
+    public char[] getRow(int t) {
+        if (t == 0)
+            throw new IndexOutOfBoundsException("0");
+        return matrix[t];
     }
 
     /**
      * sets the value
      *
-     * @param i     in range 1-nTax
-     * @param j     in range 1-nTax
+     * @param t     in range 1-nTax
+     * @param pos     in range 1-nChar
      * @param value
      */
-    public void set(int i, int j, char value) {
-        matrix[i - 1][j - 1] = value;
+    public void set(int t, int pos, char value) {
+        if (t == 0 || pos == 0)
+            throw new IndexOutOfBoundsException("0");
+        matrix[t][pos] = value;
     }
 
 
@@ -136,7 +195,7 @@ public class CharactersBlock extends ADataBlock {
      * @param matrix
      */
     public void set(@NotNull char[][] matrix) {
-        if (matrix.length == 0) {
+        if (matrix.length <= 1) {
             clear();
         } else {
             setDimension(matrix.length, matrix[0].length);
@@ -145,7 +204,6 @@ public class CharactersBlock extends ADataBlock {
             }
         }
     }
-
 
     public char[][] getMatrix() {
         return matrix;
@@ -177,12 +235,16 @@ public class CharactersBlock extends ADataBlock {
         return this.characterWeights;
     }
 
-    public double getCharacterWeight(int i) {
-        return characterWeights[i];
+    public double getCharacterWeight(int pos) {
+        if (pos == 0)
+            throw new IndexOutOfBoundsException("0");
+        return characterWeights == null?1:characterWeights[pos];
     }
 
-    public void setCharacterWeight(int i, double w) {
-        this.characterWeights[i] = w;
+    public void setCharacterWeight(int pos, double w) {
+        if (pos == 0)
+            throw new IndexOutOfBoundsException("0");
+        this.characterWeights[pos] = w;
     }
 
     public CharactersType getDataType() {
@@ -310,7 +372,9 @@ public class CharactersBlock extends ADataBlock {
      * @return color
      */
     public int getColor(int t, int pos) {
-        return getColor(matrix[t - 1][pos - 1]);
+        if (t == 0 || pos == 0)
+            throw new IndexOutOfBoundsException("0");
+        return getColor(matrix[t][pos]);
     }
 
     /**
@@ -360,6 +424,13 @@ public class CharactersBlock extends ADataBlock {
         return IToChararacters.class;
     }
 
+    public boolean isRespectCase() {
+        return respectCase;
+    }
+
+    public void setRespectCase(boolean respectCase) {
+        this.respectCase = respectCase; // todo: respect case isn't implemented and is ignored
+    }
 }
 
 

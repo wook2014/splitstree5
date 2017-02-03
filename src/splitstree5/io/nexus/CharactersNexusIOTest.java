@@ -72,7 +72,7 @@ public class CharactersNexusIOTest {
             CharactersNexusIO.parse(new NexusStreamParser(new StringReader(sw1.toString())), taxaBlock, charactersBlock2, format);
 
             for (int t = 1; t <= charactersBlock1.getNtax(); t++)
-                assertArrayEquals("t=" + t, charactersBlock1.getMatrix()[t - 1], charactersBlock2.getMatrix()[t - 1]);
+                assertArrayEquals("t=" + t, charactersBlock1.getRow(t), charactersBlock2.getRow(t));
 
             StringWriter sw2 = new StringWriter();
             CharactersNexusIO.write(sw2, taxaBlock, charactersBlock2, format);

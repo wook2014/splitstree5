@@ -19,53 +19,64 @@
 
 package splitstree5.core.datablocks.characters;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Ambiguity codes
  * Created by huson on 1/16/17.
  */
 public class AmbiguityCodes {
-    private final Map<String, Character> dna2code;
-    private final Map<Character, String> code2dna;
-
-    private static AmbiguityCodes instance;
-
+    public static String CODES = "wrkysmbhdvn";
     /**
-     * get instance
-     *
-     * @return instance
+     * gets all nucleotides associated with a given code
+     * @param code
+     * @return all (lowercase) letters associated with the given code, or the nucleotide it self, if not a code
      */
-    public static AmbiguityCodes getInstance() {
-        if (instance == null)
-            instance = new AmbiguityCodes();
-        return instance;
-    }
+    public static String getNucleotides(char code) {
+        switch (Character.toLowerCase(code)) {
+            case 'w':
+                return "at";
 
-    /**
-     * constructor
-     */
-    private AmbiguityCodes() {
-        code2dna = new HashMap<>();
-        dna2code = new HashMap<>();
+            case 'r':
+                return "ag";
 
-        final String AMBIGDNA = "wrkysmbhdvn";
-        final String[] AMBIGDNACODES = {"at", "ag", "gt", "ct", "cg", "ac", "cgt", "act", "agt", "acg", "acgt"};
+            case 'k':
+                return "gt";
 
-        for (int i = 0; i < AMBIGDNACODES.length; i++) {
-            dna2code.put(AMBIGDNACODES[i], AMBIGDNA.charAt(i));
-            code2dna.put(AMBIGDNA.charAt(i), AMBIGDNACODES[i]);
+            case 'y':
+                return "ct";
+
+            case 's':
+                return "cg";
+
+            case 'm':
+                return "ac";
+
+            case 'b':
+                return "cgt";
+
+            case 'h':
+                return "act";
+
+            case 'd':
+                return "agt";
+
+            case 'v':
+                return "acg";
+
+            case 'n':
+                return "acgt";
+
+            default:
+                return "" + code; // this is not a code, but a nucleotide
         }
     }
 
-    public String getDNAForCode(char code) {
-        return code2dna.get(code);
+    /**
+     * is the given letter an ambiguity code?
+     *
+     * @param ch
+     * @return true, if code, false otherwise
+     */
+    public static boolean isAmbiguityCode(char ch) {
+        return CODES.indexOf(Character.toLowerCase(ch)) != -1;
     }
-
-    public Character getCodeForDNA(String dna) {
-        return dna2code.get(dna);
-
-    }
-
 }

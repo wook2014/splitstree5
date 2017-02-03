@@ -100,7 +100,7 @@ public class TaxaFilter extends AConnector<TaxaBlock, TaxaBlock> {
         if (disabledTaxa.size() == 0)
             return "Enabled: " + enabledTaxa.size();
         else
-            return "Enabled: " + enabledTaxa.size() + " (of " + (enabledTaxa.size() + disabledTaxa.size());
+            return "Enabled: " + enabledTaxa.size() + " (of " + (enabledTaxa.size() + disabledTaxa.size() + ")");
     }
 
     /**

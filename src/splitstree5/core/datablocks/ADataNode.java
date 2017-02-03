@@ -74,4 +74,7 @@ public class ADataNode<D extends ADataBlock> extends ANode {
     public void setName(String name) {
         dataBlock.setName(name);
     }
+
+    public void clear() {
+    }
 }

@@ -138,13 +138,11 @@ public class CharactersNexusIO {
                 respectCase = np.findIgnoreCase(formatTokens, "respectcase", true, respectCase);
                 respectCase = np.findIgnoreCase(formatTokens, "no respectcase", false, respectCase);
                 if (respectCase)
-                    System.err.println("WARNING: Format 'RespectCase' not implemented."
-                            + " All character-states will be converted to lower case");
+                    System.err.println("WARNING: Format 'RespectCase' not implemented. All character-states will be converted to lower case");
             }
 
             characters.setMissingCharacter(Character.toLowerCase(np.findIgnoreCase(formatTokens, "missing=", null, '?')));
             characters.setGapCharacter(Character.toLowerCase(np.findIgnoreCase(formatTokens, "gap=", null, '-')));
-
 
             {
                 boolean nomatchchar = np.findIgnoreCase(formatTokens, "no matchChar", true, false);
@@ -306,7 +304,7 @@ public class CharactersNexusIO {
 
 
             if (str.length() != characters.getNchar())
-                throw new IOException("line " + np.lineno() + ": wrong number of chars: " + str.length());
+                throw new IOException("line " + np.lineno() + ": wrong number of chars: " + str.length() + ", expected: " + characters.getNchar());
 
             for (int i = 1; i <= str.length(); i++) {
                 // @todo: until we know that respectcase works, fold all characters to lower-case
@@ -491,7 +489,6 @@ public class CharactersNexusIO {
                         else
                             ch = str.charAt(d - 1);
 
-
                         if (ch == format.getMatchChar()) {
                             if (t == 1) {
                                 throw new IOException("line " + np.lineno() + ": matchchar illegal in first sequence");
@@ -560,13 +557,9 @@ public class CharactersNexusIO {
      * @return boolean  true if character consistent with the symbol list of the block's datatype
      */
     private static boolean isValidState(CharactersBlock characters, CharactersNexusFormat format, char ch) {
-        if (characters.getDataType() == CharactersType.unknown)
-            return true;
-        if (ch == characters.getMissingCharacter() || ch == characters.getGapCharacter() || ch == format.getMatchChar())
-            return true;
-        if (characters.getSymbols().indexOf(ch) >= 0)
-            return true;
-        return characters.getDataType() == CharactersType.DNA && AmbiguityCodes.getInstance().getDNAForCode(ch) != null;
+        return characters.getDataType() == CharactersType.unknown || ch == characters.getMissingCharacter() || ch == characters.getGapCharacter() || ch == format.getMatchChar()
+                || characters.getSymbols().indexOf(ch) >= 0
+                || (characters.getDataType() == CharactersType.DNA && AmbiguityCodes.isAmbiguityCode(ch));
     }
 
     /**
@@ -587,7 +580,7 @@ public class CharactersNexusIO {
         w.write("FORMAT\n");
         w.write("\tdatatype='" + characters.getDataType().toString() + "'");
 
-        if (format.isRespectCase())
+        if (characters.isRespectCase())
             w.write(" respectcase");
 
         if (characters.getMissingCharacter() != 0)
@@ -661,7 +654,6 @@ public class CharactersNexusIO {
         }
 
         w.write("MATRIX\n");
-        if (characters.getMatrix() != null)
             if (format.isTranspose() && !format.isInterleave())
                 writeMatrixTranposed(w, taxa, characters, format, null);// todo: setup and pass a state labeler
             else if (!format.isTranspose() && format.isInterleave())

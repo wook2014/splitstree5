@@ -34,6 +34,8 @@ import java.io.IOException;
 public class DagNodeViewMouseHandler {
     private double mouseDownX;
     private double mouseDownY;
+    private double originalNodeX;
+    private double originalNodeY;
     private boolean shiftDown;
     private boolean controlDown;
     private final Line line = new Line();
@@ -54,8 +56,12 @@ public class DagNodeViewMouseHandler {
 
                 mouseDownX = e.getSceneX();
                 mouseDownY = e.getSceneY();
+
                 shiftDown = e.isShiftDown();
                 controlDown = e.isControlDown();
+
+                originalNodeX = nodeView.getX();
+                originalNodeY = nodeView.getY();
 
                 if (!controlDown && shiftDown && nodeView.getANode() instanceof ADataNode) {
                     line.setStartX(mouseDownX - world.localToScene(0, 0).getX());
@@ -85,6 +91,9 @@ public class DagNodeViewMouseHandler {
 
         nodeView.setOnMouseReleased((me) -> {
             if (nodeView == lock) {
+                if (!controlDown && !shiftDown) {
+                    dagView.getUndoManager().addUndoableChangePair("Move", nodeView.xProperty(), originalNodeX, nodeView.getX(), nodeView.yProperty(), originalNodeY, nodeView.getY());
+                }
                 if (!controlDown && shiftDown && nodeView.getANode() instanceof ADataNode) {
                     try {
                         new NewNodeDialog(dagView, nodeView, me);

@@ -82,17 +82,19 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
 
         algorithmPane.setDocument(document);
         algorithmPane.setUndoManager(undoManager);
+        controller.getCenterPane().getChildren().setAll(algorithmPane);
+        algorithmPane.setup();
+        algorithmPane.setPrefWidth(controller.getCenterPane().getWidth());
+        algorithmPane.setPrefHeight(controller.getCenterPane().getHeight());
         algorithmPane.prefHeightProperty().bind(controller.getCenterPane().heightProperty());
         algorithmPane.prefWidthProperty().bind(controller.getCenterPane().widthProperty());
-        algorithmPane.setup();
+        controller.getCenterPane().getChildren().setAll(algorithmPane);
     }
 
     /**
      * setup controller
      */
     private void setupController() {
-        setupCenterPane();
-
         // todo: add other algorithm names here
         final ChoiceBox<String> algorithmChoiceBox = controller.getAlgorithmChoiceBox();
         algorithmChoiceBox.getItems().add(connector.getAlgorithm().getName());
@@ -100,7 +102,7 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
         algorithmChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             undoManager.addUndoableChange("Algorithm", algorithmChoiceBox.valueProperty(), oldValue, newValue);
             // todo: set algorithm by name
-            setupCenterPane();
+            controller.getCenterPane().getChildren().setAll(algorithmPane);
         });
 
         controller.getUndoMenuItem().setOnAction((e) -> {
@@ -133,13 +135,10 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
         controller.getResetButton().setOnAction((e) -> {
             algorithmPane.syncModel2Controller();
             undoManager.clear();
-            setupCenterPane();
+            controller.getCenterPane().getChildren().setAll(algorithmPane);
         });
     }
 
-    private void setupCenterPane() {
-        controller.getCenterPane().getChildren().setAll(algorithmPane);
-    }
 
     public static int windowCount = 0;
 
@@ -147,15 +146,28 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
      * show this view
      */
     public void show() {
-        stage = new Stage();
-        stage.setTitle("Algorithm - SplitsTree5");
-        stage.setScene(new Scene(root, 500, 450));
-
-        stage.setX(100 + windowCount * 40);
-        stage.setY(200 + windowCount * 40);
-        windowCount++;
-
-        stage.show();
-        algorithmPane.syncModel2Controller();
+        show(-1, -1);
     }
+
+    /**
+     * show this view
+     */
+    public void show(double screenX, double screenY) {
+        if (stage == null) {
+            stage = new Stage();
+            stage.setTitle("Algorithm - SplitsTree5");
+            stage.setScene(new Scene(root, 600, 400));
+
+            if (screenX == -1) {
+                screenX = 100 + ConnectorView.windowCount * 40;
+                screenY = 200 + ConnectorView.windowCount * 40;
+                ConnectorView.windowCount++;
+            }
+            stage.setX(screenX);
+            stage.setY(screenY);
+        }
+        stage.show();
+        stage.toFront();
+    }
+
 }

@@ -44,6 +44,8 @@ import java.io.IOException;
 public class DagNodeView extends Group {
     private final Rectangle rectangle;
     private final ANode aNode;
+    private TextView textView;
+    private ConnectorView connectorView;
 
     /**
      * constructor
@@ -90,8 +92,9 @@ public class DagNodeView extends Group {
                 Button openButton = new Button("Open...");
                 openButton.setOnAction((e) -> {
                     try {
-                        ConnectorView view = new ConnectorView(dagView.getDocument(), (AConnector) aNode);
-                        view.show();
+                        if (connectorView == null)
+                            connectorView = new ConnectorView(dagView.getDocument(), (AConnector) aNode);
+                        connectorView.show(this.getX(), this.getY());
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
@@ -118,8 +121,9 @@ public class DagNodeView extends Group {
             openButton.setOnAction((e) -> {
 
                 try {
-                    TextView view = new TextView(NexusFileWriter.toString(dagView.getDocument().getDag().getWorkingTaxaNode().getDataBlock(), ((ADataNode) aNode).getDataBlock()));
-                    view.show();
+                    if (textView == null)
+                        textView = new TextView(NexusFileWriter.toString(dagView.getDag().getWorkingTaxaNode().getDataBlock(), ((ADataNode) aNode).getDataBlock()));
+                    textView.show(this.getX(), this.getY());
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -134,9 +138,25 @@ public class DagNodeView extends Group {
         DagNodeViewMouseHandler.install(dagView, dagView.getCenterPane(), this);
     }
 
+    public double getX() {
+        return xProperty().get();
+    }
+
+    public void setX(double x) {
+        xProperty().set(x);
+    }
+
     public DoubleProperty xProperty() {
         return super.layoutXProperty();
 
+    }
+
+    public double getY() {
+        return yProperty().get();
+    }
+
+    public void setY(double y) {
+        yProperty().set(y);
     }
 
     public DoubleProperty yProperty() {

@@ -83,7 +83,6 @@ public class TaxaFilterPane extends AlgorithmPane {
      * setup controller
      */
     public void setup() {
-        System.err.println("setup");
         controller.getActiveList().getItems().addListener((ListChangeListener.Change<? extends Taxon> c) -> {
             if (!undoManager.isPerformingUndoOrRedo()) { // for performance reasons, check this here. Is also checked in addUndoableChange, but why make a change object if we don't need it...
                 final UndoableChangeListViews2<Taxon> change = new UndoableChangeListViews2<>("Change Active Taxa", controller.getActiveList(), prevActiveTaxa, controller.getInactiveList(), prevInactiveTaxa);
@@ -218,6 +217,12 @@ public class TaxaFilterPane extends AlgorithmPane {
 
             activeList.getItems().setAll(taxaFilter.getEnabledTaxa());
             inactiveList.getItems().setAll(taxaFilter.getDisabledTaxa());
+
+            if (prevActiveTaxa.size() + prevInactiveTaxa.size() == 0) {
+                prevInactiveTaxa.addAll(taxaFilter.getDisabledTaxa());
+                prevActiveTaxa.addAll(taxaFilter.getEnabledTaxa());
+            }
+
         } finally {
             inSync = false;
         }

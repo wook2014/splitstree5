@@ -47,20 +47,29 @@ public class TextView {
         controller.getTextArea().setFont(new Font("Courier", 12));
     }
 
+    public void show() {
+        show(-1, -1);
+    }
+
     /**
      * show this view
      */
-    public void show() {
-        stage = new Stage();
-        stage.setTitle("Text Viewer - SplitsTree5");
-        stage.setScene(new Scene(root, 600, 400));
+    public void show(double screenX, double screenY) {
+        if (stage == null) {
+            stage = new Stage();
+            stage.setTitle("Text Viewer - SplitsTree5");
+            stage.setScene(new Scene(root, 600, 400));
 
-        stage.setX(100 + ConnectorView.windowCount * 40);
-        stage.setY(200 + ConnectorView.windowCount * 40);
-        ConnectorView.windowCount++;
-
+            if (screenX == -1) {
+                screenX = 100 + ConnectorView.windowCount * 40;
+                screenY = 200 + ConnectorView.windowCount * 40;
+                ConnectorView.windowCount++;
+            }
+            stage.setX(screenX);
+            stage.setY(screenY);
+            controller.getCloseButton().setOnAction((e) -> stage.close());
+        }
         stage.show();
-
-        controller.getCloseButton().setOnAction((e) -> stage.close());
+        stage.toFront();
     }
 }

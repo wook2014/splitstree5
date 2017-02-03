@@ -2,6 +2,7 @@ package splitstree5.gui.dagview;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Pane;
 
 import java.net.URL;
@@ -22,9 +23,13 @@ public class DAGViewController {
     private Pane centerPane;
 
     @FXML
-    void initialize() {
-        // reset these things so that button and menu are on top of center pane
-    }
+    private MenuItem deleteMenuItem;
+
+    @FXML
+    private MenuItem undoMenuItem;
+
+    @FXML
+    private MenuItem redoMenuItem;
 
     public Button getDoneButton() {
         return doneButton;
@@ -32,5 +37,17 @@ public class DAGViewController {
 
     public Pane getCenterPane() {
         return centerPane;
+    }
+
+    public MenuItem getDeleteMenuItem() {
+        return deleteMenuItem;
+    }
+
+    public MenuItem getUndoMenuItem() {
+        return undoMenuItem;
+    }
+
+    public MenuItem getRedoMenuItem() {
+        return redoMenuItem;
     }
 }

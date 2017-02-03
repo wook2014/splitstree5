@@ -58,6 +58,11 @@ public class TaxaBlock extends ADataBlock {
         });
     }
 
+    /**
+     * named constructor
+     *
+     * @param name
+     */
     public TaxaBlock(String name) {
         this();
         setName(name);
@@ -70,11 +75,19 @@ public class TaxaBlock extends ADataBlock {
         setShortDescription("");
     }
 
+    /**
+     * get size
+     * @return number of taxa
+     */
     @Override
     public int size() {
         return taxa.size();
     }
 
+    /**
+     * get number of taxa
+     * @return number of taxa
+     */
     public int getNtax() {
         return taxa.size();
     }
@@ -83,29 +96,57 @@ public class TaxaBlock extends ADataBlock {
         return name2taxon.get(taxonName);
     }
 
+    /**
+     * get taxon
+     * @param t range 1 to nTax
+     * @return taxon
+     */
     public Taxon get(int t) {
-        return taxa.get(t - 1);
+        if (t == 0)
+            throw new IndexOutOfBoundsException("0");
+        return taxa.get(t-1);
     }
 
+    /**
+     * get taxon label
+     * @param t range 1 to nTax
+     * @return taxon
+     */
     public String getLabel(int t) {
+        if (t == 0)
+            throw new IndexOutOfBoundsException("0");
         return taxa.get(t - 1).getName();
     }
 
+    /**
+     * get index of taxon
+     * @param taxon
+     * @return number between 1 and ntax, or -1 if not found
+     */
     public int indexOf(Taxon taxon) {
         if (taxon2index.containsKey(taxon))
-            return taxon2index.get(taxon) + 1;
+            return taxon2index.get(taxon)+1;
         else
             return -1;
     }
 
+    /**
+     * get index of taxon by label
+     * @param label
+     * @return number between 1 and ntax, or -1 if not found
+     */
     public int indexOf(String label) {
-        int t = getLabels().indexOf(label);
+        final int t = getLabels().indexOf(label);
         if (t == -1)
             return -1;
         else
             return t + 1;
     }
 
+    /**
+     * get list of all taxa
+     * @return taxa
+     */
     public ObservableList<Taxon> getTaxa() {
         return taxa;
     }
@@ -124,8 +165,7 @@ public class TaxaBlock extends ADataBlock {
      * @return modified map
      */
     public Map<Integer, Integer> computeIndexMap(TaxaBlock modifiedTaxaBlock) {
-        HashMap<Integer, Integer> map = new HashMap<>();
-
+        final HashMap<Integer, Integer> map = new HashMap<>();
         for (int t = 1; t <= getNtax(); t++) {
             final Taxon taxon = get(t);
             if (modifiedTaxaBlock.getTaxa().contains(taxon)) {
@@ -165,10 +205,7 @@ public class TaxaBlock extends ADataBlock {
         TaxaBlock result = new TaxaBlock();
 
         try {
-            //result.setNTax(getNtax());
             for (int t = 1; t <= getNtax(); t++) {
-                //result.setLabel(t, getLabel(t));
-                //result.setInfo(t, getInfo(t));
                 result.add(get(t));
             }
         } catch (Exception ex) {
@@ -177,6 +214,10 @@ public class TaxaBlock extends ADataBlock {
         return result;
     }
 
+    /**
+     * get the current set of taxa as a bit set
+     * @return
+     */
     public BitSet getTaxaSet() {
         final BitSet taxa = new BitSet();
         taxa.set(1, getNtax());
