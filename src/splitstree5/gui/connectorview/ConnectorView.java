@@ -30,10 +30,8 @@ import splitstree5.core.dag.UpdateState;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.undo.UndoManager;
 import splitstree5.utils.ExtendedFXMLLoader;
-import splitstree5.utils.Option;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * create a connector view
@@ -46,8 +44,6 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
     private final UndoManager undoManager;
     private final AlgorithmPane algorithmPane;
     private Stage stage;
-
-    private final ArrayList<Option> options = new ArrayList<>();
 
     private final AConnector<P, C> connector;
 
@@ -65,8 +61,6 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
         controller = extendedFXMLLoader.getController();
         undoManager = new UndoManager();
 
-        algorithmPane.syncModel2Controller();
-        setupController();
 
         connector.stateProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == UpdateState.VALID) {
@@ -77,18 +71,19 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
 
         connector.getParent().stateProperty().addListener((observable, oldValue, newValue) -> {
             undoManager.clear(); // if parent changes, have to forget history...
-
         });
 
+        setupController();
+        controller.getCenterPane().getChildren().setAll(algorithmPane);
         algorithmPane.setDocument(document);
         algorithmPane.setUndoManager(undoManager);
         controller.getCenterPane().getChildren().setAll(algorithmPane);
-        algorithmPane.setup();
         algorithmPane.setPrefWidth(controller.getCenterPane().getWidth());
         algorithmPane.setPrefHeight(controller.getCenterPane().getHeight());
         algorithmPane.prefHeightProperty().bind(controller.getCenterPane().heightProperty());
         algorithmPane.prefWidthProperty().bind(controller.getCenterPane().widthProperty());
-        controller.getCenterPane().getChildren().setAll(algorithmPane);
+        algorithmPane.setup();
+        algorithmPane.syncModel2Controller();
     }
 
     /**
@@ -139,7 +134,6 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
         });
     }
 
-
     public static int windowCount = 0;
 
     /**
@@ -167,6 +161,7 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
             stage.setY(screenY);
         }
         stage.show();
+        stage.sizeToScene();
         stage.toFront();
     }
 
