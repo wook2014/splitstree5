@@ -34,12 +34,16 @@ import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * test cases for CharacterBlock io
  * Created by huson on 1/19/17.
  */
 public class CharactersNexusIOTest {
+
+    // comments not implemented? ntaxa in character block? characters first?
+
     @Test
     public void testIO() throws IOException {
 
@@ -52,6 +56,9 @@ public class CharactersNexusIOTest {
         inputFiles.add("test//characters//mtDNA_interleave.nex");
         inputFiles.add("test//characters//myosin_aa.nex");
         inputFiles.add("test//characters//rubber_dna_interleave.nex");
+
+        inputFiles.add("test//characters//microsat1.nex");
+        inputFiles.add("test//characters//microsat2.nex");
 
 
         for(String inputFile:inputFiles){
@@ -75,6 +82,12 @@ public class CharactersNexusIOTest {
                         format.setInterleave(false);
                         format.setTranspose(true);
                         break;
+
+                    //need list of tokens
+                    /*case 3:
+                        format.setTranspose(false);
+                        format.setTokens(true);
+                        break;*/
 
                 }
                 StringWriter sw1 = new StringWriter();
