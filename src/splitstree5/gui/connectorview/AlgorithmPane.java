@@ -23,6 +23,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.layout.Pane;
 import splitstree5.core.Document;
+import splitstree5.core.connectors.AConnector;
 import splitstree5.undo.UndoManager;
 
 /**
@@ -44,6 +45,14 @@ public abstract class AlgorithmPane extends Pane {
      * @param undoManager
      */
     public void setUndoManager(UndoManager undoManager) {
+    }
+
+    /**
+     * sets the connector
+     *
+     * @param connector
+     */
+    public void setConnector(AConnector connector) {
     }
 
     public BooleanProperty applicableProperty() {

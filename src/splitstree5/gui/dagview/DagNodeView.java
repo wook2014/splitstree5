@@ -75,7 +75,8 @@ public class DagNodeView extends Group {
         rectangle.setStroke(Color.DARKGRAY);
         getChildren().add(rectangle);
 
-        final Label label = new Label(aNode.getName());
+        final Label label = new Label();
+        label.textProperty().bind(aNode.nameProperty());
         label.setLayoutX(10);
         label.setLayoutY(4);
         getChildren().add(label);

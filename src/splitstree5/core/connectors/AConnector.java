@@ -139,6 +139,10 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
         }
         this.algorithm = algorithm;
         applicable.set(algorithm != null && algorithm.isApplicable(taxaBlock, parent.getDataBlock(), child.getDataBlock()));
+        if (algorithm != null)
+            setName(algorithm.getName());
+        else
+            setName("AConnector");
     }
 
     @Override

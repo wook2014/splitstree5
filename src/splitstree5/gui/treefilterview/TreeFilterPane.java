@@ -26,8 +26,10 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.control.ListView;
 import jloda.phylo.PhyloTree;
 import splitstree5.core.Document;
+import splitstree5.core.algorithms.filters.TreeFilter;
+import splitstree5.core.connectors.AConnector;
 import splitstree5.core.dag.UpdateState;
-import splitstree5.core.filters.TreeFilter;
+import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.gui.connectorview.AlgorithmPane;
 import splitstree5.undo.UndoManager;
 import splitstree5.undo.UndoableChangeListViews2;
@@ -54,12 +56,13 @@ public class TreeFilterPane extends AlgorithmPane {
 
     final SimpleBooleanProperty applicableProperty = new SimpleBooleanProperty();
 
+    private AConnector connector;
+
     private boolean inSync = false;
 
     /**
      * constructor
      *
-     * @param treeFilter
      */
     public TreeFilterPane(TreeFilter treeFilter) throws IOException {
         this.treeFilter = treeFilter;
@@ -79,12 +82,18 @@ public class TreeFilterPane extends AlgorithmPane {
         this.document = document;
     }
 
+    @Override
+    public void setConnector(AConnector connector) {
+        this.connector = connector;
+    }
+
     private boolean inUpdateSelection = false;
 
     /**
      * setup controller
      */
     public void setup() {
+        this.connector = connector;
 
         controller.getActiveList().getItems().addListener((ListChangeListener.Change<? extends TreeHolder> c) -> {
             if (!undoManager.isPerformingUndoOrRedo()) { // for performance reasons, check this here. Is also checked in addUndoableChange, but why make a change object if we don't need it...
@@ -168,14 +177,22 @@ public class TreeFilterPane extends AlgorithmPane {
 
             allTrees.clear();
             activeList.getItems().clear();
-            for (PhyloTree phyloTree : treeFilter.getEnabledTrees()) {
-                activeList.getItems().add(new TreeHolder(phyloTree, allTrees.size()));
-                allTrees.add(phyloTree);
-            }
             inactiveList.getItems().clear();
-            for (PhyloTree phyloTree : treeFilter.getDisabledTrees()) {
-                inactiveList.getItems().add(new TreeHolder(phyloTree, allTrees.size()));
-                allTrees.add(phyloTree);
+
+            if (treeFilter.getEnabledTrees().size() == 0 && treeFilter.getDisabledTrees().size() == 0) {
+                for (PhyloTree phyloTree : ((TreesBlock) connector.getParent().getDataBlock()).getTrees()) {
+                    activeList.getItems().add(new TreeHolder(phyloTree, allTrees.size()));
+                    allTrees.add(phyloTree);
+                }
+            } else {
+                for (PhyloTree phyloTree : treeFilter.getEnabledTrees()) {
+                    activeList.getItems().add(new TreeHolder(phyloTree, allTrees.size()));
+                    allTrees.add(phyloTree);
+                }
+                for (PhyloTree phyloTree : treeFilter.getDisabledTrees()) {
+                    inactiveList.getItems().add(new TreeHolder(phyloTree, allTrees.size()));
+                    allTrees.add(phyloTree);
+                }
             }
         } finally {
             inSync = false;
@@ -195,6 +212,6 @@ public class TreeFilterPane extends AlgorithmPane {
         for (TreeHolder holder : controller.getInactiveList().getItems()) {
             treeFilter.getDisabledTrees().add(allTrees.get(holder.getRef()));
         }
-        treeFilter.setState(UpdateState.INVALID);
+        connector.setState(UpdateState.INVALID);
     }
 }

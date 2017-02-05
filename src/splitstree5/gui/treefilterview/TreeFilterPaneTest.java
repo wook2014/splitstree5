@@ -44,11 +44,11 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import org.junit.Test;
 import splitstree5.core.Document;
+import splitstree5.core.algorithms.filters.TreeFilter;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.core.filters.TreeFilter;
 import splitstree5.gui.connectorview.ConnectorView;
 import splitstree5.io.nexus.NexusFileParser;
 import splitstree5.io.nexus.NexusFileWriter;
@@ -81,7 +81,7 @@ public class TreeFilterPaneTest extends Application {
 
         ADataNode<TreesBlock> filtered = document.getDag().createDataNode(new TreesBlock());
 
-        AConnector connector = document.getDag().addConnector(new TreeFilter(document.getDag().getWorkingTaxaNode().getDataBlock(), treesNode, filtered));
+        AConnector connector = document.getDag().addConnector(new AConnector(document.getDag().getWorkingTaxaNode().getDataBlock(), treesNode, filtered, new TreeFilter()));
         ConnectorView<TaxaBlock, TaxaBlock> connectorView = new ConnectorView<>(document, connector);
         connectorView.show();
 

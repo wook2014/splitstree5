@@ -38,7 +38,7 @@ public class OptionableBase extends ANamed implements IOptionable {
     }
 
     public OptionableBase(String name, String shortDescription) {
-        this.name = name;
+        setName(name);
         this.shortDescription = shortDescription;
     }
 

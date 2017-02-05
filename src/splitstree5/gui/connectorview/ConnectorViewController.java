@@ -24,6 +24,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Pane;
+import splitstree5.core.algorithms.Algorithm;
 
 /**
  * connector view controller
@@ -53,7 +54,7 @@ public class ConnectorViewController {
     private MenuItem aboutMenuItem;
 
     @FXML
-    private ChoiceBox<String> algorithmChoiceBox;
+    private ChoiceBox<Algorithm> algorithmChoiceBox;
 
     @FXML
     private Pane centerPane;
@@ -92,7 +93,7 @@ public class ConnectorViewController {
         return aboutMenuItem;
     }
 
-    public ChoiceBox<String> getAlgorithmChoiceBox() {
+    public ChoiceBox<Algorithm> getAlgorithmChoiceBox() {
         return algorithmChoiceBox;
     }
 

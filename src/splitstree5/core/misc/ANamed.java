@@ -19,6 +19,8 @@
 
 package splitstree5.core.misc;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import jloda.util.Basic;
 
 /**
@@ -26,28 +28,23 @@ import jloda.util.Basic;
  * Created by huson on 1/16/17.
  */
 public class ANamed {
-    protected String name;
+    protected final StringProperty name = new SimpleStringProperty();
     protected String shortDescription;
 
-    /**
-     * gets the name
-     *
-     * @return name or null
-     */
-    public String getName() {
-        if (name == null)
-            return Basic.getShortName(this.getClass());
-        else
-            return name;
+    public ANamed() {
+        name.set(Basic.getShortName(this.getClass()));
     }
 
-    /**
-     * sets the name
-     *
-     * @param name
-     */
+    public String getName() {
+        return name.get();
+    }
+
+    public StringProperty nameProperty() {
+        return name;
+    }
+
     public void setName(String name) {
-        this.name = name;
+        this.name.set(name);
     }
 
     /**

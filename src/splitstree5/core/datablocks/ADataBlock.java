@@ -69,4 +69,8 @@ abstract public class ADataBlock extends OptionableBase {
         return list;
     }
 
+    public String getName() {
+        return super.getName();
+    }
+
 }

@@ -25,6 +25,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
 import javafx.stage.Stage;
 import splitstree5.core.Document;
+import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.dag.UpdateState;
 import splitstree5.core.datablocks.ADataBlock;
@@ -32,6 +33,9 @@ import splitstree5.undo.UndoManager;
 import splitstree5.utils.ExtendedFXMLLoader;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * create a connector view
@@ -42,8 +46,10 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
     private final Parent root;
     private final ConnectorViewController controller;
     private final UndoManager undoManager;
-    private final AlgorithmPane algorithmPane;
+    private AlgorithmPane algorithmPane;
     private Stage stage;
+
+    private Map<Algorithm<P, C>, AlgorithmPane> algorithm2pane = new HashMap<>(); // we key used panes around incase we want to undo back to one
 
     private final AConnector<P, C> connector;
 
@@ -53,14 +59,11 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
     public ConnectorView(Document document, AConnector<P, C> connector) throws IOException {
         this.document = document;
         this.connector = connector;
-        AlgorithmPane control = connector.getAlgorithm().getControl();
-        this.algorithmPane = (control != null ? control : new GenericAlgorithmPane<>(connector));
 
         final ExtendedFXMLLoader<ConnectorViewController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         root = extendedFXMLLoader.getRoot();
         controller = extendedFXMLLoader.getController();
         undoManager = new UndoManager();
-
 
         connector.stateProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == UpdateState.VALID) {
@@ -73,32 +76,23 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
             undoManager.clear(); // if parent changes, have to forget history...
         });
 
-        setupController();
-        controller.getCenterPane().getChildren().setAll(algorithmPane);
-        algorithmPane.setDocument(document);
-        algorithmPane.setUndoManager(undoManager);
-        controller.getCenterPane().getChildren().setAll(algorithmPane);
-        algorithmPane.setPrefWidth(controller.getCenterPane().getWidth());
-        algorithmPane.setPrefHeight(controller.getCenterPane().getHeight());
-        algorithmPane.prefHeightProperty().bind(controller.getCenterPane().heightProperty());
-        algorithmPane.prefWidthProperty().bind(controller.getCenterPane().widthProperty());
-        algorithmPane.setup();
-        algorithmPane.syncModel2Controller();
-    }
+        setupAlgorithmPane();
 
-    /**
-     * setup controller
-     */
-    private void setupController() {
-        // todo: add other algorithm names here
-        final ChoiceBox<String> algorithmChoiceBox = controller.getAlgorithmChoiceBox();
-        algorithmChoiceBox.getItems().add(connector.getAlgorithm().getName());
-        algorithmChoiceBox.setValue(connector.getAlgorithm().getName());
-        algorithmChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            undoManager.addUndoableChange("Algorithm", algorithmChoiceBox.valueProperty(), oldValue, newValue);
-            // todo: set algorithm by name
-            controller.getCenterPane().getChildren().setAll(algorithmPane);
-        });
+        final ChoiceBox<Algorithm> algorithmChoiceBox = controller.getAlgorithmChoiceBox();
+        final ArrayList<Algorithm<P, C>> algorithms = connector.getAllAlgorithms();
+        if (connector.getAlgorithm() != null) { // if algorithm already set, make sure we use the existing algorithm object
+            for (int i = 0; i < algorithms.size(); i++) {
+                final Algorithm<P, C> algorithm = algorithms.get(i);
+                if (connector.getAlgorithm().getClass().equals(algorithm.getClass())) {
+                    algorithms.set(i, connector.getAlgorithm());
+                    break;
+                }
+            }
+        }
+        if (algorithms.size() == 0 && connector.getAlgorithm() != null) {
+            algorithms.add(connector.getAlgorithm());
+            algorithmChoiceBox.setDisable(true);
+        }
 
         controller.getUndoMenuItem().setOnAction((e) -> {
             undoManager.undo();
@@ -132,6 +126,41 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
             undoManager.clear();
             controller.getCenterPane().getChildren().setAll(algorithmPane);
         });
+
+        algorithmChoiceBox.getItems().addAll(algorithms);
+        algorithmChoiceBox.setValue(connector.getAlgorithm());
+        algorithmChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            undoManager.addUndoableChange("Set Algorithm", algorithmChoiceBox.valueProperty(), oldValue, newValue);
+            // todo: set algorithm by name
+            connector.setAlgorithm(newValue);
+            setupAlgorithmPane();
+            controller.getCenterPane().getChildren().setAll(algorithmPane);
+        });
+
+        algorithmPane.syncModel2Controller();
+
+        controller.getCenterPane().getChildren().setAll(algorithmPane);
+    }
+
+    /**
+     * setup the algorithm pane
+     */
+    private void setupAlgorithmPane() {
+        algorithmPane = algorithm2pane.get(connector.getAlgorithm());
+        if (algorithmPane == null) {
+            algorithmPane = connector.getAlgorithm().getControl();
+            if (algorithmPane == null)
+                algorithmPane = new GenericAlgorithmPane<>(connector);
+            algorithm2pane.put(connector.getAlgorithm(), algorithmPane);
+            algorithmPane.setDocument(document);
+            algorithmPane.setUndoManager(undoManager);
+            algorithmPane.setConnector(connector);
+            algorithmPane.setPrefWidth(controller.getCenterPane().getWidth());
+            algorithmPane.setPrefHeight(controller.getCenterPane().getHeight());
+            algorithmPane.prefHeightProperty().bind(controller.getCenterPane().heightProperty());
+            algorithmPane.prefWidthProperty().bind(controller.getCenterPane().widthProperty());
+            algorithmPane.setup();
+        }
     }
 
     public static int windowCount = 0;
@@ -164,5 +193,4 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
         stage.sizeToScene();
         stage.toFront();
     }
-
 }

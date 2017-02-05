@@ -19,6 +19,7 @@
 
 package splitstree5.core.datablocks;
 
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import splitstree5.core.connectors.AConnector;
@@ -73,6 +74,10 @@ public class ADataNode<D extends ADataBlock> extends ANode {
     @Override
     public void setName(String name) {
         dataBlock.setName(name);
+    }
+
+    public StringProperty nameProperty() {
+        return dataBlock.nameProperty();
     }
 
     public void clear() {

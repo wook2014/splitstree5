@@ -70,9 +70,9 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
     }
 
     /**
-     * setup the pane
+     * setup controller
      */
-    public synchronized void setup() {
+    public void setup() {
         final GridPane grid = new GridPane();
         grid.setPadding(new Insets(10, 5, 10, 5));
         grid.setHgap(20);
