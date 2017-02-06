@@ -19,6 +19,8 @@
 
 package splitstree5.gui.textview;
 
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.text.Font;
@@ -37,12 +39,28 @@ public class TextView {
     private final TextViewController controller;
     private Stage stage;
 
+    /**
+     * constructor
+     *
+     * @param text
+     * @throws IOException
+     */
     public TextView(String text) throws IOException {
+        this(new ReadOnlyStringWrapper(text));
+    }
+
+    /**
+     * constructor
+     *
+     * @param textProperty
+     * @throws IOException
+     */
+    public TextView(ReadOnlyStringProperty textProperty) throws IOException {
         final ExtendedFXMLLoader<TextViewController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         root = extendedFXMLLoader.getRoot();
         controller = extendedFXMLLoader.getController();
 
-        controller.getTextArea().setText(text);
+        controller.getTextArea().textProperty().bind(textProperty);
         controller.getTextArea().setEditable(false);
         controller.getTextArea().setFont(new Font("Courier", 12));
     }

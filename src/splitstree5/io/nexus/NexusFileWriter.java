@@ -21,8 +21,9 @@ package splitstree5.io.nexus;
 
 import jloda.util.Basic;
 import splitstree5.core.Document;
+import splitstree5.core.algorithms.filters.TaxaFilter;
+import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.*;
-import splitstree5.core.filters.TaxaFilter;
 
 import java.io.*;
 
@@ -47,8 +48,8 @@ public class NexusFileWriter {
             write(writer, document.getDag().getTopTaxaNode().getDataBlock(), document.getDag().getTopDataNode().getDataBlock());
 
             // taxa filter and second block, if necessary:
-            final TaxaFilter taxaFilter = (TaxaFilter) document.getDag().getTopTaxaNode().getChildren().get(0);
-            if (taxaFilter.getDisabledTaxa().size() > 0) { // some taxa have been filtered
+            AConnector<TaxaBlock, TaxaBlock> taxaFilter = new AConnector<>(document.getDag().getTopTaxaNode().getDataBlock(), document.getDag().getTopTaxaNode(), document.getDag().getWorkingTaxaNode(), new splitstree5.core.algorithms.filters.TaxaFilter());
+            if (((TaxaFilter) taxaFilter.getAlgorithm()).getDisabledTaxa().size() > 0) { // some taxa have been filtered
                 writer.write("[NEED to report taxa filter]\n");
             }
 

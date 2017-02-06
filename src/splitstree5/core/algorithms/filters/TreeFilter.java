@@ -33,6 +33,8 @@ import splitstree5.gui.treefilterview.TreeFilterPane;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Trees filter
@@ -42,37 +44,50 @@ public class TreeFilter extends Algorithm<TreesBlock, TreesBlock> implements IFr
     public enum Consensus {Strict, Majority, Loose, Network, None}
 
     private Consensus optionConsensusMethod = Consensus.None;
-    private int optionNetworkDimension = 2;
 
-    private final ArrayList<PhyloTree> enabledTrees = new ArrayList<>();
-    private final ArrayList<PhyloTree> disabledTrees = new ArrayList<>();
-
-    public TreeFilter() {
-    }
+    private final ArrayList<String> enabledTrees = new ArrayList<>();
+    private final ArrayList<String> disabledTrees = new ArrayList<>();
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock ignored, TreesBlock originalTrees, TreesBlock modifiedTrees) throws InterruptedException, CanceledException {
         modifiedTrees.getTrees().clear();
 
-        final ArrayList<PhyloTree> list = new ArrayList<>();
-        if (enabledTrees.size() == 0)
-            list.addAll(originalTrees.getTrees());
-        else
-            list.addAll(enabledTrees);
-        list.removeAll(disabledTrees);
-
-        for (PhyloTree tree : list) {
-            if (!getDisabledTrees().contains(tree) && originalTrees.getTrees().contains(tree)) {
-                modifiedTrees.getTrees().add(tree);
+        if (enabledTrees.size() == 0 && disabledTrees.size() == 0) // nothing has been explicitly set, copy everything
+            modifiedTrees.getTrees().setAll(originalTrees.getTrees());
+        else {
+            final Map<String, PhyloTree> name2tree = new HashMap<>();
+            for (PhyloTree tree : originalTrees.getTrees()) {
+                name2tree.put(tree.getName(), tree);
+            }
+            for (String name : enabledTrees) {
+                if (!disabledTrees.contains(name)) {
+                    modifiedTrees.getTrees().add(name2tree.get(name));
+                }
             }
         }
     }
 
-    public ArrayList<PhyloTree> getEnabledTrees() {
+    @Override
+    public void clear() {
+        enabledTrees.clear();
+        disabledTrees.clear();
+    }
+
+    @Override
+    public String getShortDescription() {
+        if (enabledTrees.size() == 0 && disabledTrees.size() == 0)
+            return "";
+        else if (disabledTrees.size() == 0)
+            return "Enabled: " + enabledTrees.size();
+        else
+            return "Enabled: " + enabledTrees.size() + " (of " + (enabledTrees.size() + disabledTrees.size() + ")");
+    }
+
+    public ArrayList<String> getEnabledTrees() {
         return enabledTrees;
     }
 
-    public ArrayList<PhyloTree> getDisabledTrees() {
+    public ArrayList<String> getDisabledTrees() {
         return disabledTrees;
     }
 

@@ -23,8 +23,8 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.ReportNode;
+import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.filters.TaxaFilter;
 import splitstree5.gui.connectorview.ConnectorView;
 import splitstree5.io.nexus.NexusFileParser;
 
@@ -42,7 +42,7 @@ public class TreesTopFilterTest extends Application {
         NexusFileParser.parse(document);
 
         {
-            TaxaFilter taxaFilter = new TaxaFilter(document.getDag().getTopTaxaNode(), document.getDag().getWorkingTaxaNode());
+            AConnector<TaxaBlock, TaxaBlock> taxaFilter = new AConnector<>(document.getDag().getTopTaxaNode().getDataBlock(), document.getDag().getTopTaxaNode(), document.getDag().getWorkingTaxaNode(), new splitstree5.core.algorithms.filters.TaxaFilter());
             ConnectorView<TaxaBlock, TaxaBlock> connectorView = new ConnectorView<>(document, taxaFilter);
             connectorView.show();
 

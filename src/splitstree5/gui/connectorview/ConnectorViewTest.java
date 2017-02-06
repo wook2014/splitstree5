@@ -31,7 +31,6 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.filters.SplitsFilter;
-import splitstree5.core.filters.TaxaFilter;
 import splitstree5.core.misc.Taxon;
 
 /**
@@ -72,7 +71,7 @@ public class ConnectorViewTest extends Application {
         }
 
         {
-            TaxaFilter taxaFilter = new TaxaFilter(document.getDag().getTopTaxaNode(), document.getDag().getWorkingTaxaNode());
+            AConnector<TaxaBlock, TaxaBlock> taxaFilter = new AConnector<>(document.getDag().getTopTaxaNode().getDataBlock(), document.getDag().getTopTaxaNode(), document.getDag().getWorkingTaxaNode(), new splitstree5.core.algorithms.filters.TaxaFilter());
             ConnectorView<TaxaBlock, TaxaBlock> connectorView = new ConnectorView<>(document, taxaFilter);
             connectorView.show();
 
@@ -80,7 +79,7 @@ public class ConnectorViewTest extends Application {
         }
 
         {
-            TaxaFilter taxaFilter = new TaxaFilter(document.getDag().getTopTaxaNode(), document.getDag().getWorkingTaxaNode());
+            AConnector<TaxaBlock, TaxaBlock> taxaFilter = new AConnector<>(document.getDag().getTopTaxaNode().getDataBlock(), document.getDag().getTopTaxaNode(), document.getDag().getWorkingTaxaNode(), new splitstree5.core.algorithms.filters.TaxaFilter());
             ConnectorView<TaxaBlock, TaxaBlock> connectorView = new ConnectorView<>(document, taxaFilter);
             connectorView.show();
         }

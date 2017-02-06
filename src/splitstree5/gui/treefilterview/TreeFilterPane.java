@@ -49,10 +49,8 @@ public class TreeFilterPane extends AlgorithmPane {
     private Document document = null;
     private UndoManager undoManager = new UndoManager();
 
-    private ArrayList<TreeHolder> prevActiveTrees = new ArrayList<>(); // used to facilitate undo/redo, do not modify
-    private ArrayList<TreeHolder> prevInactiveTrees = new ArrayList<>(); // used to facilitate undo/redo, do not modify
-
-    private ArrayList<PhyloTree> allTrees = new ArrayList<>();
+    private ArrayList<String> prevActiveTrees = new ArrayList<>(); // used to facilitate undo/redo, do not modify
+    private ArrayList<String> prevInactiveTrees = new ArrayList<>(); // used to facilitate undo/redo, do not modify
 
     final SimpleBooleanProperty applicableProperty = new SimpleBooleanProperty();
 
@@ -93,11 +91,9 @@ public class TreeFilterPane extends AlgorithmPane {
      * setup controller
      */
     public void setup() {
-        this.connector = connector;
-
-        controller.getActiveList().getItems().addListener((ListChangeListener.Change<? extends TreeHolder> c) -> {
+        controller.getActiveList().getItems().addListener((ListChangeListener.Change<? extends String> c) -> {
             if (!undoManager.isPerformingUndoOrRedo()) { // for performance reasons, check this here. Is also checked in addUndoableChange, but why make a change object if we don't need it...
-                final UndoableChangeListViews2<TreeHolder> change = new UndoableChangeListViews2<TreeHolder>("Change Active Trees", controller.getActiveList(), prevActiveTrees, controller.getInactiveList(), prevInactiveTrees);
+                final UndoableChangeListViews2<String> change = new UndoableChangeListViews2<String>("Change Active Trees", controller.getActiveList(), prevActiveTrees, controller.getInactiveList(), prevInactiveTrees);
                 prevActiveTrees = change.getItemsA();
                 prevInactiveTrees = change.getItemsB();
                 if (!inSync)
@@ -113,11 +109,11 @@ public class TreeFilterPane extends AlgorithmPane {
             updateSelection();
         });
 
-        controller.getInactiveList().getItems().addListener((ListChangeListener.Change<? extends TreeHolder> c) -> updateSelection());
+        controller.getInactiveList().getItems().addListener((ListChangeListener.Change<? extends String> c) -> updateSelection());
 
-        controller.getActiveList().getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends TreeHolder> c) -> updateSelection());
+        controller.getActiveList().getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends String> c) -> updateSelection());
 
-        controller.getInactiveList().getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends TreeHolder> c) -> updateSelection());
+        controller.getInactiveList().getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends String> c) -> updateSelection());
 
         controller.getInactivateAllButton().setOnAction((e) -> {
             controller.getInactiveList().getItems().addAll(controller.getActiveList().getItems());
@@ -132,14 +128,14 @@ public class TreeFilterPane extends AlgorithmPane {
         controller.getInactivateSelectedButton().disableProperty().bind(Bindings.isEmpty(controller.getActiveList().getSelectionModel().getSelectedIndices()));
 
         controller.getActivateAllButton().setOnAction((e) -> {
-            final ArrayList<TreeHolder> list = new ArrayList<>(controller.getInactiveList().getItems());
+            final ArrayList<String> list = new ArrayList<>(controller.getInactiveList().getItems());
             controller.getInactiveList().getItems().clear();
             controller.getActiveList().getItems().addAll(list);
         });
         controller.getActivateAllButton().disableProperty().bind(Bindings.isEmpty(controller.getInactiveList().getItems()));
 
         controller.getActivateSelectedButton().setOnAction((e) -> {
-            final ArrayList<TreeHolder> list = new ArrayList<>(controller.getInactiveList().getSelectionModel().getSelectedItems());
+            final ArrayList<String> list = new ArrayList<>(controller.getInactiveList().getSelectionModel().getSelectedItems());
             controller.getInactiveList().getItems().removeAll(list);
             controller.getActiveList().getItems().addAll(list);
         });
@@ -172,26 +168,22 @@ public class TreeFilterPane extends AlgorithmPane {
     public void syncModel2Controller() {
         inSync = true;
         try {
-            final ListView<TreeHolder> activeList = controller.getActiveList();
-            final ListView<TreeHolder> inactiveList = controller.getInactiveList();
+            final ListView<String> activeList = controller.getActiveList();
+            final ListView<String> inactiveList = controller.getInactiveList();
 
-            allTrees.clear();
             activeList.getItems().clear();
             inactiveList.getItems().clear();
 
             if (treeFilter.getEnabledTrees().size() == 0 && treeFilter.getDisabledTrees().size() == 0) {
                 for (PhyloTree phyloTree : ((TreesBlock) connector.getParent().getDataBlock()).getTrees()) {
-                    activeList.getItems().add(new TreeHolder(phyloTree, allTrees.size()));
-                    allTrees.add(phyloTree);
+                    activeList.getItems().add(phyloTree.getName());
                 }
             } else {
-                for (PhyloTree phyloTree : treeFilter.getEnabledTrees()) {
-                    activeList.getItems().add(new TreeHolder(phyloTree, allTrees.size()));
-                    allTrees.add(phyloTree);
+                for (String name : treeFilter.getEnabledTrees()) {
+                    activeList.getItems().add(name);
                 }
-                for (PhyloTree phyloTree : treeFilter.getDisabledTrees()) {
-                    inactiveList.getItems().add(new TreeHolder(phyloTree, allTrees.size()));
-                    allTrees.add(phyloTree);
+                for (String name : treeFilter.getDisabledTrees()) {
+                    inactiveList.getItems().add(name);
                 }
             }
         } finally {
@@ -204,14 +196,9 @@ public class TreeFilterPane extends AlgorithmPane {
      */
     public void syncController2Model() {
         treeFilter.getEnabledTrees().clear();
-        for (TreeHolder holder : controller.getActiveList().getItems()) {
-            treeFilter.getEnabledTrees().add(allTrees.get(holder.getRef()));
-        }
-
+        treeFilter.getEnabledTrees().addAll(controller.getActiveList().getItems());
         treeFilter.getDisabledTrees().clear();
-        for (TreeHolder holder : controller.getInactiveList().getItems()) {
-            treeFilter.getDisabledTrees().add(allTrees.get(holder.getRef()));
-        }
+        treeFilter.getDisabledTrees().addAll(controller.getInactiveList().getItems());
         connector.setState(UpdateState.INVALID);
     }
 }

@@ -36,7 +36,7 @@ public class TreeFilterPaneController {
     private HBox hbox;
 
     @FXML
-    private ListView<TreeHolder> activeList;
+    private ListView<String> activeList;
 
     @FXML
     private Button inactivateSelectedButton;
@@ -51,7 +51,7 @@ public class TreeFilterPaneController {
     private Button activateAllButton;
 
     @FXML
-    private ListView<TreeHolder> inactiveList;
+    private ListView<String> inactiveList;
 
 
     @FXML
@@ -65,11 +65,11 @@ public class TreeFilterPaneController {
         inactiveList.setPlaceholder(new Label("- Empty -"));
     }
 
-    public ListView<TreeHolder> getActiveList() {
+    public ListView<String> getActiveList() {
         return activeList;
     }
 
-    public ListView<TreeHolder> getInactiveList() {
+    public ListView<String> getInactiveList() {
         return inactiveList;
     }
 

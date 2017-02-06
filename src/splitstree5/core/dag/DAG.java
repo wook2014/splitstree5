@@ -29,7 +29,6 @@ import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.ReportNode;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.*;
-import splitstree5.core.filters.TaxaFilter;
 import splitstree5.core.topfilters.ATopFilter;
 import splitstree5.core.topfilters.DistancesTopFilter;
 import splitstree5.core.topfilters.SplitsTopFilter;
@@ -49,7 +48,7 @@ public class DAG {
     private final ObservableSet<ADataNode> dataNodes = FXCollections.observableSet();
 
     private final ObjectProperty<ADataNode<TaxaBlock>> topTaxaNode = new SimpleObjectProperty<>();
-    private TaxaFilter taxaFilter;
+    private AConnector<TaxaBlock, TaxaBlock> taxaFilter;
     private final ObjectProperty<ADataNode<TaxaBlock>> workingTaxaNode = new SimpleObjectProperty<>();
     private final ObjectProperty<ADataNode> topDataNode = new SimpleObjectProperty<>();
     private ATopFilter<? extends ADataBlock> topFilter;
@@ -82,7 +81,7 @@ public class DAG {
     public void setupTopAndWorkingNodes(TaxaBlock topTaxaBlock, ADataBlock topDataBlock) {
         setTopTaxaNode(createDataNode(topTaxaBlock));
         setWorkingTaxaNode(createDataNode((TaxaBlock) topTaxaBlock.newInstance()));
-        taxaFilter = new TaxaFilter(getTopTaxaNode(), getWorkingTaxaNode());
+        taxaFilter = new AConnector<TaxaBlock, TaxaBlock>(getTopTaxaNode().getDataBlock(), getTopTaxaNode(), getWorkingTaxaNode(), new splitstree5.core.algorithms.filters.TaxaFilter());
         register(taxaFilter);
         setTopDataNode(createDataNode(topDataBlock));
         getTopDataNode().getDataBlock().setName("Orig" + getTopDataNode().getDataBlock().getName());
@@ -209,7 +208,7 @@ public class DAG {
         this.workingDataNode.set(workingDataNode);
     }
 
-    public TaxaFilter getTaxaFilter() {
+    public AConnector<TaxaBlock, TaxaBlock> getTaxaFilter() {
         return taxaFilter;
     }
 

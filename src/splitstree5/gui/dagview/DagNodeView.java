@@ -21,6 +21,10 @@ package splitstree5.gui.dagview;
 
 import com.sun.istack.internal.NotNull;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WeakChangeListener;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -29,6 +33,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Shear;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.dag.ANode;
+import splitstree5.core.dag.UpdateState;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.gui.connectorview.ConnectorView;
 import splitstree5.gui.textview.TextView;
@@ -46,6 +51,8 @@ public class DagNodeView extends Group {
     private final ANode aNode;
     private TextView textView;
     private ConnectorView connectorView;
+    private ChangeListener<UpdateState> stateChangeListener;
+
 
     /**
      * constructor
@@ -122,8 +129,12 @@ public class DagNodeView extends Group {
             openButton.setOnAction((e) -> {
 
                 try {
-                    if (textView == null)
-                        textView = new TextView(NexusFileWriter.toString(dagView.getDag().getWorkingTaxaNode().getDataBlock(), ((ADataNode) aNode).getDataBlock()));
+                    if (textView == null) {
+                        final StringProperty textProperty = new SimpleStringProperty(NexusFileWriter.toString(dagView.getDag().getWorkingTaxaNode().getDataBlock(), ((ADataNode) aNode).getDataBlock()));
+                        stateChangeListener = (observable, oldValue, newValue) -> textProperty.set(NexusFileWriter.toString(dagView.getDag().getWorkingTaxaNode().getDataBlock(), ((ADataNode) aNode).getDataBlock()));
+                        aNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
+                        textView = new TextView(textProperty);
+                    }
                     textView.show(this.getX(), this.getY());
                 } catch (IOException e1) {
                     e1.printStackTrace();

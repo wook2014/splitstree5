@@ -29,7 +29,6 @@ import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.filters.TaxaFilter;
 import splitstree5.gui.connectorview.ConnectorView;
 import splitstree5.io.nexus.NexusFileParser;
 
@@ -47,7 +46,7 @@ public class Try extends Application {
         NexusFileParser.parse(document);
 
         {
-            TaxaFilter taxaFilter = document.getDag().getTaxaFilter();
+            AConnector<TaxaBlock, TaxaBlock> taxaFilter = document.getDag().getTaxaFilter();
             ConnectorView<TaxaBlock, TaxaBlock> view = new ConnectorView<>(document, taxaFilter);
             view.show();
         }

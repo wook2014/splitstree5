@@ -77,6 +77,12 @@ abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> exte
         compute(progressListener, taxaBlock, (P) parent, (C) child);
     }
 
+    /**
+     * clear temporary data
+     */
+    public void clear() {
+    }
+
     public boolean isDisabled() {
         return disabled.get();
     }

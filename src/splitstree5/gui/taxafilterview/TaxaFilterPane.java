@@ -25,8 +25,10 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.ListView;
 import splitstree5.core.Document;
+import splitstree5.core.algorithms.filters.TaxaFilter;
+import splitstree5.core.connectors.AConnector;
 import splitstree5.core.dag.UpdateState;
-import splitstree5.core.filters.TaxaFilter;
+import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
 import splitstree5.gui.connectorview.AlgorithmPane;
 import splitstree5.undo.UndoManager;
@@ -52,6 +54,8 @@ public class TaxaFilterPane extends AlgorithmPane {
 
     final SimpleBooleanProperty applicableProperty = new SimpleBooleanProperty();
 
+    private AConnector connector;
+
     private boolean inSync = false;
 
     /**
@@ -75,6 +79,11 @@ public class TaxaFilterPane extends AlgorithmPane {
     @Override
     public void setDocument(Document document) {
         this.document = document;
+    }
+
+    @Override
+    public void setConnector(AConnector connector) {
+        this.connector = connector;
     }
 
     private boolean inUpdateSelection = false;
@@ -215,14 +224,15 @@ public class TaxaFilterPane extends AlgorithmPane {
             final ListView<Taxon> activeList = controller.getActiveList();
             final ListView<Taxon> inactiveList = controller.getInactiveList();
 
-            activeList.getItems().setAll(taxaFilter.getEnabledTaxa());
-            inactiveList.getItems().setAll(taxaFilter.getDisabledTaxa());
+            activeList.getItems().clear();
+            inactiveList.getItems().clear();
 
-            if (prevActiveTaxa.size() + prevInactiveTaxa.size() == 0) {
-                prevInactiveTaxa.addAll(taxaFilter.getDisabledTaxa());
-                prevActiveTaxa.addAll(taxaFilter.getEnabledTaxa());
+            if (taxaFilter.getEnabledTaxa().size() == 0 && taxaFilter.getDisabledTaxa().size() == 0) {
+                activeList.getItems().addAll(((TaxaBlock) connector.getParent().getDataBlock()).getTaxa());
+            } else {
+                activeList.getItems().addAll(taxaFilter.getEnabledTaxa());
+                inactiveList.getItems().addAll(taxaFilter.getDisabledTaxa());
             }
-
         } finally {
             inSync = false;
         }
@@ -232,13 +242,10 @@ public class TaxaFilterPane extends AlgorithmPane {
      * sync controller to model
      */
     public void syncController2Model() {
-        final ListView<Taxon> activeList = controller.getActiveList();
-        final ListView<Taxon> inactiveList = controller.getInactiveList();
-
         taxaFilter.getEnabledTaxa().clear();
-        taxaFilter.getEnabledTaxa().addAll(activeList.getItems());
+        taxaFilter.getEnabledTaxa().addAll(controller.getActiveList().getItems());
         taxaFilter.getDisabledTaxa().clear();
-        taxaFilter.getDisabledTaxa().addAll(inactiveList.getItems());
-        taxaFilter.setState(UpdateState.INVALID);
+        taxaFilter.getDisabledTaxa().addAll(controller.getInactiveList().getItems());
+        connector.setState(UpdateState.INVALID);
     }
 }
