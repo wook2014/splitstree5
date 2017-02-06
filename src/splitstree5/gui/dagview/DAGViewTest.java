@@ -23,6 +23,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import org.junit.Test;
 import splitstree5.core.Document;
+import splitstree5.core.algorithms.filters.SplitsFilter;
 import splitstree5.core.algorithms.filters.TreeFilter;
 import splitstree5.core.algorithms.trees2splits.TreeSelector;
 import splitstree5.core.connectors.AConnector;
@@ -30,7 +31,6 @@ import splitstree5.core.dag.DAG;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.core.filters.SplitsFilter;
 import splitstree5.io.nexus.NexusFileParser;
 
 /**
@@ -55,12 +55,12 @@ public class DAGViewTest extends Application {
         if (dag.getWorkingDataNode().getDataBlock() instanceof TreesBlock) {
             final TreeSelector treeSelector = new TreeSelector();
             AConnector connector = dag.createConnector(dag.getWorkingDataNode(), new ADataNode<>(new SplitsBlock()), treeSelector);
-            dag.addConnector(new SplitsFilter(dag.getWorkingTaxaNode().getDataBlock(), connector.getChild(), new ADataNode<>(new SplitsBlock())));
+            dag.createConnector(connector.getChild(), new ADataNode<>(new SplitsBlock()), new SplitsFilter());
         }
 
 
         if (dag.getWorkingDataNode().getDataBlock() instanceof TreesBlock) {
-            dag.addConnector(new AConnector<>(dag.getWorkingTaxaNode().getDataBlock(), dag.getWorkingDataNode(), new ADataNode<>(new TreesBlock()), new TreeFilter()));
+            dag.createConnector(dag.getWorkingDataNode(), new ADataNode<>(new TreesBlock()), new TreeFilter());
         }
 
         final DAGView dagView = new DAGView(document);

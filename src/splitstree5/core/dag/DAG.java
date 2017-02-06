@@ -130,7 +130,7 @@ public class DAG {
      * @param <C>
      * @return connector node
      */
-    public <P extends ADataBlock, C extends ADataBlock> AConnector createConnector(ADataNode<P> parent, ADataNode<C> child, Algorithm<P, C> algorithm) {
+    public <P extends ADataBlock, C extends ADataBlock> AConnector<P, C> createConnector(ADataNode<P> parent, ADataNode<C> child, Algorithm<P, C> algorithm) {
         return addConnector(new AConnector<>(getWorkingTaxaNode().getDataBlock(), parent, child, algorithm));
     }
 

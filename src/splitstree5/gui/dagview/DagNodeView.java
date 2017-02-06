@@ -28,6 +28,7 @@ import javafx.beans.value.WeakChangeListener;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Shear;
@@ -97,7 +98,7 @@ public class DagNodeView extends Group {
             getChildren().add(descriptionLabel);
 
             if (((AConnector) aNode).getAlgorithm().getControl() != null || OptionsAccessor.getAllOptions(((AConnector) aNode).getAlgorithm()).size() > 0) {
-                Button openButton = new Button("Open...");
+                final Button openButton = new Button("Open...");
                 openButton.setOnAction((e) -> {
                     try {
                         if (connectorView == null)
@@ -112,6 +113,17 @@ public class DagNodeView extends Group {
                 openButton.setLayoutX(rectangle.getWidth() - 83);
                 openButton.setLayoutY(rectangle.getHeight() - 33);
                 getChildren().add(openButton);
+
+                final ProgressBar progressBar = new ProgressBar();
+                progressBar.setPrefWidth(70);
+                progressBar.setPrefHeight(30);
+                progressBar.setLayoutX(10);
+                progressBar.setLayoutY(rectangle.getHeight() - 33);
+                progressBar.visibleProperty().bind(((AConnector) aNode).getService().runningProperty());
+                progressBar.progressProperty().bind(((AConnector) aNode).getService().progressProperty());
+                getChildren().add(progressBar);
+
+
             }
         } else if (aNode instanceof ADataNode) {
             {

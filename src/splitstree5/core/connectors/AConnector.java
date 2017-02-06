@@ -220,6 +220,10 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
             return algorithm.getShortDescription();
     }
 
+    public ConnectorService<P, C> getService() {
+        return service;
+    }
+
     /**
      * gets all algorithms that can be associated with this connector
      *

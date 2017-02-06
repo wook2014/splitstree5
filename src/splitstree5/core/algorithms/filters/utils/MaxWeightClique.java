@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.filters.utils;
+package splitstree5.core.algorithms.filters.utils;
 
 import java.util.Arrays;
 

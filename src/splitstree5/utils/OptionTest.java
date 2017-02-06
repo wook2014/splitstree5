@@ -20,8 +20,7 @@
 package splitstree5.utils;
 
 import org.junit.Test;
-import splitstree5.core.datablocks.SplitsBlock;
-import splitstree5.core.filters.SplitsFilterAlgorithm;
+import splitstree5.core.algorithms.filters.SplitsFilter;
 
 /**
  * test option
@@ -31,9 +30,9 @@ public class OptionTest {
 
     @Test
     public void testGetAllOptions() throws Exception {
-        SplitsFilterAlgorithm splitsFilterAlgorithm = new SplitsFilterAlgorithm(new SplitsBlock());
+        SplitsFilter splitsFilter = new SplitsFilter();
 
-        for (Option option : OptionsAccessor.getAllOptions(splitsFilterAlgorithm)) {
+        for (Option option : OptionsAccessor.getAllOptions(splitsFilter)) {
             System.err.println(option);
             switch (option.getType().getTypeName()) {
                 case "boolean": {

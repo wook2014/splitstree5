@@ -17,18 +17,19 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.filters;
+package splitstree5.core.algorithms.filters;
 
-import javafx.collections.ListChangeListener;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
+import splitstree5.core.algorithms.filters.utils.ClosestTree;
+import splitstree5.core.algorithms.filters.utils.DimensionFilter;
+import splitstree5.core.algorithms.filters.utils.GreedyCompatible;
+import splitstree5.core.algorithms.filters.utils.GreedyWeaklyCompatible;
+import splitstree5.core.algorithms.interfaces.IFromSplits;
+import splitstree5.core.algorithms.interfaces.IToSplits;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.filters.utils.ClosestTree;
-import splitstree5.core.filters.utils.DimensionFilter;
-import splitstree5.core.filters.utils.GreedyCompatible;
-import splitstree5.core.filters.utils.GreedyWeaklyCompatible;
 import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
 
@@ -40,7 +41,7 @@ import java.util.List;
  * splits filter
  * Created by huson on 12/12/16.
  */
-public class SplitsFilterAlgorithm extends Algorithm<SplitsBlock, SplitsBlock> {
+public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements IFromSplits, IToSplits {
     public enum FilterAlgorithm {None, GreedyCompatible, ClosestTree, GreedyWeaklyCompatible}
 
     private final ArrayList<ASplit> enabledSplits = new ArrayList<>();
@@ -60,43 +61,37 @@ public class SplitsFilterAlgorithm extends Algorithm<SplitsBlock, SplitsBlock> {
     /**
      * constructor
      *
-     * @param parent
      */
-    public SplitsFilterAlgorithm(SplitsBlock parent) {
+    public SplitsFilter() {
         super("Splits Filter");
-        enabledSplits.addAll(parent.getSplits());
-        parent.getSplits().addListener((ListChangeListener<ASplit>) c -> {
-            while (c.next()) {
-                if (c.getRemovedSize() > 0)
-                    enabledSplits.removeAll(c.getRemoved());
-                if (c.getAddedSize() > 0)
-                    enabledSplits.addAll(c.getAddedSubList());
-            }
-        });
     }
 
+    @Override
+    public void clear() {
+        enabledSplits.clear();
+        disabledSplits.clear();
+    }
     /**
      * do the computation
      *
      * @param progress
      * @param taxaBlock
-     * @param original
-     * @param modified
+     * @param parent
+     * @param child
      * @throws CanceledException
      */
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, SplitsBlock original, SplitsBlock modified) throws CanceledException {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, SplitsBlock parent, SplitsBlock child) throws CanceledException {
         boolean changed = false;
-        List<ASplit> splits = new ArrayList<>(original.size());
+        List<ASplit> splits = new ArrayList<>(parent.size());
 
-        if (enabledSplits.size() == 0 || enabledSplits.size() == original.size()) {
-            splits.addAll(original.getSplits());
-        } else {
-            splits.addAll(enabledSplits);
-            changed = true;
-        }
-        if (disabledSplits.size() > 0) {
-            splits.removeAll(disabledSplits);
-            changed = true;
+        if (enabledSplits.size() == 0 && disabledSplits.size() == 0) // nothing has been explicitly set, copy everything
+            child.getSplits().setAll(parent.getSplits());
+        else {
+            for (ASplit split : enabledSplits) {
+                if (!disabledSplits.contains(split)) {
+                    child.getSplits().add(split);
+                }
+            }
         }
 
         if (optionModifyWeightsUsingLeastSquares) {
@@ -117,7 +112,7 @@ public class SplitsFilterAlgorithm extends Algorithm<SplitsBlock, SplitsBlock> {
             }
             case ClosestTree: {
                 final int oldSize = splits.size();
-                splits = ClosestTree.apply(progress, taxaBlock.getNtax(), splits, original.getCycle());
+                splits = ClosestTree.apply(progress, taxaBlock.getNtax(), splits, parent.getCycle());
                 compatibility = Compatibility.compatible;
                 if (splits.size() != oldSize)
                     changed = true;
@@ -160,20 +155,30 @@ public class SplitsFilterAlgorithm extends Algorithm<SplitsBlock, SplitsBlock> {
                 changed = true;
         }
 
-        modified.getSplits().addAll(splits);
+        child.getSplits().addAll(splits);
         if (!changed) {
-            modified.setCycle(original.getCycle());
-            modified.setFit(original.getFit());
-            modified.setCompatibility(original.getCompatibility());
-            modified.setThreshold(original.getThreshold());
+            child.setCycle(parent.getCycle());
+            child.setFit(parent.getFit());
+            child.setCompatibility(parent.getCompatibility());
+            child.setThreshold(parent.getThreshold());
         } else {
-            modified.setCycle(original.getCycle());
-            modified.setFit(-1);
+            child.setCycle(parent.getCycle());
+            child.setFit(-1);
             if (compatibility == Compatibility.unknown)
-                compatibility = Compatibility.compute(taxaBlock.getNtax(), modified.getSplits(), modified.getCycle());
-            modified.setCompatibility(compatibility);
-            modified.setThreshold(original.getThreshold());
+                compatibility = Compatibility.compute(taxaBlock.getNtax(), child.getSplits(), child.getCycle());
+            child.setCompatibility(compatibility);
+            child.setThreshold(parent.getThreshold());
         }
+    }
+
+    @Override
+    public String getShortDescription() {
+        if (enabledSplits.size() == 0 && disabledSplits.size() == 0)
+            return "";
+        else if (disabledSplits.size() == 0)
+            return "Enabled: " + enabledSplits.size();
+        else
+            return "Enabled: " + enabledSplits.size() + " (of " + (enabledSplits.size() + disabledSplits.size() + ")");
     }
 
 

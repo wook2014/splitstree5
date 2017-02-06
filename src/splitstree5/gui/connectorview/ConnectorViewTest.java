@@ -25,12 +25,13 @@ import org.junit.Test;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.ReportNode;
 import splitstree5.core.algorithms.distances2splits.NeighborNet;
+import splitstree5.core.algorithms.filters.SplitsFilter;
 import splitstree5.core.connectors.AConnector;
+import splitstree5.core.dag.DAG;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.filters.SplitsFilter;
 import splitstree5.core.misc.Taxon;
 
 /**
@@ -52,20 +53,21 @@ public class ConnectorViewTest extends Application {
         final SplitsBlock splitsBlock1 = new SplitsBlock();
         final SplitsBlock splitsBlock2 = new SplitsBlock();
 
-        document.getDag().setupTopAndWorkingNodes(taxaBlock, distancesBlock);
+        final DAG dag = document.getDag();
+        dag.setupTopAndWorkingNodes(taxaBlock, distancesBlock);
 
         taxaBlock.getTaxa().addAll(new Taxon("First"), new Taxon("Second"), new Taxon("Third"), new Taxon("Fourth"), new Taxon("Fifth"), new Taxon("Sixth"));
 
         document.setupTaxonSelectionModel();
 
         {
-            final AConnector<DistancesBlock, SplitsBlock> nnet = new AConnector<>(taxaBlock, new ADataNode<>(distancesBlock), new ADataNode<>(splitsBlock1), new NeighborNet());
+            final AConnector<DistancesBlock, SplitsBlock> nnet = dag.createConnector(new ADataNode<>(distancesBlock), new ADataNode<>(splitsBlock1), new NeighborNet());
             ConnectorView<DistancesBlock, SplitsBlock> connectorView = new ConnectorView<>(document, nnet);
             connectorView.show();
         }
 
         {
-            final SplitsFilter splitsFilter = new SplitsFilter(taxaBlock, new ADataNode<>(splitsBlock1), new ADataNode<>(splitsBlock2));
+            final AConnector<SplitsBlock, SplitsBlock> splitsFilter = dag.createConnector(new ADataNode<>(splitsBlock1), new ADataNode<>(splitsBlock2), new SplitsFilter());
             ConnectorView<SplitsBlock, SplitsBlock> connectorView = new ConnectorView<>(document, splitsFilter);
             connectorView.show();
         }

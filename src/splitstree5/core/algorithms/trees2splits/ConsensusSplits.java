@@ -20,6 +20,7 @@
 package splitstree5.core.algorithms.trees2splits;
 
 import javafx.beans.property.SimpleObjectProperty;
+import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
@@ -28,28 +29,49 @@ import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * implements consensus splits
  * Created by huson on 12/11/16.
  */
 public class ConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
-    public enum Consensus {STRICT, LOOSE, MAJORITY, NETWORK, ALL}
+    public enum Consensus {Strict, Majority, Loose, Network, All}
 
-    private final SimpleObjectProperty<Consensus> consensus = new SimpleObjectProperty<>(Consensus.ALL);
+    private final SimpleObjectProperty<Consensus> consensusOption = new SimpleObjectProperty<>(Consensus.All);
 
-    public Consensus getConsensus() {
-        return consensus.get();
+    /**
+     * compute the consensus splits
+     *
+     * @param progressListener
+     * @param taxaBlock
+     * @param treesBlock
+     * @param splitsBlock
+     */
+    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock) throws CanceledException {
+        System.err.println("Not implemented");
     }
 
-    public SimpleObjectProperty<Consensus> consensusProperty() {
-        return consensus;
+    @Override
+    public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent, SplitsBlock child) {
+        return parent.size() > 0 && !parent.isPartial();
     }
 
-    public void setConsensus(Consensus consensus) {
-        this.consensus.set(consensus);
+    @Override
+    public List<String> listOptions() {
+        return Arrays.asList("consensus", "threshold", "edgeWeights");
     }
 
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock) {
-        System.err.println(getName() + ": not implemented");
+    public Consensus getConsensusOption() {
+        return consensusOption.get();
+    }
+
+    public SimpleObjectProperty<Consensus> consensusOptionProperty() {
+        return consensusOption;
+    }
+
+    public void setConsensusOption(Consensus consensusOption) {
+        this.consensusOption.set(consensusOption);
     }
 }
