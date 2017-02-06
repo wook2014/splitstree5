@@ -1,0 +1,150 @@
+BEGIN Characters;
+DIMENSIONS ntax=8 nchar=920;
+FORMAT
+	datatype='rna' missing=? gap=- symbols="augc" labels=left transpose=no interleave=yes;
+MATRIX
+'Tobacco'            aagaaccugcccuugggagcuggaaacggcugcuaauaccccguaggggcucgcgucuga
+'Rice'               aagaaccugcccuugggaacuggaaacgguugcuaauaccccguaggggcucgcgucuga
+'Marchantia'         aagaaccugcccuugggagcuggaaacgguugcuaauaccccauaggggcuugcgucuga
+'Chlamydomonas'      aagaaccuaccuaucggauugggaaacuguugcuaauaccccauaggggcuugcgucuga
+'Chlorella'          aagaaccuaccuuuaggaacuggaaacgguugcuaauaccccauaugggcuugcgucuga
+'Euglena'            aagaaucugcgcuugggagauggaaacguuugcuaaugccucauaugagcuugcaucuga
+'Anacystis_nidulans' gagaaucugccuacaggaguuggaaacgacugcuaauacccgauaugagcucgcgucuga
+'Olithodiscus'       gagaaucugccuuuaggauuuggaaacgaaugcuaauaccuuauaggagcucgcggcuga
+
+'Tobacco'            uuagcuaguugguggcaagcuuaccaaggcgaugacugguccgagaggaugaucagccac
+'Rice'               uuagcuaguugguggcaagcuuaccaaggcgaugacugguccgagaggaugaucagccac
+'Marchantia'         uuagcuaguuggugguaagcuuaccaaggcgacgacuggucugagaggaugaucagccac
+'Chlamydomonas'      uuagcuaguuggugguaagccucccaaggccacgacuggucugagaggaugaucagccac
+'Chlorella'          uuagcuuguuggugguaagcuuaccaaggcaacgacuggucugagaggaugaucagccac
+'Euglena'            uuagcuuguuggugguaagcuuaccaaggcgacgacugauuugagaggaugaucagccac
+'Anacystis_nidulans' uuagcuaguuggugguaagccuaccaaggcgacgacuggucugagaggaugaucagccac
+'Olithodiscus'       uuagcuaguuggugguaagccuaccaaggcgaucacugauuugagaggaugaucagucac
+
+'Tobacco'            acugggacugagacacggcccagacuccuacgggaggcagcaguggggaauuuuccgcaa
+'Rice'               acugggacugagacacggcccagacuccuacgggaggcagcaguggggaauuuuccgcaa
+'Marchantia'         acugggacugagacacggcccagacucuuacgggaggcagcaguggggaauuuuccgcaa
+'Chlamydomonas'      acugggacugagacacggcccagacuccuacgggaggcagcagugaggaauuuuucgcaa
+'Chlorella'          acugggacugagacacggcccagacuucuacggaaggcagcagugaggaauuuuccgcaa
+'Euglena'            acugggauugaga-acggaacagacuucuacggaaggcagcagugaggaauuuuccgcaa
+'Anacystis_nidulans' acugggacugagacacggcccagacuccuacgggaggcagcaguggggaauuuuccgcaa
+'Olithodiscus'       acuggaacugagacacgguccagacuccuacgggaggcagcaguggggaauuuucugcaa
+
+'Tobacco'            ugggcgaaagacggagcaaugccgcguggagguagaagggggucgugacuuuucccggag
+'Rice'               ugggcgaaagacggagcaaugccgcguggagguggaaggggucgucaacuuuucucggag
+'Marchantia'         ugggcgaaacacggagcaaugccgcguggagguagaagggggucguaacuuuucucagag
+'Chlamydomonas'      ugggcgcaagacggagcaaugccgcgugcaggaagaagggggucguaacuuuucucagag
+'Chlorella'          ugggcgaaagacggagcaaugccgcguggaggaugacaggggucguaacuuuucucagag
+'Euglena'            ugggcgcaagacggagcaauaccgcgugaaggaagacggggguugaaacuuuucucaaag
+'Anacystis_nidulans' ugggcgcaagacggagcaacgccgcgugggggaggaaggggacuguaacuuuucucaggg
+'Olithodiscus'       ugggcgaaagacagagcaauaccgcgugagggaugacagggauuguaacuuuuuucaggg
+
+'Tobacco'            aagaugacgguaucuggggaauaagcaucggcuaacucugaaucccagggcucaacccug
+'Rice'               aagaugacgguaucugaggaauaagcaucggcuaacucugaaucccagggcucaacccug
+'Marchantia'         aagaugacgguaucugaggaauaagcaucggcuaacucugaaucccagggcucaacccug
+'Chlamydomonas'      aagaugacgguaucugaggaauaagcaccggcuaacucugaauaccagggcucaaccuug
+'Chlorella'          aagaugacgguaucugaggaauaagcaucggcuaacuccgaagaucagggcuuaacccug
+'Euglena'            aagaugacgguauuugaggaauaagcaucggcuaauuccgaaagucaaagcuuaacuuug
+'Anacystis_nidulans' aagaugacgguaccugaggaauaagccucggcuaauuccgaagcguggggcucaaccuca
+'Olithodiscus'       aggaugacguuaccugaagaauaagcaucggcuaacuccgaaucuuaaggcucaaccuua
+
+'Tobacco'            gacaggcgguggacuggaguacgguaggggcagagggaauuguggagcggugaaaugcgu
+'Rice'               gacaggcgguggacuggaguacgguaggggcagagggaauuguggagcggugaaaugcau
+'Marchantia'         gacaggcgguggacuggaguacgguaggggcagagggaauuguggagcggugaaaugcgu
+'Chlamydomonas'      gaccggcauuggacuugaguacgguaggggcagagggaauuguggagcggugaaaugcgu
+'Chlorella'          agucggcaguagacuugaguacgguaggggcagagggaauuguguagcggugaaaugcgu
+'Euglena'            gaagggcauuaaacuugaguaugguaggggugaagggaauuguguagcggugaaaugcgu
+'Anacystis_nidulans' uacaggcaauggacuagaguaugguagggguagcgggaauuguguagcggugaaaugcgu
+'Olithodiscus'       aaccagcaauggacuugagugugguagagguagagggaauuguggagcggugaaaugcgu
+
+'Tobacco'            agagaucggaaagaacaccaacggcgaaagcacucugcugggccgacacugacacugaga
+'Rice'               ugagaucggaaagaacaccaacggcgaaagcacucugcugggccgacacugacacugaga
+'Marchantia'         agagaucggaaagaacaccaauggcgaaagcacucuucugggccgacacugacacugaga
+'Chlamydomonas'      agagauauggaggaacaccaguggcgaaggcgcucugcugggccgaaacugacacugaga
+'Chlorella'          agagaucgggaagaacaccaauggcgaaag-acucugcugggccgaaacugacacucaga
+'Euglena'            agagauuggaaagaacaccaauggcgaaggcacuuuucuaggccaauacugacgcugaga
+'Anacystis_nidulans' agauaucuggaagaacaccagcggcgaaagcgcgcuacugggccauaacugacgcucaug
+'Olithodiscus'       agauauuggaaagaccaccaauggcgaaggcacucuacugggccauuacugacacugaga
+
+'Tobacco'            gacgaaagcuaggggagcgaaugggauuagauaccccaguaguccuagccguaaacgaug
+'Rice'               gacgaaagcuaggggagcaaaugggauuagagaccccaguaguccuagccguaaacgaug
+'Marchantia'         gacgaaagcuaggggagcaaaugggauuagauaccccaguaguccuagccguaaacgaug
+'Chlamydomonas'      gacgaaagcugggggagcgaauaggauuagauacccuaguagucccagccguaaacuaug
+'Chlorella'          gacgaaagcuaggggagcgaaugggauuagauaccccaguaguccuagccguaaacgaug
+'Euglena'            aacgaaagcugagggagcaaacaggauuagauacccu-guagucuuggccguaaacuaug
+'Anacystis_nidulans' gacgaaagcuaggggagcgaaagggauuagauaccccuguaguccuagccguaaacgaug
+'Olithodiscus'       gacgaaagcuaggggagcaaaugggauuagauaccccaguaguccuagcuguaaacgaug
+
+'Tobacco'            gauacuaggcgcugcagugcuguagcuaacgcguuaaguaucccgccuggggaguacguu
+'Rice'               gauacuaggugcugcagugcuguagcuaacgcguuaaguaucccgccuggggaguacguu
+'Marchantia'         gauacuaagcgcugcagugcuguagcuaacgcguuaaguaucccgccuggggaguacguu
+'Chlamydomonas'      gagacuaagugcugcagugcuguagcuaacgcguuaagucucccgccuggggaguaugcu
+'Chlorella'          gauacuaagugcugcaguacuguagcuaacgcgugaaguaucccgccuggggaguaugcu
+'Euglena'            gauacuaaguggugcacugcuguaguuaacacguuaaguaucccgccuggggaguacgcu
+'Anacystis_nidulans' aacacuagguguugcagugccguagccaacgcguuaaguguuccgccuggggaguacgca
+'Olithodiscus'       gauacuagaugucgcgguauuauagcuaacgcguuaaguaucccgccugggaaguaugcu
+
+'Tobacco'            cgcaagaaugaaacucaaaggaauugacgggggcccgcacaagcgguggagcaugugguu
+'Rice'               cgcaagaaugaaacucaaaggaauugacgggggcccgcacaagcgguggagcaugugguu
+'Marchantia'         cgcaagaaugaaacucaaaggaauugacgggggcccgcacaagcgguggagcaugugguu
+'Chlamydomonas'      cgcaagagugaaacucaaaggaauugacggga--ccgcacaagcgguggauuauguggau
+'Chlorella'          cgcaagagugaaacucaaaggaauugacgggggcccgcacaagcgguggagcaugugguu
+'Euglena'            ugcacaagugaaacucaaaggaauugacgggggcccgcacaagcgguggagcaugugguu
+'Anacystis_nidulans' cgcaaguuggaaacucaaaggaauugacgggggcccgcacaagcgguggaguaugugguu
+'Olithodiscus'       cgcaagagugaaacucaaaggaauugacgggggcccgcacaagcgguggagcaugugguu
+
+'Tobacco'            uaauucgaugcaaagcgaagaaccuuaccagggcuugacaauccucuugaaaacaggugg
+'Rice'               uaauucgaugcaaagcgaagaaccuuaccagggcuugacaauccucuugaaaacaggugg
+'Marchantia'         uaauucgaugcaacgcgaagaaccuuaccagggcuugacaaucuuuuugaaaacaggugg
+'Chlamydomonas'      uaauucgauacaacgcgaagaaccuuaccaggguuugacaaccucucagaaaacaggugg
+'Chlorella'          uaauucgaugcaacgcgaagaaccuuaccagggcuugaca------------acaggugg
+'Euglena'            uaauucgaugcaacacgaagaaccuuaccaggauuugacaa-------gaaaacaggugg
+'Anacystis_nidulans' uaauucgaugcaacgcgaagaaccuuaccaggguuugacaaucucuuggaaaacaggugg
+'Olithodiscus'       uaauucgaugcaacgcgaagaaccuuaccaggguuugacaaguuuuuugaaaacaggugg
+
+'Tobacco'            ugcauggcugucgucagcgugccguaaguguuggguuaagucccgcaacgagcgcaaccc
+'Rice'               ugcauggcugucgucagcgugccguaaguguuggguuaagucucgcaacgagcgcaaccc
+'Marchantia'         ugcauggcugucgucagcgugccguaaguguuggguuaagucccgcaacgagcgcaaccc
+'Chlamydomonas'      ugcauggcugucgucagcgugcugugaauguauaguuaagucucauaacgagcgcaaccc
+'Chlorella'          ugcauggcugucgucagcgugucgugaguguuggguuaagucccgcaacgagcgcaaccc
+'Euglena'            ugcauggcugucgucagcgugucgugaguguuggguuaagucccgcaacgagcgcaaccc
+'Anacystis_nidulans' ugcauggcugucgucagcgugucgugaguguuggguuaagucccgcaacgagcgcaaccc
+'Olithodiscus'       ugcauggcugucgucagcgugucgugaguguuggguuaagucccgcaacgagcguaaccc
+
+'Tobacco'            ucguguucggaggaaggugaggaugacgucaagucaucaugccccuuagggcgacacacg
+'Rice'               ucguguucggaggaaggagaggaugaggccaagucaucaugccccuuagggcgacacacg
+'Marchantia'         ucuuguucggaggaaggugaggaugacgucaagucagcaugccccuuagggcgacacacg
+'Chlamydomonas'      ucgucuucggaggaaggugaggaugacgucaagucagcaugccccuuagggcuucacacg
+'Chlorella'          uuguuuucggaggaaggugaggaugacgucaagucagcaugccccuuagggcgacacacg
+'Euglena'            uuuuuuucggaggaaggugaggacgacgucaagucaucaugccccuuagggcuacacacg
+'Anacystis_nidulans' acguuuucggaggaagguguggacgacgucaagucaucaugccccuuagggcuacacacg
+'Olithodiscus'       uuguuuucggaggaagguaaggacgacgucaagucaucaugccccuuagggcuacacacg
+
+'Tobacco'            ugcuacaauggccgggacaaagggucgcgaucccgcgag-gugagcuaaaacccguccuc
+'Rice'               ugcuacaaugggcgggacaaagggucgcgaucucgcgagggugagcuaaaacccguccuc
+'Marchantia'         ugcuacaauggccgggacaaagggucgcgaccucgcgagagaaagcuaaaacccggccuc
+'Chlamydomonas'      uaauacaaugguugggacaaucagaagcga-cucgugagagcuagcggcaacccaaccuc
+'Chlorella'          ugcuacaauggccaggacaaugagaugcuaccucgcgagagcaagcuaaaaccuggucuc
+'Euglena'            ugcuacaaugguuaagacaauaaguugcaauuuugugaaaaugagcuaaaacuuagccua
+'Anacystis_nidulans' uacuacaaugcuccggacagcgagacgcgaagccgcgaggugaagcaaaaaccggggcuc
+'Olithodiscus'       ugcuacauuggguagaacaauaaguugcuaaguugcgaaaccaagcgaaaaucuacucua
+
+'Tobacco'            aguucggauugcaggcugcaacucgccugcaugaagccggaaucgcuaguaaucgccggu
+'Rice'               aguucggauugcaggcugcaacucgccugcaugaagcaggaaucgcuaguaaucgccggu
+'Marchantia'         aguucggauugcaggcugcaacucgccugcaugaagccggaaucgcuaguaaucgccggu
+'Chlamydomonas'      aguucggauuguaggcugcaacucgccuacaugaagccggaaucgcuaguaaucgccagu
+'Chlorella'          aguucggauugcaggcugcaacucgccugcaugaagucggaaucgcuaguaaucgcuggu
+'Euglena'            aguucggauuguaggcugaaacucgccuacaugaagccggaaucgcuaguaaucgccggu
+'Anacystis_nidulans' aguucagauugcaggcugcaacucgccugcaugaaggcggaaucgcuaguaaucgcaggu
+'Olithodiscus'       aguucggauuguaggcugcaacucgccuacauaaagauggaaucgcuaguaaucgcuggu
+
+'Tobacco'            cagauacggcggugaauucg
+'Rice'               cagauacggcggugaauccg
+'Marchantia'         cagauacggcggugaauccg
+'Chlamydomonas'      cagauauggcggugaauacg
+'Chlorella'          cagauacagcggugaauacg
+'Euglena'            cagauacggcggugaauacg
+'Anacystis_nidulans' cagauacugcggugaauacg
+'Olithodiscus'       cagacacagcggugaau-cg
+;
+END; [Characters]
