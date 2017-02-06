@@ -1,0 +1,87 @@
+BEGIN CHARACTERS;
+DIMENSIONS ntax=6 nchar=79;
+FORMAT
+	datatype='DNA' missing=? gap=- symbols="atgc" labels=left transpose=yes interleave=no;
+MATRIX
+'Allele290bp''Allele291bp''Allele295bp''Allele29Sbp''Allele29obp''Allele293bp'
+c           c           c           c           c           c
+c           c           c           c           c           c
+a           a           a           a           a           a
+c           c           c           c           c           c
+c           c           c           c           c           c
+c           c           c           c           c           c
+a           a           a           a           a           a
+g           g           g           g           g           g
+g           g           g           g           g           g
+g           g           g           g           g           g
+a           a           a           a           a           a
+g           g           g           g           g           g
+a           a           a           a           a           a
+t           t           t           t           t           t
+a           a           a           a           a           a
+t           t           t           t           t           t
+c           c           c           c           c           c
+c           c           c           c           c           c
+g           g           g           g           g           g
+a           a           a           a           a           a
+g           g           g           g           g           g
+c           c           c           c           c           c
+t           t           t           t           t           t
+c           c           c           c           c           c
+t           c           a           t           t           t
+c           -           -           -           c           -
+a           -           -           -           a           -
+-           -           -           -           -           -
+-           -           -           -           -           -
+c           -           c           c           c           c
+a           a           a           a           a           a
+c           c           c           c           c           c
+a           a           a           a           a           a
+c           c           c           c           c           c
+a           a           a           a           a           a
+c           c           c           c           c           c
+a           a           a           a           a           a
+c           c           c           c           c           c
+a           a           a           a           a           a
+c           c           c           c           c           c
+a           a           a           a           a           a
+c           c           c           c           c           c
+a           a           a           a           a           a
+c           c           c           c           c           c
+a           a           a           a           a           a
+c           c           c           c           c           c
+a           a           a           a           a           a
+c           c           c           c           c           c
+a           a           a           a           a           a
+c           c           c           c           c           g
+a           a           a           a           a           -
+c           c           c           c           c           -
+a           a           -           a           -           -
+c           g           -           g           -           -
+-           a           a           a           -           a
+-           g           g           g           -           g
+-           a           a           a           -           a
+-           g           g           g           -           g
+-           a           a           a           a           a
+-           g           g           g           g           g
+a           a           a           a           a           a
+g           g           g           g           g           g
+a           a           a           a           a           a
+a           a           a           a           a           a
+a           a           a           a           a           a
+t           t           t           t           t           t
+g           g           g           g           g           g
+a           a           a           a           a           a
+a           a           a           a           a           a
+t           t           t           t           t           t
+c           c           c           c           c           c
+t           t           t           t           t           t
+a           a           a           a           a           a
+a           a           a           a           a           a
+c           c           c           c           c           c
+c           c           c           c           c           c
+a           a           a           a           a           a
+g           g           g           g           g           g
+c           c           c           c           c           c
+;
+END; [CHARACTERS]

@@ -49,6 +49,9 @@ public class CharactersNexusIOTest {
 
         final ArrayList<String> inputFiles = new ArrayList<>();
 
+        // does not work
+        //inputFiles.add("test//nexus//characters-simple.nex");
+
         inputFiles.add("test//characters//algae_rna_interleave.nex");
         inputFiles.add("test//characters//bees_dna_interleave.nex");
         inputFiles.add("test//characters//dolphins_binary.nex");
@@ -60,6 +63,17 @@ public class CharactersNexusIOTest {
         inputFiles.add("test//characters//microsat1.nex");
         inputFiles.add("test//characters//microsat2.nex");
 
+        // transposed matrix
+        inputFiles.add("test//characters//transpose//algae_rna_interleave.nex");
+        inputFiles.add("test//characters//transpose//bees_dna_interleave.nex");
+        inputFiles.add("test//characters//transpose//dolphins_binary.nex");
+        inputFiles.add("test//characters//transpose//mtDNA_interleave.nex");
+        inputFiles.add("test//characters//transpose//rubber_dna_interleave.nex");
+
+        inputFiles.add("test//characters//transpose//microsat1.nex");
+        inputFiles.add("test//characters//transpose//microsat2.nex");
+
+
 
         for(String inputFile:inputFiles){
 
@@ -70,15 +84,21 @@ public class CharactersNexusIOTest {
             List<String> taxonNames = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock1, format);
             taxaBlock.addTaxaByNames(taxonNames);
 
-            for (int test = 0; test < 3; test++) {
+            for (int test = 0; test < 4; test++) {
                 System.err.println("test: " + test);
                 switch (test) {
+                    // first: original interleave and transpose
+                    // transpose must be set false before setting interleave true
                     case 0:
                         break;
                     case 1:
-                        format.setInterleave(true);
+                        format.setInterleave(false);
+                        format.setTranspose(false);
                         break;
                     case 2:
+                        format.setInterleave(true);
+                        break;
+                    case 3:
                         format.setInterleave(false);
                         format.setTranspose(true);
                         break;
