@@ -1,3 +1,8 @@
+[Acute chagas outbreaks: molecular and biological features of Trypanosoma cruzi isolates,
+ and clinical aspects of acute cases in Santander, Colombia
+ Martha Lucía Díaz, Sandra Leal, Julio César Mantilla, Alfredo Molina-Berríos, Rodrigo López-Muñoz,
+ Aldo Solari, Patricia Escobar, and Clara Isabel González Rugeles
+ Parasit Vectors. 2015]
 BEGIN Characters;
 DIMENSIONS ntax=13 nchar=32;
 FORMAT

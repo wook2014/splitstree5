@@ -42,7 +42,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class CharactersNexusIOTest {
 
-    // comments not implemented? ntaxa in character block? characters first?
+    // not #nexus, ntaxa in character block, characters first
 
     @Test
     public void testIO() throws IOException {
@@ -51,6 +51,7 @@ public class CharactersNexusIOTest {
 
         // does not work
         //inputFiles.add("test//nexus//characters-simple.nex");
+        //inputFiles.add("test//characters//tokens.nex");
 
         inputFiles.add("test//characters//algae_rna_interleave.nex");
         inputFiles.add("test//characters//bees_dna_interleave.nex");
@@ -73,7 +74,9 @@ public class CharactersNexusIOTest {
         inputFiles.add("test//characters//transpose//microsat1.nex");
         inputFiles.add("test//characters//transpose//microsat2.nex");
 
-
+        //new
+        inputFiles.add("test//characters//pf02171.nexus");
+        inputFiles.add("test//characters//pf01569.nexus");
 
         for(String inputFile:inputFiles){
 

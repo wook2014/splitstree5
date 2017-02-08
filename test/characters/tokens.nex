@@ -1,0 +1,10 @@
+BEGIN CHARACTERS;
+DIMENSIONS NCHAR=3;
+CHARSTATELABELS 1 hair/absent present, 2 color/red blue,
+3 size/small big;
+FORMAT TOKENS;
+MATRIX
+taxon_1 absent red big
+taxon_2 absent blue small
+taxon_3 present blue small;
+END;
