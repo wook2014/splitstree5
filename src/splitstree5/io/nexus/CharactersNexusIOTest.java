@@ -49,33 +49,35 @@ public class CharactersNexusIOTest {
         final ArrayList<String> inputFiles = new ArrayList<>();
 
         // does not work
-        //inputFiles.add("test//nexus//characters-simple.nex");
+        inputFiles.add("test//nexus//characters-simple.nex");
         //inputFiles.add("test//characters//tokens.nex");
 
-        inputFiles.add("test//characters//algae_rna_interleave.nex");
-        inputFiles.add("test//characters//bees_dna_interleave.nex");
-        inputFiles.add("test//characters//dolphins_binary.nex");
-        inputFiles.add("test//characters//mammals_aa.nex");
-        inputFiles.add("test//characters//mtDNA_interleave.nex");
-        inputFiles.add("test//characters//myosin_aa.nex");
-        inputFiles.add("test//characters//rubber_dna_interleave.nex");
+        if (false) {
+            inputFiles.add("test//characters//algae_rna_interleave.nex");
+            inputFiles.add("test//characters//bees_dna_interleave.nex");
+            inputFiles.add("test//characters//dolphins_binary.nex");
+            inputFiles.add("test//characters//mammals_aa.nex");
+            inputFiles.add("test//characters//mtDNA_interleave.nex");
+            inputFiles.add("test//characters//myosin_aa.nex");
+            inputFiles.add("test//characters//rubber_dna_interleave.nex");
 
-        inputFiles.add("test//characters//microsat1.nex");
-        inputFiles.add("test//characters//microsat2.nex");
+            inputFiles.add("test//characters//microsat1.nex");
+            inputFiles.add("test//characters//microsat2.nex");
 
-        // transposed matrix
-        inputFiles.add("test//characters//transpose//algae_rna_interleave.nex");
-        inputFiles.add("test//characters//transpose//bees_dna_interleave.nex");
-        inputFiles.add("test//characters//transpose//dolphins_binary.nex");
-        inputFiles.add("test//characters//transpose//mtDNA_interleave.nex");
-        inputFiles.add("test//characters//transpose//rubber_dna_interleave.nex");
+            // transposed matrix
+            inputFiles.add("test//characters//transpose//algae_rna_interleave.nex");
+            inputFiles.add("test//characters//transpose//bees_dna_interleave.nex");
+            inputFiles.add("test//characters//transpose//dolphins_binary.nex");
+            inputFiles.add("test//characters//transpose//mtDNA_interleave.nex");
+            inputFiles.add("test//characters//transpose//rubber_dna_interleave.nex");
 
-        inputFiles.add("test//characters//transpose//microsat1.nex");
-        inputFiles.add("test//characters//transpose//microsat2.nex");
+            inputFiles.add("test//characters//transpose//microsat1.nex");
+            inputFiles.add("test//characters//transpose//microsat2.nex");
 
-        //new
-        inputFiles.add("test//characters//pf02171.nexus");
-        inputFiles.add("test//characters//pf01569.nexus");
+            //new
+            inputFiles.add("test//characters//pf02171.nexus");
+            inputFiles.add("test//characters//pf01569.nexus");
+        }
 
         for(String inputFile:inputFiles){
 
@@ -120,7 +122,7 @@ public class CharactersNexusIOTest {
                 CharactersNexusIO.parse(new NexusStreamParser(new StringReader(sw1.toString())), taxaBlock, charactersBlock2, format);
 
                 for (int t = 1; t <= charactersBlock1.getNtax(); t++)
-                    assertArrayEquals("t=" + t, charactersBlock1.getRow(t), charactersBlock2.getRow(t));
+                    assertArrayEquals("t=" + t, charactersBlock1.getMatrix()[t - 1], charactersBlock2.getMatrix()[t - 1]);
 
                 StringWriter sw2 = new StringWriter();
                 CharactersNexusIO.write(sw2, taxaBlock, charactersBlock2, format);

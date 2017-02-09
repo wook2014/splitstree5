@@ -92,6 +92,9 @@ public class CharactersNexusIO {
     public static ArrayList<String> parse(NexusStreamParser np, TaxaBlock taxa, CharactersBlock characters, @Nullable CharactersNexusFormat format) throws IOException {
         characters.clear();
 
+        if (np.peekMatchIgnoreCase("#nexus"))
+            np.matchIgnoreCase("#nexus");
+
         if (format == null)
             format = new CharactersNexusFormat();
 
@@ -111,7 +114,6 @@ public class CharactersNexusIO {
             np.matchIgnoreCase("dimensions ntax=" + taxa.getNtax());
             np.matchIgnoreCase("nchar=");
             int nchar = np.getInt(1, Integer.MAX_VALUE);
-            if (format.isIgnoreMatrix())
                 if (format.isIgnoreMatrix())
                     characters.setDimension(taxa.getNtax(), 0);
                 else

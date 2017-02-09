@@ -65,12 +65,9 @@ public class PairwiseCompare {
         numNotMissing = 0;
         numActive = characters.getNchar();
 
-        final char[] seqi = characters.getRow(i); // characters have positions 1 to nchar
-        final char[] seqj = characters.getRow(j);
-
         for (int k = 1; k <= characters.getNchar(); k++) {
-            final char ci = seqi[k];
-            final char cj = seqj[k];
+            final char ci = characters.get(i, k);
+            final char cj = characters.get(j, k);
             final double charWeight = characters.getCharacterWeight(k);
 
             if (ci != missingchar && ci != gapchar && cj != missingchar && cj != gapchar)

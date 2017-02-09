@@ -90,7 +90,7 @@ public class CharactersBlock extends ADataBlock {
 
     @Override
     public void clear() {
-        matrix = new char[1][1];
+        matrix = new char[0][0];
         setShortDescription("");
     }
 
@@ -104,7 +104,7 @@ public class CharactersBlock extends ADataBlock {
     }
 
     public void setDimension(int ntax, int nchar) {
-        matrix = new char[ntax + 1][nchar+1];
+        matrix = new char[ntax][nchar];
     }
 
     /**
@@ -112,7 +112,7 @@ public class CharactersBlock extends ADataBlock {
      * @return taxa
      */
     public int getNtax() {
-        return matrix.length-1;
+        return matrix.length;
     }
 
     /**
@@ -120,7 +120,7 @@ public class CharactersBlock extends ADataBlock {
      * @return characters
      */
     public int getNchar() {
-        return matrix.length <= 1 ? 0 : matrix[1].length - 1;
+        return matrix[0].length;
     }
 
     /**
@@ -132,9 +132,7 @@ public class CharactersBlock extends ADataBlock {
      * @return value
      */
     public char get(int t, int pos) {
-        if (t == 0 || pos == 0)
-            throw new IndexOutOfBoundsException("0");
-        return matrix[t][pos];
+        return matrix[t - 1][pos - 1];
     }
 
     /**
@@ -145,9 +143,7 @@ public class CharactersBlock extends ADataBlock {
      * @return true if is amb. code
      */
     public boolean isAmbiguityCode(int t, int pos) {
-        if (t == 0 || pos == 0)
-            throw new IndexOutOfBoundsException("0");
-        return isHasAmbiguousStates() && AmbiguityCodes.isAmbiguityCode(matrix[t][pos]);
+        return isHasAmbiguousStates() && AmbiguityCodes.isAmbiguityCode(matrix[t - 1][pos - 1]);
     }
 
     /**
@@ -158,27 +154,7 @@ public class CharactersBlock extends ADataBlock {
      * @return all nucleotides or null
      */
     public String getNucleotidesForAmbiguityCode(int t, int pos) {
-        if (t == 0 || pos == 0)
-            throw new IndexOutOfBoundsException("0");
-        return AmbiguityCodes.getNucleotides(matrix[t][pos]);
-    }
-
-    /**
-     * gets the sequence associated with taxon t
-     *
-     * @param t between 1 and ntax
-     * @return sequence
-     */
-    public char[] getRow(int t) {
-        if (t == 0)
-            throw new IndexOutOfBoundsException("0");
-        return matrix[t];
-    }
-
-    public void setRow(int t, char[] row) {
-        if (t == 0)
-            throw new IndexOutOfBoundsException("0");
-        matrix[t] = row;
+        return AmbiguityCodes.getNucleotides(matrix[t - 1][pos - 1]);
     }
 
     /**
@@ -189,9 +165,7 @@ public class CharactersBlock extends ADataBlock {
      * @param value
      */
     public void set(int t, int pos, char value) {
-        if (t == 0 || pos == 0)
-            throw new IndexOutOfBoundsException("0");
-        matrix[t][pos] = value;
+        matrix[t - 1][pos - 1] = value;
     }
 
 
@@ -201,13 +175,9 @@ public class CharactersBlock extends ADataBlock {
      * @param matrix
      */
     public void set(@NotNull char[][] matrix) {
-        if (matrix.length <= 1) {
-            clear();
-        } else {
             setDimension(matrix.length, matrix[0].length);
             for (int i = 0; i < matrix.length; i++) {
                 System.arraycopy(matrix[i], 0, this.matrix[i], 0, matrix.length);
-            }
         }
     }
 
@@ -242,15 +212,11 @@ public class CharactersBlock extends ADataBlock {
     }
 
     public double getCharacterWeight(int pos) {
-        if (pos == 0)
-            throw new IndexOutOfBoundsException("0");
-        return characterWeights == null?1:characterWeights[pos];
+        return characterWeights == null ? 1 : characterWeights[pos - 1];
     }
 
     public void setCharacterWeight(int pos, double w) {
-        if (pos == 0)
-            throw new IndexOutOfBoundsException("0");
-        this.characterWeights[pos] = w;
+        this.characterWeights[pos - 1] = w;
     }
 
     public CharactersType getDataType() {
@@ -378,9 +344,7 @@ public class CharactersBlock extends ADataBlock {
      * @return color
      */
     public int getColor(int t, int pos) {
-        if (t == 0 || pos == 0)
-            throw new IndexOutOfBoundsException("0");
-        return getColor(matrix[t][pos]);
+        return getColor(matrix[t - 1][pos - 1]);
     }
 
     /**
@@ -439,13 +403,14 @@ public class CharactersBlock extends ADataBlock {
     }
 
     /**
-     * shallow copies the given matrix
-     *
-     * @param source
+     * make a shallow copy of a row
+     * @param parent
+     * @param parentIndex
+     * @param targetIndex
      */
-    public void copyMatrix(CharactersBlock source) {
-        matrix = new char[source.getNtax() + 1][];
-        System.arraycopy(source.matrix, 0, matrix, 0, source.matrix.length);
+    public void copyRow(CharactersBlock parent, int parentIndex, int targetIndex) {
+        matrix[targetIndex - 1] = parent.matrix[parentIndex - 1];
+
     }
 }
 

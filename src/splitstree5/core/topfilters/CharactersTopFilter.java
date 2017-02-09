@@ -70,7 +70,7 @@ public class CharactersTopFilter extends ATopFilter<CharactersBlock> {
                 for (Taxon a : modifiedTaxaBlock.getTaxa()) {
                     final int originalI = getOriginalTaxaBlock().indexOf(a);
                     final int modifiedI = modifiedTaxaBlock.indexOf(a);
-                    child.setRow(modifiedI, parent.getRow(originalI));
+                    child.copyRow(parent, originalI, modifiedI);
                     progressListener.incrementProgress();
                 }
             }
