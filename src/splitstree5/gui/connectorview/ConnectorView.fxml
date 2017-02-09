@@ -28,13 +28,13 @@
     <bottom>
         <ButtonBar minHeight="40.0" prefHeight="40.0" BorderPane.alignment="CENTER">
             <buttons>
-                <Button fx:id="resetButton" mnemonicParsing="false" label="Reset">
+                <Button fx:id="resetButton" mnemonicParsing="false" text="Reset">
                     <opaqueInsets>
                         <Insets/>
                     </opaqueInsets>
                 </Button>
-                <Button fx:id="cancelButton" mnemonicParsing="false" label="Cancel"/>
-                <Button fx:id="applyButton" mnemonicParsing="false" label="Apply"/>
+                <Button fx:id="cancelButton" mnemonicParsing="false" text="Cancel"/>
+                <Button fx:id="applyButton" mnemonicParsing="false" text="Apply"/>
             </buttons>
             <padding>
                 <Insets right="10.0"/>
@@ -44,9 +44,9 @@
     <top>
         <MenuBar BorderPane.alignment="CENTER">
             <menus>
-                <Menu mnemonicParsing="false" label="File">
+                <Menu mnemonicParsing="false" text="File">
                     <items>
-                        <MenuItem fx:id="closeMenuItem" mnemonicParsing="false" label="Close">
+                        <MenuItem fx:id="closeMenuItem" mnemonicParsing="false" text="Close">
                             <accelerator>
                                 <KeyCodeCombination alt="UP" code="W" control="UP" meta="UP" shift="UP"
                                                     shortcut="DOWN"/>
@@ -54,15 +54,15 @@
                         </MenuItem>
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" label="Edit">
+                <Menu mnemonicParsing="false" text="Edit">
                     <items>
-                        <MenuItem fx:id="undoMenuItem" mnemonicParsing="false" label="Undo">
+                        <MenuItem fx:id="undoMenuItem" mnemonicParsing="false" text="Undo">
                             <accelerator>
                                 <KeyCodeCombination alt="UP" code="Z" control="UP" meta="UP" shift="UP"
                                                     shortcut="DOWN"/>
                             </accelerator>
                         </MenuItem>
-                        <MenuItem fx:id="redoMenuItem" mnemonicParsing="false" label="Redo">
+                        <MenuItem fx:id="redoMenuItem" mnemonicParsing="false" text="Redo">
                             <accelerator>
                                 <KeyCodeCombination alt="UP" code="Z" control="UP" meta="UP" shift="DOWN"
                                                     shortcut="DOWN"/>
@@ -70,9 +70,9 @@
                         </MenuItem>
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" label="Help">
+                <Menu mnemonicParsing="false" text="Help">
                     <items>
-                        <MenuItem fx:id="aboutMenuItem" mnemonicParsing="false" label="About"/>
+                        <MenuItem fx:id="aboutMenuItem" mnemonicParsing="false" text="About"/>
                     </items>
                 </Menu>
             </menus>

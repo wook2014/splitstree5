@@ -37,19 +37,19 @@
         <RowConstraints maxHeight="314.0" minHeight="36.0" prefHeight="36.0" vgrow="SOMETIMES"/>
     </rowConstraints>
     <children>
-        <Label label="Target Data:" GridPane.rowIndex="2"/>
-        <Label label="Algorithm:" GridPane.rowIndex="3"/>
+        <Label text="Target Data:" GridPane.rowIndex="2"/>
+        <Label text="Algorithm:" GridPane.rowIndex="3"/>
         <ChoiceBox fx:id="targetDataChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
         <ChoiceBox fx:id="algorithmChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
         <ButtonBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0" GridPane.columnIndex="1"
                    GridPane.rowIndex="4">
             <buttons>
-                <Button fx:id="applyButton" defaultButton="true" mnemonicParsing="false" label="Apply">
+                <Button fx:id="applyButton" defaultButton="true" mnemonicParsing="false" text="Apply">
                     <opaqueInsets>
                         <Insets/>
                     </opaqueInsets>
                 </Button>
-                <Button fx:id="cancelButton" cancelButton="true" mnemonicParsing="false" label="Cancel"/>
+                <Button fx:id="cancelButton" cancelButton="true" mnemonicParsing="false" text="Cancel"/>
             </buttons>
             <opaqueInsets>
                 <Insets/>
@@ -58,9 +58,9 @@
                 <Insets/>
             </GridPane.margin>
         </ButtonBar>
-        <Label label="Create New Node" GridPane.columnIndex="1"/>
-        <Label label="Source Data:" GridPane.rowIndex="1"/>
-        <Label fx:id="sourceDataLabel" label="Source" GridPane.columnIndex="1" GridPane.rowIndex="1">
+        <Label text="Create New Node" GridPane.columnIndex="1"/>
+        <Label text="Source Data:" GridPane.rowIndex="1"/>
+        <Label fx:id="sourceDataLabel" text="Source" GridPane.columnIndex="1" GridPane.rowIndex="1">
             <GridPane.margin>
                 <Insets/>
             </GridPane.margin>
