@@ -25,6 +25,7 @@ import splitstree5.core.algorithms.interfaces.IFromChararacters;
 import splitstree5.core.algorithms.interfaces.IToChararacters;
 import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.datablocks.characters.CharactersType;
+import splitstree5.io.nexus.stateLabeler.StateLabeler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,6 +53,9 @@ public class CharactersBlock extends ADataBlock {
     private boolean respectCase = false; // respectCase==true hasn't been implemented
 
     private CharactersType dataType = CharactersType.unknown;
+
+    private StateLabeler stateLabeler;
+    private Map<Integer, String> charLabeler;
 
     // todo: SplitsTree4 uses two tables ambigStates and replacedStates to store replaced ambig
 
@@ -109,6 +113,7 @@ public class CharactersBlock extends ADataBlock {
 
     /**
      * gets the number of taxa
+     *
      * @return taxa
      */
     public int getNtax() {
@@ -117,6 +122,7 @@ public class CharactersBlock extends ADataBlock {
 
     /**
      * gets the number of characters
+     *
      * @return characters
      */
     public int getNchar() {
@@ -127,7 +133,7 @@ public class CharactersBlock extends ADataBlock {
      * gets the value for i and j. If the letter is an ambiguity code, then returns the missing character.
      * In the case of an ambiguity code, use getAmbiguousNucleotides() to get all nucleotides associated with the code
      *
-     * @param t in range 1..nTax
+     * @param t   in range 1..nTax
      * @param pos in range 1..nchar
      * @return value
      */
@@ -161,7 +167,7 @@ public class CharactersBlock extends ADataBlock {
      * sets the value
      *
      * @param t     in range 1-nTax
-     * @param pos     in range 1-nChar
+     * @param pos   in range 1-nChar
      * @param value
      */
     public void set(int t, int pos, char value) {
@@ -175,9 +181,9 @@ public class CharactersBlock extends ADataBlock {
      * @param matrix
      */
     public void set(@NotNull char[][] matrix) {
-            setDimension(matrix.length, matrix[0].length);
-            for (int i = 0; i < matrix.length; i++) {
-                System.arraycopy(matrix[i], 0, this.matrix[i], 0, matrix.length);
+        setDimension(matrix.length, matrix[0].length);
+        for (int i = 0; i < matrix.length; i++) {
+            System.arraycopy(matrix[i], 0, this.matrix[i], 0, matrix.length);
         }
     }
 
@@ -339,6 +345,7 @@ public class CharactersBlock extends ADataBlock {
 
     /**
      * get the color for a given taxon and position
+     *
      * @param t
      * @param pos
      * @return color
@@ -402,15 +409,31 @@ public class CharactersBlock extends ADataBlock {
         this.respectCase = respectCase; // todo: respect case isn't implemented and is ignored
     }
 
+    public StateLabeler getStateLabeler() {
+        return stateLabeler;
+    }
+
+    public void setStateLabeler(StateLabeler stateLabeler) {
+        this.stateLabeler = stateLabeler;
+    }
+
+    public Map<Integer, String> getCharLabeler() {
+        return charLabeler;
+    }
+
+    public void setCharLabeler(Map<Integer, String> charLabeler) {
+        this.charLabeler = charLabeler;
+    }
+
     /**
      * make a shallow copy of a row
+     *
      * @param parent
      * @param parentIndex
      * @param targetIndex
      */
     public void copyRow(CharactersBlock parent, int parentIndex, int targetIndex) {
         matrix[targetIndex - 1] = parent.matrix[parentIndex - 1];
-
     }
 }
 

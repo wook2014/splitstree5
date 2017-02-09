@@ -26,8 +26,7 @@ package splitstree5.io.nexus;
 public class CharactersNexusFormat {
     private boolean transpose;
     private boolean interleave;
-    private boolean labels;
-    private boolean labelQuotes;
+    private boolean labels = true;
     private boolean tokens;
     private char matchChar = 0;
 
@@ -63,13 +62,6 @@ public class CharactersNexusFormat {
         this.labels = labels;
     }
 
-    public boolean isLabelQuotes() {
-        return labelQuotes;
-    }
-
-    public void setLabelQuotes(boolean labelQuotes) {
-        this.labelQuotes = labelQuotes;
-    }
 
     public boolean isTokens() {
         return tokens;

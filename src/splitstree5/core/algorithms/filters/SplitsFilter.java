@@ -60,7 +60,6 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
 
     /**
      * constructor
-     *
      */
     public SplitsFilter() {
         super("Splits Filter");
@@ -71,6 +70,7 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
         enabledSplits.clear();
         disabledSplits.clear();
     }
+
     /**
      * do the computation
      *
@@ -126,7 +126,7 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
                 break;
             }
         }
-        if (getOptionWeightThreshold()>0) {
+        if (getOptionWeightThreshold() > 0) {
             final int oldSize = splits.size();
             ArrayList<ASplit> tmp = new ArrayList<>(splits.size());
             for (ASplit split : splits) {
@@ -137,7 +137,7 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
             if (splits.size() != oldSize)
                 changed = true;
         }
-        if (getOptionConfidenceThreshold()>0) {
+        if (getOptionConfidenceThreshold() > 0) {
             final int oldSize = splits.size();
             ArrayList<ASplit> tmp = new ArrayList<>(splits.size());
             for (ASplit split : splits) {
@@ -148,7 +148,7 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
             if (splits.size() != oldSize)
                 changed = true;
         }
-        if (getOptionMaximumDimension()>0) {
+        if (getOptionMaximumDimension() > 0) {
             final int oldSize = splits.size();
             splits = DimensionFilter.apply(progress, optionMaximumDimension, splits);
             if (splits.size() != oldSize)

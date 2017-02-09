@@ -55,8 +55,7 @@ public class TreeFilter extends Algorithm<TreesBlock, TreesBlock> implements IFr
             progress.setMaximum(0);
             child.getTrees().setAll(parent.getTrees());
             progress.incrementProgress();
-        }
-        else {
+        } else {
             progress.setMaximum(enabledTrees.size());
             final Map<String, PhyloTree> name2tree = new HashMap<>();
             for (PhyloTree tree : parent.getTrees()) {

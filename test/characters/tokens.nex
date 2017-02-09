@@ -1,8 +1,8 @@
 BEGIN CHARACTERS;
-DIMENSIONS NCHAR=3;
+DIMENSIONS ntax=3 NCHAR=3;
+FORMAT TOKENS labels=yes;
 CHARSTATELABELS 1 hair/absent present, 2 color/red blue,
 3 size/small big;
-FORMAT TOKENS;
 MATRIX
 taxon_1 absent red big
 taxon_2 absent blue small

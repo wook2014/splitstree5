@@ -25,8 +25,10 @@ package splitstree5.core.datablocks.characters;
  */
 public class AmbiguityCodes {
     public static String CODES = "wrkysmbhdvn";
+
     /**
      * gets all nucleotides associated with a given code
+     *
      * @param code
      * @return all (lowercase) letters associated with the given code, or the nucleotide it self, if not a code
      */

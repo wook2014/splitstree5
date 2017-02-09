@@ -60,7 +60,6 @@ public class TreeFilterPane extends AlgorithmPane {
 
     /**
      * constructor
-     *
      */
     public TreeFilterPane(TreeFilter treeFilter) throws IOException {
         this.treeFilter = treeFilter;

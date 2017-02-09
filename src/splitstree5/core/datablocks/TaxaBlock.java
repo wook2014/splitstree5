@@ -67,6 +67,7 @@ public class TaxaBlock extends ADataBlock {
         this();
         setName(name);
     }
+
     @Override
     public void clear() {
         taxa.clear();
@@ -77,6 +78,7 @@ public class TaxaBlock extends ADataBlock {
 
     /**
      * get size
+     *
      * @return number of taxa
      */
     @Override
@@ -86,6 +88,7 @@ public class TaxaBlock extends ADataBlock {
 
     /**
      * get number of taxa
+     *
      * @return number of taxa
      */
     public int getNtax() {
@@ -98,17 +101,19 @@ public class TaxaBlock extends ADataBlock {
 
     /**
      * get taxon
+     *
      * @param t range 1 to nTax
      * @return taxon
      */
     public Taxon get(int t) {
         if (t == 0)
             throw new IndexOutOfBoundsException("0");
-        return taxa.get(t-1);
+        return taxa.get(t - 1);
     }
 
     /**
      * get taxon label
+     *
      * @param t range 1 to nTax
      * @return taxon
      */
@@ -120,18 +125,20 @@ public class TaxaBlock extends ADataBlock {
 
     /**
      * get index of taxon
+     *
      * @param taxon
      * @return number between 1 and ntax, or -1 if not found
      */
     public int indexOf(Taxon taxon) {
         if (taxon2index.containsKey(taxon))
-            return taxon2index.get(taxon)+1;
+            return taxon2index.get(taxon) + 1;
         else
             return -1;
     }
 
     /**
      * get index of taxon by label
+     *
      * @param label
      * @return number between 1 and ntax, or -1 if not found
      */
@@ -145,6 +152,7 @@ public class TaxaBlock extends ADataBlock {
 
     /**
      * get list of all taxa
+     *
      * @return taxa
      */
     public ObservableList<Taxon> getTaxa() {
@@ -216,6 +224,7 @@ public class TaxaBlock extends ADataBlock {
 
     /**
      * get the current set of taxa as a bit set
+     *
      * @return
      */
     public BitSet getTaxaSet() {

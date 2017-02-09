@@ -41,7 +41,7 @@ public class WagModel extends ProteinModel {
 		 */
 
 		/* For efficiency, we precompute the eigenvalue decomposition 
-		 *     V'DV = Pi^(1/2) Q Pi(-1/2)
+         *     V'DV = Pi^(1/2) Q Pi(-1/2)
 		 * We used matlab for this.
 		 */
 

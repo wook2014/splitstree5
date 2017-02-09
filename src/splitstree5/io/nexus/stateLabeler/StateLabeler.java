@@ -28,6 +28,7 @@ import java.util.List;
  * Created by Daria on 30.10.2016.
  */
 public abstract class StateLabeler {
+
     /**
      * Takes a token and site. If the token has appeared at that site, returns corresponding char.
      * Otherwise, adds token to the map and returns a newly assigned char.
