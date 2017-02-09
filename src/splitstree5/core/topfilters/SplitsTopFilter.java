@@ -25,6 +25,7 @@ import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ASplit;
+import splitstree5.core.misc.Compatibility;
 
 import java.util.BitSet;
 import java.util.Map;
@@ -40,24 +41,31 @@ public class SplitsTopFilter extends ATopFilter<SplitsBlock> {
      *
      * @param originalTaxaNode
      * @param modifiedTaxaNode
-     * @param parent
-     * @param child
+     * @param parentNode
+     * @param childNode
      */
-    public SplitsTopFilter(ADataNode<TaxaBlock> originalTaxaNode, ADataNode<TaxaBlock> modifiedTaxaNode, ADataNode<SplitsBlock> parent, ADataNode<SplitsBlock> child) {
-        super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parent, child);
+    public SplitsTopFilter(ADataNode<TaxaBlock> originalTaxaNode, ADataNode<TaxaBlock> modifiedTaxaNode, ADataNode<SplitsBlock> parentNode, ADataNode<SplitsBlock> childNode) {
+        super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parentNode, childNode);
 
         setAlgorithm(new Algorithm<SplitsBlock, SplitsBlock>("TopFilter") {
-            public void compute(ProgressListener progressListener, TaxaBlock modifiedTaxaBlock, SplitsBlock original, SplitsBlock modified) {
+            public void compute(ProgressListener progressListener, TaxaBlock modifiedTaxaBlock, SplitsBlock parent, SplitsBlock child) {
                 if (originalTaxaNode.getDataBlock().getTaxa().equals(modifiedTaxaBlock.getTaxa())) {
-                    modified.copy(original);
+                    child.copy(parent);
+                    child.setCycle(parent.getCycle());
+                    child.setCompatibility(parent.getCompatibility());
                 } else {
                     final Map<Integer, Integer> originalIndex2ModifiedIndex = getOriginalTaxaBlock().computeIndexMap(modifiedTaxaBlock);
-                    for (ASplit split : original.getSplits()) {
+                    for (ASplit split : parent.getSplits()) {
                         ASplit induced = computeInducedSplit(split, originalIndex2ModifiedIndex, modifiedTaxaBlock.getNtax());
                         if (induced != null)
-                            modified.getSplits().add(induced);
+                            child.getSplits().add(induced);
                     }
+                    child.setCycle(computeInducedCycle(parent.getCycle(), originalIndex2ModifiedIndex, modifiedTaxaBlock.getNtax()));
+                    child.setCompatibility(Compatibility.compute(modifiedTaxaBlock.getNtax(), child.getSplits(), child.getCycle()));
                 }
+                child.setFit(parent.getFit());
+                child.setThreshold(parent.getThreshold());
+                child.setPartial(parent.isPartial());
             }
         });
     }
@@ -82,5 +90,17 @@ public class SplitsTopFilter extends ATopFilter<SplitsBlock> {
             return new ASplit(inducedA, inducedNtax, originalSplit.getWeight());
         } else
             return null;
+    }
+
+    private static int[] computeInducedCycle(int[] originalCycle, Map<Integer, Integer> originalIndex2ModifiedIndex, int inducedNtax) {
+        final int[] cycle = new int[inducedNtax];
+
+        int i = 0;
+        for (int originalI : originalCycle) {
+            if (originalIndex2ModifiedIndex.containsKey(originalI)) {
+                cycle[i++] = originalIndex2ModifiedIndex.get(originalI);
+            }
+        }
+        return cycle;
     }
 }

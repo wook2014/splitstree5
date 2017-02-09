@@ -44,10 +44,11 @@ public class ExtendedFXMLLoader<C> {
      */
     public ExtendedFXMLLoader(Class clazz) throws IOException {
         fxmlLoader = new FXMLLoader();
-        final String path = clazz.getCanonicalName().replaceAll("\\.", File.separator) + ".fxml";
+        String path = clazz.getCanonicalName().replaceAll("\\.", File.separator) + ".fxml";
         final URL url = clazz.getClassLoader().getResource(path);
         if (url == null)
             throw new IOException("Failed to load resource: " + path);
+
         root = fxmlLoader.load(url.openStream());
         controller = fxmlLoader.getController();
     }

@@ -67,19 +67,22 @@ public class DagNodeView extends Group {
         aNode.stateProperty().addListener((observable, oldValue, newValue) -> {
             switch (newValue) {
                 case VALID:
-                    rectangle.setFill(Color.LIGHTGREEN);
+                    rectangle.setFill(Color.WHITE);
                     break;
                 case COMPUTING:
-                    rectangle.setFill(Color.LIGHTYELLOW);
+                    rectangle.setFill(Color.LIGHTYELLOW.darker());
                     break;
                 case FAILED:
                     rectangle.setFill(Color.PINK);
+                    break;
+                case INVALID:
+                    rectangle.setFill(Color.LIGHTYELLOW.brighter());
                     break;
                 default:
                     rectangle.setFill(Color.LIGHTGRAY);
             }
         });
-        rectangle.setFill(Color.WHITE);
+        rectangle.setFill(Color.LIGHTGRAY);
         rectangle.setStroke(Color.DARKGRAY);
         getChildren().add(rectangle);
 
@@ -122,8 +125,6 @@ public class DagNodeView extends Group {
                 progressBar.visibleProperty().bind(((AConnector) aNode).getService().runningProperty());
                 progressBar.progressProperty().bind(((AConnector) aNode).getService().progressProperty());
                 getChildren().add(progressBar);
-
-
             }
         } else if (aNode instanceof ADataNode) {
             {

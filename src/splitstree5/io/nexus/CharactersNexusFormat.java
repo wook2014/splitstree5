@@ -31,11 +31,12 @@ public class CharactersNexusFormat {
     private boolean tokens;
     private char matchChar = 0;
 
+    private boolean ignoreMatrix = false;
+
     /**
      * the Constructor
      */
     public CharactersNexusFormat() {
-
     }
 
     public boolean isTranspose() {
@@ -84,5 +85,18 @@ public class CharactersNexusFormat {
 
     public void setMatchChar(char matchChar) {
         this.matchChar = matchChar;
+    }
+
+    /**
+     * if set, will not read or write matrix
+     *
+     * @return true, if matrix ignored
+     */
+    public boolean isIgnoreMatrix() {
+        return ignoreMatrix;
+    }
+
+    public void setIgnoreMatrix(boolean ignoreMatrix) {
+        this.ignoreMatrix = ignoreMatrix;
     }
 }

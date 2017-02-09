@@ -49,19 +49,23 @@ public class TreeFilter extends Algorithm<TreesBlock, TreesBlock> implements IFr
     private final ArrayList<String> disabledTrees = new ArrayList<>();
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock ignored, TreesBlock originalTrees, TreesBlock modifiedTrees) throws InterruptedException, CanceledException {
-        modifiedTrees.getTrees().clear();
-
+    public void compute(ProgressListener progress, TaxaBlock ignored, TreesBlock parent, TreesBlock child) throws InterruptedException, CanceledException {
         if (enabledTrees.size() == 0 && disabledTrees.size() == 0) // nothing has been explicitly set, copy everything
-            modifiedTrees.getTrees().setAll(originalTrees.getTrees());
+        {
+            progress.setMaximum(0);
+            child.getTrees().setAll(parent.getTrees());
+            progress.incrementProgress();
+        }
         else {
+            progress.setMaximum(enabledTrees.size());
             final Map<String, PhyloTree> name2tree = new HashMap<>();
-            for (PhyloTree tree : originalTrees.getTrees()) {
+            for (PhyloTree tree : parent.getTrees()) {
                 name2tree.put(tree.getName(), tree);
             }
             for (String name : enabledTrees) {
                 if (!disabledTrees.contains(name)) {
-                    modifiedTrees.getTrees().add(name2tree.get(name));
+                    child.getTrees().add(name2tree.get(name));
+                    progress.incrementProgress();
                 }
             }
         }

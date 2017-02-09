@@ -50,17 +50,19 @@ public class TreesTopFilter extends ATopFilter<TreesBlock> {
         super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parentBlock, childBlock);
 
         setAlgorithm(new Algorithm<TreesBlock, TreesBlock>("TopFilter") {
-            public void compute(ProgressListener progressListener, TaxaBlock modifiedTaxaBlock, TreesBlock original, TreesBlock modified) {
+            public void compute(ProgressListener progressListener, TaxaBlock modifiedTaxaBlock, TreesBlock parent, TreesBlock child) {
                 if (originalTaxaNode.getDataBlock().getTaxa().equals(modifiedTaxaBlock.getTaxa())) {
-                    modified.copy(original);
+                    child.copy(parent);
                 } else {
-                    for (PhyloTree tree : original.getTrees()) {
+                    for (PhyloTree tree : parent.getTrees()) {
                         PhyloTree induced = computeInducedTree(tree, modifiedTaxaBlock.getLabels());
                         if (induced != null) {
-                            modified.getTrees().add(induced);
+                            child.getTrees().add(induced);
                         }
                     }
                 }
+                child.setPartial(parent.isPartial());
+                child.setRooted(parent.isRooted());
             }
         });
     }
@@ -118,9 +120,9 @@ public class TreesTopFilter extends ATopFilter<TreesBlock> {
                 diVertices.add(v);
         }
         for (Node v : diVertices) {
-            inducedTree.delDivertex(v);
             if (inducedTree.getRoot() == v)
                 inducedTree.setRoot(null);
+            inducedTree.delDivertex(v);
         }
 
         Node root = inducedTree.getRoot();

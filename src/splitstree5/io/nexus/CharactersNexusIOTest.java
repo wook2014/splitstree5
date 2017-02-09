@@ -34,7 +34,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * test cases for CharacterBlock io
@@ -88,7 +87,7 @@ public class CharactersNexusIOTest {
             taxaBlock.addTaxaByNames(taxonNames);
 
             for (int test = 0; test < 4; test++) {
-                System.err.println("test: " + test);
+                System.err.println("test: " + test + " input file: " + inputFile);
                 switch (test) {
                     // first: original interleave and transpose
                     // transpose must be set false before setting interleave true

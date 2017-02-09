@@ -102,13 +102,20 @@ public class CharactersNexusIO {
             int ntax = np.getInt(1, Integer.MAX_VALUE);
             np.matchIgnoreCase("nchar=");
             int nchar = np.getInt(1, Integer.MAX_VALUE);
-            characters.setDimension(ntax, nchar);
+            if (format.isIgnoreMatrix())
+                characters.setDimension(ntax, 0);
+            else
+                characters.setDimension(ntax, nchar);
             np.matchIgnoreCase(";");
         } else {
             np.matchIgnoreCase("dimensions ntax=" + taxa.getNtax());
             np.matchIgnoreCase("nchar=");
             int nchar = np.getInt(1, Integer.MAX_VALUE);
-            characters.setDimension(taxa.getNtax(), nchar);
+            if (format.isIgnoreMatrix())
+                if (format.isIgnoreMatrix())
+                    characters.setDimension(taxa.getNtax(), 0);
+                else
+                    characters.setDimension(taxa.getNtax(), nchar);
             np.matchIgnoreCase(";");
         }
 
@@ -235,15 +242,18 @@ public class CharactersNexusIO {
         final TreeSet<Character> unknownStates = new TreeSet<>();
         {
             np.matchIgnoreCase("MATRIX");
-            if (!format.isTranspose() && !format.isInterleave()) {
-                taxonNamesFound = readMatrix(np, taxa, characters, format, stateLabeler, unknownStates);
-            } else if (format.isTranspose() && !format.isInterleave()) {
-                taxonNamesFound = readMatrixTransposed(np, taxa, characters, format, stateLabeler, unknownStates);
-            } else if (!format.isTranspose() && format.isInterleave()) {
-                taxonNamesFound = readMatrixInterleaved(np, taxa, characters, format, stateLabeler, unknownStates);
+            if (!format.isIgnoreMatrix()) {
+                if (!format.isTranspose() && !format.isInterleave()) {
+                    taxonNamesFound = readMatrix(np, taxa, characters, format, stateLabeler, unknownStates);
+                } else if (format.isTranspose() && !format.isInterleave()) {
+                    taxonNamesFound = readMatrixTransposed(np, taxa, characters, format, stateLabeler, unknownStates);
+                } else if (!format.isTranspose() && format.isInterleave()) {
+                    taxonNamesFound = readMatrixInterleaved(np, taxa, characters, format, stateLabeler, unknownStates);
+                } else
+                    throw new IOException("line " + np.lineno() + ": can't read matrix!");
+                np.matchIgnoreCase(";");
             } else
-                throw new IOException("line " + np.lineno() + ": can't read matrix!");
-            np.matchIgnoreCase(";");
+                taxonNamesFound = new ArrayList<>();
         }
         np.matchEndBlock();
 
@@ -654,13 +664,16 @@ public class CharactersNexusIO {
         }
 
         w.write("MATRIX\n");
+        if (!format.isIgnoreMatrix()) {
             if (format.isTranspose() && !format.isInterleave())
                 writeMatrixTranposed(w, taxa, characters, format, null);// todo: setup and pass a state labeler
             else if (!format.isTranspose() && format.isInterleave())
                 writeMatrixInterleaved(w, taxa, characters, format, null);// todo: setup and pass a state labeler
             else
                 writeMatrix(w, taxa, characters, format, null); // todo: setup and pass a state labeler
-        w.write(";\nEND; [" + NAME + "]\n");
+            w.write(";\n");
+        }
+        w.write("END; [" + NAME + "]\n");
     }
 
     private static void writeMatrix(Writer w, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format, StateLabeler stateLabeler) throws IOException {

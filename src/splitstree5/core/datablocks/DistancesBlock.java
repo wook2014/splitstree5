@@ -35,7 +35,7 @@ public class DistancesBlock extends ADataBlock {
      * constructor
      */
     public DistancesBlock() {
-        distances = new double[1][1];
+        distances = new double[0][0];
     }
 
     /**
@@ -60,19 +60,19 @@ public class DistancesBlock extends ADataBlock {
 
     @Override
     public void clear() {
-        distances = new double[1][1];
+        distances = new double[0][0];
         variances = null;
         setShortDescription("");
     }
 
     public void setNtax(int n) {
-        distances = new double[n + 1][n+1];
+        distances = new double[n][n];
 
     }
 
     @Override
     public int size() {
-        return distances == null ? 0 : distances.length-1;
+        return distances.length;
     }
 
     /**
@@ -83,9 +83,7 @@ public class DistancesBlock extends ADataBlock {
      * @return value
      */
     public double get(int i, int j) {
-        if (i == 0 || j == 0)
-            throw new IndexOutOfBoundsException("0");
-        return distances[i][j];
+        return distances[i - 1][j - 1];
     }
 
     /**
@@ -96,9 +94,7 @@ public class DistancesBlock extends ADataBlock {
      * @param value
      */
     public void set(int i, int j, double value) {
-        if (i == 0 || j == 0)
-            throw new IndexOutOfBoundsException("0");
-        distances[i][j] = value;
+        distances[i - 1][j - 1] = value;
     }
 
     public int getNtax() {
@@ -113,9 +109,7 @@ public class DistancesBlock extends ADataBlock {
      * @param value
      */
     public void setBoth(int i, int j, double value) {
-        if (i == 0 || j == 0)
-            throw new IndexOutOfBoundsException("0");
-        distances[i][j] = distances[j][i] = value;
+        distances[i - 1][j - 1] = distances[j - 1][i - 1] = value;
     }
 
     /**
@@ -126,10 +120,8 @@ public class DistancesBlock extends ADataBlock {
      * @return variances or -1, if not set
      */
     public double getVariance(int i, int j) {
-        if (i == 0 || j == 0)
-            throw new IndexOutOfBoundsException("0");
         if (variances != null)
-            return variances[i][j];
+            return variances[i - 1][j - 1];
         else
             return -1;
     }
@@ -142,11 +134,9 @@ public class DistancesBlock extends ADataBlock {
      * @param value
      */
     public void setVariance(int i, int j, double value) {
-        if (i == 0 || j == 0)
-            throw new IndexOutOfBoundsException("0");
         synchronized (this) {
             if (variances == null) {
-                variances = new double[distances.length + 1][distances.length+1];
+                variances = new double[distances.length][distances.length];
             }
         }
         variances[i][j] = value;

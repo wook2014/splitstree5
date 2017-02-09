@@ -29,7 +29,7 @@
     <children>
         <VBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
             <children>
-                <Label prefHeight="20.0" text="Active"/>
+                <Label prefHeight="20.0" label="Active"/>
                 <ListView fx:id="activeList" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
                           minHeight="100.0" prefWidth="200.0">
                     <VBox.margin>
@@ -44,19 +44,19 @@
         <VBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" prefWidth="150.0"
               HBox.hgrow="ALWAYS">
             <children>
-                <Button fx:id="inactivateSelectedButton" mnemonicParsing="false" text="&gt;"/>
+                <Button fx:id="inactivateSelectedButton" mnemonicParsing="false" label="&gt;"/>
                 <Pane layoutX="10.0" layoutY="192.0" minWidth="50.0" prefHeight="20.0" prefWidth="50.0"/>
-                <Button fx:id="inactivateAllButton" mnemonicParsing="false" text="&gt;&gt;"/>
+                <Button fx:id="inactivateAllButton" mnemonicParsing="false" label="&gt;&gt;"/>
                 <Pane prefHeight="50.0" prefWidth="100.0"/>
-                <Button fx:id="activateSelectedButton" mnemonicParsing="false" text="&lt;"/>
+                <Button fx:id="activateSelectedButton" mnemonicParsing="false" label="&lt;"/>
                 <Pane layoutX="10.0" layoutY="271.0" prefHeight="20.0" prefWidth="100.0"/>
                 <Button fx:id="activateAllButton" layoutX="38.0" layoutY="229.0" mnemonicParsing="false"
-                        text="&lt;&lt;"/>
+                        label="&lt;&lt;"/>
             </children>
         </VBox>
         <VBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
             <children>
-                <Label prefHeight="20.0" text="Inactive"/>
+                <Label prefHeight="20.0" label="Inactive"/>
                 <ListView fx:id="inactiveList" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
                           minHeight="100.0" prefWidth="200.0">
                     <VBox.margin>

@@ -120,7 +120,7 @@ public class CharactersBlock extends ADataBlock {
      * @return characters
      */
     public int getNchar() {
-        return matrix[0].length-1;
+        return matrix.length <= 1 ? 0 : matrix[1].length - 1;
     }
 
     /**
@@ -173,6 +173,12 @@ public class CharactersBlock extends ADataBlock {
         if (t == 0)
             throw new IndexOutOfBoundsException("0");
         return matrix[t];
+    }
+
+    public void setRow(int t, char[] row) {
+        if (t == 0)
+            throw new IndexOutOfBoundsException("0");
+        matrix[t] = row;
     }
 
     /**
@@ -430,6 +436,16 @@ public class CharactersBlock extends ADataBlock {
 
     public void setRespectCase(boolean respectCase) {
         this.respectCase = respectCase; // todo: respect case isn't implemented and is ignored
+    }
+
+    /**
+     * shallow copies the given matrix
+     *
+     * @param source
+     */
+    public void copyMatrix(CharactersBlock source) {
+        matrix = new char[source.getNtax() + 1][];
+        System.arraycopy(source.matrix, 0, matrix, 0, source.matrix.length);
     }
 }
 

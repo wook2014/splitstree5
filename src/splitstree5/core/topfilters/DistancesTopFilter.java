@@ -64,6 +64,5 @@ public class DistancesTopFilter extends ATopFilter<DistancesBlock> {
                 }
             }
         });
-
     }
 }

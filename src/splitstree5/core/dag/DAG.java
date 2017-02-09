@@ -29,10 +29,7 @@ import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.ReportNode;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.*;
-import splitstree5.core.topfilters.ATopFilter;
-import splitstree5.core.topfilters.DistancesTopFilter;
-import splitstree5.core.topfilters.SplitsTopFilter;
-import splitstree5.core.topfilters.TreesTopFilter;
+import splitstree5.core.topfilters.*;
 
 import java.util.ArrayList;
 
@@ -87,7 +84,9 @@ public class DAG {
         getTopDataNode().getDataBlock().setName("Orig" + getTopDataNode().getDataBlock().getName());
         setWorkingDataNode(createDataNode(topDataBlock.newInstance()));
 
-        if (topDataBlock instanceof DistancesBlock) {
+        if (topDataBlock instanceof CharactersBlock) {
+            topFilter = new CharactersTopFilter(getTopTaxaNode(), getWorkingTaxaNode(), getTopDataNode(), getWorkingDataNode());
+        } else if (topDataBlock instanceof DistancesBlock) {
             topFilter = new DistancesTopFilter(getTopTaxaNode(), getWorkingTaxaNode(), getTopDataNode(), getWorkingDataNode());
         } else if (topDataBlock instanceof SplitsBlock) {
             topFilter = new SplitsTopFilter(getTopTaxaNode(), getWorkingTaxaNode(), getTopDataNode(), getWorkingDataNode());

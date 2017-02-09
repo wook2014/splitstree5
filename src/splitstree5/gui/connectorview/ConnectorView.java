@@ -89,7 +89,7 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
                 }
             }
         }
-        if (algorithms.size() == 0 && connector.getAlgorithm() != null) {
+        if (algorithms.size() <= 1 && connector.getAlgorithm() != null) {
             algorithms.add(connector.getAlgorithm());
             algorithmChoiceBox.setDisable(true);
         }
