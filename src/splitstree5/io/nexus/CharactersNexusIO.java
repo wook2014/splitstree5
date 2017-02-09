@@ -505,7 +505,7 @@ public class CharactersNexusIO {
                             if (t == 1) {
                                 throw new IOException("line " + np.lineno() + ": matchchar illegal in first sequence");
                             } else
-                                characters.set(t, i, characters.get(1, t));
+                                characters.set(t, i, characters.get(1, i));
                         } else {
                             if (!checkStates || isValidState(characters, format, ch))
                                 characters.set(t, i, ch);

@@ -52,7 +52,6 @@ public class CharactersNexusIOTest {
         inputFiles.add("test//nexus//characters-simple.nex");
         //inputFiles.add("test//characters//tokens.nex");
 
-        if (false) {
             inputFiles.add("test//characters//algae_rna_interleave.nex");
             inputFiles.add("test//characters//bees_dna_interleave.nex");
             inputFiles.add("test//characters//dolphins_binary.nex");
@@ -77,7 +76,6 @@ public class CharactersNexusIOTest {
             //new
             inputFiles.add("test//characters//pf02171.nexus");
             inputFiles.add("test//characters//pf01569.nexus");
-        }
 
         for(String inputFile:inputFiles){
 
@@ -138,5 +136,4 @@ public class CharactersNexusIOTest {
             }
         }
     }
-
 }
