@@ -24,6 +24,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.ListView;
+import jloda.fx.ExtendedFXMLLoader;
 import jloda.phylo.PhyloTree;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.filters.TreeFilter;
@@ -34,7 +35,6 @@ import splitstree5.gui.connectorview.AlgorithmPane;
 import splitstree5.undo.UndoManager;
 import splitstree5.undo.UndoableChangeListViews2;
 import splitstree5.utils.DragAndDropSupportListView2;
-import splitstree5.utils.ExtendedFXMLLoader;
 
 import java.io.IOException;
 import java.util.ArrayList;

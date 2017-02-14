@@ -27,12 +27,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import jloda.fx.ExtendedFXMLLoader;
 import splitstree5.core.Document;
 import splitstree5.core.dag.ANode;
 import splitstree5.core.dag.DAG;
 import splitstree5.gui.connectorview.ConnectorView;
 import splitstree5.undo.UndoManager;
-import splitstree5.utils.ExtendedFXMLLoader;
 import splitstree5.utils.Option;
 
 import java.io.IOException;

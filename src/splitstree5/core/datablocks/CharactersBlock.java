@@ -126,7 +126,7 @@ public class CharactersBlock extends ADataBlock {
      * @return characters
      */
     public int getNchar() {
-        return matrix[0].length;
+        return matrix.length == 0 ? 0 : matrix[0].length;
     }
 
     /**

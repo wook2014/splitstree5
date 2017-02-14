@@ -25,8 +25,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import jloda.fx.ExtendedFXMLLoader;
 import splitstree5.gui.connectorview.ConnectorView;
-import splitstree5.utils.ExtendedFXMLLoader;
 
 import java.io.IOException;
 

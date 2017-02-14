@@ -47,8 +47,8 @@ public class DAGViewTest extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         final Document document = new Document();
-        document.setFileName("test/nexus/trees49-notaxa.nex");
-        //document.setFileName("test/nexus/characters-simple.nex");
+        //document.setFileName("test/nexus/trees49-notaxa.nex");
+        document.setFileName("test/nexus/characters-simple.nex");
         NexusFileParser.parse(document);
 
         DAG dag = document.getDag();

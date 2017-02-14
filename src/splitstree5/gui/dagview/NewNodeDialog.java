@@ -23,13 +23,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import jloda.fx.ExtendedFXMLLoader;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.dag.DAG;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.undo.UndoableChange;
-import splitstree5.utils.ExtendedFXMLLoader;
 
 import java.io.IOException;
 
