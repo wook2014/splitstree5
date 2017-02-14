@@ -12,7 +12,6 @@ public class ConsensusTree extends Algorithm<TreesBlock, SplitsBlock> implements
 
     @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock parent, SplitsBlock child) throws Exception {
-        progressListener.setDebug(true);
         progressListener.setTasks("Consensus tree", "Init.");
         //progressListener.setMaximum(?);
 

@@ -28,7 +28,6 @@ public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> implements 
 
     @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock trees, SplitsBlock splits) throws Exception {
-        progressListener.setDebug(true);
         progressListener.setTasks("Tree selector", "Init.");
 
         if (optionWhich < 1)

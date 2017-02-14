@@ -17,9 +17,7 @@ import java.util.HashMap;
 public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFromDistances, IToTrees {
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees)
-            throws InterruptedException, CanceledException {
-        progressListener.setDebug(true);
+    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees) throws InterruptedException, CanceledException {
         progressListener.setTasks("BioNJ", "Creating nodes...");
         progressListener.setMaximum(distances.getNtax());
 
