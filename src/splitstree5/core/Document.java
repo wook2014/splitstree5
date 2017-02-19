@@ -23,10 +23,10 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ListChangeListener;
+import jloda.fx.ASelectionModel;
 import jloda.util.Basic;
 import splitstree5.core.dag.DAG;
 import splitstree5.core.misc.Taxon;
-import splitstree5.utils.ASelectionModel;
 
 import java.util.List;
 
