@@ -7,9 +7,6 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.models.K2Pmodel;
 
-/**
- * Created by Daria on 21.02.2017.
- */
 public class K2P extends DNAdistance{
 
     private double tratio = 2.0;
