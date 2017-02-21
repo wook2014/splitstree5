@@ -37,7 +37,7 @@ public class F84 extends DNAdistance {
         B = piC * piT + piA * piG;
         C = piR * piY;
 
-        distancesBlock.set(fillDistanceMatrix(progressListener, charactersBlock, model).getDistances());
+        distancesBlock.copy(fillDistanceMatrix(progressListener, charactersBlock, model));
     }
 
     @Override

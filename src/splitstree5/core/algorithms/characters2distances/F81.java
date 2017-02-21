@@ -1,10 +1,7 @@
 package splitstree5.core.algorithms.characters2distances;
 
 import jloda.util.ProgressListener;
-import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
-import splitstree5.core.algorithms.interfaces.IFromChararacters;
-import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -34,8 +31,7 @@ public class F81 extends DNAdistance {
 
         B = 1.0 - ((piA * piA) + (piC * piC) + (piG * piG) + (piT * piT));
 
-        distancesBlock.set(fillDistanceMatrix(progressListener, charactersBlock, model).getDistances());
-        // todo rewrite this to update the variance
+        distancesBlock.copy(fillDistanceMatrix(progressListener, charactersBlock, model));
     }
 
     /**
