@@ -19,13 +19,7 @@ public class F81 extends DNAdistance {
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 
-       /* if (doc != null) {
-            doc.notifySubtask("F81 Distance");
-            doc.notifySetProgress(0);
-        }*/
-
         progressListener.setTasks("F81 Distance", "computing...");
-
         F81model model = new F81model(this.getNormedBaseFreq());
         model.setPinv(getOptionPInvar());
         model.setGamma(getOptionGamma());
