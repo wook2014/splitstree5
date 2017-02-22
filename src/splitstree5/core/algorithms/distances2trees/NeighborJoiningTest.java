@@ -40,30 +40,75 @@ public class NeighborJoiningTest {
     @Test
     public void testCompute() throws Exception {
 
-        String output = "(a:1.0,b:4.0,(c:2.0,(f:5.0,(d:3.0,e:2.0):1.0):1.0):1.0)";
+        // TEST 1
+        final String output1 = "(a:1.0,b:4.0,(c:2.0,(f:5.0,(d:3.0,e:2.0):1.0):1.0):1.0)";
 
-        String[] names = {"a", "b", "c", "d", "e", "f"};
-        Taxon[] taxons = new Taxon[6];
-        TaxaBlock taxaBlock = new TaxaBlock();
-        for (int i = 0; i < names.length; i++) {
-            taxons[i] = new Taxon();
-            taxons[i].setName(names[i]);
-            taxaBlock.getTaxa().add(taxons[i]);
+        String[] names1 = {"a", "b", "c", "d", "e", "f"};
+        Taxon[] taxons1 = new Taxon[6];
+        TaxaBlock taxaBlock1 = new TaxaBlock();
+        for (int i = 0; i < names1.length; i++) {
+            taxons1[i] = new Taxon();
+            taxons1[i].setName(names1[i]);
+            taxaBlock1.getTaxa().add(taxons1[i]);
         }
-        DistancesBlock distancesBlock = new DistancesBlock();
-        double[][] dist = {{0, 5, 4, 7, 6, 8},
+        DistancesBlock distancesBlock1 = new DistancesBlock();
+        double[][] dist1 = {{0, 5, 4, 7, 6, 8},
                 {5, 0, 7, 10, 9, 11},
                 {4, 7, 0, 7, 6, 8},
                 {7, 10, 7, 0, 5, 9},
                 {6, 9, 6, 5, 0, 8},
                 {8, 11, 8, 9, 8, 0}};
-        distancesBlock.set(dist);
+        distancesBlock1.set(dist1);
 
-        ProgressListener pl = new ProgressPercentage();
-        TreesBlock treesBlock = new TreesBlock();
+        // TEST 2
+        final String output2 = "(Tobacco:0.008836136,Rice:0.017279206,(Marchantia:0.010631585," +
+                "((Chlamydomonas:0.06331665,((Euglena:0.0679614,Olithodiscus:0.06720343)" +
+                ":0.008690414,Anacystis_nidulans:0.07131875):0.008862138):0.0036498776,Chlorella:0.031623945)" +
+                ":0.024320895):0.011652797);";
 
-        nj.compute(pl, taxaBlock, distancesBlock, treesBlock);
-        System.out.println("output: " + treesBlock.getTrees().get(0).toString());
-        assertEquals(output, treesBlock.getTrees().get(0).toString());
+        String[] names2 = {"Tobacco",
+                "Rice",
+                "Marchantia",
+                "Chlamydomonas",
+                "Chlorella",
+                "Euglena",
+                "Anacystis_nidulans",
+                "Olithodiscus"};
+        Taxon[] taxons2 = new Taxon[8];
+        TaxaBlock taxaBlock2 = new TaxaBlock();
+        for (int i = 0; i < names2.length; i++) {
+            taxons2[i] = new Taxon();
+            taxons2[i].setName(names2[i]);
+            taxaBlock2.getTaxa().add(taxons2[i]);
+        }
+        DistancesBlock distancesBlock2 = new DistancesBlock();
+        double[][] dist2 = {
+                {0.0, 0.026115343, 0.02937976, 0.112445414, 0.07836644, 0.13626374, 0.12295974, 0.14052288},
+                {0.026115343, 0.0, 0.041304346, 0.12104689, 0.088202864, 0.14379802, 0.13152175, 0.14472252},
+                {0.02937976, 0.041304346, 0.0, 0.099236645, 0.06394708, 0.12294182, 0.12065218, 0.132753},
+                {0.112445414, 0.12104689, 0.099236645, 0.0, 0.09955752, 0.14207049, 0.14285715, 0.15611354},
+                {0.07836644, 0.088202864, 0.06394708, 0.09955752, 0.0, 0.1160221, 0.11797133, 0.11589404},
+                {0.13626374, 0.14379802, 0.12294182, 0.14207049, 0.1160221, 0.0, 0.15916575, 0.13516484},
+                {0.12295974, 0.13152175, 0.12065218, 0.14285715, 0.11797133, 0.15916575, 0.0, 0.13601741},
+                {0.14052288, 0.14472252, 0.132753, 0.15611354, 0.11589404, 0.13516484, 0.13601741, 0.0}};
+        distancesBlock2.set(dist2);
+
+
+        // apply algorithm
+
+        ProgressListener pl1 = new ProgressPercentage();
+        TreesBlock treesBlock1 = new TreesBlock();
+        ProgressListener pl2 = new ProgressPercentage();
+        TreesBlock treesBlock2 = new TreesBlock();
+
+        System.out.println("Test 1");
+        nj.compute(pl1, taxaBlock1, distancesBlock1, treesBlock1);
+        System.out.println("output: " + treesBlock1.getTrees().get(0).toString());
+        assertEquals(output1, treesBlock1.getTrees().get(0).toString());
+
+        System.out.println("Test 2");
+        nj.compute(pl2, taxaBlock2, distancesBlock2, treesBlock2);
+        System.out.println("output: " + treesBlock2.getTrees().get(0).toString());
+        assertEquals(output2, treesBlock2.getTrees().get(0).toString());
     }
 }

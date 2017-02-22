@@ -117,5 +117,6 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> implements IFro
         System.err.println("Tree: " + tree.toBracketString());
 
         trees.getTrees().addAll(tree);
+        progressListener.close();
     }
 }
