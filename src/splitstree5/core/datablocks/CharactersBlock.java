@@ -445,10 +445,10 @@ public class CharactersBlock extends ADataBlock {
     public char[] getRow(int t) {
         if (t == matrix.length)
             throw new IllegalArgumentException("" + t);
-        final char[] source = matrix[t - 1];
-        final char[] target = new char[source.length + 1];
-        System.arraycopy(source, 0, target, 1, source.length);
-        return target;
+        final char[] src = matrix[t - 1];
+        final char[] dest = new char[src.length + 1];
+        System.arraycopy(src, 0, dest, 1, src.length);
+        return dest;
     }
 }
 
