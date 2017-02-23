@@ -131,8 +131,7 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
         algorithmChoiceBox.setValue(connector.getAlgorithm());
         algorithmChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             undoManager.addUndoableChange("Set Algorithm", algorithmChoiceBox.valueProperty(), oldValue, newValue);
-            // todo: set algorithm by name
-            connector.setAlgorithm(newValue);
+            connector.setAlgorithm((Algorithm) newValue);
             setupAlgorithmPane();
             controller.getCenterPane().getChildren().setAll(algorithmPane);
         });
