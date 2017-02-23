@@ -435,6 +435,20 @@ public class CharactersBlock extends ADataBlock {
     public void copyRow(CharactersBlock parent, int parentIndex, int targetIndex) {
         matrix[targetIndex - 1] = parent.matrix[parentIndex - 1];
     }
+
+    /**
+     * gets row with coordinates starting at 1
+     *
+     * @param t 1-based index
+     * @return row, 1-based
+     */
+    public char[] getRow(int t) {
+        if (t == matrix.length)
+            throw new IllegalArgumentException("" + t);
+        char[] row = new char[matrix.length + 1];
+        System.arraycopy(matrix[t - 1], 1, row, 0, matrix[t - 1].length - 1);
+        return row;
+    }
 }
 
 
