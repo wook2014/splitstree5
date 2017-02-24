@@ -232,7 +232,7 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> imple
         for (int i = 1; i <= nbNtax; i++) {
             for (int j = 1; j <= nbNtax; j++) { //fill up the
                 if (i < j)
-                    h[i][j] = distances.get(i, j);// distance matix h
+                    h[i][j] = distances.get(i, j);// distance matrix h
                 else
                     h[i][j] = distances.get(j, i);
             }

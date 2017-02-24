@@ -41,6 +41,8 @@ public class SplitsNexusIO {
     public static final String NAME = "SPLITS";
 
     public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
+            "\t[TITLE title;]\n" +
+            "\t[LINK name = title;]\n" +
             "\t[DIMENSIONS [NTAX=number-of-taxa] [NSPLITS=number-of-splits];]\n" +
             "\t[FORMAT\n" +
             "\t\t[LABELS={LEFT|NO}]\n" +
@@ -84,12 +86,15 @@ public class SplitsNexusIO {
      * @throws IOException
      */
     public static ArrayList<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, SplitsBlock splitsBlock, @Nullable SplitsNexusFormat splitsNexusFormat) throws IOException {
+        splitsBlock.clear();
+
         final ArrayList<String> taxonNamesFound = new ArrayList<>();
 
         if (splitsNexusFormat == null)
             splitsNexusFormat = new SplitsNexusFormat();
 
         np.matchBeginBlock(NAME);
+        UtilitiesNexusIO.readTitleLinks(np, splitsBlock);
 
         final int ntax = taxaBlock.getNtax();
         np.matchIgnoreCase("dimensions ntax=" + ntax);
@@ -185,7 +190,6 @@ public class SplitsNexusIO {
      * @param np the nexus parser
      */
     private static void readMatrix(NexusStreamParser np, int ntax, int nsplits, SplitsBlock splitsBlock, SplitsNexusFormat splitsNexusFormat) throws IOException {
-
         for (int i = 1; i <= nsplits; i++) {
             float weight = 1;
             float confidence = -1;
@@ -240,9 +244,10 @@ public class SplitsNexusIO {
         final int nsplits = splitsBlock.getNsplits();
 
         w.write("\nBEGIN " + NAME + ";\n");
-        w.write("DIMENSIONS ntax=" + ntax + " nsplits=" + nsplits + ";\n");
+        UtilitiesNexusIO.writeTitleLinks(w, splitsBlock);
+        w.write("\tDIMENSIONS ntax=" + ntax + " nsplits=" + nsplits + ";\n");
 
-        w.write("FORMAT");
+        w.write("\tFORMAT");
         if (splitsNexusFormat.isLabels())
             w.write(" labels=left");
         else
@@ -257,8 +262,8 @@ public class SplitsNexusIO {
             w.write(" confidences=no");
         w.write(";\n");
         if (splitsBlock.getThreshold() != 0)
-            w.write("THRESHOLD=" + splitsBlock.getThreshold() + "; \n");
-        w.write(String.format("PROPERTIES fit=%.2f", splitsBlock.getFit()));
+            w.write("\tTHRESHOLD=" + splitsBlock.getThreshold() + "; \n");
+        w.write(String.format("\tPROPERTIES fit=%.2f", splitsBlock.getFit()));
         switch (splitsBlock.getCompatibility()) {
             case compatible:
                 w.write(" compatible");
@@ -277,7 +282,7 @@ public class SplitsNexusIO {
         w.write(";\n");
 
         if (splitsBlock.getCycle() != null) {
-            w.write("CYCLE");
+            w.write("\tCYCLE");
             int[] cycle = splitsBlock.getCycle();
             for (int i = 1; i < cycle.length; i++)
                 w.write(" " + cycle[i]);
@@ -288,7 +293,7 @@ public class SplitsNexusIO {
 
         int t = 1;
         for (ASplit split : splitsBlock.getSplits()) {
-            w.write("[" + (t++) + ", size=" + split.size() + "]" + " \t");
+            w.write("\t[" + (t++) + ", size=" + split.size() + "]" + " \t");
             if (splitsNexusFormat.isLabels()) {
                 String lab = split.getLabel();
                 w.write(" '" + lab + "'" + " \t");

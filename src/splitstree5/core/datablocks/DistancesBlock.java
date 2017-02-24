@@ -60,6 +60,7 @@ public class DistancesBlock extends ADataBlock {
 
     @Override
     public void clear() {
+        super.clear();
         distances = new double[0][0];
         variances = null;
         setShortDescription("");

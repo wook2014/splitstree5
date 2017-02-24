@@ -35,6 +35,8 @@ public class TaxaNexusIO {
     private static final String NAME = "TAXA";
 
     public static final String SYNTAX = "BEGIN DISTANCES;\n" +
+            "\t[TITLE title;]\n" +
+            "\t[LINK name = title;]\n" +
             "\t[DIMENSIONS [NTAX=number-of-taxaBlock];]\n" +
             "\t[FORMAT\n" +
             "\t    [TRIANGLE={LOWER|UPPER|BOTH}]\n" +
@@ -73,6 +75,7 @@ public class TaxaNexusIO {
             np.matchIgnoreCase("#nexus"); // skip header line if it is the first line
 
         np.matchBeginBlock(NAME);
+        UtilitiesNexusIO.readTitleLinks(np, taxaBlock);
 
         np.matchIgnoreCase("DIMENSIONS ntax=");
         final int ntax = np.getInt();
@@ -127,15 +130,16 @@ public class TaxaNexusIO {
      */
     public static void write(Writer w, TaxaBlock taxaBlock) throws IOException {
         w.write("\nBEGIN " + NAME + ";\n");
-        w.write("DIMENSIONS ntax=" + taxaBlock.getNtax() + ";\n");
-        w.write("TAXLABELS\n");
+        UtilitiesNexusIO.writeTitleLinks(w, taxaBlock);
+        w.write("\tDIMENSIONS ntax=" + taxaBlock.getNtax() + ";\n");
+        w.write("\tTAXLABELS\n");
         for (int i = 1; i <= taxaBlock.getNtax(); i++)
-            w.write("[" + i + "] '" + taxaBlock.get(i).getName() + "'\n");
+            w.write("\t\t[" + i + "] '" + taxaBlock.get(i).getName() + "'\n");
         w.write(";\n");
         if (hasInfos(taxaBlock)) {
-            w.write("TAXINFO\n");
+            w.write("\tTAXINFO\n");
             for (int i = 1; i <= taxaBlock.getNtax(); i++)
-                w.write("[" + i + "] '" + taxaBlock.get(i).getInfo() + "'\n");
+                w.write("\t\t[" + i + "] '" + taxaBlock.get(i).getInfo() + "'\n");
             w.write(";\n");
         }
         w.write("END; [" + NAME + "]\n");

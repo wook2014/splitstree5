@@ -81,6 +81,7 @@ abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> exte
      * clear temporary data
      */
     public void clear() {
+        super.clear();
     }
 
     public boolean isDisabled() {

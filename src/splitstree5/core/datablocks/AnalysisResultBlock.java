@@ -31,6 +31,7 @@ import splitstree5.core.algorithms.interfaces.IToAnalysisResults;
 public class AnalysisResultBlock extends ADataBlock {
     @Override
     public void clear() {
+        super.clear();
         setShortDescription("");
     }
 

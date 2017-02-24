@@ -57,6 +57,7 @@ public class TreesBlock extends ADataBlock {
 
     @Override
     public void clear() {
+        super.clear();
         trees.clear();
         partial = false;
         rooted = false;

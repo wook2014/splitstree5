@@ -94,6 +94,7 @@ public class CharactersBlock extends ADataBlock {
 
     @Override
     public void clear() {
+        super.clear();
         matrix = new char[0][0];
         setShortDescription("");
     }

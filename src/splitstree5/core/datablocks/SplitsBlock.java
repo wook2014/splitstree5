@@ -79,6 +79,7 @@ public class SplitsBlock extends ADataBlock {
 
     @Override
     public void clear() {
+        super.clear();
         splits.clear();
         cycle = null;
         compatibility = Compatibility.unknown;

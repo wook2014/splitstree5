@@ -46,6 +46,8 @@ public class CharactersNexusIO {
 
     public static final String SYNTAX =
             "BEGIN CHARACTERS;\n" +
+                    "\t[TITLE title;]\n" +
+                    "\t[LINK name = title;]\n" +
                     "\tDIMENSIONS [NTAX=number-of-taxa] NCHAR=number-of-characters;\n" +
                     "\t[PROPERTIES [GAMMASHAPE=shape-parameter] [PINVAR=proportion-invar];]\n" +
                     "\t[FORMAT\n" +
@@ -99,6 +101,7 @@ public class CharactersNexusIO {
             format = new CharactersNexusFormat();
 
         np.matchBeginBlock(NAME);
+        UtilitiesNexusIO.readTitleLinks(np, characters);
 
         if (taxa.getNtax() == 0) {
             np.matchIgnoreCase("dimensions ntax=");
@@ -587,6 +590,7 @@ public class CharactersNexusIO {
             format = new CharactersNexusFormat();
 
         w.write("\nBEGIN " + NAME + ";\n");
+        UtilitiesNexusIO.writeTitleLinks(w, characters);
         w.write("DIMENSIONS ntax=" + characters.getNtax() + " nchar=" + characters.getNchar() + ";\n");
         w.write("FORMAT\n");
         w.write("\tdatatype='" + characters.getDataType().toString() + "'");

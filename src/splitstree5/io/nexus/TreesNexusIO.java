@@ -40,6 +40,8 @@ public class TreesNexusIO {
     public static final String NAME = "TREES";
 
     public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
+            "\t[TITLE title;]\n" +
+            "\t[LINK name = title;]\n" +
             "[PROPERTIES PARTIALTREES={YES|NO} ROOTED={YES|NO};]\n" +
             "[TRANSLATE\n" +
             "    nodeLabel1 taxon1,\n" +
@@ -72,12 +74,14 @@ public class TreesNexusIO {
      * @throws IOException
      */
     public static ArrayList<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, TreesBlock treesBlock, @Nullable TreesNexusFormat treesNexusFormat) throws IOException {
+        treesBlock.clear();
         if (treesNexusFormat == null)
             treesNexusFormat = new TreesNexusFormat();
 
         boolean rootedExplicitySet = false;
 
         np.matchBeginBlock(NAME);
+        UtilitiesNexusIO.readTitleLinks(np, treesBlock);
 
         if (np.peekMatchIgnoreCase("PROPERTIES")) {
             final List<String> tokens = np.getTokensLowerCase("format", ";");
@@ -219,8 +223,9 @@ public class TreesNexusIO {
             treesNexusFormat = new TreesNexusFormat();
 
         w.write("\nBEGIN " + NAME + ";\n");
+        UtilitiesNexusIO.writeTitleLinks(w, treesBlock);
         if (treesBlock.isPartial() || treesBlock.isRooted()) {
-            w.write("PROPERTIES");
+            w.write("\tPROPERTIES");
             w.write(" partialTrees=" + (treesBlock.isPartial() ? "yes" : "no"));
             w.write(" rooted=" + (treesBlock.isRooted() ? "yes" : "no"));
             w.write(";\n");
@@ -229,20 +234,20 @@ public class TreesNexusIO {
         final Map<String, String> translator;
         if (treesNexusFormat.isTranslate()) {
             translator = computeTranslationName2Number(taxaBlock);
-            w.write("TRANSLATE\n");
+            w.write("\tTRANSLATE\n");
 
             for (int t = 1; t <= taxaBlock.getNtax(); t++) {
-                w.write(t + " '" + taxaBlock.getLabel(t) + "',\n");
+                w.write("\t\t" + t + " '" + taxaBlock.getLabel(t) + "',\n");
             }
             w.write(";\n");
         } else
             translator = null;
 
-        w.write("[TREES]\n");
+        w.write("\t[TREES]\n");
         int t = 1;
         for (PhyloTree tree : treesBlock.getTrees()) {
             final String name = (tree.getName() != null && tree.getName().length() > 0 ? tree.getName() : "t" + t);
-            w.write("[" + (t++) + "] tree '" + name + "'=" + getFlags(tree) + " ");
+            w.write("\t\t[" + (t++) + "] tree '" + name + "'=" + getFlags(tree) + " ");
             tree.write(w, treesNexusFormat.isShowWeights(), translator);
             w.write(";\n");
         }

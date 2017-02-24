@@ -37,6 +37,8 @@ public class DistancesNexusIO {
     public static final String NAME = "DISTANCES";
 
     public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
+            "\t[TITLE title;]\n" +
+            "\t[LINK name = title;]\n" +
             "\t[DIMENSIONS [NTAX=number-of-taxa];]\n" +
             "\t[FORMAT\n" +
             "\t\t[TRIANGLE={LOWER|UPPER|BOTH}]\n" +
@@ -65,26 +67,27 @@ public class DistancesNexusIO {
      *
      * @param np
      * @param taxaBlock
-     * @param distancesBlock
+     * @param distances
      * @param distancesNexusFormat
      * @return taxon names found in this block
      * @throws IOException
      */
-    public static ArrayList<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, DistancesBlock distancesBlock, @Nullable DistancesNexusFormat distancesNexusFormat) throws IOException {
-        distancesBlock.clear();
+    public static ArrayList<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, DistancesBlock distances, @Nullable DistancesNexusFormat distancesNexusFormat) throws IOException {
+        distances.clear();
 
         if (distancesNexusFormat == null)
             distancesNexusFormat = new DistancesNexusFormat();
 
         np.matchBeginBlock(NAME);
+        UtilitiesNexusIO.readTitleLinks(np, distances);
 
         if (taxaBlock.getNtax() == 0) {
             np.matchIgnoreCase("dimensions ntax=");
-            distancesBlock.setNtax(np.getInt(1, Integer.MAX_VALUE));
+            distances.setNtax(np.getInt(1, Integer.MAX_VALUE));
             np.matchIgnoreCase(";");
         } else {
             np.matchIgnoreCase("dimensions ntax=" + taxaBlock.getNtax() + ";");
-            distancesBlock.setNtax(taxaBlock.getNtax());
+            distances.setNtax(taxaBlock.getNtax());
         }
 
         if (np.peekMatchIgnoreCase("FORMAT")) {
@@ -120,17 +123,17 @@ public class DistancesNexusIO {
         final boolean lower = distancesNexusFormat.getTriangle().equals("lower");
         final int diag = distancesNexusFormat.getDiagonal() ? 0 : 1;
 
-        final ArrayList<String> taxonNamesFound = new ArrayList<>(distancesBlock.getNtax());
+        final ArrayList<String> taxonNamesFound = new ArrayList<>(distances.getNtax());
 
         {
             np.matchIgnoreCase("MATRIX");
-            for (int t = 1; t <= distancesBlock.getNtax(); t++) {
+            for (int t = 1; t <= distances.getNtax(); t++) {
                 String label = np.getLabelRespectCase();
                 if (taxaBlock.getNtax() > 0 && !taxaBlock.get(t).getName().equals(label))
                     throw new IOException("line " + np.lineno() + ": expected '" + taxaBlock.get(t).getName() + "', found: '" + label + "'");
                 taxonNamesFound.add(label);
 
-                distancesBlock.set(t, t, 0);
+                distances.set(t, t, 0);
 
                 int left;
                 int right;
@@ -140,20 +143,20 @@ public class DistancesNexusIO {
                     right = t - diag;
                 } else if (upper) {
                     left = t + diag;
-                    right = distancesBlock.getNtax();
+                    right = distances.getNtax();
                 } else // both
                 {
                     left = 1;
-                    right = distancesBlock.getNtax();
+                    right = distances.getNtax();
                 }
 
                 for (int q = left; q <= right; q++) {
                     double z = np.getDouble();
 
                     if (both)
-                        distancesBlock.set(t, q, z);
+                        distances.set(t, q, z);
                     else
-                        distancesBlock.setBoth(t, q, z);
+                        distances.setBoth(t, q, z);
 
                 }
             }
@@ -162,13 +165,13 @@ public class DistancesNexusIO {
 
         if (np.peekMatchIgnoreCase("VARMATRIX")) {
             np.matchIgnoreCase("VARMATRIX");
-            for (int t = 1; t <= distancesBlock.getNtax(); t++) {
+            for (int t = 1; t <= distances.getNtax(); t++) {
                 String label = np.getLabelRespectCase();
                 if (taxaBlock.getNtax() > 0 && !taxaBlock.get(t).getName().equals(label))
                     throw new IOException("line " + np.lineno() + ": expected '" + taxaBlock.get(t).getName() + "', found: '" + label + "'");
 
                 if (distancesNexusFormat.isVariancesIO())
-                    distancesBlock.setVariance(t, t, 0);
+                    distances.setVariance(t, t, 0);
 
                 int left;
                 int right;
@@ -178,11 +181,11 @@ public class DistancesNexusIO {
                     right = t - diag;
                 } else if (upper) {
                     left = t + diag;
-                    right = distancesBlock.getNtax();
+                    right = distances.getNtax();
                 } else // both
                 {
                     left = 1;
-                    right = distancesBlock.getNtax();
+                    right = distances.getNtax();
                 }
 
                 for (int q = left; q <= right; q++) {
@@ -190,9 +193,9 @@ public class DistancesNexusIO {
 
                     if (distancesNexusFormat.isVariancesIO()) {
                         if (both)
-                            distancesBlock.setVariance(t, q, z);
+                            distances.setVariance(t, q, z);
                         else
-                            distancesBlock.setVariance(t, q, z);
+                            distances.setVariance(t, q, z);
                     }
                 }
             }
@@ -202,8 +205,8 @@ public class DistancesNexusIO {
         np.matchEndBlock();
 
         if (both) {
-            if (!isSymmetric(distancesBlock)) {
-                symmetrize(distancesBlock);
+            if (!isSymmetric(distances)) {
+                symmetrize(distances);
                 System.err.println("Warning: Distance matrix not symmetric: averaging between upper and lower parts");
             }
         }
@@ -215,16 +218,17 @@ public class DistancesNexusIO {
      *
      * @param w
      * @param taxaBlock
-     * @param distancesBlock
+     * @param distances
      * @param distancesNexusFormat - if null
      * @throws IOException
      */
-    public static void write(Writer w, TaxaBlock taxaBlock, DistancesBlock distancesBlock, @Nullable DistancesNexusFormat distancesNexusFormat) throws IOException {
+    public static void write(Writer w, TaxaBlock taxaBlock, DistancesBlock distances, @Nullable DistancesNexusFormat distancesNexusFormat) throws IOException {
         if (distancesNexusFormat == null)
             distancesNexusFormat = new DistancesNexusFormat();
 
         w.write("\nBEGIN " + NAME + ";\n");
-        w.write("DIMENSIONS ntax=" + distancesBlock.getNtax() + ";\n");
+        UtilitiesNexusIO.writeTitleLinks(w, distances);
+        w.write("DIMENSIONS ntax=" + distances.getNtax() + ";\n");
         w.write("FORMAT");
         if (distancesNexusFormat.getLabels())
             w.write(" labels=left");
@@ -244,7 +248,7 @@ public class DistancesNexusIO {
         {
             w.write("MATRIX\n");
 
-            for (int t = 1; t <= distancesBlock.getNtax(); t++) {
+            for (int t = 1; t <= distances.getNtax(); t++) {
                 if (distancesNexusFormat.getLabels()) {
                     w.write("[" + t + "]");
                     w.write(" '" + taxaBlock.get(t).getName() + "'");
@@ -264,18 +268,18 @@ public class DistancesNexusIO {
                     case "upper":
                         left = t + diag;//t-1+diag;
 
-                        right = distancesBlock.getNtax();
+                        right = distances.getNtax();
                         for (int i = 1; i < t; i++)
                             w.write("      ");
                         break;
                     default: // both
                         left = 1;
-                        right = distancesBlock.getNtax();
+                        right = distances.getNtax();
                         break;
                 }
 
                 for (int q = left; q <= right; q++) {
-                    w.write(" " + (float) (distancesBlock.get(t, q)));
+                    w.write(" " + (float) (distances.get(t, q)));
                 }
                 w.write("\n");
             }
@@ -283,10 +287,10 @@ public class DistancesNexusIO {
         }
 
         // write variances, if present
-        if (distancesNexusFormat.isVariancesIO() && distancesBlock.isVariances()) {
+        if (distancesNexusFormat.isVariancesIO() && distances.isVariances()) {
             w.write("VARMATRIX\n");
 
-            for (int t = 1; t <= distancesBlock.getNtax(); t++) {
+            for (int t = 1; t <= distances.getNtax(); t++) {
                 if (distancesNexusFormat.getLabels()) {
                     w.write("[" + t + "]");
                     w.write(" '" + taxaBlock.get(t).getName() + "'");
@@ -306,18 +310,18 @@ public class DistancesNexusIO {
                     case "upper":
                         left = t + diag;//t-1+diag;
 
-                        right = distancesBlock.getNtax();
+                        right = distances.getNtax();
                         for (int i = 1; i < t; i++)
                             w.write("      ");
                         break;
                     default: // both
                         left = 1;
-                        right = distancesBlock.getNtax();
+                        right = distances.getNtax();
                         break;
                 }
 
                 for (int q = left; q <= right; q++) {
-                    w.write(" " + (float) (distancesBlock.getVariance(t, q)));
+                    w.write(" " + (float) (distances.getVariance(t, q)));
                 }
                 w.write("\n");
             }

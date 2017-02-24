@@ -30,6 +30,11 @@ import java.util.ArrayList;
  * Created by huson on 12/21/16.
  */
 abstract public class ADataBlock extends OptionableBase {
+    /**
+     * creates a new instance
+     *
+     * @return new instance
+     */
     public ADataBlock newInstance() {
         try {
             return getClass().newInstance();
@@ -38,12 +43,6 @@ abstract public class ADataBlock extends OptionableBase {
             return null;
         }
     }
-
-
-    /**
-     * clear
-     */
-    abstract public void clear();
 
     abstract public int size();
 

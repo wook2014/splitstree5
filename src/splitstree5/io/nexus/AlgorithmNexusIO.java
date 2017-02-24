@@ -46,9 +46,11 @@ public class AlgorithmNexusIO<P extends ADataBlock, C extends ADataBlock> {
      * @throws IOException
      */
     public static <P extends ADataBlock, C extends ADataBlock> void parse(Algorithm<P, C> algorithm, NexusStreamParser np, boolean skipHeader) throws IOException {
+        algorithm.clear();
         if (!skipHeader) {
             np.matchBeginBlock(NAME);
-            np.matchIgnoreCase("NAME='" + algorithm.getName() + "';");
+            UtilitiesNexusIO.readTitleLinks(np, algorithm);
+            np.matchIgnoreCase("ALGORITHM='" + algorithm.getName() + "';");
         }
         final List<Option> options = OptionsAccessor.getAllOptions(algorithm);
 
@@ -79,10 +81,11 @@ public class AlgorithmNexusIO<P extends ADataBlock, C extends ADataBlock> {
      * @throws IOException
      */
     public static <P extends ADataBlock, C extends ADataBlock> void write(Algorithm<P, C> algorithm, Writer w) throws IOException {
-        w.write("BEGIN " + NAME + ";\n");
-        w.write("NAME = '" + algorithm.getName() + "';\n");
+        w.write("\nBEGIN " + NAME + ";\n");
+        UtilitiesNexusIO.writeTitleLinks(w, algorithm);
+        w.write("\tALGORITHM = '" + algorithm.getName() + "';\n");
         for (Option option : OptionsAccessor.getAllOptions(algorithm)) {
-            w.write(option.getName() + " = " + option.getValue().toString() + ";\n");
+            w.write("\t\t" + option.getName() + " = " + option.getValue().toString() + ";\n");
         }
         w.write("END; [" + NAME + "]\n");
     }
@@ -90,11 +93,13 @@ public class AlgorithmNexusIO<P extends ADataBlock, C extends ADataBlock> {
     public static <P extends ADataBlock, C extends ADataBlock> String getUsage(Algorithm<P, C> algorithm) {
         final StringBuilder buf = new StringBuilder();
         buf.append("BEGIN " + NAME + ";\n");
-        buf.append("NAME = '").append(algorithm.getName()).append("';\n");
+        buf.append("\t[TITLE title;]\n");
+        buf.append("\t[LINK name = title;]\n");
+        buf.append("ALGORITHM = '").append(algorithm.getName()).append("';\n");
         for (Option option : OptionsAccessor.getAllOptions(algorithm)) {
             final String[] choice = option.getLegalValues();
             final String possibleValues = (choice != null ? "{ " + Basic.toString(choice, " | ") + " }" : "<" + option.getType().toString() + ">");
-            buf.append(option.getName()).append(" = ").append(possibleValues).append(";\n");
+            buf.append("\t\t").append(option.getName()).append(" = ").append(possibleValues).append(";\n");
         }
         buf.append("END; [" + NAME + "]\n");
         return buf.toString();

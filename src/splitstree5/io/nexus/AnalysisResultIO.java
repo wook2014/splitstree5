@@ -35,10 +35,11 @@ public class AnalysisResultIO {
     private static final String NAME = "ST_ANALYSIS_RESULT";
 
     public static final String SYNTAX = "BEGIN ST_ANALYSIS_RESULT;\n" +
+            "\t[TITLE title;]\n" +
+            "\t[LINK name = title;]\n" +
             "\t[DIMENSIONS [NLINES=number-of-lines];]\n" +
             "\tRESULT\n" +
-            "\tresults...\n" +
-            "\t\n" +
+            "\t\tresults...\n" +
             "END;\n";
 
 
@@ -55,20 +56,21 @@ public class AnalysisResultIO {
      * parse an analysis block
      *
      * @param np
-     * @param aBlock
+     * @param block
      * @return list of taxon names found
      * @throws IOException
      */
-    public static ArrayList<String> parse(NexusStreamParser np, AnalysisResultBlock aBlock) throws IOException {
+    public static ArrayList<String> parse(NexusStreamParser np, AnalysisResultBlock block) throws IOException {
+        block.clear();
         final ArrayList<String> taxonNamesFound = new ArrayList<>();
 
-        aBlock.setShortDescription(null);
+        block.setShortDescription(null);
 
         if (np.peekMatchIgnoreCase("#nexus"))
             np.matchIgnoreCase("#nexus"); // skip header line if it is the first line
 
         np.matchBeginBlock(NAME);
-
+        UtilitiesNexusIO.readTitleLinks(np, block);
         np.matchIgnoreCase("DIMENSIONS nlines=");
         final int nLines = np.getInt();
         np.matchIgnoreCase(";");
@@ -83,7 +85,7 @@ public class AnalysisResultIO {
                     found++;
                 buf.append(word);
             }
-            aBlock.setShortDescription(buf.toString());
+            block.setShortDescription(buf.toString());
         }
         np.matchIgnoreCase("END;");
 
@@ -95,15 +97,16 @@ public class AnalysisResultIO {
      * writes the block in nexus format
      *
      * @param w
-     * @param aBlock
+     * @param block
      * @throws IOException
      */
-    public static void write(Writer w, AnalysisResultBlock aBlock) throws IOException {
+    public static void write(Writer w, AnalysisResultBlock block) throws IOException {
         w.write("\nBEGIN " + NAME + ";\n");
-        w.write("DIMENSIONS nlines=" + Basic.countOccurrences(aBlock.getShortDescription(), '\n') + ";\n");
-        w.write("RESULT;\n");
-        w.write(aBlock.getShortDescription());
-        if (!aBlock.getShortDescription().endsWith("\n"))
+        UtilitiesNexusIO.writeTitleLinks(w, block);
+        w.write("\tDIMENSIONS nlines=" + Basic.countOccurrences(block.getShortDescription(), '\n') + ";\n");
+        w.write("\tRESULT;\n");
+        w.write(block.getShortDescription());
+        if (!block.getShortDescription().endsWith("\n"))
             w.write("\n");
         w.write("END; [" + NAME + "]\n");
     }

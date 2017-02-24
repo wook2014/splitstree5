@@ -22,31 +22,44 @@ package splitstree5.core.misc;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import jloda.util.Basic;
+import jloda.util.Pair;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * a class with name and short description
  * Created by huson on 1/16/17.
  */
 public class ANamed {
-    protected final StringProperty name = new SimpleStringProperty();
+    private StringProperty name;
     protected String shortDescription;
 
+    private String title;
+    private ArrayList<Pair<String, String>> links;
+
     public ANamed() {
-        name.set(Basic.getShortName(this.getClass()));
+        setName(Basic.getShortName(this.getClass()));
     }
 
+    /**
+     * gets the name. E.g., the name associated with the Neighbor-joining Algorithm class is NeighborJoining
+     *
+     * @return name
+     */
     public String getName() {
-        return name.get();
+        return name == null ? null : name.get();
     }
 
     public StringProperty nameProperty() {
+        if (name == null)
+            name = new SimpleStringProperty();
         return name;
     }
 
     public void setName(String name) {
-        this.name.set(name);
+        nameProperty().set(name);
     }
-
     /**
      * gets a short description e.g. for a tooltip
      *
@@ -63,5 +76,51 @@ public class ANamed {
      */
     public void setShortDescription(String shortDescription) {
         this.shortDescription = shortDescription;
+    }
+
+    /**
+     * gets the title of a block. This is used during IO
+     *
+     * @return title
+     */
+    public String getTitle() {
+        return title;
+    }
+
+    /**
+     * sets the title of a block. This is used during IO
+     *
+     * @param title
+     */
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    /**
+     * list of parent blocks, each pair consisting of the name and title of a parent block
+     *
+     * @return list of links to parents
+     */
+    public List<Pair<String, String>> getLinks() {
+        if (links == null)
+            links = new ArrayList<>();
+        return links;
+    }
+
+    /**
+     * are any links set?
+     *
+     * @return true, if links set
+     */
+    public boolean hasLinks() {
+        return links != null && links.size() > 0;
+    }
+
+    /**
+     * clear title and links
+     */
+    public void clear() {
+        title = null;
+        links = null;
     }
 }
