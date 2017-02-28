@@ -1,6 +1,8 @@
 package splitstree5.core.algorithms.characters2distances;
 
-import jloda.util.Alert;
+import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IToDistances;
+import splitstree5.gui.dialog.Alert;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
@@ -13,7 +15,7 @@ import splitstree5.utils.nexus.SplitsException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ProteinMLdist extends SequenceBasedDistance{
+public class ProteinMLdist extends SequenceBasedDistance implements IFromChararacters, IToDistances {
 
     private PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates = PairwiseCompare.HandleAmbiguous.Ignore;
 

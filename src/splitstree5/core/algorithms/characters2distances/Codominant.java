@@ -52,15 +52,15 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
         progressListener.setMaximum(ntax);
 
         for (int i = 1; i <= ntax; i++) {
-            //char[] seqi = characters.getRow(i);
-            char[] seqi = new char[charactersBlock.getMatrix()[i].length];
-            System.arraycopy(charactersBlock.getMatrix()[i], 0, seqi, 0, charactersBlock.getMatrix()[i].length);
+            char[] seqi = charactersBlock.getRow(i);
+            //char[] seqi = new char[charactersBlock.getMatrix()[i].length];
+            //System.arraycopy(charactersBlock.getMatrix()[i], 0, seqi, 0, charactersBlock.getMatrix()[i].length);
 
             for (int j = i + 1; j <= ntax; j++) {
 
-                //char[] seqj = characters.getRow(j);
-                char[] seqj = new char[charactersBlock.getMatrix()[j].length];
-                System.arraycopy(charactersBlock.getMatrix()[j], 0, seqj, 0, charactersBlock.getMatrix()[j].length);
+                char[] seqj = charactersBlock.getRow(j);
+                //char[] seqj = new char[charactersBlock.getMatrix()[j].length];
+                //System.arraycopy(charactersBlock.getMatrix()[j], 0, seqj, 0, charactersBlock.getMatrix()[j].length);
 
                 double distSquared = 0.0;
 

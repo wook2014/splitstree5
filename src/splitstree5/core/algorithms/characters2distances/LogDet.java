@@ -1,7 +1,7 @@
 package splitstree5.core.algorithms.characters2distances;
 
 import Jama.Matrix;
-import jloda.util.Alert;
+import splitstree5.gui.dialog.Alert;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;
@@ -163,6 +163,13 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
 
 
     public boolean isApplicable(TaxaBlock taxa, CharactersBlock characters) {
+
+        /*if (taxa == null || c == null)
+            return false;
+
+        /* We can apply as long as there is more than one symbol
+        return (c.getFormat().getSymbols().length() > 1);*/
+
        //todo
        return true;
     }

@@ -1,6 +1,6 @@
 package splitstree5.core.algorithms.characters2distances;
 
-import jloda.util.Alert;
+import splitstree5.gui.dialog.Alert;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;

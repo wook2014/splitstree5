@@ -6,7 +6,9 @@ import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 
-public abstract class SequenceBasedDistance extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
+public abstract class SequenceBasedDistance extends Algorithm<CharactersBlock, DistancesBlock> {
+
+    // todo : implements IFromChararacters, IToDistances for all extended classes
 
     abstract public double getOptionPInvar();
 
