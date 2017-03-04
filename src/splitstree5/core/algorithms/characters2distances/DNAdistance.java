@@ -1,5 +1,6 @@
 package splitstree5.core.algorithms.characters2distances;
 
+import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.gui.dialog.Alert;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
@@ -74,11 +75,13 @@ public abstract class DNAdistance extends SequenceBasedDistance{
 
     // TODO
     /* Now the fields relating to distance computation */
-    /*public boolean isApplicable(Document doc, Taxa taxa, Characters ch) {
+    public boolean isApplicable(TaxaBlock taxa, CharactersBlock ch) {
         return taxa != null && ch != null
-                && (ch.getFormat().getDatatype().equalsIgnoreCase(Characters.Datatypes.DNA)
-                || ch.getFormat().getDatatype().equalsIgnoreCase(Characters.Datatypes.RNA));
-    }*/
+                && (ch.getDataType().equals(CharactersType.DNA)
+                || ch.getDataType().equals(CharactersType.RNA));
+                //&& (ch.getFormat().getDatatype().equalsIgnoreCase(Characters.Datatypes.DNA)
+                //|| ch.getFormat().getDatatype().equalsIgnoreCase(Characters.Datatypes.RNA));
+    }
 
     /**
      * REturn the inverse of the moment generating function corresponding to the current settings

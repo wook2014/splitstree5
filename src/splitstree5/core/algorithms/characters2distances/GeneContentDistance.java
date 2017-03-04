@@ -7,6 +7,7 @@ import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.datablocks.characters.CharactersType;
 
 import java.util.BitSet;
 
@@ -38,7 +39,7 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
      */
     public boolean isApplicable(TaxaBlock taxa, CharactersBlock ch) {
         //return taxa != null && ch != null && ch.getFormat().getDatatype().equalsIgnoreCase(Characters.Datatypes.STANDARD);
-        return  true;
+        return  taxa != null && ch != null && ch.getDataType().equals(CharactersType.standard);
     }
 
     /**

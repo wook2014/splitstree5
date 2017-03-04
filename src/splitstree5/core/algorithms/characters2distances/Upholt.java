@@ -1,5 +1,6 @@
 package splitstree5.core.algorithms.characters2distances;
 
+import splitstree5.core.datablocks.characters.CharactersType;
 import splitstree5.gui.dialog.Alert;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
@@ -91,7 +92,7 @@ public class Upholt extends Algorithm<CharactersBlock, DistancesBlock> implement
             return false;
         return c.getFormat().getSymbols().equalsIgnoreCase(Characters.Datatypes.STANDARDSYMBOLS);
         */
-        return true;
+        return taxa != null && c != null && c.getDataType().equals(CharactersType.standard);
     }
 
     final public String getDescription() {

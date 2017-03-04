@@ -7,6 +7,7 @@ import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.datablocks.characters.CharactersType;
 
 public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
 
@@ -23,7 +24,9 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
         /*return taxa != null && chars != null
                 && chars.getFormat().getDatatype().equalsIgnoreCase(Characters.Datatypes.STANDARD)
                 && chars.hasCharweights();*/
-        return true;
+        return taxa != null && chars != null
+                && chars.getDataType().equals(CharactersType.standard)
+                && chars.getCharacterWeights() != null;
     }
 
     @Override

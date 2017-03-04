@@ -31,7 +31,7 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
      */
     public boolean isApplicable(TaxaBlock taxa, CharactersBlock c) {
         //return taxa != null && c != null && (c.getFormat().isDiploid());
-        return true;
+        return taxa != null && c != null && c.isDiploid();
     }
 
     @Override

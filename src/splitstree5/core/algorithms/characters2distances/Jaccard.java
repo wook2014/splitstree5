@@ -1,5 +1,6 @@
 package splitstree5.core.algorithms.characters2distances;
 
+import splitstree5.core.datablocks.characters.CharactersType;
 import splitstree5.gui.dialog.Alert;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
@@ -21,7 +22,7 @@ public class Jaccard extends Algorithm<CharactersBlock, DistancesBlock> implemen
     protected String TASK = "Jaccard Coefficient Distance";
 
     /**
-     * Determine whether Dice distances can be computed with given data.
+     * Determine whether Jaccard distances can be computed with given data.
      *
      * @param taxa the taxa
      * @param c    the characters matrix
@@ -31,7 +32,7 @@ public class Jaccard extends Algorithm<CharactersBlock, DistancesBlock> implemen
         /*if (taxa == null || c == null || !(c.getFormat().getDatatype()).equalsIgnoreCase(Characters.Datatypes.STANDARD))
             return false;
         return c.getFormat().getSymbols().equalsIgnoreCase(Characters.Datatypes.STANDARDSYMBOLS);*/
-        return true;
+        return taxa != null && c != null && c.getDataType().equals(CharactersType.standard);
     }
 
     @Override

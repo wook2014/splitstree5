@@ -2,6 +2,7 @@ package splitstree5.core.algorithms.characters2distances;
 
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
 import splitstree5.core.algorithms.interfaces.IToDistances;
+import splitstree5.core.datablocks.characters.CharactersType;
 import splitstree5.gui.dialog.Alert;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;
@@ -97,10 +98,9 @@ public class ProteinMLdist extends SequenceBasedDistance implements IFromCharara
      * @return true, if method applies to given data
      */
     public boolean isApplicable(TaxaBlock taxa, CharactersBlock ch) {
-        //return taxa != null && ch != null
-          //      && (ch.getFormat().getDatatype().equalsIgnoreCase(Characters.Datatypes.PROTEIN));
-        //todo
-        return true;
+        return taxa != null && ch != null
+                && ch.getDataType().equals(CharactersType.protein);
+                //&& (ch.getFormat().getDatatype().equalsIgnoreCase(Characters.Datatypes.PROTEIN));
     }
 
 
@@ -112,6 +112,10 @@ public class ProteinMLdist extends SequenceBasedDistance implements IFromCharara
      *
      * @return methods
      */
+
+    // todo not used?
+    public enum Model {cpREV45, Dayhoff, JTT, mtMAM, mtREV24, pmb, Rhodopsin, WAG}
+
     public List selectionOptionModel() {
         //TODO: Get list directly from class list.
         List models = new LinkedList();
