@@ -11,28 +11,16 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
-/**
- * Created by Daria on 22.02.2017.
- */
 public class Dice extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
 
     private PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates = PairwiseCompare.HandleAmbiguous.Ignore;
 
     public final static String DESCRIPTION = "Calculates distances using the Dice coefficient distance.";
-    protected String TASK = "Dice Coefficient Distance";
+    private String TASK = "Dice Coefficient Distance";
 
-    /**
-     * Determine whether Dice distances can be computed with given data.
-     *
-     * @param taxa the taxa
-     * @param c    the characters matrix
-     * @return true, character block exists and has standard datatype.
-     */
-    public boolean isApplicable(TaxaBlock taxa, CharactersBlock c) {
-       /* if (taxa == null || c == null || !(c.getFormat().getDatatype()).equalsIgnoreCase(Characters.Datatypes.STANDARD))
-            return false;
-        return c.getFormat().getSymbols().equalsIgnoreCase(Characters.Datatypes.STANDARDSYMBOLS);*/
-       return taxa != null && c != null && c.getDataType().equals(CharactersType.standard);
+    @Override
+    public boolean isApplicable(TaxaBlock taxaBlock, CharactersBlock parent, DistancesBlock child) {
+        return parent.getDataType().equals(CharactersType.standard);
     }
 
     @Override
@@ -105,6 +93,10 @@ public class Dice extends Algorithm<CharactersBlock, DistancesBlock> implements 
 
     public void setOptionHandleAmbiguousStates(PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates) {
         this.optionHandleAmbiguousStates = optionHandleAmbiguousStates;
+    }
+
+    public String getTASK(){
+        return TASK;
     }
 }
 

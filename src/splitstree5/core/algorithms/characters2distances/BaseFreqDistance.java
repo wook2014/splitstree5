@@ -13,27 +13,11 @@ import splitstree5.core.datablocks.TaxaBlock;
  */
 public class BaseFreqDistance extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
 
+    // todo not used, implement or delete
     private boolean optionIgnoreGaps = true;
 
     public final static String DESCRIPTION = "Calculates distances from differences in the base composition";
-    protected String TASK = "Base Frequency Distance";
-
-    protected String getTask() {
-        return TASK;
-    }
-
-    /**
-     * Determine whether Hamming distances can be computed with given data.
-     *
-     * @param taxa the taxa
-     * @param c    the characters matrix
-     * @return true, if method applies to given data
-     */
-    public boolean isApplicable(TaxaBlock taxa, CharactersBlock c) {
-        //return taxa != null && c != null;
-        return true;
-    }
-
+    private String TASK = "Base Frequency Distance";
 
     @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
@@ -54,7 +38,7 @@ public class BaseFreqDistance extends Algorithm<CharactersBlock, DistancesBlock>
         for (int s = 1; s <= ntax; s++) {
             System.err.print(taxaBlock.getLabel(s) + "\t");
             double count = 0;
-            for (int i = 0; i < charactersBlock.getNchar(); i++) {
+            for (int i = 1; i < charactersBlock.getNchar()+1; i++) {
                 int x = symbols.indexOf(charactersBlock.get(s, i));
                 if (x >= 0) {
                     double weight = charactersBlock.getCharacterWeight(i);
@@ -117,5 +101,9 @@ public class BaseFreqDistance extends Algorithm<CharactersBlock, DistancesBlock>
      */
     public String getDescription() {
         return DESCRIPTION;
+    }
+
+    protected String getTask() {
+        return TASK;
     }
 }

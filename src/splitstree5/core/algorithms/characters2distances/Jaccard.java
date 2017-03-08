@@ -21,18 +21,10 @@ public class Jaccard extends Algorithm<CharactersBlock, DistancesBlock> implemen
     public final static String DESCRIPTION = "Calculates distances using the Jaccard coefficient distance.";
     protected String TASK = "Jaccard Coefficient Distance";
 
-    /**
-     * Determine whether Jaccard distances can be computed with given data.
-     *
-     * @param taxa the taxa
-     * @param c    the characters matrix
-     * @return true, character block exists and has standard datatype.
-     */
-    public boolean isApplicable(TaxaBlock taxa, CharactersBlock c) {
-        /*if (taxa == null || c == null || !(c.getFormat().getDatatype()).equalsIgnoreCase(Characters.Datatypes.STANDARD))
-            return false;
-        return c.getFormat().getSymbols().equalsIgnoreCase(Characters.Datatypes.STANDARDSYMBOLS);*/
-        return taxa != null && c != null && c.getDataType().equals(CharactersType.standard);
+
+    @Override
+    public boolean isApplicable(TaxaBlock taxa, CharactersBlock c, DistancesBlock d) {
+        return c.getDataType().equals(CharactersType.standard);
     }
 
     @Override
@@ -108,5 +100,9 @@ public class Jaccard extends Algorithm<CharactersBlock, DistancesBlock> implemen
 
     public void setOptionHandleAmbiguousStates(PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates) {
         this.optionHandleAmbiguousStates = optionHandleAmbiguousStates;
+    }
+
+    public String getTASK(){
+        return TASK;
     }
 }
