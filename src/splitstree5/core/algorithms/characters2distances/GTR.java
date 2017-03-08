@@ -4,12 +4,14 @@ import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
+import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.models.GTRmodel;
 
-public class GTR extends DNAdistance{
+public class GTR extends DNAdistance implements IFromChararacters, IToDistances {
 
     private double[][] QMatrix; //Q Matrix provided by user for ML estimation.
     public final static String DESCRIPTION = "Calculates distances using a General Time Reversible model";

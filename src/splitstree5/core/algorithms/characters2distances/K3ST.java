@@ -2,12 +2,14 @@ package splitstree5.core.algorithms.characters2distances;
 
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
+import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.models.K3STmodel;
 
-public class K3ST extends DNAdistance {
+public class K3ST extends DNAdistance implements IFromChararacters, IToDistances {
 
     private double[][] QMatrix; //Q Matrix provided by user for ML estimation.
     private double tratio = 2.0;

@@ -2,12 +2,14 @@ package splitstree5.core.algorithms.characters2distances;
 
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
+import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.models.F84Model;
 
-public class F84 extends DNAdistance {
+public class F84 extends DNAdistance implements IFromChararacters, IToDistances {
 
     private double tratio = 2.0;
     private double A, B, C;

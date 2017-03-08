@@ -2,12 +2,14 @@ package splitstree5.core.algorithms.characters2distances;
 
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
+import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.models.F81model;
 
-public class F81 extends DNAdistance {
+public class F81 extends DNAdistance implements IFromChararacters, IToDistances {
 
     public final static String DESCRIPTION = "Calculates distances using the Felsenstein81 model";
     private double B;
