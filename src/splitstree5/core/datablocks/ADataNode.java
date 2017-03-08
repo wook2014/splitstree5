@@ -73,7 +73,8 @@ public class ADataNode<D extends ADataBlock> extends ANode {
 
     @Override
     public void setName(String name) {
-        dataBlock.setName(name);
+        if (dataBlock != null)
+            dataBlock.setName(name);
     }
 
     public StringProperty nameProperty() {
