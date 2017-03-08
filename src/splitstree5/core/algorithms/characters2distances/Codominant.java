@@ -21,17 +21,9 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
      */
     protected boolean useSquareRoot;
 
-    /**
-     * Determine whether  distances can be computed with given data.
-     *
-     * @param taxa the taxa
-     * @param c    the characters matrix
-     * @return true, if method applies to given data... taxa and characters are non-null and their is
-     *         an even number of characters.
-     */
-    public boolean isApplicable(TaxaBlock taxa, CharactersBlock c) {
-        //return taxa != null && c != null && (c.getFormat().isDiploid());
-        return taxa != null && c != null && c.isDiploid();
+    @Override
+    public boolean isApplicable(TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock){
+        return !charactersBlock.isUseCharacterWeights() && charactersBlock.isDiploid();
     }
 
     @Override
@@ -41,9 +33,9 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
         char missingchar = charactersBlock.getMissingCharacter();
         char gapchar = charactersBlock.getGapCharacter();
 
-        if (charactersBlock.isUseCharacterWeights()) {
+        /*if (charactersBlock.isUseCharacterWeights()) {
             throw new SplitsException("The Codominant distance is not available when there are character weights");
-        }
+        }*/
 
         int ntax = taxaBlock.getNtax();
         distancesBlock.setNtax(ntax);
@@ -51,16 +43,17 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
         progressListener.setTasks(TASK, "Init.");
         progressListener.setMaximum(ntax);
 
-        for (int i = 1; i <= ntax; i++) {
-            char[] seqi = charactersBlock.getRow(i);
-            //char[] seqi = new char[charactersBlock.getMatrix()[i].length];
-            //System.arraycopy(charactersBlock.getMatrix()[i], 0, seqi, 0, charactersBlock.getMatrix()[i].length);
+        for (int i = 0; i < ntax; i++) {
+            //char[] seqi = charactersBlock.getRow(i);
 
-            for (int j = i + 1; j <= ntax; j++) {
+            char[] seqi = new char[charactersBlock.getMatrix()[i].length];
+            System.arraycopy(charactersBlock.getMatrix()[i], 0, seqi, 0, charactersBlock.getMatrix()[i].length);
 
-                char[] seqj = charactersBlock.getRow(j);
-                //char[] seqj = new char[charactersBlock.getMatrix()[j].length];
-                //System.arraycopy(charactersBlock.getMatrix()[j], 0, seqj, 0, charactersBlock.getMatrix()[j].length);
+            for (int j = i + 1; j < ntax; j++) {
+
+                //char[] seqj = charactersBlock.getRow(j);
+                char[] seqj = new char[charactersBlock.getMatrix()[j].length];
+                System.arraycopy(charactersBlock.getMatrix()[j], 0, seqj, 0, charactersBlock.getMatrix()[j].length);
 
                 double distSquared = 0.0;
 
@@ -70,7 +63,7 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
                 int nValidLoci = 0;
 
 
-                for (int k = 1; k <= nLoci; k++) {
+                for (int k = 1; k < nLoci; k++) {
                     char ci1 = seqi[2 * k - 1];
                     char ci2 = seqi[2 * k];
                     char cj1 = seqj[2 * k - 1];
@@ -120,8 +113,8 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
                 if (getOptionUseSquareRoot())
                     dij = Math.sqrt(dij);
 
-                distancesBlock.set(i, j, Math.sqrt(dij));
-                distancesBlock.set(j, i, Math.sqrt(dij));
+                distancesBlock.set(i+1, j+1, Math.sqrt(dij));
+                distancesBlock.set(j+1, i+1, Math.sqrt(dij));
             }
             progressListener.incrementProgress();
         }

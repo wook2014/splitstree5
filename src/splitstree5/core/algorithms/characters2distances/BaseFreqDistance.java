@@ -8,12 +8,8 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
-/**
- * Created by Daria on 22.02.2017.
- */
 public class BaseFreqDistance extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
 
-    // todo not used, implement or delete
     private boolean optionIgnoreGaps = true;
 
     public final static String DESCRIPTION = "Calculates distances from differences in the base composition";
@@ -38,7 +34,7 @@ public class BaseFreqDistance extends Algorithm<CharactersBlock, DistancesBlock>
         for (int s = 1; s <= ntax; s++) {
             System.err.print(taxaBlock.getLabel(s) + "\t");
             double count = 0;
-            for (int i = 1; i < charactersBlock.getNchar()+1; i++) {
+            for (int i = 1; i <= charactersBlock.getNchar(); i++) {
                 int x = symbols.indexOf(charactersBlock.get(s, i));
                 if (x >= 0) {
                     double weight = charactersBlock.getCharacterWeight(i);
