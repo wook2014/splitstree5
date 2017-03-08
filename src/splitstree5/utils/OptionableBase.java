@@ -34,12 +34,15 @@ public class OptionableBase extends ANamed implements IOptionable {
     }
 
     public OptionableBase(String name) {
-        this(name, null);
+        if (name != null)
+            setName(name);
     }
 
     public OptionableBase(String name, String shortDescription) {
-        setName(name);
-        this.shortDescription = shortDescription;
+        if (name != null)
+            setName(name);
+        if (shortDescription != null)
+            setShortDescription(shortDescription);
     }
 
     /**

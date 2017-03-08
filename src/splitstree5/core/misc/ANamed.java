@@ -33,13 +33,12 @@ import java.util.List;
  */
 public class ANamed {
     private StringProperty name;
-    protected String shortDescription;
+    private StringProperty shortDescription;
 
     private String title;
     private ArrayList<Pair<String, String>> links;
 
     public ANamed() {
-        setName(Basic.getShortName(this.getClass()));
     }
 
     /**
@@ -48,25 +47,32 @@ public class ANamed {
      * @return name
      */
     public String getName() {
-        return name == null ? null : name.get();
+        return nameProperty().get();
     }
 
     public StringProperty nameProperty() {
         if (name == null)
-            name = new SimpleStringProperty();
+            name = new SimpleStringProperty(Basic.getShortName(this.getClass()));
         return name;
     }
 
     public void setName(String name) {
         nameProperty().set(name);
     }
+
+    public StringProperty shortDescriptionProperty() {
+        if (shortDescription == null)
+            shortDescription = new SimpleStringProperty();
+        return shortDescription;
+    }
+
     /**
      * gets a short description e.g. for a tooltip
      *
      * @return short description
      */
     public String getShortDescription() {
-        return shortDescription;
+        return shortDescriptionProperty().get();
     }
 
     /**
@@ -75,7 +81,7 @@ public class ANamed {
      * @param shortDescription
      */
     public void setShortDescription(String shortDescription) {
-        this.shortDescription = shortDescription;
+        shortDescriptionProperty().set(shortDescription);
     }
 
     /**
