@@ -8,8 +8,6 @@ import splitstree5.core.datablocks.DistancesBlock;
 
 public abstract class SequenceBasedDistance extends Algorithm<CharactersBlock, DistancesBlock> {
 
-    // todo : implements IFromChararacters, IToDistances for all extended classes
-
     abstract public double getOptionPInvar();
 
     abstract public void setOptionPInvar(double pinvar);
@@ -17,7 +15,5 @@ public abstract class SequenceBasedDistance extends Algorithm<CharactersBlock, D
     abstract public double getOptionGamma();
 
     abstract public void setOptionGamma(double gamma);
-
-    //abstract public Distances computeDist(Characters characters);
 
 }
