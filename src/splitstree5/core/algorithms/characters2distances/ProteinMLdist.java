@@ -1,5 +1,6 @@
 package splitstree5.core.algorithms.characters2distances;
 
+import javafx.beans.property.SimpleObjectProperty;
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
 import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.characters.CharactersType;
@@ -20,7 +21,9 @@ public class ProteinMLdist extends SequenceBasedDistance implements IFromCharara
 
     private PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates = PairwiseCompare.HandleAmbiguous.Ignore;
 
-    private String optionModel = "JTT";
+    public enum Model {cpREV45, Dayhoff, JTT, mtMAM, mtREV24, pmb, Rhodopsin, WAG}
+    private final SimpleObjectProperty<Model> optionModel = new SimpleObjectProperty<>(Model.JTT);
+
     private double optionPInvar = 0.0;
     private double optionGamma = 0.0;
     private boolean usePinvar = false;
@@ -47,13 +50,13 @@ public class ProteinMLdist extends SequenceBasedDistance implements IFromCharara
         progressListener.setTasks("Protein ML distance", "Init.");
         progressListener.setMaximum(npairs);
 
-        ProteinModel model = selectModel(getOptionModel());
+        ProteinModel model = selectModel(optionModel.get());
         model.setPinv(this.getOptionPInvar());
         model.setGamma(this.getOptionGamma());
 
-        if (model == null) {
+        /*if (model == null) {
             throw new SplitsException("Incorrect model name");
-        }
+        }*/
         int k = 0;
         for (int s = 1; s <= ntax; s++) {
             for (int t = s + 1; t <= ntax; t++) {
@@ -90,90 +93,46 @@ public class ProteinMLdist extends SequenceBasedDistance implements IFromCharara
         }
     }
 
-    /**
-     * Determine whether F84 corrected Hamming distances can be computed with given data.
-     *
-     * @param taxa the taxa
-     * @param ch   the characters matrix
-     * @return true, if method applies to given data
-     */
-    public boolean isApplicable(TaxaBlock taxa, CharactersBlock ch) {
-        return taxa != null && ch != null
-                && ch.getDataType().equals(CharactersType.protein);
-                //&& (ch.getFormat().getDatatype().equalsIgnoreCase(Characters.Datatypes.PROTEIN));
+    @Override
+    public boolean isApplicable(TaxaBlock taxa, CharactersBlock ch, DistancesBlock distancesBlock) {
+        return ch.getDataType().equals(CharactersType.protein);
+
     }
 
-
-
-    /**
-     * returns list of all known protein models
-     * <p/>
-     * In future, this list will be constructed using reflection
-     *
-     * @return methods
-     */
-
-    // todo not used?
-    public enum Model {cpREV45, Dayhoff, JTT, mtMAM, mtREV24, pmb, Rhodopsin, WAG}
-
-    public List selectionOptionModel() {
-        //TODO: Get list directly from class list.
-        List models = new LinkedList();
-        models.add("cpREV45");
-        models.add("Dayhoff");
-        models.add("JTT");
-        models.add("mtMAM");
-        models.add("mtREV24");
-        models.add("pmb");
-        models.add("Rhodopsin");
-        models.add("WAG");
-
-        return models;
-    }
-
-/*
- * Given the names of the protein model (in the list), this
- * initialises and returns the appropriate ProteinModel object.
- * In future, this can be done using reflection.
- *
- * Returns null if no model identified.
- */
-
-    public ProteinModel selectModel(String modelName) {
+    public ProteinModel selectModel(Model model) {
         ProteinModel themodel;
 
-        System.err.println("Model name = " + modelName);
+        System.err.println("Model name = " + model.toString());
         //TODO: Add all models
-        switch (modelName) {
-            case "cpREV45":
+        switch (model) {
+            case cpREV45:
                 themodel = new cpREV45Model();
                 break;
-            case "Dayhoff":
+            case Dayhoff:
                 themodel = new DayhoffModel();
                 break;
-            case "JTT":
+            case JTT:
                 themodel = new JTTmodel();
                 break;
-            case "mtMAM":
+            case mtMAM:
                 themodel = new mtMAMModel();
                 break;
-            case "mtREV24":
+            case mtREV24:
                 themodel = new mtREV24Model();
                 break;
-            case "pmb":
+            case pmb:
                 themodel = new pmbModel();
                 break;
-            case "Rhodopsin":
+            case Rhodopsin:
                 themodel = new RhodopsinModel();
                 break;
-            case "WAG":
+            case WAG:
                 themodel = new WagModel();
                 break;
             default:
                 themodel = null;
                 break;
         }
-
 
         return themodel;
     }
@@ -192,12 +151,12 @@ public class ProteinMLdist extends SequenceBasedDistance implements IFromCharara
         return true;
     }
 
-    public String getOptionModel() {
-        return optionModel;
+    public Model getOptionModel() {
+        return optionModel.get();
     }
 
-    public void setOptionModel(String optionModel) {
-        this.optionModel = optionModel;
+    public void setOptionModel(Model optionModel) {
+        this.optionModel.set(optionModel);
     }
 
     public double getOptionPInvar() {

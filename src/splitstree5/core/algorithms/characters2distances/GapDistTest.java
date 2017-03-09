@@ -16,12 +16,15 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class ProteinMLdistTest {
+/**
+ * Created by Daria on 05.03.2017.
+ */
+public class GapDistTest {
 
-    final ProteinMLdist pML = new ProteinMLdist();
+    final GapDist gapDist = new GapDist();
 
     @Test
-    public void testCompute() throws Exception {
+    public void compute() throws Exception {
 
         String inputFile = "test//characters//myosin_aa.nex";
         ProgressListener pl = new ProgressPercentage();
@@ -33,39 +36,19 @@ public class ProteinMLdistTest {
         taxaBlock.addTaxaByNames(taxonNames);
         DistancesBlock distancesBlock = new DistancesBlock();
 
-        pML.compute(pl, taxaBlock, charactersBlock, distancesBlock);
+        gapDist.compute(pl, taxaBlock, charactersBlock, distancesBlock);
 
         final TaxaBlock taxaFromSplitsTree4 = new TaxaBlock();
         final DistancesBlock distancesFromSplitsTree4 = new DistancesBlock();
         taxaFromSplitsTree4.addTaxaByNames
-                (DistancesNexusIO.parse(new NexusStreamParser(new FileReader("test//distances//myosinProtML.nex")),
+                (DistancesNexusIO.parse(new NexusStreamParser(new FileReader("test//distances//myosinGapDist.nex")),
                         taxaFromSplitsTree4, distancesFromSplitsTree4, null));
 
 
         for(int i = 0; i<distancesBlock.getDistances().length; i++){
-            assertArrayEquals(distancesFromSplitsTree4.getDistances()[i], distancesBlock.getDistances()[i], 0.000001);
+            assertArrayEquals(distancesFromSplitsTree4.getDistances()[i], distancesBlock.getDistances()[i], 0.0001);
         }
 
-        // test 2
-
-        List<String> taxonNames2 = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock, format);
-        taxaBlock.addTaxaByNames(taxonNames2);
-        DistancesBlock distancesBlock2 = new DistancesBlock();
-
-
-        pML.setOptionModel(ProteinMLdist.Model.pmb);
-        pML.compute(pl, taxaBlock, charactersBlock, distancesBlock2);
-
-        final TaxaBlock taxaFromSplitsTree4_2 = new TaxaBlock();
-        final DistancesBlock distancesFromSplitsTree4_2 = new DistancesBlock();
-        taxaFromSplitsTree4.addTaxaByNames
-                (DistancesNexusIO.parse(new NexusStreamParser(new FileReader("test//distances//myosinProtML_pmb.nex")),
-                        taxaFromSplitsTree4_2, distancesFromSplitsTree4_2, null));
-
-
-        for(int i = 0; i<distancesBlock2.getDistances().length; i++){
-            assertArrayEquals(distancesFromSplitsTree4_2.getDistances()[i], distancesBlock2.getDistances()[i], 0.000001);
-        }
     }
 
 }

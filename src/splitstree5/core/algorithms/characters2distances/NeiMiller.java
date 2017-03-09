@@ -13,14 +13,9 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
 
     public final static String DESCRIPTION = "Calculate distances from restriction-sites using Nei and Miller (1990).";
 
-    /**
-     * Determine whether Nei-Miller distances can be computed with given data.
-     *
-     * @param taxa  the taxa
-     * @param chars the characters matrix
-     * @return true, if method applies to given data
-     */
-    public boolean isApplicable(TaxaBlock taxa, CharactersBlock chars) {
+
+    @Override
+    public boolean isApplicable(TaxaBlock taxa, CharactersBlock chars, DistancesBlock distancesBlock) {
         /*return taxa != null && chars != null
                 && chars.getFormat().getDatatype().equalsIgnoreCase(Characters.Datatypes.STANDARD)
                 && chars.hasCharweights();*/

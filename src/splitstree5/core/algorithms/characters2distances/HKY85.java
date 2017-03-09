@@ -2,12 +2,14 @@ package splitstree5.core.algorithms.characters2distances;
 
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
+import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.models.HKY85model;
 
-public class HKY85 extends DNAdistance{
+public class HKY85 extends DNAdistance implements IFromChararacters, IToDistances {
 
     private double tratio = 2.0;
     public final static String DESCRIPTION = "Calculates distances using the Hasegawa, Kishino and Yano model";
