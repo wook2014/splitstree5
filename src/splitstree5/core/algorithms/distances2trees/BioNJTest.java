@@ -56,10 +56,10 @@ public class BioNJTest {
 
 
         // TEST 2
-        final String output2 = "(Tobacco:0.008836136,Rice:0.017279206,(Marchantia:0.010631585," +
+        final String output2 = "(Tobacco:0.008836137,Rice:0.017279206,(Marchantia:0.010631585," +
                 "(Chlorella:0.031623945,(Chlamydomonas:0.06331665," +
                 "((Euglena:0.0679614,Olithodiscus:0.06720343):0.008690414,Anacystis_nidulans:0.07131875):0.008862138)" +
-                ":0.0036498776):0.024320895):0.011652797);";
+                ":0.0036498776):0.024320895):0.011652796)";
 
 
         String[] names2 = {"Tobacco",

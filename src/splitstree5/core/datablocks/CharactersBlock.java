@@ -443,13 +443,24 @@ public class CharactersBlock extends ADataBlock {
      * @param t 1-based index
      * @return row, 1-based
      */
-    public char[] getRow(int t) {
-        if (t == matrix.length)
+    public char[] getRow1(int t) {
+        if (t == 0 || t == matrix.length)
             throw new IllegalArgumentException("" + t);
         final char[] src = matrix[t - 1];
         final char[] dest = new char[src.length + 1];
         System.arraycopy(src, 0, dest, 1, src.length);
         return dest;
+    }
+
+
+    /**
+     * gets row with coordinates starting at 0
+     *
+     * @param t 0-based index
+     * @return row, 0-based
+     */
+    public char[] getRow0(int t) {
+        return matrix[t];
     }
 }
 
