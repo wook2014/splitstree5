@@ -74,6 +74,51 @@ public class CodominantTest {
         for(int i = 0; i<distancesBlock2.getDistances().length; i++){
             assertArrayEquals(distancesFromSplitsTree4_2.getDistances()[i], distancesBlock2.getDistances()[i], 1.0);
         }
+
+        // test 3
+        String inputFile3 = "test//characters//diploid.nex";
+        ProgressListener pl3 = new ProgressPercentage();
+        TaxaBlock taxaBlock3 = new TaxaBlock();
+        CharactersBlock charactersBlock3 = new CharactersBlock();
+
+        CharactersNexusFormat format3 = new CharactersNexusFormat();
+        List<String> taxonNames3 = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile3)), taxaBlock3, charactersBlock3, format3);
+        taxaBlock3.addTaxaByNames(taxonNames3);
+        DistancesBlock distancesBlock3 = new DistancesBlock();
+
+        codominant.setOptionUseSquareRoot(false);
+        codominant.compute(pl3, taxaBlock3, charactersBlock3, distancesBlock3);
+
+        final TaxaBlock taxaFromSplitsTree43 = new TaxaBlock();
+        final DistancesBlock distancesFromSplitsTree43 = new DistancesBlock();
+        taxaFromSplitsTree43.addTaxaByNames
+                (DistancesNexusIO.parse(new NexusStreamParser(new FileReader("test//distances//diploidCod.nex")),
+                        taxaFromSplitsTree43, distancesFromSplitsTree43, null));
+
+
+        for(int i = 0; i<distancesBlock3.getDistances().length; i++){
+            assertArrayEquals(distancesFromSplitsTree43.getDistances()[i], distancesBlock3.getDistances()[i], 1.0);
+        }
+
+        // test 4
+
+        List<String> taxonNames4 = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile3)), taxaBlock3, charactersBlock3, format3);
+        taxaBlock3.addTaxaByNames(taxonNames4);
+        DistancesBlock distancesBlock4 = new DistancesBlock();
+
+        codominant.setOptionUseSquareRoot(true);
+        codominant.compute(pl3, taxaBlock3, charactersBlock3, distancesBlock4);
+
+        final TaxaBlock taxaFromSplitsTree44 = new TaxaBlock();
+        final DistancesBlock distancesFromSplitsTree44 = new DistancesBlock();
+        taxaFromSplitsTree44.addTaxaByNames
+                (DistancesNexusIO.parse(new NexusStreamParser(new FileReader("test//distances//diploidCodSqrt.nex")),
+                        taxaFromSplitsTree44, distancesFromSplitsTree44, null));
+
+
+        for(int i = 0; i<distancesBlock4.getDistances().length; i++){
+            assertArrayEquals(distancesFromSplitsTree44.getDistances()[i], distancesBlock4.getDistances()[i], 1.0);
+        }
     }
 
 }
