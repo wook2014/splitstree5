@@ -1,0 +1,12 @@
+BEGIN Characters;
+DIMENSIONS ntax=5 nchar=4;
+FORMAT
+	datatype='dna' missing=? gap=- symbols="ATCG" labels=left transpose=no interleave=no;
+MATRIX
+'1'     AAAA
+'2'     TTTT
+'3'     GGGG
+'4' 	ATCG
+'5'     CGCG
+;
+END; [Characters]

@@ -64,7 +64,9 @@ public class BaseFreqDistance extends Algorithm<CharactersBlock, DistancesBlock>
 
                 distancesBlock.set(s, t, p);
                 distancesBlock.set(t, s, p);
+                //System.out.print(p+" ");
             }
+            //System.out.println();
             progressListener.incrementProgress();
         }
         progressListener.close();

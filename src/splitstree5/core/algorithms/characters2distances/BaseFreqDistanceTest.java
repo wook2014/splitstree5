@@ -21,13 +21,41 @@ import static org.junit.Assert.*;
  */
 public class BaseFreqDistanceTest {
 
-    final BaseFreqDistance baseFreqDistance = new BaseFreqDistance();
+    final private BaseFreqDistance baseFreqDistance = new BaseFreqDistance();
 
     @Test
     public void compute() throws Exception {
 
+        String inputFile = "test//characters//mini.nex";
+        ProgressListener pl = new ProgressPercentage();
+        TaxaBlock taxaBlock = new TaxaBlock();
+        CharactersBlock charactersBlock = new CharactersBlock();
+
+        CharactersNexusFormat format = new CharactersNexusFormat();
+        List<String> taxonNames = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock, format);
+        taxaBlock.addTaxaByNames(taxonNames);
+        DistancesBlock distancesBlock = new DistancesBlock();
+
+        baseFreqDistance.compute(pl, taxaBlock, charactersBlock, distancesBlock);
+
+        final TaxaBlock taxaFromSplitsTree4 = new TaxaBlock();
+        final DistancesBlock distancesFromSplitsTree4 = new DistancesBlock();
+        taxaFromSplitsTree4.addTaxaByNames
+                (DistancesNexusIO.parse(new NexusStreamParser(new FileReader("test//distances//miniBaseFreq.nex")),
+                        taxaFromSplitsTree4, distancesFromSplitsTree4, null));
+
+
+        System.out.println("MATRIX");
+        for(int i = 0; i<distancesBlock.getDistances().length; i++){
+            for(int j = 0; j < distancesBlock.getDistances()[i].length; j++){
+                System.out.print(distancesBlock.get(i+1,j+1)+" ");
+            }
+            System.out.println();
+            assertArrayEquals(distancesFromSplitsTree4.getDistances()[i], distancesBlock.getDistances()[i], 0.0);
+        }
+
         // TEST 1
-        String inputFile = "test//characters//algae_rna_interleave.nex";
+        /*String inputFile = "test//characters//algae_rna_interleave.nex";
         ProgressListener pl = new ProgressPercentage();
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
@@ -46,12 +74,17 @@ public class BaseFreqDistanceTest {
                         taxaFromSplitsTree4, distancesFromSplitsTree4, null));
 
 
+        System.out.println("MATRIX");
         for(int i = 0; i<distancesBlock.getDistances().length; i++){
+            for(int j = 0; j < distancesBlock.getDistances()[i].length; j++){
+                System.out.print(distancesBlock.get(i+1,j+1)+" ");
+            }
+            System.out.println();
             assertArrayEquals(distancesFromSplitsTree4.getDistances()[i], distancesBlock.getDistances()[i], 0.001);
-        }
+        }*/
 
         // TEST 2
-        String inputFile2 = "test//characters//myosin_aa.nex";
+        /*String inputFile2 = "test//characters//myosin_aa.nex";
         ProgressListener pl2 = new ProgressPercentage();
         TaxaBlock taxaBlock2 = new TaxaBlock();
         CharactersBlock charactersBlock2 = new CharactersBlock();
@@ -72,7 +105,7 @@ public class BaseFreqDistanceTest {
 
         for(int i = 0; i<distancesBlock2.getDistances().length; i++){
             assertArrayEquals(distancesFromSplitsTree4_2.getDistances()[i], distancesBlock2.getDistances()[i], 0.01);
-        }
+        }*/
 
     }
 
