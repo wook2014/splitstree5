@@ -21,13 +21,23 @@ package splitstree5.core.algorithms.distances2trees;
 
 import jloda.util.ProgressListener;
 import jloda.util.ProgressPercentage;
+import jloda.util.parse.NexusStreamParser;
 import org.junit.Test;
+import splitstree5.core.algorithms.characters2distances.Uncorrected_P;
+import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.Taxon;
+import splitstree5.io.nexus.CharactersNexusFormat;
+import splitstree5.io.nexus.CharactersNexusIO;
+import splitstree5.io.nexus.DistancesNexusIO;
+
+import java.io.FileReader;
+import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertArrayEquals;
 
 /**
  * nj test
@@ -60,12 +70,18 @@ public class NeighborJoiningTest {
                 {8, 11, 8, 9, 8, 0}};
         distancesBlock1.set(dist1);
 
-        // TEST 2
-        final String output2 = "(Tobacco:0.008836136,Rice:0.017279206,(Marchantia:0.010631585," +
+        // TEST 2-3
+        final String outputFromChar = "(Tobacco:0.008836136,Rice:0.017279206,(Marchantia:0.010631585," +
                 "((Chlamydomonas:0.06331665,((Euglena:0.0679614,Olithodiscus:0.06720343)" +
                 ":0.008690414,Anacystis_nidulans:0.07131875):0.008862138):0.0036498776,Chlorella:0.031623945)" +
-                ":0.024320895):0.011652797);";
+                ":0.024320895):0.011652797)";
 
+        final String outputDirect = "(Tobacco:0.008836137,Rice:0.017279206,(Marchantia:0.010631586," +
+                "(Chlorella:0.031623945,(((Euglena:0.0679614,Olithodiscus:0.06720344):0.00869041," +
+                "Anacystis_nidulans:0.07131875):0.0088621415,Chlamydomonas:0.06331665):0.0036498758):0.024320897):0.011652796)";
+
+
+        // DIRECT FROM MATRIX
         String[] names2 = {"Tobacco",
                 "Rice",
                 "Marchantia",
@@ -93,6 +109,27 @@ public class NeighborJoiningTest {
                 {0.14052288, 0.14472252, 0.132753, 0.15611354, 0.11589404, 0.13516484, 0.13601741, 0.0}};
         distancesBlock2.set(dist2);
 
+        // FROM CHARACTERS
+
+        String inputFile = "test//characters//algae_rna_interleave.nex";
+        ProgressListener pl = new ProgressPercentage();
+        TaxaBlock taxaBlock3 = new TaxaBlock();
+        CharactersBlock charactersBlock3 = new CharactersBlock();
+
+        CharactersNexusFormat format = new CharactersNexusFormat();
+        List<String> taxonNames = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile)),
+                taxaBlock3, charactersBlock3, format);
+        taxaBlock3.addTaxaByNames(taxonNames);
+
+        DistancesBlock distancesBlock3 = new DistancesBlock();
+        final Uncorrected_P uncorrected_p = new Uncorrected_P();
+        uncorrected_p.compute(pl, taxaBlock3, charactersBlock3, distancesBlock3);
+
+        // CHECK MATRIX
+        for(int i = 0; i<distancesBlock3.getDistances().length; i++){
+            assertArrayEquals(distancesBlock2.getDistances()[i], distancesBlock3.getDistances()[i], 0.000001);
+            //assertArrayEquals(distancesBlock2.getDistances()[i], distancesBlock3.getDistances()[i], 0.0);
+        }
 
         // apply algorithm
 
@@ -100,15 +137,22 @@ public class NeighborJoiningTest {
         TreesBlock treesBlock1 = new TreesBlock();
         ProgressListener pl2 = new ProgressPercentage();
         TreesBlock treesBlock2 = new TreesBlock();
+        ProgressListener pl3 = new ProgressPercentage();
+        TreesBlock treesBlock3 = new TreesBlock();
 
-        System.out.println("Test 1");
         nj.compute(pl1, taxaBlock1, distancesBlock1, treesBlock1);
+        System.out.println("Test 1");
         System.out.println("output: " + treesBlock1.getTrees().get(0).toString());
         assertEquals(output1, treesBlock1.getTrees().get(0).toString());
 
-        System.out.println("Test 2");
         nj.compute(pl2, taxaBlock2, distancesBlock2, treesBlock2);
+        System.out.println("Test 2");
         System.out.println("output: " + treesBlock2.getTrees().get(0).toString());
-        assertEquals(output2, treesBlock2.getTrees().get(0).toString());
+        assertEquals(outputDirect, treesBlock2.getTrees().get(0).toString());
+
+        nj.compute(pl3, taxaBlock3, distancesBlock3, treesBlock3);
+        System.out.println("Test 3");
+        System.out.println("output: " + treesBlock3.getTrees().get(0).toString());
+        assertEquals(outputFromChar, treesBlock3.getTrees().get(0).toString());
     }
 }
