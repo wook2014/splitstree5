@@ -31,6 +31,37 @@ public class CodominantTest {
     @Test
     public void compute() throws Exception {
 
+        String inputFile0 = "test//characters//miniDiploid.nex";
+        ProgressListener pl0 = new ProgressPercentage();
+        TaxaBlock taxaBlock0 = new TaxaBlock();
+        CharactersBlock charactersBlock0 = new CharactersBlock();
+
+        CharactersNexusFormat format0 = new CharactersNexusFormat();
+        List<String> taxonNames0 = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile0)), taxaBlock0,
+                charactersBlock0, format0);
+        taxaBlock0.addTaxaByNames(taxonNames0);
+        DistancesBlock distancesBlock0 = new DistancesBlock();
+
+        codominant.compute(pl0, taxaBlock0, charactersBlock0, distancesBlock0);
+
+        for(int i = 0; i < distancesBlock0.getDistances().length; i++){
+            for(int j = 0; j< distancesBlock0.getDistances()[i].length; j++){
+                System.out.print(distancesBlock0.getDistances()[i][j]+" ");
+            }
+            System.out.println();
+        }
+
+        final TaxaBlock taxaFromSplitsTree40 = new TaxaBlock();
+        final DistancesBlock distancesFromSplitsTree40 = new DistancesBlock();
+        taxaFromSplitsTree40.addTaxaByNames
+                (DistancesNexusIO.parse(new NexusStreamParser(new FileReader("test//distances//miniDiploidCod.nex")),
+                        taxaFromSplitsTree40, distancesFromSplitsTree40, null));
+
+
+        for(int i = 0; i<distancesBlock0.getDistances().length; i++){
+            assertArrayEquals(distancesFromSplitsTree40.getDistances()[i], distancesBlock0.getDistances()[i], 0.000001);
+        }
+
         // test 1
         String inputFile = "test//characters//algae_rna_interleave.nex";
         ProgressListener pl = new ProgressPercentage();
@@ -52,7 +83,7 @@ public class CodominantTest {
 
 
         for(int i = 0; i<distancesBlock.getDistances().length; i++){
-            assertArrayEquals(distancesFromSplitsTree4.getDistances()[i], distancesBlock.getDistances()[i], 1.0);
+            assertArrayEquals(distancesFromSplitsTree4.getDistances()[i], distancesBlock.getDistances()[i], 0.0001);
         }
 
         // test 2
