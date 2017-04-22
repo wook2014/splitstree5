@@ -19,8 +19,7 @@ import java.util.Iterator;
  */
 public class TreesUtilities {
 
-    //todo : replace classes imported from st4
-
+    // no translate, ioexeption
     /**
      * verify that tree, translation and taxa fit together
      *

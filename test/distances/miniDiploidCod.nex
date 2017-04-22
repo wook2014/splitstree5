@@ -1,0 +1,11 @@
+BEGIN Distances;
+DIMENSIONS ntax=5;
+FORMAT labels=left diagonal triangle=both;
+MATRIX
+[1] '1a'   0.0 4.0 4.0 3.4641016 2.828427
+[2] '2a'   4.0 0.0 4.0 3.4641016 2.828427
+[3] '3a'   4.0 4.0 0.0 2.0 2.828427
+[4] '4a'   3.4641016 3.4641016 2.0 0.0 2.0
+[5] '5a'   2.828427 2.828427 2.828427 2.0 0.0
+;
+END; [Distances]

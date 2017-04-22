@@ -1,0 +1,41 @@
+BEGIN Characters;
+DIMENSIONS ntax = 10 nchar=4;
+FORMAT
+	diploid datatype='dna' missing=? gap=- symbols="ATCG" labels=left transpose=no interleave=no;
+MATRIX
+'1a'     AAAA
+'1b'     TTTT
+'2a'     TTTT
+'2b'     AAAA
+'3a'     GGGG
+'3b'     CCCC
+'4a'     CGCG
+'4b'     GCGC
+'5a' 	 ATCG
+'5b'     TAGC
+;
+END; [Characters]
+
+[#nexus
+
+ begin Taxa;
+ dimensions ntax=10;
+ end;
+
+ BEGIN Characters;
+ DIMENSIONS nchar=4;
+ FORMAT
+ 	diploid datatype='dna' missing=? gap=- symbols="ATCG" labels=left transpose=no interleave=no;
+ MATRIX
+ '1a'     AAAA
+ '1b'     TTTT
+ '2a'     TTTT
+ '2b'     AAAA
+ '3a'     GGGG
+ '3b'     CCCC
+ '4a'     CGCG
+ '4b'     GCGC
+ '5a' 	  ATCG
+ '5b'     TAGC
+ ;
+ END; [Characters]]

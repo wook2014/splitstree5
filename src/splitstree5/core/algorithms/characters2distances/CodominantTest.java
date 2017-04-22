@@ -25,12 +25,23 @@ public class CodominantTest {
 
     @Test
     public void isApplicable() throws Exception {
-        //TODO
+        //TODO shouldn't it be used only for nucleotide?
+
+        String inputFile2 = "test//characters//algae_rna_interleave.nex";
+        TaxaBlock taxaBlock2 = new TaxaBlock();
+        CharactersBlock charactersBlock2 = new CharactersBlock();
+        CharactersNexusFormat format2 = new CharactersNexusFormat();
+        List<String> taxonNames2 = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile2)), taxaBlock2, charactersBlock2, format2);
+        taxaBlock2.addTaxaByNames(taxonNames2);
+        DistancesBlock distancesBlock2 = new DistancesBlock();
+
+        assertEquals(false, codominant.isApplicable(taxaBlock2, charactersBlock2, distancesBlock2));
     }
 
     @Test
     public void compute() throws Exception {
 
+        // TEST 0
         String inputFile0 = "test//characters//miniDiploid.nex";
         ProgressListener pl0 = new ProgressPercentage();
         TaxaBlock taxaBlock0 = new TaxaBlock();
@@ -44,13 +55,6 @@ public class CodominantTest {
 
         codominant.compute(pl0, taxaBlock0, charactersBlock0, distancesBlock0);
 
-        for(int i = 0; i < distancesBlock0.getDistances().length; i++){
-            for(int j = 0; j< distancesBlock0.getDistances()[i].length; j++){
-                System.out.print(distancesBlock0.getDistances()[i][j]+" ");
-            }
-            System.out.println();
-        }
-
         final TaxaBlock taxaFromSplitsTree40 = new TaxaBlock();
         final DistancesBlock distancesFromSplitsTree40 = new DistancesBlock();
         taxaFromSplitsTree40.addTaxaByNames
@@ -62,14 +66,15 @@ public class CodominantTest {
             assertArrayEquals(distancesFromSplitsTree40.getDistances()[i], distancesBlock0.getDistances()[i], 0.000001);
         }
 
-        // test 1
-        String inputFile = "test//characters//algae_rna_interleave.nex";
+        // + Test
+        String inputFile = "test//characters//mini_rightDiploid.nex";
         ProgressListener pl = new ProgressPercentage();
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
 
         CharactersNexusFormat format = new CharactersNexusFormat();
-        List<String> taxonNames = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock, format);
+        List<String> taxonNames = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock,
+                charactersBlock, format);
         taxaBlock.addTaxaByNames(taxonNames);
         DistancesBlock distancesBlock = new DistancesBlock();
 
@@ -78,32 +83,58 @@ public class CodominantTest {
         final TaxaBlock taxaFromSplitsTree4 = new TaxaBlock();
         final DistancesBlock distancesFromSplitsTree4 = new DistancesBlock();
         taxaFromSplitsTree4.addTaxaByNames
-                (DistancesNexusIO.parse(new NexusStreamParser(new FileReader("test//distances//algaeCod.nex")),
+                (DistancesNexusIO.parse(new NexusStreamParser(new FileReader("test//distances//mini_rightDiploidCod.nex")),
                         taxaFromSplitsTree4, distancesFromSplitsTree4, null));
 
-
         for(int i = 0; i<distancesBlock.getDistances().length; i++){
-            assertArrayEquals(distancesFromSplitsTree4.getDistances()[i], distancesBlock.getDistances()[i], 0.0001);
+            assertArrayEquals(distancesFromSplitsTree4.getDistances()[i], distancesBlock.getDistances()[i], 0.000001);
+        }
+
+
+        // test 1
+        String inputFile1 = "test//characters//algae_rna_interleave.nex";
+        ProgressListener pl1 = new ProgressPercentage();
+        TaxaBlock taxaBlock1 = new TaxaBlock();
+        CharactersBlock charactersBlock1 = new CharactersBlock();
+
+        CharactersNexusFormat format1 = new CharactersNexusFormat();
+        List<String> taxonNames1 = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile1)), taxaBlock1,
+                charactersBlock1, format1);
+        taxaBlock1.addTaxaByNames(taxonNames1);
+        DistancesBlock distancesBlock1 = new DistancesBlock();
+
+        codominant.compute(pl1, taxaBlock1, charactersBlock1, distancesBlock1);
+
+        final TaxaBlock taxaFromSplitsTree41 = new TaxaBlock();
+        final DistancesBlock distancesFromSplitsTree41 = new DistancesBlock();
+        taxaFromSplitsTree41.addTaxaByNames
+                (DistancesNexusIO.parse(new NexusStreamParser(new FileReader("test//distances//algaeCod.nex")),
+                        taxaFromSplitsTree41, distancesFromSplitsTree41, null));
+
+
+        for(int i = 0; i<distancesBlock1.getDistances().length; i++){
+            assertArrayEquals(distancesFromSplitsTree41.getDistances()[i], distancesBlock1.getDistances()[i], 0.000001);
         }
 
         // test 2
 
-        List<String> taxonNames2 = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock, format);
-        taxaBlock.addTaxaByNames(taxonNames2);
+        List<String> taxonNames2 = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile1)),
+                taxaBlock1, charactersBlock1, format1);
+        taxaBlock1.addTaxaByNames(taxonNames2);
         DistancesBlock distancesBlock2 = new DistancesBlock();
 
         codominant.setOptionUseSquareRoot(true);
-        codominant.compute(pl, taxaBlock, charactersBlock, distancesBlock2);
+        codominant.compute(pl1, taxaBlock1, charactersBlock1, distancesBlock2);
 
         final TaxaBlock taxaFromSplitsTree4_2 = new TaxaBlock();
         final DistancesBlock distancesFromSplitsTree4_2 = new DistancesBlock();
-        taxaFromSplitsTree4.addTaxaByNames
+        taxaFromSplitsTree41.addTaxaByNames
                 (DistancesNexusIO.parse(new NexusStreamParser(new FileReader("test//distances//algaeCodSqrt.nex")),
                         taxaFromSplitsTree4_2, distancesFromSplitsTree4_2, null));
 
 
         for(int i = 0; i<distancesBlock2.getDistances().length; i++){
-            assertArrayEquals(distancesFromSplitsTree4_2.getDistances()[i], distancesBlock2.getDistances()[i], 1.0);
+            assertArrayEquals(distancesFromSplitsTree4_2.getDistances()[i], distancesBlock2.getDistances()[i], 0.000001);
         }
 
         // test 3
@@ -113,7 +144,8 @@ public class CodominantTest {
         CharactersBlock charactersBlock3 = new CharactersBlock();
 
         CharactersNexusFormat format3 = new CharactersNexusFormat();
-        List<String> taxonNames3 = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile3)), taxaBlock3, charactersBlock3, format3);
+        List<String> taxonNames3 = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile3)), taxaBlock3,
+                charactersBlock3, format3);
         taxaBlock3.addTaxaByNames(taxonNames3);
         DistancesBlock distancesBlock3 = new DistancesBlock();
 
@@ -128,12 +160,13 @@ public class CodominantTest {
 
 
         for(int i = 0; i<distancesBlock3.getDistances().length; i++){
-            assertArrayEquals(distancesFromSplitsTree43.getDistances()[i], distancesBlock3.getDistances()[i], 1.0);
+            assertArrayEquals(distancesFromSplitsTree43.getDistances()[i], distancesBlock3.getDistances()[i], 0.000001);
         }
 
         // test 4
 
-        List<String> taxonNames4 = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile3)), taxaBlock3, charactersBlock3, format3);
+        List<String> taxonNames4 = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile3)), taxaBlock3,
+                charactersBlock3, format3);
         taxaBlock3.addTaxaByNames(taxonNames4);
         DistancesBlock distancesBlock4 = new DistancesBlock();
 
@@ -148,7 +181,7 @@ public class CodominantTest {
 
 
         for(int i = 0; i<distancesBlock4.getDistances().length; i++){
-            assertArrayEquals(distancesFromSplitsTree44.getDistances()[i], distancesBlock4.getDistances()[i], 1.0);
+            assertArrayEquals(distancesFromSplitsTree44.getDistances()[i], distancesBlock4.getDistances()[i], 0.000001);
         }
     }
 

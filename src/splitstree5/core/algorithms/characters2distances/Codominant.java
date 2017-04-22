@@ -30,13 +30,14 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 
-        distancesBlock.setNtax(taxaBlock.getNtax());
-
         char missingchar = charactersBlock.getMissingCharacter();
         char gapchar = charactersBlock.getGapCharacter();
 
-
         int ntax = taxaBlock.getNtax();
+        distancesBlock.setNtax(ntax);
+
+        progressListener.setTasks(TASK, "Init.");
+        progressListener.setMaximum(ntax);
 
         for (int i = 0; i < ntax; i++) {
             char[] seqi = charactersBlock.getRow0(i);
@@ -53,94 +54,10 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
 
                 for (int k = 0; k < nLoci; k++) {
 
-                    char ci1 = seqi[2 * k];System.out.println("ci1 "+(2*k)+" "+ci1);
-                    char ci2 = seqi[2 * k+1];System.out.println("ci2 "+(2*k+1)+" "+ci2);
-                    char cj1 = seqj[2 * k];System.out.println("cj1 "+(2*k)+" "+cj1);
-                    char cj2 = seqj[2 * k+1];System.out.println("cj2 "+(2*k+1)+" "+cj2);
-
-                    if (ci1 == missingchar || ci2 == missingchar || cj1 == missingchar || cj2 == missingchar)
-                        continue;
-                    if (ci1 == gapchar || ci2 == gapchar || cj1 == gapchar || cj2 == gapchar)
-                        continue;
-
-                    nValidLoci++;
-
-                    int diff;
-
-                    if (ci1 == ci2) { //AA vs ...
-                        if (cj1 == cj2) {
-                            if (ci1 != cj1)
-                                diff = 4;   //AA vs BB
-                            else
-                                diff = 0;  //AA vs AA
-                        } else {  //AA vs XY
-                            if (ci1 == cj1 || ci1 == cj2)
-                                diff = 1; //AA vs AY
-                            else
-                                diff = 3; //AA vs BC
-                        }
-                    } else {     //AB vs ...
-                        if (cj1 == cj2) {  //AB vs XX
-                            if (ci1 == cj1 && ci2 == cj1)
-                                diff = 1;   //AB vs AA
-                            else
-                                diff = 3;   //AB vs CC
-                        } else {  //AB vs XY
-                            if ((ci1 == cj1 && ci2 == cj2) || (ci1 == cj2 && ci2 == cj1))
-                                diff = 0; //AB vs BA or AB vs AB
-                            else if (ci1 == cj1 || ci2 == cj2 || ci1 == cj2 || ci2 == cj1)
-                                diff = 1;   //AB vs AC
-                            else
-                                diff = 2;   //AB vs CD
-                        }
-                    }
-
-                    distSquared += (double) diff;
-                }
-
-                double dij = nchar / 2.0 * distSquared / (double) nValidLoci;
-                if (getOptionUseSquareRoot())
-                    dij = Math.sqrt(dij);
-
-                distancesBlock.set(i+1, j+1, Math.sqrt(dij));
-                distancesBlock.set(j+1, i+1, Math.sqrt(dij));
-            }
-        }
-        /*char missingchar = charactersBlock.getMissingCharacter();
-        char gapchar = charactersBlock.getGapCharacter();
-
-
-        int ntax = taxaBlock.getNtax();
-        distancesBlock.setNtax(ntax);
-
-        progressListener.setTasks(TASK, "Init.");
-        progressListener.setMaximum(ntax);
-
-        for (int i = 0; i < ntax; i++) {
-            char[] seqi = charactersBlock.getRow0(i);
-
-            //char[] seqi = new char[charactersBlock.getMatrix()[i].length];
-            //System.arraycopy(charactersBlock.getMatrix()[i], 0, seqi, 0, charactersBlock.getMatrix()[i].length);
-
-            for (int j = i + 1; j < ntax; j++) {
-
-                char[] seqj = charactersBlock.getRow0(j);
-                //char[] seqj = new char[charactersBlock.getMatrix()[j].length];
-                //System.arraycopy(charactersBlock.getMatrix()[j], 0, seqj, 0, charactersBlock.getMatrix()[j].length);
-
-                double distSquared = 0.0;
-
-
-                int nchar = charactersBlock.getNchar();
-                int nLoci = nchar / 2;
-                int nValidLoci = 0;
-
-
-                for (int k = 1; k < nLoci; k++) {
-                    char ci1 = seqi[2 * k - 1];
-                    char ci2 = seqi[2 * k];
-                    char cj1 = seqj[2 * k - 1];
-                    char cj2 = seqj[2 * k];
+                    char ci1 = seqi[2 * k];
+                    char ci2 = seqi[2 * k+1];
+                    char cj1 = seqj[2 * k];
+                    char cj2 = seqj[2 * k+1];
 
                     if (ci1 == missingchar || ci2 == missingchar || cj1 == missingchar || cj2 == missingchar)
                         continue;
@@ -191,7 +108,7 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
             }
             progressListener.incrementProgress();
         }
-        progressListener.close();*/
+        progressListener.close();
     }
 
     // GETTER AND SETTER
