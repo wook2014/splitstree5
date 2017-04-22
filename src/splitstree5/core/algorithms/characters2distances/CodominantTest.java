@@ -26,7 +26,6 @@ public class CodominantTest {
     @Test
     public void isApplicable() throws Exception {
         //TODO shouldn't it be used only for nucleotide?
-
         String inputFile2 = "test//characters//algae_rna_interleave.nex";
         TaxaBlock taxaBlock2 = new TaxaBlock();
         CharactersBlock charactersBlock2 = new CharactersBlock();
