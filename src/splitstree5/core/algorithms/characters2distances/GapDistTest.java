@@ -46,7 +46,7 @@ public class GapDistTest {
 
 
         for(int i = 0; i<distancesBlock.getDistances().length; i++){
-            assertArrayEquals(distancesFromSplitsTree4.getDistances()[i], distancesBlock.getDistances()[i], 0.0001);
+            assertArrayEquals(distancesFromSplitsTree4.getDistances()[i], distancesBlock.getDistances()[i], 0.0000001);
         }
 
     }

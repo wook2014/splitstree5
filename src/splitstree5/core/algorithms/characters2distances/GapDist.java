@@ -24,12 +24,6 @@ public class GapDist extends Algorithm<CharactersBlock, DistancesBlock> implemen
         return DESCRIPTION;
     }
 
-
-    /*public boolean isApplicable(TaxaBlock taxa, CharactersBlock c) {
-        //return c.isValid() && taxa.isValid();
-        return true;
-    }*/
-
     @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
@@ -45,21 +39,21 @@ public class GapDist extends Algorithm<CharactersBlock, DistancesBlock> implemen
         progressListener.setTasks("Gap distance", "Init.");
         progressListener.setMaximum(ntax);
 
-
+        //todo getrow
         for (t = 0; t < ntax; t++) {
-            //char[] row_t = charactersBlock.getRow(t);
-            char[] row_t = new char[charactersBlock.getMatrix()[t].length];
-            System.arraycopy(charactersBlock.getMatrix()[t], 0, row_t, 0, charactersBlock.getMatrix()[t].length);
+            char[] row_t = charactersBlock.getRow0(t);
+            //char[] row_t = new char[charactersBlock.getMatrix()[t].length];
+            //System.arraycopy(charactersBlock.getMatrix()[t], 0, row_t, 0, charactersBlock.getMatrix()[t].length);
 
             for (s = t + 1; s < ntax; s++) {
-                //char[] row_s = charactersBlock.getRow(s);
-                char[] row_s = new char[charactersBlock.getMatrix()[s].length];
-                System.arraycopy(charactersBlock.getMatrix()[s], 0, row_s, 0, charactersBlock.getMatrix()[s].length);
+                char[] row_s = charactersBlock.getRow0(s);
+                //char[] row_s = new char[charactersBlock.getMatrix()[s].length];
+                //System.arraycopy(charactersBlock.getMatrix()[s], 0, row_s, 0, charactersBlock.getMatrix()[s].length);
 
                 double sim = 0;
                 double len = 0;
                 char sc, tc;
-                for (c = 1; c < nchar; c++) {
+                for (c = 0; c < nchar; c++) {
                     sc = row_s[c];
                     tc = row_t[c];
 
@@ -72,7 +66,7 @@ public class GapDist extends Algorithm<CharactersBlock, DistancesBlock> implemen
                 double v = 1.0;
                 if (sim != 0 && len != 0) v = (1.0 - sim / len);
                 distancesBlock.set(s+1, t+1, v);
-                //todo distancesBlock.set(t, s, v);?
+                distancesBlock.set(t+1, s+1, v);
             }
             progressListener.incrementProgress();
         }
