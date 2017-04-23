@@ -26,6 +26,8 @@ public class NeiMillerTest {
     @Test
     public void compute() throws Exception {
 
+        assertEquals(2,4);
+
         /*String inputFile = "test//characters//myosin_aa.nex";
         ProgressListener pl = new ProgressPercentage();
         TaxaBlock taxaBlock = new TaxaBlock();

@@ -26,6 +26,7 @@ public class Nei_Li_RestrictionDistanceTest {
     @Test
     public void compute() throws Exception {
 
+        assertEquals(2,4);
         /*String inputFile = "test//characters//dolphins_binary.nex";
         ProgressListener pl = new ProgressPercentage();
         TaxaBlock taxaBlock = new TaxaBlock();

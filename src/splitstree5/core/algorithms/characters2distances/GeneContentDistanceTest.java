@@ -66,7 +66,7 @@ public class GeneContentDistanceTest {
 
 
         for(int i = 0; i<distancesBlock2.getDistances().length; i++){
-            assertArrayEquals(distancesFromSplitsTree4_2.getDistances()[i], distancesBlock2.getDistances()[i], 0.00001);
+            assertArrayEquals(distancesFromSplitsTree4_2.getDistances()[i], distancesBlock2.getDistances()[i], 0.000001);
         }
 
     }
