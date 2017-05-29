@@ -1,25 +1,5 @@
-/*
- *  Copyright (C) 2016 Daniel H. Huson
- *
- *  (Some files contain contributions from other authors, who are then mentioned separately.)
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package splitstree5.core.algorithms.distances2splits;
 
-import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromDistances;
@@ -31,15 +11,15 @@ import splitstree5.core.misc.ASplit;
 
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.List;
 
-/**
- * split decomposition
- * Created by huson on 12/30/16.
- */
-public class SplitDecomposition extends Algorithm<DistancesBlock, SplitsBlock> implements IFromDistances, IToSplits {
+public class BunemanTree extends Algorithm<DistancesBlock, SplitsBlock> implements IFromDistances, IToSplits {
+
+    public final static String DESCRIPTION = "Computes the Buneman tree (Buneman 1971)";
+
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, DistancesBlock distancesBlock, SplitsBlock splitsBlock) throws InterruptedException, CanceledException {
+    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distancesBlock, SplitsBlock splitsBlock)
+            throws Exception {
+
         splitsBlock.getSplits().clear();
 
         ArrayList<ASplit> previousSplits = new ArrayList<>(); // list of previously computed splits
@@ -47,8 +27,8 @@ public class SplitDecomposition extends Algorithm<DistancesBlock, SplitsBlock> i
 
         // ProgressDialog pd = new ProgressDialog("Split Decomposition...",""); //Set new progress bar.
         // doc.setProgressListener(pd);
-        progress.setMaximum(taxaBlock.getNtax());    //initialize maximum progress
-        progress.setProgress(0);
+        progressListener.setMaximum(taxaBlock.getNtax());    //initialize maximum progress
+        progressListener.setProgress(0);
 
         final BitSet previousTaxa = new BitSet(); // taxa already processed
         final int ntax = taxaBlock.getNtax();
@@ -97,17 +77,78 @@ public class SplitDecomposition extends Algorithm<DistancesBlock, SplitsBlock> i
 
             previousTaxa.set(t);
 
-            progress.setProgress(t);
+            progressListener.setProgress(t);
         }
 
 
         // copy splits to splits
-        splitsBlock.setFit(computeFit(distancesBlock, previousSplits));
+        //splitsBlock.setFit(computeFit(distancesBlock, previousSplits));
         splitsBlock.getSplits().addAll(previousSplits);
 
-        progress.setProgress(ntax);   //set progress to 100%
-        progress.close();
+        progressListener.setProgress(ntax);   //set progress to 100%
+        progressListener.close();
+
+        /*ASplit previous = new ASplit(new BitSet(), distancesBlock.getNtax());
+        ASplit current;
+        BitSet taxa_prev = new BitSet(); // taxa already processed
+
+
+        progressListener.setTasks("Buneman tree","Init.");
+        progressListener.setMaximum(taxaBlock.getNtax());
+
+        for (int t = 1; t <= distancesBlock.getNtax(); t++) {
+            // initally, just add 1 to set of previous taxa
+            if (t == 1) {
+                taxa_prev.set(t);
+                continue;
+            }
+
+            current = new ASplit(new BitSet(), t); // restart current list of splits
+
+            // Does t vs previous set of taxa form a split?
+            BitSet At = new BitSet(); // taxa set
+            At.set(t);
+
+            float wgt = getIsolationIndex(t, At, taxa_prev, distancesBlock);
+            if (wgt > 0) {
+                current.add((TaxaSet) (At.clone()), wgt);
+            }
+
+            // consider all previously computed splits:
+            for (int s = 1; s <= previous.size(); getNsplits(); s++) {
+                BitSet A = previous.get(s);
+                BitSet B = A.getComplement(t - 1);
+
+                // is Au{t} vs B a split?
+                A.set(t);
+                wgt = Math.min(previous.getWeight(s), getIsolationIndex(t, A, B, d));
+                if (wgt > 0) {
+                    current.add((TaxaSet) (A.clone()), wgt);
+                }
+                A.unset(t);
+
+                // is A vs Bu{t} a split?
+                B.set(t);
+                wgt = Math.min(previous.getWeight(s), getIsolationIndex(t, B, A, d));
+                if (wgt > 0) {
+                    current.add((TaxaSet) (B.clone()), wgt);
+                }
+            }
+            previous = current;
+            taxa_prev.set(t);
+            doc.notifySetProgress(t);
+        }
+
+        // copy splits to splits
+        Splits splits = new Splits(taxa.getNtax());
+        splits.addSplitsSet(previous);
+        splits.getProperties().setCompatibility(Splits.Properties.COMPATIBLE);
+        //System.err.println(" "+splits.splits.getNsplits());
+        doc.notifySetProgress(taxa.getNtax());   //set progress to 100%
+        return splits;*/
+
     }
+
 
     /**
      * Returns the isolation index for Au{x} vs B
@@ -123,7 +164,7 @@ public class SplitDecomposition extends Algorithm<DistancesBlock, SplitsBlock> i
 
         for (int i = 1; i <= t; i++) {
             if (A.get(i)) {
-                for (int j = 1; j <= t; j++) {
+                for (int j = 1; j <= t; j++)
                     if (B.get(j)) {
                         for (int k = j; k <= t; k++) {
                             if (B.get(k)) {
@@ -136,7 +177,6 @@ public class SplitDecomposition extends Algorithm<DistancesBlock, SplitsBlock> i
                             }
                         }
                     }
-                }
             }
         }
         return min_val;
@@ -153,34 +193,9 @@ public class SplitDecomposition extends Algorithm<DistancesBlock, SplitsBlock> i
      * @return the isolation index
      */
     public static float getIsolationIndex(int i, int j, int k, int m, DistancesBlock d) {
-        return (float) (0.5 * (Math.max(d.get(i, k) + d.get(j, m), d.get(i, m) + d.get(j, k)) - d.get(i, j) - d.get(k, m)));
-    }
-
-    /**
-     * computes the fit
-     *
-     * @param distancesBlock
-     * @param splits
-     * @return fit, ls fit and stress
-     */
-    public static float computeFit(DistancesBlock distancesBlock, List<ASplit> splits) {
-        double dsum = 0;
-        double ssum = 0;
-
-        final int ntax = distancesBlock.getNtax();
-        final double[][] sdist = new double[ntax + 1][ntax + 1];
-
-        for (int i = 1; i <= ntax; i++) {
-            for (int j = i + 1; j <= ntax; j++) {
-                double dij = 0.0;
-                for (ASplit split : splits) {
-                    if (split.isContainedInA(i) != split.isContainedInA(j))
-                        dij += split.getWeight();
-                }
-                sdist[i][j] = sdist[j][i] = dij;
-            }
-        }
-        return (float) Math.max(100 * (1.0 - ssum / dsum), 0.0);
+        return (float)
+                (0.5 * (Math.min(d.get(i, k) + d.get(j, m), d.get(i, m) + d.get(j, k))
+                        - d.get(i, j) - d.get(k, m)));
     }
 
     private static BitSet getComplement(BitSet A, int ntax) {
@@ -188,6 +203,11 @@ public class SplitDecomposition extends Algorithm<DistancesBlock, SplitsBlock> i
         for (int t = A.nextClearBit(1); t != -1 && t <= ntax; t = A.nextClearBit(t + 1))
             result.set(t);
         return result;
+    }
+
+    // GETTER AND SETTER
+    public String getDescription() {
+        return DESCRIPTION;
     }
 
 }

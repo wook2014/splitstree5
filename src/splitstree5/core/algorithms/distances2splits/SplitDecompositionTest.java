@@ -26,6 +26,7 @@ import org.junit.Test;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.misc.ASplit;
 import splitstree5.io.nexus.DistancesNexusIO;
 import splitstree5.io.nexus.SplitsNexusIO;
 import splitstree5.io.nexus.TaxaNexusIO;
@@ -64,6 +65,25 @@ public class SplitDecompositionTest {
         DistancesNexusIO.write(w, taxaBlock, distancesBlock, null);
         SplitsNexusIO.write(w, taxaBlock, splitsBlock, null);
         System.err.println(w.toString());
+
+        // compare splits
+
+        TaxaBlock taxaFromST4 = new TaxaBlock();
+        SplitsBlock splitsFromST4 = new SplitsBlock();
+        NexusStreamParser np = new NexusStreamParser(new FileReader("test/splits/distances7-SplitDecomp.txt"));
+        np.matchIgnoreCase("#nexus");
+        TaxaNexusIO.parse(np, taxaFromST4);
+        SplitsNexusIO.parse(np, taxaFromST4, splitsFromST4, null);
+
+        for(int i=0; i<splitsBlock.getSplits().size(); i++){
+            ASplit aSplit = splitsBlock.getSplits().get(i);
+            ASplit aSplitST4 = splitsFromST4.getSplits().get(i);
+            assertEquals(aSplit.getA(), aSplitST4.getA());
+            assertEquals(aSplit.getB(), aSplitST4.getB());
+            assertEquals(aSplit.getWeight(), aSplitST4.getWeight());
+            assertEquals(aSplit.getConfidence(), aSplitST4.getConfidence());
+            assertEquals(aSplit.getLabel(), aSplitST4.getLabel());
+        }
     }
 
 }
