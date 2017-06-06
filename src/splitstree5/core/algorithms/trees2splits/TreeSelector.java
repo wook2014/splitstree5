@@ -64,6 +64,7 @@ public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> implements 
         splits.setCompatibility(Compatibility.compatible);
 
         SplitsUtilities.verifySplits(splits, taxaBlock);
+        progressListener.close();
     }
 
     @Override

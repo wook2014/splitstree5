@@ -1,22 +1,80 @@
 package splitstree5.core.algorithms.trees2splits;
 
 import jloda.util.ProgressPercentage;
+import jloda.util.parse.NexusStreamParser;
 import org.junit.Test;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.SplitsBlock;
+import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.io.nexus.NexusFileParser;
-import splitstree5.io.nexus.NexusFileWriter;
+import splitstree5.core.misc.ASplit;
+import splitstree5.io.nexus.*;
+
+import java.io.FileReader;
+import java.io.StringWriter;
 
 import static junit.framework.Assert.assertEquals;
 
 public class TreeSelectorTest {
 
+    final TreeSelector treeSelector = new TreeSelector();
+
     @Test
     public void testCompute() throws Exception {
 
-        Document document = new Document();
+        TaxaBlock taxaBlock = new TaxaBlock();
+        TreesBlock treesBlock = new TreesBlock();
+        NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/trees6-translate.nex"));
+        np.matchIgnoreCase("#nexus");
+        TaxaNexusIO.parse(np, taxaBlock);
+        TreesNexusIO.parse(np, taxaBlock, treesBlock, null);
+
+        for(int which = 1; which<=treesBlock.getNTrees(); which++){
+
+            System.err.println("COMPUTE SPLITS FOR TREE"+which);
+
+            SplitsBlock splitsBlock = new SplitsBlock();
+            treeSelector.setOptionWhich(which);
+            treeSelector.compute(new ProgressPercentage(), taxaBlock, treesBlock, splitsBlock);
+
+            final StringWriter w = new StringWriter();
+            w.write("#nexus\n");
+            TaxaNexusIO.write(w, taxaBlock);
+            TreesNexusIO.write(w, taxaBlock, treesBlock, null);
+            SplitsNexusIO.write(w, taxaBlock, splitsBlock, null);
+            System.err.println(w.toString());
+
+            // compare splits
+
+            String fileName = "test/splits/tree selector/trees6-"+which+".nex";
+
+            TaxaBlock taxaFromST4 = new TaxaBlock();
+            SplitsBlock splitsFromST4 = new SplitsBlock();
+            NexusStreamParser np4 = new NexusStreamParser(new FileReader(fileName));
+            np4.matchIgnoreCase("#nexus");
+            TaxaNexusIO.parse(np4, taxaFromST4);
+            SplitsNexusIO.parse(np4, taxaFromST4, splitsFromST4, null);
+
+            assertEquals(splitsBlock.size(), splitsFromST4.size());
+            for(int i=0; i<splitsBlock.getSplits().size(); i++){
+                ASplit aSplit = splitsBlock.getSplits().get(i);
+                if(splitsFromST4.getSplits().contains(aSplit)){
+                    int index = splitsFromST4.getSplits().indexOf(aSplit);
+                    ASplit aSplitST4 = splitsFromST4.getSplits().get(index);
+                    assertEquals(aSplit.getA(), aSplitST4.getA());
+                    assertEquals(aSplit.getB(), aSplitST4.getB());
+                    assertEquals(aSplit.getWeight(), aSplitST4.getWeight());
+                    assertEquals(aSplit.getConfidence(), aSplitST4.getConfidence());
+                    assertEquals(aSplit.getLabel(), aSplitST4.getLabel());
+                }
+                splitsFromST4.getSplits().remove(aSplit);
+            }
+            assertEquals(0, splitsFromST4.size());
+
+        }
+
+        /*Document document = new Document();
         document.setFileName("test/nexus/trees6-translate.nex");
         NexusFileParser.parse(document);
 
@@ -55,7 +113,7 @@ public class TreeSelectorTest {
                         "END; [SPLITS]\n";
                 assertEquals("tree 1:", expected, NexusFileWriter.toString(document.getDag().getWorkingTaxaNode().getDataBlock(), splitsNode.getDataBlock()));
             }
-        }
+        }*/
     }
 
 }
