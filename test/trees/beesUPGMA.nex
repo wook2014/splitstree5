@@ -1,0 +1,18 @@
+#nexus
+
+BEGIN Taxa;
+DIMENSIONS ntax=6;
+TAXLABELS
+[1] 'A.andrenof'
+[2] 'A.mellifer'
+[3] 'A.dorsata'
+[4] 'A.cerana'
+[5] 'A.florea'
+[6] 'A.koschev'
+;
+END; [Taxa]
+
+BEGIN Trees;
+[TREES]
+[1] tree 'UPGMA'=[&R] (A.andrenof:0.0022156574,A.florea:0.0022156574,(A.koschev:0.038404725,((A.mellifer:0.045051698,A.cerana:0.045051698):0.003077302,A.dorsata:0.104579024):0.009724273):0.036189068);
+END; [Trees]

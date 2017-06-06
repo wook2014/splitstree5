@@ -48,27 +48,39 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
     private final SimpleObjectProperty<EdgeWeights> optionEdgeWeights = new SimpleObjectProperty<>(EdgeWeights.Mean);
     private double optionThreshold = 0.33;
 
+    public final static String DESCRIPTION = "Computes the consensus splits of trees (Holland and Moulton 2003)";
+
     /**
      * compute the consensus splits
      *
      * @param progressListener
      * @param taxaBlock
-     * @param parent
-     * @param child
+     * @param treesBlock
+     * @param splitsBlock
      */
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock parent, SplitsBlock child) throws CanceledException, SplitsException {
+    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock)
+            throws CanceledException, SplitsException {
+        
         progressListener.setMaximum(100);
-        final ObservableList<PhyloTree> trees = parent.getTrees();
-
+        final ObservableList<PhyloTree> trees = treesBlock.getTrees();
+        TreeSelector trans;
         final Map<BitSet, WeightStats> split2weights = new HashMap<>();
         BitSet taxaInTree = taxaBlock.getTaxaSet();
 
-        for (int which = 0; which < trees.size(); which++) {
-            final PhyloTree tree = trees.get(which);
+        if (treesBlock.getNTrees() == 1) System.err.println("Consensus network: only one Tree specified");
+
+        for (int which = 1; which <= trees.size(); which++) {
+            final PhyloTree tree = trees.get(which-1);
             progressListener.setProgress(50 * which / trees.size());
             try {
                 final List<ASplit> splits = new ArrayList<>();
                 TreeUtilities.computeSplits(taxaBlock, taxaInTree, tree, splits);
+                /*SplitsBlock tmp = new SplitsBlock();
+                TreesBlock tmpT= new TreesBlock();
+                tmpT.getTrees().add(tree);
+                trans = new TreeSelector();
+                trans.compute(progressListener, taxaBlock, treesBlock, tmp);*/
+
                 for (ASplit split : splits) {
                     final WeightStats weightStats = split2weights.computeIfAbsent(split.getA(), k -> new WeightStats());
                     weightStats.add((float) split.getWeight());
@@ -101,20 +113,20 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
                         break;
                 }
                 final float confidence = (float) weightStats.getCount() / (float) trees.size();
-                child.getSplits().add(new ASplit(aSet, taxaBlock.getNtax(), wgt, confidence));
+                splitsBlock.getSplits().add(new ASplit(aSet, taxaBlock.getNtax(), wgt, confidence));
             }
             progressListener.setProgress(50 + 50 * ((count++) / split2weights.size()));
         }
-        splitstree5.utils.nexus.SplitsUtilities.verifySplits(child, taxaBlock);
+        splitstree5.utils.nexus.SplitsUtilities.verifySplits(splitsBlock, taxaBlock);
 
 
-        child.setCycle(SplitsUtilities.computeCycle(taxaBlock.getNtax(), child.getSplits()));
-        child.setFit(-1);
-        child.setCompatibility(Compatibility.compute(taxaBlock.getNtax(), child.getSplits(), child.getCycle()));
+        splitsBlock.setCycle(SplitsUtilities.computeCycle(taxaBlock.getNtax(), splitsBlock.getSplits()));
+        splitsBlock.setFit(-1);
+        splitsBlock.setCompatibility(Compatibility.compute(taxaBlock.getNtax(), splitsBlock.getSplits(), splitsBlock.getCycle()));
     }
 
     @Override
-    public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent, SplitsBlock child) {
+    public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent, SplitsBlock splitsBlock) {
         return parent.size() > 0 && !parent.isPartial();
     }
 
