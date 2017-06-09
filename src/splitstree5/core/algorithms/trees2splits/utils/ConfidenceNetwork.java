@@ -3,6 +3,7 @@ package splitstree5.core.algorithms.trees2splits.utils;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.SplitsBlock;
+import splitstree5.core.misc.ASplit;
 import splitstree5.utils.SplitMatrix;
 
 import java.util.Arrays;
@@ -63,7 +64,7 @@ public class ConfidenceNetwork {
      * @return
      * @throws CanceledException
      */
-    static public SplitsBlock getConfidenceNetwork(SplitMatrix M, double level, ProgressListener pl) throws CanceledException {
+    static public SplitsBlock getConfidenceNetwork(SplitMatrix M, double level, int ntax, ProgressListener pl) throws CanceledException {
 
 
         int nsplits = M.getNsplits();   //Number of splits.... |U| in Beran 88
@@ -140,9 +141,12 @@ public class ConfidenceNetwork {
             double cutoffRij = row[cutoffH].Rij;
             double low = median - cutoffRij;
             double high = median + cutoffRij;
-            BitSet sp = M.getSplit(i);
-            if (high > 0.0)
-                // todo : newSplits.getSplits().add(sp, (float) median, 0, new Interval(low, high), "");
+            BitSet sp = M.getSplit(i-1);
+            if (high > 0.0) {
+                ASplit split = new ASplit(sp, ntax, (float) median, 0);
+                //newSplits.getSplits().add(sp, (float) median, 0, new Interval(low, high), "");
+                newSplits.getSplits().add(split);
+            }
             //doc.notifySetProgress(40 + (60 * i) / nsplits);
             pl.incrementProgress();
 

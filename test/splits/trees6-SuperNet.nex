@@ -1,0 +1,36 @@
+#nexus
+
+BEGIN Taxa;
+DIMENSIONS ntax=6;
+TAXLABELS
+[1] 't1'
+[2] 't2'
+[3] 't3'
+[4] 't4'
+[5] 't5'
+[6] 't6'
+;
+END; [Taxa]
+
+BEGIN Splits;
+DIMENSIONS ntax=6 nsplits=14;
+FORMAT labels=no weights=yes confidences=no intervals=no;
+PROPERTIES fit=-1,00 non compatible;
+CYCLE 1 4 5 6 3 2;
+MATRIX
+[1, size=2] 	 0.055555556 	  1 3,
+[2, size=3] 	 0.027777778 	  1 3 4,
+[3, size=2] 	 0.027777778 	  1 4,
+[4, size=2] 	 0.027777778 	  1 4 5 6,
+[5, size=2] 	 0.16666667 	  1 2 3 4,
+[6, size=2] 	 0.055555556 	  1 2,
+[7, size=3] 	 0.083333336 	  1 2 3,
+[8, size=3] 	 0.055555556 	  1 2 4,
+[9, size=1] 	 0.16666667 	  1,
+[10, size=1] 	 0.16666667 	  1 3 4 5 6,
+[11, size=1] 	 0.16666667 	  1 2 4 5 6,
+[12, size=1] 	 0.16666667 	  1 2 3 5 6,
+[13, size=1] 	 0.16666667 	  1 2 3 4 6,
+[14, size=1] 	 0.16666667 	  1 2 3 4 5,
+;
+END; [Splits]

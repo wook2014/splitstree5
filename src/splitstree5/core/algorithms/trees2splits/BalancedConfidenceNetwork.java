@@ -9,9 +9,11 @@ import splitstree5.core.algorithms.trees2splits.utils.ConfidenceNetwork;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
+import splitstree5.core.misc.ASplit;
 import splitstree5.utils.SplitMatrix;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Comparator;
 
 public class BalancedConfidenceNetwork extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
@@ -26,8 +28,9 @@ public class BalancedConfidenceNetwork extends Algorithm<TreesBlock, SplitsBlock
         progressListener.setMaximum(100);
 
         SplitMatrix M = new SplitMatrix(treesBlock, taxaBlock);
+        M.print();
 
-        splitsBlock = ConfidenceNetwork.getConfidenceNetwork(M, getOptionLevel(), progressListener);
+        splitsBlock.copy(ConfidenceNetwork.getConfidenceNetwork(M, getOptionLevel(), taxaBlock.getNtax(), progressListener));
     }
 
     public String getDescription() {
