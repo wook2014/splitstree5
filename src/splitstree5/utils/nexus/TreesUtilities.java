@@ -12,6 +12,7 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
+import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Taxon;
 
 import java.io.IOException;
@@ -129,18 +130,24 @@ public class TreesUtilities {
      * @return splits
      */
     public static SplitsBlock convertTreeToSplits(TreesBlock trees, int which, TaxaBlock taxa, boolean skipNegativeSplitIds) {
+
         SplitsBlock splits = new SplitsBlock();
         PhyloTree tree = trees.getTrees().get(which);
 
         // choose an arbitrary labeled root
         Node root = null;
         for (Node v = tree.getFirstNode(); v != null; v = tree.getNextNode(v)) {
-            /*if (trees.getTaxaForLabel(taxa, tree.getLabel(v)).cardinality() > 0
+            BitSet taxaSet = new BitSet();
+            taxaSet.set(tree.getId(v));
+            //if (tree.getNode2Taxa(v).cardinality() > 0
+            if (taxaSet.cardinality() > 0
                     && tree.getDegree(v) == 1) {
                 root = v;
-                break;
-            }*/ // todo : getTaxaForLabel
+                break; //todo
+            }
         }
+        System.out.println(root);
+
         if (root == null) // empty tree?
             return splits;
 
@@ -150,7 +157,13 @@ public class TreesUtilities {
         try {
             SplitsUtilities.verifySplits(splits, taxa);
         } catch (SplitsException ex) {
-            splits = null;
+            //splits = null;
+        }
+
+        // false!!!
+        System.out.println("TU splits");
+        for(int i = 0; i<splits.getSplits().size(); i++){
+            System.out.println(splits.getSplits().get(i).getA());
         }
 
         return splits;
@@ -174,6 +187,11 @@ public class TreesUtilities {
         //todo
         //BitSet e_taxa = trees.getTaxaForLabel(taxa, tree.getLabel(v));
         BitSet e_taxa = new BitSet();
+        //e_taxa.set(tree.getId(v));
+        if (taxa.indexOf(tree.getLabel(v)) != -1) //e_taxa.set(0);
+         e_taxa.set(taxa.indexOf(tree.getLabel(v)));
+
+        System.out.println("e taxa   "+e_taxa); // right!!!
 
         Iterator edges = tree.getAdjacentEdges(v);
         while (edges.hasNext()) {
@@ -182,11 +200,14 @@ public class TreesUtilities {
             if (f != e) {
                 BitSet f_taxa = tree2splitsRec(tree.getOpposite(v, f), f, trees, which, taxa, splits, skipNegativeSplitIds);
                 /*if (tree.getConfidence(f) != 1)
-                    splits.getFormat().setConfidences(true);
+                    splits.getFormat().setConfidences(true);*/
 
-                if (!skipNegativeSplitIds || tree.getSplit(f) >= 0)
-                    splits.getSplitsSet().add(f_taxa, (float) tree.getWeight(f), (float) tree.getConfidence(f));*/
-                for (int t = 1; t <= f_taxa.length(); t++) {
+                if (!skipNegativeSplitIds || tree.getSplit(f) >= 0) {
+                    //splits.getSplitsSet().add(f_taxa, (float) tree.getWeight(f), (float) tree.getConfidence(f));
+                    ASplit split = new ASplit(f_taxa, taxa.getNtax(), (float) tree.getWeight(f), (float) tree.getConfidence(f));
+                    splits.getSplits().add(split);
+                }
+                for (int t = 0; t < f_taxa.length(); t++) {
                     if (f_taxa.get(t))
                         e_taxa.set(t);
                 }

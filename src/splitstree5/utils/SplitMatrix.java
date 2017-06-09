@@ -41,11 +41,23 @@ import java.util.Map;
 
 public class SplitMatrix {
 
+    private int ntax;
+
     private int nblocks;   //Number of Split sets
     SparseTable<Double> matrix;     //Split weights, indexed by split and then split set.
 
     private Map splitIndices; // Map from splits to indices
     private SplitsBlock allSplits; //Splits block containing all splits
+
+    public void print(){
+        System.out.println("print Split matrix:");
+        for(int i = 0; i<=allSplits.getNsplits(); i++){
+            for(int j=0; j<=nblocks; j++){
+                System.out.print(matrix.get(i,j)+" ");
+            }
+            System.out.println();
+        }
+    }
 
     /*
     Constructor
@@ -75,11 +87,12 @@ public class SplitMatrix {
      * @param taxa
      */
     public SplitMatrix(TreesBlock trees, TaxaBlock taxa) {
-        matrix = new SparseTable();
+        ntax = taxa.getNtax();
+        matrix = new SparseTable<>();
         splitIndices = new HashMap();
         allSplits = new SplitsBlock();
 
-        for (int i = 1; i <= trees.getNTrees(); i++) {
+        for (int i = 0; i < trees.getNTrees(); i++) {
             add(TreesUtilities.convertTreeToSplits(trees, i, taxa));
         }
 
@@ -133,14 +146,14 @@ public class SplitMatrix {
 
 
     /**
-     * Adds a new block wiith a new set of splits and stores weights in a new block.
+     * Adds a new block with a new set of splits and stores weights in a new block.
      *
      * @param newSplits
      */
     public void add(SplitsBlock newSplits) {
 
         int newBlockId = getNblocks() + 1;
-        for (int i = 1; i <= newSplits.getNsplits(); i++) {
+        for (int i = 0; i < newSplits.getNsplits(); i++) {
             BitSet sp = newSplits.getSplits().get(i).getA(); // todo A?
             int id = findOrAddSplit(sp);
             set(id, newBlockId, newSplits.getSplits().get(i).getWeight());
@@ -220,7 +233,7 @@ public class SplitMatrix {
      * @return int Number of taxa.
      */
     public int getNtax() {
-        return allSplits.getSplits().get(0).ntax();
+        return ntax;
     }
 
     /**
