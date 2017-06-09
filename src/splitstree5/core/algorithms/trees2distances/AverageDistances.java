@@ -38,7 +38,6 @@ public class AverageDistances extends Algorithm<TreesBlock, DistancesBlock> impl
                     count[i][j]++;
                     count[j][i]++;
                 }
-
             for (int s = 0; s < splits.getNsplits(); s++) {
                 BitSet A = splits.getSplits().get(s).getA();
                 BitSet B = splits.getSplits().get(s).getB();
