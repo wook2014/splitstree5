@@ -215,4 +215,36 @@ public class TreesUtilities {
         }
         return e_taxa;
     }
+
+    /**
+     * determines whether every pair of taxa occur together in some tree
+     *
+     * @param taxa
+     * @param trees
+     * @return returns true, if every pair of taxa occur together in some  tree
+     */
+    static public boolean hasAllPairs(TaxaBlock taxa, TreesBlock trees) {
+        int numPairs = (taxa.getNtax() * (taxa.getNtax() - 1)) / 2;
+
+        BitSet seen = new BitSet();
+
+        for (int which = 1; which <= trees.getNTrees(); which++) {
+            BitSet support = //trees.getSupport(taxa, which).getBits();
+            //---
+            new BitSet();
+            PhyloTree tree = trees.getTrees().get(which);
+            for(String v : tree.getNodeLabels()){
+            support.set(taxa.indexOf(v)); //todo test???
+            }
+            //---
+            for (int i = support.nextSetBit(1); i > 0; i = support.nextSetBit(i + 1)) {
+                for (int j = support.nextSetBit(i + 1); j > 0; j = support.nextSetBit(j + 1)) {
+                    seen.set(i + taxa.getNtax() * j, true);
+                    if (seen.cardinality() == numPairs)
+                        return true; // seen all possible pairs
+                }
+            }
+        }
+        return false;
+    }
 }
