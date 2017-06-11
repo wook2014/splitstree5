@@ -31,6 +31,7 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
     private int optionSeed = 0;
     private String optionEdgeWeights = TREESIZEWEIGHTEDMEAN;
 
+    // todo make enum like in ConsensusNetwork
     // edge weight options:
     static final String AVERAGERELATIVE = "AverageRelative";
     static final String MEAN = "Mean";
@@ -150,6 +151,7 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
                 ad.compute(new ProgressPercentage(), taxaBlock, treesBlock, distances);
 
                 LeastSquaresWeights leastSquares = new LeastSquaresWeights();
+                leastSquares.setDistancesBlock(distances);
 
                 /*document tmpdoc = new //document();
                 tmpdoc.setTaxa(taxa);
@@ -160,7 +162,7 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
                 //if (!leastSquares.isApplicable(tmp//doc, taxa, splits))
                   //  new Alert("Least Squares not applicable");
                 //else
-                    leastSquares.compute(new ProgressPercentage(), taxaBlock, splits, splits);
+                    leastSquares.compute(new ProgressPercentage(), taxaBlock, splits, splitsBlock);
             }
         }
 
@@ -168,7 +170,7 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
         // pd.close();								//get rid of the progress listener
         // //doc.setProgressListener(null);
         //return splits;
-        splitsBlock.copy(splits);
+        //splitsBlock.copy(splits);
     }
 
 

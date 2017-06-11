@@ -1,4 +1,4 @@
-package splitstree5.core.algorithms.trees2splits;
+package splitstree5.core.algorithms.trees2splits.utils;
 
 
 import jloda.util.Basic;
@@ -8,7 +8,12 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.BitSet;
 import java.util.Comparator;
-
+/**
+ * This is a simple implementation of a partial split
+ *
+ * @author huson
+ *         Date: 19-Feb-2004
+ */
 public class PartialSplit implements Comparator, Cloneable{
 
     BitSet A;
