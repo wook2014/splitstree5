@@ -3,13 +3,14 @@ package splitstree5.core.algorithms.trees2splits;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
-import jloda.util.Basic;
-import jloda.util.CanceledException;
-import jloda.util.NotOwnerException;
-import jloda.util.ProgressListener;
+import jloda.util.*;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToSplits;
+import splitstree5.core.algorithms.splits2splits.LeastSquaresWeights;
+import splitstree5.core.algorithms.trees2distances.AverageDistances;
+import splitstree5.core.algorithms.trees2splits.utils.PartialSplit;
+import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
@@ -143,18 +144,23 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
                         "can't apply Least Squares");
                 setNoOptionLeastSquare(false);
             } else {
-               /* Distances distances = TreesUtilities.getAveragePairwiseDistances(taxa, trees);
+                //Distances distances = TreesUtilities.getAveragePairwiseDistances(taxa, trees);
+                DistancesBlock distances = new DistancesBlock();
+                AverageDistances ad = new AverageDistances();
+                ad.compute(new ProgressPercentage(), taxaBlock, treesBlock, distances);
+
                 LeastSquaresWeights leastSquares = new LeastSquaresWeights();
 
-                //document tmp//doc = new //document();
-                tmp//doc.setTaxa(taxa);
-                tmp//doc.setDistances(distances);
-                tmp//doc.setSplits(splits);
-                tmp//doc.setProgressListener(//doc.getProgressListener());
-                if (!leastSquares.isApplicable(tmp//doc, taxa, splits))
-                    new Alert("Least Squares not applicable");
-                else
-                    leastSquares.apply(tmp//doc, taxa, splits);*/
+                /*document tmpdoc = new //document();
+                tmpdoc.setTaxa(taxa);
+                tmpdoc.setDistances(distances);
+                tmpdoc.setSplits(splits);
+                tmpdoc.setProgressListener(//doc.getProgressListener());*/
+
+                //if (!leastSquares.isApplicable(tmp//doc, taxa, splits))
+                  //  new Alert("Least Squares not applicable");
+                //else
+                    leastSquares.compute(new ProgressPercentage(), taxaBlock, splits, splits);
             }
         }
 
@@ -162,7 +168,7 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
         // pd.close();								//get rid of the progress listener
         // //doc.setProgressListener(null);
         //return splits;
-
+        splitsBlock.copy(splits);
     }
 
 
@@ -314,8 +320,11 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
                                                       TaxaBlock taxa, List list, int which, BitSet seen) throws NotOwnerException {
         PhyloTree tree = trees.getTrees().get(which);// getTree(which);
         //BitSet e_taxa = trees.getTaxaForLabel(taxa, tree.getLabel(v));
-        // todo implement getTaxaForLabel in Taxa Block?
-        BitSet e_taxa = new BitSet(); // todo delete
+        // todo test
+        BitSet e_taxa = new BitSet();
+        if (taxa.indexOf(tree.getLabel(v)) != -1)
+            e_taxa.set(taxa.indexOf(tree.getLabel(v)));
+
         seen.or(e_taxa);
 
         Iterator edges = tree.getAdjacentEdges(v);
@@ -547,38 +556,6 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
                             }
                         }
                     }
-                    /*
-                    if (psa.getA().cardinality() == 2) {
-                        Aa = psa.getA();
-                        Ba = psa.getB();
-                    } else if (psa.getB().cardinality() == 2) {
-                        Aa = psa.getB();
-                        Ba = psa.getA();
-                    } else
-                        continue;
-                    for (int b = a + 1; b < splits.length; b++) {
-                        final PartialSplit psb = splits[b];
-                        final TaxaSet Ab, Bb;
-                        if (psb.getA().cardinality() == 2) {
-                            Ab = psb.getA();
-                            Bb = psb.getB();
-                        } else if (psb.getB().cardinality() == 2) {
-                            Ab = psb.getB();
-                            Bb = psb.getA();
-                        } else
-                            continue;
-                        if (TaxaSet.intersection(Aa, Ab).cardinality() == 1
-                                && Ba.intersects(Ab) == false && Bb.intersects(Aa) == false
-                                && Ba.intersects(Bb) == true) {
-                            PartialSplit ps=new PartialSplit(
-                                    TaxaSet.union(Aa, Ab), TaxaSet.union(Ba, Bb));
-                            if(partialSplits.contains(ps)==false)
-                            {
-                                partialSplits.add(ps);
-                                count++;
-                            }
-                        */
-
                 }
             }
             System.err.println("# Refinement heuristic [" + i + "] added " + count + " partial splits");
