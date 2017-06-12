@@ -22,7 +22,7 @@ import static org.junit.Assert.*;
  */
 public class BalancedConfidenceNetworkTest {
 
-    final BalancedConfidenceNetwork bcn = new BalancedConfidenceNetwork();
+    final private BalancedConfidenceNetwork bcn = new BalancedConfidenceNetwork();
 
     @Test
     public void compute() throws Exception {
@@ -60,7 +60,7 @@ public class BalancedConfidenceNetworkTest {
             assertEquals(aSplit.getA(), aSplitST4.getA());
             assertEquals(aSplit.getB(), aSplitST4.getB());
             assertEquals(aSplit.getWeight(), aSplitST4.getWeight());
-            //assertEquals(aSplit.getConfidence(), aSplitST4.getConfidence()); //todo
+            assertEquals(aSplit.getConfidence(), aSplitST4.getConfidence()); //todo
             assertEquals(aSplit.getLabel(), aSplitST4.getLabel());
         }
 

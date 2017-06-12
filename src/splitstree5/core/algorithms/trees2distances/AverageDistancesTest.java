@@ -77,6 +77,28 @@ public class AverageDistancesTest {
         }
 
 
+        // TEST 3
+        TaxaBlock taxaBlock3 = new TaxaBlock();
+        TreesBlock treesBlock3 = new TreesBlock();
+        NexusStreamParser np3 = new NexusStreamParser(new FileReader("test/trees/dolphins-NJ.nex"));
+        np3.matchIgnoreCase("#nexus");
+        TaxaNexusIO.parse(np3, taxaBlock3);
+        TreesNexusIO.parse(np3, taxaBlock3, treesBlock3, null);
+
+        ProgressListener pl3 = new ProgressPercentage();
+        DistancesBlock distancesBlock3 = new DistancesBlock();
+        averageDistances.compute(pl3, taxaBlock3, treesBlock3, distancesBlock3);
+
+        final TaxaBlock taxaFromSplitsTree43 = new TaxaBlock();
+        final DistancesBlock distancesFromSplitsTree43 = new DistancesBlock();
+        taxaFromSplitsTree43.addTaxaByNames
+                (DistancesNexusIO.parse(new NexusStreamParser(new FileReader("test/distances/dolphins-NJ-averageDist.nex")),
+                        taxaFromSplitsTree43, distancesFromSplitsTree43, null));
+
+        for(int i = 0; i<distancesBlock3.getDistances().length; i++){
+            assertArrayEquals(distancesFromSplitsTree43.getDistances()[i], distancesBlock3.getDistances()[i], 0.000001);
+        }
+
     }
 
 }

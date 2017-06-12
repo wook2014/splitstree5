@@ -96,7 +96,7 @@ public class AverageConsensusTest {
         }
 
         // TEST 3
-        /*TaxaBlock taxaBlock3 = new TaxaBlock();
+        TaxaBlock taxaBlock3 = new TaxaBlock();
         TreesBlock treesBlock3 = new TreesBlock();
         NexusStreamParser np3 = new NexusStreamParser(new FileReader("test/trees/dolphins-NJ.nex"));
         np3.matchIgnoreCase("#nexus");
@@ -130,11 +130,12 @@ public class AverageConsensusTest {
                 ASplit aSplitST4 = splitsFromST43.getSplits().get(index);
                 assertEquals(aSplit.getA(), aSplitST4.getA());
                 assertEquals(aSplit.getB(), aSplitST4.getB());
-                assertEquals(aSplit.getWeight(), aSplitST4.getWeight());
+                assertEquals(aSplit.getWeight(), aSplitST4.getWeight(), 0.0000001);
                 assertEquals(aSplit.getConfidence(), aSplitST4.getConfidence());
                 assertEquals(aSplit.getLabel(), aSplitST4.getLabel());
             }
+            splitsFromST43.getSplits().remove(aSplit);
         }
-        assertEquals(0, splitsFromST43.size());*/
+        assertEquals(0, splitsFromST43.size());
     }
 }
