@@ -16,20 +16,25 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
 import splitstree5.gui.dialog.Alert;
+import splitstree5.io.nexus.SplitsNexusIO;
+import splitstree5.io.nexus.TaxaNexusIO;
+import splitstree5.io.nexus.TreesNexusIO;
 import splitstree5.utils.nexus.TreesUtilities;
 
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.*;
 
 public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
 
     public final static String DESCRIPTION = "Z-closure super-network from partial trees (Huson, Dezulian, Kloepper and Steel 2004)";
     private boolean optionZRule = true;
-    private boolean optionLeastSquare = false;
+    private boolean optionLeastSquare = false;                  // todo ???
     private boolean optionSuperTree = false;
     private int optionNumberOfRuns = 1;
     private boolean optionApplyRefineHeuristic = false;
-    private int optionSeed = 0;
-    private String optionEdgeWeights = TREESIZEWEIGHTEDMEAN;
+    private int optionSeed = 0;                                 // todo test? can't set in ST4
+    private String optionEdgeWeights = TREESIZEWEIGHTEDMEAN;    // todo test? can't set in ST4
 
     // todo make enum like in ConsensusNetwork
     // edge weight options:
@@ -59,7 +64,6 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
         BitSet[] supportSet = new BitSet[treesBlock.getNTrees() + 1];
         Set allPSplits = new HashSet();
 
-        ////doc.notifySubtask("extracting partial splits from trees");
         progressListener.setSubtask("extracting partial splits from trees");
         progressListener.setMaximum(treesBlock.getNTrees());
 
@@ -73,7 +77,6 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
                     PartialSplit ps = (PartialSplit) o;
                     if (ps.isNonTrivial()) {
                         allPSplits.add(ps.clone());
-                        ////doc.notifySetProgress(which);
                         progressListener.incrementProgress();
                     }
                 }
@@ -84,12 +87,17 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
         SplitsBlock splits = new SplitsBlock();
 
         if (getOptionZRule()) {
-            computeClosureOuterLoop(/*doc,*/ progressListener, taxaBlock, allPSplits);
+            computeClosureOuterLoop(progressListener, taxaBlock, allPSplits);
         }
 
+        System.out.println("DEBUG");
+        for(Object ps : allPSplits){
+            System.out.println(ps);
+        }  // it ok!!! \o/
+
         if (getOptionApplyRefineHeuristic()) {
-            ////doc.notifySubtask("Refinement heuristic");
-            applyRefineHeuristic(/*doc,*/ allPSplits);
+            progressListener.setSubtask("Refinement heuristic");
+            applyRefineHeuristic(allPSplits);
         }
 
         ////doc.notifySubtask("collecting full splits");
@@ -118,13 +126,23 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
                 }
             }
         }
+        System.err.println("DEBUG - ok");
+        final StringWriter w2 = new StringWriter();
+        w2.write("#nexus\n");
+        SplitsNexusIO.write(w2, taxaBlock, splits, null);
+        System.err.println(w2.toString()); // it ok!!! \o/
 
+        // todo ------------- find problem here :
         // add all missing trivial splits
         for (int t = 1; t <= taxaBlock.getNtax(); t++) {
             BitSet ts = new BitSet();
             ts.set(t);
             PartialSplit ps = new PartialSplit(ts);
-            ps.setComplement(taxaBlock.getTaxaSet());
+            //ps.setComplement(taxaBlock.getTaxaSet());
+            BitSet ts1 = new BitSet();
+            ts1.set(1, taxaBlock.getNtax()+1);
+            ps.setComplement(ts1);
+            System.err.println(ps); // <- here!!!
             if (!allPSplits.contains(ps)){
                 //splits.getSplitsSet().add(ps.getA());
                 ASplit split = new ASplit(ps.getA(), taxaBlock.getNtax());
@@ -132,7 +150,15 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
             }
 
         }
+        System.err.println("DEBUG");
+        final StringWriter w1 = new StringWriter();
+        w1.write("#nexus\n");
+        SplitsNexusIO.write(w1, taxaBlock, splits, null);
+        System.err.println(w1.toString());
 
+        //todo ---------------------------------------------
+
+        // todo : test
         if (getOptionEdgeWeights().equals(AVERAGERELATIVE)) {
             setWeightAverageReleativeLength(pSplitsOfTrees, supportSet, taxaBlock, splits);
         } else if (!getOptionEdgeWeights().equals(NONE)) {
@@ -145,7 +171,6 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
                         "can't apply Least Squares");
                 setNoOptionLeastSquare(false);
             } else {
-                //Distances distances = TreesUtilities.getAveragePairwiseDistances(taxa, trees);
                 DistancesBlock distances = new DistancesBlock();
                 AverageDistances ad = new AverageDistances();
                 ad.compute(new ProgressPercentage(), taxaBlock, treesBlock, distances);
@@ -165,12 +190,8 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
                     leastSquares.compute(new ProgressPercentage(), taxaBlock, splits, splitsBlock);
             }
         }
-
-        //doc.notifySetProgress(100);   //set progress to 100%
-        // pd.close();								//get rid of the progress listener
-        // //doc.setProgressListener(null);
-        //return splits;
-        //splitsBlock.copy(splits);
+        splitsBlock.copy(splits);
+        progressListener.close();
     }
 
 
@@ -320,7 +341,7 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
 
     private BitSet computePSplitsFromTreeRecursively(Node v, Edge e, TreesBlock trees,
                                                       TaxaBlock taxa, List list, int which, BitSet seen) throws NotOwnerException {
-        PhyloTree tree = trees.getTrees().get(which);// getTree(which);
+        PhyloTree tree = trees.getTrees().get(which-1);// getTree(which);
         //BitSet e_taxa = trees.getTaxaForLabel(taxa, tree.getLabel(v));
         // todo test
         BitSet e_taxa = new BitSet();

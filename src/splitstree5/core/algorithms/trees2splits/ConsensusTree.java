@@ -15,6 +15,8 @@ public class ConsensusTree extends Algorithm<TreesBlock, SplitsBlock> implements
         progressListener.setTasks("Consensus tree", "Init.");
         //progressListener.setMaximum(?);
 
+        // todo needs ConsensusNetwork
+
         progressListener.close();
     }
 }

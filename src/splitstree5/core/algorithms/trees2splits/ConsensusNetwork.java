@@ -69,8 +69,8 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
 
         if (treesBlock.getNTrees() == 1) System.err.println("Consensus network: only one Tree specified");
 
-        for (int which = 1; which <= trees.size(); which++) {
-            final PhyloTree tree = trees.get(which-1);
+        for (int which = 0; which < trees.size(); which++) {
+            final PhyloTree tree = trees.get(which);
             progressListener.setProgress(50 * which / trees.size());
             try {
                 final List<ASplit> splits = new ArrayList<>();
