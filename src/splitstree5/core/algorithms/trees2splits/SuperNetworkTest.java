@@ -99,7 +99,7 @@ public class SuperNetworkTest {
             assertEquals(aSplit.getA(), aSplitST4.getA());
             assertEquals(aSplit.getB(), aSplitST4.getB());
             assertEquals(aSplit.getWeight(), aSplitST4.getWeight());
-            //assertEquals(aSplit.getConfidence(), aSplitST4.getConfidence()); //todo
+            assertEquals(aSplit.getConfidence(), aSplitST4.getConfidence()); //todo
             assertEquals(aSplit.getLabel(), aSplitST4.getLabel());
         }
 
