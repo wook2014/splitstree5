@@ -35,7 +35,6 @@ public class HKY85 extends DNAdistance implements IFromChararacters, IToDistance
 
     @Override
     protected double exactDist(double[][] F) throws SaturatedDistancesException {
-        //todo
         return 0.0;//We will never get here!
     }
 

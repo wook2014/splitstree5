@@ -26,6 +26,7 @@ package splitstree5.core.models;
 
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
+import com.sun.xml.internal.bind.v2.util.QNameMap;
 
 import java.util.Random;
 
@@ -38,18 +39,18 @@ import java.util.Random;
  */
 public abstract class NucleotideModel implements SubstitutionModel {
 
-    final static double EPSILON = 1e-6; //Threshold for round-off error when checking matrices
+    private final static double EPSILON = 1e-6; //Threshold for round-off error when checking matrices
 
-    double[] freqs; /* base frequencies */
-    double[] sqrtf; /* Square roots of frequencies */
-    double[] evals; /* evalues of Pi^(1/2) Q Pi^(-1/2) */
-    double[][] evecs; /* evectors of Pi^(1/2) Q Pi^(-1/2) */
+    private double[] freqs; /* base frequencies */
+    private double[] sqrtf; /* Square roots of frequencies */
+    private double[] evals; /* evalues of Pi^(1/2) Q Pi^(-1/2) */
+    private double[][] evecs; /* evectors of Pi^(1/2) Q Pi^(-1/2) */
 
-    double[][] Pmatrix; /* Current P matrix */
-    double[][] Qmatrix; /* Current Q matrix */
-    double tval;
-    double pinv; /* Proportion of invariant sites */
-    double gamma = 0.0;
+    private double[][] Pmatrix; /* Current P matrix */
+    private double[][] Qmatrix; /* Current Q matrix */
+    private double tval;
+    private double pinv; /* Proportion of invariant sites */
+    private double gamma = 0.0;
 
     /*------------Constructors-----------------------*/
     NucleotideModel() {
@@ -109,8 +110,8 @@ public abstract class NucleotideModel implements SubstitutionModel {
 
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j <= i; j++) {
-                double x = sqrtf[i] * Q[i][j] / sqrtf[j];
-                double y = sqrtf[j] * Q[j][i] / sqrtf[i];
+                double x = sqrtf[i] * Qmatrix[i][j] / sqrtf[j];
+                double y = sqrtf[j] * Qmatrix[j][i] / sqrtf[i];
                 M.set(i, j, (x + y) / 2.0);
                 if (i != j)
                     M.set(j, i, (x + y) / 2.0);
@@ -296,7 +297,7 @@ public abstract class NucleotideModel implements SubstitutionModel {
 
         double r = 0.0;
         for (int i = 0; i < 4; i++)
-            r += freqs[i] * Qmatrix[i][i];
+            r -= freqs[i] * Qmatrix[i][i];
 
         //Normalise so rate is one.
         for (int i = 0; i < 4; i++) {
