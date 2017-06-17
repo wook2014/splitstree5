@@ -434,16 +434,16 @@ public class PartialSplit implements Comparator, Cloneable{
      * returns the split induced by the given BitSet.
      * Returns null, if A=0 or B=0
      *
-     * @param BitSet
+     * @param bitSet
      * @return projected split or null
      */
-    public PartialSplit getInduced(BitSet BitSet) {
+    public PartialSplit getInduced(BitSet bitSet) {
         BitSet Ap = (BitSet) getA().clone();
         BitSet Bp = (BitSet) getB().clone();
-        Ap.and(BitSet);
-        Bp.and(BitSet);
+        Ap.and(bitSet);
+        Bp.and(bitSet);
         if (Ap.cardinality() > 0 && Bp.cardinality() > 0
-                && Ap.cardinality() + Bp.cardinality() == BitSet.cardinality())
+                && Ap.cardinality() + Bp.cardinality() == bitSet.cardinality())
             return new PartialSplit(Ap, Bp, getWeight(), getConfidence());
         else
             return null;

@@ -1,0 +1,3 @@
+
+ - Error by parsing partial trees in IO part :
+   nexus blocks with partial trees have false "isPartial" value

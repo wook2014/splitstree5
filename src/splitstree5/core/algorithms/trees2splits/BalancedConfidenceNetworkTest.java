@@ -53,6 +53,10 @@ public class BalancedConfidenceNetworkTest {
         TaxaNexusIO.parse(np4, taxaFromST4);
         SplitsNexusIO.parse(np4, taxaFromST4, splitsFromST4, null);
 
+        for(ASplit s : splitsFromST4.getSplits()){
+            System.out.println("conf - "+ s.getConfidence());
+        }
+
         assertEquals(splitsBlock.getSplits().size(), splitsFromST4.getSplits().size());
         for(int i=0; i<splitsBlock.getSplits().size(); i++){
             ASplit aSplit = splitsBlock.getSplits().get(i);

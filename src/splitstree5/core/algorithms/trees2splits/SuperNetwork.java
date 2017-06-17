@@ -33,8 +33,8 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
     private boolean optionSuperTree = false;
     private int optionNumberOfRuns = 1;
     private boolean optionApplyRefineHeuristic = false;
-    private int optionSeed = 0;                                 // todo test? can't set in ST4
-    private String optionEdgeWeights = TREESIZEWEIGHTEDMEAN;    // todo test? can't set in ST4
+    private int optionSeed = 0;
+    private String optionEdgeWeights = TREESIZEWEIGHTEDMEAN;
 
     // todo make enum like in ConsensusNetwork
     // edge weight options:
@@ -49,13 +49,58 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock)
             throws Exception {
 
-        // todo
-        /*if (treesBlock.getNTrees() == 0)
-            return new Splits(taxa.getNtax());*/
+        /**
+         * Determine the set of taxa for partial trees.
+         * If the block contains partial trees, then the translate statement must mention all
+         * taxa. We use this info to build a taxa block
+         */
+        // todo move to trees block?
+        /*if (treesBlock.isPartial()){
 
-        /*if (treesBlock.getPartial()) // contains partial trees, most determine
+            // trees.setTaxaFromPartialTrees(taxa);
+
+            // contains partial trees, most determine
             // full set of taxa
-            trees.setTaxaFromPartialTrees(taxa);*/
+            Set<String> taxaLabels = new HashSet<>();
+            for (int i = 0; i < treesBlock.getNTrees(); i++) {
+                PhyloTree tree = treesBlock.getTrees().get(i);
+                Set<String> nodeLabels = tree.getNodeLabels();
+
+                for (String nodeLabel : nodeLabels) {
+                    //taxaLabels.add(translate.get(nodeLabel));
+                    taxaLabels.add(nodeLabel);
+                }
+            }
+
+            //are these taxa equal taxa, if so, do nothing:
+            boolean areLabelsInTaxa = true;
+            for(String label : taxaLabels){
+                if(!taxaBlock.getLabels().contains(label)) {
+                    areLabelsInTaxa = false;
+                    break;
+                }
+            }
+            if (taxaBlock.getNtax() == taxaLabels.size() && areLabelsInTaxa)
+                return;
+
+            // if they are contained in the original taxa, unhide them:
+            if (taxaBlock.getTaxa() != null && areLabelsInTaxa) {
+                BitSet toHide = new BitSet();
+                for (int t = 1; t <= taxa.getOriginalTaxa().getNtax(); t++)
+                    if (!taxaLabels.contains(taxa.getOriginalTaxa().getLabel(t)))
+                        toHide.set(t);
+                taxa.hideTaxa(toHide);
+            } else {
+                taxa.setNtax(taxaLabels.size());
+                Iterator it = taxaLabels.iterator();
+                int t = 0;
+                while (it.hasNext()) {
+                    taxa.setLabel(++t, (String) it.next());
+                }
+            }
+
+        }*/
+
 
         progressListener.setTasks("Z-closure", "init");
 
@@ -90,10 +135,10 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
             computeClosureOuterLoop(progressListener, taxaBlock, allPSplits);
         }
 
-        System.out.println("DEBUG");
+        /*System.out.println("DEBUG");
         for(Object ps : allPSplits){
             System.out.println(ps);
-        }  // it ok!!! \o/
+        }*/  // trees49 is ok here !!!
 
         if (getOptionApplyRefineHeuristic()) {
             progressListener.setSubtask("Refinement heuristic");
@@ -102,7 +147,6 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
 
         ////doc.notifySubtask("collecting full splits");
         ////doc.notifySetMaximumProgress(allPSplits.size());
-        int count = 0;
         for (Object allPSplit : allPSplits) {
             //doc.notifySetProgress(++count);
             PartialSplit ps = (PartialSplit) allPSplit;
@@ -126,13 +170,12 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
                 }
             }
         }
-        System.err.println("DEBUG - ok");
+        /*System.err.println("DEBUG ");
         final StringWriter w2 = new StringWriter();
         w2.write("#nexus\n");
         SplitsNexusIO.write(w2, taxaBlock, splits, null);
-        System.err.println(w2.toString()); // it ok!!! \o/
+        System.err.println(w2.toString());*/ // tree49 is  ok here!!!
 
-        // todo ------------- find problem here :
         // add all missing trivial splits
         for (int t = 1; t <= taxaBlock.getNtax(); t++) {
             BitSet ts = new BitSet();
@@ -142,23 +185,19 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
             BitSet ts1 = new BitSet();
             ts1.set(1, taxaBlock.getNtax()+1);
             ps.setComplement(ts1);
-            System.err.println(ps); // <- here!!!
+            //System.err.println(ps); // <- here!!!
             if (!allPSplits.contains(ps)){
-                //splits.getSplitsSet().add(ps.getA());
                 ASplit split = new ASplit(ps.getA(), taxaBlock.getNtax());
                 splits.getSplits().add(split);
             }
 
         }
-        System.err.println("DEBUG");
+        System.err.println("DEBUG - ok for tree49");
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
         SplitsNexusIO.write(w1, taxaBlock, splits, null);
         System.err.println(w1.toString());
 
-        //todo ---------------------------------------------
-
-        // todo : test
         if (getOptionEdgeWeights().equals(AVERAGERELATIVE)) {
             setWeightAverageReleativeLength(pSplitsOfTrees, supportSet, taxaBlock, splits);
         } else if (!getOptionEdgeWeights().equals(NONE)) {
@@ -177,12 +216,6 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
 
                 LeastSquaresWeights leastSquares = new LeastSquaresWeights();
                 leastSquares.setDistancesBlock(distances);
-
-                /*document tmpdoc = new //document();
-                tmpdoc.setTaxa(taxa);
-                tmpdoc.setDistances(distances);
-                tmpdoc.setSplits(splits);
-                tmpdoc.setProgressListener(//doc.getProgressListener());*/
 
                 //if (!leastSquares.isApplicable(tmp//doc, taxa, splits))
                   //  new Alert("Least Squares not applicable");
@@ -250,8 +283,6 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
                     value = sum;
                     break;
             }
-            //splits.setWeight(s, value);
-            //splits.setConfidence(s, total);
             splits.getSplits().get(s-1).setWeight(value);
             splits.getSplits().get(s-1).setConfidence(total);
         }
@@ -261,7 +292,6 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
      * sets the weight of a split in the network as the average relative length of the edge
      * in the input trees
      *
-     * @param //doc
      * @param pSplits
      * @param supportSet
      * @param taxa
@@ -531,11 +561,10 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
     /**
      * applies a simple refinement heuristic
      *
-     * @param //doc
      * @param partialSplits
      * @throws CanceledException
      */
-    private void applyRefineHeuristic(/*document doc,*/ Set partialSplits) throws CanceledException {
+    private void applyRefineHeuristic(Set partialSplits) throws CanceledException {
 
 
         for (int i = 1; i <= 10; i++) {

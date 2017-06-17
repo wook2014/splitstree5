@@ -26,9 +26,10 @@ public class NeiMillerTest {
     @Test
     public void compute() throws Exception {
 
+        System.err.print("no test data");
         assertEquals(2,4);
 
-        /*String inputFile = "test//characters//myosin_aa.nex";
+        /*String inputFile = "test//characters//dolphins_weighted.nex";
         ProgressListener pl = new ProgressPercentage();
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
@@ -40,7 +41,7 @@ public class NeiMillerTest {
 
         neiMiller.compute(pl, taxaBlock, charactersBlock, distancesBlock);
 
-        final TaxaBlock taxaFromSplitsTree4 = new TaxaBlock();
+        /*final TaxaBlock taxaFromSplitsTree4 = new TaxaBlock();
         final DistancesBlock distancesFromSplitsTree4 = new DistancesBlock();
         taxaFromSplitsTree4.addTaxaByNames
                 (DistancesNexusIO.parse(new NexusStreamParser(new FileReader("test//distances//myosinProtML.nex")),
