@@ -21,7 +21,7 @@ import static org.junit.Assert.*;
  */
 public class Nei_Li_RestrictionDistanceTest {
 
-    final Nei_Li_RestrictionDistance net_li = new Nei_Li_RestrictionDistance();
+    final Nei_Li_RestrictionDistance nei_li = new Nei_Li_RestrictionDistance();
 
     @Test
     public void compute() throws Exception {

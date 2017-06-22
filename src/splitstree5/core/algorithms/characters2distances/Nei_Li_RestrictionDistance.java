@@ -16,6 +16,7 @@ public class Nei_Li_RestrictionDistance extends Algorithm<CharactersBlock, Dista
     private PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates = PairwiseCompare.HandleAmbiguous.Ignore;
     public final boolean EXPERT = false;
     private final String DESCRIPTION = "Calculates the Nei and Li (1979) distance for restriction site data";
+    private double optionRestrictionSiteLength = 6.0;
 
     @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
@@ -49,7 +50,7 @@ public class Nei_Li_RestrictionDistance extends Algorithm<CharactersBlock, Dista
                         numUndefined++;
                     } else {
                         double s_hat = 2.0 * nst / (ns + nt);
-                        double a = (4.0 * Math.pow(s_hat, 1.0 / (2 * 6)) - 1.0) / 3.0;
+                        double a = (4.0 * Math.pow(s_hat, 1.0 / (2 * optionRestrictionSiteLength)) - 1.0) / 3.0;
                         if (a <= 0.0) {
                             dist = -1;
                             numUndefined++;
@@ -99,5 +100,13 @@ public class Nei_Li_RestrictionDistance extends Algorithm<CharactersBlock, Dista
 
     public void setOptionHandleAmbiguousStates(PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates) {
         this.optionHandleAmbiguousStates = optionHandleAmbiguousStates;
+    }
+
+    public double getOptionRestrictionSiteLength(){
+        return this.optionRestrictionSiteLength;
+    }
+
+    public void setOptionRestrictionSiteLength(double restrictionSiteLength){
+        this.optionRestrictionSiteLength=restrictionSiteLength;
     }
 }

@@ -14,10 +14,10 @@ import splitstree5.core.datablocks.TaxaBlock;
 public class Upholt extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
 
     private PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates = PairwiseCompare.HandleAmbiguous.Ignore;
+    private double optionRestrictionSiteLength = 6.0;
 
     public final boolean EXPERT = false;
     public final static String DESCRIPTION = "Calculates the Upholt (1979) distance for restriction site data";
-
 
     @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
@@ -52,7 +52,7 @@ public class Upholt extends Algorithm<CharactersBlock, DistancesBlock> implement
                         dist = -1;
                     } else {
                         double s_hat = 2.0 * nst / (ns + nt);
-                        dist = -Math.log(s_hat) / 6.0;
+                        dist = -Math.log(s_hat) / optionRestrictionSiteLength;
                     }
 
                 }
@@ -105,6 +105,14 @@ public class Upholt extends Algorithm<CharactersBlock, DistancesBlock> implement
 
     public void setOptionHandleAmbiguousStates(PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates) {
         this.optionHandleAmbiguousStates = optionHandleAmbiguousStates;
+    }
+
+    public double getOptionRestrictionSiteLength(){
+        return this.optionRestrictionSiteLength;
+    }
+
+    public void setOptionRestrictionSiteLength(double restrictionSiteLength){
+        this.optionRestrictionSiteLength=restrictionSiteLength;
     }
 
 }
