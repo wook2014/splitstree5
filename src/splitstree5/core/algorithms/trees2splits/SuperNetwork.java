@@ -1,5 +1,6 @@
 package splitstree5.core.algorithms.trees2splits;
 
+import javafx.beans.property.SimpleObjectProperty;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
@@ -16,34 +17,23 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
 import splitstree5.gui.dialog.Alert;
-import splitstree5.io.nexus.SplitsNexusIO;
-import splitstree5.io.nexus.TaxaNexusIO;
-import splitstree5.io.nexus.TreesNexusIO;
 import splitstree5.utils.nexus.TreesUtilities;
 
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.*;
 
 public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
 
     public final static String DESCRIPTION = "Z-closure super-network from partial trees (Huson, Dezulian, Kloepper and Steel 2004)";
     private boolean optionZRule = true;
-    private boolean optionLeastSquare = false;                  // todo ???
+    private boolean optionLeastSquare = false; // todo ???
     private boolean optionSuperTree = false;
     private int optionNumberOfRuns = 1;
     private boolean optionApplyRefineHeuristic = false;
     private int optionSeed = 0;
-    private String optionEdgeWeights = TREESIZEWEIGHTEDMEAN;
 
-    // todo make enum like in ConsensusNetwork
     // edge weight options:
-    static final String AVERAGERELATIVE = "AverageRelative";
-    static final String MEAN = "Mean";
-    static final String TREESIZEWEIGHTEDMEAN = "TreeSizeWeightedMean";
-    static final String SUM = "Sum";
-    static final String MIN = "Min";
-    static final String NONE = "None";
+    public enum EdgeWeights {AverageRelative, Mean, TreeSizeWeightedMean, Sum, Min, None}
+    private final SimpleObjectProperty<EdgeWeights> optionEdgeWeights = new SimpleObjectProperty<>(EdgeWeights.TreeSizeWeightedMean);
 
     @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock)
@@ -135,11 +125,6 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
             computeClosureOuterLoop(progressListener, taxaBlock, allPSplits);
         }
 
-        /*System.out.println("DEBUG");
-        for(Object ps : allPSplits){
-            System.out.println(ps);
-        }*/  // trees49 is ok here !!!
-
         if (getOptionApplyRefineHeuristic()) {
             progressListener.setSubtask("Refinement heuristic");
             applyRefineHeuristic(allPSplits);
@@ -170,40 +155,29 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
                 }
             }
         }
-        /*System.err.println("DEBUG ");
-        final StringWriter w2 = new StringWriter();
-        w2.write("#nexus\n");
-        SplitsNexusIO.write(w2, taxaBlock, splits, null);
-        System.err.println(w2.toString());*/ // tree49 is  ok here!!!
 
         // add all missing trivial splits
         for (int t = 1; t <= taxaBlock.getNtax(); t++) {
             BitSet ts = new BitSet();
             ts.set(t);
             PartialSplit ps = new PartialSplit(ts);
-            //ps.setComplement(taxaBlock.getTaxaSet());
             BitSet ts1 = new BitSet();
             ts1.set(1, taxaBlock.getNtax()+1);
             ps.setComplement(ts1);
-            //System.err.println(ps); // <- here!!!
             if (!allPSplits.contains(ps)){
                 ASplit split = new ASplit(ps.getA(), taxaBlock.getNtax());
                 splits.getSplits().add(split);
             }
 
         }
-        /*System.err.println("DEBUG - ok for tree49");
-        final StringWriter w1 = new StringWriter();
-        w1.write("#nexus\n");
-        SplitsNexusIO.write(w1, taxaBlock, splits, null);
-        System.err.println(w1.toString());*/
 
-        if (getOptionEdgeWeights().equals(AVERAGERELATIVE)) {
+        if (getOptionEdgeWeights().equals(EdgeWeights.AverageRelative)) {
             setWeightAverageReleativeLength(pSplitsOfTrees, supportSet, taxaBlock, splits);
-        } else if (!getOptionEdgeWeights().equals(NONE)) {
+        } else if (!getOptionEdgeWeights().equals(EdgeWeights.None)) {
             setWeightsConfidences(pSplitsOfTrees, supportSet, taxaBlock, splits);
         }
 
+        // todo how do we get here ?
         if (getNoOptionLeastSquare()) {
             if (!TreesUtilities.hasAllPairs(taxaBlock, treesBlock)) {
                 new Alert("Partial trees don't have the 'All Pairs' property,\n" +
@@ -217,12 +191,10 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
                 LeastSquaresWeights leastSquares = new LeastSquaresWeights();
                 leastSquares.setDistancesBlock(distances);
 
-                //if (!leastSquares.isApplicable(tmp//doc, taxa, splits))
-                  //  new Alert("Least Squares not applicable");
-                //else
-                    leastSquares.compute(new ProgressPercentage(), taxaBlock, splits, splitsBlock);
+                leastSquares.compute(new ProgressPercentage(), taxaBlock, splits, splitsBlock);
             }
         }
+
         splitsBlock.copy(splits);
         progressListener.close();
     }
@@ -270,16 +242,16 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
 
             float value = 1;
             switch (getOptionEdgeWeights()) {
-                case MIN:
+                case Min:
                     value = min;
                     break;
-                case MEAN:
+                case Mean:
                     value = weighted / total;
                     break;
-                case TREESIZEWEIGHTEDMEAN:
+                case TreeSizeWeightedMean:
                     value = sum / total;
                     break;
-                case SUM:
+                case Sum:
                     value = sum;
                     break;
             }
@@ -371,20 +343,10 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
 
     private BitSet computePSplitsFromTreeRecursively(Node v, Edge e, TreesBlock trees,
                                                       TaxaBlock taxa, List list, int which, BitSet seen) throws NotOwnerException {
-        PhyloTree tree = trees.getTrees().get(which-1);// getTree(which);
-        //BitSet e_taxa = trees.getTaxaForLabel(taxa, tree.getLabel(v));
-        // todo test
+        PhyloTree tree = trees.getTrees().get(which-1);
         BitSet e_taxa = new BitSet();
         if (taxa.indexOf(tree.getLabel(v)) != -1)
             e_taxa.set(taxa.indexOf(tree.getLabel(v)));
-
-        // the same as above
-        /*if (tree.getLabel(v) != null)
-        for (int t = 1; t <= taxa.getNtax(); t++) {
-            if (tree.getLabel(v).equals(taxa.getLabel(t))) {
-                e_taxa.set(t);
-            }
-        }*/
 
         seen.or(e_taxa);
 
@@ -397,7 +359,6 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
                 PartialSplit ps = new PartialSplit(f_taxa);
                 ps.setWeight((float) tree.getWeight(f));
                 list.add(ps);
-                //e_taxa.set(f_taxa);
                 for (int t = 1; t < f_taxa.length(); t++) {
                     if (f_taxa.get(t))
                         e_taxa.set(t);
@@ -683,29 +644,16 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
         this.optionSuperTree = optionSuperTree;
     }
 
-    public String getOptionEdgeWeights() {
-        return optionEdgeWeights;
+    public EdgeWeights getOptionEdgeWeights() {
+        return this.optionEdgeWeights.get();
     }
 
-    public void setOptionEdgeWeights(String optionEdgeWeights) {
-        this.optionEdgeWeights = optionEdgeWeights;
+    public SimpleObjectProperty<EdgeWeights> optionEdgeWeightsProperty() {
+        return this.optionEdgeWeights;
     }
 
-
-    /**
-     * return the possible chocies for optionEdgeWeights
-     *
-     * @return list of choices
-     */
-    public List selectionOptionEdgeWeights() {
-        List list = new LinkedList();
-        list.add(AVERAGERELATIVE);
-        list.add(MEAN);
-        list.add(TREESIZEWEIGHTEDMEAN);
-        list.add(SUM);
-        list.add(MIN);
-        list.add(NONE);
-        return list;
+    public void setOptionEdgeWeights(EdgeWeights optionEdgeWeights) {
+        this.optionEdgeWeights.set(optionEdgeWeights);
     }
 
     public boolean getOptionApplyRefineHeuristic() {

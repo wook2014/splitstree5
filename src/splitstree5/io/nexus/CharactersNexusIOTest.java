@@ -46,6 +46,8 @@ public class CharactersNexusIOTest {
 
         final ArrayList<String> inputFiles = new ArrayList<>();
 
+        inputFiles.add("test//characters//ferment4-diploid.nex");
+
         inputFiles.add("test//characters//tokens.nex");
 
         inputFiles.add("test//nexus//characters-simple.nex");

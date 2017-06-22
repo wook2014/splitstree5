@@ -225,7 +225,7 @@ public class CharactersNexusIO {
 
         characters.setCharLabeler(null);
         characters.setStateLabeler(null);
-        if (np.peekMatchIgnoreCase("CharStateLabels")) {
+        if (np.peekMatchIgnoreCase("CharStateLabels")) { // todo is false for ferment4-diploid (microsat data)
             np.matchIgnoreCase("CharStateLabels");
             switch (characters.getDataType()) {
                 case protein:
@@ -315,6 +315,7 @@ public class CharactersNexusIO {
                 }
             }
             if (tokenList != null) {
+                System.err.print("StateLabeler is "+ characters.getStateLabeler());
                 str = characters.getStateLabeler().parseSequence(tokenList, 1, false);
             }
 

@@ -182,7 +182,7 @@ public class SuperNetworkTest {
         superNetwork.setOptionZRule(false);
         superNetwork.setOptionSuperTree(true);
         superNetwork.setOptionNumberOfRuns(3);
-        superNetwork.setOptionEdgeWeights("Mean");
+        superNetwork.setOptionEdgeWeights(SuperNetwork.EdgeWeights.Mean);
         superNetwork.setOptionApplyRefineHeuristic(true);
         superNetwork.compute(new ProgressPercentage(), taxaBlock3, treesBlock3, splitsBlock3);
 
@@ -228,7 +228,7 @@ public class SuperNetworkTest {
         superNetwork.setOptionZRule(true);
         superNetwork.setOptionSuperTree(false);
         superNetwork.setOptionNumberOfRuns(3);
-        superNetwork.setOptionEdgeWeights("AverageRelative");
+        superNetwork.setOptionEdgeWeights(SuperNetwork.EdgeWeights.AverageRelative);
         superNetwork.setOptionApplyRefineHeuristic(false);
         superNetwork.compute(new ProgressPercentage(), taxaBlock4, treesBlock4, splitsBlock4);
 

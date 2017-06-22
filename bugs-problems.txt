@@ -6,3 +6,9 @@
    applied after splits computation, the final splits from ST4 are not the same
 
  - No output of confidences from ST4?
+
+ - BalancedConfidenceNetwork can not open tree6.nex in ST4
+   all confidences are 0.0
+
+ - Problem by reading microsat character data
+   StateLabeler isn't set
