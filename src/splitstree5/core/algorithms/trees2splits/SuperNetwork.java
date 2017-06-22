@@ -192,11 +192,11 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
             }
 
         }
-        System.err.println("DEBUG - ok for tree49");
+        /*System.err.println("DEBUG - ok for tree49");
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
         SplitsNexusIO.write(w1, taxaBlock, splits, null);
-        System.err.println(w1.toString());
+        System.err.println(w1.toString());*/
 
         if (getOptionEdgeWeights().equals(AVERAGERELATIVE)) {
             setWeightAverageReleativeLength(pSplitsOfTrees, supportSet, taxaBlock, splits);
@@ -378,6 +378,14 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
         if (taxa.indexOf(tree.getLabel(v)) != -1)
             e_taxa.set(taxa.indexOf(tree.getLabel(v)));
 
+        // the same as above
+        /*if (tree.getLabel(v) != null)
+        for (int t = 1; t <= taxa.getNtax(); t++) {
+            if (tree.getLabel(v).equals(taxa.getLabel(t))) {
+                e_taxa.set(t);
+            }
+        }*/
+
         seen.or(e_taxa);
 
         Iterator edges = tree.getAdjacentEdges(v);
@@ -456,7 +464,6 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
     /**
      * computes the split closure obtained using the zig-zap rule
      *
-     * @param //doc           the //document
      * @param partialSplits
      */
     private void computeClosure(ProgressListener pl, Set partialSplits) throws CanceledException {

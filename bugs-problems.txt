@@ -1,3 +1,8 @@
 
  - Error by parsing partial trees in IO part :
    nexus blocks with partial trees have false "isPartial" value
+
+ - SuperNetwork in SplitsTree4 uses a DimensionFilter
+   applied after splits computation, the final splits from ST4 are not the same
+
+ - No output of confidences from ST4?
