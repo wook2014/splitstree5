@@ -12,3 +12,11 @@
 
  - Problem by reading microsat character data
    StateLabeler isn't set
+
+ - Amplified Fragment Length Polymorphism (AFLP) and Restriction Fragment Length Polymorphism (RFLP)
+   RAPD data (?) for Upholt and Nei Li
+   http://datadryad.org/bitstream/handle/10255/dryad.1577/MEC-10-0241DataS1.txt?sequence=1
+
+ - optionLeastSquare in SuperNetwork is not used?
+
+ - Nei Miller in ST4 doesn't work
