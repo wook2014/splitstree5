@@ -34,9 +34,9 @@ import splitstree5.core.topfilters.*;
 import java.util.ArrayList;
 
 /**
- * The document analysis graph
+ * The document update graph
  * <p/>
- * Created by huson on 12/29/16.
+ * Daniel Huson, 2016
  */
 public class DAG {
     private final IntegerProperty size = new SimpleIntegerProperty();
@@ -62,9 +62,9 @@ public class DAG {
             updating.set(invalidNodes.size() > 0);
             System.err.println("DAG updating: " + updating.get());
         });
+
         dataNodes.addListener((InvalidationListener) observable -> size.set(connectorNodes.size() + dataNodes.size()));
         connectorNodes.addListener((InvalidationListener) observable -> size.set(connectorNodes.size() + dataNodes.size()));
-
 
         updatingProperty().addListener((observable, oldValue, newValue) -> System.err.println("UPDATING: " + newValue));
     }

@@ -111,4 +111,9 @@ public class TreesBlock extends ADataBlock {
     public Class getToInterface() {
         return IToTrees.class;
     }
+
+    @Override
+    public String getInfo() {
+        return getNTrees() + " trees" + (isPartial() ? ", partial" : "") + (isRooted() ? ", rooted" : "");
+    }
 }

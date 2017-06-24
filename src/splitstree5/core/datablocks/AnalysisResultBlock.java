@@ -49,4 +49,9 @@ public class AnalysisResultBlock extends ADataBlock {
     public Class getToInterface() {
         return IToAnalysisResults.class;
     }
+
+    @Override
+    public String getInfo() {
+        return "analysis results";
+    }
 }

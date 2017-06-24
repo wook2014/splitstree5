@@ -20,6 +20,7 @@
 package splitstree5.gui.connectorview;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 import org.junit.Test;
 import splitstree5.core.Document;
@@ -85,5 +86,17 @@ public class ConnectorViewTest extends Application {
             ConnectorView<TaxaBlock, TaxaBlock> connectorView = new ConnectorView<>(document, taxaFilter);
             connectorView.show();
         }
+
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Platform.exit();
+            }
+        });
     }
 }

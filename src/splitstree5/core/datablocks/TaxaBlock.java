@@ -242,4 +242,9 @@ public class TaxaBlock extends ADataBlock {
     public Class getToInterface() {
         return IToTaxa.class;
     }
+
+    @Override
+    public String getInfo() {
+        return getNtax() + " taxa";
+    }
 }

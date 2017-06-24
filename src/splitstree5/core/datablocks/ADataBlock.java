@@ -72,4 +72,11 @@ abstract public class ADataBlock extends OptionableBase {
         return super.getName();
     }
 
+    /**
+     * gets the info for this block
+     *
+     * @return info
+     */
+    abstract public String getInfo();
+
 }

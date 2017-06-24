@@ -52,11 +52,16 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
      * constructor
      */
     public NeighborNet() {
-        super("Neighbor net", "Neighbor-Net algorithm (Bryant and Moulton 2004)");
+        super("Neighbor net");
     }
 
     public List<String> listOptions() {
         return Arrays.asList("optionCutOff", "optionLeastSquares", "optionRegularization", "optionLambdaFrac");
+    }
+
+    @Override
+    public String getCitation() {
+        return "Bryant and Moulton 2004";
     }
 
     /**
@@ -564,8 +569,6 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
         } while (a != x);
         return ordering;
     }
-
-
 }
 
 /* A node in the net */

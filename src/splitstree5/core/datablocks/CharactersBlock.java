@@ -462,6 +462,11 @@ public class CharactersBlock extends ADataBlock {
     public char[] getRow0(int t) {
         return matrix[t];
     }
+
+    @Override
+    public String getInfo() {
+        return getNtax() + " character sequences of length " + getNchar() + ", " + getDataType().toString();
+    }
 }
 
 

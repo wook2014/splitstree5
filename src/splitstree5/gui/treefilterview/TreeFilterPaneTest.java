@@ -41,6 +41,7 @@ package splitstree5.gui.treefilterview;
 
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 import org.junit.Test;
 import splitstree5.core.Document;
@@ -86,5 +87,17 @@ public class TreeFilterPaneTest extends Application {
         connectorView.show();
 
         document.getDag().createReporter(filtered);
+
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Platform.exit();
+            }
+        });
     }
 }

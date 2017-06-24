@@ -190,4 +190,8 @@ public class SplitDecomposition extends Algorithm<DistancesBlock, SplitsBlock> i
         return result;
     }
 
+    @Override
+    public String getCitation() {
+        return "Bandelt and Dress 1992";
+    }
 }

@@ -3,13 +3,13 @@ package splitstree5.core.algorithms.trees2splits;
 import jloda.util.ProgressPercentage;
 import jloda.util.parse.NexusStreamParser;
 import org.junit.Test;
-import splitstree5.core.Document;
-import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
-import splitstree5.io.nexus.*;
+import splitstree5.io.nexus.SplitsNexusIO;
+import splitstree5.io.nexus.TaxaNexusIO;
+import splitstree5.io.nexus.TreesNexusIO;
 
 import java.io.FileReader;
 import java.io.StringWriter;
@@ -95,20 +95,20 @@ public class TreeSelectorTest {
 
             if (which == 1) {
                 String expected = "\nBEGIN SPLITS;\n" +
-                        "DIMENSIONS ntax=6 nsplits=9;\n" +
-                        "FORMAT labels=no weights=yes confidences=no;\n" +
-                        "PROPERTIES fit=-1.00 compatible;\n" +
-                        "CYCLE 1 2 3 5 6 4;\n" +
+                        "\tDIMENSIONS ntax=6 nsplits=9;\n" +
+                        "\tFORMAT labels=no weights=yes confidences=no;\n" +
+                        "\tPROPERTIES fit=-1.00 compatible;\n" +
+                        "\tCYCLE 1 2 3 5 6 4;\n" +
                         "MATRIX\n" +
-                        "[1, size=1] \t 1.0 \t 1 2 3 4 6,\n" +
-                        "[2, size=1] \t 1.0 \t 1 2 3 4 5,\n" +
-                        "[3, size=2] \t 1.0 \t 1 2 3 4,\n" +
-                        "[4, size=1] \t 1.0 \t 1,\n" +
-                        "[5, size=1] \t 1.0 \t 1 3 4 5 6,\n" +
-                        "[6, size=2] \t 1.0 \t 1 2,\n" +
-                        "[7, size=1] \t 1.0 \t 1 2 4 5 6,\n" +
-                        "[8, size=3] \t 1.0 \t 1 2 3,\n" +
-                        "[9, size=1] \t 1.0 \t 1 2 3 5 6,\n" +
+                        "\t[1, size=1] \t 1.0 \t 1 2 3 4 5,\n" +
+                        "\t[2, size=1] \t 1.0 \t 1,\n" +
+                        "\t[3, size=1] \t 1.0 \t 1 3 4 5 6,\n" +
+                        "\t[4, size=2] \t 1.0 \t 1 2,\n" +
+                        "\t[5, size=1] \t 1.0 \t 1 2 4 5 6,\n" +
+                        "\t[6, size=3] \t 1.0 \t 1 2 3,\n" +
+                        "\t[7, size=1] \t 1.0 \t 1 2 3 5 6,\n" +
+                        "\t[8, size=2] \t 1.0 \t 1 2 3 4,\n" +
+                        "\t[9, size=1] \t 1.0 \t 1 2 3 4 6,\n" +
                         ";\n" +
                         "END; [SPLITS]\n";
                 assertEquals("tree 1:", expected, NexusFileWriter.toString(document.getDag().getWorkingTaxaNode().getDataBlock(), splitsNode.getDataBlock()));

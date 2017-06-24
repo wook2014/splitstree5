@@ -25,7 +25,9 @@ import jloda.util.Basic;
 import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.utils.Option;
 import splitstree5.utils.OptionableBase;
+import splitstree5.utils.OptionsAccessor;
 
 /**
  * An algorithm
@@ -114,5 +116,32 @@ abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> exte
      */
     public String toString() {
         return getName();
+    }
+
+    /**
+     * gets the citation for the algorithm
+     *
+     * @return
+     */
+    public String getCitation() {
+        return "citation?";
+    }
+
+    /**
+     * reports the parameters used by this algorithm
+     *
+     * @return parameters
+     */
+    final public String getParameters() {
+        final StringBuilder buf = new StringBuilder();
+        for (Option option : OptionsAccessor.getAllOptions(this)) {
+            if (buf.length() > 0)
+                buf.append(", ");
+            buf.append(option.getName()).append(" = ").append(option.getValue().toString());
+        }
+        if (buf.length() == 0)
+            return "none";
+        else
+            return buf.toString();
     }
 }

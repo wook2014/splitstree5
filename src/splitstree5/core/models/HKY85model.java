@@ -25,7 +25,7 @@
 package splitstree5.core.models;
 
 /**
- * @author Mig
+ * @author Miguel Jette
  *         <p/>
  *         To change the template for this generated type comment go to
  *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments

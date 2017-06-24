@@ -20,6 +20,7 @@
 package splitstree5.core;
 
 import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ListChangeListener;
@@ -39,11 +40,16 @@ public class Document {
     private final StringProperty fileName = new SimpleStringProperty();
     private final ASelectionModel<Taxon> taxaSelectionModel = new ASelectionModel<>();
 
+    private final StringProperty methodsText = new SimpleStringProperty();
+
     /**
      * constructor
      */
     public Document() {
         dag = new DAG();
+        dag.updatingProperty().addListener((c, o, n) -> {
+            methodsText.setValue(MethodsTextGenerator.getInstance().apply(this));
+        });
     }
 
     /**
@@ -89,5 +95,9 @@ public class Document {
 
     public ASelectionModel<Taxon> getTaxaSelectionModel() {
         return taxaSelectionModel;
+    }
+
+    public ReadOnlyStringProperty methodsTextProperty() {
+        return methodsText;
     }
 }

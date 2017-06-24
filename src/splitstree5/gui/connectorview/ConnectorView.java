@@ -49,7 +49,7 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
     private AlgorithmPane algorithmPane;
     private Stage stage;
 
-    private Map<Algorithm<P, C>, AlgorithmPane> algorithm2pane = new HashMap<>(); // we key used panes around incase we want to undo back to one
+    private Map<Algorithm<P, C>, AlgorithmPane> algorithm2pane = new HashMap<>(); // we keep used panes around in case we want to undo back to one
 
     private final AConnector<P, C> connector;
 

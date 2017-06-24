@@ -203,4 +203,9 @@ public class DistancesBlock extends ADataBlock {
     public Class getToInterface() {
         return IToDistances.class;
     }
+
+    @Override
+    public String getInfo() {
+        return "a " + getNtax() + "x" + getNtax() + " distance matrix";
+    }
 }
