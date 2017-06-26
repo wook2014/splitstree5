@@ -23,6 +23,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import splitstree5.core.algorithms.Algorithm;
 
@@ -58,6 +59,9 @@ public class ConnectorViewController {
 
     @FXML
     private Pane centerPane;
+
+    @FXML
+    private TextField statusBar;
 
     @FXML
         // This method is called by the FXMLLoader when initialization is complete
@@ -99,5 +103,9 @@ public class ConnectorViewController {
 
     public Pane getCenterPane() {
         return centerPane;
+    }
+
+    public TextField getStatusBar() {
+        return statusBar;
     }
 }

@@ -28,6 +28,7 @@ import jloda.fx.ASelectionModel;
 import jloda.util.Basic;
 import splitstree5.core.dag.DAG;
 import splitstree5.core.misc.Taxon;
+import splitstree5.info.MethodsTextGenerator;
 
 import java.util.List;
 

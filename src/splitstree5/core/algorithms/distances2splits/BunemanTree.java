@@ -209,5 +209,4 @@ public class BunemanTree extends Algorithm<DistancesBlock, SplitsBlock> implemen
     public String getDescription() {
         return DESCRIPTION;
     }
-
 }

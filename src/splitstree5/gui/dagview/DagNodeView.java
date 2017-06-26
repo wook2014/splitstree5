@@ -39,7 +39,6 @@ import splitstree5.core.datablocks.ADataNode;
 import splitstree5.gui.connectorview.ConnectorView;
 import splitstree5.gui.textview.TextView;
 import splitstree5.io.nexus.NexusFileWriter;
-import splitstree5.utils.OptionsAccessor;
 
 import java.io.IOException;
 
@@ -100,7 +99,6 @@ public class DagNodeView extends Group {
             descriptionLabel.setLayoutY(24);
             getChildren().add(descriptionLabel);
 
-            if (((AConnector) aNode).getAlgorithm().getControl() != null || OptionsAccessor.getAllOptions(((AConnector) aNode).getAlgorithm()).size() > 0) {
                 final Button openButton = new Button("Open...");
                 openButton.setOnAction((e) -> {
                     try {
@@ -125,7 +123,6 @@ public class DagNodeView extends Group {
                 progressBar.visibleProperty().bind(((AConnector) aNode).getService().runningProperty());
                 progressBar.progressProperty().bind(((AConnector) aNode).getService().progressProperty());
                 getChildren().add(progressBar);
-            }
         } else if (aNode instanceof ADataNode) {
             {
                 Shear sh = new Shear(-0.2, 0, rectangle.getX() + rectangle.getWidth() / 2, rectangle.getY() + rectangle.getHeight() / 2);

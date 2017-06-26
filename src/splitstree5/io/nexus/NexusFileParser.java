@@ -23,7 +23,6 @@ import javafx.application.Platform;
 import jloda.util.ProgressPercentage;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.Document;
-import splitstree5.core.algorithms.ReportNode;
 import splitstree5.core.dag.DAGUtils;
 import splitstree5.core.dag.UpdateState;
 import splitstree5.core.datablocks.*;
@@ -78,7 +77,7 @@ public class NexusFileParser {
                 document.setupTaxonSelectionModel();
 
                 // todo: for debugging:
-                new ReportNode<>(document.getDag().getWorkingTaxaNode().getDataBlock(), document.getDag().getWorkingDataNode());
+                // new ReportNode<>(document.getDag().getWorkingTaxaNode().getDataBlock(), document.getDag().getWorkingDataNode());
 
                 if (Platform.isFxApplicationThread())
                     document.getDag().getTopTaxaNode().setState(UpdateState.VALID);

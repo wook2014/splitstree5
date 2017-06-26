@@ -119,15 +119,6 @@ abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> exte
     }
 
     /**
-     * gets the citation for the algorithm
-     *
-     * @return
-     */
-    public String getCitation() {
-        return "citation?";
-    }
-
-    /**
      * reports the parameters used by this algorithm
      *
      * @return parameters
@@ -139,9 +130,6 @@ abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> exte
                 buf.append(", ");
             buf.append(option.getName()).append(" = ").append(option.getValue().toString());
         }
-        if (buf.length() == 0)
-            return "none";
-        else
-            return buf.toString();
+        return buf.toString();
     }
 }

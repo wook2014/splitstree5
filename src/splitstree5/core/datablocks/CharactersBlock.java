@@ -465,7 +465,7 @@ public class CharactersBlock extends ADataBlock {
 
     @Override
     public String getInfo() {
-        return getNtax() + " character sequences of length " + getNchar() + ", " + getDataType().toString();
+        return getNtax() + " " + getDataType().toString() + " character sequences of length " + getNchar();
     }
 }
 

@@ -114,6 +114,6 @@ public class TreesBlock extends ADataBlock {
 
     @Override
     public String getInfo() {
-        return getNTrees() + " trees" + (isPartial() ? ", partial" : "") + (isRooted() ? ", rooted" : "");
+        return (getNTrees() == 1 ? "a tree" : getNTrees() + " trees") + (isPartial() ? ", partial" : "") + (isRooted() ? ", rooted" : "");
     }
 }

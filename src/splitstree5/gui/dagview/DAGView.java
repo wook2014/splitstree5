@@ -78,6 +78,8 @@ public class DAGView {
         controller.getRedoMenuItem().disableProperty().bind(new SimpleBooleanProperty(false).isEqualTo(undoManager.canRedoProperty()));
         controller.getRedoMenuItem().textProperty().bind(undoManager.redoNameProperty());
 
+        controller.getMethodTextArea().textProperty().bind(document.methodsTextProperty());
+
         recompute();
     }
 

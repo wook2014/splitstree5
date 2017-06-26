@@ -3,6 +3,7 @@ package splitstree5.gui.dagview;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
 
 import java.net.URL;
@@ -31,6 +32,9 @@ public class DAGViewController {
     @FXML
     private MenuItem redoMenuItem;
 
+    @FXML
+    private TextArea methodTextArea;
+
     public Button getDoneButton() {
         return doneButton;
     }
@@ -49,5 +53,9 @@ public class DAGViewController {
 
     public MenuItem getRedoMenuItem() {
         return redoMenuItem;
+    }
+
+    public TextArea getMethodTextArea() {
+        return methodTextArea;
     }
 }

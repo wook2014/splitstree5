@@ -59,11 +59,6 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
         return Arrays.asList("optionCutOff", "optionLeastSquares", "optionRegularization", "optionLambdaFrac");
     }
 
-    @Override
-    public String getCitation() {
-        return "Bryant and Moulton 2004";
-    }
-
     /**
      * run the neighbor net algorithm
      *

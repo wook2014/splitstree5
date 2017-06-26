@@ -25,11 +25,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
 import javafx.stage.Stage;
 import jloda.fx.ExtendedFXMLLoader;
+import jloda.util.Basic;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.dag.UpdateState;
 import splitstree5.core.datablocks.ADataBlock;
+import splitstree5.info.MethodsTextGenerator;
 import splitstree5.undo.UndoManager;
 
 import java.io.IOException;
@@ -160,6 +162,11 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
             algorithmPane.prefWidthProperty().bind(controller.getCenterPane().widthProperty());
             algorithmPane.setup();
         }
+
+        if (MethodsTextGenerator.getCitation(connector.getAlgorithm()).length() == 0)
+            controller.getStatusBar().setText(Basic.fromCamelCase(connector.getAlgorithm().getName()));
+        else
+            controller.getStatusBar().setText(Basic.fromCamelCase(connector.getAlgorithm().getName()) + " (" + MethodsTextGenerator.getCitation(connector.getAlgorithm()) + ")");
     }
 
     public static int windowCount = 0;
