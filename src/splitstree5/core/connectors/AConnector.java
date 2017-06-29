@@ -80,7 +80,7 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
         this.parent = parent;
         parent.getChildren().add(this);
         this.child = child;
-        this.children = FXCollections.unmodifiableObservableList(FXCollections.observableArrayList(child));
+        this.children = FXCollections.observableArrayList(child);
         service = new ConnectorService<>(this);
 
         parent.stateProperty().addListener(new WeakChangeListener<UpdateState>(parentStateChangeListener));

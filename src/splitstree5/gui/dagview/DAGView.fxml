@@ -2,7 +2,8 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.input.*?>
 <?import javafx.scene.layout.*?>
 <BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
             prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111"
@@ -23,7 +24,12 @@
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Close"/>
+                        <MenuItem fx:id="closeMenuItem" mnemonicParsing="false" text="Close">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="W" control="UP" meta="UP" shift="UP"
+                                                    shortcut="DOWN"/>
+                            </accelerator>
+                        </MenuItem>
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Edit">
@@ -47,6 +53,35 @@
                                                     shortcut="DOWN"/>
                             </accelerator>
                         </MenuItem>
+                        <SeparatorMenuItem mnemonicParsing="false"/>
+                        <MenuItem fx:id="selectAllMenuItem" mnemonicParsing="false" text="Select All">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="A" control="UP" meta="UP" shift="UP"
+                                                    shortcut="DOWN"/>
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem fx:id="selectNoneMenuItem" mnemonicParsing="false" text="Select None">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="A" control="UP" meta="UP" shift="DOWN"
+                                                    shortcut="DOWN"/>
+                            </accelerator>
+                        </MenuItem>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="View">
+                    <items>
+                        <MenuItem fx:id="zoomInMenuItem" mnemonicParsing="false" text="Zoom In">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="P" control="UP" meta="UP" shift="UP"
+                                                    shortcut="DOWN"/>
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem fx:id="zoomOutMenuItem" mnemonicParsing="false" text="Zoom Out">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="M" control="UP" meta="UP" shift="UP"
+                                                    shortcut="DOWN"/>
+                            </accelerator>
+                        </MenuItem>
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">
@@ -60,9 +95,13 @@
     <center>
         <SplitPane dividerPositions="1.0" minHeight="0.0" orientation="VERTICAL" BorderPane.alignment="CENTER">
             <items>
-                <ScrollPane minHeight="0.0">
+                <ScrollPane fx:id="centerScrollPane" minHeight="0.0">
                     <content>
-                        <Pane fx:id="centerPane"/>
+                        <Group>
+                            <children>
+                                <Pane fx:id="centerPane"/>
+                            </children>
+                        </Group>
                     </content>
                 </ScrollPane>
                 <TextArea fx:id="methodTextArea" editable="false" focusTraversable="false" minHeight="0.0"

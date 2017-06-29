@@ -32,6 +32,7 @@ import splitstree5.core.datablocks.ADataNode;
 import splitstree5.undo.UndoableChange;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * displays the new node dialog and creates a new node, if desired
@@ -103,6 +104,7 @@ public class NewNodeDialog {
      */
     private void makeNewNodes(final DAGView dagView, DagNodeView sourceNodeView, ADataBlock childDataBlock, double xTarget, double yTarget) {
         final ADataNode targetNode = new ADataNode(childDataBlock);
+        dagView.getDag().addDataNode(targetNode);
         final AConnector connectorNode = dagView.getDag().createConnector((ADataNode) sourceNodeView.getANode(), (ADataNode) targetNode, (Algorithm) controller.getAlgorithmChoiceBox().getValue());
         final DagNodeView targetNodeView = new DagNodeView(dagView, targetNode);
         final DagNodeView connectorNodeView = new DagNodeView(dagView, connectorNode);
@@ -113,14 +115,8 @@ public class NewNodeDialog {
         connectorNodeView.xProperty().set((sourceNodeView.xProperty().get() + xTarget) / 2);
         connectorNodeView.yProperty().set((sourceNodeView.yProperty().get() + yTarget) / 2);
 
-        dagView.getNodeViews().getChildren().addAll(targetNodeView, connectorNodeView);
-
         final DagEdgeView edgeView1 = new DagEdgeView(sourceNodeView, connectorNodeView);
         final DagEdgeView edgeView2 = new DagEdgeView(connectorNodeView, targetNodeView);
-
-        dagView.getEdgeViews().getChildren().addAll(edgeView1, edgeView2);
-
-        connectorNode.forceRecompute();
 
         UndoableChange undoableChange = new UndoableChange("Create Node") {
             @Override
@@ -130,10 +126,18 @@ public class NewNodeDialog {
                 dagView.getDag().delete(targetNode, true, false);
                 dagView.getNodeViews().getChildren().removeAll(connectorNodeView, targetNodeView);
                 dagView.getEdgeViews().getChildren().removeAll(edgeView1, edgeView2);
+
+                dagView.getNode2NodeView().remove(connectorNode);
+                dagView.getNode2EdgeViews().remove(connectorNode);
+                dagView.getNode2NodeView().remove(targetNode);
             }
 
             @Override
             public void redo() {
+                dagView.getNode2NodeView().put(targetNode, targetNodeView);
+                dagView.getNode2NodeView().put(connectorNode, connectorNodeView);
+                dagView.getNode2EdgeViews().put(connectorNode, Arrays.asList(edgeView1, edgeView2));
+
                 dagView.getDag().addConnector(connectorNode);
                 dagView.getDag().addDataNode(targetNode);
                 dagView.getNodeViews().getChildren().addAll(connectorNodeView, targetNodeView);
@@ -142,6 +146,9 @@ public class NewNodeDialog {
                 connectorNode.forceRecompute();
             }
         };
+        undoableChange.redo();
+        connectorNode.forceRecompute();
+
         dagView.getUndoManager().addUndoableChange(undoableChange);
     }
 }

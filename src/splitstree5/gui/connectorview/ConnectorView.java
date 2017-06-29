@@ -119,9 +119,8 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
             System.err.println(connector.getAlgorithm().getName() + " is applicable: " + n);
         });
 
-        controller.getCancelButton().setOnAction((e) -> {
-            ConnectorView.this.stage.close();
-        });
+        controller.getCancelButton().setOnAction((e) -> ConnectorView.this.stage.close());
+        controller.getCloseMenuItem().setOnAction((e) -> ConnectorView.this.stage.close());
 
         controller.getResetButton().setOnAction((e) -> {
             algorithmPane.syncModel2Controller();

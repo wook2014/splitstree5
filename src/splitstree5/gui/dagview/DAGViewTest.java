@@ -24,12 +24,12 @@ import javafx.stage.Stage;
 import org.junit.Test;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.characters2distances.HammingDistances;
-import splitstree5.core.algorithms.distances2trees.BioNJ;
+import splitstree5.core.algorithms.distances2splits.NeighborNet;
 import splitstree5.core.dag.DAG;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
-import splitstree5.core.datablocks.TreesBlock;
+import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.io.nexus.NexusFileParser;
 
 /**
@@ -55,8 +55,8 @@ public class DAGViewTest extends Application {
         if (dag.getWorkingDataNode().getDataBlock() instanceof CharactersBlock) {
             final ADataNode<DistancesBlock> distances = dag.createDataNode(new DistancesBlock());
             dag.createConnector(dag.getWorkingDataNode(), distances, new HammingDistances());
-            final ADataNode<TreesBlock> trees = dag.createDataNode(new TreesBlock());
-            dag.createConnector(distances, trees, new BioNJ());
+            final ADataNode<SplitsBlock> splits = dag.createDataNode(new SplitsBlock());
+            dag.createConnector(distances, splits, new NeighborNet());
         }
 
         final DAGView dagView = new DAGView(document);

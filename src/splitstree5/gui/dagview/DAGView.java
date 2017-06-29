@@ -19,26 +19,33 @@
 
 package splitstree5.gui.dagview;
 
+import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import jloda.fx.ASelectionModel;
 import jloda.fx.ExtendedFXMLLoader;
 import splitstree5.core.Document;
+import splitstree5.core.connectors.AConnector;
 import splitstree5.core.dag.ANode;
 import splitstree5.core.dag.DAG;
 import splitstree5.gui.connectorview.ConnectorView;
 import splitstree5.undo.UndoManager;
-import splitstree5.utils.Option;
+import splitstree5.undo.UndoableChange;
+import splitstree5.undo.UndoableChangeList;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * create a connector view
@@ -54,7 +61,9 @@ public class DAGView {
     private final Group nodeViews = new Group();
     private final Group edgeViews = new Group();
 
-    private final ArrayList<Option> options = new ArrayList<>();
+    private final Map<ANode, DagNodeView> node2NodeView = new HashMap<>();
+    private final Map<ANode, List<DagEdgeView>> node2EdgeViews = new HashMap<>();
+
 
     /**
      * constructor
@@ -67,18 +76,133 @@ public class DAGView {
         controller = extendedFXMLLoader.getController();
         undoManager = new UndoManager();
 
+        final ASelectionModel<ANode> selectionModel = getDag().getNodeSelectionModel();
+
         controller.getCenterPane().getChildren().addAll(edgeViews, nodeViews);
 
-        controller.getUndoMenuItem().setOnAction((e) -> {
-            undoManager.undo();
-        });
+        controller.getCloseMenuItem().setOnAction((e) -> Platform.exit());
+        controller.getDoneButton().setOnAction((e) -> Platform.exit());
+
+        controller.getUndoMenuItem().setOnAction((e) -> undoManager.undo());
         controller.getUndoMenuItem().disableProperty().bind(new SimpleBooleanProperty(false).isEqualTo(undoManager.canUndoProperty()));
         controller.getUndoMenuItem().textProperty().bind(undoManager.undoNameProperty());
         controller.getRedoMenuItem().setOnAction((e) -> undoManager.redo());
+
         controller.getRedoMenuItem().disableProperty().bind(new SimpleBooleanProperty(false).isEqualTo(undoManager.canRedoProperty()));
         controller.getRedoMenuItem().textProperty().bind(undoManager.redoNameProperty());
 
+        controller.getSelectAllMenuItem().setOnAction((e) -> selectionModel.selectAll());
+        controller.getSelectNoneMenuItem().setOnAction((e) -> selectionModel.clearSelection());
+        controller.getSelectNoneMenuItem().disableProperty().bind(selectionModel.emptyProperty());
+
+        selectionModel.getSelectedItems().addListener((InvalidationListener) (e) -> System.err.println("Selected: " + selectionModel.getSelectedItems().size()));
+
+        controller.getDeleteMenuItem().setOnAction((e) -> {
+            Set<ANode> deletableSelection = new HashSet<>(selectionModel.getSelectedItems());
+            deletableSelection.remove(getDag().getTopTaxaNode());
+            deletableSelection.remove(getDag().getTopDataNode());
+            deletableSelection.remove(getDag().getTaxaFilter());
+            deletableSelection.remove(getDag().getTopFilter());
+            deletableSelection.remove(getDag().getWorkingTaxaNode());
+            deletableSelection.remove(getDag().getWorkingDataNode());
+
+            Set<ANode> toDelete = new HashSet<>();
+            for (Node node : nodeViews.getChildren()) {
+                if (node instanceof DagNodeView) {
+                    final ANode aNode = ((DagNodeView) node).getANode();
+                    if (aNode instanceof AConnector) {
+                        ANode child = ((AConnector) aNode).getChild();
+                        if (deletableSelection.contains(child))
+                            toDelete.add(aNode);
+                    }
+                }
+            }
+            final ArrayList<UndoableChange> list = new ArrayList<>();
+            toDelete.addAll(deletableSelection);
+            for (ANode node : toDelete) {
+                if (node2EdgeViews.keySet().contains(node)) {
+                    final ArrayList<DagEdgeView> listOfEdgeView = new ArrayList<>(node2EdgeViews.get(node));
+                    for (DagEdgeView edgeView : listOfEdgeView) {
+                        edgeViews.getChildren().remove(edgeView);
+                        list.add(new UndoableChange("Delete") {
+                            public void undo() {
+                                if (!edgeViews.getChildren().contains(edgeView))
+                                    edgeViews.getChildren().add(edgeView);
+                            }
+
+                            public void redo() {
+                                edgeViews.getChildren().remove(edgeView);
+                            }
+                        });
+                    }
+                    list.add(new UndoableChange("Delete") {
+                        public void undo() {
+                            node2EdgeViews.put(node, listOfEdgeView);
+                        }
+
+                        public void redo() {
+                            node2EdgeViews.remove(node);
+                        }
+                    });
+                }
+                final DagNodeView nodeView = node2NodeView.get(node);
+                final ObservableList<ANode> children = FXCollections.observableArrayList(node.getChildren());
+                final ANode parent = getDag().findParent(node);
+                list.add(new UndoableChange("Delete") {
+                    public void undo() {
+                        if (!nodeViews.getChildren().contains(nodeView))
+                            nodeViews.getChildren().add(nodeView);
+                        node2NodeView.put(node, nodeView);
+                        getDag().reconnect(parent, node, children);
+                    }
+
+                    public void redo() {
+                        nodeViews.getChildren().remove(nodeView);
+                        node2EdgeViews.remove(node);
+                        getDag().delete(node, true, false);
+                    }
+                });
+                {
+                    list.add(new UndoableChange("Delete") {
+                        public void undo() {
+                            getDag().updateSelectionModel();
+                            getDocument().updateMethodsText();
+                        }
+
+                        public void redo() {
+                            getDag().updateSelectionModel();
+                            getDocument().updateMethodsText();
+                        }
+                    });
+                }
+                selectionModel.clearSelection(node);
+                // here we actually delete stuff:
+                for (UndoableChange change : list) {
+                    change.redo();
+                }
+                getUndoManager().addUndoableChange(new UndoableChangeList("Delete", list));
+            }
+        });
+        controller.getDeleteMenuItem().disableProperty().bind(selectionModel.emptyProperty());
+
         controller.getMethodTextArea().textProperty().bind(document.methodsTextProperty());
+
+        controller.getZoomInMenuItem().setOnAction((e) -> {
+            controller.getCenterPane().setScaleX(1.1 * controller.getCenterPane().getScaleX());
+            controller.getCenterPane().setScaleY(1.1 * controller.getCenterPane().getScaleY());
+        });
+        controller.getZoomOutMenuItem().setOnAction((e) -> {
+            controller.getCenterPane().setScaleX(1.0 / 1.1 * controller.getCenterPane().getScaleX());
+            controller.getCenterPane().setScaleY(1.0 / 1.1 * controller.getCenterPane().getScaleY());
+        });
+
+        controller.getCenterScrollPane().setPrefViewportHeight(controller.getCenterPane().getHeight());
+        controller.getCenterScrollPane().setPrefViewportWidth(controller.getCenterPane().getWidth());
+
+        controller.getCenterScrollPane().setOnMouseClicked((e) -> {
+            if (!e.isShiftDown())
+                selectionModel.clearSelection();
+        });
 
         recompute();
     }
@@ -94,41 +218,73 @@ public class DAGView {
 
         final DAG dag = document.getDag();
 
-        final Map<ANode, DagNodeView> node2nodeView = new HashMap<>();
+        node2NodeView.clear();
+        node2NodeView.put(dag.getTopTaxaNode(), new DagNodeView(this, dag.getTopTaxaNode()));
+        node2NodeView.put(dag.getTaxaFilter(), new DagNodeView(this, dag.getTaxaFilter()));
 
-        node2nodeView.put(dag.getTopTaxaNode(), new DagNodeView(this, dag.getTopTaxaNode()));
-        node2nodeView.put(dag.getTaxaFilter(), new DagNodeView(this, dag.getTaxaFilter()));
-
-        node2nodeView.put(dag.getWorkingTaxaNode(), new DagNodeView(this, dag.getWorkingTaxaNode()));
-        node2nodeView.put(dag.getTopDataNode(), new DagNodeView(this, dag.getTopDataNode()));
-        node2nodeView.put(dag.getTopFilter(), new DagNodeView(this, dag.getTopFilter()));
-        node2nodeView.put(dag.getWorkingDataNode(), new DagNodeView(this, dag.getWorkingDataNode()));
+        node2NodeView.put(dag.getWorkingTaxaNode(), new DagNodeView(this, dag.getWorkingTaxaNode()));
+        node2NodeView.put(dag.getTopDataNode(), new DagNodeView(this, dag.getTopDataNode()));
+        node2NodeView.put(dag.getTopFilter(), new DagNodeView(this, dag.getTopFilter()));
+        node2NodeView.put(dag.getWorkingDataNode(), new DagNodeView(this, dag.getWorkingDataNode()));
 
         final double yDelta = 150;
         final double xDelta = 250;
-        node2nodeView.get(dag.getTopTaxaNode()).setXY(20, 20);
-        node2nodeView.get(dag.getTopDataNode()).setXY(20 + xDelta, 20);
-        node2nodeView.get(dag.getTaxaFilter()).setXY(20, 20 + yDelta);
-        node2nodeView.get(dag.getWorkingTaxaNode()).setXY(20, 20 + 2 * yDelta);
-        node2nodeView.get(dag.getTopFilter()).setXY(20 + xDelta, 20 + 2 * yDelta);
-        node2nodeView.get(dag.getWorkingDataNode()).setXY(20 + 2 * xDelta, 20 + yDelta);
+        node2NodeView.get(dag.getTopTaxaNode()).setXY(20, 20);
+        node2NodeView.get(dag.getTopDataNode()).setXY(20 + xDelta, 20);
+        node2NodeView.get(dag.getTaxaFilter()).setXY(20, 20 + yDelta);
+        node2NodeView.get(dag.getWorkingTaxaNode()).setXY(20, 20 + 2 * yDelta);
+        node2NodeView.get(dag.getTopFilter()).setXY(20 + xDelta, 20 + 2 * yDelta);
+        node2NodeView.get(dag.getWorkingDataNode()).setXY(20 + 2 * xDelta, 20 + yDelta);
 
-        assignNodeViewsAndCoordinatesForChildrenRec(this, dag.getWorkingDataNode(), node2nodeView, xDelta, yDelta, true);
+        assignNodeViewsAndCoordinatesForChildrenRec(this, dag.getWorkingDataNode(), node2NodeView, xDelta, yDelta, true);
 
         final ObservableList<DagEdgeView> edgeViews = FXCollections.observableArrayList();
 
-        for (DagNodeView a : node2nodeView.values()) {
-            for (DagNodeView b : node2nodeView.values()) {
-                if (a.getANode().getChildren().contains(b.getANode()))
-                    edgeViews.add(new DagEdgeView(a, b));
+        for (DagNodeView a : node2NodeView.values()) {
+            for (DagNodeView b : node2NodeView.values()) {
+                if (a.getANode().getChildren().contains(b.getANode())) {
+                    final DagEdgeView edgeView = new DagEdgeView(a, b);
+                    edgeViews.add(edgeView);
+                    {
+                        final List<DagEdgeView> list = node2EdgeViews.computeIfAbsent(a.getANode(), k -> new ArrayList<>());
+                        list.add(edgeView);
+                    }
+                    {
+                        final List<DagEdgeView> list = node2EdgeViews.computeIfAbsent(b.getANode(), k -> new ArrayList<>());
+                        list.add(edgeView);
+                    }
+                }
+
                 else if (a.getANode() == dag.getWorkingTaxaNode() && b.getANode() == dag.getTopFilter()) {
-                    edgeViews.add(new DagEdgeView(a, b));
+                    final DagEdgeView edgeView = new DagEdgeView(a, b);
+                    edgeViews.add(edgeView);
+                    {
+                        final List<DagEdgeView> list = node2EdgeViews.computeIfAbsent(a.getANode(), k -> new ArrayList<>());
+                        list.add(edgeView);
+                    }
+                    {
+                        final List<DagEdgeView> list = node2EdgeViews.computeIfAbsent(b.getANode(), k -> new ArrayList<>());
+                        list.add(edgeView);
+                    }
                 }
             }
         }
 
         getEdgeViews().getChildren().addAll(edgeViews);
-        getNodeViews().getChildren().addAll(node2nodeView.values());
+        getNodeViews().getChildren().addAll(node2NodeView.values());
+
+        dag.getNodeSelectionModel().getSelectedItems().addListener((ListChangeListener<ANode>) c -> {
+            while (c.next()) {
+                for (ANode node : c.getAddedSubList()) {
+                    if (node2NodeView.containsKey(node))
+                        node2NodeView.get(node).setEffect(new DropShadow(3, Color.RED));
+                }
+                for (ANode node : c.getRemoved()) {
+                    if (node2NodeView.containsKey(node))
+                        node2NodeView.get(node).setEffect(null);
+                }
+            }
+        });
     }
 
     /**
@@ -201,5 +357,17 @@ public class DAGView {
         ConnectorView.windowCount++;
 
         stage.show();
+    }
+
+    public DagNodeView getNodeView(ANode node) {
+        return node2NodeView.get(node);
+    }
+
+    Map<ANode, DagNodeView> getNode2NodeView() {
+        return node2NodeView;
+    }
+
+    Map<ANode, List<DagEdgeView>> getNode2EdgeViews() {
+        return node2EdgeViews;
     }
 }

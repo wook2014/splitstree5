@@ -23,15 +23,15 @@ import javafx.beans.property.Property;
 
 /**
  * An undoable property change
- * Created by huson on 12/25/16.
+ * Daniel Huson, 12.2016
  */
 public class UndoableChangePropertyPair<S, T> extends UndoableChange {
     private final Property<S> property1;
     private final S oldValue1;
-    private final S newValue1;
+    private S newValue1;
     private final Property<T> property2;
     private final T oldValue2;
-    private final T newValue2;
+    private T newValue2;
 
     /**
      * constructor
@@ -72,6 +72,21 @@ public class UndoableChangePropertyPair<S, T> extends UndoableChange {
     public void redo() {
         property1.setValue(newValue1);
         property2.setValue(newValue2);
+    }
 
+    public S getNewValue1() {
+        return newValue1;
+    }
+
+    public void setNewValue1(S newValue1) {
+        this.newValue1 = newValue1;
+    }
+
+    public T getNewValue2() {
+        return newValue2;
+    }
+
+    public void setNewValue2(T newValue2) {
+        this.newValue2 = newValue2;
     }
 }

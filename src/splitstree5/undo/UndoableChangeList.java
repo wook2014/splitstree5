@@ -16,53 +16,68 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package splitstree5.undo;
 
-import javafx.beans.property.Property;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
- * An undoable property change
- * Daniel Huson, 12.2016
+ * A list of  undoable property changes
+ * Daniel HUson, 6.2017
  */
-public class UndoableChangeProperty<T> extends UndoableChange {
-    private final Property<T> property;
-    private final T oldValue;
-    private final T newValue;
+public class UndoableChangeList<T> extends UndoableChange {
+    private final ArrayList<UndoableChange> list = new ArrayList<>();
 
     /**
      * constructor
-     *
-     * @param property
-     * @param oldValue
-     * @param newValue
      */
-    public UndoableChangeProperty(Property<T> property, T oldValue, T newValue) {
-        this("", property, oldValue, newValue);
+    public UndoableChangeList() {
+        super("");
     }
 
     /**
      * constructor
      *
      * @param name
-     * @param property
-     * @param oldValue
-     * @param newValue
      */
-    public UndoableChangeProperty(String name, Property<T> property, T oldValue, T newValue) {
+    public UndoableChangeList(String name) {
         super(name);
-        this.property = property;
-        this.oldValue = oldValue;
-        this.newValue = newValue;
+    }
+
+    /**
+     * constructor
+     *
+     * @param name
+     */
+    public UndoableChangeList(String name, Collection<UndoableChange> list) {
+        super(name);
+        this.list.addAll(list);
+    }
+
+
+    public void add(UndoableChange property) {
+        list.add(property);
+    }
+
+    public int size() {
+        return list.size();
+    }
+
+    public ArrayList<UndoableChange> getList() {
+        return list;
     }
 
     @Override
     public void undo() {
-        property.setValue(oldValue);
+        for (UndoableChange change : list) {
+            change.undo();
+        }
     }
 
     @Override
     public void redo() {
-        property.setValue(newValue);
+        for (UndoableChange change : list) {
+            change.redo();
+        }
     }
 }

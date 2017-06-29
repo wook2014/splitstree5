@@ -197,13 +197,13 @@ public class TaxaFilterPane extends AlgorithmPane {
                     if (controller.getActiveList().getSelectionModel().getSelectedItems().contains(taxon))
                         document.getTaxaSelectionModel().select(taxon);
                     else
-                        document.getTaxaSelectionModel().clearSelect(taxon);
+                        document.getTaxaSelectionModel().clearSelection(taxon);
                 }
                 for (Taxon taxon : controller.getInactiveList().getItems()) {
                     if (controller.getInactiveList().getSelectionModel().getSelectedItems().contains(taxon))
                         document.getTaxaSelectionModel().select(taxon);
                     else
-                        document.getTaxaSelectionModel().clearSelect(taxon);
+                        document.getTaxaSelectionModel().clearSelection(taxon);
                 }
             } finally {
                 inUpdateSelection = false;

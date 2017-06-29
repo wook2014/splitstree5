@@ -23,7 +23,10 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
+import javafx.collections.SetChangeListener;
+import jloda.fx.ASelectionModel;
 import jloda.util.Basic;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.ReportNode;
@@ -32,6 +35,8 @@ import splitstree5.core.datablocks.*;
 import splitstree5.core.topfilters.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The document update graph
@@ -54,6 +59,8 @@ public class DAG {
     private final BooleanProperty updating = new SimpleBooleanProperty();
     private final ObservableSet<ANode> invalidNodes = FXCollections.observableSet();
 
+    private final ASelectionModel<ANode> nodeSelectionModel = new ASelectionModel<>();
+
     /**
      * constructor
      */
@@ -63,8 +70,25 @@ public class DAG {
             System.err.println("DAG updating: " + updating.get());
         });
 
-        dataNodes.addListener((InvalidationListener) observable -> size.set(connectorNodes.size() + dataNodes.size()));
-        connectorNodes.addListener((InvalidationListener) observable -> size.set(connectorNodes.size() + dataNodes.size()));
+        dataNodes.addListener((InvalidationListener) observable -> {
+            size.set(connectorNodes.size() + dataNodes.size());
+        });
+        connectorNodes.addListener((InvalidationListener) observable -> {
+            size.set(connectorNodes.size() + dataNodes.size());
+        });
+
+        connectorNodes.addListener((SetChangeListener<AConnector>) change -> {
+            if (change.wasAdded() || change.wasRemoved()) {
+                updateSelectionModel();
+            }
+        });
+        dataNodes.addListener((SetChangeListener<ADataNode>) change -> {
+            if (change.wasAdded() || change.wasRemoved()) {
+                final Set<ANode> selected = new HashSet<>(nodeSelectionModel.getSelectedItems());
+                nodeSelectionModel.selectItems(selected);
+                updateSelectionModel();
+            }
+        });
 
         updatingProperty().addListener((observable, oldValue, newValue) -> System.err.println("UPDATING: " + newValue));
     }
@@ -238,11 +262,12 @@ public class DAG {
             }
         }
         if (deleteNode) {
+            node.disconnect();
+
             if (node instanceof ADataNode)
                 dataNodes.remove(node);
-            else
-                connectorNodes.remove((AConnector) node);
-            node.disconnect();
+            else if (node instanceof AConnector)
+                connectorNodes.remove(node);
 
             if (invalidNodes.contains(node))
                 invalidNodes.remove(node);
@@ -289,5 +314,44 @@ public class DAG {
 
     public ReadOnlyIntegerProperty size() {
         return ReadOnlyIntegerProperty.readOnlyIntegerProperty(size);
+    }
+
+    public ASelectionModel<ANode> getNodeSelectionModel() {
+        return nodeSelectionModel;
+    }
+
+    public void reconnect(ANode parent, ANode node, ObservableList<ANode> children) {
+        if (parent != null) {
+            if (parent instanceof AConnector)
+                ((AConnector) parent).getChildren().add(node);
+            else
+                ((ADataNode) parent).getChildren().add(node);
+        }
+        for (ANode child : children) {
+            if (node instanceof AConnector)
+                ((AConnector) node).getChildren().add(child);
+            else
+                ((ADataNode) node).getChildren().add(child);
+        }
+        if (node instanceof ADataNode)
+            dataNodes.add((ADataNode) node);
+        else if (node instanceof AConnector)
+            connectorNodes.add((AConnector) node);
+    }
+
+    public ANode findParent(ANode node) {
+        if (node instanceof ADataNode) {
+            for (ANode parent : connectorNodes) {
+                if (parent.getChildren().contains(node))
+                    return parent;
+            }
+        } else {
+            return ((AConnector) node).getParent();
+        }
+        return null;
+    }
+
+    public void updateSelectionModel() {
+        getNodeSelectionModel().setItems(dataNodes, connectorNodes);
     }
 }

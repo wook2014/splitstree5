@@ -26,6 +26,8 @@ import splitstree5.core.connectors.AConnector;
 import splitstree5.core.dag.ANode;
 import splitstree5.core.dag.UpdateState;
 
+import java.util.ArrayList;
+
 /**
  * a data node
  * Created by huson on 12/21/16.
@@ -61,8 +63,10 @@ public class ADataNode<D extends ADataBlock> extends ANode {
     }
 
     public void disconnect() {
-        for (ANode connector : getChildren()) {
-            connector.disconnect();
+        final ArrayList<ANode> children = new ArrayList<>(getChildren());
+        for (ANode connector : children) {
+            if (getChildren().contains(connector))
+                connector.disconnect();
         }
     }
 

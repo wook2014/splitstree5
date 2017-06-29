@@ -38,6 +38,7 @@ import java.util.List;
  */
 public class Document {
     private final DAG dag;
+
     private final StringProperty fileName = new SimpleStringProperty();
     private final ASelectionModel<Taxon> taxaSelectionModel = new ASelectionModel<>();
 
@@ -48,9 +49,7 @@ public class Document {
      */
     public Document() {
         dag = new DAG();
-        dag.updatingProperty().addListener((c, o, n) -> {
-            methodsText.setValue(MethodsTextGenerator.getInstance().apply(this));
-        });
+        dag.updatingProperty().addListener((c, o, n) -> updateMethodsText());
     }
 
     /**
@@ -100,5 +99,9 @@ public class Document {
 
     public ReadOnlyStringProperty methodsTextProperty() {
         return methodsText;
+    }
+
+    public void updateMethodsText() {
+        methodsText.setValue(MethodsTextGenerator.getInstance().apply(this));
     }
 }

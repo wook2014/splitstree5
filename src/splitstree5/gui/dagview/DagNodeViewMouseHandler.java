@@ -19,13 +19,21 @@
 
 package splitstree5.gui.dagview;
 
+import javafx.event.Event;
+import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import jloda.fx.ASelectionModel;
 import jloda.util.Basic;
+import splitstree5.core.dag.ANode;
 import splitstree5.core.datablocks.ADataNode;
+import splitstree5.undo.UndoableChangeList;
+import splitstree5.undo.UndoableChangePropertyPair;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * installs a mouse handler
@@ -34,10 +42,13 @@ import java.io.IOException;
 public class DagNodeViewMouseHandler {
     private double mouseDownX;
     private double mouseDownY;
-    private double originalNodeX;
-    private double originalNodeY;
+
+    private final Map<ANode, UndoableChangePropertyPair> node2change = new HashMap<>();
+
     private boolean shiftDown;
     private boolean controlDown;
+    private boolean dragged;
+
     private final Line line = new Line();
     private static DagNodeView lock = null;
 
@@ -52,20 +63,22 @@ public class DagNodeViewMouseHandler {
         nodeView.setOnMousePressed((e) -> {
             if (lock == null) {
                 lock = nodeView;
+                dragged = false;
                 world.getChildren().remove(line);
 
-                mouseDownX = e.getSceneX();
-                mouseDownY = e.getSceneY();
+                final Point2D point = world.screenToLocal(e.getScreenX(), e.getScreenY());
+                mouseDownX = point.getX();
+                mouseDownY = point.getY();
+                ;
 
                 shiftDown = e.isShiftDown();
                 controlDown = e.isControlDown();
 
-                originalNodeX = nodeView.getX();
-                originalNodeY = nodeView.getY();
+                node2change.clear();
 
-                if (!controlDown && shiftDown && nodeView.getANode() instanceof ADataNode) {
-                    line.setStartX(mouseDownX - world.localToScene(0, 0).getX());
-                    line.setStartY(mouseDownY - world.localToScene(0, 0).getY());
+                if (controlDown && !shiftDown && nodeView.getANode() instanceof ADataNode) {
+                    line.setStartX(mouseDownX);
+                    line.setStartY(mouseDownY);
                     line.setEndX(mouseDownX);
                     line.setEndY(mouseDownY);
                     world.getChildren().add(line);
@@ -75,37 +88,83 @@ public class DagNodeViewMouseHandler {
 
         nodeView.setOnMouseDragged((e) -> {
             if (nodeView == lock) {
-                if (!controlDown && !shiftDown) {
-                    nodeView.xProperty().set(nodeView.xProperty().get() + (e.getSceneX() - mouseDownX));
-                    nodeView.yProperty().set(nodeView.yProperty().get() + (e.getSceneY() - mouseDownY));
-                    mouseDownX = e.getSceneX();
-                    mouseDownY = e.getSceneY();
-                }
-                if (!controlDown && shiftDown && nodeView.getANode() instanceof ADataNode) {
-                    line.setEndX(e.getSceneX() - world.localToScene(0, 0).getX());
-                    line.setEndY(e.getSceneY() - world.localToScene(0, 0).getY());
+                if (!controlDown) {
+                    dragged = true;
 
+                    final ASelectionModel<ANode> selectionModel = dagView.getDag().getNodeSelectionModel();
+
+                    if (!selectionModel.getSelectedItems().contains(nodeView.getANode())) {
+                        if (!e.isShiftDown())
+                            selectionModel.clearSelection();
+                        selectionModel.select(nodeView.getANode());
+                    }
+
+                    final boolean setupUndo = (node2change.size() == 0);
+
+                    final Point2D point = world.screenToLocal(e.getScreenX(), e.getScreenY());
+                    for (ANode node : selectionModel.getSelectedItems()) {
+                        final DagNodeView selectedNodeView = dagView.getNodeView(node);
+                        if (selectedNodeView != null) {
+                            if (setupUndo) {
+                                node2change.put(node,
+                                        new UndoableChangePropertyPair("", selectedNodeView.xProperty(), selectedNodeView.getX(), null, selectedNodeView.yProperty(), selectedNodeView.getY(), null));
+                            }
+                            selectedNodeView.xProperty().set(selectedNodeView.xProperty().get() + (point.getX() - mouseDownX));
+                            selectedNodeView.yProperty().set(selectedNodeView.yProperty().get() + (point.getY() - mouseDownY));
+                        }
+                    }
+
+                    mouseDownX = point.getX();
+                    mouseDownY = point.getY();
+
+                }
+                if (controlDown && nodeView.getANode() instanceof ADataNode) {
+                    final Point2D point = world.screenToLocal(e.getScreenX(), e.getScreenY());
+                    line.setEndX(point.getX());
+                    line.setEndY(point.getY());
                 }
             }
         });
 
-        nodeView.setOnMouseReleased((me) -> {
+        nodeView.setOnMouseReleased((e) -> {
             if (nodeView == lock) {
-                if (!controlDown && !shiftDown) {
-                    dagView.getUndoManager().addUndoableChangePair("Move", nodeView.xProperty(), originalNodeX, nodeView.getX(), nodeView.yProperty(), originalNodeY, nodeView.getY());
-                }
-                if (!controlDown && shiftDown && nodeView.getANode() instanceof ADataNode) {
-                    try {
-                        new NewNodeDialog(dagView, nodeView, me);
-                    } catch (IOException ex) {
-                        Basic.caught(ex);
+                if (dragged) {
+                    if (!controlDown) {
+                        final ASelectionModel<ANode> selectionModel = dagView.getDag().getNodeSelectionModel();
+                        for (ANode node : selectionModel.getSelectedItems()) {
+                            final DagNodeView selectedNodeView = dagView.getNodeView(node);
+                            UndoableChangePropertyPair pair = node2change.get(node);
+                            if (pair != null) {
+                                pair.setNewValue1(selectedNodeView.getX());
+                                pair.setNewValue2(selectedNodeView.getY());
+                            }
+                            dagView.getUndoManager().addUndoableChange(new UndoableChangeList("Move", node2change.values()));
+                        }
                     }
+                } else {
+                    final ASelectionModel<ANode> selectionModel = dagView.getDag().getNodeSelectionModel();
+                    if (!e.isShiftDown()) {
+                        selectionModel.clearSelection();
+                    }
+                    if (selectionModel.getSelectedItems().contains(nodeView.getANode())) {
+                        selectionModel.clearSelection(nodeView.getANode());
+                    } else
+                        selectionModel.select(nodeView.getANode());
+
+                    if (controlDown && nodeView.getANode() instanceof ADataNode) {
+                        try {
+                            new NewNodeDialog(dagView, nodeView, e);
+                        } catch (IOException ex) {
+                            Basic.caught(ex);
+                        }
+                    }
+                    world.getChildren().remove(line);
                 }
-                world.getChildren().remove(line);
                 lock = null;
             }
                 }
         );
+        nodeView.setOnMouseClicked(Event::consume);
     }
 
     /**

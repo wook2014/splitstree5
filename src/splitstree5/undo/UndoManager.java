@@ -24,7 +24,7 @@ import javafx.beans.property.*;
 
 /**
  * Undoable change manager
- * Created by huson on 12/25/16.
+ * Daniel Huson, 12.2016
  */
 public class UndoManager {
     private ListNode parentNode = new ListNode();

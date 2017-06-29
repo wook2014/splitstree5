@@ -20,8 +20,8 @@
 package splitstree5.undo;
 
 /**
- * A undo-redoable actiom
- * Created by huson on 12/25/16.
+ * A undo-redoable action
+ * Daniel Huson, 12.2016
  */
 
 abstract public class UndoableChange {

@@ -81,7 +81,7 @@ public class MethodsTextGenerator {
     public static String preambleTemplate = "Analysis was performed using SplitsTree5 %s (%s).\n";
     public static String inputDataTemplate = "The original input consisted of %s and %s.\n";
     public static String filteredInputTemplate = "After removal of %d taxa, the input consisted of %s and %s.\n";
-    public static String methodWithOutputTemplate = "The %s method (%s) was used%s to obtain %s.\n";
+    public static String methodWithOutputTemplate = "The %s method (%s) was used%s so as to obtain %s.\n";
     public static String methodTemplate = "The %s method %s was used%s.\n";
 
     private final Map<String, String> method2citation;
