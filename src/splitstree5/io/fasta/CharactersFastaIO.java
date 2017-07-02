@@ -2,6 +2,7 @@ package splitstree5.io.fasta;
 
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.datablocks.characters.CharactersType;
 
 import java.io.BufferedReader;
@@ -15,7 +16,13 @@ import java.util.Arrays;
  */
 public class CharactersFastaIO {
 
-    public enum ID {ncbi, gb, emb, dbj, pir, prf, sp, pdb, pat, bbs, gnl, ref, lcl, unknown}
+    // todo : check parameter for all sequences or only for the first one?
+    //public enum ID {ncbi, gb, emb, dbj, pir, prf, sp, pdb, pat, bbs, gnl, ref, lcl, unknown}
+
+    private static final String[] possibleIDs =
+            {"gb", "emb", "ena", //???
+                    "dbj", "pir", "prf", "sp", "pdb", "pat", "bbs", "gnl", "ref", "lcl"};
+
     public final String[] extensions = {"fasta", "fas", "fa", "seq", "fsa"};
 
     private static char gap = '-';
@@ -40,10 +47,7 @@ public class CharactersFastaIO {
                 continue;
             if(line.startsWith(">")) {
                 startedNewSequence = true;
-                if(taxonNamesFound.contains(line.substring(1))){
-                    throw new IOException("Double taxon name: "+line.substring(1));
-                }
-                taxonNamesFound.add(line.substring(1));
+                addTaxaName(line, taxonNamesFound);
                 ntax++;
             }else{
                 if(startedNewSequence){
@@ -78,7 +82,7 @@ public class CharactersFastaIO {
         readMatrix(matrix, characters);
     }
 
-    private static void readMatrix(ArrayList<String> matrix, CharactersBlock characters){
+    private static void readMatrix(ArrayList<String> matrix, CharactersBlock characters) throws IOException {
         // todo check if valid and set parameters here
 
         String foundSymbols = "";
@@ -96,9 +100,9 @@ public class CharactersFastaIO {
         // sort found symbols
         char[] chars = foundSymbols.toCharArray();
         Arrays.sort(chars);
-        String sorted = new String(chars);
+        String sortedSymbols = new String(chars);
 
-        switch (sorted) {
+        switch (sortedSymbols) {
             case "01": characters.setDataType(CharactersType.standard);
                 break;
             case "acgt": characters.setDataType(CharactersType.DNA);
@@ -107,10 +111,74 @@ public class CharactersFastaIO {
                 break;
             case "acdefghiklmnpqrstvwyz": characters.setDataType(CharactersType.protein);
                 break;
-            default: characters.setDataType(CharactersType.unknown);
+            default:
+                if(isAmbiguous(sortedSymbols)){
+                    characters.setHasAmbiguousStates(true);
+                    if(sortedSymbols.contains("t")) characters.setDataType(CharactersType.DNA);
+                    if(sortedSymbols.contains("u")) characters.setDataType(CharactersType.RNA);
+                    if(sortedSymbols.contains("t") && sortedSymbols.contains("u"))
+                        throw new IOException("Nucleotide sequence contains Thymine and Uracil at tha same time");
+                }else{
+                    characters.setDataType(CharactersType.unknown);
+                    System.err.println("Warning : can not recognize characters type!");
+                    // todo set new gap/missing/match chars and try again
+                }
                 break;
         }
         System.err.println("symbols: "+foundSymbols);
+    }
+
+    private static boolean isAmbiguous(String foundSymbols){
+        final String IUPAC = "acgtu"+ AmbiguityCodes.CODES;
+        for(char c : foundSymbols.toCharArray()){
+            if(!IUPAC.contains(c+"")) return false;
+        }
+        return true;
+    }
+
+    private static void addTaxaName(String infoLine, ArrayList<String> taxonNamesFound) throws IOException {
+
+        if(infoLine.contains("[organism=")){
+            int index1 = infoLine.indexOf("[organism=")+10;
+            int index2 = infoLine.indexOf(']');
+
+            // todo test whole line or only taxon name???
+            if(taxonNamesFound.contains(infoLine.substring(index1,index2))){
+                throw new IOException("Double taxon name: "+infoLine.substring(index1,index2));
+            }
+            taxonNamesFound.add(infoLine.substring(index1,index2));
+            return;
+        }
+
+        // check SeqID
+        // todo ? boolean doubleID; ?
+
+        infoLine = infoLine.toLowerCase();
+        String foundID = "";
+        for(String id : possibleIDs){
+            if(infoLine.contains(">"+id+"|") || infoLine.contains("|"+id+"|")){
+                foundID = id;
+                break;
+            }
+        }
+
+        if(!foundID.equals("")){
+            String afterID = infoLine.substring(infoLine.indexOf(foundID)+foundID.length());
+            int index1 = afterID.indexOf('|')+1;
+            int index2 = afterID.substring(index1+1).indexOf('|')+2;
+
+            if(taxonNamesFound.contains(afterID.substring(index1,index2))){
+                throw new IOException("Double taxon name: "+afterID.substring(index1,index2));
+            }
+            taxonNamesFound.add(" "+afterID.substring(index1,index2).toUpperCase());
+            return;
+        }
+
+
+        if(taxonNamesFound.contains(infoLine.substring(1))){
+            throw new IOException("Double taxon name: "+infoLine.substring(1));
+        }
+        taxonNamesFound.add(infoLine.substring(1));
     }
 
     // GETTER AND SETTER

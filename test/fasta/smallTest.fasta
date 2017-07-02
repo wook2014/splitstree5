@@ -1,17 +1,17 @@
 
 ; comment
->Sequenz 1
+>Sequence 1
 AAAAA
 AAAAA
->Sequenz 2
+>Sequence 2
 TTTT
 TTTTTT
->Sequenz 3
+>ENA|BN000065|BN000065.1 TPA: Homo sapiens SMP1 gene, RHD gene and RHCE gene
 ACGT
 AAAATT
->Sequenz 4
+>Seq1 [organism=Carpodacus mexicanus] C.mexicanus clone 6b actin (act) mRNA, partial cds
 CCC-CCC
 CCC
->Sequenz 5
+>Sequence 5
 CGCG
 CGCGCG
