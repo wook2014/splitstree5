@@ -1,15 +1,17 @@
+
+; comment
 >Sequenz 1
-a1234567
-890
+AAAAA
+AAAAA
 >Sequenz 2
-b12345
-67890
+TTTT
+TTTTTT
 >Sequenz 3
-c1234
-567890
+ACGT
+AAAATT
 >Sequenz 4
-d1234567
-890
+CCC-CCC
+CCC
 >Sequenz 5
-e123456
-7890
+CGCG
+CGCGCG
