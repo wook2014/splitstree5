@@ -29,6 +29,8 @@ public class CharactersFastaIOTest {
         CharactersNexusIO.write(w, taxaBlock, charactersBlock, null);
         System.err.println(w.toString());
 
+        System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
+
     }
 
 }

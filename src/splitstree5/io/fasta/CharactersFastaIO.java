@@ -43,8 +43,12 @@ public class CharactersFastaIO {
         boolean startedNewSequence = false;
 
         while((line=in.readLine())!=null) {
+
             if(line.startsWith(";"))
                 continue;
+            if(line.equals(">"))
+                throw new IOException("No taxa label given at the sequence "+(ntax+1));
+
             if(line.startsWith(">")) {
                 startedNewSequence = true;
                 addTaxaName(line, taxonNamesFound);
@@ -53,7 +57,7 @@ public class CharactersFastaIO {
                 if(startedNewSequence){
                     if(!sequence.equals("")) matrix.add(sequence);
                     if(nchar!=0 && nchar!=sequenceLength){
-                        throw new IOException("Sequences must be the same length");
+                        throw new IOException("Sequences must be the same length. Wrong number of chars at the sequence "+(ntax-1));
                     }
                     nchar = sequenceLength;
                     sequenceLength = 0;
@@ -64,8 +68,13 @@ public class CharactersFastaIO {
                 sequence+=line;
             }
         }
+
+        if(sequence.length() == 0)
+            throw new IOException("Sequence " + ntax +" is zero");
         matrix.add(sequence);
-        if(nchar!=sequenceLength) throw new IOException("Sequences must be the same length");
+        if(nchar!=sequenceLength)
+            throw new IOException("Sequences must be the same length. Wrong number of chars at the sequence "+ntax);
+
         in.close();
 
         System.err.println("ntax: "+ntax+" nchar: "+nchar);
@@ -170,7 +179,8 @@ public class CharactersFastaIO {
             if(taxonNamesFound.contains(afterID.substring(index1,index2))){
                 throw new IOException("Double taxon name: "+afterID.substring(index1,index2));
             }
-            taxonNamesFound.add(" "+afterID.substring(index1,index2).toUpperCase());
+            System.err.println("name-"+afterID.substring(index1,index2).toUpperCase());
+            taxonNamesFound.add(afterID.substring(index1,index2).toUpperCase()+" ");
             return;
         }
 
