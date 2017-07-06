@@ -27,6 +27,8 @@ import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.datablocks.characters.CharactersType;
 import splitstree5.io.nexus.stateLabeler.StateLabeler;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -210,7 +212,8 @@ public class CharactersBlock extends ADataBlock {
             this.characterWeights = null;
         else {
             this.characterWeights = new double[getNchar()];
-            System.arraycopy(characterWeights, 0, this.characterWeights, 0, characterWeights.length);
+            System.arraycopy(characterWeights, 1, this.characterWeights, 0, characterWeights.length-1);
+            System.err.println("Debug: charWeights: "+Arrays.toString(this.characterWeights));
         }
     }
 

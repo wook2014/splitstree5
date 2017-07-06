@@ -10,8 +10,10 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.nexus.CharactersNexusFormat;
 import splitstree5.io.nexus.CharactersNexusIO;
 import splitstree5.io.nexus.DistancesNexusIO;
+import splitstree5.io.nexus.TaxaNexusIO;
 
 import java.io.FileReader;
+import java.io.StringWriter;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -26,10 +28,7 @@ public class NeiMillerTest {
     @Test
     public void compute() throws Exception {
 
-        System.err.print("no test data");
-        assertEquals(2,4);
-
-        /*String inputFile = "test//characters//dolphins_weighted.nex";
+        String inputFile = "test//characters//dolphins_weighted.nex";
         ProgressListener pl = new ProgressPercentage();
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
@@ -41,10 +40,18 @@ public class NeiMillerTest {
 
         neiMiller.compute(pl, taxaBlock, charactersBlock, distancesBlock);
 
+        final StringWriter w = new StringWriter();
+        w.write("#nexus\n");
+        TaxaNexusIO.write(w, taxaBlock);
+        DistancesNexusIO.write(w, taxaBlock, distancesBlock, null);
+        System.err.println(w.toString());
+
+        throw new Exception("NO TEST DATA FROM ST4");
+
         /*final TaxaBlock taxaFromSplitsTree4 = new TaxaBlock();
         final DistancesBlock distancesFromSplitsTree4 = new DistancesBlock();
         taxaFromSplitsTree4.addTaxaByNames
-                (DistancesNexusIO.parse(new NexusStreamParser(new FileReader("test//distances//myosinProtML.nex")),
+                (DistancesNexusIO.parse(new NexusStreamParser(new FileReader("test//distances//....nex")),
                         taxaFromSplitsTree4, distancesFromSplitsTree4, null));
 
 

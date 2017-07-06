@@ -1,13 +1,13 @@
 #nexus
-[!Dusky Dolphins MBE 12:1781-1792 (2003)]
+[!Dusky Dolphins MBE 12:1781-1792 (2003)
 begin taxa;
 dimensions ntax=36;
-end;
+end;]
 
 begin characters;
-dimensions nchar=60;
+dimensions ntax=36 nchar=60;
 format datatype=standard labels;
-CHARWEIGHTS 5	1	5	5	5	2	2	4	5	4	5	5	3	3	4	1	4	1	2	1	3	2	3	1	5	5	2	3	4	1	5	5	3	5	4	1	4	2	2	2	5	1	2	4	1	3	1	4	4	4	4	3	5	5	4	4	2	1	4	4;
+CHARWEIGHTS 5 1	5 5 5 2 2 4 5 4 5 5 3 3 4 1 4 1 2 1 3 2 3 1 5 5 2 3 4 1 5 5 3 5 4 1 4 2 2 2 5 1 2 4 1 3 1 4 4 4 4 3 5 5 4 4 2 1 4 4;
 matrix
 A1.1 000000000000000000000000000000000000000000000000000000000000
 A1.2 000000000000000000000000000100000000000000000000100000000000
