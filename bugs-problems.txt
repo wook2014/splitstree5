@@ -1,4 +1,6 @@
-- Need to add citations for all methods.
+ - Need to add citations for all methods.
+   distances2splits [done]
+   distances3trees  [done]
 
  - Error by parsing partial trees in IO part :
    nexus blocks with partial trees have false "isPartial" value

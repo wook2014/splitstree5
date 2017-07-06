@@ -40,6 +40,10 @@ import java.util.HashMap;
  */
 public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> implements IFromDistances, IToTrees {
 
+    public final static String CITATION = " N. Saitou and M. Nei. "+
+            "The Neighbor-Joining method:  a new method for reconstructing phylogenetic trees. "+
+            "Molecular Biology and Evolution, 4:406–425, 1987.";
+
     /**
      * compute the neighbor joining tree
      *

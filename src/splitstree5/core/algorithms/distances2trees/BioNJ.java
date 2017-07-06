@@ -16,6 +16,9 @@ import java.util.HashMap;
 
 public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFromDistances, IToTrees {
 
+    public final static String CITATION = " O. Gascuel.  BIONJ: An improved version of the NJ algorithm based on a simple model of" +
+            "sequence data. Mol. Biol. Evol., 14:685–695, 1997.";
+
     @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees) throws InterruptedException, CanceledException {
         progressListener.setTasks("BioNJ", "Creating nodes...");

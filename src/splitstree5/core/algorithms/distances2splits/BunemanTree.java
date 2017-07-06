@@ -14,6 +14,10 @@ import java.util.BitSet;
 
 public class BunemanTree extends Algorithm<DistancesBlock, SplitsBlock> implements IFromDistances, IToSplits {
 
+    public final static String CITATION ="P. Buneman.  The recovery of trees from measures of dissimilarity.c"+
+            "In F. R. Hodson, D. G. Kendall,  and  P.  Tautu,  editors, " +
+            "Mathematics  in  the  Archaeological  and  Historical  Sciences, pages 387–395. Edinburgh University Press, 1971.";
+
     public final static String DESCRIPTION = "Computes the Buneman tree (Buneman 1971)";
 
     @Override
