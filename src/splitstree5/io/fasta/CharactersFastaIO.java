@@ -12,7 +12,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * Created by Daria on 01.07.2017.
+ * Import Characters in FastA format.
+ * Daria Evseeva, 07.2017
  */
 public class CharactersFastaIO {
 
@@ -36,47 +37,50 @@ public class CharactersFastaIO {
         int ntax = 0;
         int nchar = 0;
 
-        BufferedReader in = new BufferedReader(new FileReader(inputFile));
-        String line;
-        int sequenceLength = 0;
-        String sequence = "";
-        boolean startedNewSequence = false;
+        int counter = 0;
+        try (BufferedReader in = new BufferedReader(new FileReader(inputFile))) {
+            counter ++;
+            String line;
+            int sequenceLength = 0;
+            String sequence = "";
+            boolean startedNewSequence = false;
 
-        while((line=in.readLine())!=null) {
 
-            if(line.startsWith(";"))
-                continue;
-            if(line.equals(">"))
-                throw new IOException("No taxa label given at the sequence "+(ntax+1));
+            while ((line = in.readLine()) != null) {
 
-            if(line.startsWith(">")) {
-                startedNewSequence = true;
-                addTaxaName(line, taxonNamesFound);
-                ntax++;
-            }else{
-                if(startedNewSequence){
-                    if(!sequence.equals("")) matrix.add(sequence);
-                    if(nchar!=0 && nchar!=sequenceLength){
-                        throw new IOException("Sequences must be the same length. Wrong number of chars at the sequence "+(ntax-1));
+                if (line.startsWith(";"))
+                    continue;
+                if (line.equals(">"))
+                    throw new IOException("No taxa label given at the sequence " + (ntax + 1));
+
+                if (line.startsWith(">")) {
+                    startedNewSequence = true;
+                    addTaxaName(line, taxonNamesFound);
+                    ntax++;
+                } else {
+                    if (startedNewSequence) {
+                        if (!sequence.equals("")) matrix.add(sequence);
+                        if (nchar != 0 && nchar != sequenceLength) {
+                            throw new IOException("Sequences must be the same length. Wrong number of chars at the sequence "
+                                    + (ntax - 1)+" line: "+counter);
+                        }
+                        nchar = sequenceLength;
+                        sequenceLength = 0;
+                        sequence = "";
+                        startedNewSequence = false;
                     }
-                    nchar = sequenceLength;
-                    sequenceLength = 0;
-                    sequence = "";
-                    startedNewSequence = false;
+                    sequenceLength += line.length();
+                    sequence += line;
                 }
-                sequenceLength+=line.length();
-                sequence+=line;
             }
+
+            if (sequence.length() == 0)
+                throw new IOException("Sequence " + ntax + " is zero");
+            matrix.add(sequence);
+            if (nchar != sequenceLength)
+                throw new IOException("Sequences must be the same length. Wrong number of chars at the sequence " + ntax);
+
         }
-
-        if(sequence.length() == 0)
-            throw new IOException("Sequence " + ntax +" is zero");
-        matrix.add(sequence);
-        if(nchar!=sequenceLength)
-            throw new IOException("Sequences must be the same length. Wrong number of chars at the sequence "+ntax);
-
-        in.close();
-
         System.err.println("ntax: "+ntax+" nchar: "+nchar);
         for(String s : matrix){
             System.err.println(s);
@@ -160,7 +164,9 @@ public class CharactersFastaIO {
         }
 
         // check SeqID
-        // todo ? boolean doubleID; ?
+        // todo ? boolean doubleID; first ID
+
+        // todo option make names unique
 
         infoLine = infoLine.toLowerCase();
         String foundID = "";
@@ -180,7 +186,7 @@ public class CharactersFastaIO {
                 throw new IOException("Double taxon name: "+afterID.substring(index1,index2));
             }
             System.err.println("name-"+afterID.substring(index1,index2).toUpperCase());
-            taxonNamesFound.add(afterID.substring(index1,index2).toUpperCase()+" ");
+            taxonNamesFound.add(afterID.substring(index1,index2).toUpperCase());
             return;
         }
 
