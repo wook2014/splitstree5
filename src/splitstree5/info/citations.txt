@@ -8,3 +8,26 @@ JukesCantor; Jukes and Cantor 1969; T. H. Jukes and C. R. Cantor. Evolution of p
 BioNJ; Gascuel 1997; O. Gascuel, BIONJ: an improved version of the NJ algorithm based on a simple model of sequence data. Molecular Biology and Evolution. 1997 14:685-695.
 NeighborJoining; Saitou and Nei 1987;N. Saitou and M. Nei. The Neighbor-Joining method: a new method for reconstructing phylogenetic trees. Molecular Biology and Evolution, 4:406-425, 1987.
 UPGMA; Sokal and Michener 1958; R.R. Sokal and C.D.Michener. A statistical method for evaluating systematic relationships. University of Kansas Scientific Bulletin, 28:1409-1438, 1958.
+
+BaseFreqDistance; ?
+Codominant; Smouse and Peakall 1999; Smouse PE, Peakall R Spatial autocorrelation analysis of individual multiallele and multilocus genetic structure. Heredity, 82, 561-573, 1999.
+Dice; ?
+F81; Swofford et al 1996; D.L. Swofford, G.J. Olsen, P.J. Waddell, and  D.M. Hillis. Chapter  11:  Phylogenetic inference. In D. M. Hillis, C. Moritz, and B. K. Mable, editors, Molecular Systematics, pages 407–514. Sinauer Associates, Inc., 2nd edition, 1996.
+F84; Swofford et al 1996; D.L. Swofford, G.J. Olsen, P.J. Waddell, and  D.M. Hillis. Chapter  11:  Phylogenetic inference. In D. M. Hillis, C. Moritz, and B. K. Mable, editors, Molecular Systematics, pages 407–514. Sinauer Associates, Inc., 2nd edition, 1996.
+GapDist; ?
+GeneContentDistance; Huson and Steel 2004; D.H. Huson  and  M. Steel. Phylogenetic  trees  based  on  gene  content. Bioinformatics, 20(13):2044–9, 2004.
+GTR; ?
+Hamming; ?
+HKY85; Hasegawa, Kishino, Yano 1985; Hasegawa M, Kishino H, Yano T. "Dating of human-ape splitting by a molecular clock of mitochondrial DNA". Journal of Molecular Evolution. 22 (2): 160–174. PMID 3934395. doi:10.1007/BF02101694, 1985.
+Jaccard; ?
+JukesCantor; Swofford et al 1996; D.L. Swofford, G.J. Olsen, P.J. Waddell, and  D.M. Hillis. Chapter  11:  Phylogenetic inference. In D. M. Hillis, C. Moritz, and B. K. Mable, editors, Molecular Systematics, pages 407–514. Sinauer Associates, Inc., 2nd edition, 1996.
+K2P; Swofford et al 1996; D.L. Swofford, G.J. Olsen, P.J. Waddell, and  D.M. Hillis. Chapter  11:  Phylogenetic inference. In D. M. Hillis, C. Moritz, and B. K. Mable, editors, Molecular Systematics, pages 407–514. Sinauer Associates, Inc., 2nd edition, 1996.
+K3ST; Swofford et al 1996; D.L. Swofford, G.J. Olsen, P.J. Waddell, and  D.M. Hillis. Chapter  11:  Phylogenetic inference. In D. M. Hillis, C. Moritz, and B. K. Mable, editors, Molecular Systematics, pages 407–514. Sinauer Associates, Inc., 2nd edition, 1996.
+LogDet; Steel 1994; M.A. Steel.  Recovering a tree from the leaf colorations it generates under a Markov model. Appl. Math. Lett., 7(2):19–24, 1994.
+Nei_Li_RestrictionDistance; Nei and Li 1979; ?
+NeiMiller; Nei and Miller 1990; M. Nei and J.C. Miller. A simple method for estimating average number of nucleotide substitutions within and between populations from restriction data. Genetics, 125:873–879, 1990.
+ProteinMLdist; Swofford et al 1996; D.L. Swofford, G.J. Olsen, P.J. Waddell, and  D.M. Hillis. Chapter  11:  Phylogenetic inference. In D. M. Hillis, C. Moritz, and B. K. Mable, editors, Molecular Systematics, pages 407–514. Sinauer Associates, Inc., 2nd edition, 1996.
+UncorrectedP; ?
+Upholt; Upholt 1979; ?
+
+SuperNetwork; Huson et al 2004; D.H. Huson, T. Dezulian, T. Kloepper, and M. A. Steel. Phylogenetic super-networks from partial trees. IEEE/ACM Transactions in Computational Biology and Bioinformatics, 1(4):151–158, 2004.
