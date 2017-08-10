@@ -115,6 +115,7 @@ public class CharactersFastaIO {
         Arrays.sort(chars);
         String sortedSymbols = new String(chars);
 
+        // todo check subset!
         switch (sortedSymbols) {
             case "01": characters.setDataType(CharactersType.standard);
                 break;

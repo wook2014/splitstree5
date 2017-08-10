@@ -20,7 +20,8 @@ public class CharactersClustalIOTest {
 
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
-        CharactersClustalIO.parse("test/notNexusFiles/prot1.aln", taxaBlock, charactersBlock);
+        //CharactersClustalIO.parse("test/notNexusFiles/prot1.aln", taxaBlock, charactersBlock);
+        CharactersClustalIO.parse("test/notNexusFiles/protein.aln", taxaBlock, charactersBlock);
 
         // printing
         final StringWriter w = new StringWriter();
