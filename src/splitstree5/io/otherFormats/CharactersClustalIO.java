@@ -32,9 +32,6 @@ public class CharactersClustalIO {
 
     public static void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters) throws IOException {
 
-        //ArrayList<String> taxonNamesFound = new ArrayList<>();
-        //ArrayList<String> matrix = new ArrayList<>();
-
         Map<String, String> taxa2seq = new LinkedHashMap<>();
 
         int ntax = 0;
@@ -51,12 +48,23 @@ public class CharactersClustalIO {
                 counter ++;
                 if (line.startsWith("CLUSTAL"))
                     continue;
-                if(!line.equals("") /* todo test conservation string here*/){
-                    String label = line.substring(0, line.indexOf(' '));
+                if(!line.equals("") && hasAlphabeticalSymbols(line)){
+
+                    int lastSeqIndex = line.length();
+                    while(Character.isDigit(line.charAt(lastSeqIndex-1)))
+                        lastSeqIndex--;
+                    line = line.substring(0, lastSeqIndex);
+
+                    int labelIndex = line.indexOf(' ');
+                    String label = line.substring(0, labelIndex);
+
+                    line = line.replace(" ", "");
+                    line = line.replace("\t", "");
+
                     if (!taxa2seq.containsKey(label)){
-                        taxa2seq.put(label, line.substring(line.indexOf(' ')).replace(" ", ""));
+                        taxa2seq.put(label, line.substring(labelIndex));
                     }else{
-                        taxa2seq.put(label, taxa2seq.get(label)+line.substring(line.indexOf(' ')).replace(" ", ""));
+                        taxa2seq.put(label, taxa2seq.get(label)+line.substring(labelIndex));
                     }
                 }
             }
@@ -81,6 +89,7 @@ public class CharactersClustalIO {
             System.err.println(taxa2seq.get(s));
         }
 
+        taxa.clear();
         taxa.addTaxaByNames(taxa2seq.keySet());
         setCharacters(taxa2seq, ntax, nchar, characters);
     }
@@ -92,10 +101,11 @@ public class CharactersClustalIO {
         int labelsCounter = 1;
         String foundSymbols = "";
         for(String label : taxa2seq.keySet()){
-            for(int j=1; j<nchar; j++){
+            for(int j=1; j<=nchar; j++){
 
-                char symbol = Character.toLowerCase(taxa2seq.get(label).charAt(j));
-                if(foundSymbols.indexOf(symbol) == -1) foundSymbols+=symbol;
+                char symbol = taxa2seq.get(label).charAt(j-1);
+                if(foundSymbols.indexOf(Character.toLowerCase(symbol)) == -1)
+                    foundSymbols+=Character.toLowerCase(symbol);
 
                 characters.set(labelsCounter, j, symbol);
             }
@@ -161,6 +171,13 @@ public class CharactersClustalIO {
             }
         }
         return isSubSet;
+    }
+
+    private static boolean hasAlphabeticalSymbols(String line){
+        for(char c : line.toCharArray()){
+            if(Character.isLetter(c)) return true;
+        }
+        return false;
     }
 
     // GETTER AND SETTER
