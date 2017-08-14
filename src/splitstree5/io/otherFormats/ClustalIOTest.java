@@ -3,19 +3,16 @@ package splitstree5.io.otherFormats;
 import org.junit.Test;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.io.fasta.CharactersFastaIO;
 import splitstree5.io.nexus.CharactersNexusFormat;
 import splitstree5.io.nexus.CharactersNexusIO;
 import splitstree5.io.nexus.TaxaNexusIO;
 
 import java.io.StringWriter;
 
-import static org.junit.Assert.*;
-
 /**
  * Created by Daria on 05.08.2017.
  */
-public class CharactersClustalIOTest {
+public class ClustalIOTest {
     @Test
     public void parse() throws Exception {
 
@@ -23,7 +20,7 @@ public class CharactersClustalIOTest {
         CharactersBlock charactersBlock = new CharactersBlock();
         CharactersNexusFormat format = new CharactersNexusFormat();
 
-        CharactersClustalIO.parse("test/notNexusFiles/prot1.aln", taxaBlock, charactersBlock, format);
+        ClustalIO.parse("test/notNexusFiles/prot1.aln", taxaBlock, charactersBlock, format);
         // printing
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
@@ -33,7 +30,7 @@ public class CharactersClustalIOTest {
         System.err.println(format.isInterleave());
         //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
 
-        CharactersClustalIO.parse("test/notNexusFiles/protein.aln", taxaBlock, charactersBlock, format);
+        ClustalIO.parse("test/notNexusFiles/protein.aln", taxaBlock, charactersBlock, format);
         // printing
         final StringWriter w2 = new StringWriter();
         w2.write("#nexus\n");
@@ -42,7 +39,7 @@ public class CharactersClustalIOTest {
         System.err.println(w2.toString());
         //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
 
-        CharactersClustalIO.parse("test/notNexusFiles/conservation.aln", taxaBlock, charactersBlock, format);
+        ClustalIO.parse("test/notNexusFiles/conservation.aln", taxaBlock, charactersBlock, format);
         // printing
         final StringWriter w3 = new StringWriter();
         w3.write("#nexus\n");
@@ -51,7 +48,7 @@ public class CharactersClustalIOTest {
         System.err.println(w3.toString());
         //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
 
-        CharactersClustalIO.parse("test/notNexusFiles/dna-ncbi.aln", taxaBlock, charactersBlock, format);
+        ClustalIO.parse("test/notNexusFiles/dna-ncbi.aln", taxaBlock, charactersBlock, format);
         // printing
         final StringWriter w4 = new StringWriter();
         w4.write("#nexus\n");
@@ -60,7 +57,7 @@ public class CharactersClustalIOTest {
         System.err.println(w4.toString());
         //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
 
-        CharactersClustalIO.parse("test/notNexusFiles/dna-ncbi-num.aln", taxaBlock, charactersBlock, format);
+        ClustalIO.parse("test/notNexusFiles/dna-ncbi-num.aln", taxaBlock, charactersBlock, format);
         // printing
         final StringWriter w5 = new StringWriter();
         w5.write("#nexus\n");

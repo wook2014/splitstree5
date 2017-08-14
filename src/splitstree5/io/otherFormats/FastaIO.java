@@ -1,9 +1,10 @@
-package splitstree5.io.fasta;
+package splitstree5.io.otherFormats;
 
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.datablocks.characters.CharactersType;
+import splitstree5.io.otherFormats.CharactersFormat;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -15,7 +16,7 @@ import java.util.Arrays;
  * Import Characters in FastA format.
  * Daria Evseeva, 07.2017
  */
-public class CharactersFastaIO {
+public class FastaIO extends CharactersFormat{
 
     // todo : check parameter for all sequences or only for the first one?
     //public enum ID {ncbi, gb, emb, dbj, pir, prf, sp, pdb, pat, bbs, gnl, ref, lcl, unknown}
@@ -107,47 +108,7 @@ public class CharactersFastaIO {
             }
         }
 
-        foundSymbols = foundSymbols.replace(getStringGap(), "");
-        foundSymbols = foundSymbols.replace(getStringMissing(), "");
-        foundSymbols = foundSymbols.replace(getStringMatchChar(), "");
-        // sort found symbols
-        char[] chars = foundSymbols.toCharArray();
-        Arrays.sort(chars);
-        String sortedSymbols = new String(chars);
-
-        // todo check subset!
-        switch (sortedSymbols) {
-            case "01": characters.setDataType(CharactersType.standard);
-                break;
-            case "acgt": characters.setDataType(CharactersType.DNA);
-                break;
-            case "acgu": characters.setDataType(CharactersType.RNA);
-                break;
-            case "acdefghiklmnpqrstvwyz": characters.setDataType(CharactersType.protein);
-                break;
-            default:
-                if(isAmbiguous(sortedSymbols)){
-                    characters.setHasAmbiguousStates(true);
-                    if(sortedSymbols.contains("t")) characters.setDataType(CharactersType.DNA);
-                    if(sortedSymbols.contains("u")) characters.setDataType(CharactersType.RNA);
-                    if(sortedSymbols.contains("t") && sortedSymbols.contains("u"))
-                        throw new IOException("Nucleotide sequence contains Thymine and Uracil at tha same time");
-                }else{
-                    characters.setDataType(CharactersType.unknown);
-                    System.err.println("Warning : can not recognize characters type!");
-                    // todo set new gap/missing/match chars and try again
-                }
-                break;
-        }
-        System.err.println("symbols: "+foundSymbols);
-    }
-
-    private static boolean isAmbiguous(String foundSymbols){
-        final String IUPAC = "acgtu"+ AmbiguityCodes.CODES;
-        for(char c : foundSymbols.toCharArray()){
-            if(!IUPAC.contains(c+"")) return false;
-        }
-        return true;
+        estimateDataType(foundSymbols, characters);
     }
 
     private static void addTaxaName(String infoLine, ArrayList<String> taxonNamesFound) throws IOException {
