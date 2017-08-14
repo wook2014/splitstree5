@@ -803,8 +803,12 @@ public class CharactersNexusIO {
             taxaWidth = maxLabelLength(taxa) + 1;
         }
 
-        // will use 60 columns per block
-        int maxColumns = Math.max(1, 60 / columnWidth); //Maximum number of sites to print on one line.
+        int maxColumns;
+        if(format.getColumnsPerBlock() == 0)
+            // will use 60 columns per block
+            maxColumns = Math.max(1, 60 / columnWidth); //Maximum number of sites to print on one line.
+        else
+            maxColumns = Math.max(1, format.getColumnsPerBlock() / columnWidth); //Maximum number of sites to print on one line.
 
         for (int c0 = 1; c0 <= characters.getNchar(); c0 += maxColumns) {
             final int cMax = Math.min(c0 + maxColumns - 1, characters.getNchar());

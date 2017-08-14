@@ -8,6 +8,7 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.datablocks.characters.CharactersType;
+import splitstree5.io.nexus.CharactersNexusFormat;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -30,17 +31,16 @@ public class CharactersClustalIO {
     private static char missing = '?';
     private static char matchChar='.';
 
-    public static void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters) throws IOException {
+    public static void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format) throws IOException {
 
         Map<String, String> taxa2seq = new LinkedHashMap<>();
 
         int ntax = 0;
         int nchar = 0;
-
+        int sequenceInLineLength = 0;
         int counter = 0;
         try (BufferedReader in = new BufferedReader(new FileReader(inputFile))) {
             String line;
-            int sequenceLength = 0;
             String sequence = "";
             boolean startedNewSequence = false;
 
@@ -60,6 +60,8 @@ public class CharactersClustalIO {
 
                     line = line.replace(" ", "");
                     line = line.replace("\t", "");
+
+                    if(sequenceInLineLength==0) sequenceInLineLength = line.substring(labelIndex).length();
 
                     if (!taxa2seq.containsKey(label)){
                         taxa2seq.put(label, line.substring(labelIndex));
@@ -92,6 +94,9 @@ public class CharactersClustalIO {
         taxa.clear();
         taxa.addTaxaByNames(taxa2seq.keySet());
         setCharacters(taxa2seq, ntax, nchar, characters);
+
+        format.setInterleave(true);
+        format.setColumnsPerBlock(sequenceInLineLength);
     }
 
     private static void setCharacters(Map<String, String> taxa2seq, int ntax, int nchar, CharactersBlock characters) throws IOException {
@@ -136,6 +141,8 @@ public class CharactersClustalIO {
                     characters.setDataType(CharactersType.protein);
                     break;
                 }
+
+                // todo statistic to distinguish protein and ambiguous dna
 
                 if(isAmbiguous(sortedSymbols)){
                     characters.setHasAmbiguousStates(true);

@@ -29,6 +29,7 @@ public class CharactersNexusFormat {
     private boolean labels = true;
     private boolean tokens;
     private char matchChar = 0;
+    private int columnsPerBlock = 0;
 
     private boolean ignoreMatrix = false;
 
@@ -90,5 +91,13 @@ public class CharactersNexusFormat {
 
     public void setIgnoreMatrix(boolean ignoreMatrix) {
         this.ignoreMatrix = ignoreMatrix;
+    }
+
+    public int getColumnsPerBlock(){
+        return this.columnsPerBlock;
+    }
+
+    public void setColumnsPerBlock(int columnsPerBlock){
+        this.columnsPerBlock = columnsPerBlock;
     }
 }
