@@ -69,7 +69,7 @@ public class ClustalIO extends CharactersFormat{
         }
 
         if(taxa2seq.isEmpty())
-            throw new IOException("No sequences was found");
+            throw new IOException("No sequences were found");
 
         ntax = taxa2seq.size();
         nchar = taxa2seq.get(taxa2seq.keySet().iterator().next()).length();
