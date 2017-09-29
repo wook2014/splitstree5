@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,6 +29,7 @@ public class PhylipIO  extends CharactersFormat {
         int counter = 0;
         int readLines = 0;
         boolean standard = true;
+        boolean sameLengthNtax = true;
 
         boolean readDim = true;
 
@@ -43,7 +45,6 @@ public class PhylipIO  extends CharactersFormat {
 
                 if(readDim){
                     int separateIndex = 0;
-
                     boolean betweenNumbers = false;
                     for( char c : line.toCharArray()){
                         separateIndex ++;
@@ -55,17 +56,18 @@ public class PhylipIO  extends CharactersFormat {
                     readDim = false;
                 } else {
                     readLines ++;
-                    //taxa2seq.put(line.substring(0, 10).replace(" ",""), line.substring(10).replace(" ", ""));
                     labels.add(line.substring(0, 10).replace(" ",""));
                     sequences.add(line.substring(10).replace(" ", ""));
                     if(readLines == ntax){
-                        System.err.print("-----"+labels.get(labels.size()-1));
+                        int seqLength = sequences.get(0).length();
                         for(String seq : sequences){
-                            if(seq.length() != nchar){
+                            if(seq.length() != seqLength){
                                 standard = false;
+                                sameLengthNtax = false;
                                 break;
                             }
                         }
+                        if(!sameLengthNtax || seqLength!=nchar) standard = false;
                     }
                     if(readLines>ntax && standard)
                         throw new IOException("Unexpected symbol at the line "+counter);
@@ -76,11 +78,13 @@ public class PhylipIO  extends CharactersFormat {
         if(standard)
             setCharactersStandard(labels, sequences, ntax, nchar, taxa, characters);
         else
-            setCharactersInterleaved(labels, sequences, ntax, nchar, taxa, characters);
-        //if(taxa2seq.isEmpty())
-          //  throw new IOException("No sequences were found");
+            if(sameLengthNtax)
+                setCharactersInterleaved(labels, sequences, ntax, nchar, taxa, characters);
+            else
+                setCharactersStandardEOL(labels, sequences, ntax, nchar, taxa, characters);
 
-        //determineFormat(taxa2seq, ntax, nchar);
+        if(sequences.isEmpty())
+            throw new IOException("No sequences were found");
 
         //ntax = taxa2seq.size();
         //nchar = taxa2seq.get(taxa2seq.keySet().iterator().next()).length();
@@ -91,16 +95,6 @@ public class PhylipIO  extends CharactersFormat {
             else
                 nchar =  taxa2seq.get(s).length();
         }*/
-
-        System.err.println("ntax: "+ntax+" nchar: "+nchar);
-        for(String s : taxa2seq.keySet()){
-            System.err.println(s);
-            System.err.println(taxa2seq.get(s));
-        }
-
-        //taxa.clear();
-        //taxa.addTaxaByNames(taxa2seq.keySet());
-        //setCharacters(taxa2seq, ntax, nchar, characters);
 
         //format.setInterleave(true);
         //format.setColumnsPerBlock(sequenceInLineLength);
@@ -128,36 +122,112 @@ public class PhylipIO  extends CharactersFormat {
             }
             labelsCounter++;
         }
-
         estimateDataType(foundSymbols, characters);
 
     }
 
     private static void setCharactersInterleaved(ArrayList<String> labels, ArrayList<String> sequences,
-                                                 int ntax, int nchar, TaxaBlock taxa, CharactersBlock characters){
+                                                 int ntax, int nchar, TaxaBlock taxa, CharactersBlock characters) throws IOException {
+
+        List<String> taxaNames = labels.subList(0, ntax);
+
         taxa.clear();
-        taxa.addTaxaByNames(labels);
+        taxa.addTaxaByNames(taxaNames);
         characters.clear();
         characters.setDimension(ntax, nchar);
 
-        // todo test it!
         boolean multi = true;
         for(int i=0; i<ntax; i++){
+            System.err.println("i---"+i);
+            System.err.println("i---"+labels.get(i));
             for(int j=ntax+i; j<labels.size(); j=j+ntax){
-                if(!sequences.get(i).equals(sequences.get(j))){
+                System.err.println("j---"+j);
+                System.err.println("j---"+labels.get(j));
+                if(!labels.get(i).equals(labels.get(j))){
                     multi = false;
                     break;
                 }
             }
             if(!multi) break;
         }
+        System.err.println("MULTI "+multi);
 
-        if(!multi){
+        if(!multi)
             for(int i=ntax; i<labels.size(); i++){
                 sequences.set(i, labels.get(i)+sequences.get(i));
             }
-        }
 
+        String foundSymbols = "";
+        Map<String, Integer> symbolsCounter = new LinkedHashMap<>();
+        int seqLength = 0;
+        for(int i=0; i<sequences.size(); i++){
+            for(int j=1; j<=sequences.get(i).length(); j++){
+                char symbol = sequences.get(i).charAt(j-1);
+                if(foundSymbols.indexOf(Character.toLowerCase(symbol)) == -1)
+                    foundSymbols+=Character.toLowerCase(symbol);
+                int taxaIndex = (i % ntax)+1;
+                int charIndex = j;
+                /*for(int seq=taxaIndex; seq<i; seq=seq+ntax)
+                    charIndex+=sequences.get(seq).length();
+                System.err.println("charIndex " +charIndex);
+                System.err.println("charIndex i " +i);
+                System.err.println("charIndex j " +j);*/
+                /*while (characters.get(taxaIndex, charIndex) != '\u0000')
+                    charIndex+=sequences.get(taxaIndex).length();*/ // todo only if blocks have the same length
+                characters.set(taxaIndex, j+seqLength, symbol);
+            }
+            if(i % ntax == ntax-1)
+                seqLength =+ sequences.get(i).length();
+        }
+        estimateDataType(foundSymbols, characters);
+    }
+
+    private static void setCharactersStandardEOL(ArrayList<String> labels, ArrayList<String> sequences,
+                                              int ntax, int nchar, TaxaBlock taxa, CharactersBlock characters) throws IOException {
+
+        List<String> taxaNames = new ArrayList<>();
+        characters.clear();
+        characters.setDimension(ntax, nchar);
+
+
+
+        /*int labelsCounter = 1;
+        String foundSymbols = "";
+        Map<String, String> symbolsCounter = new LinkedHashMap<>();
+
+        for(String seq : sequences){
+            for(int j=1; j<=nchar; j++){
+
+                char symbol = seq.charAt(j-1);
+                if(foundSymbols.indexOf(Character.toLowerCase(symbol)) == -1)
+                    foundSymbols+=Character.toLowerCase(symbol);
+
+                characters.set(labelsCounter, j, symbol);
+            }
+            labelsCounter++;
+        }*/
+        String foundSymbols = "";
+        int iterator = 0;
+        //todo
+        /*while(iterator <= labels.size()){
+            taxaNames.add(labels.get(iterator));
+            for(int j=1; j<=nchar; j++){
+                char symbol;
+                if(j==sequences.get(iterator).length()) {
+                    iterator++;
+                    sequences.set(iterator, labels.get(iterator)+sequences.get(iterator));
+                }
+                symbol = sequences.get(iterator).charAt(j-1);
+                if(foundSymbols.indexOf(Character.toLowerCase(symbol)) == -1)
+                    foundSymbols+=Character.toLowerCase(symbol);
+
+                characters.set(taxaNames.size(), j, symbol);
+            }
+        }*/
+
+        estimateDataType(foundSymbols, characters);
+        taxa.clear();
+        taxa.addTaxaByNames(taxaNames);
     }
 }
 

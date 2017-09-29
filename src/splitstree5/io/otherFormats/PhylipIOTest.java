@@ -29,15 +29,15 @@ public class PhylipIOTest {
         TaxaNexusIO.write(w1, taxaBlock);
         CharactersNexusIO.write(w1, taxaBlock, charactersBlock, format);
         System.err.println(w1.toString());
-        System.err.println(format.isInterleave());
+        String standard = w1.toString();
 
-        /*PhylipIO.parse("test/notNexusFiles/standardEOL.phy", taxaBlock, charactersBlock, format);
+        PhylipIO.parse("test/notNexusFiles/standardEOL.phy", taxaBlock, charactersBlock, format);
         // printing
         final StringWriter w2 = new StringWriter();
         w2.write("#nexus\n");
         TaxaNexusIO.write(w2, taxaBlock);
         CharactersNexusIO.write(w2, taxaBlock, charactersBlock, format);
-        System.err.println(w2.toString());*/
+        System.err.println(w2.toString());
 
         PhylipIO.parse("test/notNexusFiles/interleaved.phy", taxaBlock, charactersBlock, format);
         // printing
@@ -46,6 +46,7 @@ public class PhylipIOTest {
         TaxaNexusIO.write(w3, taxaBlock);
         CharactersNexusIO.write(w3, taxaBlock, charactersBlock, format);
         System.err.println(w3.toString());
+        String interleaved = w3.toString();
 
         PhylipIO.parse("test/notNexusFiles/interleaved-multi.phy", taxaBlock, charactersBlock, format);
         // printing
@@ -54,8 +55,11 @@ public class PhylipIOTest {
         TaxaNexusIO.write(w4, taxaBlock);
         CharactersNexusIO.write(w4, taxaBlock, charactersBlock, format);
         System.err.println(w4.toString());
+        String interleavedMulti = w4.toString();
 
-        //todo compare to each other
+
+        assertEquals(standard, interleaved);
+        assertEquals(interleaved, interleavedMulti);
 
     }
 
