@@ -31,13 +31,13 @@ public class PhylipIOTest {
         System.err.println(w1.toString());
         System.err.println(format.isInterleave());
 
-        PhylipIO.parse("test/notNexusFiles/standardEOL.phy", taxaBlock, charactersBlock, format);
+        /*PhylipIO.parse("test/notNexusFiles/standardEOL.phy", taxaBlock, charactersBlock, format);
         // printing
         final StringWriter w2 = new StringWriter();
         w2.write("#nexus\n");
         TaxaNexusIO.write(w2, taxaBlock);
         CharactersNexusIO.write(w2, taxaBlock, charactersBlock, format);
-        System.err.println(w2.toString());
+        System.err.println(w2.toString());*/
 
         PhylipIO.parse("test/notNexusFiles/interleaved.phy", taxaBlock, charactersBlock, format);
         // printing

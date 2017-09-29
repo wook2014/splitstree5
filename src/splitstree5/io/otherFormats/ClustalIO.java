@@ -101,6 +101,8 @@ public class ClustalIO extends CharactersFormat{
 
         int labelsCounter = 1;
         String foundSymbols = "";
+        Map<String, String> symbolsCounter = new LinkedHashMap<>();
+
         for(String label : taxa2seq.keySet()){
             for(int j=1; j<=nchar; j++){
 

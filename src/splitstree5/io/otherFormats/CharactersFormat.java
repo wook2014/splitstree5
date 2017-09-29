@@ -5,6 +5,7 @@ import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.datablocks.characters.CharactersType;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -17,7 +18,7 @@ public abstract class CharactersFormat {
     private static char matchChar='.';
 
 
-    public static void estimateDataType(String foundSymbols, CharactersBlock characters) throws IOException {
+    public static void estimateDataType(String foundSymbols, CharactersBlock characters/*, ArrayList<Integer> frequency*/) throws IOException {
         foundSymbols = foundSymbols.replace(getStringGap(), "");
         foundSymbols = foundSymbols.replace(getStringMissing(), "");
         foundSymbols = foundSymbols.replace(getStringMatchChar(), "");
