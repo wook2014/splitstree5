@@ -11,6 +11,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Import Characters in FastA format.
@@ -99,16 +101,21 @@ public class FastaIO extends CharactersFormat{
     private static void readMatrix(ArrayList<String> matrix, CharactersBlock characters) throws IOException {
         // todo check if valid and set parameters here
 
+        Map<Character, Integer> frequency = new LinkedHashMap<>();
         String foundSymbols = "";
         for(int i = 1; i<=characters.getNtax(); i++){
             for(int j = 1; j<=characters.getNchar(); j++){
                 char symbol = Character.toLowerCase(matrix.get(i-1).charAt(j-1));
-                if(foundSymbols.indexOf(symbol) == -1) foundSymbols+=symbol;
+                if(foundSymbols.indexOf(symbol) == -1) {
+                    foundSymbols+=symbol;
+                    frequency.put(symbol, 1);
+                } else
+                    frequency.put(symbol, frequency.get(symbol)+1);
                 characters.set(i, j, matrix.get(i-1).charAt(j-1));
             }
         }
 
-        estimateDataType(foundSymbols, characters);
+        estimateDataType(foundSymbols, characters, frequency);
     }
 
     private static void addTaxaName(String infoLine, ArrayList<String> taxonNamesFound) throws IOException {

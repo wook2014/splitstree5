@@ -1,8 +1,8 @@
 #nexus
-[!Dusky Dolphins MBE 12:1781-1792 (2003)
+[!Dusky Dolphins MBE 12:1781-1792 (2003)]
 begin taxa;
 dimensions ntax=36;
-end;]
+end;
 
 begin characters;
 dimensions ntax=36 nchar=60;

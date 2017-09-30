@@ -101,21 +101,24 @@ public class ClustalIO extends CharactersFormat{
 
         int labelsCounter = 1;
         String foundSymbols = "";
-        Map<String, String> symbolsCounter = new LinkedHashMap<>();
+        Map<Character, Integer> frequency = new LinkedHashMap<>();
 
         for(String label : taxa2seq.keySet()){
             for(int j=1; j<=nchar; j++){
 
-                char symbol = taxa2seq.get(label).charAt(j-1);
-                if(foundSymbols.indexOf(Character.toLowerCase(symbol)) == -1)
-                    foundSymbols+=Character.toLowerCase(symbol);
+                char symbol = Character.toLowerCase(taxa2seq.get(label).charAt(j-1));
+                if(foundSymbols.indexOf(symbol) == -1){
+                    foundSymbols+=symbol;
+                    frequency.put(symbol, 1);
+                } else
+                    frequency.put(symbol, frequency.get(symbol)+1);
 
-                characters.set(labelsCounter, j, symbol);
+                characters.set(labelsCounter, j, Character.toUpperCase(symbol));
             }
             labelsCounter++;
         }
 
-        estimateDataType(foundSymbols, characters);
+        estimateDataType(foundSymbols, characters, frequency);
     }
 
     private static boolean hasAlphabeticalSymbols(String line){

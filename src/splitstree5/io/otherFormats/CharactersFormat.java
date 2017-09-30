@@ -18,7 +18,7 @@ public abstract class CharactersFormat {
     private static char matchChar='.';
 
 
-    public static void estimateDataType(String foundSymbols, CharactersBlock characters/*, Map<Character, Integer> frequency*/) throws IOException {
+    public static void estimateDataType(String foundSymbols, CharactersBlock characters, Map<Character, Integer> frequency) throws IOException {
         foundSymbols = foundSymbols.replace(getStringGap(), "");
         foundSymbols = foundSymbols.replace(getStringMissing(), "");
         foundSymbols = foundSymbols.replace(getStringMatchChar(), "");
@@ -39,7 +39,7 @@ public abstract class CharactersFormat {
             default:
                 char x = getUnknownSymbols(sortedSymbols);
                 if(x =='\u0000'){
-                    if(sortedSymbols.contains("b")){
+                    if(sortedSymbols.contains("b") || hasMostNucleotide(frequency)){
                         characters.setHasAmbiguousStates(true);
                         if(sortedSymbols.contains("t")) characters.setDataType(CharactersType.DNA);
                         if(sortedSymbols.contains("u")) characters.setDataType(CharactersType.RNA);
@@ -75,6 +75,7 @@ public abstract class CharactersFormat {
                 break;
         }
         System.err.println("symbols: "+sortedSymbols);
+        System.err.println("frequencies : "+ frequency);
     }
 
     private static char getUnknownSymbols(String sortedSymbols){
@@ -95,6 +96,18 @@ public abstract class CharactersFormat {
             if(AA.contains(c+"") && !IUPAC.contains(c+"")) return true;
         }
         return false;
+    }
+
+    private static boolean hasMostNucleotide(Map<Character, Integer> frequency){
+        int nFreq = 0;
+        int otherFreq = 0;
+        for(char c : frequency.keySet()){
+            if(c=='a' || c=='g' || c=='c' || c=='t' || c =='u')
+                nFreq+=frequency.get(c);
+            else
+                otherFreq+=frequency.get(c);
+        }
+        return nFreq>= otherFreq;
     }
 
     private static boolean isAmbiguous(String foundSymbols){
