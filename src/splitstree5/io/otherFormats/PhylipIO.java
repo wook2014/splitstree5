@@ -19,13 +19,11 @@ public class PhylipIO  extends CharactersFormat {
 
     public static void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format) throws IOException {
 
-        Map<String, String> taxa2seq = new LinkedHashMap<>();
         ArrayList<String> labels = new ArrayList<>();
         ArrayList<String> sequences = new ArrayList<>();
 
         int ntax = 0;
         int nchar = 0;
-        int sequenceInLineLength = 0;
         int counter = 0;
         int readLines = 0;
         boolean standard = true;
@@ -35,8 +33,6 @@ public class PhylipIO  extends CharactersFormat {
 
         try (BufferedReader in = new BufferedReader(new FileReader(inputFile))) {
             String line;
-            String sequence = "";
-            boolean startedNewSequence = false;
 
             while ((line = in.readLine()) != null) {
 
@@ -75,16 +71,18 @@ public class PhylipIO  extends CharactersFormat {
             }
         }
 
+        if(sequences.isEmpty())
+            throw new IOException("No sequences were found");
+
         if(standard)
             setCharactersStandard(labels, sequences, ntax, nchar, taxa, characters);
         else
-            if(sameLengthNtax)
+            if(sameLengthNtax){
                 setCharactersInterleaved(labels, sequences, ntax, nchar, taxa, characters);
-            else
+                format.setInterleave(true);
+                format.setColumnsPerBlock(sequences.get(0).length());
+            } else
                 setCharactersStandardEOL(labels, sequences, ntax, nchar, taxa, characters);
-
-        if(sequences.isEmpty())
-            throw new IOException("No sequences were found");
 
         //ntax = taxa2seq.size();
         //nchar = taxa2seq.get(taxa2seq.keySet().iterator().next()).length();
@@ -95,9 +93,6 @@ public class PhylipIO  extends CharactersFormat {
             else
                 nchar =  taxa2seq.get(s).length();
         }*/
-
-        //format.setInterleave(true);
-        //format.setColumnsPerBlock(sequenceInLineLength);
     }
 
     private static void setCharactersStandard(ArrayList<String> labels, ArrayList<String> sequences,
@@ -138,11 +133,7 @@ public class PhylipIO  extends CharactersFormat {
 
         boolean multi = true;
         for(int i=0; i<ntax; i++){
-            System.err.println("i---"+i);
-            System.err.println("i---"+labels.get(i));
             for(int j=ntax+i; j<labels.size(); j=j+ntax){
-                System.err.println("j---"+j);
-                System.err.println("j---"+labels.get(j));
                 if(!labels.get(i).equals(labels.get(j))){
                     multi = false;
                     break;
@@ -150,8 +141,6 @@ public class PhylipIO  extends CharactersFormat {
             }
             if(!multi) break;
         }
-        System.err.println("MULTI "+multi);
-
         if(!multi)
             for(int i=ntax; i<labels.size(); i++){
                 sequences.set(i, labels.get(i)+sequences.get(i));
@@ -189,41 +178,26 @@ public class PhylipIO  extends CharactersFormat {
         characters.clear();
         characters.setDimension(ntax, nchar);
 
-
-
-        /*int labelsCounter = 1;
-        String foundSymbols = "";
-        Map<String, String> symbolsCounter = new LinkedHashMap<>();
-
-        for(String seq : sequences){
-            for(int j=1; j<=nchar; j++){
-
-                char symbol = seq.charAt(j-1);
-                if(foundSymbols.indexOf(Character.toLowerCase(symbol)) == -1)
-                    foundSymbols+=Character.toLowerCase(symbol);
-
-                characters.set(labelsCounter, j, symbol);
-            }
-            labelsCounter++;
-        }*/
         String foundSymbols = "";
         int iterator = 0;
-        //todo
-        /*while(iterator <= labels.size()){
+        while(iterator < labels.size()){
             taxaNames.add(labels.get(iterator));
-            for(int j=1; j<=nchar; j++){
+            int shift = 0;
+            for(int j=0; j<nchar; j++){
                 char symbol;
-                if(j==sequences.get(iterator).length()) {
+                if(j-shift==sequences.get(iterator).length()) {
                     iterator++;
                     sequences.set(iterator, labels.get(iterator)+sequences.get(iterator));
+                    shift += j;
                 }
-                symbol = sequences.get(iterator).charAt(j-1);
+                symbol = sequences.get(iterator).charAt(j-shift);
                 if(foundSymbols.indexOf(Character.toLowerCase(symbol)) == -1)
                     foundSymbols+=Character.toLowerCase(symbol);
 
-                characters.set(taxaNames.size(), j, symbol);
+                characters.set(taxaNames.size(), j+1, symbol);
             }
-        }*/
+            iterator++;
+        }
 
         estimateDataType(foundSymbols, characters);
         taxa.clear();

@@ -38,6 +38,7 @@ public class PhylipIOTest {
         TaxaNexusIO.write(w2, taxaBlock);
         CharactersNexusIO.write(w2, taxaBlock, charactersBlock, format);
         System.err.println(w2.toString());
+        String standardEOL = w2.toString();
 
         PhylipIO.parse("test/notNexusFiles/interleaved.phy", taxaBlock, charactersBlock, format);
         // printing
@@ -58,8 +59,9 @@ public class PhylipIOTest {
         String interleavedMulti = w4.toString();
 
 
-        assertEquals(standard, interleaved);
+        //assertEquals(standard, interleaved);
         assertEquals(interleaved, interleavedMulti);
+        assertEquals(standard, standardEOL);
 
     }
 
