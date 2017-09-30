@@ -1,12 +1,12 @@
 package splitstree5.io.otherFormats;
 
+import com.sun.xml.internal.fastinfoset.util.CharArray;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.datablocks.characters.CharactersType;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 /**
  * Created by Daria on 15.08.2017.
@@ -18,7 +18,7 @@ public abstract class CharactersFormat {
     private static char matchChar='.';
 
 
-    public static void estimateDataType(String foundSymbols, CharactersBlock characters/*, ArrayList<Integer> frequency*/) throws IOException {
+    public static void estimateDataType(String foundSymbols, CharactersBlock characters/*, Map<Character, Integer> frequency*/) throws IOException {
         foundSymbols = foundSymbols.replace(getStringGap(), "");
         foundSymbols = foundSymbols.replace(getStringMissing(), "");
         foundSymbols = foundSymbols.replace(getStringMatchChar(), "");
@@ -27,7 +27,6 @@ public abstract class CharactersFormat {
         Arrays.sort(chars);
         String sortedSymbols = new String(chars);
 
-        // todo check subset!
         switch (sortedSymbols) {
             case "01": characters.setDataType(CharactersType.standard);
                 break;
@@ -38,8 +37,24 @@ public abstract class CharactersFormat {
             case "acdefghiklmnpqrstvwyz": characters.setDataType(CharactersType.protein);
                 break;
             default:
+                char x = getUnknownSymbols(sortedSymbols);
+                if(x =='\u0000'){
+                    if(sortedSymbols.contains("b")){
+                        characters.setHasAmbiguousStates(true);
+                        if(sortedSymbols.contains("t")) characters.setDataType(CharactersType.DNA);
+                        if(sortedSymbols.contains("u")) characters.setDataType(CharactersType.RNA);
+                        if(sortedSymbols.contains("t") && sortedSymbols.contains("u"))
+                            throw new IOException("Nucleotide sequence contains Thymine and Uracil at the same time");
+                    }
+                    if(hasAAOnlySybols(sortedSymbols))
+                        characters.setDataType(CharactersType.protein);
+                }else{
+                    characters.setDataType(CharactersType.unknown);
+                    System.err.println("Warning : can not recognize characters type!");
+                    System.err.println("Unexpected character: '"+x+"'");
+                }
 
-                if (checkSubset(foundSymbols)) {
+               /* if (checkSubset(foundSymbols)) {
                     characters.setDataType(CharactersType.protein);
                     break;
                 }
@@ -56,10 +71,30 @@ public abstract class CharactersFormat {
                     characters.setDataType(CharactersType.unknown);
                     System.err.println("Warning : can not recognize characters type!");
                     // todo set new gap/missing/match chars and try again
-                }
+                }*/
                 break;
         }
         System.err.println("symbols: "+sortedSymbols);
+    }
+
+    private static char getUnknownSymbols(String sortedSymbols){
+        String knownSymbols = CharactersType.protein.getSymbols() + CharactersType.DNA.getSymbols()+
+                CharactersType.RNA.getSymbols() + AmbiguityCodes.CODES;
+        for(char c : sortedSymbols.toCharArray()){
+            if(knownSymbols.indexOf(c)==-1){
+                return c;
+            }
+        }
+        return '\u0000';
+    }
+
+    private static boolean hasAAOnlySybols (String foundSymbols){
+        final String IUPAC = ("acgtu"+ AmbiguityCodes.CODES);
+        final String AA = CharactersType.protein.getSymbols();
+        for(char c : foundSymbols.toCharArray()){
+            if(AA.contains(c+"") && !IUPAC.contains(c+"")) return true;
+        }
+        return false;
     }
 
     private static boolean isAmbiguous(String foundSymbols){
