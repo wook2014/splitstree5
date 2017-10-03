@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * Created by Daria on 27.09.2017.
  */
-public class PhylipIO  extends CharactersFormat {
+public class PhylipCharactersIO extends CharactersFormat {
 
     public static void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format) throws IOException {
 
