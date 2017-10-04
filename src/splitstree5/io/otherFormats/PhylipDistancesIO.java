@@ -1,10 +1,9 @@
 package splitstree5.io.otherFormats;
 
-import splitstree5.core.datablocks.CharactersBlock;
+import com.sun.istack.internal.Nullable;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
-import splitstree5.io.nexus.CharactersNexusFormat;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -41,14 +40,24 @@ public class PhylipDistancesIO {
                     st.nextToken();
                 Taxon taxon = new Taxon(st.sval);
                 taxa.add(taxon);
-                //System.err.println(st.sval);
+                System.err.println(st.sval);
                 for (int j = 1; j <= ntax; j++) {
                     token = st.nextToken();
-                    if (token != StreamTokenizer.TT_EOL){
+                    if (token != StreamTokenizer.TT_EOL && token != StreamTokenizer.TT_EOF){
                         distances.set(i, j-shift, Double.parseDouble(st.sval));
-                        //System.err.println(i+"--"+(j-shift)+"----------"+st.sval);
+                        System.err.println(i+"--"+(j-shift)+"----------"+st.sval);
                     } else {
-                        if(j>=i) break;
+                        if(j>=i) {
+                            st.nextToken();
+                            if (isNumeric(st.sval)) {
+                                st.pushBack();
+                                shift++;
+                                j--;
+                            }else{
+                                st.pushBack();
+                                break;
+                            }
+                        }
                         if(j<i-1) shift++;
                     }
                 }
@@ -73,6 +82,19 @@ public class PhylipDistancesIO {
                 distances.set(j, i, distances.get(i,j));
             }
         }
+    }
+
+    private static boolean isNumeric(@Nullable String str) {
+        if(str==null) return false;
+        try
+        {
+            double d = Double.parseDouble(str);
+        }
+        catch(NumberFormatException nfe)
+        {
+            return false;
+        }
+        return true;
     }
 
 }

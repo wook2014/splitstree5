@@ -9,9 +9,9 @@ BioNJ; Gascuel 1997; O. Gascuel, BIONJ: an improved version of the NJ algorithm 
 NeighborJoining; Saitou and Nei 1987;N. Saitou and M. Nei. The Neighbor-Joining method: a new method for reconstructing phylogenetic trees. Molecular Biology and Evolution, 4:406-425, 1987.
 UPGMA; Sokal and Michener 1958; R.R. Sokal and C.D.Michener. A statistical method for evaluating systematic relationships. University of Kansas Scientific Bulletin, 28:1409-1438, 1958.
 
-BaseFreqDistance; ?
+BaseFreqDistance; Hamming 1950; Hamming, Richard W. "Error detecting and error correcting codes". Bell System Technical Journal. 29 (2): 147–160. MR 0035935, 1950.
 Codominant; Smouse and Peakall 1999; Smouse PE, Peakall R Spatial autocorrelation analysis of individual multiallele and multilocus genetic structure. Heredity, 82, 561-573, 1999.
-Dice; ?
+Dice; Hamming 1950; Hamming, Richard W. "Error detecting and error correcting codes". Bell System Technical Journal. 29 (2): 147–160. MR 0035935, 1950.
 F81; Swofford et al 1996; D.L. Swofford, G.J. Olsen, P.J. Waddell, and  D.M. Hillis. Chapter 11: Phylogenetic inference. In D. M. Hillis, C. Moritz, and B. K. Mable, editors, Molecular Systematics, pages 407–514. Sinauer Associates, Inc., 2nd edition, 1996.
 F84; Swofford et al 1996; D.L. Swofford, G.J. Olsen, P.J. Waddell, and  D.M. Hillis. Chapter 11: Phylogenetic inference. In D. M. Hillis, C. Moritz, and B. K. Mable, editors, Molecular Systematics, pages 407–514. Sinauer Associates, Inc., 2nd edition, 1996.
 GapDist; ?
@@ -20,7 +20,7 @@ GTR; ?
 Hamming; Hamming 1950; Hamming, Richard W. "Error detecting and error correcting codes". Bell System Technical Journal. 29 (2): 147–160. MR 0035935, 1950.
 HKY85; Hasegawa, Kishino, Yano 1985; Hasegawa M, Kishino H, Yano T. "Dating of human-ape splitting by a molecular clock of mitochondrial DNA". Journal of Molecular Evolution. 22 (2): 160–174. PMID 3934395. doi:10.1007/BF02101694, 1985.
 Jaccard; ?
-TODO : 2 different citations?
+TODO : 2 different citations? (GeneContentDistance and JukesCantor)
 JukesCantor; Swofford et al 1996; D.L. Swofford, G.J. Olsen, P.J. Waddell, and  D.M. Hillis. Chapter  11:  Phylogenetic inference. In D. M. Hillis, C. Moritz, and B. K. Mable, editors, Molecular Systematics, pages 407–514. Sinauer Associates, Inc., 2nd edition, 1996.
 K2P; Swofford et al 1996; D.L. Swofford, G.J. Olsen, P.J. Waddell, and  D.M. Hillis. Chapter  11:  Phylogenetic inference. In D. M. Hillis, C. Moritz, and B. K. Mable, editors, Molecular Systematics, pages 407–514. Sinauer Associates, Inc., 2nd edition, 1996.
 K3ST; Swofford et al 1996; D.L. Swofford, G.J. Olsen, P.J. Waddell, and  D.M. Hillis. Chapter  11:  Phylogenetic inference. In D. M. Hillis, C. Moritz, and B. K. Mable, editors, Molecular Systematics, pages 407–514. Sinauer Associates, Inc., 2nd edition, 1996.
