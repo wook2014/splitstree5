@@ -16,6 +16,11 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
+/**
+ * Created on Feb 2017.
+ * @author Daria
+ */
+
 public class ProteinMLdistTest {
 
     final ProteinMLdist pML = new ProteinMLdist();

@@ -16,7 +16,8 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 /**
- * Created by Daria on 21.02.2017.
+ * Created on 21.02.2017.
+ * @author Daria
  */
 public class F84Test {
 

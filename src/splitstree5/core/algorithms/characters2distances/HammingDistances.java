@@ -31,7 +31,8 @@ import splitstree5.gui.dialog.Alert;
 
 /**
  * hamming distances
- * Created by huson on 2/2/17.
+ * Created on 2/2/17.
+ * @author huson
  */
 public class HammingDistances extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
     private PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates = PairwiseCompare.HandleAmbiguous.Ignore;

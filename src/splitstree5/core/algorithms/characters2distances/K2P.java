@@ -9,6 +9,13 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.models.K2Pmodel;
 
+/**
+ * Computes the Kimura two parameter distance for a set of characters
+ *
+ * Created on 12-Jun-2004
+ * @author DJB
+ */
+
 public class K2P extends DNAdistance implements IFromChararacters, IToDistances {
 
     private double tratio = 2.0;

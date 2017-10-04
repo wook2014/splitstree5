@@ -17,7 +17,8 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 /**
- * Created by Daria on 05.03.2017.
+ * Created on 05.03.2017.
+ * @author Daria
  */
 public class CodominantTest {
 

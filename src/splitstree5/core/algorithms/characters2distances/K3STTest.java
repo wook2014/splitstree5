@@ -15,6 +15,11 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
+/**
+ * Created on Feb 2017.
+ * @author Daria
+ */
+
 public class K3STTest {
 
     final K3ST k3st = new K3ST();

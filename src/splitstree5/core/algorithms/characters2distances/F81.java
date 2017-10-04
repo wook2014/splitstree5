@@ -9,6 +9,14 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.models.F81model;
 
+/**
+ * Implements the Felsenstein81 DNA distance model
+ *
+ * Created on Jun 2004
+ *
+ * todo : no authors
+ */
+
 public class F81 extends DNAdistance implements IFromChararacters, IToDistances {
 
     public final static String DESCRIPTION = "Calculates distances using the Felsenstein81 model";

@@ -9,6 +9,13 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.models.HKY85model;
 
+/**
+ * Computes the Hasegawa, Kishino and Yano distance for a set of characters.
+ *
+ * Created on 12-Jun-2004
+ * @author Mig
+ */
+
 public class HKY85 extends DNAdistance implements IFromChararacters, IToDistances {
 
     private double tratio = 2.0;

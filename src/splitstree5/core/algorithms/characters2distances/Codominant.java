@@ -9,6 +9,13 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.utils.nexus.SplitsException;
 
+/**
+ * Implementation of the Co-dominant genetic distance
+ *
+ * Created on Nov 2009
+ * @author bryant
+ */
+
 public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
 
     protected String TASK = "Codominant Genetic Distance";

@@ -9,6 +9,14 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.models.F84Model;
 
+/**
+ * Implements the Felsenstein84 DNA distance model
+ *
+ * Created on Jun 2004
+ *
+ * todo : no authors
+ */
+
 public class F84 extends DNAdistance implements IFromChararacters, IToDistances {
 
     private double tratio = 2.0;

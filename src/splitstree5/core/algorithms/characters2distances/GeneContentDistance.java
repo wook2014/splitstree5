@@ -11,6 +11,10 @@ import splitstree5.core.datablocks.characters.CharactersType;
 
 import java.util.BitSet;
 
+/**
+ * todo : no auhtor and date
+ */
+
 public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
 
     public final static String DESCRIPTION = "Compute distances based on shared genes (Snel Bork et al 1999, Huson and Steel 2003)";

@@ -17,6 +17,13 @@ import splitstree5.utils.nexus.SplitsException;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Computes the maximum likelihood protein distance estimates for a set of characters
+ *
+ * Created on Jun 8, 2004
+ * @author bryant
+ */
+
 public class ProteinMLdist extends SequenceBasedDistance implements IFromChararacters, IToDistances {
 
     private PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates = PairwiseCompare.HandleAmbiguous.Ignore;

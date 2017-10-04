@@ -9,6 +9,12 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.CharactersType;
 
+/**
+ * Computes the Nei and Miller (1990) distance from a set of characters
+ *
+ * Created on 2008-03-17
+ * @author bryant
+ */
 public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
 
     public final static String DESCRIPTION = "Calculate distances from restriction-sites using Nei and Miller (1990).";

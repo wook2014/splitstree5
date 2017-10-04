@@ -15,6 +15,11 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
+/**
+ * Created on Feb 2017.
+ * @author Daria
+ */
+
 public class K2PTest {
 
     final K2P k2p = new K2P();

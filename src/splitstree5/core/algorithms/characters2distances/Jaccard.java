@@ -12,7 +12,10 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
 /**
- * Created by Daria on 22.02.2017.
+ * Simple implementation of hamming distances
+ *
+ * Created on 2009-01-25
+ * @author bryant
  */
 public class Jaccard extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
 

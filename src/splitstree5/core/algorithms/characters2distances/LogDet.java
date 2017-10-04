@@ -11,6 +11,60 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
+/**
+ * Calculation of the LogDet transform.
+ *
+ * Created on  2008-03-17
+ * @author bryant
+ *
+ *
+ * The standard formula that we use for computing log det distances is
+ * \[d_{xy} = -1/r ln(\frac{ det F_{xy} }{\sqrt{det(\Pi_x \Pi_y)}}\]
+ * which is formula (23) on page 460 of Swofford et al.
+ * <p/>
+ * Taking the log of the determinant is numerically unstable, so instead we compute
+ * trace(log(F_xy)) using an eigenvalue decomposition of F_xy.
+ * <p/>
+ * Both ways of computing log det will run into problems when F has zero or negative
+ * eigenvalues. To avoid this, the implementation of logDet in LDDist makes some rather arbitrary
+ * modifications to the F_xy matrix. These might be especially useful in protein log Det, where
+ * it can often happen that rows or columns of F_xy are all zero. It seems to me that there are
+ * better ways of dealing with that (e.g. using logDet on a subset of states), but that
+ * requires a lot of further investigation that, given general problems of distance based methods,
+ * might not be worth it.
+ * <p/>
+ * Here is a description of the fudge factor as I've interpreted it from LdDist code:
+ * <p/>
+ * Let F_{xy}[i,j] be the number of sites with an i for x and a j for y.
+ * <p/>
+ * for each state i, let \f_x[i] be the number of sites in x with state i. Likewise for \f_y[i].
+ * let m_x[i] be the number of sites where x has an i and y has a missing or gap.
+ * let m_y[i] be the number of sites where y has an i and x has a missing or gap.
+ * <p/>
+ * For each pair of states i,j multiply F_{xy}[i,j] by (1.0 + m_x[i]/f_x[i] + m_y[j]/f_y[j])
+ * <p/>
+ * I'm not quite sure why we don't just add m_x[i]/f_x[i] + m_y[j]/f_y[j] to F_{xy}, as this would correspond
+ * to 'allocating' the sites  i -- gap  over the different pairs (i,1),...,(i,r) according to the total frequencies.
+ * <p/>
+ * The next step is to replace zero elements in F_{xy}[i,j] by 0.5. This is, I guess, imputing missing values,
+ * but it won't solve the problem of zero rows or columns.
+ * <p/>
+ * Finally, we rescale F so that its entries sum to 1.0.
+ * <p/>
+ * <p/>
+ * ToDo: come up with a better way to do this.
+ * <p/>
+ * The other option involves the use of invariable sites. These can be estimated using the 'Estimate' button (we
+ * use the capture-recapture method because it is fast and easy to implement), or you can plug in values from
+ * Quartet puzzling or Phyml. Note that pvar is the proportion of variable sites, which is 1.0 minus the proportion
+ * of invariable sites. Maybe we should change this.
+ * <p/>
+ * The formula we use is identical to 'Method 2' in the thesis of Peter Waddell. Namely, let pi[i] denote the
+ * estimated frequency for state i and let p be the proportion of invariable sites. Using F (fudged or not) we compute
+ * V = (F - p \Pi)
+ * where \Pi is the diagonal matrix with \pi_i values down the diagonal. We then replace F by V in the formula above.
+ */
+
 public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
 
     private PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates = PairwiseCompare.HandleAmbiguous.Ignore;

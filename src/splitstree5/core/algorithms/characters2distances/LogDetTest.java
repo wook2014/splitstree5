@@ -16,7 +16,8 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 /**
- * Created by Daria on 22.02.2017.
+ * Created on 22.02.2017.
+ * @author Daria
  */
 public class LogDetTest {
 

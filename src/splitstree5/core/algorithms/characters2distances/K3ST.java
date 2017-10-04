@@ -9,6 +9,13 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.models.K3STmodel;
 
+/**
+ * Calculates distances using the Kimura-3ST model
+ *
+ * Created on 12-Jun-2004
+ * @author DJB
+ */
+
 public class K3ST extends DNAdistance implements IFromChararacters, IToDistances {
 
     private double[][] QMatrix; //Q Matrix provided by user for ML estimation.
