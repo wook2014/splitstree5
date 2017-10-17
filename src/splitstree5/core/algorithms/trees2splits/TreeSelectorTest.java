@@ -16,6 +16,11 @@ import java.io.StringWriter;
 
 import static junit.framework.Assert.assertEquals;
 
+/**
+ * Created on 24.01.2017.
+ * @author Daria
+ */
+
 public class TreeSelectorTest {
 
     final TreeSelector treeSelector = new TreeSelector();

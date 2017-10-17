@@ -38,7 +38,8 @@ import static junit.framework.Assert.assertEquals;
 
 /**
  * test neighbor net
- * Created by huson on 12/30/16.
+ * Created on 12/30/16.
+ * @author huson
  */
 public class NeighborNetTest {
     @Test

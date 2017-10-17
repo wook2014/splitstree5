@@ -15,6 +15,11 @@ import java.io.StringWriter;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.*;
 
+/**
+ * Created on 09.06.2017.
+ * @author Daria
+ */
+
 public class AverageConsensusTest {
 
     final AverageConsensus algorithm = new AverageConsensus();

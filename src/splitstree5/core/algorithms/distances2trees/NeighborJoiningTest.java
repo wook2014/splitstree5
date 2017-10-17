@@ -41,7 +41,8 @@ import static org.junit.Assert.assertArrayEquals;
 
 /**
  * nj test
- * Created by huson on 1/12/17.
+ * Created on 1/12/17.
+ * @author Daniel Huson, Daria Evseeva
  */
 public class NeighborJoiningTest {
 

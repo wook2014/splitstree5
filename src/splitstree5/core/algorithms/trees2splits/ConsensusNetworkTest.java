@@ -18,8 +18,10 @@ import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.*;
 
 /**
- * Created by Daria on 06.06.2017.
+ * Created on 06.06.2017.
+ * @author Daria
  */
+
 public class ConsensusNetworkTest {
 
     final ConsensusNetwork consensusNetwork = new ConsensusNetwork();

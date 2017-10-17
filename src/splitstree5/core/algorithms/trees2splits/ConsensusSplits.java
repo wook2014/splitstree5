@@ -34,7 +34,10 @@ import java.util.List;
 
 /**
  * implements consensus splits
- * Created by huson on 12/11/16.
+ * corresponds to the "ConsensusTree" algorithm in SplitsTree4
+ *
+ * Created on 12/11/16.
+ * @author huson
  */
 public class ConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
     public enum Consensus {Strict, Majority, Loose, Network, All}

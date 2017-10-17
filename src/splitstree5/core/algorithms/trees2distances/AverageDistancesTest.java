@@ -17,8 +17,10 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 /**
- * Created by Daria on 07.06.2017.
+ * Created on 07.06.2017.
+ * @author Daria
  */
+
 public class AverageDistancesTest {
 
     final AverageDistances averageDistances = new AverageDistances();

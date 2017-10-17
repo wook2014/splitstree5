@@ -34,13 +34,17 @@ import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
 import splitstree5.core.misc.SplitsUtilities;
 import splitstree5.core.misc.TreeUtilities;
+import splitstree5.io.nexus.SplitsNexusIO;
 import splitstree5.utils.nexus.SplitsException;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.*;
 
 /**
  * implements consensus network
- * Created by huson on 12/11/16.
+ * Created on 12/11/16.
+ * @author Tobias Kloepper, Daniel Huson and David Bryant
  */
 public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
     public enum EdgeWeights {Median, Mean, Count, Sum, None}
@@ -82,6 +86,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
                 trans.compute(progressListener, taxaBlock, treesBlock, tmp);*/
 
                 for (ASplit split : splits) {
+                    System.err.println(split.getA());
                     final WeightStats weightStats = split2weights.computeIfAbsent(split.getA(), k -> new WeightStats());
                     weightStats.add((float) split.getWeight());
                 }
@@ -123,6 +128,16 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
         splitsBlock.setCycle(SplitsUtilities.computeCycle(taxaBlock.getNtax(), splitsBlock.getSplits()));
         splitsBlock.setFit(-1);
         splitsBlock.setCompatibility(Compatibility.compute(taxaBlock.getNtax(), splitsBlock.getSplits(), splitsBlock.getCycle()));
+
+        System.err.println("DEBUG 2");
+        final StringWriter w1 = new StringWriter();
+        w1.write("#nexus\n");
+        try {
+            SplitsNexusIO.write(w1, taxaBlock, splitsBlock, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.err.println(w1.toString());
     }
 
     @Override

@@ -18,8 +18,10 @@ import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.*;
 
 /**
- * Created by Daria on 09.06.2017.
+ * Created on 09.06.2017.
+ * @author Daria
  */
+
 public class BalancedConfidenceNetworkTest {
 
     final private BalancedConfidenceNetwork bcn = new BalancedConfidenceNetwork();

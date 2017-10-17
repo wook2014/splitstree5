@@ -16,6 +16,11 @@ import java.io.StringWriter;
 
 import static junit.framework.Assert.assertEquals;
 
+/**
+ * Created on 29.05.2017.
+ * @author Daria
+ */
+
 public class BunemanTreeTest {
 
     final BunemanTree algorithm = new BunemanTree();

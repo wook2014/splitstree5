@@ -13,6 +13,13 @@ import splitstree5.core.datablocks.TreesBlock;
 
 import java.util.BitSet;
 
+/**
+ * calculates a distance matrix from a tree
+ *
+ * Created on 07.06.2017
+ * @author Tobias Kloepper, Daniel Huson and David Bryant
+ */
+
 public class AverageDistances extends Algorithm<TreesBlock, DistancesBlock> implements IFromTrees, IToDistances {
     @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock treesBlock, DistancesBlock distancesBlock)
@@ -45,7 +52,7 @@ public class AverageDistances extends Algorithm<TreesBlock, DistancesBlock> impl
                     for (int b = B.nextSetBit(1); b > 0; b = B.nextSetBit(b + 1)) {
                         int i = taxaBlock.indexOf(tmpTaxa.getLabel(a)); // translate numbering
                         int j = taxaBlock.indexOf(tmpTaxa.getLabel(b));
-                        distancesBlock.set(i, j, distancesBlock.get(i, j) +  splits.getSplits().get(s).getWeight());//splits.getWeight(s));
+                        distancesBlock.set(i, j, distancesBlock.get(i, j) +  splits.getSplits().get(s).getWeight());
                         distancesBlock.set(j, i, distancesBlock.get(i, j));
                     }
                 }

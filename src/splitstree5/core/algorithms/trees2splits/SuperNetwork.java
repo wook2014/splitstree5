@@ -21,6 +21,13 @@ import splitstree5.utils.nexus.TreesUtilities;
 
 import java.util.*;
 
+/**
+ * compute network from partial trees
+ *
+ * Created on 22.06.2017
+ * @author Daniel Huson and Daria Evseeva
+ */
+
 public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
 
     public final static String DESCRIPTION = "Z-closure super-network from partial trees (Huson, Dezulian, Kloepper and Steel 2004)";

@@ -17,6 +17,12 @@ import splitstree5.utils.nexus.TreesUtilities;
 import java.io.IOException;
 import java.io.StringWriter;
 
+/**
+ * implements consensus networks
+ *
+ * Created on 07.06.2017
+ * @author Tobias Kloepper, Daniel Huson and David Bryant
+ */
 
 public class AverageConsensus extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
 

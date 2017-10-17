@@ -36,13 +36,11 @@ import java.util.HashMap;
 
 /**
  * Neighbor joining algorithm
- * Created by huson on 12/11/16.
+ *
+ * Created on 12/11/16. Original version : 2010-05-09.
+ * @author  Christian Rausch, Daniel Huson and Daria Evseeva
  */
 public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> implements IFromDistances, IToTrees {
-
-    public final static String CITATION = " N. Saitou and M. Nei. "+
-            "The Neighbor-Joining method:  a new method for reconstructing phylogenetic trees. "+
-            "Molecular Biology and Evolution, 4:406–425, 1987.";
 
     /**
      * compute the neighbor joining tree

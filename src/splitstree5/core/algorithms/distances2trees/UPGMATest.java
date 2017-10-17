@@ -10,6 +10,11 @@ import splitstree5.core.misc.Taxon;
 
 import static junit.framework.Assert.assertEquals;
 
+/**
+ * Created on 21.01.2017.
+ * @author Daria
+ */
+
 public class UPGMATest {
 
     private UPGMA upgma = new UPGMA();

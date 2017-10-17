@@ -39,7 +39,8 @@ import static junit.framework.Assert.assertEquals;
 
 /**
  * test split decomposition
- * Created by huson on 12/30/16.
+ * Created on 12/30/16.
+ * @author Daniel Huson, Daria Evseeva
  */
 public class SplitDecompositionTest {
     @Test

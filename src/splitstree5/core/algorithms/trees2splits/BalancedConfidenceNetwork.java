@@ -1,6 +1,5 @@
 package splitstree5.core.algorithms.trees2splits;
 
-import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
@@ -9,12 +8,14 @@ import splitstree5.core.algorithms.trees2splits.utils.ConfidenceNetwork;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.core.misc.ASplit;
 import splitstree5.utils.SplitMatrix;
 
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Comparator;
+/**
+ * Implements confidence networks using Beran's algorithm
+ *
+ * Created on 07.06.2017
+ * @author Daniel Huson and David Bryant
+ */
 
 public class BalancedConfidenceNetwork extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
 

@@ -12,11 +12,14 @@ import splitstree5.core.misc.ASplit;
 import java.util.ArrayList;
 import java.util.BitSet;
 
-public class BunemanTree extends Algorithm<DistancesBlock, SplitsBlock> implements IFromDistances, IToSplits {
+/**
+ * Implements the buneman tree
+ *
+ * Created on 2007-09-11
+ * @author Daniel Huson, David Bryant, Tobias Kloepper and Daria Evseeva
+ */
 
-    public final static String CITATION ="P. Buneman.  The recovery of trees from measures of dissimilarity.c"+
-            "In F. R. Hodson, D. G. Kendall,  and  P.  Tautu,  editors, " +
-            "Mathematics  in  the  Archaeological  and  Historical  Sciences, pages 387–395. Edinburgh University Press, 1971.";
+public class BunemanTree extends Algorithm<DistancesBlock, SplitsBlock> implements IFromDistances, IToSplits {
 
     public final static String DESCRIPTION = "Computes the Buneman tree (Buneman 1971)";
 
@@ -91,66 +94,6 @@ public class BunemanTree extends Algorithm<DistancesBlock, SplitsBlock> implemen
 
         progressListener.setProgress(ntax);   //set progress to 100%
         progressListener.close();
-
-        /*ASplit previous = new ASplit(new BitSet(), distancesBlock.getNtax());
-        ASplit current;
-        BitSet taxa_prev = new BitSet(); // taxa already processed
-
-
-        progressListener.setTasks("Buneman tree","Init.");
-        progressListener.setMaximum(taxaBlock.getNtax());
-
-        for (int t = 1; t <= distancesBlock.getNtax(); t++) {
-            // initally, just add 1 to set of previous taxa
-            if (t == 1) {
-                taxa_prev.set(t);
-                continue;
-            }
-
-            current = new ASplit(new BitSet(), t); // restart current list of splits
-
-            // Does t vs previous set of taxa form a split?
-            BitSet At = new BitSet(); // taxa set
-            At.set(t);
-
-            float wgt = getIsolationIndex(t, At, taxa_prev, distancesBlock);
-            if (wgt > 0) {
-                current.add((TaxaSet) (At.clone()), wgt);
-            }
-
-            // consider all previously computed splits:
-            for (int s = 1; s <= previous.size(); getNsplits(); s++) {
-                BitSet A = previous.get(s);
-                BitSet B = A.getComplement(t - 1);
-
-                // is Au{t} vs B a split?
-                A.set(t);
-                wgt = Math.min(previous.getWeight(s), getIsolationIndex(t, A, B, d));
-                if (wgt > 0) {
-                    current.add((TaxaSet) (A.clone()), wgt);
-                }
-                A.unset(t);
-
-                // is A vs Bu{t} a split?
-                B.set(t);
-                wgt = Math.min(previous.getWeight(s), getIsolationIndex(t, B, A, d));
-                if (wgt > 0) {
-                    current.add((TaxaSet) (B.clone()), wgt);
-                }
-            }
-            previous = current;
-            taxa_prev.set(t);
-            doc.notifySetProgress(t);
-        }
-
-        // copy splits to splits
-        Splits splits = new Splits(taxa.getNtax());
-        splits.addSplitsSet(previous);
-        splits.getProperties().setCompatibility(Splits.Properties.COMPATIBLE);
-        //System.err.println(" "+splits.splits.getNsplits());
-        doc.notifySetProgress(taxa.getNtax());   //set progress to 100%
-        return splits;*/
-
     }
 
 

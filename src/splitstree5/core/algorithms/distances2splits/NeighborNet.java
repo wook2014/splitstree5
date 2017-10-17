@@ -40,13 +40,10 @@ import java.util.Stack;
 
 /**
  * Neighbor net algorithm
- * Created by huson on 12/30/16.
+ * Created on 12/30/16.
+ * @author Daniel Huson
  */
 public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implements IFromDistances, IToSplits {
-
-    public final static String CITATION =" D. Bryant and V. Moulton.  NeighborNet:  An agglomerative method for the construction of " +
-            "planar phylogenetic networks.  In R. Guig ́o and D. Gusfield, editors, " +
-            "Algorithms  in  Bioinformatics, WABI 2002 , volume LNCS 2452, pages 375–391, 2002.";
 
     private double optionCutOff = 0.000001; // min weight of split that we consider
     private NeighborNetSplitWeightOptimizer.LeastSquares optionLeastSquares = NeighborNetSplitWeightOptimizer.LeastSquares.ols;

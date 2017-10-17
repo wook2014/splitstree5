@@ -34,13 +34,11 @@ import java.util.BitSet;
 import java.util.List;
 
 /**
- * split decomposition
- * Created by huson on 12/30/16.
+ * Split decomposition
+ * Created on 12/30/16.
+ * @author Daniel Huson and Daria Evseeva
  */
 public class SplitDecomposition extends Algorithm<DistancesBlock, SplitsBlock> implements IFromDistances, IToSplits {
-
-    public final static String CITATION =" H.-J. Bandelt and A. W. M. Dress.  A canonical decomposition theory for metrics on a " +
-            "finite set. Advances in Mathematics , 92:47–105, 1992.";
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, DistancesBlock distancesBlock, SplitsBlock splitsBlock) throws InterruptedException, CanceledException {

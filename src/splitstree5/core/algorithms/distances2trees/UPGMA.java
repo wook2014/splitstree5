@@ -12,10 +12,14 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 
-public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> implements IFromDistances, IToTrees {
+/**
+ * UPGMA classic n³ version
+ *
+ * Created on 2010-02-04
+ * @author Christian Rausch, David Bryant, Daniel Huson
+ */
 
-    public final static String CITATION = "R. R. Sokal and C. D. Michener.  A statistical method for evaluating systematic relationships. " +
-            "University of Kansas Scientific Bulletin, 28:1409–1438, 1958.";
+public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> implements IFromDistances, IToTrees {
 
     @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees)
