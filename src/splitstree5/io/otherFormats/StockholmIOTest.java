@@ -8,17 +8,15 @@ import splitstree5.io.nexus.TaxaNexusIO;
 
 import java.io.StringWriter;
 
-/**
- * Created by Daria on 01.07.2017.
- */
-public class FastaIOTest {
+import static org.junit.Assert.*;
 
+public class StockholmIOTest {
     @Test
     public void parse() throws Exception {
 
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
-        FastaIO.parse("test/notNexusFiles/fasta/smallTest.fasta", taxaBlock, charactersBlock);
+        StockholmIO.parse("test/notNexusFiles/PF02171_seed.txt", taxaBlock, charactersBlock);
 
         // printing
         final StringWriter w = new StringWriter();
@@ -26,9 +24,6 @@ public class FastaIOTest {
         TaxaNexusIO.write(w, taxaBlock);
         CharactersNexusIO.write(w, taxaBlock, charactersBlock, null);
         System.err.println(w.toString());
-
-        System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
-
     }
 
 }

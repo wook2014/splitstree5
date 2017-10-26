@@ -23,3 +23,11 @@
  - optionLeastSquare in SuperNetwork is not used?
 
  - Nei Miller in ST4 doesn't work
+
+ - todo : IO - formats :
+    GenAlEX
+    Matlab
+    MrBayesPartitions
+    OldNexus ?
+    ReticulateNetworkImport
+    SingleLineSequences = the same as FastA, but without names ?

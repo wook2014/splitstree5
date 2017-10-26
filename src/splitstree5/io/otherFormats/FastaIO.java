@@ -29,9 +29,6 @@ public class FastaIO extends CharactersFormat{
 
     public final String[] extensions = {"fasta", "fas", "fa", "seq", "fsa"};
 
-    private static char gap = '-';
-    private static char missing = '?';
-    private static char matchChar='.';
 
     public static void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters) throws IOException {
 
@@ -166,41 +163,4 @@ public class FastaIO extends CharactersFormat{
         taxonNamesFound.add(infoLine.substring(1));
     }
 
-    // GETTER AND SETTER
-
-    public static char getGap(){
-        return gap;
-    }
-
-    public static String getStringGap(){
-        return gap+"";
-    }
-
-    public static void setGap(char newGap){
-        gap = newGap;
-    }
-
-    public static char getMissing(){
-        return missing;
-    }
-
-    public static String getStringMissing(){
-        return missing+"";
-    }
-
-    public static void setMissing(char newMissing){
-        missing = newMissing;
-    }
-
-    public static char getMatchChar(){
-        return matchChar;
-    }
-
-    public static String getStringMatchChar(){
-        return matchChar+"";
-    }
-
-    public static void setMatchChar(char newMatchChar){
-        matchChar = newMatchChar;
-    }
 }
