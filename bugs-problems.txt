@@ -30,4 +30,3 @@
     MrBayesPartitions
     OldNexus ?
     ReticulateNetworkImport
-    SingleLineSequences = the same as FastA, but without names ?
