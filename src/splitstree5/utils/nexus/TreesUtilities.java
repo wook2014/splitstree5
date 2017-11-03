@@ -48,7 +48,7 @@ public class TreesUtilities {
      */
     public static BitSet getTaxa(PhyloTree tree) {
         BitSet taxa = new BitSet();
-        for (Node v = tree.getFirstNode(); v != null; v = tree.getNextNode(v)) {
+        for (Node v : tree.nodes()) {
             if (tree.getNode2Taxa(v) != null) {
                 for (Integer t : tree.getNode2Taxa(v)) {
                     taxa.set(t);
@@ -90,7 +90,7 @@ public class TreesUtilities {
 
         // choose an arbitrary labeled root
         Node root = null;
-        for (Node v = tree.getFirstNode(); v != null; v = tree.getNextNode(v)) {
+        for (Node v : tree.nodes()) {
             BitSet taxaSet = new BitSet();
             taxaSet.set(v.getId());
             //if (tree.getNode2Taxa(v).cardinality() > 0

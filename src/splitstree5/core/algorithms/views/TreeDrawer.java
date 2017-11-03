@@ -71,7 +71,7 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
         if (parent.getNTrees() > 0) {
             final PhyloTree tree = parent.getTrees().get(0);
             if (tree.getRoot() == null && tree.getNumberOfNodes() > 0) {
-                for (Node v = tree.getFirstNode(); v != null; v = tree.getNextNode(v)) {
+                for (Node v : tree.nodes()) {
                     if (v.getDegree() > 1 && tree.getLabel(v) == null) {
                         tree.setRoot(v);
                         break;
@@ -131,7 +131,7 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
                 }
 
                 // compute all views and put their parts into the appropriate groups
-                for (Node v = tree.getFirstNode(); v != null; v = tree.getNextNode(v)) {
+                for (Node v : tree.nodes()) {
                     final PhylogeneticNodeView nodeView = PhylogeneticNodeView.createDefaultNodeView(node2point.get(v), tree.getLabel(v));
                     child.getNode2view().put(v, nodeView);
                     final Group parts = nodeView.getParts();
@@ -141,7 +141,7 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
                     if (labels != null)
                         child.getNodeLabelsGroup().getChildren().addAll(labels);
                 }
-                for (Edge e = tree.getFirstEdge(); e != null; e = tree.getNextEdge(e)) {
+                for (Edge e : tree.edges()) {
                     final EdgeControlPoints controlPoints = edge2controlPoints.get(e);
                     final PhylogeneticEdgeView edgeView = PhylogeneticEdgeView.createDefaultEdgeView(getOptionLayout(), getOptionEdgeShape(), tree.getWeight(e),
                             node2point.get(e.getSource()), controlPoints.getControl1(), controlPoints.getMid(),
@@ -183,7 +183,7 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
             float maxX = Float.MIN_VALUE;
             float minY = Float.MAX_VALUE;
             float maxY = Float.MIN_VALUE;
-            for (Node v = tree.getFirstNode(); v != null; v = tree.getNextNode(v)) {
+            for (Node v : tree.nodes()) {
                 final Point2D point = node2point.get(v);
                 minX = Math.min(minX, (float) point.getX());
                 maxX = Math.max(maxX, (float) point.getX());
@@ -200,7 +200,7 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
         }
 
         if (factorX != 1 || factorY != 1) {
-            for (Node v = tree.getFirstNode(); v != null; v = tree.getNextNode(v)) {
+            for (Node v : tree.nodes()) {
                 final Point2D point = node2point.get(v);
                 node2point.set(v, new Point2D(factorX * point.getX(), factorY * point.getY()));
             }

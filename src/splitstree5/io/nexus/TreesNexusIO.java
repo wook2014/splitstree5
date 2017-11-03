@@ -188,7 +188,7 @@ public class TreesNexusIO {
             if (hasNumbersOnInternalNodes(tree))
                 changeNumbersOnInternalNodesToEdgeConfidencies(tree); // todo needs debugging
 
-            for (Node v = tree.getFirstNode(); v != null; v = tree.getNextNode(v)) {
+            for (Node v : tree.nodes()) {
                 final String label = tree.getLabel(v);
                 if (label != null && label.length() > 0 && !knownTaxonNames.contains(label)) {
                     if (haveSetKnownTaxonNames) {

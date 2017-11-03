@@ -50,7 +50,7 @@ public class TreeUtilities {
         Node root = tree.getRoot();
         if (root == null) {
             // choose an arbitrary labeled root
-            for (Node v = tree.getFirstNode(); v != null; v = tree.getNextNode(v)) {
+            for (Node v : tree.nodes()) {
                 if (tree.getNode2Taxa(v).size() > 0 && v.getDegree() == 1) {
                     root = v;
                     break;
