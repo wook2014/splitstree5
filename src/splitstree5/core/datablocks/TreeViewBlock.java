@@ -172,8 +172,8 @@ public class TreeViewBlock extends ADataBlock {
     }
 
     public void updateSelectionModels(PhyloTree tree) {
-        nodeSelectionModel.setItems(tree.getNodes().toArray(new Node[tree.getNumberOfNodes()]));
-        edgeSelectionModel.setItems(tree.getEdges().toArray(new Edge[tree.getNumberOfEdges()]));
+        nodeSelectionModel.setItems(tree.getNodesAsSet().toArray(new Node[tree.getNumberOfNodes()]));
+        edgeSelectionModel.setItems(tree.getEdgesAsSet().toArray(new Edge[tree.getNumberOfEdges()]));
     }
 
     public Map<Node, PhylogeneticNodeView> getNode2view() {

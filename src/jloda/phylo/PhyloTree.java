@@ -390,7 +390,7 @@ public class PhyloTree extends PhyloGraph {
                             setLabel(u, getLabel(u) + "," + getLabel(v));
                     }
 
-                    for (Edge e = v.getFirstAdjacentEdge(); e != null; e = v.getNextAdjacentEdge(e)) {
+                    for (Edge e : v.adjacentEdges()) {
                         Node w = v.getOpposite(e);
                         Edge f;
                         if (w == e.getSource()) {
@@ -637,9 +637,8 @@ public class PhyloTree extends PhyloGraph {
         if (v.getDegree() != 2)
             throw new RuntimeException("v not divertex, degree is: " + v.getDegree());
 
-        Edge e = getFirstAdjacentEdge(v);
-        Edge f = getLastAdjacentEdge(v);
-
+        Edge e = v.getFirstAdjacentEdge();
+        Edge f = v.getLastAdjacentEdge();
         Node x = getOpposite(v, e);
         Node y = getOpposite(v, f);
 
@@ -741,13 +740,13 @@ public class PhyloTree extends PhyloGraph {
 
         int outDegree = 0;
         if (e == null)
-            outDegree = getDegree(v);
+            outDegree = v.getDegree();
         else if (isSpecial(e)) {
             for (Edge f = v.getFirstAdjacentEdge(); f != null; f = v.getNextAdjacentEdge(f))
                 if (!isSpecial(f))
                     outDegree++;
         } else
-            outDegree = getDegree(v) - 1;
+            outDegree = v.getDegree() - 1;
         if ((outDegree > 0 || e == null) && (!isHideCollapsedSubTreeOnWrite() || getLabel(v) == null || !getLabel(v).endsWith(PhyloTree.COLLAPSED_NODE_SUFFIX))) {
             outs.write("(");
             boolean first = true;
@@ -943,7 +942,7 @@ public class PhyloTree extends PhyloGraph {
         final Node oldRoot = getRoot();
         setRoot((Node) null);
         if (oldRoot != null) {
-            if (getOutDegree(oldRoot) == 2 && getLabel(oldRoot) == null) {
+            if (oldRoot.getOutDegree() == 2 && getLabel(oldRoot) == null) {
                 if (edgeLabels != null) {
                     String label = null;
                     for (Edge e = oldRoot.getFirstOutEdge(); e != null; e = oldRoot.getNextOutEdge(e)) {

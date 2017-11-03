@@ -359,9 +359,7 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
 
         seen.or(e_taxa);
 
-        Iterator edges = tree.getAdjacentEdges(v);
-        while (edges.hasNext()) {
-            Edge f = (Edge) edges.next();
+        for (Edge f : v.adjacentEdges()) {
             if (f != e) {
                 BitSet f_taxa = computePSplitsFromTreeRecursively(tree.getOpposite(v, f), f, trees,
                         taxa, list, which, seen);

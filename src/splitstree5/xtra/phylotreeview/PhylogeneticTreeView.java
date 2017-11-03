@@ -36,7 +36,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.view.phylotreeview;
+package splitstree5.xtra.phylotreeview;
 
 
 import javafx.beans.property.*;

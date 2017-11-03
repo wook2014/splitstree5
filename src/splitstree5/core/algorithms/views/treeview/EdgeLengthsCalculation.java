@@ -42,7 +42,7 @@ import jloda.graph.EdgeFloatArray;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
 import splitstree5.core.algorithms.views.TreeDrawer;
-import splitstree5.view.phylotreeview.IntArray;
+import splitstree5.xtra.phylotreeview.IntArray;
 
 /**
  * compute edge length
@@ -81,14 +81,14 @@ public class EdgeLengthsCalculation {
                 break;
             }
             case Uniform: {
-                for (Edge e : tree.getEdges()) {
+                for (Edge e : tree.edges()) {
                     edgeLengths.set(e, 1f);
                 }
                 break;
             }
             default:
             case Weights: {
-                for (Edge e : tree.getEdges()) {
+                for (Edge e : tree.edges()) {
                     edgeLengths.set(e, (float) (Math.max(0, tree.getWeight(e))));
                 }
                 break;
@@ -107,7 +107,7 @@ public class EdgeLengthsCalculation {
             return 0;
         else {
             int depthBelow = 0;
-            for (Edge e = v.getFirstOutEdge(); e != null; e = v.getNextOutEdge(e)) {
+            for (Edge e : v.outEdges()) {
                 depthBelow = Math.max(depthBelow, computeMaxDepthRec(e.getTarget()));
             }
             return depthBelow + 1;
@@ -122,7 +122,7 @@ public class EdgeLengthsCalculation {
      */
     private static int computeNode2DepthRec(Node v, final IntArray node2depth) {
         int depth = 0;
-        for (Edge e = v.getFirstOutEdge(); e != null; e = v.getNextOutEdge(e)) {
+        for (Edge e : v.outEdges()) {
             depth = Math.max(depth, computeNode2DepthRec(e.getTarget(), node2depth));
         }
         node2depth.set(v.getId(), depth);
@@ -138,7 +138,7 @@ public class EdgeLengthsCalculation {
      * @param edgeLengths
      */
     private static void setEdgeLengthsEarlyBranchingRec(int maxDepth, int depth, Node v, EdgeFloatArray edgeLengths) {
-        for (Edge e = v.getFirstOutEdge(); e != null; e = v.getNextOutEdge(e)) {
+        for (Edge e : v.outEdges()) {
             final Node w = e.getTarget();
             if (w.getOutDegree() == 0) {
                 edgeLengths.set(e, (float) (maxDepth - depth));
@@ -158,10 +158,10 @@ public class EdgeLengthsCalculation {
      */
     private static float setEdgeLengthsRec(Node v, IntArray node2depth, EdgeFloatArray edgeLengths) {
         float depth = 0;
-        for (Edge e = v.getFirstOutEdge(); e != null; e = v.getNextOutEdge(e)) {
+        for (Edge e : v.outEdges()) {
             depth = Math.max(depth, setEdgeLengthsRec(e.getTarget(), node2depth, edgeLengths) + 1);
         }
-        for (Edge e = v.getFirstOutEdge(); e != null; e = v.getNextOutEdge(e)) {
+        for (Edge e : v.outEdges()) {
             edgeLengths.set(e, depth - node2depth.get(e.getTarget().getId()));
         }
         return depth;

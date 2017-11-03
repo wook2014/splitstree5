@@ -32,7 +32,6 @@ import splitstree5.core.misc.Compatibility;
 
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -74,7 +73,7 @@ public class DimensionFilter {
 
             while (graph.getNumberOfNodes() > 0) {
                 Node worstNode = getWorstNode(graph);
-                int s = ((Pair) graph.getInfo(worstNode)).getFirstInt();
+                int s = ((Pair) worstNode.getInfo()).getFirstInt();
                 toDelete.set(s);
                 graph.deleteNode(worstNode);
                 //System.err.println("deleted: "+graph);
@@ -138,7 +137,7 @@ public class DimensionFilter {
             if (!keep.contains(v)) {
                 clique.clear();
                 clique.add(v);
-                if (findClique(graph, v, graph.getFirstAdjacentEdge(v), 1, d, clique, discard))
+                if (findClique(graph, v, v.getFirstAdjacentEdge(), 1, d, clique, discard))
                     keep.addAll(clique);
                 else
                     discard.add(v);
@@ -170,8 +169,8 @@ public class DimensionFilter {
             return true;  // found clique, retreat
         else {
             while (e != null) {
-                Node w = graph.getOpposite(v, e);
-                e = graph.getNextAdjacentEdge(e, v);
+                Node w = v.getOpposite(e);
+                e = v.getNextAdjacentEdge(e);
 
                 if (isConnectedTo(graph, w, clique) && !discard.contains(w)) {
                     clique.add(w);
@@ -191,11 +190,10 @@ public class DimensionFilter {
      * @param w
      * @param U
      * @return true, if w is connected to all nodes in U
-     * @throws NotOwnerException
      */
     private static boolean isConnectedTo(Graph graph, Node w, NodeSet U) {
         int count = 0;
-        for (Edge e = graph.getFirstAdjacentEdge(w); e != null; e = graph.getNextAdjacentEdge(e, w)) {
+        for (Edge e : w.adjacentEdges()) {
             Node u = graph.getOpposite(w, e);
             if (U.contains(u)) {
                 count++;
@@ -219,17 +217,15 @@ public class DimensionFilter {
         int maxDegreeHeuristicThreshold = 6; // use heuristic for max degrees above this threshold
         NodeSet active = new NodeSet(graph);
         for (Node v = graph.getFirstNode(); v != null; v = graph.getNextNode(v)) {
-            if (graph.getDegree(v) < maxDegree
+            if (v.getDegree() < maxDegree
                     || (maxDegree <= maxDegreeHeuristicThreshold && hasDegreeDButNotInClique(maxDegree + 1, graph, v)))
                 active.add(v);
         }
 
         while (!active.isEmpty()) {
             Node v = active.getFirstElement();
-            if (graph.getDegree(v) < maxDegree || (maxDegree <= maxDegreeHeuristicThreshold && hasDegreeDButNotInClique(maxDegree + 1, graph, v))) {
-                Iterator it = graph.getAdjacentNodes(v);
-                while (it.hasNext()) {
-                    Node w = (Node) it.next();
+            if (v.getDegree() < maxDegree || (maxDegree <= maxDegreeHeuristicThreshold && hasDegreeDButNotInClique(maxDegree + 1, graph, v))) {
+                for (Node w : v.adjacentNodes()) {
                     active.add(w);
                 }
                 active.remove(v);
@@ -270,11 +266,10 @@ public class DimensionFilter {
      * @return compatibility score
      */
     private static int getCompatibilityScore(Graph graph, Node v) {
-        int score = ((Pair) graph.getInfo(v)).getSecondInt();
-        Iterator it = graph.getAdjacentNodes(v);
-        while (it.hasNext()) {
-            v = (Node) it.next();
-            score -= ((Pair) graph.getInfo(v)).getSecondInt();
+        int score = ((Pair) v.getInfo()).getSecondInt();
+
+        for (Node w : v.adjacentNodes()) {
+            score -= ((Pair) w.getInfo()).getSecondInt();
         }
         return score;
     }
@@ -287,13 +282,13 @@ public class DimensionFilter {
      * @return false, if the node v has degree!=d or is contained in a d+1 clique
      */
     private static boolean hasDegreeDButNotInClique(int d, Graph graph, Node v) {
-        if (graph.getDegree(v) != d)
+        if (v.getDegree() != d)
             return false;
-        for (Edge e = graph.getFirstAdjacentEdge(v); e != null; e = graph.getNextAdjacentEdge(e, v)) {
+        for (Edge e = v.getFirstAdjacentEdge(); e != null; e = v.getNextAdjacentEdge(e)) {
             Node a = graph.getOpposite(v, e);
-            for (Edge f = graph.getNextAdjacentEdge(e, v); f != null; f = graph.getNextAdjacentEdge(f, v)) {
+            for (Edge f = v.getNextAdjacentEdge(e); f != null; f = v.getNextAdjacentEdge(f)) {
                 Node b = graph.getOpposite(v, f);
-                if (!graph.areAdjacent(a, b))
+                if (!a.isAdjacent(b))
                     return true;
             }
         }

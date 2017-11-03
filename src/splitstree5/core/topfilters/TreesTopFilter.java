@@ -80,7 +80,7 @@ public class TreesTopFilter extends ATopFilter<TreesBlock> {
 
         final List<Node> nakedLeaves = new LinkedList<>();
 
-        for (Node v : inducedTree.getNodes()) {
+        for (Node v : inducedTree.getNodesAsSet()) {
             if (inducedTree.getLabel(v) == null || !keep.contains(inducedTree.getLabel(v))) {
                 if (v.getOwner() != null && inducedTree.getLabel(v) != null) // not yet deleted
                 {

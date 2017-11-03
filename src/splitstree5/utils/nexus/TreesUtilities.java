@@ -4,16 +4,12 @@ import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.graph.NotOwnerException;
 import jloda.phylo.PhyloTree;
-import jloda.util.Basic;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
-import splitstree5.core.misc.Taxon;
 
-import java.io.IOException;
 import java.util.BitSet;
-import java.util.Iterator;
 
 /**
  * some computations on trees
@@ -22,44 +18,6 @@ import java.util.Iterator;
  *         Created by Daria on 23.01.2017.
  */
 public class TreesUtilities {
-
-    // no translate, ioexeption
-    /**
-     * verify that tree, translation and taxa fit together
-     *
-     * @param tree
-     * @param taxa
-     * @param allowAddTaxa if taxa-block is missing taxa in tree, do we allow them to be added to taxa block?
-     * @throws IOException
-     */
-    public static void verifyTree(PhyloTree tree, TaxaBlock taxa, boolean allowAddTaxa) throws IOException {
-        final BitSet seen = new BitSet();
-        Iterator it = tree.nodeIterator();
-        while (it.hasNext()) {
-            try {
-                String taxonLabel = tree.getLabel((Node) it.next());
-
-                //if (taxa.indexOf(taxonLabel) == -1) {
-                if (taxa.getLabels().indexOf(taxonLabel) == -1) {
-                    if (allowAddTaxa) {
-                        //taxa.add(taxonLabel);
-                        Taxon t = new Taxon(taxonLabel);
-                        taxa.add(t);
-                    } else {
-                        //Taxa.show("current taxon block", taxa);
-                        throw new IOException("Taxon-label not contained in taxa-block: " + taxonLabel);
-                    }
-                }
-                //seen.set(taxa.indexOf(taxonLabel));
-                seen.set(taxa.getLabels().indexOf(taxonLabel));
-            } catch (NotOwnerException ex) {
-                Basic.caught(ex);
-            }
-        }
-        if (seen.cardinality() != taxa.getNtax())
-            throw new IOException("Taxa " + taxa + " and seen <" + seen + "> differ");
-    }
-
     /**
      * sets the node2taxa and taxon2node maps for a tree
      *
@@ -134,10 +92,9 @@ public class TreesUtilities {
         Node root = null;
         for (Node v = tree.getFirstNode(); v != null; v = tree.getNextNode(v)) {
             BitSet taxaSet = new BitSet();
-            taxaSet.set(tree.getId(v));
+            taxaSet.set(v.getId());
             //if (tree.getNode2Taxa(v).cardinality() > 0
-            if (taxaSet.cardinality() > 0
-                    && tree.getDegree(v) == 1) {
+            if (taxaSet.cardinality() > 0 && v.getDegree() == 1) {
                 root = v;
                 break; //todo
             }
@@ -189,10 +146,7 @@ public class TreesUtilities {
 
         System.out.println("e taxa   "+e_taxa); // right!!!
 
-        Iterator edges = tree.getAdjacentEdges(v);
-        while (edges.hasNext()) {
-            Edge f = (Edge) edges.next();
-
+        for (Edge f : v.adjacentEdges()) {
             if (f != e) {
                 BitSet f_taxa = tree2splitsRec(tree.getOpposite(v, f), f, trees, which, taxa, splits, skipNegativeSplitIds);
                 /*if (tree.getConfidence(f) != 1)

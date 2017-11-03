@@ -289,8 +289,6 @@ public class Edge extends NodeEdge implements Comparable {
         if (getInfo() != null)
             buf.append(getInfo().toString());
         buf.append("]: ").append(source.getId()).append(" ").append(target.getId());
-        if (isHidden())
-            buf.append(" (hidden)");
         return buf.toString();
     }
 
@@ -335,10 +333,7 @@ public class Edge extends NodeEdge implements Comparable {
      * @return next edge in list of all edges
      */
     public Edge getNext() {
-        Edge e = (Edge) next;
-        while (e != null && e.isHidden())
-            e = (Edge) e.next;
-        return e;
+        return (Edge) next;
     }
 
     /**
@@ -347,10 +342,7 @@ public class Edge extends NodeEdge implements Comparable {
      * @return previous edge in list of all edges
      */
     public Edge getPrev() {
-        Edge e = (Edge) prev;
-        while (e != null && e.isHidden())
-            e = (Edge) e.prev;
-        return e;
+        return (Edge) prev;
     }
 
 

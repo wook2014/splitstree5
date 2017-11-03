@@ -17,21 +17,21 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.view.phylotreeview;
+package splitstree5.xtra.phylotreeview;
 
-public class FloatArray {
-    /**
-     * dynamic int array
-     * Daniel Huson, 10.2017
-     */
-    private float[] array;
+/**
+ * dynamic int array
+ * Daniel Huson, 10.2017
+ */
+public class IntArray {
+    private int[] array;
 
-    public FloatArray() {
+    public IntArray() {
         this(1024);
     }
 
-    public FloatArray(int initialCapacity) {
-        array = new float[initialCapacity];
+    public IntArray(int initialCapacity) {
+        array = new int[initialCapacity];
     }
 
     public void clear() {
@@ -39,15 +39,15 @@ public class FloatArray {
             array[i] = 0;
     }
 
-    public float get(int index) {
+    public int get(int index) {
         if (index >= array.length)
             return 0;
         return array[index];
     }
 
-    public void set(int index, float value) {
+    public void set(int index, int value) {
         if (index >= array.length) {
-            float[] tmp = new float[2 * Math.max(array.length, index)];
+            int[] tmp = new int[2 * Math.max(array.length, index)];
             System.arraycopy(array, 0, tmp, 0, array.length);
             array = tmp;
         }

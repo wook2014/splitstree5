@@ -100,7 +100,8 @@ public class PhylogeneticEdgeView {
             case CubicCurve: {
                 boolean forJavaCourse = false;
 
-                if (forJavaCourse || layout == TreeDrawer.Layout.Radial) {
+                // todo: do we want to use the support node?
+                if (true || layout == TreeDrawer.Layout.Radial) {
                     edgeShape = new CubicCurve(start.getX(), start.getY(), control1.getX(), control1.getY(), control2.getX(), control2.getY(), end.getX(), end.getY());
 
 

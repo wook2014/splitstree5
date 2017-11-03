@@ -19,6 +19,8 @@
  *
  * @version $Id: Node.java,v 1.20 2009-04-27 07:20:20 huson Exp $
  * @author Daniel Huson
+ * @version $Id: Node.java,v 1.20 2009-04-27 07:20:20 huson Exp $
+ * @author Daniel Huson
  */
 /**
  * @version $Id: Node.java,v 1.20 2009-04-27 07:20:20 huson Exp $
@@ -28,9 +30,11 @@
  */
 package jloda.graph;
 
-import jloda.util.IteratorAdapter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Node class used by Graph class
@@ -412,10 +416,7 @@ public class Node extends NodeEdge implements Comparable {
      * @return next node
      */
     public Node getNext() {
-        Node v = (Node) next;
-        while (v != null && v.isHidden())
-            v = (Node) v.next;
-        return v;
+        return (Node) next;
     }
 
     /**
@@ -424,10 +425,7 @@ public class Node extends NodeEdge implements Comparable {
      * @return previous node
      */
     public Node getPrev() {
-        Node v = (Node) prev;
-        while (v != null && v.isHidden())
-            v = (Node) v.prev;
-        return v;
+        return (Node) prev;
     }
 
     /**
@@ -457,103 +455,6 @@ public class Node extends NodeEdge implements Comparable {
         return outDegree;
     }
 
-    /**
-     * get iterator over all adjacent nodes
-     *
-     * @return iterator over all adjacent nodes
-     */
-    public Iterator<Node> getAdjacentNodes() {
-        final Node v = this;
-        return new IteratorAdapter<Node>() {
-            private Edge e = v.getFirstAdjacentEdge();
-
-            protected Node findNext() throws NoSuchElementException {
-                if (e != null) {
-                    Node result;
-                    do {
-                        result = v.getOpposite(e);
-                        e = v.getNextAdjacentEdge(e);
-                    }
-                    while (result != null && result.isHidden());
-                    return result;
-                } else {
-                    throw new NoSuchElementException("at end");
-                }
-            }
-        };
-    }
-
-    /**
-     * get iterator over all adjacent edges
-     *
-     * @return iterator over all adjacent edges
-     */
-    public Iterator<Edge> getAdjacentEdges() {
-        return new IteratorAdapter<Edge>() {
-            final Node v = Node.this;
-            private Edge e = v.getFirstAdjacentEdge();
-
-            protected Edge findNext() throws NoSuchElementException {
-                if (e != null) {
-                    final Edge result = e;
-                    e = v.getNextAdjacentEdge(e);
-                    return result;
-                } else {
-                    throw new NoSuchElementException("at end");
-                }
-            }
-        };
-    }
-
-    /**
-     * get iterator over all in edges
-     *
-     * @return iterator over all in edges
-     */
-    public Iterator<Edge> getInEdges() {
-        return new IteratorAdapter<Edge>() {
-            final Node v = Node.this;
-            private Edge e = v.getFirstAdjacentEdge();
-
-            protected Edge findNext() throws NoSuchElementException {
-                while (e != null && e.getTarget() != v) {
-                    e = v.getNextAdjacentEdge(e);
-                }
-                if (e != null) {
-                    final Edge result = e;
-                    e = v.getNextAdjacentEdge(e);
-                    return result;
-                } else {
-                    throw new NoSuchElementException("at end");
-                }
-            }
-        };
-    }
-
-    /**
-     * get iterator over all out edges
-     *
-     * @return iterator over all out edges
-     */
-    public Iterator<Edge> getOutEdges() {
-        return new IteratorAdapter<Edge>() {
-            final Node v = Node.this;
-            private Edge e = v.getFirstAdjacentEdge();
-
-            protected Edge findNext() throws NoSuchElementException {
-                while (e != null && e.getSource() != v) {
-                    e = v.getNextAdjacentEdge(e);
-                }
-                if (e != null) {
-                    final Edge result = e;
-                    e = v.getNextAdjacentEdge(e);
-                    return result;
-                } else {
-                    throw new NoSuchElementException("at end");
-                }
-            }
-        };
-    }
 
     /**
      * get a directed edge from this node to w, or null
@@ -563,8 +464,7 @@ public class Node extends NodeEdge implements Comparable {
      */
     public Edge findDirectedEdge(Node w) throws NotOwnerException {
         checkOwner(w);
-        for (Iterator<Edge> iterator = getOutEdges(); iterator.hasNext(); ) {
-            Edge e = iterator.next();
+        for (Edge e : outEdges()) {
             if (getOpposite(e) == w)
                 return e;
         }
@@ -579,8 +479,8 @@ public class Node extends NodeEdge implements Comparable {
      */
     public boolean isAdjacent(Node w) throws NotOwnerException {
         checkOwner(w);
-        for (Iterator<Node> it = getAdjacentNodes(); it.hasNext(); ) {
-            if (it.next() == w)
+        for (Node v : adjacentNodes()) {
+            if (v == w)
                 return true;
         }
         return false;
@@ -630,6 +530,81 @@ public class Node extends NodeEdge implements Comparable {
         this.data = data;
     }
 
+    public Iterable<Edge> outEdges() {
+        return () -> new Iterator<Edge>() {
+            Edge e = getFirstOutEdge();
+
+            @Override
+            public boolean hasNext() {
+                return e != null;
+            }
+
+            @Override
+            public Edge next() {
+                Edge result = e;
+                e = getNextOutEdge(e);
+                return result;
+            }
+        };
+    }
+
+    public Iterable<Edge> inEdges() {
+        return () -> new Iterator<Edge>() {
+            Edge e = getFirstInEdge();
+
+            @Override
+            public boolean hasNext() {
+                return e != null;
+            }
+
+            @Override
+            public Edge next() {
+                Edge result = e;
+                e = getNextInEdge(e);
+                return result;
+            }
+        };
+    }
+
+    public Iterable<Edge> adjacentEdges() {
+        return () -> new Iterator<Edge>() {
+            Edge e = getFirstAdjacentEdge();
+
+            @Override
+            public boolean hasNext() {
+                return e != null;
+            }
+
+            @Override
+            public Edge next() {
+                Edge result = e;
+                e = getNextAdjacentEdge(e);
+                return result;
+            }
+        };
+    }
+
+    public Iterable<Node> adjacentNodes() {
+        return () -> new Iterator<Node>() {
+            Edge e = getFirstAdjacentEdge();
+
+            @Override
+            public boolean hasNext() {
+                return e != null;
+            }
+
+            @Override
+            public Node next() {
+                Node result = e.getOpposite(Node.this);
+                e = getNextAdjacentEdge(e);
+                return result;
+            }
+        };
+    }
+
+    public boolean isLeaf() {
+        return outDegree == 0;
+    }
 }
 
 // EOF

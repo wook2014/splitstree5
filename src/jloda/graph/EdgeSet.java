@@ -28,9 +28,10 @@
  */
 package jloda.graph;
 
-import jloda.util.IteratorAdapter;
-
-import java.util.*;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * EdgeSet implements a set of edges contained in a given graph
@@ -56,7 +57,7 @@ public class EdgeSet extends GraphBase implements Set<Edge> {
      * @return a boolean value
      */
     public boolean contains(Object e) {
-        return bits.get(getOwner().getId((Edge) e));
+        return e instanceof Edge && bits.get(((Edge) e).getId());
     }
 
     /**
@@ -69,7 +70,7 @@ public class EdgeSet extends GraphBase implements Set<Edge> {
         if (contains(e))
             return false;
         else {
-            bits.set(getOwner().getId(e), true);
+            bits.set(e.getId(), true);
             return true;
         }
     }
@@ -80,8 +81,8 @@ public class EdgeSet extends GraphBase implements Set<Edge> {
      * @param e Edge
      */
     public boolean remove(Object e) {
-        if (contains(e)) {
-            bits.set(getOwner().getId((Edge) e), false);
+        if (e instanceof Edge && contains(e)) {
+            bits.set(((Edge) e).getId(), false);
             return true;
         } else
             return false;
@@ -144,17 +145,16 @@ public class EdgeSet extends GraphBase implements Set<Edge> {
      * @return true, if set changes
      */
     public boolean retainAll(Collection collection) {
-        boolean changed = (collection.size() != size() || !containsAll(collection));
-        EdgeSet was = (EdgeSet) this.clone();
+        final int old = bits.cardinality();
+        final BitSet newBits = new BitSet();
 
-        clear();
-        for (Object e : collection) {
-            if (e instanceof Edge) {
-                if (was.contains(e))
-                    add((Edge) e);
+        for (Object obj : collection) {
+            if (obj instanceof Edge) {
+                newBits.set(((Edge) obj).getId());
             }
         }
-        return changed;
+        bits.and(newBits);
+        return old != bits.cardinality();
     }
 
     /**
@@ -181,21 +181,16 @@ public class EdgeSet extends GraphBase implements Set<Edge> {
     public Edge[] toArray() {
         Edge[] result = new Edge[bits.cardinality()];
         int i = 0;
-        Iterator<Edge> it = getOwner().edgeIterator();
-        while (it.hasNext()) {
-            Edge e = it.next();
+        for (Edge e : getOwner().edges()) {
             if (contains(e))
                 result[i++] = e;
         }
         return result;
     }
 
-
     public <T> T[] toArray(T[] ts) {
         int i = 0;
-        Iterator<Edge> it = getOwner().edgeIterator();
-        while (it.hasNext()) {
-            Edge e = it.next();
+        for (Edge e : getOwner().edges()) {
             if (contains(e))
                 ts[i++] = (T) e;
         }
@@ -206,9 +201,9 @@ public class EdgeSet extends GraphBase implements Set<Edge> {
      * Puts all edges into set.
      */
     public void addAll() {
-        Iterator<Edge> it = getOwner().edgeIterator();
-        while (it.hasNext())
-            add(it.next());
+        for (Edge e : getOwner().edges()) {
+            add(e);
+        }
     }
 
     /**
@@ -226,17 +221,19 @@ public class EdgeSet extends GraphBase implements Set<Edge> {
      * @return an enumeration of the elements in the set
      */
     public Iterator<Edge> iterator() {
-        return new IteratorAdapter<Edge>() {
-            private Edge e = getFirstElement();
+        return new Iterator<Edge>() {
+            Edge e = getFirstElement();
 
-            protected Edge findNext() throws NoSuchElementException {
-                if (e != null) {
-                    final Edge result = e;
-                    e = getNextElement(e);
-                    return result;
-                } else {
-                    throw new NoSuchElementException("at end");
-                }
+            @Override
+            public boolean hasNext() {
+                return e != null;
+            }
+
+            @Override
+            public Edge next() {
+                Edge result = e;
+                e = getNextElement(e);
+                return result;
             }
         };
     }

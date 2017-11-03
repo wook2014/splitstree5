@@ -29,7 +29,6 @@
 package jloda.graph;
 
 import jloda.util.Basic;
-import jloda.util.IteratorAdapter;
 
 import java.lang.ref.WeakReference;
 import java.util.*;
@@ -44,7 +43,7 @@ import java.util.*;
  * Daniel Huson, 2002
  * <p/>
  */
-public class Graph<V, E> extends GraphBase {
+public class Graph extends GraphBase {
     private Node firstNode;
     private Node lastNode;
     private int numberNodes;
@@ -214,8 +213,8 @@ public class Graph<V, E> extends GraphBase {
         deleteEdgeFromArrays(e);
         deleteEdgeFromSets(e);
 
-        getSource(e).decrementOutDegree();
-        getTarget(e).decrementInDegree();
+        e.getSource().decrementOutDegree();
+        e.getTarget().decrementInDegree();
         if (firstEdge == e)
             firstEdge = (Edge) e.next;
         if (lastEdge == e)
@@ -277,17 +276,6 @@ public class Graph<V, E> extends GraphBase {
      */
     public void clear() {
         deleteAllNodes();
-    }
-
-    /**
-     * Change the order of edges adjacent to a node.
-     *
-     * @param v        the node in question.
-     * @param newOrder the desired sequence of edges.
-     */
-    public void rearrangeAdjacentEdges(Node v, List<Edge> newOrder) {
-        checkOwner(v);
-        v.rearrangeAdjacentEdges(newOrder);
     }
 
     /**
@@ -379,87 +367,25 @@ public class Graph<V, E> extends GraphBase {
     }
 
     /**
-     * Returns the node opposite node v via edge e.
-     *
-     * @param v the node
-     * @param e the edge
-     * @return the opposite node
+     * gets the node opposite to v via e
+     * @param v
+     * @param e
+     * @return opposite node
      */
     public Node getOpposite(Node v, Edge e) {
-        checkOwner(e);
-        return e.getOpposite(v);
+        return v.getOpposite(e);
     }
 
     /**
-     * Get the first adjacent edge to v.
-     *
-     * @param v the node
-     * @return the first adjacent edge
+     * are the two nodes adjacent?
+     * @param v
+     * @param w
+     * @return
      */
-    public Edge getFirstAdjacentEdge(Node v) {
-        checkOwner(v);
-        return v.getFirstAdjacentEdge();
+    public boolean areAdjacent(Node v, Node w) {
+        return v.isAdjacent(w);
     }
 
-    /**
-     * Get the last adjacent edge to v.
-     *
-     * @param v the node
-     * @return the last adjacent edge
-     */
-    public Edge getLastAdjacentEdge(Node v) {
-        checkOwner(v);
-        return v.getLastAdjacentEdge();
-    }
-
-
-    /**
-     * Get the successor of e adjacent to v
-     *
-     * @param e the edge
-     * @param v the node
-     * @return the successor of edge adjacent to v
-     */
-    public Edge getNextAdjacentEdge(Edge e, Node v) {
-        checkOwner(v);
-        return v.getNextAdjacentEdge(e);
-    }
-
-    /**
-     * Get the predecessor of e adjacent to v
-     *
-     * @param e the edge
-     * @param v the node
-     * @return the predecessor of edge adjacent to v
-     */
-    public Edge getPrevAdjacentEdge(Edge e, Node v) {
-        checkOwner(v);
-        return v.getPrevAdjacentEdge(e);
-    }
-
-    /**
-     * Get the cyclic successor of e adjacent to v.
-     *
-     * @param e the edge
-     * @param v the node
-     * @return the cyclic successor of edge adjacent to v
-     */
-    public Edge getNextAdjacentEdgeCyclic(Edge e, Node v) {
-        checkOwner(v);
-        return v.getNextAdjacentEdgeCyclic(e);
-    }
-
-    /**
-     * Get the cyclic predecessor of e adjacent to v.
-     *
-     * @param e the edge
-     * @param v the node
-     * @return the cyclic predecessor of edge adjacent to v
-     */
-    public Edge getPrevAdjacentEdgeCyclic(Edge e, Node v) {
-        checkOwner(v);
-        return v.getPrevAdjacentEdgeCyclic(e);
-    }
 
     /**
      * Get the first edge in the graph.
@@ -467,9 +393,6 @@ public class Graph<V, E> extends GraphBase {
      * @return the first edge
      */
     public Edge getFirstEdge() {
-        if (firstEdge != null && firstEdge.isHidden()) {
-            return firstEdge.getNext();
-        }
         return firstEdge;
     }
 
@@ -479,8 +402,6 @@ public class Graph<V, E> extends GraphBase {
      * @return the last edge
      */
     public Edge getLastEdge() {
-        if (lastEdge != null && lastEdge.isHidden())
-            return lastEdge.getPrev();
         return lastEdge;
     }
 
@@ -507,25 +428,11 @@ public class Graph<V, E> extends GraphBase {
     }
 
     /**
-     * Get an edge between the two nodes v and w, if it exists
-     *
-     * @param v source node
-     * @param w target node
-     * @return an edge between v and w
-     */
-    public Edge getCommonEdge(Node v, Node w) {
-        checkOwner(v);
-        return v.getCommonEdge(w);
-    }
-
-    /**
      * Get the first node in the graph.
      *
      * @return the first node
      */
     public Node getFirstNode() {
-        if (firstNode != null && firstNode.isHidden())
-            return firstNode.getNext();
         return firstNode;
     }
 
@@ -535,8 +442,6 @@ public class Graph<V, E> extends GraphBase {
      * @return the last node
      */
     public Node getLastNode() {
-        if (lastNode != null && lastNode.isHidden())
-            return lastNode.getPrev();
         return lastNode;
     }
 
@@ -563,6 +468,41 @@ public class Graph<V, E> extends GraphBase {
     }
 
     /**
+     * iterable over all nodes
+     *
+     * @return iterable over all nodes
+     */
+    public Iterable<Node> nodes() {
+        return () -> new Iterator<Node>() {
+            Node v = getFirstNode();
+
+            @Override
+            public boolean hasNext() {
+                return v != null;
+            }
+
+            @Override
+            public Node next() {
+                Node result = v;
+                v = getNextNode(v);
+                return result;
+            }
+        };
+    }
+
+    public NodeSet getNodesAsSet() {
+        NodeSet nodeSet = new NodeSet(this);
+        nodeSet.addAll();
+        return nodeSet;
+    }
+
+    public EdgeSet getEdgesAsSet() {
+        EdgeSet edgeSet = new EdgeSet(this);
+        edgeSet.addAll();
+        return edgeSet;
+    }
+
+    /**
      * Get the number of nodes.
      *
      * @return the number of nodes
@@ -580,215 +520,27 @@ public class Graph<V, E> extends GraphBase {
         return numberEdges;
     }
 
-    /**
-     * Get the source node of e.
-     *
-     * @param e the edge
-     * @return the source of e
-     */
-    public Node getSource(Edge e) {
-        checkOwner(e);
-        return e.getSource();
-    }
 
     /**
-     * Get the target node of e.
-     *
-     * @param e the edge
-     * @return the target of e
+     * iterable over all edges
+     * @return all edges
      */
-    public Node getTarget(Edge e) {
-        checkOwner(e);
-        return e.getTarget();
-    }
+    public Iterable<Edge> edges() {
+        return () -> new Iterator<Edge>() {
+            Edge e = getFirstEdge();
 
-    /**
-     * Get the degree of node v.
-     *
-     * @return the degree
-     */
-    public int getDegree(Node v) {
-        checkOwner(v);
-        return v.getDegree();
-    }
-
-    /**
-     * Get the in-degree of node v.
-     *
-     * @return the in-degree
-     */
-    public int getInDegree(Node v) {
-        checkOwner(v);
-        return v.getInDegree();
-    }
-
-    /**
-     * Get the out-degree of node v.
-     *
-     * @return the out-degree
-     */
-    public int getOutDegree(Node v) {
-        checkOwner(v);
-        return v.getOutDegree();
-    }
-
-    /**
-     * Get an iterator over all edges
-     *
-     * @return edge iterator
-     */
-    public Iterator<Edge> edgeIterator() {
-        return new IteratorAdapter<Edge>() {
-            private Edge e = getFirstEdge();
-
-            protected Edge findNext() throws NoSuchElementException {
-                if (e != null) {
-                    final Edge result = e;
-                    e = getNextEdge(e);
-                    return result;
-                } else {
-                    throw new NoSuchElementException("at end");
-                }
-            }
-        };
-    }
-
-    /**
-     * Get an iterator over all edges, including hidden ones
-     *
-     * @return edge iterator
-     */
-    public Iterator<Edge> edgeIteratorIncludingHidden() {
-        return new IteratorAdapter<Edge>() {
-            private Edge e = firstEdge;
-
-            protected Edge findNext() throws NoSuchElementException {
-                if (e != null) {
-                    final Edge result = e;
-                    checkOwner(e);
-                    e = (Edge) result.next;
-                    return result;
-                } else {
-                    throw new NoSuchElementException("at end");
-                }
-            }
-        };
-    }
-
-    /**
-     * Get an iterator over all nodes
-     *
-     * @return node iterator
-     */
-    public Iterator<Node> nodeIterator() {
-        return new IteratorAdapter<Node>() {
-            private Node v = getFirstNode();
-
-            protected Node findNext() throws NoSuchElementException {
-                if (v != null) {
-                    final Node result = v;
-                    v = getNextNode(v);
-                    return result;
-                } else {
-                    throw new NoSuchElementException("at end");
-                }
-            }
-
+            @Override
             public boolean hasNext() {
-                return v != null;
+                return e != null;
+            }
+
+            @Override
+            public Edge next() {
+                Edge result = e;
+                e = getNextEdge(e);
+                return result;
             }
         };
-    }
-
-    /**
-     * Get an iterator over all nodes
-     *
-     * @return node iterator
-     */
-    public Iterator<Node> nodeIteratorIncludingHidden() {
-        return new IteratorAdapter<Node>() {
-            private Node v = firstNode;
-
-            protected Node findNext() throws NoSuchElementException {
-                if (v != null) {
-                    final Node result = v;
-                    v = (Node) v.next;
-                    return result;
-                } else {
-                    throw new NoSuchElementException("at end");
-                }
-            }
-
-            public boolean hasNext() {
-                return v != null;
-            }
-        };
-    }
-
-    /**
-     * Get an iterator over all nodes adjacent to v.
-     *
-     * @param v node
-     * @return all nodes adjacent to v
-     */
-    public Iterator<Node> getAdjacentNodes(Node v) {
-        checkOwner(v);
-        return v.getAdjacentNodes();
-    }
-
-    /**
-     * Get an iterator over all edges adjacent to v.
-     *
-     * @param v node
-     * @return all edges adjacent to v
-     */
-    public Iterator<Edge> getAdjacentEdges(Node v) {
-        checkOwner(v);
-        return v.getAdjacentEdges();
-    }
-
-    /**
-     * Get an iterator over all all in-edges adjacent to v.
-     *
-     * @param v node
-     * @return all in-edges adjacent to v
-     */
-    public Iterator<Edge> getInEdges(Node v) {
-        checkOwner(v);
-        return v.getInEdges();
-    }
-
-    /**
-     * Get an iterator over all all out-edges adjacent to v.
-     *
-     * @param v node
-     * @return all out-edges adjacent to v
-     */
-    public Iterator<Edge> getOutEdges(Node v) {
-        checkOwner(v);
-        return v.getOutEdges();
-    }
-
-    /**
-     * Get the id of node v.
-     *
-     * @param v node
-     * @return the id
-     */
-    public int getId(Node v) {
-        checkOwner(v);
-        return v.getId();
-    }
-
-    /**
-     * Get the id of edge e.
-     *
-     * @param e edge
-     * @return the id
-     */
-    public int getId(Edge e) {
-        checkOwner(e);
-        return e.getId();
     }
 
     /**
@@ -809,63 +561,6 @@ public class Graph<V, E> extends GraphBase {
         return buf.toString();
     }
 
-    /**
-     * Get the info associated with node v.
-     *
-     * @param v node
-     * @return the info
-     */
-    @SuppressWarnings("unchecked")
-    public V getInfo(Node v) {
-        checkOwner(v);
-        return (V) v.getInfo();
-    }
-
-    /**
-     * set the info associated with node v.
-     *
-     * @param v   node
-     * @param obj the info object
-     */
-    public void setInfo(Node v, V obj) {
-        checkOwner(v);
-        v.setInfo(obj);
-    }
-
-    /**
-     * Get the info associated with edge e.
-     *
-     * @param e edge
-     * @return the info
-     */
-    @SuppressWarnings("unchecked")
-    public E getInfo(Edge e) {
-        checkOwner(e);
-        return (E) e.getInfo();
-    }
-
-    /**
-     * set the info associated with edge e.
-     *
-     * @param e   edge
-     * @param obj the info object
-     */
-    public void setInfo(Edge e, E obj) {
-        checkOwner(e);
-        e.setInfo(obj);
-    }
-
-    /**
-     * Get an edge directed from one given node to another, if it exists.
-     *
-     * @param v source node
-     * @param w target node
-     * @return edge from v tp w, if it exists, else null
-     */
-    public Edge findDirectedEdge(Node v, Node w) {
-        checkOwner(v);
-        return v.findDirectedEdge(w);
-    }
 
     /**
      * Adds a GraphUpdateListener
@@ -892,7 +587,6 @@ public class Graph<V, E> extends GraphBase {
 
     protected void fireNewNode(Node v) {
         checkOwner(v);
-
         for (GraphUpdateListener gul : graphUpdateListeners) {
             gul.newNode(v);
         }
@@ -904,7 +598,6 @@ public class Graph<V, E> extends GraphBase {
 
     protected void fireDeleteNode(Node v) {
         checkOwner(v);
-
         for (GraphUpdateListener gul : graphUpdateListeners) {
             gul.deleteNode(v);
         }
@@ -916,7 +609,6 @@ public class Graph<V, E> extends GraphBase {
 
     protected void fireNewEdge(Edge e) {
         checkOwner(e);
-
         for (GraphUpdateListener gul : graphUpdateListeners) {
             gul.newEdge(e);
         }
@@ -928,7 +620,6 @@ public class Graph<V, E> extends GraphBase {
 
     protected void fireDeleteEdge(Edge e) {
         checkOwner(e);
-
         for (GraphUpdateListener gul : graphUpdateListeners) {
             gul.deleteEdge(e);
         }
@@ -939,7 +630,6 @@ public class Graph<V, E> extends GraphBase {
 
     protected void fireGraphHasChanged() {
         if (!ignoreGraphHasChanged) {
-
             for (GraphUpdateListener gul : graphUpdateListeners) {
                 gul.graphHasChanged();
             }
@@ -986,14 +676,14 @@ public class Graph<V, E> extends GraphBase {
         for (Node v = src.getFirstNode(); v != null; v = src.getNextNode(v)) {
             Node w = newNode();
             w.setId(v.getId());
-            setInfo(w, (V) src.getInfo(v));
+            w.setInfo(v.getInfo());
             oldNode2newNode.set(v, w);
         }
         idsNodes = src.idsNodes;
 
-        for (Edge e = src.getFirstEdge(); e != null; e = src.getNextEdge(e)) {
-            Node p = oldNode2newNode.get(src.getSource(e));
-            Node q = oldNode2newNode.get(src.getTarget(e));
+        for (Edge e : src.edges()) {
+            Node p = oldNode2newNode.get(e.getSource());
+            Node q = oldNode2newNode.get(e.getTarget());
             Edge f = null;
             try {
                 f = newEdge(p, q);
@@ -1001,16 +691,17 @@ public class Graph<V, E> extends GraphBase {
             } catch (IllegalSelfEdgeException e1) {
                 Basic.caught(e1);
             }
-            setInfo(f, (E) src.getInfo(e));
+            if (f != null)
+                f.setInfo(e.getInfo());
             oldEdge2newEdge.set(e, f);
         }
         idsEdges = src.idsEdges;
 
         // change all adjacencies to reflect order in old graph:
-        for (Node v = src.getFirstNode(); v != null; v = src.getNextNode(v)) {
+        for (Node v : src.nodes()) {
             Node w = oldNode2newNode.get(v);
             List<Edge> newOrder = new LinkedList<>();
-            for (Edge e = v.getFirstAdjacentEdge(); e != null; e = v.getNextAdjacentEdge(e)) {
+            for (Edge e : v.adjacentEdges()) {
                 newOrder.add(oldEdge2newEdge.get(e));
             }
             w.rearrangeAdjacentEdges(newOrder);
@@ -1026,18 +717,6 @@ public class Graph<V, E> extends GraphBase {
         Graph result = new Graph();
         result.copy(this);
         return result;
-    }
-
-    /**
-     * determines whether two nodes are adjacent
-     *
-     * @param a
-     * @param b
-     * @return true, if adjacent
-     */
-    public boolean areAdjacent(Node a, Node b) {
-        checkOwner(a);
-        return a.isAdjacent(b);
     }
 
     /**
@@ -1065,9 +744,7 @@ public class Graph<V, E> extends GraphBase {
                 as.set(v, null);
             }
         }
-        for (WeakReference ref : toDelete) {
-            nodeAssociations.remove(ref);
-        }
+        nodeAssociations.removeAll(toDelete);
     }
 
     /**
@@ -1095,9 +772,7 @@ public class Graph<V, E> extends GraphBase {
                 set.remove(v);
             }
         }
-        for (WeakReference ref : toDelete) {
-            nodeSets.remove(ref);
-        }
+        nodeSets.removeAll(toDelete);
     }
 
     /**
@@ -1125,9 +800,7 @@ public class Graph<V, E> extends GraphBase {
                 as.set(edge, null);
             }
         }
-        for (WeakReference ref : toDelete) {
-            edgeAssociations.remove(ref);
-        }
+        edgeAssociations.removeAll(toDelete);
     }
 
     /**
@@ -1155,42 +828,7 @@ public class Graph<V, E> extends GraphBase {
                 set.remove(v);
             }
         }
-        for (WeakReference ref : toDelete) {
-            edgeSets.remove(ref);
-        }
-    }
-
-    /**
-     * gets the number of connected components of the graph
-     *
-     * @return connected components
-     */
-    public int getNumberConnectedComponents() {
-        int result = 0;
-        NodeSet used = new NodeSet(this);
-
-        for (Node v = getFirstNode(); v != null; v = v.getNext()) {
-            if (!used.contains(v)) {
-                visitConnectedComponent(v, used);
-                result++;
-            }
-        }
-        return result;
-    }
-
-    /**
-     * visit all nodes in a connected component
-     *
-     * @param v
-     * @param used
-     */
-    public void visitConnectedComponent(Node v, NodeSet used) {
-        used.add(v);
-        for (Edge f = getFirstAdjacentEdge(v); f != null; f = v.getNextAdjacentEdge(f)) {
-            Node w = f.getOpposite(v);
-            if (!used.contains(w))
-                visitConnectedComponent(w, used);
-        }
+        edgeSets.removeAll(toDelete);
     }
 
     /**
@@ -1221,60 +859,6 @@ public class Graph<V, E> extends GraphBase {
         }
     }
 
-    /*public NodeSet computeSetOfLeaves(Node v) {
-        NodeSet sons = new NodeSet(this);
-        getLeavesRec(v,sons);
-        return sons;
-   }
-    public void getLeavesRec(Node v, NodeSet nodes) {
-        for (Edge f = v.getFirstOutEdge(); f != null; f = v.getNextOutEdge(f)) {
-           Node w = f.getTarget();
-           getLeavesRec(w,sons);
-       }
-                  if (v.getOutDegree() == 0)
-           nodes.add(w);
-        return sons;
-   }*/
-
-    /**
-     * gets all nodes
-     *
-     * @return node set of nodes
-     */
-    public NodeSet getNodes() {
-        NodeSet nodes = new NodeSet(this);
-        for (Node v = getFirstNode(); v != null; v = getNextNode(v))
-            nodes.add(v);
-        return nodes;
-    }
-
-    /**
-     * gets all edges
-     *
-     * @return edge set of edges
-     */
-    public EdgeSet getEdges() {
-        EdgeSet edges = new EdgeSet(this);
-        for (Edge v = getFirstEdge(); v != null; v = getNextEdge(v))
-            edges.add(v);
-        return edges;
-    }
-
-
-    /**
-     * get the unhidden subset
-     *
-     * @param nodes
-     * @return
-     */
-    public NodeSet getUnhiddenSubset(Collection<Node> nodes) {
-        NodeSet unhidden = new NodeSet(this);
-        for (Node v : nodes) {
-            if (!v.isHidden())
-                unhidden.add(v);
-        }
-        return unhidden;
-    }
 
     /**
      * reorders nodes in graph. These nodes are put at the front of the list of nodes
@@ -1292,8 +876,7 @@ public class Graph<V, E> extends GraphBase {
         }
 
         if (toMove.size() > 0) {
-            for (Iterator<Node> it = nodeIteratorIncludingHidden(); it.hasNext(); ) {
-                Node v = it.next();
+            for (Node v : nodes()) {
                 if (!toMove.contains(v))
                     newOrder.add(v);
             }

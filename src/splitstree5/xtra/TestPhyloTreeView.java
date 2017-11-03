@@ -16,7 +16,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package splitstree5.view;
+package splitstree5.xtra;
 
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
@@ -29,8 +29,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import jloda.phylo.PhyloTree;
-import splitstree5.view.phylotreeview.PhylogeneticTreeView;
-import splitstree5.view.phylotreeview.TreeNode;
+import splitstree5.xtra.phylotreeview.PhylogeneticTreeView;
+import splitstree5.xtra.phylotreeview.TreeNode;
 
 public class TestPhyloTreeView extends Application {
     @Override

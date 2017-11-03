@@ -51,7 +51,7 @@ public class TreeUtilities {
         if (root == null) {
             // choose an arbitrary labeled root
             for (Node v = tree.getFirstNode(); v != null; v = tree.getNextNode(v)) {
-                if (tree.getNode2Taxa(v).size() > 0 && tree.getDegree(v) == 1) {
+                if (tree.getNode2Taxa(v).size() > 0 && v.getDegree() == 1) {
                     root = v;
                     break;
                 }

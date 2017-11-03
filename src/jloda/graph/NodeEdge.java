@@ -34,9 +34,6 @@ package jloda.graph;
  */
 
 public class NodeEdge extends GraphBase {
-    private final static int HIDDEN_MASK = (1 << 31);
-    private final static int ID_MASK = ~HIDDEN_MASK;
-
     protected Object info;
     private int id;
     NodeEdge prev;
@@ -99,7 +96,7 @@ public class NodeEdge extends GraphBase {
      * @return id
      */
     public int getId() {
-        return id & ID_MASK;
+        return id;
     }
 
     /**
@@ -108,28 +105,7 @@ public class NodeEdge extends GraphBase {
      * @param id
      */
     void setId(int id) {
-        this.id = id & ID_MASK;
-    }
-
-    /**
-     * is this node hidden? If hidden, this node or edge will not be considered when using an iteration
-     *
-     * @return hidden
-     */
-    public boolean isHidden() {
-        return (id & HIDDEN_MASK) == HIDDEN_MASK;
-    }
-
-    /**
-     * set the hidden state of this node
-     *
-     * @param hidden
-     */
-    void setHidden(boolean hidden) {
-        if (hidden)
-            id |= HIDDEN_MASK;
-        else
-            id &= (~HIDDEN_MASK);
+        this.id = id;
     }
 }
 

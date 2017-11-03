@@ -29,15 +29,17 @@
 package jloda.graph;
 
 import jloda.util.Basic;
-import jloda.util.IteratorAdapter;
 
-import java.util.*;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * NodeSet implements a set of nodes contained in a given graph
  * Daniel Huson, 2003
  */
-public class NodeSet extends GraphBase implements Set<Node> {
+public class NodeSet extends GraphBase implements Set<Node>, Iterable<Node> {
     final BitSet bits;
 
     /**
@@ -58,13 +60,7 @@ public class NodeSet extends GraphBase implements Set<Node> {
      * @return a boolean value
      */
     public boolean contains(Object v) {
-        boolean result = false;
-        try {
-            result = bits.get(getOwner().getId((Node) v));
-        } catch (NotOwnerException ex) {
-            Basic.caught(ex);
-        }
-        return result;
+        return v instanceof Node && bits.get(((Node) v).getId());
     }
 
     /**
@@ -74,10 +70,10 @@ public class NodeSet extends GraphBase implements Set<Node> {
      * @return true, if new
      */
     public boolean add(Node v) {
-        if (bits.get(getOwner().getId(v)))
+        if (bits.get(v.getId()))
             return false;
         else {
-            bits.set(getOwner().getId(v), true);
+            bits.set(v.getId(), true);
             return true;
         }
     }
@@ -88,10 +84,12 @@ public class NodeSet extends GraphBase implements Set<Node> {
      * @param v Node
      */
     public boolean remove(Object v) {
-        if (bits.get(getOwner().getId((Node) v))) {
-            bits.set(getOwner().getId((Node) v), false);
-            return true;
-        } else
+        if (v instanceof Node) {
+            if (bits.get(((Node) v).getId())) {
+                bits.set(((Node) v).getId(), false);
+                return true;
+            }
+        }
             return false;
 
     }
@@ -103,11 +101,9 @@ public class NodeSet extends GraphBase implements Set<Node> {
      * @return true, if some element is new
      */
     public boolean addAll(final Collection<? extends Node> collection) {
-        Iterator it = collection.iterator();
-
         boolean result = false;
-        while (it.hasNext()) {
-            if (add((Node) it.next()))
+        for (Node v : collection) {
+            if (add(v))
                 result = true;
         }
         return result;
@@ -120,10 +116,8 @@ public class NodeSet extends GraphBase implements Set<Node> {
      * @return all contained?
      */
     public boolean containsAll(final Collection<?> collection) {
-        Iterator it = collection.iterator();
-
-        while (it.hasNext()) {
-            if (!contains(it.next()))
+        for (Object obj : collection) {
+            if (!contains(obj))
                 return false;
         }
         return true;
@@ -150,12 +144,11 @@ public class NodeSet extends GraphBase implements Set<Node> {
      * @return true, if something actually removed
      */
     public boolean removeAll(final Collection<?> collection) {
-        Iterator it = collection.iterator();
-
         boolean result = false;
-        while (it.hasNext()) {
-            if (remove(it.next()))
-                result = true;
+        for (Object obj : collection) {
+            if (obj instanceof Node)
+                if (remove(obj))
+                    result = true;
         }
         return result;
     }
@@ -167,19 +160,16 @@ public class NodeSet extends GraphBase implements Set<Node> {
      * @return true, if set changes
      */
     public boolean retainAll(final Collection<?> collection) {
-        if (collection == null)
-            return false;
-        boolean changed = (collection.size() != size() || !containsAll(collection));
-        NodeSet was = (NodeSet) this.clone();
+        final int old = bits.cardinality();
+        final BitSet newBits = new BitSet();
 
-        clear();
-        Iterator it = collection.iterator();
-        while (it.hasNext()) {
-            Object v = it.next();
-            if (v instanceof Node && was.contains(v))
-                add((Node) v);
+        for (Object obj : collection) {
+            if (obj instanceof Node) {
+                newBits.set(((Node) obj).getId());
+            }
         }
-        return changed;
+        bits.and(newBits);
+        return old != bits.cardinality();
     }
 
     /**
@@ -199,30 +189,46 @@ public class NodeSet extends GraphBase implements Set<Node> {
     }
 
     /**
-     * return all contained nodes as objects
+     * return all nodes as array
      *
      * @return contained nodes
      */
     public Node[] toArray() {
-        Node[] result = new Node[bits.cardinality()];
+        final Node[] result = new Node[bits.cardinality()];
         int i = 0;
-        Iterator<Node> it = getOwner().nodeIterator();
-        while (it.hasNext()) {
-            Node v = it.next();
+        for (Node v : getOwner().nodes()) {
             if (contains(v))
                 result[i++] = v;
         }
         return result;
     }
 
-
     /**
      * Puts all nodes into set.
      */
     public void addAll() {
-        Iterator it = getOwner().nodeIterator();
-        while (it.hasNext())
-            add((Node) it.next());
+        for (Node v : getOwner().nodes()) {
+            add(v);
+        }
+    }
+
+    public Iterator<Node> iterator() {
+        return new Iterator<Node>() {
+            Node v = getFirstElement();
+
+            @Override
+            public boolean hasNext() {
+                return v != null;
+
+            }
+
+            @Override
+            public Node next() {
+                Node result = v;
+                v = getNextElement(v);
+                return result;
+            }
+        };
     }
 
     /**
@@ -232,27 +238,6 @@ public class NodeSet extends GraphBase implements Set<Node> {
      */
     public int size() {
         return bits.cardinality();
-    }
-
-    /**
-     * Returns an enumeration of the elements in the set.
-     *
-     * @return an enumeration of the elements in the set
-     */
-    public Iterator<Node> iterator() {
-        return new IteratorAdapter<Node>() {
-            private Node v = getFirstElement();
-
-            protected Node findNext() throws NoSuchElementException {
-                if (v != null) {
-                    final Node result = v;
-                    v = getNextElement(v);
-                    return result;
-                } else {
-                    throw new NoSuchElementException("at end");
-                }
-            }
-        };
     }
 
     /**

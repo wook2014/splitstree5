@@ -537,7 +537,7 @@ public class PhyloGraph extends Graph {
                 Edge e = (Edge) pair.getSecond();
                 Node w = getOpposite(v, e);
 
-                for (Edge f = getFirstAdjacentEdge(w); f != null; f = getNextAdjacentEdge(f, w)) {
+                for (Edge f : w.adjacentEdges()) {
                     if (f != e) {
                         Node u = getOpposite(w, f);
                         if (u != v && !opposites.contains(u)) {
@@ -589,7 +589,7 @@ public class PhyloGraph extends Graph {
     public void getAllSeparators(int splitId, Node v, Edge e, NodeSet seen, List<Pair<Node, Edge>> separators) {
         if (!seen.contains(v)) {
             seen.add(v);
-            for (Edge f = getFirstAdjacentEdge(v); f != null; f = getNextAdjacentEdge(f, v)) {
+            for (Edge f : v.adjacentEdges()) {
                 if (f != e) {
                     if (getSplit(f) == splitId) {
                         separators.add(new Pair<>(v, f));
@@ -613,7 +613,7 @@ public class PhyloGraph extends Graph {
     public Pair<Node, Edge> getSeparator(int splitId, Node v, Edge e, NodeSet seen) {
         if (!seen.contains(v)) {
             seen.add(v);
-            for (Edge f = getFirstAdjacentEdge(v); f != null; f = getNextAdjacentEdge(f, v)) {
+            for (Edge f : v.adjacentEdges()) {
                 if (f != e) {
                     if (getSplit(f) == splitId)
                         return new Pair<>(v, f);
@@ -670,7 +670,7 @@ public class PhyloGraph extends Graph {
                     label.append("1");
             }
             labels.set(v, label.toString());
-            for (Edge e = v.getFirstAdjacentEdge(); e != null; e = v.getNextAdjacentEdge(e)) {
+            for (Edge e : v.adjacentEdges()) {
                 int s = getSplit(e);
                 if (!used.get(s)) {
                     used.set(s);
@@ -710,7 +710,7 @@ public class PhyloGraph extends Graph {
         for (Edge e = graph.getFirstEdge(); e != null; e = graph.getNextEdge(e)) {
             Edge f = null;
             try {
-                f = newEdge(old2new.get(graph.getSource(e)), old2new.get(graph.getTarget(e)));
+                f = newEdge(old2new.get(e.getSource()), old2new.get(e.getTarget()));
             } catch (IllegalSelfEdgeException e1) {
                 Basic.caught(e1);
             }

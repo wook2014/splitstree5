@@ -17,60 +17,49 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.view;
+package splitstree5.xtra;
 
 import jloda.graph.Edge;
+import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
-import splitstree5.view.phylotreeview.TreeEdge;
-import splitstree5.view.phylotreeview.TreeNode;
+import splitstree5.xtra.phylotreeview.TreeEdge;
+import splitstree5.xtra.phylotreeview.TreeNode;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * implements a rooted tree edge for a phylo tree
+ * implements a rooted tree node for a phylo tree
  * Daniel Huson, 10.2017
  */
-public class PhyloTreeEdge extends TreeEdge {
-    private final Edge e;
+public class PhyloTreeNode extends TreeNode {
+    final private Node v;
     private Map<String, Object> data;
-    private TreeNode target;
+    private Collection<TreeEdge> outEdges;
 
-    public PhyloTreeEdge(Edge e) {
-        this.e = e;
-    }
-
-    @Override
-    public TreeNode getTarget() {
-        if (target == null) {
-            target = new PhyloTreeNode(e.getTarget());
-        }
-        return target;
+    /**
+     * constructor
+     *
+     * @param v
+     */
+    public PhyloTreeNode(Node v) {
+        this.v = v;
     }
 
     @Override
     public String getLabel() {
-        return ((PhyloTree) e.getOwner()).getLabel(e);
+        return ((PhyloTree) v.getOwner()).getLabel(v);
     }
 
-    @Override
     public void setLabel(String label) {
-        ((PhyloTree) e.getOwner()).setLabel(e, label);
-    }
-
-    @Override
-    public float getWeight() {
-        return (float) ((PhyloTree) e.getOwner()).getWeight(e);
-    }
-
-    @Override
-    public void setWeight(float weight) {
-        ((PhyloTree) e.getOwner()).setWeight(e, weight);
+        ((PhyloTree) v.getOwner()).setLabel(v, label);
     }
 
     @Override
     public int getId() {
-        return e.getId();
+        return v.getId();
     }
 
     @Override
@@ -78,5 +67,16 @@ public class PhyloTreeEdge extends TreeEdge {
         if (data == null)
             data = new HashMap<>();
         return data;
+    }
+
+    @Override
+    public Collection<TreeEdge> getOutEdges() {
+        if (outEdges == null) {
+            outEdges = new ArrayList<>(v.getOutDegree());
+            for (Edge e : v.outEdges()) {
+                outEdges.add(new PhyloTreeEdge(e));
+            }
+        }
+        return outEdges;
     }
 }

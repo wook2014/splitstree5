@@ -192,8 +192,6 @@ public class MethodsTextGenerator {
                 buf.append(Basic.toString(papers, "\n"));
             }
         }
-        if (false) // todo: turn back on?
-            System.err.println(buf.toString());
         return buf.toString();
     }
 
