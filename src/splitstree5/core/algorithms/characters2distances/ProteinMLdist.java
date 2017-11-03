@@ -1,21 +1,17 @@
 package splitstree5.core.algorithms.characters2distances;
 
 import javafx.beans.property.SimpleObjectProperty;
-import splitstree5.core.algorithms.interfaces.IFromChararacters;
-import splitstree5.core.algorithms.interfaces.IToDistances;
-import splitstree5.core.datablocks.characters.CharactersType;
-import splitstree5.gui.dialog.Alert;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
+import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.datablocks.characters.CharactersType;
 import splitstree5.core.models.*;
-import splitstree5.utils.nexus.SplitsException;
-
-import java.util.LinkedList;
-import java.util.List;
+import splitstree5.gui.dialog.Alert;
 
 /**
  * Computes the maximum likelihood protein distance estimates for a set of characters

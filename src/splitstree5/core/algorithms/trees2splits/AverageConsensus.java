@@ -11,11 +11,6 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.io.nexus.DistancesNexusIO;
-import splitstree5.utils.nexus.TreesUtilities;
-
-import java.io.IOException;
-import java.io.StringWriter;
 
 /**
  * implements consensus networks

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2017 Daniel H. Huson
  *  
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *  
@@ -57,7 +57,7 @@ public class NeighborNetSplitWeightOptimizer {
      * <p>
      * That is, it minimizes  0.5*||Ax - d||^2_2  +  \lambda ||x||_1
      *
-     * @param cycle     Circular ordering
+     * @param cycle     Radial ordering
      * @param distances Input distance
      * @return Splits  splits with the estimated weights.
      */

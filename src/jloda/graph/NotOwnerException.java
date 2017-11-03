@@ -17,13 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.algorithms.interfaces;
+package jloda.graph;
 
-/**
- * to networks interface.
- * This is used to identify algorithms at runtime
- * Created by huson on 1/31/17.
- */
-public interface IToNetworks {
-
+public class NotOwnerException extends RuntimeException {
 }

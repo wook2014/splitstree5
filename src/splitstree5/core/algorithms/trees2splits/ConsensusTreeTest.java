@@ -2,7 +2,7 @@ package splitstree5.core.algorithms.trees2splits;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Daria on 09.06.2017.

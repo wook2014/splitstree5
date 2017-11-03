@@ -2,13 +2,9 @@ package splitstree5.utils.nexus;
 
 import jloda.graph.Edge;
 import jloda.graph.Node;
+import jloda.graph.NotOwnerException;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
-import jloda.util.NotOwnerException;
-import jloda.util.ProgressListener;
-import jloda.util.ProgressPercentage;
-import splitstree5.core.algorithms.trees2splits.TreeSelector;
-import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;

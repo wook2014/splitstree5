@@ -16,7 +16,7 @@ import java.io.FileReader;
 import java.io.StringWriter;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
 
 /**
  * Created on 22.02.2017.

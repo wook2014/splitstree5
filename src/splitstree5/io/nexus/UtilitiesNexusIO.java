@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2017 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -49,7 +49,7 @@ public class UtilitiesNexusIO {
             np.matchIgnoreCase("=");
             String title = np.getLabelRespectCase();
             np.matchIgnoreCase(";");
-            block.getLinks().add(new Pair<>(name, title));
+            block.getLinks().add(new Pair<String, String>(name, title));
         }
     }
 

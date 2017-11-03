@@ -1,7 +1,6 @@
 package splitstree5.core.algorithms.splits2splits;
 
 import Jama.Matrix;
-import com.install4j.runtime.installer.platform.macos.MacEventHandler;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 

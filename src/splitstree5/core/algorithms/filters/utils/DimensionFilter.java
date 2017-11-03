@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2017 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -23,7 +23,10 @@ import jloda.graph.Edge;
 import jloda.graph.Graph;
 import jloda.graph.Node;
 import jloda.graph.NodeSet;
-import jloda.util.*;
+import jloda.util.Basic;
+import jloda.util.CanceledException;
+import jloda.util.Pair;
+import jloda.util.ProgressListener;
 import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
 
@@ -126,7 +129,7 @@ public class DimensionFilter {
      * @param graph
      * @param d     clique size
      */
-    private static void computeDSubgraph(ProgressListener progress, Graph graph, int d) throws NotOwnerException, CanceledException {
+    private static void computeDSubgraph(ProgressListener progress, Graph graph, int d) throws CanceledException {
         //System.err.print("Compute D-subgraph: ");
         NodeSet keep = new NodeSet(graph);
         NodeSet discard = new NodeSet(graph);

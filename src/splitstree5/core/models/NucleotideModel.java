@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2017 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -26,7 +26,6 @@ package splitstree5.core.models;
 
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
-import com.sun.xml.internal.bind.v2.util.QNameMap;
 
 import java.util.Random;
 

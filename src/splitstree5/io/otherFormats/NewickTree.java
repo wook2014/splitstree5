@@ -1,18 +1,14 @@
 package splitstree5.io.otherFormats;
 
 import jloda.phylo.PhyloTree;
-import jloda.util.Alert;
 import jloda.util.Basic;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.utils.nexus.TreesUtilities;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.HashSet;
-import java.util.Iterator;
 
 /**
  * Created by Daria on 04.10.2017.

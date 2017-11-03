@@ -16,8 +16,6 @@ import java.io.FileReader;
 import java.io.StringWriter;
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 /**
  * Created on 22.02.2017.
  * @author Daria

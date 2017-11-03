@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2017 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -34,8 +34,8 @@ import java.io.StringWriter;
  * report on the contents of a block
  * Created by huson on 1/31/17.
  */
-public class Report extends Algorithm<ADataBlock, AnalysisResultBlock> implements IFromAnalysisResults, IFromChararacters, IFromTrees, IFromNetworks, IFromDistances,
-        IFromSplits, IFromTaxa, IToAnalysisResults {
+public class Report extends Algorithm<ADataBlock, AnalysisResultBlock> implements IFromAnalysisResults, IFromChararacters, IFromTrees, IFromDistances,
+        IFromSplits, IFromTaxa, IToAnalysisResults, IFromNetwork, IToNetwork {
     @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, ADataBlock parent, AnalysisResultBlock child) throws Exception {
         try (final StringWriter w = new StringWriter()) {

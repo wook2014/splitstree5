@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2017 Daniel H. Huson
  *  
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *  
@@ -65,7 +65,7 @@ public class TreesNexusIO {
     }
 
     /**
-     * parse a splits block
+     * parse a trees block
      *
      * @param np
      * @param taxaBlock
@@ -109,7 +109,7 @@ public class TreesNexusIO {
             }
 
             if (tokens.size() != 0)
-                throw new IOException("line " + np.lineno() + ": '" + tokens + "' unexpected in FORMAT");
+                throw new IOException("line " + np.lineno() + ": '" + tokens + "' unexpected in PROPERTIES");
         }
 
         final ArrayList<String> taxonNamesFound = new ArrayList<>();

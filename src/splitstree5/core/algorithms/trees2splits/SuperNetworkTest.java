@@ -15,7 +15,6 @@ import java.io.FileReader;
 import java.io.StringWriter;
 
 import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.*;
 
 /**
  * Created on 09.06.2017.

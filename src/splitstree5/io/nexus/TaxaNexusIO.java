@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2017 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -34,20 +34,16 @@ import java.util.ArrayList;
 public class TaxaNexusIO {
     private static final String NAME = "TAXA";
 
-    public static final String SYNTAX = "BEGIN DISTANCES;\n" +
+    public static final String SYNTAX = "BEGIN TAXA;\n" +
             "\t[TITLE title;]\n" +
-            "\t[LINK name = title;]\n" +
-            "\t[DIMENSIONS [NTAX=number-of-taxaBlock];]\n" +
-            "\t[FORMAT\n" +
-            "\t    [TRIANGLE={LOWER|UPPER|BOTH}]\n" +
-            "\t    [[NO] DIAGONAL]\n" +
-            "\t    [LABELS={LEFT|NO}]\n" +
+            "\tDIMENSIONS NTAX=number-of-taxa;\n" +
+            "\t[TAXLABELS\n" +
+            "\t\tlist-of-labels\n" +
             "\t;]\n" +
-            "\tMATRIX\n" +
-            "\t    distance data in specified format\n" +
-            "\t;\n" +
+            "\t[TAXINFO\n" +
+            "\t\tlist-of-info-items\n" +
+            "\t;]\n" +
             "END;\n";
-
 
     /**
      * gets syntax
@@ -105,7 +101,7 @@ public class TaxaNexusIO {
             np.matchIgnoreCase(";");
         }
 
-        if (labelsDetected && np.peekMatchIgnoreCase("taxinfo")) // grab labels now
+        if (labelsDetected && np.peekMatchIgnoreCase("taxinfo")) // get info for labels
         {
             np.matchIgnoreCase("taxinfo");
 
@@ -135,7 +131,7 @@ public class TaxaNexusIO {
         w.write("\tTAXLABELS\n");
         for (int i = 1; i <= taxaBlock.getNtax(); i++)
             w.write("\t\t[" + i + "] '" + taxaBlock.get(i).getName() + "'\n");
-        w.write(";\n");
+        w.write("\t;\n");
         if (hasInfos(taxaBlock)) {
             w.write("\tTAXINFO\n");
             for (int i = 1; i <= taxaBlock.getNtax(); i++)
@@ -156,5 +152,4 @@ public class TaxaNexusIO {
                 return true;
         return false;
     }
-
 }

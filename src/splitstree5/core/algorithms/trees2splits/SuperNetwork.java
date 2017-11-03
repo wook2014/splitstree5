@@ -3,8 +3,12 @@ package splitstree5.core.algorithms.trees2splits;
 import javafx.beans.property.SimpleObjectProperty;
 import jloda.graph.Edge;
 import jloda.graph.Node;
+import jloda.graph.NotOwnerException;
 import jloda.phylo.PhyloTree;
-import jloda.util.*;
+import jloda.util.Basic;
+import jloda.util.CanceledException;
+import jloda.util.ProgressListener;
+import jloda.util.ProgressPercentage;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToSplits;
@@ -46,7 +50,7 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock)
             throws Exception {
 
-        /**
+        /*
          * Determine the set of taxa for partial trees.
          * If the block contains partial trees, then the translate statement must mention all
          * taxa. We use this info to build a taxa block
@@ -333,8 +337,7 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
      * @param pSplitsOfTree partial splits are returned here
      * @param support       supporting taxa are returned here
      */
-    private void computePartialSplits(TaxaBlock taxa, TreesBlock trees, int which,
-                                      Map pSplitsOfTree, BitSet support) throws NotOwnerException {
+    private void computePartialSplits(TaxaBlock taxa, TreesBlock trees, int which, Map pSplitsOfTree, BitSet support) {
         List list = new LinkedList(); // list of (onesided) partial splits
         Node v = trees.getTrees().get(which-1).getFirstNode();
         computePSplitsFromTreeRecursively(v, null, trees, taxa, list, which, support);
@@ -348,8 +351,7 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
 
     // recursively compute the splits:
 
-    private BitSet computePSplitsFromTreeRecursively(Node v, Edge e, TreesBlock trees,
-                                                      TaxaBlock taxa, List list, int which, BitSet seen) throws NotOwnerException {
+    private BitSet computePSplitsFromTreeRecursively(Node v, Edge e, TreesBlock trees, TaxaBlock taxa, List list, int which, BitSet seen) {
         PhyloTree tree = trees.getTrees().get(which-1);
         BitSet e_taxa = new BitSet();
         if (taxa.indexOf(tree.getLabel(v)) != -1)

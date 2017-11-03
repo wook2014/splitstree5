@@ -1,15 +1,15 @@
 package splitstree5.core.algorithms.characters2distances;
 
-import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.gui.dialog.Alert;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
+import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.CharactersType;
 import splitstree5.core.models.NucleotideModel;
+import splitstree5.gui.dialog.Alert;
 import splitstree5.utils.nexus.CharactersUtilities;
 import splitstree5.utils.nexus.SplitsException;
 

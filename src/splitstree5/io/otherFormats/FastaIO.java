@@ -1,16 +1,13 @@
 package splitstree5.io.otherFormats;
 
+import splitstree5.core.algorithms.interfaces.IFromChararacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.datablocks.characters.AmbiguityCodes;
-import splitstree5.core.datablocks.characters.CharactersType;
-import splitstree5.io.otherFormats.CharactersFormat;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -18,7 +15,7 @@ import java.util.Map;
  * Import Characters in FastA format.
  * Daria Evseeva, 07.2017
  */
-public class FastaIO extends CharactersFormat{
+public class FastaIO extends CharactersFormat implements IFromChararacters {
 
     // todo : check parameter for all sequences or only for the first one?
     //public enum ID {ncbi, gb, emb, dbj, pir, prf, sp, pdb, pat, bbs, gnl, ref, lcl, unknown}
@@ -47,11 +44,12 @@ public class FastaIO extends CharactersFormat{
 
 
             while ((line = in.readLine()) != null) {
+                counter++;
 
                 if (line.startsWith(";"))
                     continue;
                 if (line.equals(">"))
-                    throw new IOException("No taxa label given at the sequence " + (ntax + 1));
+                    throw new IOException("No taxa label given at the sequence " + (ntax + 1) + " in line: " + counter);
 
                 if (line.startsWith(">")) {
                     startedNewSequence = true;
@@ -62,15 +60,16 @@ public class FastaIO extends CharactersFormat{
                         if (!sequence.equals("")) matrix.add(sequence);
                         if (nchar != 0 && nchar != sequenceLength) {
                             throw new IOException("Sequences must be the same length. Wrong number of chars at the sequence "
-                                    + (ntax - 1)+" line: "+counter);
+                                    + (ntax - 1) + " in line: " + counter);
                         }
                         nchar = sequenceLength;
                         sequenceLength = 0;
                         sequence = "";
                         startedNewSequence = false;
                     }
-                    sequenceLength += line.length();
-                    sequence += line;
+                    String add = line.replaceAll("\\s+", "");
+                    sequenceLength += add.length();
+                    sequence += line.replaceAll("\\s+", "");
                 }
             }
 

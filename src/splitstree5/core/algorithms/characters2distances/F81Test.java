@@ -13,7 +13,7 @@ import splitstree5.io.nexus.CharactersNexusIO;
 import java.io.FileReader;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
 
 /**
  * Created on 21.02.2017.

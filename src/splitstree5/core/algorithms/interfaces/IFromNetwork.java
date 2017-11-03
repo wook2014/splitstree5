@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2017 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -20,10 +20,9 @@
 package splitstree5.core.algorithms.interfaces;
 
 /**
- * from networks interface.
- * this is used to identify algorithms at runtime
- * Created by huson on 1/31/17.
+ * from network interface.
+ * Daniel Huson, 6.2017
  */
-public interface IFromNetworks {
+public interface IFromNetwork {
 
 }

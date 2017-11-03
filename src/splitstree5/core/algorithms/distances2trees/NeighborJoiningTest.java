@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2017 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -31,7 +31,6 @@ import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.Taxon;
 import splitstree5.io.nexus.CharactersNexusFormat;
 import splitstree5.io.nexus.CharactersNexusIO;
-import splitstree5.io.nexus.DistancesNexusIO;
 
 import java.io.FileReader;
 import java.util.List;

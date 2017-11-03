@@ -5,16 +5,16 @@ import jloda.util.ProgressPercentage;
 import jloda.util.parse.NexusStreamParser;
 import org.junit.Test;
 import splitstree5.core.algorithms.distances2trees.NeighborJoining;
-import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.io.nexus.*;
+import splitstree5.io.nexus.DistancesNexusIO;
+import splitstree5.io.nexus.TaxaNexusIO;
+import splitstree5.io.nexus.TreesNexusIO;
 
 import java.io.FileReader;
-import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
 
 /**
  * Created on 07.06.2017.

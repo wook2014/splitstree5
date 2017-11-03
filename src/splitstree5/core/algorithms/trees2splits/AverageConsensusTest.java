@@ -3,17 +3,18 @@ package splitstree5.core.algorithms.trees2splits;
 import jloda.util.ProgressPercentage;
 import jloda.util.parse.NexusStreamParser;
 import org.junit.Test;
-import splitstree5.core.algorithms.characters2distances.Uncorrected_P;
-import splitstree5.core.algorithms.distances2trees.NeighborJoining;
-import splitstree5.core.datablocks.*;
+import splitstree5.core.datablocks.SplitsBlock;
+import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
-import splitstree5.io.nexus.*;
+import splitstree5.io.nexus.SplitsNexusIO;
+import splitstree5.io.nexus.TaxaNexusIO;
+import splitstree5.io.nexus.TreesNexusIO;
 
 import java.io.FileReader;
 import java.io.StringWriter;
 
 import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.*;
 
 /**
  * Created on 09.06.2017.

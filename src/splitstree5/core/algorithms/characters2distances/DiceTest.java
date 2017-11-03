@@ -14,7 +14,8 @@ import splitstree5.io.nexus.DistancesNexusIO;
 import java.io.FileReader;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created on 05.03.2017.
