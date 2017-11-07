@@ -132,11 +132,11 @@ public class PhyloGraph extends Graph {
         }
         for (Edge e = src.getFirstEdge(); e != null; e = src.getNextEdge(e)) {
             Edge f = (oldEdge2NewEdge.get(e));
-            edgeWeights.set(f, src.edgeWeights.get(e));
-            edgeLabels.set(f, src.edgeLabels.get(e));
-            edgeConfidences.set(f, src.edgeConfidences.get(e));
-            edgeAngles.set(f, src.edgeAngles.get(e));
-            splits.set(f, src.splits.get(e));
+            edgeWeights.put(f, src.edgeWeights.get(e));
+            edgeLabels.put(f, src.edgeLabels.get(e));
+            edgeConfidences.put(f, src.edgeConfidences.get(e));
+            edgeAngles.put(f, src.edgeAngles.get(e));
+            splits.put(f, src.splits.get(e));
         }
         for (int i = 0; i < src.taxon2node.size(); i++) {
             Node v = src.getTaxon2Node(i + 1);
@@ -198,7 +198,7 @@ public class PhyloGraph extends Graph {
      * @param d angle
      */
     public void setAngle(Edge e, double d) {
-        edgeAngles.set(e, d);
+        edgeAngles.put(e, d);
     }
 
     /**
@@ -221,7 +221,7 @@ public class PhyloGraph extends Graph {
      * @param d double
      */
     public void setWeight(Edge e, double d) {
-        edgeWeights.set(e, d);
+        edgeWeights.put(e, d);
     }
 
     /**
@@ -245,7 +245,7 @@ public class PhyloGraph extends Graph {
      * @param lab String
      */
     public void setLabel(Edge e, String lab) {
-        edgeLabels.set(e, lab);
+        edgeLabels.put(e, lab);
     }
 
     /**
@@ -266,7 +266,7 @@ public class PhyloGraph extends Graph {
      */
     public void setConfidence(Edge e, double d) {
         edgeConfidencesSet = true;
-        edgeConfidences.set(e, d);
+        edgeConfidences.put(e, d);
     }
 
     /**
@@ -332,7 +332,7 @@ public class PhyloGraph extends Graph {
      * @param id the id
      */
     public void setSplit(Edge e, int id) {
-        splits.set(e, id);
+        splits.put(e, id);
     }
 
     /**

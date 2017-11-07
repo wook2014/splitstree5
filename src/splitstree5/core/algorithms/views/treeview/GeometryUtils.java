@@ -41,12 +41,13 @@ import javafx.geometry.Point2D;
 
 public class GeometryUtils {
     private final static double RAD_TO_DEG_FACTOR = 180.0 / Math.PI;
+    private final static double DEG_TO_RAD_FACTOR = Math.PI / 180.0;
 
     /**
      * Computes the angle of a two-dimensional vector.
      *
      * @param p Point2D
-     * @return angle double
+     * @return angle in degrees
      */
     public static double computeAngle(Point2D p) {
         if (p.getX() != 0) {
@@ -72,8 +73,17 @@ public class GeometryUtils {
             return rad2deg(-0.5 * Math.PI);
     }
 
-    public static double rad2deg(double rad) {
-        return RAD_TO_DEG_FACTOR * rad;
+    public static double rad2deg(double angle) {
+        angle *= RAD_TO_DEG_FACTOR;
+        while (angle > 360)
+            angle -= 360;
+        while (angle < 0)
+            angle += 360;
+        return angle;
+    }
+
+    public static double deg2rad(double deg) {
+        return DEG_TO_RAD_FACTOR * deg;
     }
 
     /**
@@ -95,13 +105,13 @@ public class GeometryUtils {
      * Translate a point in the direction specified by an angle.
      *
      * @param apt   Point2D
-     * @param alpha double
+     * @param alpha double in degrees
      * @param dist  double
      * @return Point2D
      */
     public static Point2D translateByAngle(Point2D apt, double alpha, double dist) {
-        double dx = dist * Math.cos(alpha);
-        double dy = dist * Math.sin(alpha);
+        double dx = dist * Math.cos(DEG_TO_RAD_FACTOR * alpha);
+        double dy = dist * Math.sin(DEG_TO_RAD_FACTOR * alpha);
         if (Math.abs(dx) < 0.000000001)
             dx = 0;
         if (Math.abs(dy) < 0.000000001)
@@ -113,12 +123,12 @@ public class GeometryUtils {
      * Rotates a two-dimensional vector by the angle alpha.
      *
      * @param p     point
-     * @param alpha angle in radian
+     * @param alpha angle in degree
      * @return q point rotated around origin
      */
     public static Point2D rotate(Point2D p, double alpha) {
-        double sina = Math.sin(alpha);
-        double cosa = Math.cos(alpha);
+        double sina = Math.sin(DEG_TO_RAD_FACTOR * alpha);
+        double cosa = Math.cos(DEG_TO_RAD_FACTOR * alpha);
         return new Point2D(p.getX() * cosa - p.getY() * sina, p.getX() * sina + p.getY() * cosa);
     }
 }

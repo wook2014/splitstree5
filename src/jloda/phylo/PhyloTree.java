@@ -143,7 +143,7 @@ public class PhyloTree extends PhyloGraph {
      * @param a String
      */
     public void setLabel(Edge e, String a) throws NotOwnerException {
-        edgeLabels.set(e, a);
+        edgeLabels.put(e, a);
     }
 
     /**
@@ -925,8 +925,8 @@ public class PhyloTree extends PhyloGraph {
         setWeight(vu, weightToSource);
         setWeight(uw, weightToTarget);
         if (edgeLabels != null) {
-            edgeLabels.set(vu, edgeLabels.get(e));
-            edgeLabels.set(uw, edgeLabels.get(e));
+            edgeLabels.put(vu, edgeLabels.get(e));
+            edgeLabels.put(uw, edgeLabels.get(e));
         }
 
         deleteEdge(e);
@@ -948,10 +948,10 @@ public class PhyloTree extends PhyloGraph {
                     for (Edge e = oldRoot.getFirstOutEdge(); e != null; e = oldRoot.getNextOutEdge(e)) {
                         if (label == null && edgeLabels.get(e) != null)
                             label = edgeLabels.get(e);
-                        edgeLabels.set(e, null);
+                        edgeLabels.put(e, null);
                     }
                     final Edge e = delDivertex(oldRoot);
-                    edgeLabels.set(e, label);
+                    edgeLabels.put(e, label);
                 } else
                     delDivertex(oldRoot);
             }

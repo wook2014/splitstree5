@@ -67,9 +67,10 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock parent, TreeViewBlock child) throws Exception {
         progressListener.setTasks("Tree viewer", "Init.");
 
-
         if (parent.getNTrees() > 0) {
             final PhyloTree tree = parent.getTrees().get(0);
+            child.init(tree);
+
             if (tree.getRoot() == null && tree.getNumberOfNodes() > 0) {
                 for (Node v : tree.nodes()) {
                     if (v.getDegree() > 1 && tree.getLabel(v) == null) {
@@ -132,7 +133,8 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
 
                 // compute all views and put their parts into the appropriate groups
                 for (Node v : tree.nodes()) {
-                    final PhylogeneticNodeView nodeView = PhylogeneticNodeView.createDefaultNodeView(node2point.get(v), tree.getLabel(v));
+                    String text = (tree.getLabel(v) != null ? tree.getLabel(v) : "Node " + v.getId());
+                    final PhylogeneticNodeView nodeView = PhylogeneticNodeView.createDefaultNodeView(v, node2point.get(v), text, child.getNodeSelectionModel());
                     child.getNode2view().put(v, nodeView);
                     final Group parts = nodeView.getParts();
                     if (parts != null)
@@ -154,7 +156,6 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
                     if (labels != null)
                         child.getEdgeLabelsGroup().getChildren().addAll(labels);
                 }
-
             }
         }
 
@@ -220,19 +221,19 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
     private int setAnglesForCircularLayoutRec(final Node v, final Edge f, int nextLeafNum, final int angleParts, final EdgeFloatArray edgeAngles) {
         if (v.getOutDegree() == 0) {
             if (f != null)
-                edgeAngles.set(f, (float) (2 * Math.PI / angleParts * nextLeafNum));
+                edgeAngles.put(f, (float) (360.0 / angleParts * nextLeafNum));
             return nextLeafNum + 1;
         } else {
             if (isAllChildrenAreLeaves(v)) { // treat these separately because we want to place them all slightly closer together
                 final int numberOfChildren = v.getOutDegree();
-                final float firstAngle = (float) (2 * (Math.PI / angleParts) * (nextLeafNum + leafGroupGapProperty.get() / 200f));
-                final float deltaAngle = (float) (2 * (Math.PI / angleParts) * (nextLeafNum + numberOfChildren - 1.0 - leafGroupGapProperty.get() / 200f)) - firstAngle;
+                final float firstAngle = (float) ((360.0 / angleParts) * (nextLeafNum + leafGroupGapProperty.get() / 200f));
+                final float deltaAngle = (float) ((360.0 / angleParts) * (nextLeafNum + numberOfChildren - 1.0 - leafGroupGapProperty.get() / 200f)) - firstAngle;
                 float angle = firstAngle;
                 for (Edge e : v.outEdges()) {
-                    edgeAngles.set(e, angle);
+                    edgeAngles.put(e, angle);
                     angle += deltaAngle;
                 }
-                edgeAngles.set(f, (float) ((2 * Math.PI / angleParts) * (nextLeafNum + 0.5 * (numberOfChildren - 1))));
+                edgeAngles.put(f, (float) ((360.0 / angleParts) * (nextLeafNum + 0.5 * (numberOfChildren - 1))));
                 nextLeafNum += numberOfChildren;
                 //edgeAngles.set(f, 0.5f * (firstAngle + lastAngle));
             } else {
@@ -250,9 +251,9 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
 
                 if (f != null) {
                     if (parentPlacement.getValue() == ParentPlacement.ChildrenAverage)
-                        edgeAngles.set(f, 0.5f * (firstAngle + lastAngle));
+                        edgeAngles.put(f, 0.5f * (firstAngle + lastAngle));
                     else {
-                        edgeAngles.set(f, (float) (Math.PI / angleParts * (firstLeaf + nextLeafNum - 1)));
+                        edgeAngles.put(f, (float) (180.0 / angleParts * (firstLeaf + nextLeafNum - 1)));
                     }
                 }
             }
@@ -335,7 +336,7 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
             final Point2D control2 = end.multiply(1 - getOptionCubicCurveChildControl() * distance / (100 * end.magnitude()));
             final Point2D mid = GeometryUtils.rotate(start, wAngle - vAngle);
             final EdgeControlPoints edgeControlPoints = new EdgeControlPoints(control1, mid, control2);
-            edge2controlPoints.set(e, edgeControlPoints);
+            edge2controlPoints.put(e, edgeControlPoints);
 
             computeEdgePointsForCircularRec(w, wAngle, angles, node2points, edge2controlPoints);
         }
@@ -436,7 +437,7 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
                 final Point2D control1 = start.add(cubicCurveParentControl.get() / 100.0 * (support.getX() - start.getX()), 0);
                 final Point2D control2 = support.add(-cubicCurveChildControl.get() / 100.0 * (support.getX() - start.getX()), 0);
 
-                edge2controlPoints.set(e, new EdgeControlPoints(control1, mid, control2, support));
+                edge2controlPoints.put(e, new EdgeControlPoints(control1, mid, control2, support));
 
                 computeEdgePointsForRectilinearRec(w, node2point, edge2controlPoints);
             }

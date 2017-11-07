@@ -58,7 +58,7 @@ public class EdgeArray<T> extends GraphBase implements EdgeAssociation<T> {
      */
     public EdgeArray(Graph g, T obj) {
         this(g);
-        setAll(obj);
+        putAll(obj);
         if (obj != null && isClear)
             isClear = true;
     }
@@ -71,7 +71,7 @@ public class EdgeArray<T> extends GraphBase implements EdgeAssociation<T> {
     public EdgeArray(EdgeAssociation<T> src) {
         setOwner(src.getOwner());
         for (Edge e = getOwner().getFirstEdge(); e != null; e = e.getNext())
-            set(e, src.get(e));
+            put(e, src.get(e));
         isClear = src.isClear();
     }
 
@@ -95,7 +95,7 @@ public class EdgeArray<T> extends GraphBase implements EdgeAssociation<T> {
      * @param e   Edge
      * @param obj Object
      */
-    public void set(Edge e, T obj) {
+    public void put(Edge e, T obj) {
         checkOwner(e);
         int id = e.getId();
         if (id >= data.length) {
@@ -106,6 +106,16 @@ public class EdgeArray<T> extends GraphBase implements EdgeAssociation<T> {
         data[id] = obj;
         if (obj != null && isClear)
             isClear = true;
+    }
+
+    @Override
+    public void set(Edge e, T obj) {
+        this.put(e, obj);
+    }
+
+    @Override
+    public void setAll(T obj) {
+        this.putAll(obj);
     }
 
     /**
@@ -133,9 +143,9 @@ public class EdgeArray<T> extends GraphBase implements EdgeAssociation<T> {
      *
      * @param obj Object
      */
-    public void setAll(T obj) {
+    public void putAll(T obj) {
         for (Edge e = getOwner().getFirstEdge(); e != null; e = e.getNext())
-            set(e, obj);
+            put(e, obj);
         if (obj != null && isClear)
             isClear = true;
     }
@@ -148,43 +158,9 @@ public class EdgeArray<T> extends GraphBase implements EdgeAssociation<T> {
             data = (T[]) new Object[getOwner().getMaxEdgeId() + 1];
         else
             for (Edge e = getOwner().getFirstEdge(); e != null; e = e.getNext())
-                set(e, null);
+                put(e, null);
         isClear = true;
     }
-
-    /**
-     * get the entry as an int
-     *
-     * @param e
-     * @return int value
-     */
-    public int getInt(Edge e) {
-        Object obj = get(e);
-        if (obj == null)
-            return 0;
-        else if (obj instanceof Double)
-            return (int) ((Double) obj).doubleValue();
-        else
-            return ((Integer) obj);
-
-    }
-
-    /**
-     * get the entry as a double
-     *
-     * @param e
-     * @return double value
-     */
-    public double getDouble(Edge e) {
-        Object obj = get(e);
-        if (obj == null)
-            return 0;
-        else if (obj instanceof Integer)
-            return ((Integer) obj);
-        else
-            return ((Double) obj);
-    }
-
 
     /**
      * is clean, that is, has never been set since last erase

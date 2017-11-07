@@ -46,11 +46,26 @@ public interface NodeAssociation<T> {
     void set(Node v, T obj);
 
     /**
+     * Set the entry for node v to obj.
+     *
+     * @param v   Node
+     * @param obj Object
+     */
+    void put(Node v, T obj);
+
+    /**
      * Set the entry for all nodes to obj.
      *
      * @param obj Object
      */
     void setAll(T obj);
+
+    /**
+     * Set the entry for all nodes to obj.
+     *
+     * @param obj Object
+     */
+    void putAll(T obj);
 
     /**
      * returns a reference to the graph that owns this association

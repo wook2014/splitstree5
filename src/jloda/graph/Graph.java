@@ -693,7 +693,7 @@ public class Graph extends GraphBase {
             }
             if (f != null)
                 f.setInfo(e.getInfo());
-            oldEdge2newEdge.set(e, f);
+            oldEdge2newEdge.put(e, f);
         }
         idsEdges = src.idsEdges;
 
@@ -797,7 +797,7 @@ public class Graph extends GraphBase {
             if (as == null)
                 toDelete.add(ref); // reference is dead
             else {
-                as.set(edge, null);
+                as.put(edge, null);
             }
         }
         edgeAssociations.removeAll(toDelete);

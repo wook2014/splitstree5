@@ -115,6 +115,18 @@ public class NodeDoubleArray extends GraphBase implements NodeAssociation<Double
         data[v.getId()] = obj;
     }
 
+    @Override
+    public void put(Node v, Double obj) {
+        set(v, obj);
+    }
+
+    @Override
+    public void putAll(Double obj) {
+        setAll(obj);
+    }
+
+
+
     /**
      * grows the array. Repeatedly doubles the size of the array until it contains index n
      *

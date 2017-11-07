@@ -119,6 +119,16 @@ public class NodeArray<T> extends GraphBase implements NodeAssociation<T> {
             isClear = false;
     }
 
+    @Override
+    public void put(Node v, T obj) {
+        set(v, obj);
+    }
+
+    @Override
+    public void putAll(T obj) {
+        setAll(obj);
+    }
+
     /**
      * grows the array. Repeatedly doubles the size of the array until it contains index n
      *

@@ -82,14 +82,14 @@ public class EdgeLengthsCalculation {
             }
             case Uniform: {
                 for (Edge e : tree.edges()) {
-                    edgeLengths.set(e, 1f);
+                    edgeLengths.put(e, 1f);
                 }
                 break;
             }
             default:
             case Weights: {
                 for (Edge e : tree.edges()) {
-                    edgeLengths.set(e, (float) (Math.max(0, tree.getWeight(e))));
+                    edgeLengths.put(e, (float) (Math.max(0, tree.getWeight(e))));
                 }
                 break;
             }
@@ -141,9 +141,9 @@ public class EdgeLengthsCalculation {
         for (Edge e : v.outEdges()) {
             final Node w = e.getTarget();
             if (w.getOutDegree() == 0) {
-                edgeLengths.set(e, (float) (maxDepth - depth));
+                edgeLengths.put(e, (float) (maxDepth - depth));
             } else {
-                edgeLengths.set(e, 1f);
+                edgeLengths.put(e, 1f);
                 setEdgeLengthsEarlyBranchingRec(maxDepth, depth + 1, w, edgeLengths);
             }
         }
@@ -162,7 +162,7 @@ public class EdgeLengthsCalculation {
             depth = Math.max(depth, setEdgeLengthsRec(e.getTarget(), node2depth, edgeLengths) + 1);
         }
         for (Edge e : v.outEdges()) {
-            edgeLengths.set(e, depth - node2depth.get(e.getTarget().getId()));
+            edgeLengths.put(e, depth - node2depth.get(e.getTarget().getId()));
         }
         return depth;
     }

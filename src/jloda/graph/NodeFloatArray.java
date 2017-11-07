@@ -105,6 +105,17 @@ public class NodeFloatArray extends GraphBase implements NodeAssociation<Float> 
         data[v.getId()] = obj;
     }
 
+    @Override
+    public void put(Node v, Float obj) {
+        set(v, obj);
+    }
+
+    @Override
+    public void putAll(Float obj) {
+        setAll(obj);
+    }
+
+
     /**
      * grows the array. Repeatedly doubles the size of the array until it contains index n
      *

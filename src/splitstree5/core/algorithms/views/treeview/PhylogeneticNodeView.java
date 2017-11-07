@@ -37,12 +37,17 @@
  */
 package splitstree5.core.algorithms.views.treeview;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.beans.WeakInvalidationListener;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import jloda.fx.ASelectionModel;
 
 /**
  * node view
@@ -91,18 +96,53 @@ public class PhylogeneticNodeView {
      * @param text
      * @return
      */
-    public static PhylogeneticNodeView createDefaultNodeView(Point2D location, String text) {
+    public static PhylogeneticNodeView createDefaultNodeView(jloda.graph.Node v, Point2D location, String text, ASelectionModel<jloda.graph.Node> selectionModel) {
         final PhylogeneticNodeView nodeView = new PhylogeneticNodeView();
         nodeView.setLocation(location);
         Circle circle = new Circle(location.getX(), location.getY(), 2);
         nodeView.addParts(circle);
         circle.setFill(Color.BLUE);
+        Label label;
         if (text != null && text.length() > 0) {
-            Label label = new Label(text);
-            label.setLayoutX(location.getX() + circle.getRadius() + 3);
+            label = new Label(text);
+            label.setLayoutX(location.getX() + circle.getRadius());
             label.setLayoutY(location.getY());
             nodeView.addLabels(label);
-        }
+        } else
+            label = null;
+        circle.setOnMouseClicked((e) -> {
+            if (!e.isShiftDown())
+                selectionModel.clearSelection();
+            if (selectionModel.getSelectedItems().contains(v))
+                selectionModel.clearSelection(v);
+            else
+                selectionModel.select(v);
+        });
+        if (label != null)
+            label.setOnMouseClicked((e) -> {
+                if (!e.isShiftDown())
+                    selectionModel.clearSelection();
+                if (selectionModel.getSelectedItems().contains(v))
+                    selectionModel.clearSelection(v);
+                else
+                    selectionModel.select(v);
+            });
+        selectionModel.getSelectedItems().addListener(new WeakInvalidationListener(new InvalidationListener() {
+            @Override
+            public void invalidated(Observable observable) {
+                if (selectionModel.getSelectedItems().contains(v)) {
+                    circle.setEffect(new DropShadow(5, Color.RED));
+                    if (label != null)
+                        label.setEffect(new DropShadow(5, Color.RED));
+                } else {
+                    circle.setEffect(null);
+                    if (label != null)
+                        label.setEffect(null);
+
+                }
+            }
+        }));
+
         return nodeView;
     }
 }

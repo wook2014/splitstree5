@@ -105,6 +105,17 @@ public class NodeIntegerArray extends GraphBase implements NodeAssociation<Integ
         data[v.getId()] = obj;
     }
 
+    @Override
+    public void put(Node v, Integer obj) {
+        set(v, obj);
+    }
+
+    @Override
+    public void putAll(Integer obj) {
+        setAll(obj);
+    }
+
+
     /**
      * grows the array. Repeatedly ints the size of the array until it contains index n
      *
