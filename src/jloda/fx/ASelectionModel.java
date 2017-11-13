@@ -148,6 +148,12 @@ public class ASelectionModel<T> extends MultipleSelectionModel<T> {
         }
     }
 
+    public void clearSelection(Collection<T> items) {
+        for (T item : items) {
+            clearSelection(item);
+        }
+    }
+
     @Override
     public void clearSelection(int index) {
         if (index >= 0 && index < items.length) {

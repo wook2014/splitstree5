@@ -33,7 +33,7 @@ package jloda.graph;
  * Daniel Huson, 2003
  */
 
-public class NodeEdge extends GraphBase {
+class NodeEdge extends GraphBase {
     protected Object info;
     private int id;
     NodeEdge prev;

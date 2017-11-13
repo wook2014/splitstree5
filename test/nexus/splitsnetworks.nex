@@ -10,7 +10,7 @@ e;
 end;
 
 begin st_networks;
-format type=SplitsNetwork partial=yes;
+format partial=no;
 translate
 1 a,
 2 b,

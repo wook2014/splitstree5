@@ -111,12 +111,14 @@ public class OptionsAccessor {
             try {
                 final Set<String> set = new HashSet<>();
                 final List list = (List) listMethod.invoke(optionable);
-                for (Object a : list) {
-                    String name = a.toString();
-                    if (name.startsWith("option"))
-                        name = name.replaceAll("^option", "");
-                    order.add(name);
-                    set.add(name);
+                if (list != null) {
+                    for (Object a : list) {
+                        String name = a.toString();
+                        if (name.startsWith("option"))
+                            name = name.replaceAll("^option", "");
+                        order.add(name);
+                        set.add(name);
+                    }
                 }
                 // add other parameters not mentioned in the order
                 for (String name : name2AnOption.keySet()) {

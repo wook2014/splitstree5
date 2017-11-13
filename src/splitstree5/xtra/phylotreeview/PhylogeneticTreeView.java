@@ -48,7 +48,7 @@ import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 import jloda.fx.ASelectionModel;
-import splitstree5.core.algorithms.views.treeview.GeometryUtils;
+import splitstree5.core.datablocks.view.GeometryUtils;
 
 import java.util.Collection;
 import java.util.Iterator;

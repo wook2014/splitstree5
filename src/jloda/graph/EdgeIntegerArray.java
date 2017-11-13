@@ -48,7 +48,7 @@ public class EdgeIntegerArray extends GraphBase implements EdgeAssociation<Integ
      */
     public EdgeIntegerArray(Graph g, Integer obj) {
         this(g);
-        putAll(obj);
+        setAll(obj);
     }
 
     /**
@@ -59,7 +59,7 @@ public class EdgeIntegerArray extends GraphBase implements EdgeAssociation<Integ
     public EdgeIntegerArray(EdgeAssociation<Integer> src) {
         setOwner(src.getOwner());
         for (Edge e = getOwner().getFirstEdge(); e != null; e = e.getNext())
-            put(e, src.get(e));
+            put(e, src.getValue(e));
         isClear = src.isClear();
     }
 
@@ -79,7 +79,15 @@ public class EdgeIntegerArray extends GraphBase implements EdgeAssociation<Integ
      * @param e Edge
      * @return an object the entry for edge e
      */
-    public Integer get(Edge e) {
+    public Integer getValue(Edge e) {
+        checkOwner(e);
+        if (e.getId() < data.length)
+            return data[e.getId()];
+        else
+            return 0;
+    }
+
+    public int get(Edge e) {
         checkOwner(e);
         if (e.getId() < data.length)
             return data[e.getId()];
@@ -93,7 +101,7 @@ public class EdgeIntegerArray extends GraphBase implements EdgeAssociation<Integ
      * @param e   Edge
      * @param obj Object
      */
-    public void put(Edge e, Integer obj) {
+    public void setValue(Edge e, Integer obj) {
         checkOwner(e);
         if (obj == null)
             obj = 0;
@@ -106,14 +114,33 @@ public class EdgeIntegerArray extends GraphBase implements EdgeAssociation<Integ
         data[e.getId()] = obj;
     }
 
+    public void set(Edge e, int value) {
+        checkOwner(e);
+        if (isClear)
+            isClear = false;
+
+        if (e.getId() >= data.length) {
+            grow(e.getId());
+        }
+        data[e.getId()] = value;
+    }
+
     @Override
-    public void set(Edge e, Integer obj) {
-        this.put(e, obj);
+    public void put(Edge e, Integer obj) {
+        this.setValue(e, obj);
     }
 
     @Override
     public void setAll(Integer obj) {
-        this.putAll(obj);
+        if (obj == null)
+            obj = 0;
+        for (Edge e = getOwner().getFirstEdge(); e != null; e = e.getNext()) {
+            if (e.getId() >= data.length) {
+                grow(e.getId());
+            }
+            data[e.getId()] = obj;
+        }
+        isClear = (obj == 0);
     }
 
     /**
@@ -134,23 +161,6 @@ public class EdgeIntegerArray extends GraphBase implements EdgeAssociation<Integ
             }
             data = newData;
         }
-    }
-
-    /**
-     * Set the entry for all edges.
-     *
-     * @param obj Object
-     */
-    public void putAll(Integer obj) {
-        if (obj == null)
-            obj = 0;
-        for (Edge e = getOwner().getFirstEdge(); e != null; e = e.getNext()) {
-            if (e.getId() >= data.length) {
-                grow(e.getId());
-            }
-            data[e.getId()] = obj;
-        }
-        isClear = (obj == 0);
     }
 
     /**

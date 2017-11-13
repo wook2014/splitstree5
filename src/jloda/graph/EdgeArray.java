@@ -29,12 +29,15 @@
 package jloda.graph;
 
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 /**
  * Edge array
  * Daniel Huson 2004
  */
 
-public class EdgeArray<T> extends GraphBase implements EdgeAssociation<T> {
+public class EdgeArray<T> extends GraphBase implements EdgeAssociation<T>, Iterable<T> {
     private T data[];
     private boolean isClear = true;
 
@@ -71,7 +74,7 @@ public class EdgeArray<T> extends GraphBase implements EdgeAssociation<T> {
     public EdgeArray(EdgeAssociation<T> src) {
         setOwner(src.getOwner());
         for (Edge e = getOwner().getFirstEdge(); e != null; e = e.getNext())
-            put(e, src.get(e));
+            put(e, src.getValue(e));
         isClear = src.isClear();
     }
 
@@ -81,12 +84,16 @@ public class EdgeArray<T> extends GraphBase implements EdgeAssociation<T> {
      * @param e Edge
      * @return an object the entry for edge e
      */
-    public T get(Edge e) {
+    public T getValue(Edge e) {
         checkOwner(e);
         if (e.getId() < data.length)
             return data[e.getId()];
         else
             return null;
+    }
+
+    public T get(Edge e) {
+        return getValue(e);
     }
 
     /**
@@ -109,7 +116,7 @@ public class EdgeArray<T> extends GraphBase implements EdgeAssociation<T> {
     }
 
     @Override
-    public void set(Edge e, T obj) {
+    public void setValue(Edge e, T obj) {
         this.put(e, obj);
     }
 
@@ -170,6 +177,47 @@ public class EdgeArray<T> extends GraphBase implements EdgeAssociation<T> {
     public boolean isClear() {
         return isClear;
     }
+
+    /**
+     * get an iterable over all defined values
+     *
+     * @return iterable over avalues
+     */
+    public Iterator<T> iterator() {
+        return new Iterator<T>() {
+            private Edge e = getOwner().getFirstEdge();
+
+            {
+                while (e != null) {
+                    if (data[e.getId()] != null)
+                        break;
+                    e = e.getNext();
+                }
+            }
+
+            @Override
+            public boolean hasNext() {
+                return e != null;
+            }
+
+            @Override
+            public T next() {
+                if (e == null)
+                    throw new NoSuchElementException();
+                T result = data[e.getId()];
+                e = e.getNext();
+                {
+                    while (e != null) {
+                        if (data[e.getId()] != null)
+                            break;
+                        e = e.getNext();
+                    }
+                }
+                return result;
+            }
+        };
+    }
 }
+
 
 // EOF

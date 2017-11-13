@@ -29,12 +29,15 @@
 package jloda.graph;
 
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 /**
  * Node array
  * Daniel Huson, 2003
  */
 
-public class NodeArray<T> extends GraphBase implements NodeAssociation<T> {
+public class NodeArray<T> extends GraphBase implements NodeAssociation<T>, Iterable<T> {
     private T[] data;
     private boolean isClear = true;
 
@@ -70,7 +73,7 @@ public class NodeArray<T> extends GraphBase implements NodeAssociation<T> {
     public NodeArray(NodeAssociation<T> src) {
         this(src.getOwner());
         for (Node v = getOwner().getFirstNode(); v != null; v = v.getNext())
-            set(v, src.get(v));
+            setValue(v, src.getValue(v));
         isClear = src.isClear();
     }
 
@@ -82,7 +85,7 @@ public class NodeArray<T> extends GraphBase implements NodeAssociation<T> {
             data = (T[]) new Object[getOwner().getMaxNodeId() + 1];
         else
             for (Node v = getOwner().getFirstNode(); v != null; v = v.getNext())
-                set(v, null);
+                setValue(v, null);
         isClear = true;
     }
 
@@ -92,12 +95,16 @@ public class NodeArray<T> extends GraphBase implements NodeAssociation<T> {
      * @param v Node
      * @return an Object the entry for node v
      */
-    public T get(Node v) {
+    public T getValue(Node v) {
         checkOwner(v);
         if (v.getId() < data.length)
             return data[v.getId()];
         else
             return null;
+    }
+
+    public T get(Node v) {
+        return getValue(v);
     }
 
     /**
@@ -106,7 +113,7 @@ public class NodeArray<T> extends GraphBase implements NodeAssociation<T> {
      * @param v   Node
      * @param obj Object
      */
-    public void set(Node v, T obj) {
+    public void setValue(Node v, T obj) {
         checkOwner(v);
 
         if (v.getId() >= data.length) {
@@ -119,14 +126,14 @@ public class NodeArray<T> extends GraphBase implements NodeAssociation<T> {
             isClear = false;
     }
 
-    @Override
-    public void put(Node v, T obj) {
-        set(v, obj);
+    public void set(Node v, T obj) {
+        setValue(v, obj);
     }
 
+
     @Override
-    public void putAll(T obj) {
-        setAll(obj);
+    public void put(Node v, T obj) {
+        setValue(v, obj);
     }
 
     /**
@@ -154,7 +161,7 @@ public class NodeArray<T> extends GraphBase implements NodeAssociation<T> {
      */
     public void setAll(T obj) {
         for (Node v = getOwner().getFirstNode(); v != null; v = v.getNext())
-            set(v, obj);
+            setValue(v, obj);
     }
 
 
@@ -165,7 +172,7 @@ public class NodeArray<T> extends GraphBase implements NodeAssociation<T> {
      * @return int value
      */
     public int getInt(Node v) {
-        T obj = get(v);
+        T obj = getValue(v);
         if (obj == null)
             return 0;
         else if (obj instanceof Double)
@@ -182,7 +189,7 @@ public class NodeArray<T> extends GraphBase implements NodeAssociation<T> {
      * @return double value
      */
     public double getDouble(Node v) {
-        T obj = get(v);
+        T obj = getValue(v);
         if (obj == null)
             return 0;
         else if (obj instanceof Integer)
@@ -209,9 +216,47 @@ public class NodeArray<T> extends GraphBase implements NodeAssociation<T> {
         Graph graph = getOwner();
         NodeArray<T> result = new NodeArray<>(graph);
         for (Node v = graph.getFirstNode(); v != null; v = v.getNext()) {
-            result.set(v, get(v));
+            result.setValue(v, getValue(v));
         }
         return result;
+    }
+
+    /**
+     * get an iterator over all non-null values
+     *
+     * @return iterator
+     */
+    public Iterator<T> iterator() {
+        return new Iterator<T>() {
+            private Node v = getOwner().getFirstNode();
+
+            {
+                while (v != null) {
+                    if (data[v.getId()] != null)
+                        break;
+                    v = v.getNext();
+                }
+            }
+
+            @Override
+            public boolean hasNext() {
+                return v != null;
+            }
+
+            @Override
+            public T next() {
+                if (v == null)
+                    throw new NoSuchElementException();
+                T result = data[v.getId()];
+                v = v.getNext();
+                while (v != null) {
+                    if (data[v.getId()] != null)
+                        break;
+                    v = v.getNext();
+                }
+                return result;
+            }
+        };
     }
 }
 

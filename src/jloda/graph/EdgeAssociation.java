@@ -30,7 +30,7 @@ public interface EdgeAssociation<T> {
      * @param e Edge
      * @return an object the entry for edge e
      */
-    T get(Edge e);
+    T getValue(Edge e);
 
     /**
      * Set the entry for edge e to obj.
@@ -41,19 +41,12 @@ public interface EdgeAssociation<T> {
     void put(Edge e, T obj);
 
     /**
-     * Set the entry for all edges.
-     *
-     * @param obj Object
-     */
-    void putAll(T obj);
-
-    /**
      * Set the entry for edge e to obj.
      *
      * @param e   Edge
      * @param obj Object
      */
-    void set(Edge e, T obj);
+    void setValue(Edge e, T obj);
 
     /**
      * Set the entry for all edges.

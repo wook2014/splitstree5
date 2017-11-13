@@ -35,7 +35,26 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package splitstree5.core.algorithms.views.treeview;
+
+/*
+ *  Copyright (C) 2016 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package splitstree5.core.datablocks.view;
 
 import javafx.geometry.Point2D;
 
@@ -112,9 +131,9 @@ public class GeometryUtils {
     public static Point2D translateByAngle(Point2D apt, double alpha, double dist) {
         double dx = dist * Math.cos(DEG_TO_RAD_FACTOR * alpha);
         double dy = dist * Math.sin(DEG_TO_RAD_FACTOR * alpha);
-        if (Math.abs(dx) < 0.000000001)
+        if (Math.abs(dx) < 0.000001)
             dx = 0;
-        if (Math.abs(dy) < 0.000000001)
+        if (Math.abs(dy) < 0.000001)
             dy = 0;
         return new Point2D(apt.getX() + dx, apt.getY() + dy);
     }
@@ -131,4 +150,34 @@ public class GeometryUtils {
         double cosa = Math.cos(DEG_TO_RAD_FACTOR * alpha);
         return new Point2D(p.getX() * cosa - p.getY() * sina, p.getX() * sina + p.getY() * cosa);
     }
+
+    /**
+     * put angle into range 0-360
+     *
+     * @param degrees
+     * @return shifted angle
+     */
+    public static double modulo360(double degrees) {
+        while (degrees > 360)
+            degrees -= 360;
+        while (degrees < 0)
+            degrees += 360;
+        return degrees;
+    }
+
+    /**
+     * returns the average of angles A and B
+     *
+     * @param AngleA in deg
+     * @param AngleB in deg
+     */
+    public static double midAngle(double AngleA, double AngleB) {
+        if (modulo360(AngleA - AngleB) < 180) {
+            return modulo360(AngleB + (modulo360(AngleA - AngleB)) / 2);
+        } else {
+            return modulo360(AngleB - (modulo360(AngleB - AngleA)) / 2);
+        }
+
+    }
+
 }

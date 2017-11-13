@@ -36,7 +36,7 @@ import java.util.Set;
 /**
  * EdgeSet implements a set of edges contained in a given graph
  */
-public class EdgeSet extends GraphBase implements Set<Edge> {
+public class EdgeSet extends GraphBase implements Set<Edge>, Iterable<Edge> {
     final BitSet bits;
 
     /**

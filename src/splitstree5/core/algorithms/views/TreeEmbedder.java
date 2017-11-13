@@ -1,4 +1,23 @@
 /*
+ *  Copyright (C) 2016 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
  *  Copyright (C) 2017 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
@@ -25,27 +44,27 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
-import javafx.scene.Group;
 import jloda.graph.*;
+import jloda.phylo.PhyloGraph;
 import jloda.phylo.PhyloTree;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToTreeView;
-import splitstree5.core.algorithms.views.treeview.*;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreeViewBlock;
 import splitstree5.core.datablocks.TreesBlock;
+import splitstree5.core.datablocks.view.*;
 
 import java.util.Arrays;
 import java.util.List;
 
-
 /**
  * compute a visualization of a tree
+ * Daniel Huson, 11.2017
+ * todo: add support for rooted networks (as in Dendroscope)
  */
-public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements IFromTrees, IToTreeView {
-    public enum Layout {LeftToRight, Radial}
+public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implements IFromTrees, IToTreeView {
 
     public enum EdgeLengths {Weights, Uniform, Cladogram, CladogramEarlyBranching}
 
@@ -53,7 +72,7 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
 
     public enum EdgeShape {Straight, Angular, QuadCurve, CubicCurve}
 
-    private final Property<Layout> layout = new SimpleObjectProperty<>(Layout.LeftToRight);
+    private final Property<TreeViewBlock.Layout> layout = new SimpleObjectProperty<>(TreeViewBlock.Layout.LeftToRight);
     private final Property<EdgeLengths> edgeLengths = new SimpleObjectProperty<>(EdgeLengths.Weights);
     private final Property<ParentPlacement> parentPlacement = new SimpleObjectProperty<>(ParentPlacement.ChildrenAverage);
     private final Property<EdgeShape> edgeShape = new SimpleObjectProperty<>(EdgeShape.Straight);
@@ -67,9 +86,12 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock parent, TreeViewBlock child) throws Exception {
         progressListener.setTasks("Tree viewer", "Init.");
 
+        child.setLayout(getOptionLayout());
+
         if (parent.getNTrees() > 0) {
             final PhyloTree tree = parent.getTrees().get(0);
             child.init(tree);
+            child.updateSelectionModels(tree);
 
             if (tree.getRoot() == null && tree.getNumberOfNodes() > 0) {
                 for (Node v : tree.nodes()) {
@@ -89,8 +111,6 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
                 // todo: modify all code so that this is not necessary!
 
                 System.err.println("In compute");
-
-                child.updateSelectionModels(tree);
 
                 // compute edge lengths to reflect desired topology
                 final EdgeFloatArray edgeLengths = EdgeLengthsCalculation.computeEdgeLengths(tree, getOptionEdgeLengths());
@@ -134,27 +154,36 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
                 // compute all views and put their parts into the appropriate groups
                 for (Node v : tree.nodes()) {
                     String text = (tree.getLabel(v) != null ? tree.getLabel(v) : "Node " + v.getId());
-                    final PhylogeneticNodeView nodeView = PhylogeneticNodeView.createDefaultNodeView(v, node2point.get(v), text, child.getNodeSelectionModel());
+                    final ANodeView nodeView = TreeViewBlock.createNodeView(v, node2point.getValue(v), text, child.getNodeSelectionModel());
                     child.getNode2view().put(v, nodeView);
-                    final Group parts = nodeView.getParts();
-                    if (parts != null)
-                        child.getNodesGroup().getChildren().addAll(parts);
-                    final Group labels = nodeView.getLabels();
-                    if (labels != null)
-                        child.getNodeLabelsGroup().getChildren().addAll(labels);
+                    if (nodeView.getShape() != null)
+                        child.getNodesGroup().getChildren().addAll(nodeView.getShape());
+                    if (nodeView.getLabel() != null)
+                        child.getNodeLabelsGroup().getChildren().addAll(nodeView.getLabel());
                 }
                 for (Edge e : tree.edges()) {
-                    final EdgeControlPoints controlPoints = edge2controlPoints.get(e);
-                    final PhylogeneticEdgeView edgeView = PhylogeneticEdgeView.createDefaultEdgeView(getOptionLayout(), getOptionEdgeShape(), tree.getWeight(e),
-                            node2point.get(e.getSource()), controlPoints.getControl1(), controlPoints.getMid(),
-                            controlPoints.getControl2(), controlPoints.getSupport(), node2point.get(e.getTarget()));
+                    final EdgeControlPoints controlPoints = edge2controlPoints.getValue(e);
+                    final AEdgeView edgeView = TreeViewBlock.createEdgeView(e, getOptionLayout(), getOptionEdgeShape(), tree.getWeight(e),
+                            node2point.getValue(e.getSource()), controlPoints.getControl1(), controlPoints.getMid(),
+                            controlPoints.getControl2(), controlPoints.getSupport(), node2point.getValue(e.getTarget()), child.getEdgeSelectionModel());
                     child.getEdge2view().put(e, edgeView);
-                    final Group parts = edgeView.getParts();
-                    if (parts != null)
-                        child.getEdgesGroup().getChildren().addAll(parts);
-                    final Group labels = edgeView.getLabels();
-                    if (labels != null)
-                        child.getEdgeLabelsGroup().getChildren().addAll(labels);
+                    if (edgeView.getShape() != null)
+                        child.getEdgesGroup().getChildren().add(edgeView.getShape());
+                    if (edgeView.getLabel() != null)
+                        child.getEdgeLabelsGroup().getChildren().addAll(edgeView.getLabel());
+                }
+
+                if (false) {
+                    System.err.println("Nodes:");
+                    for (Node v : tree.nodes()) {
+                        Point2D pt = node2point.getValue(v);
+                        System.err.println(String.format("%d %.1f %.1f %s", v.getId(), pt.getX(), pt.getY(),
+                                (tree.getLabel(v) != null ? tree.getLabel(v) : "")));
+                    }
+                    System.err.println("Edges:");
+                    for (Edge e : tree.edges()) {
+                        System.err.println(e.getSource().getId() + " " + e.getTarget().getId());
+                    }
                 }
             }
         }
@@ -172,27 +201,27 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
      *
      * @param optionLayout
      * @param target
-     * @param tree
+     * @param phyloGraph
      * @param node2point
      */
-    private void scaleToFitTarget(Layout optionLayout, Dimension2D target, PhyloTree tree, NodeArray<Point2D> node2point) {
+    public static void scaleToFitTarget(TreeViewBlock.Layout optionLayout, Dimension2D target, PhyloGraph phyloGraph, NodeArray<Point2D> node2point) {
         // scale to target dimensions:
         final float factorX;
         final float factorY;
+        float maxX = Float.MIN_VALUE;
+        float maxY = Float.MIN_VALUE;
         {
             float minX = Float.MAX_VALUE;
-            float maxX = Float.MIN_VALUE;
             float minY = Float.MAX_VALUE;
-            float maxY = Float.MIN_VALUE;
-            for (Node v : tree.nodes()) {
-                final Point2D point = node2point.get(v);
+            for (Node v : phyloGraph.nodes()) {
+                final Point2D point = node2point.getValue(v);
                 minX = Math.min(minX, (float) point.getX());
                 maxX = Math.max(maxX, (float) point.getX());
                 minY = Math.min(minY, (float) point.getY());
                 maxY = Math.max(maxY, (float) point.getY());
             }
 
-            if (optionLayout == Layout.LeftToRight) {
+            if (optionLayout == TreeViewBlock.Layout.LeftToRight) {
                 factorX = (float) (target.getWidth() - 50) / (maxX - minX);
                 factorY = (float) (target.getHeight() - 50) / (maxY - minY);
             } else {
@@ -201,9 +230,9 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
         }
 
         if (factorX != 1 || factorY != 1) {
-            for (Node v : tree.nodes()) {
-                final Point2D point = node2point.get(v);
-                node2point.set(v, new Point2D(factorX * point.getX(), factorY * point.getY()));
+            for (Node v : phyloGraph.nodes()) {
+                final Point2D point = node2point.getValue(v);
+                node2point.setValue(v, new Point2D(factorX * point.getX(), factorY * point.getY()));
             }
         }
     }
@@ -243,7 +272,7 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
 
                 for (Edge e : v.outEdges()) {
                     nextLeafNum = setAnglesForCircularLayoutRec(e.getTarget(), e, nextLeafNum, angleParts, edgeAngles);
-                    final float angle = edgeAngles.get(e);
+                    final float angle = edgeAngles.getValue(e);
                     if (firstAngle == Float.MIN_VALUE)
                         firstAngle = angle;
                     lastAngle = angle;
@@ -271,11 +300,11 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
      * @param node2point
      */
     private void computeNodeLocationsForRadialRec(Node v, Point2D vPoint, EdgeFloatArray edgeLengths, EdgeFloatArray edgeAngles, NodeArray<Point2D> node2point) {
-        node2point.set(v, vPoint);
+        node2point.setValue(v, vPoint);
         for (Edge e : v.outEdges()) {
             final Node w = e.getTarget();
-            final Point2D wLocation = GeometryUtils.translateByAngle(vPoint, edgeAngles.get(e), 1000 * edgeLengths.get(e));
-            node2point.set(w, wLocation);
+            final Point2D wLocation = GeometryUtils.translateByAngle(vPoint, edgeAngles.getValue(e), 1000 * edgeLengths.getValue(e));
+            node2point.setValue(w, wLocation);
             computeNodeLocationsForRadialRec(w, wLocation, edgeLengths, edgeAngles, node2point);
         }
     }
@@ -289,11 +318,11 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
      */
     private void computeNodeLocationsForCircular(Node root, EdgeFloatArray edgeLengths, EdgeFloatArray edgeAngles, NodeArray<Point2D> node2point) {
         Point2D rootLocation = new Point2D(0.2, 0);
-        node2point.set(root, rootLocation);
+        node2point.setValue(root, rootLocation);
         for (Edge e = root.getFirstOutEdge(); e != null; e = root.getNextOutEdge(e)) {
             final Node w = e.getTarget();
-            final Point2D wLocation = GeometryUtils.translateByAngle(rootLocation, edgeAngles.get(e), 1000 * edgeLengths.get(e));
-            node2point.set(w, wLocation);
+            final Point2D wLocation = GeometryUtils.translateByAngle(rootLocation, edgeAngles.getValue(e), 1000 * edgeLengths.getValue(e));
+            node2point.setValue(w, wLocation);
             computeNodeLocationAndViewForCicularRec(rootLocation, w, wLocation, e, edgeLengths, edgeAngles, node2point);
         }
     }
@@ -310,9 +339,9 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
                                                          EdgeFloatArray edgeAngles, NodeArray<Point2D> node2point) {
         for (Edge f = v.getFirstOutEdge(); f != null; f = v.getNextOutEdge(f)) {
             final Node w = f.getTarget();
-            final Point2D b = GeometryUtils.rotateAbout(vLocation, edgeAngles.get(f) - edgeAngles.get(e), origin);
-            final Point2D c = GeometryUtils.translateByAngle(b, edgeAngles.get(f), 1000 * edgeLengths.get(f));
-            node2point.set(w, c);
+            final Point2D b = GeometryUtils.rotateAbout(vLocation, edgeAngles.getValue(f) - edgeAngles.getValue(e), origin);
+            final Point2D c = GeometryUtils.translateByAngle(b, edgeAngles.getValue(f), 1000 * edgeLengths.getValue(f));
+            node2point.setValue(w, c);
             computeNodeLocationAndViewForCicularRec(origin, w, c, f, edgeLengths, edgeAngles, node2point);
         }
     }
@@ -325,12 +354,12 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
      * @param angles
      */
     protected void computeEdgePointsForCircularRec(Node v, float vAngle, EdgeFloatArray angles, NodeArray<Point2D> node2points, EdgeArray<EdgeControlPoints> edge2controlPoints) {
-        Point2D start = node2points.get(v);
+        Point2D start = node2points.getValue(v);
         for (Edge e : v.outEdges()) {
             final Node w = e.getTarget();
-            final Point2D end = node2points.get(w);
+            final Point2D end = node2points.getValue(w);
 
-            float wAngle = angles.get(e);
+            float wAngle = angles.getValue(e);
             double distance = Math.max(1, end.magnitude() - start.magnitude());
             final Point2D control1 = start.multiply(1 + getOptionCubicCurveParentControl() * distance / (100 * start.magnitude()));
             final Point2D control2 = end.multiply(1 - getOptionCubicCurveChildControl() * distance / (100 * end.magnitude()));
@@ -352,7 +381,7 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
      */
     private float setNodeHeightsRec(final Node v, float nextLeafRank, final NodeFloatArray nodeHeights) {
         if (v.getOutDegree() == 0) {
-            nodeHeights.set(v, nextLeafRank);
+            nodeHeights.setValue(v, nextLeafRank);
             return nextLeafRank + 1;
         } else {
 
@@ -363,11 +392,11 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
                 float lastHeight = 0;
                 float height = firstHeight;
                 for (Edge e : v.outEdges()) {
-                    nodeHeights.set(e.getTarget(), height);
+                    nodeHeights.setValue(e.getTarget(), height);
                     lastHeight = height;
                     height += deltaHeight;
                 }
-                nodeHeights.set(v, 0.5f * (firstHeight + lastHeight));
+                nodeHeights.setValue(v, 0.5f * (firstHeight + lastHeight));
                 return nextLeafRank + numberOfChildren;
             } else {
                 final float firstLeafRnak = nextLeafRank;
@@ -377,16 +406,16 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
 
                 for (Edge e : v.outEdges()) {
                     nextLeafRank = setNodeHeightsRec(e.getTarget(), nextLeafRank, nodeHeights);
-                    final float eh = nodeHeights.get(e.getTarget());
+                    final float eh = nodeHeights.getValue(e.getTarget());
                     if (firstHeight == Float.MIN_VALUE)
                         firstHeight = eh;
                     lastHeight = eh;
                     lastLeaf = nextLeafRank;
                 }
                 if (parentPlacementProperty().getValue() == ParentPlacement.ChildrenAverage)
-                    nodeHeights.set(v, 0.5f * (firstHeight + lastHeight));
+                    nodeHeights.setValue(v, 0.5f * (firstHeight + lastHeight));
                 else
-                    nodeHeights.set(v, 0.5f * (firstLeafRnak + lastLeaf - 1));
+                    nodeHeights.setValue(v, 0.5f * (firstLeafRnak + lastLeaf - 1));
                 return nextLeafRank;
             }
         }
@@ -408,9 +437,9 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
      * @param nodeHeights
      */
     private void computeNodeLocationsForRectilinearRec(Node v, final float x0, EdgeFloatArray edgeLengths, NodeFloatArray nodeHeights, NodeArray<Point2D> node2point) {
-        node2point.set(v, new Point2D(x0, nodeHeights.get(v)));
+        node2point.setValue(v, new Point2D(x0, nodeHeights.getValue(v)));
         for (Edge e : v.outEdges()) {
-            computeNodeLocationsForRectilinearRec(e.getTarget(), x0 + edgeLengths.get(e), edgeLengths, nodeHeights, node2point);
+            computeNodeLocationsForRectilinearRec(e.getTarget(), x0 + edgeLengths.getValue(e), edgeLengths, nodeHeights, node2point);
         }
     }
 
@@ -422,16 +451,16 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
     private void computeEdgePointsForRectilinearRec(Node v, NodeArray<Point2D> node2point, EdgeArray<EdgeControlPoints> edge2controlPoints) {
         Point2D closestChild = null;
         for (Edge e : v.outEdges()) {
-            final Point2D point = node2point.get(e.getTarget());
+            final Point2D point = node2point.getValue(e.getTarget());
             if (closestChild == null || point.getX() < closestChild.getX())
                 closestChild = point;
         }
 
         if (closestChild != null) {
-            final Point2D start = node2point.get(v);
+            final Point2D start = node2point.getValue(v);
             for (Edge e : v.outEdges()) {
                 final Node w = e.getTarget();
-                final Point2D end = node2point.get(w);
+                final Point2D end = node2point.getValue(w);
                 final Point2D mid = new Point2D(start.getX(), end.getY());
                 final Point2D support = new Point2D(closestChild.getX(), end.getY());
                 final Point2D control1 = start.add(cubicCurveParentControl.get() / 100.0 * (support.getX() - start.getX()), 0);
@@ -456,26 +485,26 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
     private int computeEmbeddingForTriangularLayoutRec(Node v, Edge e, double hDistToRoot, int leafNumber, EdgeFloatArray edgeLengths, NodeArray<Point2D> node2point) {
         if (v.getOutDegree() == 0 && e != null)  // hit a leaf
         {
-            node2point.set(v, new Point2D(0, ++leafNumber)); // root node
+            node2point.setValue(v, new Point2D(0, ++leafNumber)); // root node
         } else {
             int old = leafNumber + 1;
             for (Edge f = v.getFirstAdjacentEdge(); f != null; f = v.getNextAdjacentEdge(f)) {
                 if (f != e) {
                     Node w = f.getOpposite(v);
-                    leafNumber = computeEmbeddingForTriangularLayoutRec(w, f, hDistToRoot + edgeLengths.get(f), leafNumber, edgeLengths, node2point);
+                    leafNumber = computeEmbeddingForTriangularLayoutRec(w, f, hDistToRoot + edgeLengths.getValue(f), leafNumber, edgeLengths, node2point);
                 }
             }
-            node2point.set(v, new Point2D(-0.5 * (leafNumber - old), 0.5 * (leafNumber + old)));
+            node2point.setValue(v, new Point2D(-0.5 * (leafNumber - old), 0.5 * (leafNumber + old)));
         }
         return leafNumber;
     }
 
 
-    public Layout getOptionLayout() {
+    public TreeViewBlock.Layout getOptionLayout() {
         return layout.getValue();
     }
 
-    public Property<Layout> layoutProperty() {
+    public Property<TreeViewBlock.Layout> layoutProperty() {
         return layout;
     }
 
@@ -483,7 +512,7 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
         return "Sets the tree layout to radial or fromLeft";
     }
 
-    public void setOptionLayout(Layout layoutProperty) {
+    public void setOptionLayout(TreeViewBlock.Layout layoutProperty) {
         this.layout.setValue(layoutProperty);
     }
 
@@ -563,7 +592,6 @@ public class TreeDrawer extends Algorithm<TreesBlock, TreeViewBlock> implements 
     public List<String> listOptions() {
         return Arrays.asList("optionLayout", "optionEdgeLengths", "optionEdgeShape", "optionParentPlacement",
                 "optionLeafGroupGapProperty", "optionCublicCurveChildControl", "optionCubicCurveParentControl");
-
     }
 }
 

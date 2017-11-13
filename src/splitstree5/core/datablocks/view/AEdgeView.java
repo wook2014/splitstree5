@@ -35,53 +35,71 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package splitstree5.core.algorithms.views.treeview;
+
+/*
+ *  Copyright (C) 2016 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package splitstree5.core.datablocks.view;
 
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
+import jloda.graph.Edge;
 
 /**
- * points used to determine how to draw an edge
+ * Edge view
  * Daniel Huson, 10.2017
  */
-public class EdgePoint {
-    public enum Type {StartPoint, EndPoint, Corner, MidPoint, SupportPoint, PrePoint, PostPoint}
+public class AEdgeView {
+    private Node shape;
+    private Node label;
+    private Point2D referencePoint;
 
-    private final Point2D point;
-    private final Type type;
+    private final Edge e;
 
-    public EdgePoint(Type type, Point2D point) {
-        this.point = point;
-        this.type = type;
+    public AEdgeView(Edge e) {
+        this.e = e;
     }
 
-    public Point2D getPoint() {
-        return point;
+    public void setShape(Node shape) {
+        this.shape = shape;
     }
 
-    public double getX() {
-        return point.getX();
+    public Node getShape() {
+        return shape;
     }
 
-    public double getY() {
-        return point.getY();
+    public void setLabel(Node label) {
+        this.label = label;
     }
 
-    public Type getType() {
-        return type;
+    public Node getLabel() {
+        return label;
     }
 
-    /**
-     * gets an edge point by type
-     *
-     * @param type
-     * @param edgePoints
-     * @return first edge point of given type or null
-     */
-    public static EdgePoint getByType(Type type, EdgePoint[] edgePoints) {
-        for (EdgePoint edgePoint : edgePoints) {
-            if (edgePoint.getType() == type)
-                return edgePoint;
-        }
-        return null;
+    public Point2D getReferencePoint() {
+        return referencePoint;
+    }
+
+    public void setReferencePoint(Point2D referencePoint) {
+        this.referencePoint = referencePoint;
+    }
+
+    public Edge getE() {
+        return e;
     }
 }

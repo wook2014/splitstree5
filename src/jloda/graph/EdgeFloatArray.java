@@ -46,7 +46,7 @@ public class EdgeFloatArray extends GraphBase implements EdgeAssociation<Float> 
      */
     public EdgeFloatArray(Graph g, Float obj) {
         this(g);
-        putAll(obj);
+        setAll(obj);
     }
 
     /**
@@ -57,7 +57,7 @@ public class EdgeFloatArray extends GraphBase implements EdgeAssociation<Float> 
     public EdgeFloatArray(EdgeAssociation<Float> src) {
         setOwner(src.getOwner());
         for (Edge e = getOwner().getFirstEdge(); e != null; e = e.getNext())
-            put(e, src.get(e));
+            put(e, src.getValue(e));
         isClear = src.isClear();
     }
 
@@ -70,14 +70,13 @@ public class EdgeFloatArray extends GraphBase implements EdgeAssociation<Float> 
         isClear = true;
     }
 
-
     /**
      * Get the entry for edge e.
      *
      * @param e Edge
      * @return an object the entry for edge e
      */
-    public Float get(Edge e) {
+    public Float getValue(Edge e) {
         checkOwner(e);
         if (e.getId() < data.length)
             return data[e.getId()];
@@ -86,12 +85,32 @@ public class EdgeFloatArray extends GraphBase implements EdgeAssociation<Float> 
     }
 
     /**
+     * Get the entry for edge e.
+     *
+     * @param e Edge
+     * @return the valjue
+     */
+    public float get(Edge e) {
+        checkOwner(e);
+        if (e.getId() < data.length)
+            return data[e.getId()];
+        else
+            return 0f;
+    }
+
+
+    /**
      * Set the entry for edge e to obj.
      *
      * @param e   Edge
      * @param obj Object
      */
     public void put(Edge e, Float obj) {
+        setValue(e, obj);
+    }
+
+    @Override
+    public void setValue(Edge e, Float obj) {
         checkOwner(e);
         if (obj == null)
             obj = 0f;
@@ -104,14 +123,28 @@ public class EdgeFloatArray extends GraphBase implements EdgeAssociation<Float> 
         data[e.getId()] = obj;
     }
 
-    @Override
-    public void set(Edge e, Float obj) {
-        this.put(e, obj);
+    public void set(Edge e, float value) {
+        checkOwner(e);
+        if (isClear)
+            isClear = false;
+
+        if (e.getId() >= data.length) {
+            grow(e.getId());
+        }
+        data[e.getId()] = value;
     }
 
     @Override
     public void setAll(Float obj) {
-        this.putAll(obj);
+        if (obj == null)
+            obj = 0f;
+        for (Edge e = getOwner().getFirstEdge(); e != null; e = e.getNext()) {
+            if (e.getId() >= data.length) {
+                grow(e.getId());
+            }
+            data[e.getId()] = obj;
+        }
+        isClear = (obj == 0f);
     }
 
     /**
@@ -132,23 +165,6 @@ public class EdgeFloatArray extends GraphBase implements EdgeAssociation<Float> 
             }
             data = newData;
         }
-    }
-
-    /**
-     * Set the entry for all edges.
-     *
-     * @param obj Object
-     */
-    public void putAll(Float obj) {
-        if (obj == null)
-            obj = 0f;
-        for (Edge e = getOwner().getFirstEdge(); e != null; e = e.getNext()) {
-            if (e.getId() >= data.length) {
-                grow(e.getId());
-            }
-            data[e.getId()] = obj;
-        }
-        isClear = (obj == 0f);
     }
 
     /**

@@ -62,7 +62,7 @@ public class TreeSelectorTest {
             SplitsNexusIO.parse(np4, taxaFromST4, splitsFromST4, null);
 
             assertEquals(splitsBlock.size(), splitsFromST4.size());
-            for(int i=0; i<splitsBlock.getSplits().size(); i++){
+            for (int i = 0; i < splitsBlock.getNsplits(); i++) {
                 ASplit aSplit = splitsBlock.getSplits().get(i);
                 if(splitsFromST4.getSplits().contains(aSplit)){
                     int index = splitsFromST4.getSplits().indexOf(aSplit);

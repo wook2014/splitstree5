@@ -59,7 +59,7 @@ public class NodeIntegerArray extends GraphBase implements NodeAssociation<Integ
     public NodeIntegerArray(NodeAssociation<Integer> src) {
         this(src.getOwner());
         for (Node v = getOwner().getFirstNode(); v != null; v = v.getNext())
-            set(v, src.get(v));
+            setValue(v, src.getValue(v));
     }
 
     /**
@@ -77,7 +77,15 @@ public class NodeIntegerArray extends GraphBase implements NodeAssociation<Integ
      * @param v Node
      * @return an Object the entry for node v
      */
-    public Integer get(Node v) {
+    public Integer getValue(Node v) {
+        checkOwner(v);
+        if (v.getId() < data.length)
+            return data[v.getId()];
+        else
+            return 0;
+    }
+
+    public int get(Node v) {
         checkOwner(v);
         if (v.getId() < data.length)
             return data[v.getId()];
@@ -91,7 +99,7 @@ public class NodeIntegerArray extends GraphBase implements NodeAssociation<Integ
      * @param v   Node
      * @param obj Object
      */
-    public void set(Node v, Integer obj) {
+    public void setValue(Node v, Integer obj) {
         checkOwner(v);
 
         if (obj == null)
@@ -105,16 +113,22 @@ public class NodeIntegerArray extends GraphBase implements NodeAssociation<Integ
         data[v.getId()] = obj;
     }
 
+    public void set(Node v, int value) {
+        checkOwner(v);
+
+        if (isClear)
+            isClear = false;
+
+        if (v.getId() >= data.length) {
+            grow(v.getId());
+        }
+        data[v.getId()] = value;
+    }
+
     @Override
     public void put(Node v, Integer obj) {
-        set(v, obj);
+        setValue(v, obj);
     }
-
-    @Override
-    public void putAll(Integer obj) {
-        setAll(obj);
-    }
-
 
     /**
      * grows the array. Repeatedly ints the size of the array until it contains index n

@@ -42,11 +42,11 @@ public class EdgeDoubleArray extends GraphBase implements EdgeAssociation<Double
      * to obj.
      *
      * @param g   Graph
-     * @param obj Object
+     * @param initValue initial value
      */
-    public EdgeDoubleArray(Graph g, Double obj) {
+    public EdgeDoubleArray(Graph g, Double initValue) {
         this(g);
-        putAll(obj);
+        setAll(initValue);
     }
 
     /**
@@ -57,7 +57,7 @@ public class EdgeDoubleArray extends GraphBase implements EdgeAssociation<Double
     public EdgeDoubleArray(EdgeAssociation<Double> src) {
         setOwner(src.getOwner());
         for (Edge e = getOwner().getFirstEdge(); e != null; e = e.getNext())
-            put(e, src.get(e));
+            put(e, src.getValue(e));
         isClear = src.isClear();
     }
 
@@ -77,7 +77,7 @@ public class EdgeDoubleArray extends GraphBase implements EdgeAssociation<Double
      * @param e Edge
      * @return an object the entry for edge e
      */
-    public Double get(Edge e) {
+    public Double getValue(Edge e) {
         checkOwner(e);
         if (e.getId() < data.length)
             return data[e.getId()];
@@ -86,12 +86,32 @@ public class EdgeDoubleArray extends GraphBase implements EdgeAssociation<Double
     }
 
     /**
+     * Get the entry for edge e.
+     *
+     * @param e Edge
+     * @return an object the entry for edge e
+     */
+    public double get(Edge e) {
+        checkOwner(e);
+        if (e.getId() < data.length)
+            return data[e.getId()];
+        else
+            return 0.0;
+    }
+
+
+    /**
      * Set the entry for edge e to obj.
      *
      * @param e   Edge
      * @param obj Object
      */
     public void put(Edge e, Double obj) {
+        setValue(e, obj);
+    }
+
+    @Override
+    public void setValue(Edge e, Double obj) {
         checkOwner(e);
         if (obj == null)
             obj = 0.0;
@@ -104,14 +124,29 @@ public class EdgeDoubleArray extends GraphBase implements EdgeAssociation<Double
         data[e.getId()] = obj;
     }
 
-    @Override
-    public void set(Edge e, Double obj) {
-        this.put(e, obj);
+    public void set(Edge e, double value) {
+        checkOwner(e);
+        if (isClear)
+            isClear = false;
+
+        if (e.getId() >= data.length) {
+            grow(e.getId());
+        }
+        data[e.getId()] = value;
     }
+
 
     @Override
     public void setAll(Double obj) {
-        this.putAll(obj);
+        if (obj == null)
+            obj = 0.0;
+        for (Edge e = getOwner().getFirstEdge(); e != null; e = e.getNext()) {
+            if (e.getId() >= data.length) {
+                grow(e.getId());
+            }
+            data[e.getId()] = obj;
+        }
+        isClear = (obj == 0.0);
     }
 
     /**
@@ -132,23 +167,6 @@ public class EdgeDoubleArray extends GraphBase implements EdgeAssociation<Double
             }
             data = newData;
         }
-    }
-
-    /**
-     * Set the entry for all edges.
-     *
-     * @param obj Object
-     */
-    public void putAll(Double obj) {
-        if (obj == null)
-            obj = 0.0;
-        for (Edge e = getOwner().getFirstEdge(); e != null; e = e.getNext()) {
-            if (e.getId() >= data.length) {
-                grow(e.getId());
-            }
-            data[e.getId()] = obj;
-        }
-        isClear = (obj == 0.0);
     }
 
     /**

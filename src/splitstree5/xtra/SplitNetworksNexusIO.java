@@ -1,4 +1,23 @@
 /*
+ *  Copyright (C) 2016 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
  *  Copyright (C) 2017 Daniel H. Huson
  *  
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
@@ -17,16 +36,16 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.io.nexus;
+package splitstree5.xtra;
 
 import com.sun.istack.internal.Nullable;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
-import jloda.util.Basic;
 import jloda.util.parse.NexusStreamParser;
-import splitstree5.core.datablocks.NetworksBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
+import splitstree5.io.nexus.TreesNexusFormat;
+import splitstree5.io.nexus.UtilitiesNexusIO;
 import splitstree5.io.nexus.utils.UnrootedNetworkNexusIO;
 
 import java.io.IOException;
@@ -37,13 +56,13 @@ import java.util.*;
  * input and output of a trees block in Nexus format
  * Daniel Huson, 7.2017
  */
-public class NetworksNexusIO {
+public class SplitNetworksNexusIO {
     public static final String NAME = "ST_NETWORKS";
 
     public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
             "\t[TITLE title;]\n" +
             "\t[LINK name = title;]\n" +
-            "[FORMAT TYPE={RootedNetwork, SplitNetwork, UnrootedNetwork} PARTIAL={YES|NO};]\n" +
+            "[PARTIAL={YES|NO};]\n" +
             "[TRANSLATE\n" +
             "    id1 taxon1,\n" +
             "    id2 taxon2,\n" +
@@ -74,7 +93,7 @@ public class NetworksNexusIO {
      * @return taxon names found in this block
      * @throws IOException
      */
-    public static ArrayList<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, NetworksBlock networksBlock, @Nullable TreesNexusFormat treesNexusFormat) throws IOException {
+    public static ArrayList<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, SplitNetworksBlock networksBlock, @Nullable TreesNexusFormat treesNexusFormat) throws IOException {
         networksBlock.clear();
         boolean rootedExplicitySet = false;
 
@@ -83,8 +102,6 @@ public class NetworksNexusIO {
 
         if (np.peekMatchIgnoreCase("FORMAT")) {
             final List<String> tokens = np.getTokensLowerCase("format", ";");
-            networksBlock.setNetworkType(Basic.valueOfIgnoreCase(NetworksBlock.NetworkType.class, np.findIgnoreCase(tokens, "type=",
-                    Basic.toString(NetworksBlock.NetworkType.values(), " "), NetworksBlock.NetworkType.UnrootedNetwork.toString())));
             networksBlock.setPartial(np.findIgnoreCase(tokens, "partial=no", false, networksBlock.isPartial()));
             networksBlock.setPartial(np.findIgnoreCase(tokens, "partial=yes", true, networksBlock.isPartial()));
             networksBlock.setPartial(np.findIgnoreCase(tokens, "partialNetworks=no", false, networksBlock.isPartial()));
@@ -137,59 +154,26 @@ public class NetworksNexusIO {
             final PhyloTree graph = new PhyloTree();
             graph.setName(name);
 
-            switch (networksBlock.getNetworkType()) {
-                case RootedNetwork: {
-                    graph.setAllowMultiLabeledNodes(true);
-                    final String treeString = Basic.toString(np.getTokensRespectCase(null, ";"), "");
-                    graph.parseBracketNotation(treeString, true);
-                    for (Node v = graph.getFirstNode(); v != null; v = v.getNext()) {
-                        if (graph.getLabel(v) != null) {
-                            final String nodeLabel = graph.getLabel(v);
-                            if (Basic.isInteger(nodeLabel)) {
-                                int taxonId = Basic.parseInt(nodeLabel);
-                                if (translator != null && translator.containsKey(taxonId)) {
-                                    taxonId = taxaBlock.indexOf(translator.get(taxonId));
-                                    if (taxonId == -1)
-                                        throw new IOException("Translate failed for: " + nodeLabel);
-                                }
-                                graph.setNode2Taxa(v, taxonId);
-                            } else {
-                                final int taxonId = taxaBlock.indexOf(nodeLabel);
-                                if (taxonId == -1)
-                                    throw new IOException("Unknown taxon: " + nodeLabel);
-                                graph.setNode2Taxa(v, taxonId);
+            UnrootedNetworkNexusIO.read(np, graph, null, null);
+            if (translator != null) {
+                for (Node v = graph.getFirstNode(); v != null; v = v.getNext()) {
+                    List<Integer> taxa = graph.getNode2Taxa(v);
+                    if (taxa != null && taxa.size() > 0) {
+                        ArrayList<Integer> newTaxa = new ArrayList<>();
+                        for (Integer taxonId : taxa) {
+                            if (translator.containsKey(taxonId)) {
+                                taxonId = taxaBlock.indexOf(translator.get(taxonId));
                             }
+                            newTaxa.add(taxonId);
                         }
-                    }
-                    break;
-                }
-                default:
-                case SplitsNetwork:
-                case UnrootedNetwork: {
-                    UnrootedNetworkNexusIO.read(np, graph, null, null);
-                    if (translator != null) {
-                        for (Node v = graph.getFirstNode(); v != null; v = v.getNext()) {
-                            List<Integer> taxa = graph.getNode2Taxa(v);
-                            if (taxa != null && taxa.size() > 0) {
-                                ArrayList<Integer> newTaxa = new ArrayList<>();
-                                for (Integer taxonId : taxa) {
-                                    if (translator.containsKey(taxonId)) {
-                                        taxonId = taxaBlock.indexOf(translator.get(taxonId));
-                                    }
-                                    newTaxa.add(taxonId);
-                                }
-                                if (!taxa.equals(newTaxa)) {
-                                    taxa.clear();
-                                    taxa.addAll(newTaxa);
-                                }
-                            }
+                        if (!taxa.equals(newTaxa)) {
+                            taxa.clear();
+                            taxa.addAll(newTaxa);
                         }
-                        break;
                     }
                 }
             }
             np.matchIgnoreCase(";");
-
             networksBlock.getNetworks().add(graph);
             treeNumber++;
         }
@@ -207,15 +191,14 @@ public class NetworksNexusIO {
      * @param networksBlock
      * @throws IOException
      */
-    public static void write(Writer w, TaxaBlock taxaBlock, NetworksBlock networksBlock, TreesNexusFormat treesNexusFormat) throws IOException {
+    public static void write(Writer w, TaxaBlock taxaBlock, SplitNetworksBlock networksBlock, TreesNexusFormat treesNexusFormat) throws IOException {
         if (treesNexusFormat == null)
             treesNexusFormat = new TreesNexusFormat();
 
         w.write("\nBEGIN " + NAME + ";\n");
         UtilitiesNexusIO.writeTitleLinks(w, networksBlock);
-        if (networksBlock.isPartial() || networksBlock.isRooted()) {
+        if (networksBlock.isPartial()) {
             w.write("\tFORMAT");
-            w.write(" type=" + networksBlock.getNetworkType().toString());
             w.write(" partial=" + (networksBlock.isPartial() ? "yes" : "no"));
             w.write(";\n");
         }
@@ -237,18 +220,7 @@ public class NetworksNexusIO {
             final String name = (graph.getName() != null && graph.getName().length() > 0 ? graph.getName() : "t" + t);
             w.write("[" + (t++) + "] network '" + name + "'=");
 
-            switch (networksBlock.getNetworkType()) {
-                case RootedNetwork:
-                    w.write(graph.toBracketString(treesNexusFormat.isShowWeights()) + "\n");
-                    break;
-                case SplitsNetwork:
-                    UnrootedNetworkNexusIO.write(w, graph, true, true, null, null);
-                    break;
-                default:
-                case UnrootedNetwork:
-                    UnrootedNetworkNexusIO.write(w, graph, true, false, null, null);
-                    break;
-            }
+            UnrootedNetworkNexusIO.write(w, graph, true, true, null, null);
             w.write(";\n");
         }
         w.write("END; [" + NAME + "]\n");

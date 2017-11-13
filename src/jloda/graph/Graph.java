@@ -677,13 +677,13 @@ public class Graph extends GraphBase {
             Node w = newNode();
             w.setId(v.getId());
             w.setInfo(v.getInfo());
-            oldNode2newNode.set(v, w);
+            oldNode2newNode.setValue(v, w);
         }
         idsNodes = src.idsNodes;
 
         for (Edge e : src.edges()) {
-            Node p = oldNode2newNode.get(e.getSource());
-            Node q = oldNode2newNode.get(e.getTarget());
+            Node p = oldNode2newNode.getValue(e.getSource());
+            Node q = oldNode2newNode.getValue(e.getTarget());
             Edge f = null;
             try {
                 f = newEdge(p, q);
@@ -699,10 +699,10 @@ public class Graph extends GraphBase {
 
         // change all adjacencies to reflect order in old graph:
         for (Node v : src.nodes()) {
-            Node w = oldNode2newNode.get(v);
+            Node w = oldNode2newNode.getValue(v);
             List<Edge> newOrder = new LinkedList<>();
             for (Edge e : v.adjacentEdges()) {
-                newOrder.add(oldEdge2newEdge.get(e));
+                newOrder.add(oldEdge2newEdge.getValue(e));
             }
             w.rearrangeAdjacentEdges(newOrder);
         }
@@ -741,7 +741,7 @@ public class Graph extends GraphBase {
             if (as == null)
                 toDelete.add(ref); // reference is dead
             else {
-                as.set(v, null);
+                as.setValue(v, null);
             }
         }
         nodeAssociations.removeAll(toDelete);
