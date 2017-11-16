@@ -1,4 +1,4 @@
-package splitstree5.io.otherFormats;
+package splitstree5.io.imports;
 
 import splitstree5.core.datablocks.characters.CharactersType;
 

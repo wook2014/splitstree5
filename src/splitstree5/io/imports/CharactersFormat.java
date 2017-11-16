@@ -1,6 +1,6 @@
-package splitstree5.io.otherFormats;
+package splitstree5.io.imports;
 
-import com.sun.xml.internal.fastinfoset.util.CharArray;
+import splitstree5.core.algorithms.interfaces.IToChararacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.datablocks.characters.CharactersType;
@@ -11,7 +11,7 @@ import java.util.*;
 /**
  * Created by Daria on 15.08.2017.
  */
-public abstract class CharactersFormat {
+public abstract class CharactersFormat implements IToChararacters {
 
     private static char gap = '-';
     private static char missing = '?';

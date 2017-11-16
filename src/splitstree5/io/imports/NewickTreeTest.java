@@ -1,6 +1,5 @@
-package splitstree5.io.otherFormats;
+package splitstree5.io.imports;
 
-import org.junit.*;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.io.nexus.TaxaNexusIO;

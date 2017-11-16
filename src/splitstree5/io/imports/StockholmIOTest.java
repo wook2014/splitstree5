@@ -1,4 +1,4 @@
-package splitstree5.io.otherFormats;
+package splitstree5.io.imports;
 
 import org.junit.Test;
 import splitstree5.core.datablocks.CharactersBlock;
@@ -8,15 +8,13 @@ import splitstree5.io.nexus.TaxaNexusIO;
 
 import java.io.StringWriter;
 
-import static org.junit.Assert.*;
-
-public class SingleLineSequencesIOTest {
+public class StockholmIOTest {
     @Test
     public void parse() throws Exception {
 
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
-        SingleLineSequencesIO.parse("test/notNexusFiles/singleLineDNA.txt", taxaBlock, charactersBlock);
+        StockholmIO.parse("test/notNexusFiles/PF02171_seed.txt", taxaBlock, charactersBlock);
 
         // printing
         final StringWriter w = new StringWriter();
@@ -24,7 +22,6 @@ public class SingleLineSequencesIOTest {
         TaxaNexusIO.write(w, taxaBlock);
         CharactersNexusIO.write(w, taxaBlock, charactersBlock, null);
         System.err.println(w.toString());
-
     }
 
 }

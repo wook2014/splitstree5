@@ -1,7 +1,8 @@
-package splitstree5.io.otherFormats;
+package splitstree5.io.imports;
 
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
+import splitstree5.core.algorithms.interfaces.IToTrees;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 
@@ -13,7 +14,7 @@ import java.util.HashSet;
 /**
  * Created by Daria on 04.10.2017.
  */
-public class NewickTree {
+public class NewickTree implements IToTrees {
 
     String datatype = null;
     /*

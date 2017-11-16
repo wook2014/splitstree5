@@ -1,6 +1,7 @@
-package splitstree5.io.otherFormats;
+package splitstree5.io.imports;
 
 import com.sun.istack.internal.Nullable;
+import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
@@ -13,7 +14,7 @@ import java.io.StreamTokenizer;
 /**
  * Created by Daria on 02.10.2017.
  */
-public class PhylipDistancesIO {
+public class PhylipDistancesIO implements IToDistances{
 
 
     public static void parse(String inputFile, TaxaBlock taxa, DistancesBlock distances) throws IOException {

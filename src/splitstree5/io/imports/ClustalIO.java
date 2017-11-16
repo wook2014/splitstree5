@@ -1,4 +1,4 @@
-package splitstree5.io.otherFormats;
+package splitstree5.io.imports;
 
 /**
  * Created by Daria on 05.08.2017.
@@ -6,14 +6,11 @@ package splitstree5.io.otherFormats;
 
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.datablocks.characters.AmbiguityCodes;
-import splitstree5.core.datablocks.characters.CharactersType;
 import splitstree5.io.nexus.CharactersNexusFormat;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
