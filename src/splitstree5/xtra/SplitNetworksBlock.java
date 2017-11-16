@@ -1,4 +1,23 @@
 /*
+ *  Copyright (C) 2016 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
  *  Copyright (C) 2017 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
@@ -17,31 +36,28 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.datablocks;
+package splitstree5.xtra;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import jloda.phylo.PhyloTree;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToTrees;
+import splitstree5.core.datablocks.ADataBlock;
 
 /**
  * A networks block
  * Daniel Huson, 7.2017
  */
-public class NetworksBlock extends ADataBlock {
-    public enum NetworkType {RootedNetwork, SplitsNetwork, HaplotypeNetwork, UnrootedNetwork}
-
-    private NetworkType networkType = NetworkType.UnrootedNetwork;
-
+public class SplitNetworksBlock extends ADataBlock {
     private final ObservableList<PhyloTree> networks;
     private boolean partial = false; // are partial networks present?
 
-    public NetworksBlock() {
+    public SplitNetworksBlock() {
         networks = FXCollections.observableArrayList();
     }
 
-    public NetworksBlock(String name) {
+    public SplitNetworksBlock(String name) {
         this();
         setName(name);
     }
@@ -51,11 +67,10 @@ public class NetworksBlock extends ADataBlock {
      *
      * @param that
      */
-    public void copy(NetworksBlock that) {
+    public void copy(SplitNetworksBlock that) {
         clear();
         networks.addAll(that.getNetworks());
         partial = that.isPartial();
-        networkType = that.getNetworkType();
     }
 
     @Override
@@ -63,7 +78,6 @@ public class NetworksBlock extends ADataBlock {
         super.clear();
         networks.clear();
         partial = false;
-        networkType = NetworkType.UnrootedNetwork;
         setShortDescription("");
     }
 
@@ -97,18 +111,6 @@ public class NetworksBlock extends ADataBlock {
         this.partial = partial;
     }
 
-    public boolean isRooted() {
-        return networkType == NetworkType.RootedNetwork;
-    }
-
-    public NetworkType getNetworkType() {
-        return networkType;
-    }
-
-    public void setNetworkType(NetworkType networkType) {
-        this.networkType = networkType;
-    }
-
     @Override
     public Class getFromInterface() {
         return IFromTrees.class;
@@ -121,6 +123,6 @@ public class NetworksBlock extends ADataBlock {
 
     @Override
     public String getInfo() {
-        return (getNNetworks() == 1 ? "a network" : getNNetworks() + " networks") + (isPartial() ? ", partial" : "") + ", " + getNetworkType();
+        return (getNNetworks() == 1 ? "a split network" : getNNetworks() + " split networks") + (isPartial() ? ", partial" : "");
     }
 }

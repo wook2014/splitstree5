@@ -22,9 +22,13 @@ package splitstree5.core.misc;
 import jloda.util.Basic;
 import splitstree5.core.algorithms.distances2splits.NeighborNet;
 import splitstree5.core.datablocks.DistancesBlock;
+import splitstree5.core.datablocks.TaxaBlock;
 
 import java.io.PrintStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.List;
 
 /**
  * utilities for splits
@@ -133,8 +137,8 @@ public class SplitsUtilities {
                 break;
             }
         }
-        int posPrev = (posOf1 == 1 ? cycle.length - 1 : posOf1 - 1);
-        int posNext = (posOf1 == cycle.length - 1 ? 0 : posOf1 + 1);
+        final int posPrev = (posOf1 == 1 ? cycle.length - 1 : posOf1 - 1);
+        final int posNext = (posOf1 == cycle.length - 1 ? 1 : posOf1 + 1);
         if (cycle[posPrev] > cycle[posNext]) { // has correct orientation, ensure that taxon 1 is at first position
             if (posOf1 != 1) {
                 int[] tmp = new int[cycle.length];
@@ -167,16 +171,34 @@ public class SplitsUtilities {
      */
     public static ArrayList<ASplit> sortByDecreasingWeight(List<ASplit> splits) {
         final ASplit[] array = splits.toArray(new ASplit[splits.size()]);
-        Arrays.sort(array, new Comparator<ASplit>() {
-            @Override
-            public int compare(ASplit a, ASplit b) {
-                if (a.getWeight() > b.getWeight())
-                    return -1;
-                else if (a.getWeight() < b.getWeight())
-                    return 1;
-                return 0;
-            }
+        Arrays.sort(array, (a, b) -> {
+            if (a.getWeight() > b.getWeight())
+                return -1;
+            else if (a.getWeight() < b.getWeight())
+                return 1;
+            return 0;
         });
         return new ArrayList<>(Arrays.asList(array)); // this construction ensures that the resulting list can grow
+    }
+
+    /**
+     * is split circular with respect to the gjven cycle?
+     *
+     * @param taxa
+     * @param cycle uses indices 1 to number-of-taxa
+     * @param split
+     * @return true if circular
+     */
+    public static boolean isCircular(TaxaBlock taxa, int[] cycle, ASplit split) {
+        final BitSet part = (!split.getA().get(cycle[1]) ? split.getA() : split.getB()); // choose part that doesn't go around the horn
+        int prev = 0;
+        for (int t = 1; t <= taxa.getNtax(); t++) {
+            if (part.get(cycle[t])) {
+                if (prev != 0 && t != prev + 1)
+                    return false;
+                prev = t;
+            }
+        }
+        return true;
     }
 }

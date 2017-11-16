@@ -93,9 +93,9 @@ public class SplitsTopFilter extends ATopFilter<SplitsBlock> {
     }
 
     private static int[] computeInducedCycle(int[] originalCycle, Map<Integer, Integer> originalIndex2ModifiedIndex, int inducedNtax) {
-        final int[] cycle = new int[inducedNtax];
+        final int[] cycle = new int[inducedNtax + 1];
 
-        int i = 0;
+        int i = 1;
         for (int originalI : originalCycle) {
             if (originalIndex2ModifiedIndex.containsKey(originalI)) {
                 cycle[i++] = originalIndex2ModifiedIndex.get(originalI);

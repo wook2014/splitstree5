@@ -38,7 +38,6 @@ import java.util.Map;
 public class PhyloTree extends PhyloGraph {
     public static final boolean ALLOW_WRITE_RETICULATE = true;
     public static final boolean ALLOW_READ_RETICULATE = true;
-    public static final boolean ALLOW_READ_WRITE_EDGE_LABELS = true;
 
     public boolean allowMultiLabeledNodes = true;
 
@@ -82,16 +81,16 @@ public class PhyloTree extends PhyloGraph {
 
         if (src.getRoot() != null) {
             Node root = src.getRoot();
-            setRoot(oldNode2NewNode.get(root));
+            setRoot(oldNode2NewNode.getValue(root));
         }
         for (Node v = src.getFirstNode(); v != null; v = v.getNext()) {
-            List<Node> children = src.getNode2GuideTreeChildren().get(v);
+            List<Node> children = src.getNode2GuideTreeChildren().getValue(v);
             if (children != null) {
                 List<Node> newChildren = new LinkedList<>();
                 for (Node w : children) {
-                    newChildren.add(oldNode2NewNode.get(w));
+                    newChildren.add(oldNode2NewNode.getValue(w));
                 }
-                getNode2GuideTreeChildren().set(oldNode2NewNode.get(v), newChildren);
+                getNode2GuideTreeChildren().setValue(oldNode2NewNode.getValue(v), newChildren);
             }
         }
         setName(src.getName());
@@ -111,16 +110,16 @@ public class PhyloTree extends PhyloGraph {
         // super.copy(src, oldNode2NewNode, oldEdge2NewEdge);
         if (src.getRoot() != null) {
             Node root = src.getRoot();
-            setRoot(oldNode2NewNode.get(root));
+            setRoot(oldNode2NewNode.getValue(root));
         }
         for (Node v = src.getFirstNode(); v != null; v = v.getNext()) {
-            List<Node> children = src.getNode2GuideTreeChildren().get(v);
+            List<Node> children = src.getNode2GuideTreeChildren().getValue(v);
             if (children != null) {
                 List<Node> newChildren = new LinkedList<>();
                 for (Node w : children) {
-                    newChildren.add(oldNode2NewNode.get(w));
+                    newChildren.add(oldNode2NewNode.getValue(w));
                 }
-                getNode2GuideTreeChildren().set(oldNode2NewNode.get(v), newChildren);
+                getNode2GuideTreeChildren().setValue(oldNode2NewNode.getValue(v), newChildren);
             }
         }
     }
@@ -143,7 +142,7 @@ public class PhyloTree extends PhyloGraph {
      * @param a String
      */
     public void setLabel(Edge e, String a) throws NotOwnerException {
-        edgeLabels.set(e, a);
+        edgeLabels.put(e, a);
     }
 
     /**
@@ -651,7 +650,7 @@ public class PhyloTree extends PhyloGraph {
         } catch (IllegalSelfEdgeException e1) {
             Basic.caught(e1);
         }
-        if (edgeWeights.get(e) != null && edgeWeights.get(f) != null)
+        if (edgeWeights.getValue(e) != null && edgeWeights.getValue(f) != null)
             setWeight(g, getWeight(e) + getWeight(f));
         if (root == v)
             root = null;
@@ -742,7 +741,7 @@ public class PhyloTree extends PhyloGraph {
         if (e == null)
             outDegree = v.getDegree();
         else if (isSpecial(e)) {
-            for (Edge f = v.getFirstAdjacentEdge(); f != null; f = v.getNextAdjacentEdge(f))
+            for (Edge f : v.adjacentEdges())
                 if (!isSpecial(f))
                     outDegree++;
         } else
@@ -752,7 +751,7 @@ public class PhyloTree extends PhyloGraph {
             boolean first = true;
             for (Edge f = v.getFirstAdjacentEdge(); f != null; f = v.getNextAdjacentEdge(f)) {
                 if (f != e) {
-                    if (node2reticulateNumber.get(v) > 0 && isSpecial(f))
+                    if (node2reticulateNumber.getValue(v) > 0 && isSpecial(f))
                         continue; // don't climb back up a special edge
 
                     if (edgeId2Number != null)
@@ -768,21 +767,21 @@ public class PhyloTree extends PhyloGraph {
 
 
                     if (isSpecial(f)) {
-                        if (node2reticulateNumber.get(w) == 0) {
-                            node2reticulateNumber.set(w, ++reticulateNodeNumber);
+                        if (node2reticulateNumber.getValue(w) == 0) {
+                            node2reticulateNumber.setValue(w, ++reticulateNodeNumber);
                             String label;
                             if (getLabel(w) != null)
-                                label = getLabelForWriting(w) + PhyloTreeUtils.makeReticulateNodeLabel(inEdgeHasWeight, node2reticulateNumber.get(w));
+                                label = getLabelForWriting(w) + PhyloTreeUtils.makeReticulateNodeLabel(inEdgeHasWeight, node2reticulateNumber.getValue(w));
                             else
-                                label = PhyloTreeUtils.makeReticulateNodeLabel(inEdgeHasWeight, node2reticulateNumber.get(w));
+                                label = PhyloTreeUtils.makeReticulateNodeLabel(inEdgeHasWeight, node2reticulateNumber.getValue(w));
 
                             writeRec(outs, w, f, writeEdgeWeights, writeEdgeLabels, nodeId2Number, edgeId2Number, label);
                         } else {
                             String label;
                             if (getLabel(w) != null)
-                                label = getLabelForWriting(w) + PhyloTreeUtils.makeReticulateNodeLabel(inEdgeHasWeight, node2reticulateNumber.get(w));
+                                label = getLabelForWriting(w) + PhyloTreeUtils.makeReticulateNodeLabel(inEdgeHasWeight, node2reticulateNumber.getValue(w));
                             else
-                                label = PhyloTreeUtils.makeReticulateNodeLabel(inEdgeHasWeight, node2reticulateNumber.get(w));
+                                label = PhyloTreeUtils.makeReticulateNodeLabel(inEdgeHasWeight, node2reticulateNumber.getValue(w));
                             outs.write(label);
                             if (writeEdgeWeights) {
                                 if (getWeight(f) >= 0)
@@ -793,8 +792,7 @@ public class PhyloTree extends PhyloGraph {
                             }
                         }
                     } else
-                        writeRec(outs, w, f, writeEdgeWeights, writeEdgeLabels, nodeId2Number, edgeId2Number,
-                                getLabelForWriting(w));
+                        writeRec(outs, w, f, writeEdgeWeights, writeEdgeLabels, nodeId2Number, edgeId2Number, getLabelForWriting(w));
                 }
             }
             outs.write(")");
@@ -925,8 +923,8 @@ public class PhyloTree extends PhyloGraph {
         setWeight(vu, weightToSource);
         setWeight(uw, weightToTarget);
         if (edgeLabels != null) {
-            edgeLabels.set(vu, edgeLabels.get(e));
-            edgeLabels.set(uw, edgeLabels.get(e));
+            edgeLabels.put(vu, edgeLabels.getValue(e));
+            edgeLabels.put(uw, edgeLabels.getValue(e));
         }
 
         deleteEdge(e);
@@ -946,12 +944,12 @@ public class PhyloTree extends PhyloGraph {
                 if (edgeLabels != null) {
                     String label = null;
                     for (Edge e = oldRoot.getFirstOutEdge(); e != null; e = oldRoot.getNextOutEdge(e)) {
-                        if (label == null && edgeLabels.get(e) != null)
-                            label = edgeLabels.get(e);
-                        edgeLabels.set(e, null);
+                        if (label == null && edgeLabels.getValue(e) != null)
+                            label = edgeLabels.getValue(e);
+                        edgeLabels.put(e, null);
                     }
                     final Edge e = delDivertex(oldRoot);
-                    edgeLabels.set(e, label);
+                    edgeLabels.put(e, label);
                 } else
                     delDivertex(oldRoot);
             }
@@ -1038,7 +1036,7 @@ public class PhyloTree extends PhyloGraph {
      * @param pos
      */
     private int computeCycleRec(Node v, Edge e, int pos) {
-        final List<Integer> taxa = node2taxa.get(v);
+        final List<Integer> taxa = node2taxa.getValue(v);
         if (taxa != null) {
             for (Integer t : taxa) {
                 setTaxon2Cycle(t, ++pos);

@@ -18,6 +18,25 @@
  */
 
 /*
+ *  Copyright (C) 2016 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
  *  Copyright (C) 2017 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
@@ -35,13 +54,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package splitstree5.core.algorithms.views.treeview;
+package splitstree5.core.datablocks.view;
 
 import jloda.graph.Edge;
 import jloda.graph.EdgeFloatArray;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
-import splitstree5.core.algorithms.views.TreeDrawer;
+import splitstree5.core.algorithms.views.TreeEmbedder;
 import splitstree5.xtra.phylotreeview.IntArray;
 
 /**
@@ -55,7 +74,7 @@ public class EdgeLengthsCalculation {
      * @param tree
      * @param type
      */
-    public static EdgeFloatArray computeEdgeLengths(PhyloTree tree, TreeDrawer.EdgeLengths type) {
+    public static EdgeFloatArray computeEdgeLengths(PhyloTree tree, TreeEmbedder.EdgeLengths type) {
         final EdgeFloatArray edgeLengths = new EdgeFloatArray(tree);
         computeEdgeLengths(tree, type, edgeLengths);
         return edgeLengths;
@@ -67,7 +86,7 @@ public class EdgeLengthsCalculation {
      * @param tree
      * @param type
      */
-    public static void computeEdgeLengths(final PhyloTree tree, TreeDrawer.EdgeLengths type, EdgeFloatArray edgeLengths) {
+    public static void computeEdgeLengths(final PhyloTree tree, TreeEmbedder.EdgeLengths type, EdgeFloatArray edgeLengths) {
         switch (type) {
             case Cladogram: {
                 final IntArray node2depth = new IntArray();
@@ -82,14 +101,14 @@ public class EdgeLengthsCalculation {
             }
             case Uniform: {
                 for (Edge e : tree.edges()) {
-                    edgeLengths.set(e, 1f);
+                    edgeLengths.put(e, 1f);
                 }
                 break;
             }
             default:
             case Weights: {
                 for (Edge e : tree.edges()) {
-                    edgeLengths.set(e, (float) (Math.max(0, tree.getWeight(e))));
+                    edgeLengths.put(e, (float) (Math.max(0, tree.getWeight(e))));
                 }
                 break;
             }
@@ -141,9 +160,9 @@ public class EdgeLengthsCalculation {
         for (Edge e : v.outEdges()) {
             final Node w = e.getTarget();
             if (w.getOutDegree() == 0) {
-                edgeLengths.set(e, (float) (maxDepth - depth));
+                edgeLengths.put(e, (float) (maxDepth - depth));
             } else {
-                edgeLengths.set(e, 1f);
+                edgeLengths.put(e, 1f);
                 setEdgeLengthsEarlyBranchingRec(maxDepth, depth + 1, w, edgeLengths);
             }
         }
@@ -162,7 +181,7 @@ public class EdgeLengthsCalculation {
             depth = Math.max(depth, setEdgeLengthsRec(e.getTarget(), node2depth, edgeLengths) + 1);
         }
         for (Edge e : v.outEdges()) {
-            edgeLengths.set(e, depth - node2depth.get(e.getTarget().getId()));
+            edgeLengths.put(e, depth - node2depth.get(e.getTarget().getId()));
         }
         return depth;
     }

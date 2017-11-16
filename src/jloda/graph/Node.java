@@ -371,7 +371,7 @@ public class Node extends NodeEdge implements Comparable {
      * @param w
      * @return common edge between this node and w, or null
      */
-    public Edge getCommonEdge(Node w) throws NotOwnerException {
+    public Edge getCommonEdge(Node w) {
         checkOwner(w);
         for (Edge e = getFirstAdjacentEdge(); e != null; e = getNextAdjacentEdge(e)) {
             if (getOpposite(e) == w)
@@ -386,7 +386,7 @@ public class Node extends NodeEdge implements Comparable {
      * @param w
      * @return common edge from this node to w, or null
      */
-    public Edge getEdgeTo(Node w) throws NotOwnerException {
+    public Edge getEdgeTo(Node w) {
         checkOwner(w);
         for (Edge e = getFirstOutEdge(); e != null; e = getNextOutEdge(e)) {
             if (getOpposite(e) == w)
@@ -401,7 +401,7 @@ public class Node extends NodeEdge implements Comparable {
      * @param w
      * @return common edge from this node to w, or null
      */
-    public Edge getEdgeFrom(Node w) throws NotOwnerException {
+    public Edge getEdgeFrom(Node w) {
         checkOwner(w);
         for (Edge e = getFirstInEdge(); e != null; e = getNextInEdge(e)) {
             if (getOpposite(e) == w)

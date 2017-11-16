@@ -35,18 +35,38 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package splitstree5.core.algorithms.views.treeview;
+
+/*
+ *  Copyright (C) 2016 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package splitstree5.core.datablocks.view;
 
 import javafx.geometry.Point2D;
 
 public class GeometryUtils {
     private final static double RAD_TO_DEG_FACTOR = 180.0 / Math.PI;
+    private final static double DEG_TO_RAD_FACTOR = Math.PI / 180.0;
 
     /**
      * Computes the angle of a two-dimensional vector.
      *
      * @param p Point2D
-     * @return angle double
+     * @return angle in degrees
      */
     public static double computeAngle(Point2D p) {
         if (p.getX() != 0) {
@@ -72,8 +92,17 @@ public class GeometryUtils {
             return rad2deg(-0.5 * Math.PI);
     }
 
-    public static double rad2deg(double rad) {
-        return RAD_TO_DEG_FACTOR * rad;
+    public static double rad2deg(double angle) {
+        angle *= RAD_TO_DEG_FACTOR;
+        while (angle > 360)
+            angle -= 360;
+        while (angle < 0)
+            angle += 360;
+        return angle;
+    }
+
+    public static double deg2rad(double deg) {
+        return DEG_TO_RAD_FACTOR * deg;
     }
 
     /**
@@ -95,16 +124,16 @@ public class GeometryUtils {
      * Translate a point in the direction specified by an angle.
      *
      * @param apt   Point2D
-     * @param alpha double
+     * @param alpha double in degrees
      * @param dist  double
      * @return Point2D
      */
     public static Point2D translateByAngle(Point2D apt, double alpha, double dist) {
-        double dx = dist * Math.cos(alpha);
-        double dy = dist * Math.sin(alpha);
-        if (Math.abs(dx) < 0.000000001)
+        double dx = dist * Math.cos(DEG_TO_RAD_FACTOR * alpha);
+        double dy = dist * Math.sin(DEG_TO_RAD_FACTOR * alpha);
+        if (Math.abs(dx) < 0.000001)
             dx = 0;
-        if (Math.abs(dy) < 0.000000001)
+        if (Math.abs(dy) < 0.000001)
             dy = 0;
         return new Point2D(apt.getX() + dx, apt.getY() + dy);
     }
@@ -113,12 +142,42 @@ public class GeometryUtils {
      * Rotates a two-dimensional vector by the angle alpha.
      *
      * @param p     point
-     * @param alpha angle in radian
+     * @param alpha angle in degree
      * @return q point rotated around origin
      */
     public static Point2D rotate(Point2D p, double alpha) {
-        double sina = Math.sin(alpha);
-        double cosa = Math.cos(alpha);
+        double sina = Math.sin(DEG_TO_RAD_FACTOR * alpha);
+        double cosa = Math.cos(DEG_TO_RAD_FACTOR * alpha);
         return new Point2D(p.getX() * cosa - p.getY() * sina, p.getX() * sina + p.getY() * cosa);
     }
+
+    /**
+     * put angle into range 0-360
+     *
+     * @param degrees
+     * @return shifted angle
+     */
+    public static double modulo360(double degrees) {
+        while (degrees > 360)
+            degrees -= 360;
+        while (degrees < 0)
+            degrees += 360;
+        return degrees;
+    }
+
+    /**
+     * returns the average of angles A and B
+     *
+     * @param AngleA in deg
+     * @param AngleB in deg
+     */
+    public static double midAngle(double AngleA, double AngleB) {
+        if (modulo360(AngleA - AngleB) < 180) {
+            return modulo360(AngleB + (modulo360(AngleA - AngleB)) / 2);
+        } else {
+            return modulo360(AngleB - (modulo360(AngleB - AngleA)) / 2);
+        }
+
+    }
+
 }

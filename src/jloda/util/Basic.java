@@ -984,6 +984,37 @@ public class Basic {
         }
         return str;
     }
+
+    /**
+     * given an array, returns it randomized (Durstenfeld 1964)
+     *
+     * @param array
+     * @param seed
+     * @return array in random order
+     */
+    public static <T> T[] randomize(T[] array, int seed) {
+        return randomize(array, new Random(seed));
+    }
+
+    /**
+     * given an array, returns it randomized (Durstenfeld 1964)
+     *
+     * @param array
+     * @param random
+     * @return array in random order
+     */
+    public static <T> T[] randomize(T[] array, Random random) {
+        T[] result = (T[]) new Object[array.length];
+        System.arraycopy(array, 0, result, 0, array.length);
+
+        for (int i = result.length - 1; i >= 1; i--) {
+            int j = random.nextInt(i + 1);
+            T tmp = result[i];
+            result[i] = result[j];
+            result[j] = tmp;
+        }
+        return result;
+    }
 }
 
 

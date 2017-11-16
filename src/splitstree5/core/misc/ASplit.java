@@ -144,6 +144,48 @@ public final class ASplit {
         return B;
     }
 
+    /**
+     * gets the split part that contains the given taxon, or A, if none contains it
+     *
+     * @param t
+     * @return split part containing taxon t
+     */
+    public BitSet getPartContaining(int t) {
+        if (B.get(t))
+            return B;
+        else
+            return A;
+    }
+
+    /**
+     * returns A, if A doesn't contain t, else B
+     *
+     * @param t
+     * @return set not containing t
+     */
+    public BitSet getPartNotContaining(int t) {
+        if (!A.get(t))
+            return A;
+        else
+            return B;
+    }
+
+    /**
+     * gets the smaller part. In the case of a tie, return the set that contains 1
+     *
+     * @return smaller part
+     */
+    public BitSet getSmallerPart() {
+        if (A.cardinality() < B.cardinality())
+            return A;
+        else if (A.cardinality() > B.cardinality())
+            return B;
+        else if (A.get(1))
+            return A;
+        else
+            return B;
+    }
+
     public double getWeight() {
         return weight;
     }

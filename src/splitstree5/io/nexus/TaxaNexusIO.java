@@ -88,6 +88,8 @@ public class TaxaNexusIO {
             } else {
                 for (int t = 1; t <= ntax; t++) {
                     final String taxonName = np.getLabelRespectCase();
+                    if (taxonName.equals(";"))
+                        throw new IOException((np.lineno() > 1 ? "Line " + np.lineno() + ":" : "") + " expected " + ntax + " taxon names, found: " + (t - 1));
                     final Taxon taxon = new Taxon(taxonName);
 
                     if (taxaBlock.indexOf(taxon) != -1) {
@@ -97,6 +99,15 @@ public class TaxaNexusIO {
                     taxonNamesFound.add(taxon.getName());
                 }
                 labelsDetected = true;
+            }
+            if (!np.peekMatchIgnoreCase(";")) {
+                int count = ntax;
+                while (!np.peekMatchIgnoreCase(";")) {
+                    np.getWordRespectCase();
+                    count++;
+                }
+                throw new IOException((np.lineno() > 1 ? "Line " + np.lineno() + ":" : "") + " expected " + ntax + " taxon names, found: " + count);
+
             }
             np.matchIgnoreCase(";");
         }

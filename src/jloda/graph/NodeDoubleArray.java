@@ -69,7 +69,7 @@ public class NodeDoubleArray extends GraphBase implements NodeAssociation<Double
     public NodeDoubleArray(NodeAssociation<Double> src) {
         this(src.getOwner());
         for (Node v = getOwner().getFirstNode(); v != null; v = v.getNext())
-            set(v, src.get(v));
+            setValue(v, src.getValue(v));
     }
 
     /**
@@ -87,7 +87,15 @@ public class NodeDoubleArray extends GraphBase implements NodeAssociation<Double
      * @param v Node
      * @return an Object the entry for node v
      */
-    public Double get(Node v) {
+    public Double getValue(Node v) {
+        checkOwner(v);
+        if (v.getId() < data.length)
+            return data[v.getId()];
+        else
+            return 0.0;
+    }
+
+    public double get(Node v) {
         checkOwner(v);
         if (v.getId() < data.length)
             return data[v.getId()];
@@ -101,7 +109,7 @@ public class NodeDoubleArray extends GraphBase implements NodeAssociation<Double
      * @param v   Node
      * @param obj Object
      */
-    public void set(Node v, Double obj) {
+    public void setValue(Node v, Double obj) {
         checkOwner(v);
 
         if (obj == null)
@@ -113,6 +121,20 @@ public class NodeDoubleArray extends GraphBase implements NodeAssociation<Double
             grow(v.getId());
         }
         data[v.getId()] = obj;
+    }
+
+    public void set(Node v, double d) {
+        if (isClear)
+            isClear = false;
+        if (v.getId() >= data.length) {
+            grow(v.getId());
+        }
+        data[v.getId()] = d;
+    }
+
+    @Override
+    public void put(Node v, Double obj) {
+        setValue(v, obj);
     }
 
     /**

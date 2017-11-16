@@ -35,7 +35,7 @@ public interface NodeAssociation<T> {
      * @param v Node
      * @return an Object the entry for node v
      */
-    T get(Node v);
+    T getValue(Node v);
 
     /**
      * Set the entry for node v to obj.
@@ -43,7 +43,15 @@ public interface NodeAssociation<T> {
      * @param v   Node
      * @param obj Object
      */
-    void set(Node v, T obj);
+    void setValue(Node v, T obj);
+
+    /**
+     * Set the entry for node v to obj.
+     *
+     * @param v   Node
+     * @param obj Object
+     */
+    void put(Node v, T obj);
 
     /**
      * Set the entry for all nodes to obj.

@@ -29,9 +29,7 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import jloda.fx.ASelectionModel;
 import jloda.fx.ExtendedFXMLLoader;
@@ -43,6 +41,7 @@ import splitstree5.gui.connectorview.ConnectorView;
 import splitstree5.undo.UndoManager;
 import splitstree5.undo.UndoableChange;
 import splitstree5.undo.UndoableChangeList;
+import splitstree5.utils.SelectionEffect;
 
 import java.io.IOException;
 import java.util.*;
@@ -277,7 +276,7 @@ public class DAGView {
             while (c.next()) {
                 for (ANode node : c.getAddedSubList()) {
                     if (node2NodeView.containsKey(node))
-                        node2NodeView.get(node).setEffect(new DropShadow(3, Color.RED));
+                        node2NodeView.get(node).setEffect(SelectionEffect.getInstance());
                 }
                 for (ANode node : c.getRemoved()) {
                     if (node2NodeView.containsKey(node))

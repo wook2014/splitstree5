@@ -29,6 +29,8 @@ import splitstree5.core.misc.Compatibility;
 import splitstree5.core.misc.SplitsUtilities;
 
 import java.util.BitSet;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * A splits block
@@ -89,6 +91,10 @@ public class SplitsBlock extends ADataBlock {
         setShortDescription("");
     }
 
+    public ObservableList<ASplit> getSplits() {
+        return splits;
+    }
+
     @Override
     public int size() {
         return splits.size();
@@ -98,17 +104,26 @@ public class SplitsBlock extends ADataBlock {
         return splits.size();
     }
 
-    /**
-     * access the splits
-     *
-     * @return splits
-     */
-    public ObservableList<ASplit> getSplits() {
-        return splits;
+    public Iterable<ASplit> splits() {
+        return () -> new Iterator<ASplit>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < splits.size();
+            }
+
+            @Override
+            public ASplit next() {
+                if (i >= splits.size())
+                    throw new NoSuchElementException();
+                return splits.get(i++);
+            }
+        };
     }
 
     public String getShortDescription() {
-        return "Number of splits: " + getSplits().size();
+        return "Number of splits: " + size();
     }
 
     public Compatibility getCompatibility() {
@@ -146,6 +161,38 @@ public class SplitsBlock extends ADataBlock {
     public int[] getCycle() {
         return cycle;
     }
+
+    public ASplit get(int s) {
+        return splits.get(s);
+    }
+
+    public double getWeight(int s) {
+        return splits.get(s).getWeight();
+    }
+
+    public BitSet getA(int s) {
+        return splits.get(s).getA();
+    }
+
+    public BitSet getB(int s) {
+        return splits.get(s).getB();
+    }
+
+    /**
+     * gets  all taxa that are included in one specified side of one split and also one specified side of the other split.
+     *
+     * @param splitP the index of split "P"
+     * @param sideP  the "side" of the split P that should be considered
+     * @param splitQ the index of the other split "Q"
+     * @param sideQ  the "side" of the split Q that should be considered
+     */
+    public BitSet intersect2(int splitP, boolean sideP, int splitQ, boolean sideQ) {
+        final BitSet result = new BitSet();
+        result.or(sideP ? getA(splitP) : getB(splitP));
+        result.and(sideQ ? getA(splitQ) : getB(splitQ));
+        return result;
+    }
+
 
     /**
      * set the cycle (and normalize it)

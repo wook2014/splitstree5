@@ -1,5 +1,4 @@
 /**
- * NodeMap.java
  * Copyright (C) 2017 Daniel H. Huson
  * <p>
  * (Some files contain contributions from other authors, who are then mentioned separately.)
@@ -16,30 +15,14 @@
  * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @version $Id: NodeMap.java,v 1.2 2005-12-05 13:25:45 huson Exp $
- * @author Daniel Huson
- */
-/**
- * @version $Id: NodeMap.java,v 1.2 2005-12-05 13:25:45 huson Exp $
- *
- * @author Daniel Huson
- *
- */
-package jloda.graph;
-
-/**
- * Node map
- * Daniel Huson, 2003
- * @deprecated use node array instead
  */
 
-public class NodeMap<T> extends NodeArray<T> {
-    /**
-     * constructor
-     * @param g
-     */
-    public NodeMap(Graph g) {
-        super(g);
-    }
+package splitstree5.core.algorithms.interfaces;
+
+/**
+ * to none
+ * This is used to identify algorithms at runtime
+ * Daniel Huson, 11.2017
+ */
+public interface IToNone {
 }

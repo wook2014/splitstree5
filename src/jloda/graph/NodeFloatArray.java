@@ -59,7 +59,7 @@ public class NodeFloatArray extends GraphBase implements NodeAssociation<Float> 
     public NodeFloatArray(NodeAssociation<Float> src) {
         this(src.getOwner());
         for (Node v = getOwner().getFirstNode(); v != null; v = v.getNext())
-            set(v, src.get(v));
+            setValue(v, src.getValue(v));
     }
 
     /**
@@ -77,7 +77,15 @@ public class NodeFloatArray extends GraphBase implements NodeAssociation<Float> 
      * @param v Node
      * @return an Object the entry for node v
      */
-    public Float get(Node v) {
+    public Float getValue(Node v) {
+        checkOwner(v);
+        if (v.getId() < data.length)
+            return data[v.getId()];
+        else
+            return 0f;
+    }
+
+    public float get(Node v) {
         checkOwner(v);
         if (v.getId() < data.length)
             return data[v.getId()];
@@ -91,7 +99,7 @@ public class NodeFloatArray extends GraphBase implements NodeAssociation<Float> 
      * @param v   Node
      * @param obj Object
      */
-    public void set(Node v, Float obj) {
+    public void setValue(Node v, Float obj) {
         checkOwner(v);
 
         if (obj == null)
@@ -103,6 +111,22 @@ public class NodeFloatArray extends GraphBase implements NodeAssociation<Float> 
             grow(v.getId());
         }
         data[v.getId()] = obj;
+    }
+
+    public void set(Node v, float value) {
+        checkOwner(v);
+        if (isClear)
+            isClear = false;
+
+        if (v.getId() >= data.length) {
+            grow(v.getId());
+        }
+        data[v.getId()] = value;
+    }
+
+    @Override
+    public void put(Node v, Float obj) {
+        setValue(v, obj);
     }
 
     /**
