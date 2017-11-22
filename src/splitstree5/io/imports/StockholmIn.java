@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class StockholmIO extends CharactersFormat{
+public class StockholmIn extends CharactersFormat{
 
     public static void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters) throws IOException {
 

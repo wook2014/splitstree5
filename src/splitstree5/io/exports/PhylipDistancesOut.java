@@ -10,7 +10,7 @@ import java.io.Writer;
 
 public class PhylipDistancesOut implements IFromDistances {
 
-    public static boolean optionTriangular = false; //todo
+    private static boolean optionTriangular = false;
 
     public static void export(Writer w, TaxaBlock taxa, DistancesBlock distances)
             throws IOException {
@@ -23,19 +23,54 @@ public class PhylipDistancesOut implements IFromDistances {
                 maxLabelLength = taxa.getLabel(i).length();
         }
 
-        w.write(ntax+"\n");
-        for(int i=1; i<=distances.getDistances().length; i++){
-            StringBuilder sequence = new StringBuilder("");
-            for(int j=1; j<=distances.getDistances()[i-1].length; j++){
-                sequence.append(distances.get(i, j));
-                sequence.append(" ");
+        w.write("\t"+ntax+"\n");
+
+        if(!optionTriangular) {
+            System.err.println("standard");
+            for (int i = 1; i <= distances.getDistances().length; i++) {
+                StringBuilder sequence = new StringBuilder("");
+                for (int j = 1; j <= distances.getDistances()[i - 1].length; j++) {
+                    sequence.append(distances.get(i, j));
+                    sequence.append(" ");
+                }
+                if(taxa.getLabel(i).length() >= 10)
+                    w.write(taxa.getLabel(i).substring(0, 10));
+                else {
+                    w.write(taxa.getLabel(i));
+                    for (int k = 0; k < 10 - taxa.getLabel(i).length(); k++) {
+                        w.write(" ");
+                    }
+                }
+                w.write("\t"+sequence + "\n");
             }
-            w.write(taxa.getLabel(i));
-            for(int k=0; k<maxLabelLength-taxa.getLabel(i).length(); k++){
-                w.write(" ");
+        } else {
+            System.err.println("triangular");
+            w.write(taxa.getLabel(1)+"\n");
+            for (int i = 2; i <= distances.getDistances().length; i++) {
+                StringBuilder sequence = new StringBuilder("");
+                for (int j = 1; j <= i-1; j++) {
+                    sequence.append(distances.get(i, j));
+                    sequence.append(" ");
+                }
+                if(taxa.getLabel(i).length() >= 10)
+                    w.write(taxa.getLabel(i).substring(0, 10));
+                else {
+                    w.write(taxa.getLabel(i));
+                    for (int k = 0; k < 10 - taxa.getLabel(i).length(); k++) {
+                        w.write(" ");
+                    }
+                }
+                w.write( "\t"+sequence + "\n");
             }
-            w.write("\t"+sequence+"\n");
         }
         w.close();
+    }
+
+    public static void setOptionTriangular(boolean optionTriangular) {
+        PhylipDistancesOut.optionTriangular = optionTriangular;
+    }
+
+    public static boolean getOptionTriangular(){
+        return PhylipDistancesOut.optionTriangular;
     }
 }

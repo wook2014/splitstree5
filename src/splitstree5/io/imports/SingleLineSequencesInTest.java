@@ -8,13 +8,13 @@ import splitstree5.io.nexus.TaxaNexusIO;
 
 import java.io.StringWriter;
 
-public class SingleLineSequencesIOTest {
+public class SingleLineSequencesInTest {
     @Test
     public void parse() throws Exception {
 
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
-        SingleLineSequencesIO.parse("test/notNexusFiles/singleLineDNA.txt", taxaBlock, charactersBlock);
+        SingleLineSequencesIn.parse("test/notNexusFiles/singleLineDNA.txt", taxaBlock, charactersBlock);
 
         // printing
         final StringWriter w = new StringWriter();

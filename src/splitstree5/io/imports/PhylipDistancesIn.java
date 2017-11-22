@@ -14,7 +14,7 @@ import java.io.StreamTokenizer;
 /**
  * Created by Daria on 02.10.2017.
  */
-public class PhylipDistancesIO implements IToDistances{
+public class PhylipDistancesIn implements IToDistances{
 
 
     public static void parse(String inputFile, TaxaBlock taxa, DistancesBlock distances) throws IOException {

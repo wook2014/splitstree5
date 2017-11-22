@@ -22,7 +22,7 @@ import java.util.Map;
  * http://www.clustal.org/download/clustalw_help.txt
  */
 
-public class ClustalIO extends CharactersFormat{
+public class ClustalIn extends CharactersFormat{
 
     public static void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format) throws IOException {
 

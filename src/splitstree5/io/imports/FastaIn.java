@@ -15,7 +15,7 @@ import java.util.Map;
  * Import Characters in FastA format.
  * Daria Evseeva, 07.2017
  */
-public class FastaIO extends CharactersFormat implements IFromChararacters {
+public class FastaIn extends CharactersFormat {
 
     // todo : check parameter for all sequences or only for the first one?
     //public enum ID {ncbi, gb, emb, dbj, pir, prf, sp, pdb, pat, bbs, gnl, ref, lcl, unknown}

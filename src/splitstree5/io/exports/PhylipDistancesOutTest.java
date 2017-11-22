@@ -17,8 +17,10 @@ public class PhylipDistancesOutTest {
     public void export() throws Exception {
 
 
-        File file = new File("test/exports/TEST_PhylipDist.aln");
-        Writer writer = new BufferedWriter(new FileWriter(file));
+        File file1 = new File("test/exports/TEST_PhylipDist.aln");
+        Writer writer1 = new BufferedWriter(new FileWriter(file1));
+        File file2 = new File("test/exports/TEST_PhylipDistTri.aln");
+        Writer writer2 = new BufferedWriter(new FileWriter(file2));
 
         TaxaBlock taxa = new TaxaBlock();
         DistancesBlock distances = new DistancesBlock();
@@ -26,8 +28,9 @@ public class PhylipDistancesOutTest {
                 new FileReader("test/distances/algaeCod.nex")),
                 taxa, distances, null));
 
-        PhylipDistancesOut.export(writer, taxa, distances);
-
+        PhylipDistancesOut.export(writer1, taxa, distances);
+        PhylipDistancesOut.setOptionTriangular(true);
+        PhylipDistancesOut.export(writer2, taxa, distances);
     }
 
 }

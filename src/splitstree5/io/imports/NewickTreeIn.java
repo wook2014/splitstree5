@@ -5,6 +5,7 @@ import jloda.util.Basic;
 import splitstree5.core.algorithms.interfaces.IToTrees;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
+import splitstree5.utils.nexus.TreesUtilities;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -14,9 +15,8 @@ import java.util.HashSet;
 /**
  * Created by Daria on 04.10.2017.
  */
-public class NewickTree implements IToTrees {
+public class NewickTreeIn implements IToTrees {
 
-    String datatype = null;
     /*
     Implement first the Importer Interface
     */
@@ -27,11 +27,10 @@ public class NewickTree implements IToTrees {
 
         taxa.clear();
         trees.clear();
-        int ntax;
 
         try (BufferedReader in = new BufferedReader(new FileReader(inputFile))) {
             // importing first tree and generating taxa object
-            String str;
+            //String str;
             HashSet<String> labels = new HashSet<>();
             boolean haveWarnedMultipleLabels = false;
 
@@ -43,17 +42,20 @@ public class NewickTree implements IToTrees {
                 if (aLine.trim().length() == 0 || aLine.startsWith("#"))
                     continue; // skip empty lines and comment lines
                 System.err.println("Tree: " + aLine);
-                str = "";
+                //str = "";
+                StringBuilder s = new StringBuilder("");
                 while (aLine != null && (!aLine.contains(";"))) {
-                    str += aLine;
+                    //str += aLine;
+                    s.append(aLine);
                     aLine = in.readLine();
                 }
+                String str = s.toString();
                 if (aLine != null) str += aLine;
                 if (str.trim().length() != 0) {
                     str = str.replaceAll(" ", "").replaceAll("\t", "");
                     PhyloTree tree = new PhyloTree();
                     tree.parseBracketNotation(Basic.removeComments(str, '[', ']'), true);
-                    /*try {
+                    try {
                         tree.parseBracketNotation(Basic.removeComments(str, '[', ']'), true);
                         if (TreesUtilities.hasNumbersOnInternalNodes(tree))
                             TreesUtilities.changeNumbersOnInternalNodesToEdgeConfidencies(tree);
@@ -62,6 +64,9 @@ public class NewickTree implements IToTrees {
                         throw ex;
                     }
 
+                    // todo : convertMultiTree2Splits: return taxa and splits in the case of a multi-labeled tree
+
+/*
                     if (getOptionConvertMultiLabeledTree()) {
                         try {
                             Document doc = convertMultiTree2Splits(tree);
@@ -79,9 +84,8 @@ public class NewickTree implements IToTrees {
                             haveWarnedMultipleLabels = true;
                         }
                     }*/
-                    for (String label : tree.getNodeLabels()) {
-                        labels.add(label);
-                    }
+
+                    labels.addAll(tree.getNodeLabels());
                     // this is for partial Trees
                     if (size == 0) size = labels.size();
                     if (labels.size() != size) partial = true;

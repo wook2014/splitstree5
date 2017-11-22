@@ -8,13 +8,17 @@ import splitstree5.io.nexus.TaxaNexusIO;
 
 import java.io.StringWriter;
 
-public class StockholmIOTest {
+/**
+ * Created by Daria on 01.07.2017.
+ */
+public class FastaInTest {
+
     @Test
     public void parse() throws Exception {
 
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
-        StockholmIO.parse("test/notNexusFiles/PF02171_seed.txt", taxaBlock, charactersBlock);
+        FastaIn.parse("test/notNexusFiles/fasta/smallTest.fasta", taxaBlock, charactersBlock);
 
         // printing
         final StringWriter w = new StringWriter();
@@ -22,6 +26,9 @@ public class StockholmIOTest {
         TaxaNexusIO.write(w, taxaBlock);
         CharactersNexusIO.write(w, taxaBlock, charactersBlock, null);
         System.err.println(w.toString());
+
+        System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
+
     }
 
 }

@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 /**
  * Created by Daria on 17.10.2017.
  */
-public class NewickTreeTest {
+public class NewickTreeInTest {
     @org.junit.Test
     public void parse() throws Exception {
 
@@ -24,8 +24,8 @@ public class NewickTreeTest {
 
         TaxaBlock taxaBlock = new TaxaBlock();
         TreesBlock treesBlock = new TreesBlock();
-        NewickTree.parse("test/notNexusFiles/colors-nj.tre", taxaBlock, treesBlock);
-        //NewickTree.parse("test/notNexusFiles/trees3.tre", taxaBlock, treesBlock);
+        NewickTreeIn.parse("test/notNexusFiles/colors-nj.tre", taxaBlock, treesBlock);
+        //NewickTreeIn.parse("test/notNexusFiles/trees3.tre", taxaBlock, treesBlock);
 
         // printing
         final StringWriter w = new StringWriter();

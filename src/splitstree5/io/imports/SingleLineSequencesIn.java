@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class SingleLineSequencesIO extends CharactersFormat {
+public class SingleLineSequencesIn extends CharactersFormat {
 
     public static void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters) throws IOException {
 
