@@ -1,5 +1,6 @@
 package splitstree5.io.imports.NeXML;
 
+import jloda.phylo.PhyloTree;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
@@ -37,14 +38,17 @@ public class NexmlFileParser {
         }
     }
 
-    // TODO
     public void parseTrees(String inputFile, TaxaBlock taxa, TreesBlock trees){
         try {
             File file = new File(inputFile);
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser saxParser = factory.newSAXParser();
-            NexmlTaxaHandler handler = new NexmlTaxaHandler();
+            NexmlTreesHandler handler = new NexmlTreesHandler();
             saxParser.parse(file, handler);
+            taxa.addTaxaByNames(handler.getTaxaLabels());
+            for (PhyloTree t : handler.getTrees()){
+                trees.getTrees().add(t);
+            }
         }catch (Exception e) {
             e.printStackTrace();
         }

@@ -16,8 +16,8 @@ public class NexmlTaxaHandler extends DefaultHandler{
                              String localName, String qName, Attributes attributes) throws SAXException {
 
         if (qName.equalsIgnoreCase("otus")) {
-            String label = attributes.getValue("id");
-            String id = attributes.getValue("label");
+            String label = attributes.getValue("label");
+            String id = attributes.getValue("id");
             System.out.println("Label : " + label);
             System.out.println("ID : " + id);
         } else if (qName.equalsIgnoreCase("otu")) {
