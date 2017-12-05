@@ -8,7 +8,7 @@ import java.io.*;
 
 public class FastaOut implements IFromChararacters {
 
-    public static void export(Writer w, TaxaBlock taxa, CharactersBlock characters)
+    public void export(Writer w, TaxaBlock taxa, CharactersBlock characters)
             throws IOException {
 
         jloda.util.FastA fasta = new jloda.util.FastA();

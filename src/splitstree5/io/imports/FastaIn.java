@@ -27,7 +27,7 @@ public class FastaIn extends CharactersFormat {
     public final String[] extensions = {"fasta", "fas", "fa", "seq", "fsa"};
 
 
-    public static void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters) throws IOException {
+    public void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters) throws IOException {
 
         ArrayList<String> taxonNamesFound = new ArrayList<>();
         ArrayList<String> matrix = new ArrayList<>();
@@ -39,7 +39,7 @@ public class FastaIn extends CharactersFormat {
             counter ++;
             String line;
             int sequenceLength = 0;
-            String sequence = "";
+            StringBuilder sequence = new StringBuilder("");
             boolean startedNewSequence = false;
 
 
@@ -57,25 +57,25 @@ public class FastaIn extends CharactersFormat {
                     ntax++;
                 } else {
                     if (startedNewSequence) {
-                        if (!sequence.equals("")) matrix.add(sequence);
+                        if (!sequence.toString().equals("")) matrix.add(sequence.toString());
                         if (nchar != 0 && nchar != sequenceLength) {
                             throw new IOException("Sequences must be the same length. Wrong number of chars at the sequence "
                                     + (ntax - 1) + " in line: " + counter);
                         }
                         nchar = sequenceLength;
                         sequenceLength = 0;
-                        sequence = "";
+                        sequence = new StringBuilder("");
                         startedNewSequence = false;
                     }
                     String add = line.replaceAll("\\s+", "");
                     sequenceLength += add.length();
-                    sequence += line.replaceAll("\\s+", "");
+                    sequence.append(line.replaceAll("\\s+", ""));
                 }
             }
 
             if (sequence.length() == 0)
                 throw new IOException("Sequence " + ntax + " is zero");
-            matrix.add(sequence);
+            matrix.add(sequence.toString());
             if (nchar != sequenceLength)
                 throw new IOException("Sequences must be the same length. Wrong number of chars at the sequence " + ntax);
 
@@ -98,12 +98,12 @@ public class FastaIn extends CharactersFormat {
         // todo check if valid and set parameters here
 
         Map<Character, Integer> frequency = new LinkedHashMap<>();
-        String foundSymbols = "";
+        StringBuilder foundSymbols = new StringBuilder("");
         for(int i = 1; i<=characters.getNtax(); i++){
             for(int j = 1; j<=characters.getNchar(); j++){
                 char symbol = Character.toLowerCase(matrix.get(i-1).charAt(j-1));
-                if(foundSymbols.indexOf(symbol) == -1) {
-                    foundSymbols+=symbol;
+                if(foundSymbols.toString().indexOf(symbol) == -1) {
+                    foundSymbols.append(symbol);
                     frequency.put(symbol, 1);
                 } else
                     frequency.put(symbol, frequency.get(symbol)+1);
@@ -111,7 +111,7 @@ public class FastaIn extends CharactersFormat {
             }
         }
 
-        estimateDataType(foundSymbols, characters, frequency);
+        estimateDataType(foundSymbols.toString(), characters, frequency);
     }
 
     private static void addTaxaName(String infoLine, ArrayList<String> taxonNamesFound) throws IOException {

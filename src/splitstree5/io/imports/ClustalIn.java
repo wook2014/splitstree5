@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class ClustalIn extends CharactersFormat{
 
-    public static void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format) throws IOException {
+    public void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format) throws IOException {
 
         Map<String, String> taxa2seq = new LinkedHashMap<>();
 
@@ -97,15 +97,15 @@ public class ClustalIn extends CharactersFormat{
         characters.setDimension(ntax, nchar);
 
         int labelsCounter = 1;
-        String foundSymbols = "";
+        StringBuilder foundSymbols = new StringBuilder("");
         Map<Character, Integer> frequency = new LinkedHashMap<>();
 
         for(String label : taxa2seq.keySet()){
             for(int j=1; j<=nchar; j++){
 
                 char symbol = Character.toLowerCase(taxa2seq.get(label).charAt(j-1));
-                if(foundSymbols.indexOf(symbol) == -1){
-                    foundSymbols+=symbol;
+                if(foundSymbols.toString().indexOf(symbol) == -1){
+                    foundSymbols.append(symbol);
                     frequency.put(symbol, 1);
                 } else
                     frequency.put(symbol, frequency.get(symbol)+1);
@@ -115,7 +115,7 @@ public class ClustalIn extends CharactersFormat{
             labelsCounter++;
         }
 
-        estimateDataType(foundSymbols, characters, frequency);
+        estimateDataType(foundSymbols.toString(), characters, frequency);
     }
 
     private static boolean hasAlphabeticalSymbols(String line){

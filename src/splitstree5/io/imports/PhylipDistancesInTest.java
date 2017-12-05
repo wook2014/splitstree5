@@ -11,13 +11,16 @@ import java.io.StringWriter;
  * Created by Daria on 03.10.2017.
  */
 public class PhylipDistancesInTest {
+
+    private PhylipDistancesIn phylipDistancesIn = new PhylipDistancesIn();
+
     @org.junit.Test
     public void parse() throws Exception {
 
         TaxaBlock taxaBlock = new TaxaBlock();
         DistancesBlock distancesBlock = new DistancesBlock();
 
-        PhylipDistancesIn.parse("test/notNexusFiles/square.dist", taxaBlock, distancesBlock);
+        phylipDistancesIn.parse("test/notNexusFiles/square.dist", taxaBlock, distancesBlock);
         // printing
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
@@ -26,7 +29,7 @@ public class PhylipDistancesInTest {
         System.err.println(w1.toString());
         String s1 = w1.toString();
 
-        PhylipDistancesIn.parse("test/notNexusFiles/triangular.dist", taxaBlock, distancesBlock);
+        phylipDistancesIn.parse("test/notNexusFiles/triangular.dist", taxaBlock, distancesBlock);
         // printing
         final StringWriter w2 = new StringWriter();
         w2.write("#nexus\n");
@@ -35,7 +38,7 @@ public class PhylipDistancesInTest {
         System.err.println(w2.toString());
         String s2 = w2.toString();
 
-        PhylipDistancesIn.parse("test/notNexusFiles/triangularEOL.dist", taxaBlock, distancesBlock);
+        phylipDistancesIn.parse("test/notNexusFiles/triangularEOL.dist", taxaBlock, distancesBlock);
         // printing
         final StringWriter w3 = new StringWriter();
         w3.write("#nexus\n");
@@ -43,7 +46,8 @@ public class PhylipDistancesInTest {
         DistancesNexusIO.write(w3,taxaBlock, distancesBlock, null);
         System.err.println(w3.toString());
 
-        PhylipDistancesIn.parse("test/notNexusFiles/squareEOL-bf.dist", taxaBlock, distancesBlock);
+        // todo
+        phylipDistancesIn.parse("test/notNexusFiles/squareEOL-bf.dist", taxaBlock, distancesBlock);
         // printing
         final StringWriter w4 = new StringWriter();
         w4.write("#nexus\n");

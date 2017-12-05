@@ -14,6 +14,9 @@ import static org.junit.Assert.*;
  * Created by Daria on 17.10.2017.
  */
 public class NewickTreeInTest {
+
+    private NewickTreeIn newickTreeIn = new NewickTreeIn();
+
     @org.junit.Test
     public void parse() throws Exception {
 
@@ -24,7 +27,7 @@ public class NewickTreeInTest {
 
         TaxaBlock taxaBlock = new TaxaBlock();
         TreesBlock treesBlock = new TreesBlock();
-        NewickTreeIn.parse("test/notNexusFiles/colors-nj.tre", taxaBlock, treesBlock);
+        newickTreeIn.parse("test/notNexusFiles/colors-nj.tre", taxaBlock, treesBlock);
         //NewickTreeIn.parse("test/notNexusFiles/trees3.tre", taxaBlock, treesBlock);
 
         // printing

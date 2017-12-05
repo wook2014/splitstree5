@@ -18,6 +18,9 @@ import java.nio.file.Paths;
 import static org.junit.Assert.*;
 
 public class MatlabOutTest {
+
+    private MatlabOut matlabOut = new MatlabOut();
+
     @Test
     public void export() throws Exception {
 
@@ -35,7 +38,8 @@ public class MatlabOutTest {
         SplitsNexusIO.parse(np, taxa, splits, null);
 
 
-        MatlabOut.export(writer, taxa, distances, splits);
+        matlabOut.export(writer, taxa, distances, splits);
+        writer.close();
 
         byte[] encoded1 = Files.readAllBytes(Paths.get("test/notNexusFiles/algae.m"));
         String algae = new String(encoded1, StandardCharsets.UTF_8);

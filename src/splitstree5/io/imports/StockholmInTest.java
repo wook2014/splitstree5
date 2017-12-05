@@ -9,12 +9,15 @@ import splitstree5.io.nexus.TaxaNexusIO;
 import java.io.StringWriter;
 
 public class StockholmInTest {
+
+    private StockholmIn stockholmIn = new StockholmIn();
+
     @Test
     public void parse() throws Exception {
 
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
-        StockholmIn.parse("test/notNexusFiles/PF02171_seed.txt", taxaBlock, charactersBlock);
+        stockholmIn.parse("test/notNexusFiles/PF02171_seed.txt", taxaBlock, charactersBlock);
 
         // printing
         final StringWriter w = new StringWriter();

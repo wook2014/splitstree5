@@ -13,6 +13,8 @@ import java.util.List;
 
 public class FastaOutTest {
 
+    private FastaOut fastaOut = new FastaOut();
+
     @Test
     public void export() throws Exception {
 
@@ -29,7 +31,8 @@ public class FastaOutTest {
                 taxa, characters, format);
         taxa.addTaxaByNames(taxonNames);
 
-        FastaOut.export(writer, taxa, characters);
+        fastaOut.export(writer, taxa, characters);
+        writer.close();
 
     }
 

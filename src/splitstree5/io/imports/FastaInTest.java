@@ -13,12 +13,14 @@ import java.io.StringWriter;
  */
 public class FastaInTest {
 
+    private FastaIn fastaIn = new FastaIn();
+
     @Test
     public void parse() throws Exception {
 
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
-        FastaIn.parse("test/notNexusFiles/fasta/smallTest.fasta", taxaBlock, charactersBlock);
+        fastaIn.parse("test/notNexusFiles/fasta/smallTest.fasta", taxaBlock, charactersBlock);
 
         // printing
         final StringWriter w = new StringWriter();

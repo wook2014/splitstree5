@@ -8,12 +8,12 @@ import java.io.*;
 
 public class ClustalOut implements IFromChararacters {
 
-    private final static String description = "CLUSTAL W (1.82) multiple sequence alignment";
+    private final String description = "CLUSTAL W (1.82) multiple sequence alignment";
 
-    private static int optionLineLength = 40;
-    private static boolean showConservation = false; // todo
+    private int optionLineLength = 40;
+    private boolean showConservation = false; // todo
 
-    public static void export(Writer w, TaxaBlock taxa, CharactersBlock characters)
+    public void export(Writer w, TaxaBlock taxa, CharactersBlock characters)
             throws IOException {
 
         w.write(description+"\n"+"\n"+"\n");
@@ -34,8 +34,13 @@ public class ClustalOut implements IFromChararacters {
             }
             w.write("\n");
         }
+    }
 
-        w.close();
+    public int getOptionLineLength(){
+        return this.optionLineLength;
+    }
+    public void setOptionLineLength(int lineLength){
+        this.optionLineLength = lineLength;
     }
 
 }

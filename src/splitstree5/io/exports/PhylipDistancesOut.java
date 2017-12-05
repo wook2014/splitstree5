@@ -10,9 +10,9 @@ import java.io.Writer;
 
 public class PhylipDistancesOut implements IFromDistances {
 
-    private static boolean optionTriangular = false;
+    private boolean optionTriangular = false;
 
-    public static void export(Writer w, TaxaBlock taxa, DistancesBlock distances)
+    public void export(Writer w, TaxaBlock taxa, DistancesBlock distances)
             throws IOException {
 
         int ntax = taxa.getNtax();
@@ -63,14 +63,13 @@ public class PhylipDistancesOut implements IFromDistances {
                 w.write( "\t"+sequence + "\n");
             }
         }
-        w.close();
     }
 
-    public static void setOptionTriangular(boolean optionTriangular) {
-        PhylipDistancesOut.optionTriangular = optionTriangular;
+    public void setOptionTriangular(boolean optionTriangular) {
+        this.optionTriangular = optionTriangular;
     }
 
-    public static boolean getOptionTriangular(){
-        return PhylipDistancesOut.optionTriangular;
+    public boolean getOptionTriangular(){
+        return this.optionTriangular;
     }
 }

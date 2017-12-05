@@ -13,6 +13,8 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class ClustalOutTest {
+
+    private ClustalOut clustalOut = new ClustalOut();
     @Test
     public void export() throws Exception {
 
@@ -29,8 +31,8 @@ public class ClustalOutTest {
                 taxa, characters, format);
         taxa.addTaxaByNames(taxonNames);
 
-        ClustalOut.export(writer, taxa, characters);
-
+        clustalOut.export(writer, taxa, characters);
+        writer.close();
     }
 
 }

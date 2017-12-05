@@ -17,7 +17,7 @@ import java.util.BitSet;
 
 public class MatlabOut implements IFromTaxa, IFromDistances, IFromSplits {
 
-    public static void export(Writer w, @Nullable TaxaBlock taxa, @Nullable DistancesBlock distances,
+    public void export(Writer w, @Nullable TaxaBlock taxa, @Nullable DistancesBlock distances,
                               @Nullable SplitsBlock splits) throws IOException {
 
         //todo: can TaxaBlock be nullable? if no, use ntax from taxablock
@@ -81,8 +81,5 @@ public class MatlabOut implements IFromTaxa, IFromDistances, IFromSplits {
             }
             w.write("\n");
         }
-
-
-        w.close(); // todo out
     }
 }

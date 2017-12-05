@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class PhylipCharactersIn extends CharactersFormat {
 
-    public static void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format) throws IOException {
+    public void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format) throws IOException {
 
         ArrayList<String> labels = new ArrayList<>();
         ArrayList<String> sequences = new ArrayList<>();
@@ -103,15 +103,15 @@ public class PhylipCharactersIn extends CharactersFormat {
         characters.setDimension(ntax, nchar);
 
         int labelsCounter = 1;
-        String foundSymbols = "";
+        StringBuilder foundSymbols = new StringBuilder("");
         Map<Character, Integer> frequency = new LinkedHashMap<>();
 
         for(String seq : sequences){
             for(int j=1; j<=nchar; j++){
 
                 char symbol = Character.toLowerCase(seq.charAt(j-1));
-                if(foundSymbols.indexOf(symbol) == -1){
-                    foundSymbols+=symbol;
+                if(foundSymbols.toString().indexOf(symbol) == -1){
+                    foundSymbols.append(symbol);
                     frequency.put(symbol, 1);
                 } else
                     frequency.put(symbol, frequency.get(symbol)+1);
@@ -120,7 +120,7 @@ public class PhylipCharactersIn extends CharactersFormat {
             }
             labelsCounter++;
         }
-        estimateDataType(foundSymbols, characters, frequency);
+        estimateDataType(foundSymbols.toString(), characters, frequency);
 
     }
 
@@ -149,14 +149,14 @@ public class PhylipCharactersIn extends CharactersFormat {
                 sequences.set(i, labels.get(i)+sequences.get(i));
             }
 
-        String foundSymbols = "";
+        StringBuilder foundSymbols = new StringBuilder("");
         Map<Character, Integer> frequency = new LinkedHashMap<>();
         int seqLength = 0;
         for(int i=0; i<sequences.size(); i++){
             for(int j=1; j<=sequences.get(i).length(); j++){
                 char symbol = Character.toLowerCase(sequences.get(i).charAt(j-1));
-                if(foundSymbols.indexOf(symbol) == -1){
-                    foundSymbols+=symbol;
+                if(foundSymbols.toString().indexOf(symbol) == -1){
+                    foundSymbols.append(symbol);
                     frequency.put(symbol, 1);
                 } else
                     frequency.put(symbol, frequency.get(symbol)+1);
@@ -173,7 +173,7 @@ public class PhylipCharactersIn extends CharactersFormat {
             if(i % ntax == ntax-1)
                 seqLength =+ sequences.get(i).length();
         }
-        estimateDataType(foundSymbols, characters, frequency);
+        estimateDataType(foundSymbols.toString(), characters, frequency);
     }
 
     private static void setCharactersStandardEOL(ArrayList<String> labels, ArrayList<String> sequences,
@@ -183,7 +183,7 @@ public class PhylipCharactersIn extends CharactersFormat {
         characters.clear();
         characters.setDimension(ntax, nchar);
 
-        String foundSymbols = "";
+        StringBuilder foundSymbols = new StringBuilder("");
         int iterator = 0;
         Map<Character, Integer> frequency = new LinkedHashMap<>();
         while(iterator < labels.size()){
@@ -197,8 +197,8 @@ public class PhylipCharactersIn extends CharactersFormat {
                     shift += j;
                 }
                 symbol = Character.toLowerCase(sequences.get(iterator).charAt(j-shift));
-                if(foundSymbols.indexOf(symbol) == -1){
-                    foundSymbols+=symbol;
+                if(foundSymbols.toString().indexOf(symbol) == -1){
+                    foundSymbols.append(symbol);
                     frequency.put(symbol, 1);
                 } else
                     frequency.put(symbol, frequency.get(symbol)+1);
@@ -208,7 +208,7 @@ public class PhylipCharactersIn extends CharactersFormat {
             iterator++;
         }
 
-        estimateDataType(foundSymbols, characters, frequency);
+        estimateDataType(foundSymbols.toString(), characters, frequency);
         taxa.clear();
         taxa.addTaxaByNames(taxaNames);
     }

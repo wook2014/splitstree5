@@ -13,6 +13,8 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class PhylipCharactersOutTest {
+
+    private PhylipCharactersOut phylipCharactersOut = new PhylipCharactersOut();
     @Test
     public void export() throws Exception {
 
@@ -30,11 +32,12 @@ public class PhylipCharactersOutTest {
                 taxaI, charactersI, formatI);
         taxaI.addTaxaByNames(taxonNamesI);
 
-        PhylipCharactersOut.export(writerI, taxaI, charactersI);
+        phylipCharactersOut.export(writerI, taxaI, charactersI);
+        writerI.close();
 
 
         // standard
-        PhylipCharactersOut.setOptionInterleaved(false);
+        phylipCharactersOut.setOptionInterleaved(false);
         File file = new File("test/exports/TEST_PHYL.phy");
         Writer writer = new BufferedWriter(new FileWriter(file));
 
@@ -48,7 +51,8 @@ public class PhylipCharactersOutTest {
                 taxa, characters, format);
         taxa.addTaxaByNames(taxonNames);
 
-        PhylipCharactersOut.export(writer, taxa, characters);
+        phylipCharactersOut.export(writer, taxa, characters);
+        writer.close();
 
     }
 

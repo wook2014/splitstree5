@@ -18,7 +18,7 @@ public class NewickTreeOut implements IFromTrees, IFromSplits, IFromNetwork {
 
     // todo function for for every block + taxa block, not static
 
-    public static void export(Writer w, @Nullable TreesBlock trees, @Nullable SplitsBlock splits) throws IOException {
+    public void export(Writer w, @Nullable TreesBlock trees, @Nullable SplitsBlock splits) throws IOException {
 
         // todo network
 
@@ -32,7 +32,5 @@ public class NewickTreeOut implements IFromTrees, IFromSplits, IFromNetwork {
             //PhyloTree tree = TreesUtilities.treeFromSplits(taxa, splits, null);
             //w.write(tree.toString() + "\n");
         }
-
-        w.close();
     }
 }

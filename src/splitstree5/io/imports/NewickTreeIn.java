@@ -23,7 +23,7 @@ public class NewickTreeIn implements IToTrees {
     public static String Description = "Newick Tree Files (*.new,*.tre, *.tree)";
     private boolean optionConvertMultiLabeledTree = false;
 
-    public static void parse(String inputFile, TaxaBlock taxa, TreesBlock trees) throws IOException {
+    public void parse(String inputFile, TaxaBlock taxa, TreesBlock trees) throws IOException {
 
         taxa.clear();
         trees.clear();

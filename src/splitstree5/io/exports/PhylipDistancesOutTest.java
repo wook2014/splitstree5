@@ -13,6 +13,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.*;
 
 public class PhylipDistancesOutTest {
+
+    private PhylipDistancesOut phylipDistancesOut = new PhylipDistancesOut();
+
     @Test
     public void export() throws Exception {
 
@@ -28,9 +31,11 @@ public class PhylipDistancesOutTest {
                 new FileReader("test/distances/algaeCod.nex")),
                 taxa, distances, null));
 
-        PhylipDistancesOut.export(writer1, taxa, distances);
-        PhylipDistancesOut.setOptionTriangular(true);
-        PhylipDistancesOut.export(writer2, taxa, distances);
+        phylipDistancesOut.export(writer1, taxa, distances);
+        writer1.close();
+        phylipDistancesOut.setOptionTriangular(true);
+        phylipDistancesOut.export(writer2, taxa, distances);
+        writer2.close();
     }
 
 }

@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class SingleLineSequencesIn extends CharactersFormat {
 
-    public static void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters) throws IOException {
+    public void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters) throws IOException {
 
         ArrayList<String> taxonNames = new ArrayList<>();
         ArrayList<String> matrix = new ArrayList<>();
@@ -58,12 +58,12 @@ public class SingleLineSequencesIn extends CharactersFormat {
         // todo check if valid and set parameters here
 
         Map<Character, Integer> frequency = new LinkedHashMap<>();
-        String foundSymbols = "";
+        StringBuilder foundSymbols = new StringBuilder("");
         for(int i = 1; i<=characters.getNtax(); i++){
             for(int j = 1; j<=characters.getNchar(); j++){
                 char symbol = Character.toLowerCase(matrix.get(i-1).charAt(j-1));
-                if(foundSymbols.indexOf(symbol) == -1) {
-                    foundSymbols+=symbol;
+                if(foundSymbols.toString().indexOf(symbol) == -1) {
+                    foundSymbols.append(symbol);
                     frequency.put(symbol, 1);
                 } else
                     frequency.put(symbol, frequency.get(symbol)+1);
@@ -71,7 +71,7 @@ public class SingleLineSequencesIn extends CharactersFormat {
             }
         }
 
-        estimateDataType(foundSymbols, characters, frequency);
+        estimateDataType(foundSymbols.toString(), characters, frequency);
     }
 
     /**

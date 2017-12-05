@@ -8,11 +8,11 @@ import java.io.*;
 
 public class PhylipCharactersOut implements IFromChararacters {
 
-    private static boolean optionInterleaved = true;
-    private static boolean optionInterleavedMultiLabels = true;
-    private static int optionLineLength = 40;
+    private boolean optionInterleaved = true;
+    private boolean optionInterleavedMultiLabels = true;
+    private int optionLineLength = 40;
 
-    public static void export(Writer w, TaxaBlock taxa, CharactersBlock characters) throws IOException {
+    public void export(Writer w, TaxaBlock taxa, CharactersBlock characters) throws IOException {
 
         int ntax = taxa.getNtax();
         int nchar = characters.getNchar();
@@ -35,7 +35,6 @@ public class PhylipCharactersOut implements IFromChararacters {
                 }
                 w.write("\n");
             }
-            w.close();
         }else{
             for(int t=1; t<=ntax; t++){
                 StringBuilder sequence = new StringBuilder("");
@@ -45,7 +44,6 @@ public class PhylipCharactersOut implements IFromChararacters {
                 }
                 w.write(get10charLabel(taxa.getLabel(t))+"\t"+sequence.toString().toUpperCase()+"\n");
             }
-            w.close();
         }
     }
 
@@ -62,28 +60,28 @@ public class PhylipCharactersOut implements IFromChararacters {
         }
     }
 
-    public static boolean getOptionInterleaved(){
+    public boolean getOptionInterleaved(){
         return optionInterleaved;
     }
 
-    public static void setOptionInterleaved(boolean interleaved){
+    public void setOptionInterleaved(boolean interleaved){
         optionInterleaved=interleaved;
     }
 
-    public static boolean getoptionInterleavedMultiLabels(){
+    public boolean getoptionInterleavedMultiLabels(){
         return optionInterleavedMultiLabels;
     }
 
-    public static void setoptionInterleavedMultiLabels(boolean multi){
+    public void setoptionInterleavedMultiLabels(boolean multi){
         optionInterleavedMultiLabels=multi;
         if(multi) optionInterleaved = true;
     }
 
-    public static int getOptionoptionLineLength(){
+    public int getOptionoptionLineLength(){
         return optionLineLength;
     }
 
-    public static void setOptionoptionLineLength(int length){
+    public void setOptionoptionLineLength(int length){
         optionLineLength=length;
     }
 
