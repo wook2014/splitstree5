@@ -16,6 +16,8 @@ import java.io.Writer;
 
 public class NewickTreeOut implements IFromTrees, IFromSplits, IFromNetwork {
 
+    // todo function for for every block + taxa block, not static
+
     public static void export(Writer w, @Nullable TreesBlock trees, @Nullable SplitsBlock splits) throws IOException {
 
         // todo network

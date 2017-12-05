@@ -83,6 +83,6 @@ public class MatlabOut implements IFromTaxa, IFromDistances, IFromSplits {
         }
 
 
-        w.close();
+        w.close(); // todo out
     }
 }

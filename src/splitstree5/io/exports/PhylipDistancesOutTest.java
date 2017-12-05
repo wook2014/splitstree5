@@ -9,7 +9,7 @@ import splitstree5.io.nexus.TaxaNexusIO;
 
 import java.io.*;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.*;
 
 public class PhylipDistancesOutTest {

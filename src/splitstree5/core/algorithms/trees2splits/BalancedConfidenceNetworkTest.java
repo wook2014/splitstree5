@@ -14,7 +14,7 @@ import splitstree5.io.nexus.TreesNexusIO;
 import java.io.FileReader;
 import java.io.StringWriter;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created on 09.06.2017.

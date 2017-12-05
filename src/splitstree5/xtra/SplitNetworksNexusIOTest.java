@@ -67,7 +67,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * networks io test

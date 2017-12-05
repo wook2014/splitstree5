@@ -30,7 +30,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * test io
