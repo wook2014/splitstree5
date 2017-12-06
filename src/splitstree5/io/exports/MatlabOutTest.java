@@ -37,8 +37,9 @@ public class MatlabOutTest {
         DistancesNexusIO.parse(np, taxa, distances, null);
         SplitsNexusIO.parse(np, taxa, splits, null);
 
-
-        matlabOut.export(writer, taxa, distances, splits);
+        matlabOut.exportTaxa(writer, taxa);
+        matlabOut.exportSplits(writer, taxa, splits);
+        matlabOut.exportDistances(writer, taxa, distances);
         writer.close();
 
         byte[] encoded1 = Files.readAllBytes(Paths.get("test/notNexusFiles/algae.m"));
