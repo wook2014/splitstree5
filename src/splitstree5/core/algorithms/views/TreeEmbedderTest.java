@@ -43,7 +43,7 @@ public class TreeEmbedderTest extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         final Document document = new Document();
-        document.setFileName("test/trees/PHYT.nex");
+        document.setFileName("test/trees/beesUPGMA.nex");
         NexusFileParser.parse(document);
 
         Workflow dag = document.getWorkflow();

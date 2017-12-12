@@ -34,7 +34,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * test neighbor net

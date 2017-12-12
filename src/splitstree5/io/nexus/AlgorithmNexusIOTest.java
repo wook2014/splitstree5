@@ -27,7 +27,7 @@ import splitstree5.core.algorithms.distances2splits.NeighborNet;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * test algorithm io
