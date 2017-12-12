@@ -19,16 +19,14 @@
 
 package splitstree5.core;
 
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyStringProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.ListChangeListener;
 import jloda.fx.ASelectionModel;
 import jloda.util.Basic;
-import splitstree5.core.dag.DAG;
 import splitstree5.core.misc.Taxon;
+import splitstree5.core.workflow.Workflow;
 import splitstree5.info.MethodsTextGenerator;
+import splitstree5.main.MainWindow;
 
 import java.util.List;
 
@@ -37,31 +35,34 @@ import java.util.List;
  * Created by huson on 12/25/16.
  */
 public class Document {
-    private final DAG dag;
+    private final Workflow workflow;
+    private MainWindow mainWindow;
 
     private final StringProperty fileName = new SimpleStringProperty();
     private final ASelectionModel<Taxon> taxaSelectionModel = new ASelectionModel<>();
 
     private final StringProperty methodsText = new SimpleStringProperty();
 
+    private final BooleanProperty dirty = new SimpleBooleanProperty();
+
     /**
      * constructor
      */
     public Document() {
-        dag = new DAG();
-        dag.updatingProperty().addListener((c, o, n) -> updateMethodsText());
+        workflow = new Workflow(this);
+        workflow.updatingProperty().addListener((c, o, n) -> updateMethodsText());
     }
 
     /**
      * setup the taxon selection model (after top and working taxa nodes have been set)
      */
     public void setupTaxonSelectionModel() {
-        if (dag.getTopTaxaNode() != null) {
-            dag.getTopTaxaNode().stateProperty().addListener((observable, oldValue, newValue) -> {
-                final List<Taxon> taxa = dag.getTopTaxaNode().getDataBlock().getTaxa();
+        if (workflow.getTopTaxaNode() != null) {
+            workflow.getTopTaxaNode().stateProperty().addListener((observable, oldValue, newValue) -> {
+                final List<Taxon> taxa = workflow.getTopTaxaNode().getDataBlock().getTaxa();
                 taxaSelectionModel.setItems(taxa.toArray(new Taxon[taxa.size()]));
             });
-            final List<Taxon> taxa = dag.getTopTaxaNode().getDataBlock().getTaxa();
+            final List<Taxon> taxa = workflow.getTopTaxaNode().getDataBlock().getTaxa();
             taxaSelectionModel.setItems(taxa.toArray(new Taxon[taxa.size()]));
         }
 
@@ -72,9 +73,8 @@ public class Document {
         }
     }
 
-
-    public DAG getDag() {
-        return dag;
+    public Workflow getWorkflow() {
+        return workflow;
     }
 
     public String getFileName() {
@@ -90,7 +90,7 @@ public class Document {
     }
 
     public ReadOnlyBooleanProperty updatingProperty() {
-        return dag.updatingProperty();
+        return workflow.updatingProperty();
     }
 
     public ASelectionModel<Taxon> getTaxaSelectionModel() {
@@ -103,5 +103,25 @@ public class Document {
 
     public void updateMethodsText() {
         methodsText.setValue(MethodsTextGenerator.getInstance().apply(this));
+    }
+
+    public boolean isDirty() {
+        return dirty.get();
+    }
+
+    public BooleanProperty dirtyProperty() {
+        return dirty;
+    }
+
+    public void setDirty(boolean dirty) {
+        this.dirty.set(dirty);
+    }
+
+    public MainWindow getMainWindow() {
+        return mainWindow;
+    }
+
+    public void setMainWindow(MainWindow mainWindow) {
+        this.mainWindow = mainWindow;
     }
 }

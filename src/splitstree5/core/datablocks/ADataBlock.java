@@ -21,6 +21,7 @@ package splitstree5.core.datablocks;
 
 import jloda.util.Basic;
 import jloda.util.PluginClassLoader;
+import splitstree5.core.Document;
 import splitstree5.utils.OptionableBase;
 
 import java.util.ArrayList;
@@ -30,6 +31,14 @@ import java.util.ArrayList;
  * Created by huson on 12/21/16.
  */
 abstract public class ADataBlock extends OptionableBase {
+    private Document document; // the document associated with this datablock
+
+    /**
+     * default constructor
+     */
+    public ADataBlock() {
+    }
+
     /**
      * creates a new instance
      *
@@ -79,4 +88,11 @@ abstract public class ADataBlock extends OptionableBase {
      */
     abstract public String getInfo();
 
+    public Document getDocument() {
+        return document;
+    }
+
+    public void setDocument(Document document) {
+        this.document = document;
+    }
 }

@@ -30,7 +30,7 @@ NeiMiller; Nei and Miller 1990; M. Nei and J.C. Miller. A simple method for esti
 ProteinMLdist; Swofford et al 1996; D.L. Swofford, G.J. Olsen, P.J. Waddell, and  D.M. Hillis. Chapter  11:  Phylogenetic inference. In D. M. Hillis, C. Moritz, and B. K. Mable, editors, Molecular Systematics, pages 407–514. Sinauer Associates, Inc., 2nd edition, 1996.
 UncorrectedP; Hamming 1950; Hamming, Richard W. "Error detecting and error correcting codes". Bell System Technical Journal. 29 (2): 147–160. MR 0035935, 1950.
 Upholt; Upholt 1979; ?
-
+SplitNetworkConstruction; Dress and Huson 2004; A.W.M. Dress and D.H. Huson, "Constructing splits graphs," in IEEE/ACM Transactions on Computational Biology and Bioinformatics, vol. 1, no. 3, pp. 109-115, July-Sept. 2004.
 AverageDistances; ?
 AverageConsensus; ?
 BalancedConfidenceNetwork; Huson and Bryant 2006; Daniel H. Huson and David Bryant. Application of Phylogenetic Networks in Evolutionary Studies. Mol. Biol. Evol. 23(2):254–267. 2006

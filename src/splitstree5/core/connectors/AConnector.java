@@ -31,11 +31,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import jloda.util.PluginClassLoader;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.dag.ANode;
-import splitstree5.core.dag.UpdateState;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.workflow.ANode;
+import splitstree5.core.workflow.UpdateState;
 
 import java.util.ArrayList;
 

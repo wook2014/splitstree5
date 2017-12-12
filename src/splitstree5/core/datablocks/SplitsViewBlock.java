@@ -20,49 +20,48 @@ package splitstree5.core.datablocks;
 
 
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.Scene;
+import javafx.scene.control.TabPane;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Shape;
-import javafx.scene.shape.StrokeLineCap;
 import javafx.stage.Stage;
 import jloda.fx.ASelectionModel;
-import jloda.graph.Edge;
-import jloda.graph.Node;
-import jloda.graph.NodeSet;
+import jloda.graph.*;
 import jloda.phylo.PhyloGraph;
+import splitstree5.core.Document;
 import splitstree5.core.algorithms.interfaces.IFromSplits;
-import splitstree5.core.algorithms.interfaces.IToNone;
-import splitstree5.core.datablocks.view.AEdgeView;
-import splitstree5.core.datablocks.view.NodeLabelLayouter;
+import splitstree5.core.algorithms.interfaces.IToSplitsView;
+import splitstree5.main.graphtab.SplitsViewTab;
+import splitstree5.main.graphtab.base.AEdgeView;
+import splitstree5.main.graphtab.base.ANodeView;
+import splitstree5.main.graphtab.base.GeometryUtils;
+import splitstree5.main.graphtab.base.GraphLayout;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * This block represents the view of a split network
  * Daniel Huson, 11.2017
  */
-public class SplitsViewBlock extends ViewBlockBase {
+public class SplitsViewBlock extends ADataBlock {
     private final ASelectionModel<Integer> splitsSelectionModel = new ASelectionModel<>();
+    private final SplitsViewTab splitsViewTab;
 
     /**
      * constructor
      */
     public SplitsViewBlock() {
         super();
+        setTitle("Split Network Viewer");
+        splitsViewTab = new SplitsViewTab();
+
+        splitsViewTab.setLayout(GraphLayout.Radial);
 
         splitsSelectionModel.getSelectedItems().addListener((ListChangeListener<Integer>) c -> {
             final Set<Integer> addedSplits = new HashSet<>();
@@ -71,102 +70,51 @@ public class SplitsViewBlock extends ViewBlockBase {
                 addedSplits.addAll(c.getAddedSubList());
                 removedSplits.addAll(c.getRemoved());
             }
-            final PhyloGraph graph = getPhyloGraph();
+            final PhyloGraph graph = splitsViewTab.getPhyloGraph();
             for (Edge e : graph.edges()) {
                 if (addedSplits.contains(graph.getSplit(e)))
-                    edgeSelectionModel.select(e);
+                    splitsViewTab.getEdgeSelectionModel().select(e);
                 if (removedSplits.contains(graph.getSplit(e)))
-                    edgeSelectionModel.clearSelection(e);
-            }
-        });
-    }
-
-    /**
-     * show the phyloGraph or network
-     */
-    public void show() {
-        final CountDownLatch countDownLatch = new CountDownLatch(1);
-
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (stage == null) {
-                        stage = new Stage();
-                        stage.setTitle("Split network");
-                        final Group world = new Group();
-                        world.getChildren().add(group);
-                        StackPane stackPane = new StackPane(world);
-                        ScrollPane scrollPane = new ScrollPane(stackPane);
-                        stackPane.minWidthProperty().bind(Bindings.createDoubleBinding(() ->
-                                scrollPane.getViewportBounds().getWidth(), scrollPane.viewportBoundsProperty()).subtract(20));
-                        stackPane.minHeightProperty().bind(Bindings.createDoubleBinding(() ->
-                                scrollPane.getViewportBounds().getHeight(), scrollPane.viewportBoundsProperty()).subtract(20));
-
-                        BorderPane borderPane = new BorderPane(scrollPane);
-                        Button layoutLabels = new Button("Layout Labels");
-                        layoutLabels.setOnAction((e) -> {
-                            if (getPhyloGraph() != null) {
-                                NodeLabelLayouter.radialLayout(getPhyloGraph(), getNode2view(), getEdge2view());
-                            }
-                        });
-
-                        Button zoomIn = new Button("Zoom In");
-                        zoomIn.setOnAction((e) -> {
-                                    final double factor = 1.1;
-                                    group.setScaleX(factor * group.getScaleX());
-                                    group.setScaleY(factor * group.getScaleY());
-                                    rescaleNodesAndEdgesToKeepApparentSizes(factor);
-                                }
-                        );
-                        Button zoomOut = new Button("Zoom Out");
-                        zoomOut.setOnAction((e) -> {
-                                    final double factor = 1.0 / 1.1;
-                                    group.setScaleX(factor * group.getScaleX());
-                                    group.setScaleY(factor * group.getScaleY());
-                                    rescaleNodesAndEdgesToKeepApparentSizes(factor);
-                                }
-                        );
-
-                        borderPane.setRight(new VBox(layoutLabels, zoomIn, zoomOut));
-                        rootNode.setCenter(borderPane);
-                        stage.setScene(scene);
-                        stage.sizeToScene();
-                        stage.show();
-                    }
-
-                    group.getChildren().clear();
-                    group.getChildren().addAll(edgesGroup.getChildren());
-                    group.getChildren().addAll(nodesGroup.getChildren());
-                    group.getChildren().addAll(edgeLabelsGroup.getChildren());
-                    group.getChildren().addAll(nodeLabelsGroup.getChildren());
-
-                    // empty all of these for the next computation
-                    edgesGroup.getChildren().clear();
-                    nodesGroup.getChildren().clear();
-                    edgeLabelsGroup.getChildren().clear();
-                    nodeLabelsGroup.getChildren().clear();
-                    nodeSelectionModel.clearSelection();
-                    edgeSelectionModel.clearSelection();
-
-                    stage.setIconified(false);
-                    stage.toFront();
-                } finally {
-                    countDownLatch.countDown();
-                }
+                    splitsViewTab.getEdgeSelectionModel().clearSelection(e);
             }
         });
 
-        try {
-            countDownLatch.await(); // wait for the JavaFX update to take place
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
+    public void setDocument(Document document) {
+        if (getDocument() == null) {
+            super.setDocument(document);
+            if (document.getMainWindow() != null) {
+                Platform.runLater(() -> { // setup tab
+                    document.getMainWindow().add(splitsViewTab);
+                });
+            } else { // this is for testing only: this opens the view in a standalone window
+                Platform.runLater(() -> {
+                    Stage stage = new Stage();
+                    final TabPane tabPane = new TabPane(splitsViewTab);
+                    stage.setScene(new Scene(tabPane));
+                    stage.setWidth(800);
+                    stage.setHeight(800);
+                    stage.show();
+                });
+            }
+        }
+    }
+
+    public SplitsViewTab getSplitsViewTab() {
+        return splitsViewTab;
+    }
+
+    /**
+     * show the splits network
+     */
+    public void show() {
+        splitsViewTab.show();
+    }
+
     public void updateSelectionModels(PhyloGraph graph) {
-        super.updateSelectionModels(graph);
+        splitsViewTab.updateSelectionModels(graph);
         splitsSelectionModel.setItems(graph.getSplitIds());
     }
 
@@ -177,7 +125,127 @@ public class SplitsViewBlock extends ViewBlockBase {
 
     @Override
     public Class getToInterface() {
-        return IToNone.class;
+        return IToSplitsView.class;
+    }
+
+
+    /**
+     * create a node view
+     *
+     * @param v
+     * @param location
+     * @param label
+     * @return node view
+     */
+    public ANodeView createNodeView(Node v, Point2D location, String label) {
+        ASelectionModel<Node> nodeSelectionModel = splitsViewTab.getNodeSelectionModel();
+        ASelectionModel<Edge> edgeSelectionModel = splitsViewTab.getEdgeSelectionModel();
+        final Group group = splitsViewTab.getGroup();
+
+        final ANodeView nodeView = new ANodeView(v, location, label, nodeSelectionModel);
+
+        if (nodeView.getShape() != null) {
+            nodeView.getShape().setOnMousePressed((e) -> {
+                mouseX = e.getScreenX();
+                mouseY = e.getScreenY();
+            });
+            nodeView.getShape().setOnMouseDragged((e) -> {
+                if (!splitsSelectionModel.isEmpty() && nodeSelectionModel.getSelectedItems().contains(nodeView.getNode())) {
+                    final HashSet<Node> selectedNodesSet = new HashSet<>(nodeSelectionModel.getSelectedItems());
+                    final Point2D center = computeAnchorCenter(edgeSelectionModel.getSelectedItems(), selectedNodesSet, splitsViewTab.getNode2view());
+                    final Point2D prevPoint = group.localToParent(group.screenToLocal(mouseX, mouseY));
+                    final Point2D newPoint = group.localToParent(group.screenToLocal(e.getScreenX(), e.getScreenY()));
+                    final double angle = GeometryUtils.computeObservedAngle(center, prevPoint, newPoint);
+                    applySplitRotation(angle, edgeSelectionModel.getSelectedItems(), selectedNodesSet, splitsViewTab.getNode2view(), splitsViewTab.getEdge2view());
+                }
+                mouseX = e.getScreenX();
+                mouseY = e.getScreenY();
+            });
+            nodeView.getShape().setOnMouseClicked((e) -> {
+                splitsSelectionModel.clearSelection();
+                edgeSelectionModel.clearSelection();
+                if (!e.isShiftDown())
+                    nodeSelectionModel.clearSelection();
+                nodeSelectionModel.select(nodeView.getNode());
+            });
+        }
+        if (nodeView.getLabel() != null) {
+            nodeView.getLabel().setOnMouseClicked((e) -> {
+                splitsSelectionModel.clearSelection();
+                edgeSelectionModel.clearSelection();
+                if (!e.isShiftDown())
+                    nodeSelectionModel.clearSelection();
+                nodeSelectionModel.select(nodeView.getNode());
+            });
+        }
+
+        return nodeView;
+    }
+
+    /**
+     * compute the anchor center for rotating splits
+     *
+     * @param edges
+     * @param selectedNodes
+     * @param node2view
+     * @return anchor center
+     */
+    private Point2D computeAnchorCenter(Collection<Edge> edges, HashSet<Node> selectedNodes, NodeArray<ANodeView> node2view) {
+        double x = 0;
+        double y = 0;
+        if (edges.size() > 0) {
+            for (Edge edge : edges) {
+                final ANodeView nodeView;
+                if (selectedNodes.contains(edge.getSource()))
+                    nodeView = node2view.get(edge.getTarget());
+                else
+                    nodeView = node2view.get(edge.getSource());
+                x += nodeView.getLocation().getX();
+                y += nodeView.getLocation().getY();
+
+            }
+            x /= edges.size();
+            y /= edges.size();
+        }
+        return new Point2D(x, y);
+    }
+
+    /**
+     * rotate split by given angle
+     *
+     * @param angle
+     * @param selectedEdges must contain all and only edges of one split
+     * @param selectedNodes must contain all and only nodes on one side of split
+     * @param node2view
+     * @param edge2view
+     */
+    private void applySplitRotation(double angle, ObservableList<Edge> selectedEdges, HashSet<Node> selectedNodes, NodeArray<ANodeView> node2view, EdgeArray<AEdgeView> edge2view) {
+        final Edge e = selectedEdges.get(0);
+        final Node anchorNode;
+        final Node selectedNode;
+        if (selectedNodes.contains(e.getSource())) {
+            anchorNode = e.getTarget();
+            selectedNode = e.getSource();
+
+        } else {
+            anchorNode = e.getSource();
+            selectedNode = e.getTarget();
+        }
+        final Point2D anchorPoint = node2view.get(anchorNode).getLocation();
+        final Point2D selectedPoint = node2view.get(selectedNode).getLocation();
+        Point2D newSelectedPoint = GeometryUtils.rotateAbout(selectedPoint, angle, anchorPoint);
+        Point2D translate = newSelectedPoint.subtract(selectedPoint);
+
+        for (Node v : selectedNodes) {
+            node2view.get(v).translateCoordinates(translate.getX(), translate.getY());
+        }
+        for (Node v : selectedNodes) {
+            for (Edge edge : v.adjacentEdges()) {
+                if (v == edge.getTarget() || !selectedNodes.contains(edge.getTarget())) {
+                    edge2view.get(edge).setCoordinates(node2view.get(edge.getSource()).getLocation(), node2view.get(edge.getTarget()).getLocation());
+                }
+            }
+        }
     }
 
     /**
@@ -190,44 +258,22 @@ public class SplitsViewBlock extends ViewBlockBase {
      * @param end
      * @return edge view
      */
-    public static AEdgeView createEdgeView(PhyloGraph graph, Edge e, Double weight, final Point2D start, final Point2D end, ASelectionModel<Node> nodeSelectionModel, ASelectionModel<Integer> splitSelectionModel) {
-        final AEdgeView edgeView = new AEdgeView(e);
-
-        Shape edgeShape = null;
-        if (start != null && end != null) {
-            edgeShape = new Line(start.getX(), start.getY(), end.getX(), end.getY());
-        }
-
-        if (edgeShape != null) {
-            edgeShape.setFill(Color.TRANSPARENT);
-            edgeShape.setStroke(Color.BLACK);
-            edgeShape.setStrokeLineCap(StrokeLineCap.ROUND);
-            edgeShape.setStrokeWidth(3);
-            edgeView.setShape(edgeShape);
-            edgeView.setReferencePoint(start.add(end).multiply(0.5));
-        }
-
-        if (false && weight != null && start != null && end != null) {
-            Label label = new Label("" + weight);
-            final Point2D m = start.add(end).multiply(0.5);
-            label.setLayoutX(m.getX());
-            label.setLayoutY(m.getY());
-            edgeView.setLabel(label);
-        }
+    public AEdgeView createEdgeView(PhyloGraph graph, Edge e, Double weight, final Point2D start, final Point2D end) {
+        final AEdgeView edgeView = new AEdgeView(e,weight,start,end);
 
         final EventHandler<? super MouseEvent> handler = (EventHandler<MouseEvent>) event -> {
             final Integer splitId = graph.getSplit(e); // must be Integer, not int, otherwise it will be confused with an index
-            if (!splitSelectionModel.getSelectedItems().contains(splitId)) {
-                splitSelectionModel.clearSelection();
-                splitSelectionModel.select(splitId);
+            if (!splitsSelectionModel.getSelectedItems().contains(splitId)) {
+                splitsSelectionModel.clearSelection();
+                splitsSelectionModel.select(splitId);
                 for (Edge f : graph.edges()) {
                     if (graph.getSplit(f) == splitId) {
-                        selectAllNodesOnSmallerSide(graph, e, nodeSelectionModel);
+                        selectAllNodesOnSmallerSide(graph, e, splitsViewTab.getNodeSelectionModel());
                     }
                 }
-            } else if (event.isShiftDown() && splitSelectionModel.getSelectedItems().contains(splitId)) {
-                splitSelectionModel.clearSelection();
-                nodeSelectionModel.clearSelection();
+            } else if (event.isShiftDown() && splitsSelectionModel.getSelectedItems().contains(splitId)) {
+                splitsSelectionModel.clearSelection();
+                splitsViewTab.getNodeSelectionModel().clearSelection();
             }
         };
 
@@ -286,7 +332,18 @@ public class SplitsViewBlock extends ViewBlockBase {
     }
 
     @Override
-    public String getInfo() {
-        return "Split network";
+    public int size() {
+        return splitsViewTab.size();
     }
+
+    @Override
+    public String getInfo() {
+        if (splitsViewTab != null && splitsViewTab.getPhyloGraph() != null) {
+            return "a split network with " + splitsViewTab.getPhyloGraph().getNumberOfNodes() + " nodes and " + splitsViewTab.getPhyloGraph().getNumberOfEdges() + " edges";
+        } else
+            return "a split network";
+    }
+
+    private static double mouseX;
+    private static double mouseY;
 }

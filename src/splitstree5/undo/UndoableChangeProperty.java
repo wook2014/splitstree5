@@ -25,7 +25,7 @@ import javafx.beans.property.Property;
  * An undoable property change
  * Daniel Huson, 12.2016
  */
-public class UndoableChangeProperty<T> extends UndoableChange {
+public class UndoableChangeProperty<T> extends UndoableRedoableCommand {
     private final Property<T> property;
     private final T oldValue;
     private final T newValue;

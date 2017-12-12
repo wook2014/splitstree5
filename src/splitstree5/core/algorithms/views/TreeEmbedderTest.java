@@ -22,11 +22,11 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import org.junit.Test;
 import splitstree5.core.Document;
-import splitstree5.core.dag.DAG;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TreeViewBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.gui.dagview.DAGView;
+import splitstree5.core.workflow.Workflow;
+import splitstree5.gui.workflowview.WorkflowView;
 import splitstree5.io.nexus.NexusFileParser;
 
 /**
@@ -46,14 +46,14 @@ public class TreeEmbedderTest extends Application {
         document.setFileName("test/trees/PHYT.nex");
         NexusFileParser.parse(document);
 
-        DAG dag = document.getDag();
+        Workflow dag = document.getWorkflow();
 
         if (dag.getWorkingDataNode().getDataBlock() instanceof TreesBlock) {
             final ADataNode<TreeViewBlock> treeViewBlock = dag.createDataNode(new TreeViewBlock());
             dag.createConnector(dag.getWorkingDataNode(), treeViewBlock, new TreeEmbedder());
         }
 
-        final DAGView dagView = new DAGView(document);
-        dagView.show();
+        final WorkflowView workflowView = new WorkflowView(document);
+        workflowView.show();
     }
 }

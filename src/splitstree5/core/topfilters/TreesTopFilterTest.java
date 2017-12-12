@@ -42,16 +42,16 @@ public class TreesTopFilterTest extends Application {
         NexusFileParser.parse(document);
 
         {
-            AConnector<TaxaBlock, TaxaBlock> taxaFilter = new AConnector<>(document.getDag().getTopTaxaNode().getDataBlock(), document.getDag().getTopTaxaNode(), document.getDag().getWorkingTaxaNode(), new splitstree5.core.algorithms.filters.TaxaFilter());
+            AConnector<TaxaBlock, TaxaBlock> taxaFilter = new AConnector<>(document.getWorkflow().getTopTaxaNode().getDataBlock(), document.getWorkflow().getTopTaxaNode(), document.getWorkflow().getWorkingTaxaNode(), new splitstree5.core.algorithms.filters.TaxaFilter());
             ConnectorView<TaxaBlock, TaxaBlock> connectorView = new ConnectorView<>(document, taxaFilter);
             connectorView.show();
 
-            new ReportNode<>(document.getDag().getWorkingTaxaNode().getDataBlock(), document.getDag().getWorkingTaxaNode());
+            new ReportNode<>(document.getWorkflow().getWorkingTaxaNode().getDataBlock(), document.getWorkflow().getWorkingTaxaNode());
         }
 
         {
-            new TreesTopFilter(document.getDag().getTopTaxaNode(), document.getDag().getWorkingTaxaNode(), document.getDag().getTopDataNode(),
-                    document.getDag().getWorkingDataNode());
+            new TreesTopFilter(document.getWorkflow().getTopTaxaNode(), document.getWorkflow().getWorkingTaxaNode(), document.getWorkflow().getTopDataNode(),
+                    document.getWorkflow().getWorkingDataNode());
         }
     }
 }

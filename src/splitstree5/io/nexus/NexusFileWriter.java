@@ -42,13 +42,13 @@ public class NexusFileWriter {
             writer.write("#nexus\n");
 
             // taxa block:
-            TaxaNexusIO.write(writer, document.getDag().getTopTaxaNode().getDataBlock());
+            TaxaNexusIO.write(writer, document.getWorkflow().getTopTaxaNode().getDataBlock());
 
             // top data-block
-            write(writer, document.getDag().getTopTaxaNode().getDataBlock(), document.getDag().getTopDataNode().getDataBlock());
+            write(writer, document.getWorkflow().getTopTaxaNode().getDataBlock(), document.getWorkflow().getTopDataNode().getDataBlock());
 
             // taxa filter and second block, if necessary:
-            AConnector<TaxaBlock, TaxaBlock> taxaFilter = new AConnector<>(document.getDag().getTopTaxaNode().getDataBlock(), document.getDag().getTopTaxaNode(), document.getDag().getWorkingTaxaNode(), new splitstree5.core.algorithms.filters.TaxaFilter());
+            AConnector<TaxaBlock, TaxaBlock> taxaFilter = new AConnector<>(document.getWorkflow().getTopTaxaNode().getDataBlock(), document.getWorkflow().getTopTaxaNode(), document.getWorkflow().getWorkingTaxaNode(), new splitstree5.core.algorithms.filters.TaxaFilter());
             if (((TaxaFilter) taxaFilter.getAlgorithm()).getDisabledTaxa().size() > 0) { // some taxa have been filtered
                 writer.write("[NEED to report taxa filter]\n");
             }

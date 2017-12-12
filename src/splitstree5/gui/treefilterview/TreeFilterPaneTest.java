@@ -73,20 +73,20 @@ public class TreeFilterPaneTest extends Application {
         NexusFileParser.parse(document);
 
         {
-            ConnectorView<TaxaBlock, TaxaBlock> connectorView = new ConnectorView<>(document, document.getDag().getTaxaFilter());
+            ConnectorView<TaxaBlock, TaxaBlock> connectorView = new ConnectorView<>(document, document.getWorkflow().getTaxaFilter());
             connectorView.show();
         }
 
-        ADataNode<TreesBlock> treesNode = document.getDag().getWorkingDataNode();
-        System.err.println(NexusFileWriter.toString(document.getDag().getWorkingTaxaNode().getDataBlock(), treesNode.getDataBlock()));
+        ADataNode<TreesBlock> treesNode = document.getWorkflow().getWorkingDataNode();
+        System.err.println(NexusFileWriter.toString(document.getWorkflow().getWorkingTaxaNode().getDataBlock(), treesNode.getDataBlock()));
 
-        ADataNode<TreesBlock> filtered = document.getDag().createDataNode(new TreesBlock());
+        ADataNode<TreesBlock> filtered = document.getWorkflow().createDataNode(new TreesBlock());
 
-        AConnector connector = document.getDag().addConnector(new AConnector(document.getDag().getWorkingTaxaNode().getDataBlock(), treesNode, filtered, new TreeFilter()));
+        AConnector connector = document.getWorkflow().addConnector(new AConnector(document.getWorkflow().getWorkingTaxaNode().getDataBlock(), treesNode, filtered, new TreeFilter()));
         ConnectorView<TaxaBlock, TaxaBlock> connectorView = new ConnectorView<>(document, connector);
         connectorView.show();
 
-        document.getDag().createReporter(filtered);
+        document.getWorkflow().createReporter(filtered);
 
         Platform.runLater(new Runnable() {
             @Override

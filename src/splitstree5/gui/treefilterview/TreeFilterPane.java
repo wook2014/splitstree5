@@ -29,10 +29,10 @@ import jloda.phylo.PhyloTree;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.filters.TreeFilter;
 import splitstree5.core.connectors.AConnector;
-import splitstree5.core.dag.UpdateState;
 import splitstree5.core.datablocks.TreesBlock;
+import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.connectorview.AlgorithmPane;
-import splitstree5.undo.UndoManager;
+import splitstree5.undo.UndoRedoManager;
 import splitstree5.undo.UndoableChangeListViews2;
 import splitstree5.utils.DragAndDropSupportListView2;
 
@@ -47,7 +47,7 @@ public class TreeFilterPane extends AlgorithmPane {
     private final TreeFilter treeFilter;
     private final TreeFilterPaneController controller;
     private Document document = null;
-    private UndoManager undoManager = new UndoManager();
+    private UndoRedoManager undoManager = new UndoRedoManager();
 
     private ArrayList<String> prevActiveTrees = new ArrayList<>(); // used to facilitate undo/redo, do not modify
     private ArrayList<String> prevInactiveTrees = new ArrayList<>(); // used to facilitate undo/redo, do not modify
@@ -66,11 +66,11 @@ public class TreeFilterPane extends AlgorithmPane {
         final ExtendedFXMLLoader extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         controller = (TreeFilterPaneController) extendedFXMLLoader.getController();
         this.getChildren().add(extendedFXMLLoader.getRoot());
-        undoManager = new UndoManager();
+        undoManager = new UndoRedoManager();
     }
 
     @Override
-    public void setUndoManager(UndoManager undoManager) {
+    public void setUndoManager(UndoRedoManager undoManager) {
         this.undoManager = undoManager;
     }
 
@@ -96,7 +96,7 @@ public class TreeFilterPane extends AlgorithmPane {
                 prevActiveTrees = change.getItemsA();
                 prevInactiveTrees = change.getItemsB();
                 if (!inSync)
-                    undoManager.addUndoableChange(change);
+                    undoManager.add(change);
             }
 
             controller.getActiveList().prefHeightProperty().bind(this.prefHeightProperty().subtract(50));

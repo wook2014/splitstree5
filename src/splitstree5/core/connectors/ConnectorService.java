@@ -23,9 +23,9 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
-import splitstree5.core.dag.UpdateState;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.misc.ProgramExecutorService;
+import splitstree5.core.workflow.UpdateState;
 
 /**
  * a service used by a method node

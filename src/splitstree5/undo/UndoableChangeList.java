@@ -25,8 +25,8 @@ import java.util.Collection;
  * A list of  undoable property changes
  * Daniel HUson, 6.2017
  */
-public class UndoableChangeList<T> extends UndoableChange {
-    private final ArrayList<UndoableChange> list = new ArrayList<>();
+public class UndoableChangeList<T> extends UndoableRedoableCommand {
+    private final ArrayList<UndoableRedoableCommand> list = new ArrayList<>();
 
     /**
      * constructor
@@ -49,13 +49,13 @@ public class UndoableChangeList<T> extends UndoableChange {
      *
      * @param name
      */
-    public UndoableChangeList(String name, Collection<UndoableChange> list) {
+    public UndoableChangeList(String name, Collection<UndoableRedoableCommand> list) {
         super(name);
         this.list.addAll(list);
     }
 
 
-    public void add(UndoableChange property) {
+    public void add(UndoableRedoableCommand property) {
         list.add(property);
     }
 
@@ -63,20 +63,20 @@ public class UndoableChangeList<T> extends UndoableChange {
         return list.size();
     }
 
-    public ArrayList<UndoableChange> getList() {
+    public ArrayList<UndoableRedoableCommand> getList() {
         return list;
     }
 
     @Override
     public void undo() {
-        for (UndoableChange change : list) {
+        for (UndoableRedoableCommand change : list) {
             change.undo();
         }
     }
 
     @Override
     public void redo() {
-        for (UndoableChange change : list) {
+        for (UndoableRedoableCommand change : list) {
             change.redo();
         }
     }

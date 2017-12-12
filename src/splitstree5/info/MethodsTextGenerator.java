@@ -62,8 +62,8 @@ import jloda.util.ResourceManager;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.connectors.AConnector;
-import splitstree5.core.dag.DAG;
 import splitstree5.core.datablocks.ADataNode;
+import splitstree5.core.workflow.Workflow;
 import splitstree5.main.Version;
 
 import java.io.BufferedReader;
@@ -72,7 +72,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 /**
- * generates the methods text for a given DAG
+ * generates the methods text for a given Workflow
  * Daniel Huson, June 2017
  */
 public class MethodsTextGenerator {
@@ -130,7 +130,7 @@ public class MethodsTextGenerator {
      * @return method text
      */
     public String apply(Document document) {
-        final DAG dag = document.getDag();
+        final Workflow dag = document.getWorkflow();
 
         final StringBuilder buf = new StringBuilder();
 

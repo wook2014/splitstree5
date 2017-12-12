@@ -29,10 +29,10 @@ import jloda.util.Basic;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.connectors.AConnector;
-import splitstree5.core.dag.UpdateState;
 import splitstree5.core.datablocks.ADataBlock;
+import splitstree5.core.workflow.UpdateState;
 import splitstree5.info.MethodsTextGenerator;
-import splitstree5.undo.UndoManager;
+import splitstree5.undo.UndoRedoManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
     private final Document document;
     private final Parent root;
     private final ConnectorViewController controller;
-    private final UndoManager undoManager;
+    private final UndoRedoManager undoManager;
     private AlgorithmPane algorithmPane;
     private Stage stage;
 
@@ -65,7 +65,7 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
         final ExtendedFXMLLoader<ConnectorViewController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         root = extendedFXMLLoader.getRoot();
         controller = extendedFXMLLoader.getController();
-        undoManager = new UndoManager();
+        undoManager = new UndoRedoManager();
 
         connector.stateProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == UpdateState.VALID) {
@@ -131,7 +131,7 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> {
         algorithmChoiceBox.getItems().addAll(algorithms);
         algorithmChoiceBox.setValue(connector.getAlgorithm());
         algorithmChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            undoManager.addUndoableChange("Set Algorithm", algorithmChoiceBox.valueProperty(), oldValue, newValue);
+            undoManager.add("Set Algorithm", algorithmChoiceBox.valueProperty(), oldValue, newValue);
             connector.setAlgorithm((Algorithm) newValue);
             setupAlgorithmPane();
             controller.getCenterPane().getChildren().setAll(algorithmPane);

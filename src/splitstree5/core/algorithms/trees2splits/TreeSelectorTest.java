@@ -83,8 +83,8 @@ public class TreeSelectorTest {
         document.setFileName("test/nexus/trees6-translate.nex");
         NexusFileParser.parse(document);
 
-        ADataNode<TreesBlock> treesNode = document.getDag().getWorkingDataNode();
-        System.err.println(NexusFileWriter.toString(document.getDag().getWorkingTaxaNode().getDataBlock(), treesNode.getDataBlock()));
+        ADataNode<TreesBlock> treesNode = document.getWorkflow().getWorkingDataNode();
+        System.err.println(NexusFileWriter.toString(document.getWorkflow().getWorkingTaxaNode().getDataBlock(), treesNode.getDataBlock()));
 
         ADataNode<SplitsBlock> splitsNode = new ADataNode<>(new SplitsBlock());
 
@@ -95,8 +95,8 @@ public class TreeSelectorTest {
 
             treeSelector.setOptionWhich(which);
             splitsNode.getDataBlock().clear();
-            treeSelector.compute(new ProgressPercentage(), document.getDag().getWorkingTaxaNode().getDataBlock(), treesNode.getDataBlock(), splitsNode.getDataBlock());
-            System.err.println(NexusFileWriter.toString(document.getDag().getWorkingTaxaNode().getDataBlock(), splitsNode.getDataBlock()));
+            treeSelector.compute(new ProgressPercentage(), document.getWorkflow().getWorkingTaxaNode().getDataBlock(), treesNode.getDataBlock(), splitsNode.getDataBlock());
+            System.err.println(NexusFileWriter.toString(document.getWorkflow().getWorkingTaxaNode().getDataBlock(), splitsNode.getDataBlock()));
 
             if (which == 1) {
                 String expected = "\nBEGIN SPLITS;\n" +
@@ -116,7 +116,7 @@ public class TreeSelectorTest {
                         "\t[9, size=1] \t 1.0 \t 1 2 3 4 6,\n" +
                         ";\n" +
                         "END; [SPLITS]\n";
-                assertEquals("tree 1:", expected, NexusFileWriter.toString(document.getDag().getWorkingTaxaNode().getDataBlock(), splitsNode.getDataBlock()));
+                assertEquals("tree 1:", expected, NexusFileWriter.toString(document.getWorkflow().getWorkingTaxaNode().getDataBlock(), splitsNode.getDataBlock()));
             }
         }*/
     }

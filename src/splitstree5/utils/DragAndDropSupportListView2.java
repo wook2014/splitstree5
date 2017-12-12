@@ -24,7 +24,7 @@ import javafx.scene.effect.BlendMode;
 import javafx.scene.input.*;
 import javafx.scene.text.Text;
 import jloda.util.Basic;
-import splitstree5.undo.UndoManager;
+import splitstree5.undo.UndoRedoManager;
 import splitstree5.undo.UndoableChangeListViews2;
 
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ public class DragAndDropSupportListView2<T> {
      * @param listViewB
      * @param <T>
      */
-    public static <T> void setup(ListView<T> listViewA, ListView<T> listViewB, UndoManager undoManager, String changeName) {
+    public static <T> void setup(ListView<T> listViewA, ListView<T> listViewB, UndoRedoManager undoManager, String changeName) {
         new DragAndDropSupportListView2<T>(listViewA, listViewB, undoManager, changeName);
     }
 
@@ -54,7 +54,7 @@ public class DragAndDropSupportListView2<T> {
      * @param listViewA
      * @param listViewB
      */
-    private DragAndDropSupportListView2(ListView<T> listViewA, ListView<T> listViewB, UndoManager undoManager, String changeName) {
+    private DragAndDropSupportListView2(ListView<T> listViewA, ListView<T> listViewB, UndoRedoManager undoManager, String changeName) {
         final DataFormat dataFormat = getDataFormat(listViewA);
 
         listViewA.setOnDragDetected(event -> {
@@ -144,7 +144,7 @@ public class DragAndDropSupportListView2<T> {
                 fromList = null;
                 if (undoManager != null) {
                     undoManager.setRecordChanges(true);
-                    undoManager.addUndoableChange(new UndoableChangeListViews2<>(changeName, listViewA, prevA, listViewB, prevB));
+                    undoManager.add(new UndoableChangeListViews2<>(changeName, listViewA, prevA, listViewB, prevB));
                 }
             }
             dragEvent.setDropCompleted(true);
@@ -190,7 +190,7 @@ public class DragAndDropSupportListView2<T> {
                 fromList = null;
                 if (undoManager != null) {
                     undoManager.setRecordChanges(true);
-                    undoManager.addUndoableChange(new UndoableChangeListViews2<>(changeName, listViewA, prevA, listViewB, prevB));
+                    undoManager.add(new UndoableChangeListViews2<>(changeName, listViewA, prevA, listViewB, prevB));
 
                 }
                 dragEvent.setDropCompleted(true);

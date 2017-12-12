@@ -28,7 +28,7 @@ import java.util.List;
  * undoable change for a pair of list views (such as active/inactive taxa or trees)
  * Daniel Huson, 12.2016
  */
-public class UndoableChangeListView<T> extends UndoableChange {
+public class UndoableChangeListView<T> extends UndoableRedoableCommand {
     private final ArrayList<T> items;
 
     private final List<T> prevItems;

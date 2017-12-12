@@ -28,12 +28,12 @@ import splitstree5.core.algorithms.ReportNode;
 import splitstree5.core.algorithms.distances2splits.NeighborNet;
 import splitstree5.core.algorithms.filters.SplitsFilter;
 import splitstree5.core.connectors.AConnector;
-import splitstree5.core.dag.DAG;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
+import splitstree5.core.workflow.Workflow;
 
 /**
  * test the connector view
@@ -54,7 +54,7 @@ public class ConnectorViewTest extends Application {
         final SplitsBlock splitsBlock1 = new SplitsBlock();
         final SplitsBlock splitsBlock2 = new SplitsBlock();
 
-        final DAG dag = document.getDag();
+        final Workflow dag = document.getWorkflow();
         dag.setupTopAndWorkingNodes(taxaBlock, distancesBlock);
 
         taxaBlock.getTaxa().addAll(new Taxon("First"), new Taxon("Second"), new Taxon("Third"), new Taxon("Fourth"), new Taxon("Fifth"), new Taxon("Sixth"));
@@ -74,15 +74,15 @@ public class ConnectorViewTest extends Application {
         }
 
         {
-            AConnector<TaxaBlock, TaxaBlock> taxaFilter = new AConnector<>(document.getDag().getTopTaxaNode().getDataBlock(), document.getDag().getTopTaxaNode(), document.getDag().getWorkingTaxaNode(), new splitstree5.core.algorithms.filters.TaxaFilter());
+            AConnector<TaxaBlock, TaxaBlock> taxaFilter = new AConnector<>(document.getWorkflow().getTopTaxaNode().getDataBlock(), document.getWorkflow().getTopTaxaNode(), document.getWorkflow().getWorkingTaxaNode(), new splitstree5.core.algorithms.filters.TaxaFilter());
             ConnectorView<TaxaBlock, TaxaBlock> connectorView = new ConnectorView<>(document, taxaFilter);
             connectorView.show();
 
-            new ReportNode<>(document.getDag().getWorkingTaxaNode().getDataBlock(), document.getDag().getWorkingTaxaNode());
+            new ReportNode<>(document.getWorkflow().getWorkingTaxaNode().getDataBlock(), document.getWorkflow().getWorkingTaxaNode());
         }
 
         {
-            AConnector<TaxaBlock, TaxaBlock> taxaFilter = new AConnector<>(document.getDag().getTopTaxaNode().getDataBlock(), document.getDag().getTopTaxaNode(), document.getDag().getWorkingTaxaNode(), new splitstree5.core.algorithms.filters.TaxaFilter());
+            AConnector<TaxaBlock, TaxaBlock> taxaFilter = new AConnector<>(document.getWorkflow().getTopTaxaNode().getDataBlock(), document.getWorkflow().getTopTaxaNode(), document.getWorkflow().getWorkingTaxaNode(), new splitstree5.core.algorithms.filters.TaxaFilter());
             ConnectorView<TaxaBlock, TaxaBlock> connectorView = new ConnectorView<>(document, taxaFilter);
             connectorView.show();
         }

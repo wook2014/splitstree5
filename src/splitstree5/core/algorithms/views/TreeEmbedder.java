@@ -54,7 +54,8 @@ import splitstree5.core.algorithms.interfaces.IToTreeView;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreeViewBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.core.datablocks.view.*;
+import splitstree5.main.graphtab.TreeViewTab;
+import splitstree5.main.graphtab.base.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -70,12 +71,11 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
 
     public enum ParentPlacement {LeafAverage, ChildrenAverage}
 
-    public enum EdgeShape {Straight, Angular, QuadCurve, CubicCurve}
 
-    private final Property<TreeViewBlock.Layout> layout = new SimpleObjectProperty<>(TreeViewBlock.Layout.LeftToRight);
+    private final Property<GraphLayout> layout = new SimpleObjectProperty<>(GraphLayout.LeftToRight);
     private final Property<EdgeLengths> edgeLengths = new SimpleObjectProperty<>(EdgeLengths.Weights);
     private final Property<ParentPlacement> parentPlacement = new SimpleObjectProperty<>(ParentPlacement.ChildrenAverage);
-    private final Property<EdgeShape> edgeShape = new SimpleObjectProperty<>(EdgeShape.Straight);
+    private final Property<AEdgeView.EdgeShape> edgeShape = new SimpleObjectProperty<>(AEdgeView.EdgeShape.Straight);
 
     private final IntegerProperty cubicCurveParentControl = new SimpleIntegerProperty(20);
     private final IntegerProperty cubicCurveChildControl = new SimpleIntegerProperty(50);
@@ -86,12 +86,14 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock parent, TreeViewBlock child) throws Exception {
         progressListener.setTasks("Tree viewer", "Init.");
 
-        child.setLayout(getOptionLayout());
+        final TreeViewTab view = child.getTreeViewTab();
+
+        view.setLayout(getOptionLayout());
 
         if (parent.getNTrees() > 0) {
             final PhyloTree tree = parent.getTrees().get(0);
-            child.init(tree);
-            child.updateSelectionModels(tree);
+            view.init(tree);
+            view.updateSelectionModels(tree);
 
             if (tree.getRoot() == null && tree.getNumberOfNodes() > 0) {
                 for (Node v : tree.nodes()) {
@@ -124,27 +126,27 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                         final EdgeFloatArray edge2Angle = new EdgeFloatArray(tree); // angle of edge
                         setAnglesForCircularLayoutRec(root, null, 0, tree.getNumberOfLeaves(), edge2Angle);
 
-                        if (getOptionEdgeShape() == EdgeShape.Straight)
+                        if (getOptionEdgeShape() == AEdgeView.EdgeShape.Straight)
                             computeNodeLocationsForRadialRec(root, new Point2D(0, 0), edgeLengths, edge2Angle, node2point);
                         else
                             computeNodeLocationsForCircular(root, edgeLengths, edge2Angle, node2point);
-                        scaleToFitTarget(getOptionLayout(), child.getTargetDimensions(), tree, node2point);
+                        scaleToFitTarget(getOptionLayout(), view.getTargetDimensions(), tree, node2point);
                         computeEdgePointsForCircularRec(root, 0, edge2Angle, node2point, edge2controlPoints);
 
                         break;
                     }
                     default:
                     case LeftToRight: {
-                        if (getOptionEdgeShape() == EdgeShape.Straight) {
+                        if (getOptionEdgeShape() == AEdgeView.EdgeShape.Straight) {
                             setOptionEdgeLengths(EdgeLengths.Cladogram);
                             computeEmbeddingForTriangularLayoutRec(root, null, 0, 0, edgeLengths, node2point);
-                            scaleToFitTarget(getOptionLayout(), child.getTargetDimensions(), tree, node2point);
+                            scaleToFitTarget(getOptionLayout(), view.getTargetDimensions(), tree, node2point);
                             computeEdgePointsForRectilinearRec(root, node2point, edge2controlPoints);
                         } else {
                             final NodeFloatArray nodeHeights = new NodeFloatArray(tree); // angle of edge
                             setNodeHeightsRec(root, 0, nodeHeights);
                             computeNodeLocationsForRectilinearRec(root, 0, edgeLengths, nodeHeights, node2point);
-                            scaleToFitTarget(getOptionLayout(), child.getTargetDimensions(), tree, node2point);
+                            scaleToFitTarget(getOptionLayout(), view.getTargetDimensions(), tree, node2point);
                             computeEdgePointsForRectilinearRec(root, node2point, edge2controlPoints);
                         }
                         break;
@@ -154,23 +156,23 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                 // compute all views and put their parts into the appropriate groups
                 for (Node v : tree.nodes()) {
                     String text = (tree.getLabel(v) != null ? tree.getLabel(v) : "Node " + v.getId());
-                    final ANodeView nodeView = TreeViewBlock.createNodeView(v, node2point.getValue(v), text, child.getNodeSelectionModel());
-                    child.getNode2view().put(v, nodeView);
+                    final ANodeView nodeView = view.createNodeView(v, node2point.getValue(v), text);
+                    view.getNode2view().put(v, nodeView);
                     if (nodeView.getShape() != null)
-                        child.getNodesGroup().getChildren().addAll(nodeView.getShape());
+                        view.getNodesGroup().getChildren().addAll(nodeView.getShape());
                     if (nodeView.getLabel() != null)
-                        child.getNodeLabelsGroup().getChildren().addAll(nodeView.getLabel());
+                        view.getNodeLabelsGroup().getChildren().addAll(nodeView.getLabel());
                 }
                 for (Edge e : tree.edges()) {
                     final EdgeControlPoints controlPoints = edge2controlPoints.getValue(e);
-                    final AEdgeView edgeView = TreeViewBlock.createEdgeView(e, getOptionLayout(), getOptionEdgeShape(), tree.getWeight(e),
+                    final AEdgeView edgeView = view.createEdgeView(e, getOptionLayout(), getOptionEdgeShape(), tree.getWeight(e),
                             node2point.getValue(e.getSource()), controlPoints.getControl1(), controlPoints.getMid(),
-                            controlPoints.getControl2(), controlPoints.getSupport(), node2point.getValue(e.getTarget()), child.getEdgeSelectionModel());
-                    child.getEdge2view().put(e, edgeView);
+                            controlPoints.getControl2(), controlPoints.getSupport(), node2point.getValue(e.getTarget()));
+                    view.getEdge2view().put(e, edgeView);
                     if (edgeView.getShape() != null)
-                        child.getEdgesGroup().getChildren().add(edgeView.getShape());
+                        view.getEdgesGroup().getChildren().add(edgeView.getShape());
                     if (edgeView.getLabel() != null)
-                        child.getEdgeLabelsGroup().getChildren().addAll(edgeView.getLabel());
+                        view.getEdgeLabelsGroup().getChildren().addAll(edgeView.getLabel());
                 }
 
                 if (false) {
@@ -189,7 +191,6 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
         }
 
         //progressListener.setMaximum(?);
-
         child.show();
 
         progressListener.close();
@@ -204,7 +205,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
      * @param phyloGraph
      * @param node2point
      */
-    public static void scaleToFitTarget(TreeViewBlock.Layout optionLayout, Dimension2D target, PhyloGraph phyloGraph, NodeArray<Point2D> node2point) {
+    public static void scaleToFitTarget(GraphLayout optionLayout, Dimension2D target, PhyloGraph phyloGraph, NodeArray<Point2D> node2point) {
         // scale to target dimensions:
         final float factorX;
         final float factorY;
@@ -221,7 +222,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                 maxY = Math.max(maxY, (float) point.getY());
             }
 
-            if (optionLayout == TreeViewBlock.Layout.LeftToRight) {
+            if (optionLayout == GraphLayout.LeftToRight) {
                 factorX = (float) (target.getWidth() - 50) / (maxX - minX);
                 factorY = (float) (target.getHeight() - 50) / (maxY - minY);
             } else {
@@ -500,11 +501,11 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
     }
 
 
-    public TreeViewBlock.Layout getOptionLayout() {
+    public GraphLayout getOptionLayout() {
         return layout.getValue();
     }
 
-    public Property<TreeViewBlock.Layout> layoutProperty() {
+    public Property<GraphLayout> layoutProperty() {
         return layout;
     }
 
@@ -512,7 +513,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
         return "Sets the tree layout to radial or fromLeft";
     }
 
-    public void setOptionLayout(TreeViewBlock.Layout layoutProperty) {
+    public void setOptionLayout(GraphLayout layoutProperty) {
         this.layout.setValue(layoutProperty);
     }
 
@@ -540,15 +541,15 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
         this.parentPlacement.setValue(parentPlacementProperty);
     }
 
-    public EdgeShape getOptionEdgeShape() {
+    public AEdgeView.EdgeShape getOptionEdgeShape() {
         return edgeShape.getValue();
     }
 
-    public Property<EdgeShape> edgeShapeProperty() {
+    public Property<AEdgeView.EdgeShape> edgeShapeProperty() {
         return edgeShape;
     }
 
-    public void setOptionEdgeShape(EdgeShape edgeShapeProperty) {
+    public void setOptionEdgeShape(AEdgeView.EdgeShape edgeShapeProperty) {
         this.edgeShape.setValue(edgeShapeProperty);
     }
 

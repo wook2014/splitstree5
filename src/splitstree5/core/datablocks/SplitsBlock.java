@@ -227,6 +227,6 @@ public class SplitsBlock extends ADataBlock {
 
     @Override
     public String getInfo() {
-        return getNsplits() + " splits" + (compatibility != Compatibility.unknown ? ", " + Basic.fromCamelCase(compatibility.toString()) : "");
+        return getNsplits() + " splits" + (compatibility != Compatibility.unknown ? ", " + Basic.fromCamelCase(compatibility.toString()).toLowerCase() : "");
     }
 }

@@ -24,7 +24,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.layout.Pane;
 import splitstree5.core.Document;
 import splitstree5.core.connectors.AConnector;
-import splitstree5.undo.UndoManager;
+import splitstree5.undo.UndoRedoManager;
 
 /**
  * An algorithm controller pane
@@ -44,7 +44,7 @@ public abstract class AlgorithmPane extends Pane {
      *
      * @param undoManager
      */
-    public void setUndoManager(UndoManager undoManager) {
+    public void setUndoManager(UndoRedoManager undoManager) {
     }
 
     /**

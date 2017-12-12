@@ -164,40 +164,6 @@ public class NodeArray<T> extends GraphBase implements NodeAssociation<T>, Itera
             setValue(v, obj);
     }
 
-
-    /**
-     * get the entry as an int
-     *
-     * @param v
-     * @return int value
-     */
-    public int getInt(Node v) {
-        T obj = getValue(v);
-        if (obj == null)
-            return 0;
-        else if (obj instanceof Double)
-            return (int) ((Double) obj).doubleValue();
-        else
-            return ((Integer) obj);
-
-    }
-
-    /**
-     * get the entry as a double
-     *
-     * @param v
-     * @return double value
-     */
-    public double getDouble(Node v) {
-        T obj = getValue(v);
-        if (obj == null)
-            return 0;
-        else if (obj instanceof Integer)
-            return ((Integer) obj);
-        else
-            return ((Double) obj);
-    }
-
     /**
      * is array erase, that is, has nothing been set
      *

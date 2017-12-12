@@ -33,9 +33,9 @@ import javafx.util.converter.FloatStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import jloda.util.Basic;
 import splitstree5.core.connectors.AConnector;
-import splitstree5.core.dag.UpdateState;
 import splitstree5.core.datablocks.ADataBlock;
-import splitstree5.undo.UndoManager;
+import splitstree5.core.workflow.UpdateState;
+import splitstree5.undo.UndoRedoManager;
 import splitstree5.utils.Option;
 import splitstree5.utils.OptionsAccessor;
 
@@ -47,7 +47,7 @@ import java.util.ArrayList;
  * Created by huson on 1/8/17.
  */
 public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> extends AlgorithmPane {
-    private UndoManager undoManager;
+    private UndoRedoManager undoManager;
 
     private final AConnector<P, C> connector;
     private final ArrayList<Option> options = new ArrayList<>();
@@ -65,7 +65,7 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
     }
 
     @Override
-    public void setUndoManager(UndoManager undoManager) {
+    public void setUndoManager(UndoRedoManager undoManager) {
         this.undoManager = undoManager;
     }
 
@@ -88,7 +88,7 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
                         final CheckBox control = new CheckBox("");
                         control.setSelected((boolean) option.getValue());
                         control.selectedProperty().addListener((observable, oldValue, newValue) -> {
-                            undoManager.addUndoableChange(text, control.selectedProperty(), oldValue, newValue);
+                            undoManager.add(text, control.selectedProperty(), oldValue, newValue);
                             option.holdValue(newValue);
                         });
                         if (option.getInfo() != null)
@@ -111,7 +111,7 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
                             if (newValue.length() == 0)
                                 newValue = "0";
                             if (Basic.isInteger(newValue)) {
-                                undoManager.addUndoableChange(text, control.textProperty(), oldValue, newValue);
+                                undoManager.add(text, control.textProperty(), oldValue, newValue);
                                 option.holdValue(Basic.parseInt(newValue));
                             }
                         });
@@ -135,7 +135,7 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
                             if (newValue.length() == 0)
                                 newValue = "0";
                             if (Basic.isDouble(newValue)) {
-                                undoManager.addUndoableChange(text, control.textProperty(), oldValue, newValue);
+                                undoManager.add(text, control.textProperty(), oldValue, newValue);
                                 option.holdValue(Basic.parseDouble(newValue));
                             }
                         });
@@ -159,7 +159,7 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
                             if (newValue.length() == 0)
                                 newValue = "0";
                             if (Basic.isFloat(newValue)) {
-                                undoManager.addUndoableChange(text, control.textProperty(), oldValue, newValue);
+                                undoManager.add(text, control.textProperty(), oldValue, newValue);
                                 option.holdValue(Basic.parseFloat(newValue));
                             }
                         });
@@ -177,7 +177,7 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
                             choiceBox.valueProperty().addListener(new ChangeListener<String>() {
                                 @Override
                                 public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                                    undoManager.addUndoableChange(text, choiceBox.valueProperty(), oldValue, newValue);
+                                    undoManager.add(text, choiceBox.valueProperty(), oldValue, newValue);
                                     option.holdValue(newValue);
                                 }
                             });

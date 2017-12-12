@@ -520,7 +520,6 @@ public class Graph extends GraphBase {
         return numberEdges;
     }
 
-
     /**
      * iterable over all edges
      * @return all edges

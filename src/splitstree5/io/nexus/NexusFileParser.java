@@ -23,10 +23,10 @@ import javafx.application.Platform;
 import jloda.util.ProgressPercentage;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.Document;
-import splitstree5.core.dag.DAGUtils;
-import splitstree5.core.dag.UpdateState;
 import splitstree5.core.datablocks.*;
 import splitstree5.core.misc.Taxon;
+import splitstree5.core.workflow.UpdateState;
+import splitstree5.core.workflow.WorkflowUtils;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -46,7 +46,7 @@ public class NexusFileParser {
      * @throws IOException
      */
     public static void parse(Document document) throws IOException {
-        document.getDag().clear();
+        document.getWorkflow().clear();
 
         try (NexusStreamParser np = new NexusStreamParser(new FileReader(document.getFileName()))) {
             np.matchIgnoreCase("#nexus");
@@ -73,28 +73,28 @@ public class NexusFileParser {
                     }
                 }
 
-                document.getDag().setupTopAndWorkingNodes(topTaxaBlock, topDataBlock);
+                document.getWorkflow().setupTopAndWorkingNodes(topTaxaBlock, topDataBlock);
                 document.setupTaxonSelectionModel();
 
                 // todo: for debugging:
-                // new ReportNode<>(document.getDag().getWorkingTaxaNode().getDataBlock(), document.getDag().getWorkingDataNode());
+                // new ReportNode<>(document.getWorkflow().getWorkingTaxaNode().getDataBlock(), document.getWorkflow().getWorkingDataNode());
 
                 if (Platform.isFxApplicationThread())
-                    document.getDag().getTopTaxaNode().setState(UpdateState.VALID);
+                    document.getWorkflow().getTopTaxaNode().setState(UpdateState.VALID);
                 else {
-                    TaxaBlock topTaxa = document.getDag().getTopTaxaNode().getDataBlock();
-                    TaxaBlock workingTaxa = document.getDag().getWorkingTaxaNode().getDataBlock();
-                    ADataBlock topData = document.getDag().getTopDataNode().getDataBlock();
-                    ADataBlock workingData = document.getDag().getWorkingDataNode().getDataBlock();
+                    TaxaBlock topTaxa = document.getWorkflow().getTopTaxaNode().getDataBlock();
+                    TaxaBlock workingTaxa = document.getWorkflow().getWorkingTaxaNode().getDataBlock();
+                    ADataBlock topData = document.getWorkflow().getTopDataNode().getDataBlock();
+                    ADataBlock workingData = document.getWorkflow().getWorkingDataNode().getDataBlock();
                     try {
-                        document.getDag().getTaxaFilter().getAlgorithm().compute(new ProgressPercentage(), topTaxa, topTaxa, workingTaxa);
-                        document.getDag().getTopFilter().getAlgorithm().compute0(new ProgressPercentage(), topTaxa, topData, workingData);
+                        document.getWorkflow().getTaxaFilter().getAlgorithm().compute(new ProgressPercentage(), topTaxa, topTaxa, workingTaxa);
+                        document.getWorkflow().getTopFilter().getAlgorithm().compute0(new ProgressPercentage(), topTaxa, topData, workingData);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
 
-                DAGUtils.print(document.getDag().getTopTaxaNode(), document.getDag().getTopDataNode());
+                WorkflowUtils.print(document.getWorkflow().getTopTaxaNode(), document.getWorkflow().getTopDataNode());
             }
         }
     }

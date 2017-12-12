@@ -28,11 +28,11 @@ import jloda.fx.ExtendedFXMLLoader;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.filters.TaxaFilter;
 import splitstree5.core.connectors.AConnector;
-import splitstree5.core.dag.UpdateState;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
+import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.connectorview.AlgorithmPane;
-import splitstree5.undo.UndoManager;
+import splitstree5.undo.UndoRedoManager;
 import splitstree5.undo.UndoableChangeListViews2;
 import splitstree5.utils.DragAndDropSupportListView2;
 
@@ -47,7 +47,7 @@ public class TaxaFilterPane extends AlgorithmPane {
     private final TaxaFilter taxaFilter;
     private final TaxaFilterPaneController controller;
     private Document document = null;
-    private UndoManager undoManager = new UndoManager();
+    private UndoRedoManager undoManager = new UndoRedoManager();
 
     private ArrayList<Taxon> prevActiveTaxa = new ArrayList<>(); // used to facilitate undo/redo, do not modify
     private ArrayList<Taxon> prevInactiveTaxa = new ArrayList<>(); // used to facilitate undo/redo, do not modify
@@ -68,11 +68,11 @@ public class TaxaFilterPane extends AlgorithmPane {
         final ExtendedFXMLLoader extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         controller = (TaxaFilterPaneController) extendedFXMLLoader.getController();
         this.getChildren().add(extendedFXMLLoader.getRoot());
-        undoManager = new UndoManager();
+        undoManager = new UndoRedoManager();
     }
 
     @Override
-    public void setUndoManager(UndoManager undoManager) {
+    public void setUndoManager(UndoRedoManager undoManager) {
         this.undoManager = undoManager;
     }
 
@@ -98,7 +98,7 @@ public class TaxaFilterPane extends AlgorithmPane {
                 prevActiveTaxa = change.getItemsA();
                 prevInactiveTaxa = change.getItemsB();
                 if (!inSync)
-                    undoManager.addUndoableChange(change);
+                    undoManager.add(change);
             }
 
             controller.getActiveList().prefHeightProperty().bind(this.prefHeightProperty().subtract(50));
