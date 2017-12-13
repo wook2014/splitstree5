@@ -76,9 +76,9 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> implements IFro
             double height = d_min / 2.0;
 
             Node v = tree.newNode();
-            Edge e = tree.newEdge(subtrees[i_min], v);
+            Edge e = tree.newEdge(v, subtrees[i_min]);
             tree.setWeight(e, Math.max(height - heights[i_min], 0.0));
-            Edge f = tree.newEdge(subtrees[j_min], v);
+            Edge f = tree.newEdge(v, subtrees[j_min]);
             tree.setWeight(f, Math.max(height - heights[j_min], 0.0));
 
             subtrees[i_min] = v;
@@ -110,15 +110,25 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> implements IFro
             progressListener.incrementProgress();
         }
 
-        int sister = 2;
+        int brother = 1;
+
+        int sister = brother + 1;
         while (subtrees[sister] == null)
             sister++;
 
         final Node root = tree.newNode();
-        final Edge left = tree.newEdge(root, subtrees[1]);
+        final Edge left = tree.newEdge(root, subtrees[brother]);
         final Edge right = tree.newEdge(root, subtrees[sister]);
-        tree.setWeight(left, d[1][sister] / 2.0);
-        tree.setWeight(right, d[1][sister] / 2.0);
+
+        final double diff = (heights[brother] - heights[sister]);
+        if (diff >= 0) {
+            tree.setWeight(left, (d[brother][sister] - diff) / 2.0);
+            tree.setWeight(right, (d[brother][sister] + diff) / 2.0);
+        } else {
+            tree.setWeight(left, (d[brother][sister] + diff) / 2.0);
+            tree.setWeight(right, (d[brother][sister] - diff) / 2.0);
+        }
+
         tree.setRoot(root);
 
         System.err.println("Tree: " + tree.toBracketString());
