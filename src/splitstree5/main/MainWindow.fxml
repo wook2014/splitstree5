@@ -13,7 +13,7 @@
                     <menus>
                         <Menu fx:id="fileMenu" mnemonicParsing="false" text="File">
                             <items>
-                                <MenuItem fx:id="newMenuItem" text="New">
+                                <MenuItem fx:id="newMenuItem" text="New...">
                                     <accelerator>
                                         <KeyCodeCombination alt="UP" code="N" control="UP" meta="UP" shift="UP"
                                                             shortcut="DOWN"/>
@@ -26,11 +26,7 @@
                                                             shortcut="DOWN"/>
                                     </accelerator>
                                 </MenuItem>
-                                <Menu fx:id="openRecentMenu" mnemonicParsing="false" text="Open Recent">
-                                    <items>
-                                        <MenuItem mnemonicParsing="false" text="Action 1"/>
-                                    </items>
-                                </Menu>
+                                <Menu fx:id="openRecentMenu" mnemonicParsing="false" text="Open Recent"/>
                                 <SeparatorMenuItem mnemonicParsing="false"/>
                                 <MenuItem fx:id="enterDataMenuItem" text="Enter Data">
                                     <accelerator>
@@ -45,7 +41,7 @@
                                                             shortcut="DOWN"/>
                                     </accelerator>
                                 </MenuItem>
-                                <MenuItem fx:id="saveAsMenuItem" text="Save As">
+                                <MenuItem fx:id="saveAsMenuItem" text="Save As...">
                                     <accelerator>
                                         <KeyCodeCombination alt="UP" code="S" control="UP" meta="UP" shift="DOWN"
                                                             shortcut="DOWN"/>
@@ -92,7 +88,7 @@
                                 </MenuItem>
                             </items>
                         </Menu>
-                        <Menu mnemonicParsing="false" text="Edit">
+                        <Menu fx:id="editMenu" mnemonicParsing="false" text="Edit">
                             <items>
                                 <MenuItem fx:id="undoMenuItem" text="Undo">
                                     <accelerator>
@@ -263,7 +259,16 @@
                                 <CheckMenuItem mnemonicParsing="false" text="Show Workflow"/>
                             </items>
                         </Menu>
-                        <Menu mnemonicParsing="false" text="Windows"/>
+                        <Menu fx:id="windowMenu" mnemonicParsing="false" text="Window">
+                            <items>
+                                <MenuItem fx:id="aboutMenuItem" mnemonicParsing="false" text="About...">
+                                    <accelerator>
+                                        <KeyCodeCombination alt="UP" code="H" control="UP" meta="UP" shift="UP"
+                                                            shortcut="DOWN"/>
+                                    </accelerator>
+                                </MenuItem>
+                            </items>
+                        </Menu>
                         <Menu mnemonicParsing="false" text="Help"/>
                     </menus>
                 </MenuBar>

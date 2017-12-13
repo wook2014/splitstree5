@@ -26,7 +26,7 @@
 <BorderPane prefHeight="350.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.111"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="splitstree5.gui.connectorview.ConnectorViewController">
     <bottom>
-        <GridPane maxWidth="1.7976931348623157E308">
+        <GridPane maxWidth="1.7976931348623157E308" style="-fx-border-color: lightgray;">
             <columnConstraints>
                 <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" maxWidth="1.7976931348623157E308"/>
                 <ColumnConstraints fillWidth="false" halignment="RIGHT" hgrow="NEVER" maxWidth="300.0" minWidth="240.0"

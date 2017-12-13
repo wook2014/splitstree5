@@ -34,6 +34,7 @@ import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
 import jloda.fx.ExtendedFXMLLoader;
 import jloda.util.Basic;
+import jloda.util.ProgramProperties;
 import splitstree5.core.Document;
 import splitstree5.core.misc.ProgramExecutorService;
 import splitstree5.main.methodstab.MethodsViewTab;
@@ -75,6 +76,9 @@ public class MainWindow {
         final ExtendedFXMLLoader<MainWindowController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         root = extendedFXMLLoader.getRoot();
         controller = extendedFXMLLoader.getController();
+        if (ProgramProperties.isMacOS()) {
+            controller.getMenuBar().setUseSystemMenuBar(true);
+        }
 
         tabPane = controller.getTabPane();
 
@@ -116,8 +120,8 @@ public class MainWindow {
         stage.toFront();
 
         if (document.getWorkflow() != null) {
-            add(new WorkflowViewTab(document));
             add(new MethodsViewTab(document));
+            add(new WorkflowViewTab(document));
         }
 
         openWindows.add(this);

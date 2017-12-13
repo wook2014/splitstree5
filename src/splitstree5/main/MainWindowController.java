@@ -23,6 +23,11 @@ import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import jloda.util.AppleStuff;
+import jloda.util.ProgramProperties;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 public class MainWindowController {
     @FXML
@@ -72,6 +77,10 @@ public class MainWindowController {
 
     @FXML
     private MenuItem quitMenuItem;
+
+    @FXML
+    private Menu editMenu;
+
 
     @FXML
     private MenuItem undoMenuItem;
@@ -164,7 +173,41 @@ public class MainWindowController {
     private ToolBar bottomToolBar;
 
     @FXML
+    private Menu windowMenu;
+
+    @FXML
+    private MenuItem aboutMenuItem;
+
+
+    @FXML
     void initialize() {
+        // if we are running on MacOS, put the specific menu items in the right places
+        if (ProgramProperties.isMacOS()) {
+            final AppleStuff appleStuff = AppleStuff.getInstance();
+            appleStuff.setQuitAction(new AbstractAction("Quit") {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    getQuitMenuItem().fire();
+                }
+            });
+            fileMenu.getItems().remove(getQuitMenuItem());
+
+            appleStuff.setAboutAction(new AbstractAction("About...") {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    getAboutMenuItem().fire();
+                }
+            });
+            windowMenu.getItems().remove(getAboutMenuItem());
+
+            appleStuff.setPreferencesAction(new AbstractAction("Preferences...") {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    getPreferencesMenuItem().fire();
+                }
+            });
+            editMenu.getItems().remove(getPreferencesMenuItem());
+        }
     }
 
     public BorderPane getBorderPane() {
@@ -229,6 +272,10 @@ public class MainWindowController {
 
     public MenuItem getQuitMenuItem() {
         return quitMenuItem;
+    }
+
+    public Menu getEditMenu() {
+        return editMenu;
     }
 
     public MenuItem getUndoMenuItem() {
@@ -349,6 +396,14 @@ public class MainWindowController {
 
     public ToolBar getBottomToolBar() {
         return bottomToolBar;
+    }
+
+    public Menu getWindowMenu() {
+        return windowMenu;
+    }
+
+    public MenuItem getAboutMenuItem() {
+        return aboutMenuItem;
     }
 
     /**
