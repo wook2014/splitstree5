@@ -21,7 +21,7 @@ public class NexmlFileParserTest {
 
         NexmlFileParser nexmlFileParser = new NexmlFileParser();
         TaxaBlock taxaBlock = new TaxaBlock();
-        nexmlFileParser.parseTaxa("test/neXML/taxa.xml", taxaBlock);
+        nexmlFileParser.parse("test/neXML/taxa.xml", taxaBlock);
 
         // printing
         final StringWriter w1 = new StringWriter();
@@ -38,7 +38,7 @@ public class NexmlFileParserTest {
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
 
-        nexmlFileParser.parseCharacters("test/neXML/M4097_seq.xml", taxaBlock, charactersBlock);
+        nexmlFileParser.parse("test/neXML/M4097_seq.xml", taxaBlock, charactersBlock);
         // printing
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
@@ -54,7 +54,7 @@ public class NexmlFileParserTest {
         TaxaBlock taxaBlock = new TaxaBlock();
         TreesBlock treesBlock = new TreesBlock();
 
-        nexmlFileParser.parseTrees("test/neXML/simple.xml", taxaBlock, treesBlock);
+        nexmlFileParser.parse("test/neXML/simple.xml", taxaBlock, treesBlock);
         // printing
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
