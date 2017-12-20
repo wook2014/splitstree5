@@ -4,19 +4,35 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 import splitstree5.core.datablocks.characters.CharactersType;
+import splitstree5.io.nexus.stateLabeler.MicrostatStateLabeler;
+import splitstree5.io.nexus.stateLabeler.ProteinStateLabeler;
+import splitstree5.io.nexus.stateLabeler.StandardStateLabeler;
+import splitstree5.io.nexus.stateLabeler.StateLabeler;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class NexmlCharactersHandler extends DefaultHandler {
 
     boolean otu = false;
     boolean bSeq = false;
+    boolean bCells = false;
 
     private ArrayList<String> taxaLabels = new ArrayList<>();
     private ArrayList<String> matrix = new ArrayList<>();
-    private CharactersType dataType = CharactersType.unknown; // todo
+    private CharactersType dataType = CharactersType.unknown;
     private StringBuilder tmp;
+    private String currentStatesID;
+    private int nchar = 0;
+
+    private HashMap<String, Character> states2symbols;
+    private HashMap<String, HashMap<String, Character>> id2states;
+    private HashMap<String, HashMap<String, Character>> column2state;
+
+    private StateLabeler stateLabeler;
+    private Map<Integer, String> charLabeler;
 
     @Override
     public void startElement(String uri,
@@ -41,9 +57,52 @@ public class NexmlCharactersHandler extends DefaultHandler {
             }
         }
         // CHARACTERS INFO
-        else if (qName.equalsIgnoreCase("characters")){
-            String dataType = attributes.getValue("xsi:type");
+        else if (qName.equalsIgnoreCase("characters")) {
+            String type = attributes.getValue("xsi:type");
+            System.out.println(type);
+            if (type.contains("Cells"))
+                bCells = true;
+            type = type.replaceAll("nex:", "");
+            type = type.replaceAll("Seqs", "");
+            type = type.replaceAll("Cells", "");
+            dataType = CharactersType.valueOfIgnoreCase(type);
             System.out.println(dataType);
+        }else if (qName.equalsIgnoreCase("format") && bCells) {
+            column2state = new HashMap<>();
+            id2states = new HashMap<>();
+        }else if (qName.equalsIgnoreCase("states") && bCells) {
+            states2symbols = new HashMap<>();
+            currentStatesID = attributes.getValue("id");
+            //column2state.keySet().add(id);
+            /*switch (dataType) {
+                case protein:
+                    stateLabeler = new ProteinStateLabeler();
+                    break;
+                case microsat:
+                    stateLabeler = new MicrostatStateLabeler();
+                    break;
+                default:
+                case unknown:
+                    stateLabeler = new StandardStateLabeler()
+                    break;
+            }*/
+        }else if ((qName.equalsIgnoreCase("state") ||
+                qName.equalsIgnoreCase("uncertain_state_set") ||
+                qName.equalsIgnoreCase("polymorphic_state_set")) && bCells) {
+            String id = attributes.getValue("id");
+            Character symbol = attributes.getValue("symbol").charAt(0);
+            states2symbols.put(id, symbol);
+        }else if (qName.equalsIgnoreCase("char") && bCells) {
+            String id = attributes.getValue("id");
+            String states = attributes.getValue("states");
+            column2state.put(id, id2states.get(states));
+        }else if (qName.equalsIgnoreCase("row")) {
+            tmp = new StringBuilder();
+        }else if (qName.equalsIgnoreCase("cell") && bCells) {
+            String column = attributes.getValue("char");
+            String state = attributes.getValue("state");
+            tmp.append(column2state.get(column).get(state));
+            //tmp.append(states2symbols.get(state));
         }else if (qName.equalsIgnoreCase("seq")) {
             bSeq = true;
             tmp = new StringBuilder();
@@ -55,6 +114,11 @@ public class NexmlCharactersHandler extends DefaultHandler {
                            String localName, String qName) throws SAXException {
         if (qName.equalsIgnoreCase("otus")) {
             System.out.println("End Element :" + qName);
+        } else if (qName.equalsIgnoreCase("states") && bCells) {
+            id2states.put(currentStatesID, states2symbols);
+        } else if (qName.equalsIgnoreCase("row") && bCells) {
+            matrix.add(tmp.toString());
+            System.out.println(tmp);
         } else if (qName.equalsIgnoreCase("seq")) {
             matrix.add(tmp.toString());
             //System.out.println(tmp);
@@ -88,13 +152,20 @@ public class NexmlCharactersHandler extends DefaultHandler {
         nchar = matrix.get(0).length();
         char[][] charMatrix = new char[ntax][nchar];
 
+        System.err.println("Matrix");
         for(int i=0; i<ntax; i++){
+            System.err.println();
             for(int j=0; j<nchar; j++){
                 // todo : check if char corresponds to the datatype
                 charMatrix[i][j] = matrix.get(i).charAt(j);
+                System.err.print(charMatrix[i][j]);
             }
         }
         return charMatrix;
+    }
+
+    public CharactersType getDataType(){
+        return this.dataType;
     }
 
 }

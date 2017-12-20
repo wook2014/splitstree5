@@ -45,6 +45,22 @@ public class NexmlFileParserTest {
     }
 
     @Test
+    public void parseCharactersCells() throws IOException {
+
+        NexmlFileParser nexmlFileParser = new NexmlFileParser();
+        TaxaBlock taxaBlock = new TaxaBlock();
+        CharactersBlock charactersBlock = new CharactersBlock();
+
+        nexmlFileParser.parse("test/neXML/M4311_cell.xml", taxaBlock, charactersBlock);
+        // printing
+        final StringWriter w1 = new StringWriter();
+        w1.write("#nexus\n");
+        TaxaNexusIO.write(w1, taxaBlock);
+        CharactersNexusIO.write(w1, taxaBlock, charactersBlock, null);
+        System.err.println(w1.toString());
+    }
+
+    @Test
     public void parseTrees() throws IOException {
 
         NexmlFileParser nexmlFileParser = new NexmlFileParser();

@@ -1,0 +1,59 @@
+<nex:nexml
+        version="0.9"
+        xml:base="http://example.org/"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:xml="http://www.w3.org/XML/1998/namespace"
+        xsi:schemaLocation="http://www.nexml.org/2009 ../xsd/nexml.xsd"
+        xmlns:nex="http://www.nexml.org/2009"
+        xmlns:cdao="http://www.evolutionaryontology.org/cdao/1.0/cdao.owl#"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+        xmlns="http://www.nexml.org/2009">
+
+    <otus id="otus1">
+        <otu id="line1"/>
+        <otu id="line2"/>
+    </otus>
+
+    <characters id="characters" label="charactersManual" otus="otus1" xsi:type="nex:StandardCells">
+        <format>
+            &lt;!-- The first elements inside a format element are state set definitions.
+            In this example, there is a set of six states, each tagged with an id.
+            The symbol attribute is a shorthand token.
+            --&gt;
+            <states id="states1">
+                <state id="s1" symbol="1"/>
+                <state id="s2" symbol="2"/>
+                <state id="s3" symbol="3"/>
+                <state id="s4" symbol="4"/>
+                <polymorphic_state_set id="s5" symbol="5">
+                    <mapping state="s1"/>
+                    <mapping state="s2"/>
+                </polymorphic_state_set>
+                <uncertain_state_set id="s6" symbol="6">
+                    <mapping state="s3"/>
+                    <mapping state="s4"/>
+                </uncertain_state_set>
+            </states>
+            &lt;!-- The matrix in this example contains two columns, both referring
+            to the same stateset - and so cells in both columns can occupy one of
+            six states. --&gt;
+            <char states="states1" id="c1"/>
+            <char states="states1" id="c2"/>
+        </format>
+        <matrix>
+            <row id="r1" otu="t1">
+                &lt;!-- Each cell must contain a reference to the column it belongs to,
+                and to a state allowed within that column. --&gt;
+                <cell char="c1" state="s2"/>
+                <cell char="c2" state="s2"/>
+            </row>
+            <row id="r2" otu="t1">
+                &lt;!-- Each cell must contain a reference to the column it belongs to,
+                and to a state allowed within that column. --&gt;
+                <cell char="c1" state="s1"/>
+                <cell char="c2" state="s4"/>
+            </row>
+        </matrix>
+    </characters>
+
+</nex:nexml>

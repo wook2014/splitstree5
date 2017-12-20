@@ -36,7 +36,15 @@ public class NexmlFileParser implements IToTaxa, IToChararacters, IToTrees, IToN
             NexmlCharactersHandler handler = new NexmlCharactersHandler();
             saxParser.parse(file, handler);
             taxa.addTaxaByNames(handler.getTaxaLabels());
-            characters.set(handler.getMatrix());
+            //characters.set(handler.getMatrix());
+            char[][] matrix = handler.getMatrix();
+            characters.setDimension(matrix.length, matrix[0].length);
+            for(int i=0; i<matrix.length; i++){
+                for(int j=0; j<matrix[0].length; j++){
+                    characters.set(i+1, j+1, matrix[i][j]);
+                }
+            }
+            characters.setDataType(handler.getDataType());
         }catch (Exception e) {
             e.printStackTrace();
         }

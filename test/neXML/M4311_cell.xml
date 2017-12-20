@@ -50,7 +50,7 @@
                 <state id="s8" symbol="7"/>
                 <state id="s9" symbol="8"/>
                 <state id="s10" symbol="9"/>
-                <uncertain_state_set id="s11" symbol="10">
+                <uncertain_state_set id="s11" symbol="X">
                     <member state="s1"/>
                     <member state="s2"/>
                 </uncertain_state_set>
