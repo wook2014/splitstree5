@@ -18,7 +18,7 @@ public class MatlabOut implements IFromTaxa, IFromDistances, IFromSplits {
     private boolean optionExportDataBlockWithTaxa = false;
     private boolean bHeader = true;
 
-    public void exportTaxa(Writer w, TaxaBlock taxa) throws IOException {
+    public void export(Writer w, TaxaBlock taxa) throws IOException {
 
         if(bHeader){
             w.write("%%MATLAB%%\n");
@@ -34,7 +34,7 @@ public class MatlabOut implements IFromTaxa, IFromDistances, IFromSplits {
         w.flush();
     }
 
-    public void exportDistances(Writer w, TaxaBlock taxa, DistancesBlock distances) throws IOException {
+    public void export(Writer w, TaxaBlock taxa, DistancesBlock distances) throws IOException {
 
         if(bHeader){
             w.write("%%MATLAB%%\n");
@@ -46,7 +46,7 @@ public class MatlabOut implements IFromTaxa, IFromDistances, IFromSplits {
         DecimalFormat dec = new DecimalFormat("#.0#####", dfs);
 
         if (optionExportDataBlockWithTaxa)
-            exportTaxa(w, taxa);
+            export(w, taxa);
 
         //Export the distances as a matrix then as a column vector.
         int ntax = distances.getNtax();
@@ -59,7 +59,7 @@ public class MatlabOut implements IFromTaxa, IFromDistances, IFromSplits {
         w.flush();
     }
 
-    public void exportSplits(Writer w, TaxaBlock taxa, SplitsBlock splits) throws IOException {
+    public void export(Writer w, TaxaBlock taxa, SplitsBlock splits) throws IOException {
 
         if(bHeader){
             w.write("%%MATLAB%%\n");
@@ -67,7 +67,7 @@ public class MatlabOut implements IFromTaxa, IFromDistances, IFromSplits {
         }
 
         if (optionExportDataBlockWithTaxa)
-            exportTaxa(w, taxa);
+            export(w, taxa);
 
         w.write("%%Number of splits, then row of split weights, then design matrix, same row ordering as distances\n");
 

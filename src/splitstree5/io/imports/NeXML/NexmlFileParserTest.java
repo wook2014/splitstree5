@@ -5,10 +5,7 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.io.imports.ClustalIn;
-import splitstree5.io.nexus.CharactersNexusFormat;
-import splitstree5.io.nexus.CharactersNexusIO;
-import splitstree5.io.nexus.TaxaNexusIO;
-import splitstree5.io.nexus.TreesNexusIO;
+import splitstree5.io.nexus.*;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -21,7 +18,7 @@ public class NexmlFileParserTest {
 
         NexmlFileParser nexmlFileParser = new NexmlFileParser();
         TaxaBlock taxaBlock = new TaxaBlock();
-        nexmlFileParser.parseTaxa("test/neXML/taxa.xml", taxaBlock);
+        nexmlFileParser.parse("test/neXML/taxa.xml", taxaBlock);
 
         // printing
         final StringWriter w1 = new StringWriter();
@@ -38,7 +35,7 @@ public class NexmlFileParserTest {
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
 
-        nexmlFileParser.parseCharacters("test/neXML/M4097_seq.xml", taxaBlock, charactersBlock);
+        nexmlFileParser.parse("test/neXML/M4097_seq.xml", taxaBlock, charactersBlock);
         // printing
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
@@ -54,12 +51,14 @@ public class NexmlFileParserTest {
         TaxaBlock taxaBlock = new TaxaBlock();
         TreesBlock treesBlock = new TreesBlock();
 
-        nexmlFileParser.parseTrees("test/neXML/simple.xml", taxaBlock, treesBlock);
+        nexmlFileParser.parse("test/neXML/simple.xml", taxaBlock, treesBlock);
         // printing
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
         TaxaNexusIO.write(w1, taxaBlock);
-        TreesNexusIO.write(w1, taxaBlock, treesBlock, null);
+        TreesNexusFormat treesNexusFormat = new TreesNexusFormat();
+        treesNexusFormat.setTranslate(false);
+        TreesNexusIO.write(w1, taxaBlock, treesBlock, treesNexusFormat);
         System.err.println(w1.toString());
     }
 

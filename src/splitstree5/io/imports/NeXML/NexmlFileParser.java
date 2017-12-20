@@ -1,6 +1,10 @@
 package splitstree5.io.imports.NeXML;
 
 import jloda.phylo.PhyloTree;
+import splitstree5.core.algorithms.interfaces.IToChararacters;
+import splitstree5.core.algorithms.interfaces.IToNetwork;
+import splitstree5.core.algorithms.interfaces.IToTaxa;
+import splitstree5.core.algorithms.interfaces.IToTrees;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
@@ -9,9 +13,9 @@ import java.io.File;
 
 import javax.xml.parsers.*;
 
-public class NexmlFileParser {
+public class NexmlFileParser implements IToTaxa, IToChararacters, IToTrees, IToNetwork {
 
-    public void parseTaxa(String inputFile, TaxaBlock taxa){
+    public void parse(String inputFile, TaxaBlock taxa){
         try {
             File file = new File(inputFile);
             SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -24,7 +28,7 @@ public class NexmlFileParser {
         }
     }
 
-    public void parseCharacters(String inputFile, TaxaBlock taxa, CharactersBlock characters){
+    public void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters){
         try {
             File file = new File(inputFile);
             SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -38,7 +42,7 @@ public class NexmlFileParser {
         }
     }
 
-    public void parseTrees(String inputFile, TaxaBlock taxa, TreesBlock trees){
+    public void parse(String inputFile, TaxaBlock taxa, TreesBlock trees){
         try {
             File file = new File(inputFile);
             SAXParserFactory factory = SAXParserFactory.newInstance();

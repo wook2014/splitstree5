@@ -11,8 +11,7 @@ import java.util.ArrayList;
 
 public class NexmlTreesHandler extends DefaultHandler {
 
-    //boolean otu = false;
-    boolean bReadingTree = false;
+    private boolean bReadingTree = false;
 
     private PhyloTree tree;
     private ArrayList<String> taxaLabels = new ArrayList<>();
@@ -47,16 +46,26 @@ public class NexmlTreesHandler extends DefaultHandler {
             String label = attributes.getValue("label");
             String id = attributes.getValue("id");
             String otu = attributes.getValue("otu");
+            System.out.println("node " + id + " has label " + otu);
             boolean root = Boolean.parseBoolean(attributes.getValue("root"));
 
             Node node = new Node(tree);
             node.setData(id);
-            System.out.println("-----"+node.getData());
+            System.out.println("-----" + node.getData());
             //tree.setLabel(node, label);
 
-            if(root) tree.setRoot(node);
-            if(otu != null) tree.setLabel(node, label);
+            if (root) tree.setRoot(node);
+            if (otu != null)
+                tree.setLabel(node, otu);
+            else if (label != null)
+                tree.setLabel(node, label);
+            else
+                tree.setLabel(node, id);
 
+        }else if (qName.equalsIgnoreCase("rootedge")&& bReadingTree){
+            Double weight = Double.parseDouble(attributes.getValue("length")); // todo : check if possible
+            //tree.setWeight(tree.newEdge(tree.getRoot(), weight);
+            tree.setWeight(weight); // todo what should i do here?
         } else if (qName.equalsIgnoreCase("edge")&& bReadingTree) {
             String source = attributes.getValue("source");
             String target = attributes.getValue("target");
@@ -65,11 +74,9 @@ public class NexmlTreesHandler extends DefaultHandler {
             Node sourceNode = tree.getLastNode();
             Node targetNode = tree.getFirstNode();
             for(Node n : tree.getNodesAsSet()){
-                if (n.getData().equals(source)) sourceNode = n;
+                if (n.getData().equals(source)) sourceNode = n; // todo : can I use data parameter here?
                 if (n.getData().equals(target)) targetNode = n;
             }
-
-            //Edge e = new Edge(tree, sourceNode, targetNode, weight);
 
             tree.setWeight(tree.newEdge(sourceNode, targetNode), weight);
         }
