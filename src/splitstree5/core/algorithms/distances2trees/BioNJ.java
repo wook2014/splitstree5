@@ -12,6 +12,7 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 
+import java.util.BitSet;
 import java.util.HashMap;
 
 
@@ -35,26 +36,35 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
         progressListener.close();
     }
 
-    private PhyloTree computeBioNJTree(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances)
-            throws InterruptedException, CanceledException {
+    /**
+     * compute the BIO nj tree
+     *
+     * @param progressListener
+     * @param taxaBlock
+     * @param distances
+     * @return tree
+     * @throws InterruptedException
+     * @throws CanceledException
+     */
+    private PhyloTree computeBioNJTree(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances) throws InterruptedException, CanceledException {
 
-        PhyloTree tree = new PhyloTree();
-        HashMap TaxaHashMap = new HashMap();
+        final PhyloTree tree = new PhyloTree();
+        final HashMap<String, Node> taxaHashMap = new HashMap<>();
         int nbNtax = distances.getNtax();
+
         StringBuffer tax[] = new StringBuffer[nbNtax + 1];
-        //Taxalabes are saved as a StringBuffer array
 
         for (int i = 1; i <= nbNtax; i++) {
             tax[i] = new StringBuffer();
-            tax[i].append(taxaBlock.getLabel(i));
-            Node v = tree.newNode(); // create newNode for each Taxon
-            tree.setLabel(v, tax[i].toString());
-            TaxaHashMap.put(tax[i].toString(), v);
+            tax[i].append(String.valueOf(i));
+            final Node v = tree.newNode(); // create newNode for each Taxon
+            tree.setLabel(v, taxaBlock.getLabel(i));
+            taxaHashMap.put(tax[i].toString(), v);
         }
 
-        double h[][] = new double[nbNtax + 1][nbNtax + 1];// distance matix
+        final double h[][] = new double[nbNtax + 1][nbNtax + 1];// distance matrix
 
-        boolean active[] = new boolean[nbNtax + 1];
+        final BitSet active = new BitSet();
 
         double var[][] = new double[nbNtax + 1][nbNtax + 1]; // variances matrix. This really should be upper diag of h.
         double b[] = new double[nbNtax + 1];// the b variable in Neighbor Joining
@@ -67,9 +77,7 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
         Edge e, f; //from tax_old to new=merged edge
         double lambda; //lambda value in BioNJ
 
-        for (int i = 1; i <= nbNtax; i++) {
-            active[i] = true;
-        }
+        active.set(1, nbNtax+1);
 
         for (int i = 1; i <= nbNtax; i++) {
             h[i][i] = 0.0;
@@ -95,9 +103,9 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
             // find: min D (h, b, b)
             double d_min = Double.MAX_VALUE, d_ij;
             for (int i = 1; i < nbNtax; i++) {
-                if (!active[i]) continue;
+                if (!active.get(i)) continue;
                 for (int j = i + 1; j <= nbNtax; j++) {
-                    if (!active[j])
+                    if (!active.get(j))
                         continue;
                     d_ij = ((double) actual - 2.0) * h[i][j] - b[i] - b[j];
                     if (d_ij < d_min) {
@@ -113,7 +121,7 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
             //dist_f=0.5*(h[i_min][j_min] + b[j_min]/((double)actual-2.0)
             //	- b[i_min]/((double)actual-2.0) );
 
-            active[j_min] = false;
+            active.set(j_min,false);
 
             // tax taxa update:
             tax_old_i = new StringBuffer(tax[i_min].toString());
@@ -151,7 +159,7 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
 
 
             for (int i = 1; i <= nbNtax; i++) {
-                if ((i == i_min) || (!active[i]))
+                if ((i == i_min) || (!active.get(i)))
                     continue;
                 //temp=(h[i][i_min] + h[i][j_min] - h_min)/2; NJ                                        //temp=(h[i][i_min] + h[i][j_min] - dist_e - dist_f)/2; NJ
                 temp = (1.0 - lambda) * (h[i][i_min] - dist_e) + (lambda) * (h[i][j_min] - dist_f); //BioNJ
@@ -174,12 +182,12 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
 
             // generate new Node for merged Taxa:
             v = tree.newNode();
-            TaxaHashMap.put(tax[i_min].toString(), v);
+            taxaHashMap.put(tax[i_min].toString(), v);
 
             // generate Edges from two Taxa that are merged to one:
-            e = tree.newEdge((Node) TaxaHashMap.get(tax_old_i.toString()), v);
+            e = tree.newEdge((Node) taxaHashMap.get(tax_old_i.toString()), v);
             tree.setWeight(e, dist_e);
-            f = tree.newEdge((Node) TaxaHashMap.get(tax_old_j.toString()), v);
+            f = tree.newEdge((Node) taxaHashMap.get(tax_old_j.toString()), v);
             tree.setWeight(f, dist_f);
             progressListener.incrementProgress();
         }
@@ -187,15 +195,15 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
         // evaluating last three nodes:
         int k_min, i;
         i = 1;
-        while (!active[i])
+        while (!active.get(i))
             i++;
         i_min = i;
         i++;
-        while (!active[i])
+        while (!active.get(i))
             i++;
         j_min = i;
         i++;
-        while (!active[i])
+        while (!active.get(i))
             i++;
         k_min = i;
 
@@ -216,12 +224,12 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
 
         // generate new Node for the root of the tree.
         v = tree.newNode();
-        TaxaHashMap.put(tax[i_min].toString(), v);
-        e = tree.newEdge((Node) TaxaHashMap.get(tax_old_i.toString()), v);
+        taxaHashMap.put(tax[i_min].toString(), v);
+        e = tree.newEdge(taxaHashMap.get(tax_old_i.toString()), v);
         tree.setWeight(e, 0.5 * (h[i_min][j_min] + h[i_min][k_min] - h[j_min][k_min]));
-        e = tree.newEdge((Node) TaxaHashMap.get(tax_old_j.toString()), v);
+        e = tree.newEdge(taxaHashMap.get(tax_old_j.toString()), v);
         tree.setWeight(e, 0.5 * (h[i_min][j_min] + h[j_min][k_min] - h[i_min][k_min]));
-        e = tree.newEdge((Node) TaxaHashMap.get(tax_old_k.toString()), v);
+        e = tree.newEdge(taxaHashMap.get(tax_old_k.toString()), v);
         tree.setWeight(e, 0.5 * (h[i_min][k_min] + h[j_min][k_min] - h[i_min][j_min]));
         return tree;
     }
