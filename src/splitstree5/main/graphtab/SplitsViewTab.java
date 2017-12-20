@@ -19,7 +19,6 @@
 package splitstree5.main.graphtab;
 
 
-import javafx.beans.InvalidationListener;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -64,10 +63,6 @@ public class SplitsViewTab extends GraphTab {
                 if (removedSplits.contains(graph.getSplit(e)))
                     edgeSelectionModel.clearSelection(e);
             }
-        });
-
-        edgeSelectionModel.getSelectedItems().addListener((InvalidationListener) (c) -> {
-            System.err.println("selection changed: " + edgeSelectionModel.getSelectedItems().size());
         });
     }
 
