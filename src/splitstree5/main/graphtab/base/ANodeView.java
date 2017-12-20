@@ -162,6 +162,7 @@ public class ANodeView {
                 selectionModel.clearSelection(v);
             else
                 selectionModel.select(v);
+            e.consume();
         });
         if (label != null) {
             label.setOnMouseClicked((e) -> {
@@ -171,6 +172,7 @@ public class ANodeView {
                     selectionModel.clearSelection(v);
                 else
                     selectionModel.select(v);
+                e.consume();
             });
             final Single<Point2D> point = new Single<>();
             label.setOnMousePressed((e) -> {

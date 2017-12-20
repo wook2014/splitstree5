@@ -173,17 +173,6 @@ public class AEdgeView {
 
     /**
      * create a simple edge view
-     *
-     * @param layout
-     * @param shape
-     * @param weight
-     * @param start
-     * @param control1
-     * @param mid
-     * @param control2
-     * @param support
-     * @param end
-     * @return
      */
     public AEdgeView(Edge e, GraphLayout layout, AEdgeView.EdgeShape shape, Double weight, final Point2D start, final Point2D control1, final Point2D mid, final Point2D control2, final Point2D support, final Point2D end) {
         this.e = e;

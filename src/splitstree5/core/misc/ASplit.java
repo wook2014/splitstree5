@@ -20,6 +20,7 @@
 package splitstree5.core.misc;
 
 import java.util.BitSet;
+import java.util.Comparator;
 
 /**
  * simple split implementation
@@ -266,5 +267,22 @@ public final class ASplit {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * compare by decreasing size
+     *
+     * @return comparison
+     */
+    public static Comparator<? super ASplit> comparatorByDecreasingSize() {
+        return (Comparator<ASplit>) (a, b) -> {
+            if (a.size() > b.size())
+                return -1;
+            else if (a.size() < b.size())
+                return 1;
+            else
+                return a.toString().compareTo(b.toString());
+
+        };
     }
 }

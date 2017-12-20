@@ -47,6 +47,7 @@ import javafx.geometry.Point2D;
 import jloda.graph.*;
 import jloda.phylo.PhyloGraph;
 import jloda.phylo.PhyloTree;
+import jloda.util.Basic;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
@@ -155,8 +156,26 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
 
                 // compute all views and put their parts into the appropriate groups
                 for (Node v : tree.nodes()) {
-                    String text = (tree.getLabel(v) != null ? tree.getLabel(v) : "Node " + v.getId());
-                    final ANodeView nodeView = view.createNodeView(v, node2point.getValue(v), text);
+                    final StringBuilder text = new StringBuilder();
+                    final String label = tree.getLabel(v);
+                    if (label != null) {
+                        if (label.startsWith("<")) // multi-labeled node
+                        {
+                            final String[] tokens = Basic.split(label.substring(1, label.length() - 1), ',');
+                            for (String token : tokens) {
+                                if (Basic.isInteger(token)) {
+                                    if (text.length() > 0)
+                                        text.append(", ");
+                                    text.append(taxaBlock.get(Basic.parseInt(token)));
+                                }
+
+                            }
+                        } else if (Basic.isInteger(label))
+                            text.append(taxaBlock.get(Basic.parseInt(label)));
+                        else
+                            text.append(label);
+                    }
+                    final ANodeView nodeView = view.createNodeView(v, node2point.getValue(v), text.toString());
                     view.getNode2view().put(v, nodeView);
                     if (nodeView.getShape() != null)
                         view.getNodesGroup().getChildren().addAll(nodeView.getShape());

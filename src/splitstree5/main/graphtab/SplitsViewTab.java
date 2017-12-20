@@ -19,6 +19,7 @@
 package splitstree5.main.graphtab;
 
 
+import javafx.beans.InvalidationListener;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -64,6 +65,10 @@ public class SplitsViewTab extends GraphTab {
                     edgeSelectionModel.clearSelection(e);
             }
         });
+
+        edgeSelectionModel.getSelectedItems().addListener((InvalidationListener) (c) -> {
+            System.err.println("selection changed: " + edgeSelectionModel.getSelectedItems().size());
+        });
     }
 
     /**
@@ -84,13 +89,8 @@ public class SplitsViewTab extends GraphTab {
 
     /**
      * create a node view
-     *
-     * @param v
-     * @param location
-     * @param label
-     * @return node view
      */
-    public ANodeView createNodeView(Node v, Point2D location, String label) {
+    public ANodeView createNodeView(final Node v, Point2D location, String label) {
         final ANodeView nodeView = new ANodeView(v, location, label, nodeSelectionModel);
 
         if (nodeView.getShape() != null) {
@@ -110,12 +110,17 @@ public class SplitsViewTab extends GraphTab {
                 mouseX = e.getScreenX();
                 mouseY = e.getScreenY();
             });
-            nodeView.getShape().setOnMouseClicked((e) -> {
+            nodeView.getShape().setOnMouseClicked((x) -> {
                 splitsSelectionModel.clearSelection();
                 edgeSelectionModel.clearSelection();
-                if (!e.isShiftDown())
+                if (!x.isShiftDown())
                     nodeSelectionModel.clearSelection();
-                nodeSelectionModel.select(nodeView.getNode());
+                nodeSelectionModel.select(v);
+                if (x.getClickCount() == 2) {
+                    Edge e = getEdgeWithMostWeight(v);
+                    selectBySplit(e);
+                }
+                x.consume();
             });
         }
         if (nodeView.getLabel() != null) {
@@ -125,19 +130,63 @@ public class SplitsViewTab extends GraphTab {
                 if (!e.isShiftDown())
                     nodeSelectionModel.clearSelection();
                 nodeSelectionModel.select(nodeView.getNode());
+                e.consume();
             });
         }
-
         return nodeView;
     }
 
+    private Edge getEdgeWithMostWeight(Node v) {
+        Edge best = v.getFirstAdjacentEdge();
+        for (Edge e : v.adjacentEdges()) {
+            if (getPhyloGraph().getWeight(e) > getPhyloGraph().getWeight(best))
+                best = e;
+        }
+        return best;
+    }
+
+    /**
+     * create an edge view
+     */
+    public AEdgeView createEdgeView(final PhyloGraph graph, final Edge e, final Double weight, final Point2D start, final Point2D end) {
+        final AEdgeView edgeView = new AEdgeView(e, weight, start, end);
+        final int splitId = graph.getSplit(e);
+
+        final EventHandler<? super MouseEvent> handler = (EventHandler<MouseEvent>) x -> {
+            if (!splitsSelectionModel.getSelectedItems().contains(splitId)) {
+                selectBySplit(e);
+            } else if (x.isShiftDown() && splitsSelectionModel.getSelectedItems().contains(splitId)) {
+                splitsSelectionModel.clearSelection();
+                nodeSelectionModel.clearSelection();
+            }
+            x.consume();
+        };
+
+        if (edgeView.getShape() != null) {
+            edgeView.getShape().setOnMouseClicked(handler);
+        }
+
+        if (edgeView.getLabel() != null) {
+            edgeView.getLabel().setOnMouseClicked(handler);
+        }
+        return edgeView;
+    }
+
+    /**
+     * select by split associated with given edge
+     */
+    public void selectBySplit(Edge e) {
+        final int splitId = getPhyloGraph().getSplit(e);
+        if (!splitsSelectionModel.getSelectedItems().contains(splitId)) {
+            splitsSelectionModel.clearSelection();
+            splitsSelectionModel.select((Integer) splitId);
+            selectAllNodesOnSmallerSide(getPhyloGraph(), e, nodeSelectionModel);
+        }
+    }
+
+
     /**
      * compute the anchor center for rotating splits
-     *
-     * @param edges
-     * @param selectedNodes
-     * @param node2view
-     * @return anchor center
      */
     private Point2D computeAnchorCenter(Collection<Edge> edges, HashSet<Node> selectedNodes, NodeArray<ANodeView> node2view) {
         double x = 0;
@@ -161,12 +210,6 @@ public class SplitsViewTab extends GraphTab {
 
     /**
      * rotate split by given angle
-     *
-     * @param angle
-     * @param selectedEdges must contain all and only edges of one split
-     * @param selectedNodes must contain all and only nodes on one side of split
-     * @param node2view
-     * @param edge2view
      */
     private void applySplitRotation(double angle, ObservableList<Edge> selectedEdges, HashSet<Node> selectedNodes, NodeArray<ANodeView> node2view, EdgeArray<AEdgeView> edge2view) {
         final Edge e = selectedEdges.get(0);
@@ -197,55 +240,12 @@ public class SplitsViewTab extends GraphTab {
         }
     }
 
-    /**
-     * create an edge view
-     *
-     * @param graph
-     * @param e
-     * @param weight
-     * @param start
-     * @param end
-     * @return edge view
-     */
-    public AEdgeView createEdgeView(PhyloGraph graph, Edge e, Double weight, final Point2D start, final Point2D end) {
-        final AEdgeView edgeView = new AEdgeView(e, weight, start, end);
-
-        final EventHandler<? super MouseEvent> handler = (EventHandler<MouseEvent>) event -> {
-            final Integer splitId = graph.getSplit(e); // must be Integer, not int, otherwise it will be confused with an index
-            if (!splitsSelectionModel.getSelectedItems().contains(splitId)) {
-                splitsSelectionModel.clearSelection();
-                splitsSelectionModel.select(splitId);
-                for (Edge f : graph.edges()) {
-                    if (graph.getSplit(f) == splitId) {
-                        selectAllNodesOnSmallerSide(graph, e, nodeSelectionModel);
-                    }
-                }
-            } else if (event.isShiftDown() && splitsSelectionModel.getSelectedItems().contains(splitId)) {
-                splitsSelectionModel.clearSelection();
-                nodeSelectionModel.clearSelection();
-            }
-        };
-
-        if (edgeView.getShape() != null) {
-            edgeView.getShape().setOnMouseClicked(handler);
-        }
-
-        if (edgeView.getLabel() != null) {
-            edgeView.getLabel().setOnMouseClicked(handler);
-        }
-        return edgeView;
-    }
-
     public ASelectionModel<Integer> getSplitsSelectionModel() {
         return splitsSelectionModel;
     }
 
     /**
      * select all nodes on smaller side of graph separated by e
-     *
-     * @param graph
-     * @param e
-     * @param nodeSelectionModel
      */
     private static void selectAllNodesOnSmallerSide(PhyloGraph graph, Edge e, ASelectionModel<Node> nodeSelectionModel) {
         nodeSelectionModel.clearSelection();
@@ -264,11 +264,6 @@ public class SplitsViewTab extends GraphTab {
 
     /**
      * recursively visit all nodes on one side of a given split
-     *
-     * @param v
-     * @param e
-     * @param splitId
-     * @param visited
      */
     private static void visitRec(PhyloGraph graph, Node v, Edge e, int splitId, NodeSet visited) {
         if (!visited.contains(v)) {
@@ -282,6 +277,6 @@ public class SplitsViewTab extends GraphTab {
 
     @Override
     public void updateMenus(MainWindowController controller) {
-
+        super.updateMenus(controller);
     }
 }

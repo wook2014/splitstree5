@@ -112,7 +112,7 @@ public class SplitNetworkConstruction extends Algorithm<SplitsBlock, SplitsViewB
         for (Node v : graph.nodes()) {
             String text = graph.getLabel(v);
             //String text = (graph.getLabel(v) != null ? graph.getLabel(v) : "Node " + v.getId());
-            final ANodeView nodeView = child.createNodeView(v, node2point.getValue(v), text);
+            final ANodeView nodeView = view.createNodeView(v, node2point.getValue(v), text);
             view.getNode2view().put(v, nodeView);
             if (nodeView.getShape() != null)
                 view.getNodesGroup().getChildren().addAll(nodeView.getShape());
@@ -120,7 +120,7 @@ public class SplitNetworkConstruction extends Algorithm<SplitsBlock, SplitsViewB
                 view.getNodeLabelsGroup().getChildren().addAll(nodeView.getLabel());
         }
         for (Edge e : graph.edges()) {
-            final AEdgeView edgeView = child.createEdgeView(graph, e, graph.getWeight(e), node2point.get(e.getSource()), node2point.get(e.getTarget()));
+            final AEdgeView edgeView = view.createEdgeView(graph, e, graph.getWeight(e), node2point.get(e.getSource()), node2point.get(e.getTarget()));
             view.getEdge2view().put(e, edgeView);
             if (edgeView.getShape() != null)
                 view.getEdgesGroup().getChildren().add(edgeView.getShape());

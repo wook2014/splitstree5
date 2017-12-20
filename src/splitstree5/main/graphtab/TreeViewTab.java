@@ -53,11 +53,11 @@ public class TreeViewTab extends GraphTab {
      *
      * @param v
      * @param location
-     * @param label
+     * @param text
      * @return
      */
-    public ANodeView createNodeView(Node v, Point2D location, String label) {
-        return new ANodeView(v, location, label, nodeSelectionModel);
+    public ANodeView createNodeView(Node v, Point2D location, String text) {
+        return new ANodeView(v, location, text, nodeSelectionModel);
     }
 
     /**
@@ -89,6 +89,7 @@ public class TreeViewTab extends GraphTab {
                     edgeSelectionModel.clearSelection(e);
                 else
                     edgeSelectionModel.select(e);
+                x.consume();
             });
         }
 
@@ -102,6 +103,7 @@ public class TreeViewTab extends GraphTab {
                     edgeSelectionModel.clearSelection(e);
                 else
                     edgeSelectionModel.select(e);
+                x.consume();
             });
         }
         return edgeView;
@@ -109,6 +111,6 @@ public class TreeViewTab extends GraphTab {
 
     @Override
     public void updateMenus(MainWindowController controller) {
-
+        super.updateMenus(controller);
     }
 }

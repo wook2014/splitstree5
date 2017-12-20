@@ -24,10 +24,10 @@ import javafx.stage.Stage;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.characters2distances.HammingDistances;
 import splitstree5.core.algorithms.distances2splits.NeighborNet;
-import splitstree5.core.datablocks.ADataNode;
-import splitstree5.core.datablocks.CharactersBlock;
-import splitstree5.core.datablocks.DistancesBlock;
-import splitstree5.core.datablocks.SplitsBlock;
+import splitstree5.core.algorithms.distances2trees.NeighborJoining;
+import splitstree5.core.algorithms.views.SplitNetworkConstruction;
+import splitstree5.core.algorithms.views.TreeEmbedder;
+import splitstree5.core.datablocks.*;
 import splitstree5.core.workflow.Workflow;
 import splitstree5.io.nexus.NexusFileParser;
 
@@ -46,8 +46,17 @@ public class MainWindowTest extends Application {
         if (workflow.getWorkingDataNode().getDataBlock() instanceof CharactersBlock) {
             final ADataNode<DistancesBlock> distances = workflow.createDataNode(new DistancesBlock());
             workflow.createConnector(workflow.getWorkingDataNode(), distances, new HammingDistances());
+
             final ADataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
             workflow.createConnector(distances, splits, new NeighborNet());
+            final ADataNode<SplitsViewBlock> splitsView = workflow.createDataNode(new SplitsViewBlock());
+            workflow.createConnector(splits, splitsView, new SplitNetworkConstruction());
+
+            final ADataNode<TreesBlock> trees = workflow.createDataNode(new TreesBlock());
+            workflow.createConnector(distances, trees, new NeighborJoining());
+            final ADataNode<TreeViewBlock> treeView = workflow.createDataNode(new TreeViewBlock());
+            workflow.createConnector(trees, treeView, new TreeEmbedder());
+
         }
 
         mainWindow.show(primaryStage, 100, 100);

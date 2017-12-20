@@ -60,17 +60,17 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> imple
 
     private PhyloTree computeNJTree(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances)
             throws InterruptedException, CanceledException {
-        int nTax = distances.getNtax();
-        PhyloTree tree = new PhyloTree();
-        HashMap<String, Node> Taxa2Nodes = new HashMap<>();
-        StringBuffer TaxaLabels[] = new StringBuffer[nTax + 1];
+        final int nTax = distances.getNtax();
+        final PhyloTree tree = new PhyloTree();
+        final HashMap<String, Node> taxa2Nodes = new HashMap<>();
+        final StringBuilder taxaLabels[] = new StringBuilder[nTax + 1];
 
-        initialize(nTax, taxaBlock, tree, Taxa2Nodes, TaxaLabels);
+        initialize(nTax, taxaBlock, tree, taxa2Nodes, taxaLabels);
 
         int i_min = 0, j_min = 0;
         double temp, dist2i, dist2j;  //new edge weights
-        StringBuffer mergedTaxa_i; //labels of taxa that are being merged
-        StringBuffer mergedTaxa_j;
+        StringBuilder mergedTaxa_i; //labels of taxa that are being merged
+        StringBuilder mergedTaxa_j;
         Node newParentNode;
         Edge edge2i, edge2j; //from tax_old to new=merged edge
 
@@ -109,13 +109,13 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> imple
             distanceMatrix[0][j_min] = 0.0;
 
             // tax taxa update:
-            mergedTaxa_i = new StringBuffer(TaxaLabels[i_min].toString());
-            mergedTaxa_j = new StringBuffer(TaxaLabels[j_min].toString());
-            TaxaLabels[i_min].insert(0, "(");
-            TaxaLabels[i_min].append(",");
-            TaxaLabels[i_min].append(TaxaLabels[j_min]);
-            TaxaLabels[i_min].append(")");
-            TaxaLabels[j_min].delete(0, TaxaLabels[j_min].length());
+            mergedTaxa_i = new StringBuilder(taxaLabels[i_min].toString());
+            mergedTaxa_j = new StringBuilder(taxaLabels[j_min].toString());
+            taxaLabels[i_min].insert(0, "(");
+            taxaLabels[i_min].append(",");
+            taxaLabels[i_min].append(taxaLabels[j_min]);
+            taxaLabels[i_min].append(")");
+            taxaLabels[j_min].delete(0, taxaLabels[j_min].length());
 
             // divergences update:
 
@@ -145,12 +145,12 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> imple
 
             // generate new Node for merged Taxa:
             newParentNode = tree.newNode();
-            Taxa2Nodes.put(TaxaLabels[i_min].toString(), newParentNode);
+            taxa2Nodes.put(taxaLabels[i_min].toString(), newParentNode);
 
             // generate Edges from two Taxa that are merged to one:
-            edge2i = tree.newEdge(Taxa2Nodes.get(mergedTaxa_i.toString()), newParentNode);
+            edge2i = tree.newEdge(taxa2Nodes.get(mergedTaxa_i.toString()), newParentNode);
             tree.setWeight(edge2i, Math.max(dist2i, 0.0));
-            edge2j = tree.newEdge(Taxa2Nodes.get(mergedTaxa_j.toString()), newParentNode);
+            edge2j = tree.newEdge(taxa2Nodes.get(mergedTaxa_j.toString()), newParentNode);
             tree.setWeight(edge2j, Math.max(dist2j, 0.0));
 
             progressListener.incrementProgress();
@@ -169,29 +169,29 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> imple
                 }
             }
         }
-        mergedTaxa_i = new StringBuffer(TaxaLabels[i_min].toString());
-        mergedTaxa_j = new StringBuffer(TaxaLabels[j_min].toString());
+        mergedTaxa_i = new StringBuilder(taxaLabels[i_min].toString());
+        mergedTaxa_j = new StringBuilder(taxaLabels[j_min].toString());
 
-        TaxaLabels[i_min].insert(0, "(");
-        TaxaLabels[i_min].append(",");
-        TaxaLabels[i_min].append(TaxaLabels[j_min]);
-        TaxaLabels[i_min].append(")");
-        TaxaLabels[j_min].delete(0, TaxaLabels[j_min].length()); //not neces. but sets content to NULL
+        taxaLabels[i_min].insert(0, "(");
+        taxaLabels[i_min].append(",");
+        taxaLabels[i_min].append(taxaLabels[j_min]);
+        taxaLabels[i_min].append(")");
+        taxaLabels[j_min].delete(0, taxaLabels[j_min].length()); //not neces. but sets content to NULL
 
         // generate new Node for merged Taxa:
         // generate Edges from two Taxa that are merged to one:
-        edge2i = tree.newEdge(Taxa2Nodes.get(mergedTaxa_i.toString()), Taxa2Nodes.get(mergedTaxa_j.toString()));
+        edge2i = tree.newEdge(taxa2Nodes.get(mergedTaxa_i.toString()), taxa2Nodes.get(mergedTaxa_j.toString()));
         tree.setWeight(edge2i, Math.max(distanceMatrix[i_min][j_min], 0.0));
         return tree;
     }
 
-    private static void initialize(int nTax, TaxaBlock taxa, PhyloTree tree, HashMap<String, Node> Taxa2Nodes, StringBuffer[] Labels) {
+    private static void initialize(int nTax, TaxaBlock taxa, PhyloTree tree, HashMap<String, Node> taxa2nodes, StringBuilder[] labels) {
         for (int i = 1; i <= nTax; i++) {
-            Labels[i] = new StringBuffer();
-            Labels[i].append(taxa.getLabel(i));
-            Node v = tree.newNode(); // create newNode for each Taxon
-            tree.setLabel(v, Labels[i].toString());
-            Taxa2Nodes.put(Labels[i].toString(), v);
+            labels[i] = new StringBuilder();
+            labels[i].append(taxa.getLabel(i));
+            final Node v = tree.newNode(); // create newNode for each Taxon
+            tree.setLabel(v, labels[i].toString());
+            taxa2nodes.put(labels[i].toString(), v);
         }
     }
 

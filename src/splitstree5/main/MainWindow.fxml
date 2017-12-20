@@ -243,7 +243,7 @@
                                 <SeparatorMenuItem mnemonicParsing="false"/>
                                 <MenuItem fx:id="layoutLabelsMenuItem" text="Layout Labels">
                                     <accelerator>
-                                        <KeyCodeCombination alt="UP" code="SPACE" control="UP" meta="UP" shift="UP"
+                                        <KeyCodeCombination alt="UP" code="COMMA" control="UP" meta="UP" shift="UP"
                                                             shortcut="DOWN"/>
                                     </accelerator>
                                 </MenuItem>
