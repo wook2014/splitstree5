@@ -85,6 +85,9 @@ public abstract class GraphTab extends ViewerTab {
 
     protected final Presenter presenter;
 
+    private double scaleChangeX = 1; // keep track of scale changes, used for reset
+    private double scaleChangeY = 1;
+
     private final StringProperty title = new SimpleStringProperty("");
     private ObjectProperty<GraphLayout> layout = new SimpleObjectProperty<>(GraphLayout.LeftToRight);
 
@@ -93,6 +96,7 @@ public abstract class GraphTab extends ViewerTab {
      */
     public GraphTab() {
         setContent(pane);
+        // pane.setStyle("-fx-border-color: red");
 
         nodeSelectionModel.getSelectedItems().addListener((ListChangeListener<Node>) c -> {
             if (c.next()) {
@@ -214,6 +218,8 @@ public abstract class GraphTab extends ViewerTab {
         edge2view = new EdgeArray<>(phyloGraph);
         group.setScaleX(1);
         group.setScaleY(1);
+        scaleChangeX = 1;
+        scaleChangeY = 1;
     }
 
     /**
@@ -291,6 +297,16 @@ public abstract class GraphTab extends ViewerTab {
 
                 })).start();
             }
+            if (!(getContent() instanceof ScrollPane)) {
+                ScrollPane scrollPane = new ScrollPane(pane);
+                setContent(scrollPane);
+
+                pane.minWidthProperty().bind(Bindings.createDoubleBinding(() ->
+                        scrollPane.getViewportBounds().getWidth(), scrollPane.viewportBoundsProperty()));
+
+                pane.minHeightProperty().bind(Bindings.createDoubleBinding(() ->
+                        scrollPane.getViewportBounds().getHeight(), scrollPane.viewportBoundsProperty()));
+            }
         });
     }
 
@@ -323,6 +339,9 @@ public abstract class GraphTab extends ViewerTab {
      * @param yFactor
      */
     public void scale(double xFactor, double yFactor) {
+        scaleChangeX *= xFactor;
+        scaleChangeY *= yFactor;
+
         for (ANodeView nodeView : getNode2view()) {
             nodeView.scaleCoordinates(xFactor, yFactor);
         }
@@ -341,12 +360,9 @@ public abstract class GraphTab extends ViewerTab {
             nodeSelectionModel.clearSelection();
             edgeSelectionModel.clearSelection();
         });
-        controller.getSelectAllNodesMenuItem().setOnAction((e) -> {
-            nodeSelectionModel.selectAll();
-        });
-        controller.getSelectAllEdgeMenuItem().setOnAction((e) -> {
-            edgeSelectionModel.selectAll();
-        });
+        controller.getSelectAllNodesMenuItem().setOnAction((e) -> nodeSelectionModel.selectAll());
+        controller.getSelectAllEdgeMenuItem().setOnAction((e) -> edgeSelectionModel.selectAll());
+
         controller.getSelectAllLabeledNodesMenuItem().setOnAction((e) -> {
             for (Node v : getPhyloGraph().nodes()) {
                 if (getPhyloGraph().getLabel(v) != null && getPhyloGraph().getLabel(v).length() > 0)
@@ -356,6 +372,8 @@ public abstract class GraphTab extends ViewerTab {
 
         controller.getZoomInMenuItem().setOnAction((e) -> scale(1.1, 1.1));
         controller.getZoomOutMenuItem().setOnAction((e) -> scale(1 / 1.1, 1 / 1.1));
+
+        controller.getResetMenuItem().setOnAction((e) -> scale(1 / scaleChangeX, 1 / scaleChangeY));
 
         controller.getLayoutLabelsMenuItem().setOnAction((e) -> layoutLabels());
     }

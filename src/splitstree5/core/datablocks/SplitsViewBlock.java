@@ -69,7 +69,6 @@ public class SplitsViewBlock extends ADataBlock {
                     splitsViewTab.getEdgeSelectionModel().clearSelection(e);
             }
         });
-
     }
 
     @Override
@@ -131,7 +130,4 @@ public class SplitsViewBlock extends ADataBlock {
         } else
             return "a split network";
     }
-
-    private static double mouseX;
-    private static double mouseY;
 }

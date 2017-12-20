@@ -82,7 +82,7 @@ public class SplitNetworkConstruction extends Algorithm<SplitsBlock, SplitsViewB
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxa, SplitsBlock splits, SplitsViewBlock child) throws Exception {
         progress.setTasks("Split network construction", "Init.");
-        SplitsViewTab view = child.getSplitsViewTab();
+        final SplitsViewTab view = child.getSplitsViewTab();
 
         graph.clear();
         view.init(graph);
@@ -132,6 +132,4 @@ public class SplitNetworkConstruction extends Algorithm<SplitsBlock, SplitsViewB
 
         progress.close();
     }
-
-
 }

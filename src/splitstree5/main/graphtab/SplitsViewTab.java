@@ -235,10 +235,6 @@ public class SplitsViewTab extends GraphTab {
         }
     }
 
-    public ASelectionModel<Integer> getSplitsSelectionModel() {
-        return splitsSelectionModel;
-    }
-
     /**
      * select all nodes on smaller side of graph separated by e
      */

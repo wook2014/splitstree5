@@ -209,7 +209,7 @@
                                 <SeparatorMenuItem mnemonicParsing="false"/>
                                 <MenuItem fx:id="resetMenuItem" mnemonicParsing="false" text="Reset">
                                     <accelerator>
-                                        <KeyCodeCombination alt="UP" code="EQUALS" control="UP" meta="UP" shift="UP"
+                                        <KeyCodeCombination alt="UP" code="DIGIT0" control="UP" meta="UP" shift="UP"
                                                             shortcut="DOWN"/>
                                     </accelerator>
                                 </MenuItem>
