@@ -59,6 +59,7 @@ public class NeXMLOut implements IFromTaxa, IFromChararacters, IFromTrees, IFrom
                 if(topTaxa == null)
                     throw new IOException("No taxa block found!");
                 System.err.println("Found a trees block");
+                export(xmlWriter, topTaxa, (TreesBlock) block);
             }
         }
 
@@ -127,14 +128,15 @@ public class NeXMLOut implements IFromTaxa, IFromChararacters, IFromTrees, IFrom
             for (Node node : nodes){
                 xmlWriter.writeCharacters("\n\t\t");
                 xmlWriter.writeEmptyElement("node");
-                xmlWriter.writeAttribute("id", node.getId()+"");
+                xmlWriter.writeAttribute("id", "n"+node.getId());
             }
 
             for (Edge edge : edges){
                 xmlWriter.writeCharacters("\n\t\t");
                 xmlWriter.writeEmptyElement("edge");
-                xmlWriter.writeAttribute("source", edge.getSource().getId()+"");
-                xmlWriter.writeAttribute("target", edge.getTarget().getId()+"");
+                xmlWriter.writeAttribute("source", "n"+edge.getSource().getId());
+                xmlWriter.writeAttribute("target", "n"+edge.getTarget().getId());
+                xmlWriter.writeAttribute("id", "e"+edge.getId());
                 xmlWriter.writeAttribute("length", tree.getWeight(edge)+"");
             }
 

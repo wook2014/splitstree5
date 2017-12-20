@@ -3,6 +3,7 @@ package splitstree5.io.exports;
 import jloda.util.parse.NexusStreamParser;
 import org.junit.Test;
 import splitstree5.core.datablocks.*;
+import splitstree5.io.imports.NeXML.NexmlFileParser;
 import splitstree5.io.nexus.*;
 
 import java.io.*;
@@ -44,6 +45,20 @@ public class NeXMLOutTest {
         writer.close();
         writer2.close();
 
+
+        // test trees block
+        File file_trees = new File("test/exports/TEST_NeXML_trees.xml");
+        Writer writer_trees = new BufferedWriter(new FileWriter(file_trees));
+
+        TaxaBlock taxaBlock = new TaxaBlock();
+        TreesBlock treesBlock = new TreesBlock();
+        NexmlFileParser nexmlFileParser = new NexmlFileParser();
+        nexmlFileParser.parse("test/neXML/simple.xml", taxaBlock, treesBlock);
+
+        List<ADataBlock> trees_list = new ArrayList<>();
+        trees_list.add(taxaBlock);
+        trees_list.add(treesBlock);
+        neXMLOut.export(writer_trees, trees_list);
     }
 
 }
