@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -18,7 +18,7 @@
  */
 
 /*
- *  Copyright (C) 2017 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -38,10 +38,13 @@
 
 package splitstree5.core.algorithms.views;
 
+import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WeakChangeListener;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
 import jloda.graph.*;
@@ -55,6 +58,8 @@ import splitstree5.core.algorithms.interfaces.IToTreeView;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreeViewBlock;
 import splitstree5.core.datablocks.TreesBlock;
+import splitstree5.core.workflow.UpdateState;
+import splitstree5.main.graphtab.AlgorithmBreadCrumbsToolBar;
 import splitstree5.main.graphtab.TreeViewTab;
 import splitstree5.main.graphtab.base.*;
 
@@ -72,7 +77,6 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
 
     public enum ParentPlacement {LeafAverage, ChildrenAverage}
 
-
     private final Property<GraphLayout> layout = new SimpleObjectProperty<>(GraphLayout.LeftToRight);
     private final Property<EdgeLengths> edgeLengths = new SimpleObjectProperty<>(EdgeLengths.Weights);
     private final Property<ParentPlacement> parentPlacement = new SimpleObjectProperty<>(ParentPlacement.ChildrenAverage);
@@ -83,13 +87,17 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
 
     private final IntegerProperty leafGroupGapProperty = new SimpleIntegerProperty(20);
 
+    private ChangeListener<UpdateState> changeListener;
+
     @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock parent, TreeViewBlock child) throws Exception {
         progressListener.setTasks("Tree viewer", "Init.");
 
-        final TreeViewTab view = child.getTreeViewTab();
-
-        view.setLayout(getOptionLayout());
+        final TreeViewTab view = child.getTab();
+        if (view.getToolBar() == null) {
+            Platform.runLater(() -> view.setToolBar(new AlgorithmBreadCrumbsToolBar(parent.getDocument(), this.getConnector())));
+        }
+        Platform.runLater(() -> view.setLayout(getOptionLayout()));
 
         if (parent.getNTrees() > 0) {
             final PhyloTree tree = parent.getTrees().get(0);
@@ -112,9 +120,6 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
 
             if (root != null) {
                 // todo: modify all code so that this is not necessary!
-
-                System.err.println("In compute");
-
                 // compute edge lengths to reflect desired topology
                 final EdgeFloatArray edgeLengths = EdgeLengthsCalculation.computeEdgeLengths(tree, getOptionEdgeLengths());
 
@@ -193,24 +198,20 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                     if (edgeView.getLabel() != null)
                         view.getEdgeLabelsGroup().getChildren().addAll(edgeView.getLabel());
                 }
-
-                if (false) {
-                    System.err.println("Nodes:");
-                    for (Node v : tree.nodes()) {
-                        Point2D pt = node2point.getValue(v);
-                        System.err.println(String.format("%d %.1f %.1f %s", v.getId(), pt.getX(), pt.getY(),
-                                (tree.getLabel(v) != null ? tree.getLabel(v) : "")));
-                    }
-                    System.err.println("Edges:");
-                    for (Edge e : tree.edges()) {
-                        System.err.println(e.getSource().getId() + " " + e.getTarget().getId());
-                    }
-                }
             }
         }
+        //view.addNodeLabelMovement();
 
-        //progressListener.setMaximum(?);
         child.show();
+
+        if (view.getToolBar() instanceof AlgorithmBreadCrumbsToolBar) {
+            Platform.runLater(() -> ((AlgorithmBreadCrumbsToolBar) view.getToolBar()).update());
+        }
+
+        if (changeListener != null)
+            getConnector().stateProperty().removeListener(changeListener);
+        changeListener = (c, o, n) -> child.getTab().getCenter().setDisable(n != UpdateState.VALID);
+        getConnector().stateProperty().addListener(new WeakChangeListener<>(changeListener));
 
         progressListener.close();
     }
@@ -328,7 +329,6 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
             computeNodeLocationsForRadialRec(w, wLocation, edgeLengths, edgeAngles, node2point);
         }
     }
-
 
     /**
      * set the coordinates for all nodes and interior edge points
@@ -451,10 +451,6 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
 
     /**
      * recursively set node coordinates for rectilinear view
-     *  @param v
-     * @param x0
-     * @param edgeLengths
-     * @param nodeHeights
      */
     private void computeNodeLocationsForRectilinearRec(Node v, final float x0, EdgeFloatArray edgeLengths, NodeFloatArray nodeHeights, NodeArray<Point2D> node2point) {
         node2point.setValue(v, new Point2D(x0, nodeHeights.getValue(v)));
@@ -465,8 +461,6 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
 
     /**
      * compute edge points
-     *
-     * @param v
      */
     private void computeEdgePointsForRectilinearRec(Node v, NodeArray<Point2D> node2point, EdgeArray<EdgeControlPoints> edge2controlPoints) {
         Point2D closestChild = null;
@@ -571,7 +565,6 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
     public void setOptionEdgeShape(AEdgeView.EdgeShape edgeShapeProperty) {
         this.edgeShape.setValue(edgeShapeProperty);
     }
-
 
     public int getOptionCubicCurveParentControl() {
         return cubicCurveParentControl.get();

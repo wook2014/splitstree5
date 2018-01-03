@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -92,6 +92,7 @@ public class SplitsViewTab extends GraphTab {
             nodeView.getShape().setOnMousePressed((e) -> {
                 mouseX = e.getScreenX();
                 mouseY = e.getScreenY();
+                e.consume();
             });
             nodeView.getShape().setOnMouseDragged((e) -> {
                 if (!splitsSelectionModel.isEmpty() && nodeSelectionModel.getSelectedItems().contains(nodeView.getNode())) {
@@ -104,6 +105,7 @@ public class SplitsViewTab extends GraphTab {
                 }
                 mouseX = e.getScreenX();
                 mouseY = e.getScreenY();
+                e.consume();
             });
             nodeView.getShape().setOnMouseClicked((x) -> {
                 splitsSelectionModel.clearSelection();
@@ -128,6 +130,7 @@ public class SplitsViewTab extends GraphTab {
                 e.consume();
             });
         }
+        addNodeLabelMovementSupport(nodeView);
         return nodeView;
     }
 
@@ -178,7 +181,6 @@ public class SplitsViewTab extends GraphTab {
             selectAllNodesOnSmallerSide(getPhyloGraph(), e, nodeSelectionModel);
         }
     }
-
 
     /**
      * compute the anchor center for rotating splits

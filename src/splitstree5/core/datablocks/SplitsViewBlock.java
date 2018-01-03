@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -21,15 +21,13 @@ package splitstree5.core.datablocks;
 
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
-import javafx.scene.Scene;
-import javafx.scene.control.TabPane;
-import javafx.stage.Stage;
 import jloda.fx.ASelectionModel;
 import jloda.graph.Edge;
 import jloda.phylo.PhyloGraph;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.interfaces.IFromSplits;
 import splitstree5.core.algorithms.interfaces.IToSplitsView;
+import splitstree5.main.IHasTab;
 import splitstree5.main.graphtab.SplitsViewTab;
 import splitstree5.main.graphtab.base.GraphLayout;
 
@@ -40,7 +38,7 @@ import java.util.Set;
  * This block represents the view of a split network
  * Daniel Huson, 11.2017
  */
-public class SplitsViewBlock extends ADataBlock {
+public class SplitsViewBlock extends ADataBlock implements IHasTab {
     private final ASelectionModel<Integer> splitsSelectionModel = new ASelectionModel<>();
     private final SplitsViewTab splitsViewTab;
 
@@ -79,20 +77,11 @@ public class SplitsViewBlock extends ADataBlock {
                 Platform.runLater(() -> { // setup tab
                     document.getMainWindow().add(splitsViewTab);
                 });
-            } else { // this is for testing only: this opens the view in a standalone window
-                Platform.runLater(() -> {
-                    Stage stage = new Stage();
-                    final TabPane tabPane = new TabPane(splitsViewTab);
-                    stage.setScene(new Scene(tabPane));
-                    stage.setWidth(800);
-                    stage.setHeight(800);
-                    stage.show();
-                });
             }
         }
     }
 
-    public SplitsViewTab getSplitsViewTab() {
+    public SplitsViewTab getTab() {
         return splitsViewTab;
     }
 

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -42,7 +42,7 @@ public class TreeViewTab extends GraphTab {
     }
 
     /**
-     * show the phyloGraph or network
+     * show the tree
      */
     public void show() {
         super.show();
@@ -57,7 +57,9 @@ public class TreeViewTab extends GraphTab {
      * @return
      */
     public ANodeView createNodeView(Node v, Point2D location, String text) {
-        return new ANodeView(v, location, text, nodeSelectionModel);
+        final ANodeView nodeView = new ANodeView(v, location, text, nodeSelectionModel);
+        addNodeLabelMovementSupport(nodeView);
+        return nodeView;
     }
 
     /**

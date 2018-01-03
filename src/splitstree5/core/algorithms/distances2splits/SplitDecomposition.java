@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -28,6 +28,7 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ASplit;
+import splitstree5.core.misc.SplitsUtilities;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -106,6 +107,7 @@ public class SplitDecomposition extends Algorithm<DistancesBlock, SplitsBlock> i
         // copy splits to splits
         splitsBlock.setFit(computeFit(distancesBlock, previousSplits));
         splitsBlock.getSplits().addAll(previousSplits);
+        splitsBlock.setCycle(SplitsUtilities.computeCycle(taxaBlock.getNtax(), previousSplits));
 
         progress.setProgress(ntax);   //set progress to 100%
         progress.close();

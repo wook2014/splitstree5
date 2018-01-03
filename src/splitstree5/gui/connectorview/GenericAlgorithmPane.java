@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -32,6 +32,7 @@ import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.FloatStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import jloda.util.Basic;
+import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.workflow.UpdateState;
@@ -62,6 +63,16 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
     public GenericAlgorithmPane(AConnector<P, C> connector) {
         this.connector = connector;
         options.addAll(OptionsAccessor.getAllOptions(connector.getAlgorithm()));
+    }
+
+    /**
+     * constructor
+     *
+     * @param algorithm
+     */
+    public GenericAlgorithmPane(AConnector<P, C> connector, Algorithm<P, C> algorithm) {
+        this.connector = connector;
+        options.addAll(OptionsAccessor.getAllOptions(algorithm));
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -18,7 +18,7 @@
  */
 
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -37,7 +37,7 @@
  */
 
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -56,7 +56,7 @@
  */
 
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -75,7 +75,7 @@
  */
 
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -94,7 +94,7 @@
  */
 
 /*
- *  Copyright (C) 2017 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -119,7 +119,6 @@ import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import jloda.fx.ASelectionModel;
-import jloda.util.Single;
 
 /**
  * node view
@@ -174,25 +173,6 @@ public class ANodeView {
                     selectionModel.select(v);
                 e.consume();
             });
-            final Single<Point2D> point = new Single<>();
-            label.setOnMousePressed((e) -> {
-                if (selectionModel.getSelectedItems().contains(v))
-                    point.set(new Point2D(e.getScreenX(), e.getScreenY()));
-            });
-            label.setOnMouseDragged((e) -> {
-                if (point.get() != null) {
-                    double deltaX = e.getScreenX() - point.get().getX();
-                    double deltaY = e.getScreenY() - point.get().getY();
-                    point.set(new Point2D(e.getScreenX(), e.getScreenY()));
-                    if (deltaX != 0)
-                        label.setLayoutX(label.getLayoutX() + deltaX);
-                    if (deltaY != 0)
-                        label.setLayoutY(label.getLayoutY() + deltaY);
-                }
-            });
-            label.setOnMouseReleased((e) -> {
-                point.set(null);
-            });
         }
     }
 
@@ -238,18 +218,41 @@ public class ANodeView {
     }
 
     /**
+     * rotate by given angle
+     *
+     * @param angle
+     */
+    public void rotateCoordinates(double angle) {
+        final Point2D oldLocation = location;
+        location = GeometryUtils.rotate(location, angle);
+
+        if (shape != null) {
+            final Point2D pos = GeometryUtils.rotate(shape.getLayoutX(), shape.getLayoutY(), angle);
+            shape.setLayoutX(pos.getX());
+            shape.setLayoutY(pos.getY());
+        }
+
+        if (label != null) {
+            Point2D diff = location.subtract(oldLocation);
+            label.setLayoutX(label.getLayoutX() + diff.getX());
+            label.setLayoutY(label.getLayoutY() + diff.getY());
+        }
+    }
+
+    /**
      * scale the coordinates of this node view
      *
      * @param factorX
      * @param factorY
      */
     public void scaleCoordinates(double factorX, double factorY) {
+        final Point2D oldLocation = location;
+        location = new Point2D(location.getX() * factorX, location.getY() * factorY);
+
         if (shape != null) {
             shape.setLayoutX(shape.getLayoutX() * factorX);
             shape.setLayoutY(shape.getLayoutY() * factorY);
         }
-        final Point2D oldLocation = location;
-        location = new Point2D(location.getX() * factorX, location.getY() * factorY);
 
         if (label != null) {
             Point2D diff = location.subtract(oldLocation);

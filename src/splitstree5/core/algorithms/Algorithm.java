@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -23,6 +23,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import jloda.util.Basic;
 import jloda.util.ProgressListener;
+import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.utils.Option;
@@ -35,6 +36,7 @@ import splitstree5.utils.OptionsAccessor;
  */
 abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> extends OptionableBase {
     private final BooleanProperty disabled = new SimpleBooleanProperty(true);
+    private AConnector<P, C> connector;
 
     /**
      * constructor
@@ -131,5 +133,19 @@ abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> exte
             buf.append(option.getName()).append(" = ").append(option.getValue().toString());
         }
         return buf.toString();
+    }
+
+    /**
+     * gets the associated connector
+     */
+    public AConnector<P, C> getConnector() {
+        return connector;
+    }
+
+    /**
+     * sets the associated connector
+     */
+    public void setConnector(AConnector<P, C> connector) {
+        this.connector = connector;
     }
 }

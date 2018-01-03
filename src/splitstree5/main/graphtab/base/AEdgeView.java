@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -18,7 +18,7 @@
  */
 
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -37,7 +37,7 @@
  */
 
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -56,7 +56,7 @@
  */
 
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -75,7 +75,7 @@
  */
 
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -94,7 +94,7 @@
  */
 
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -183,7 +183,9 @@ public class AEdgeView {
             case CubicCurve: {
                 // todo: do we want to use the support node?
                 if (true || layout == GraphLayout.Radial) {
-                    edgeShape = new CubicCurve(start.getX(), start.getY(), control1.getX(), control1.getY(), control2.getX(), control2.getY(), end.getX(), end.getY());
+                    final MoveTo moveTo = new MoveTo(start.getX(), start.getY());
+                    final CubicCurveTo cubicCurveTo = new CubicCurveTo(control1.getX(), control1.getY(), control2.getX(), control2.getY(), end.getX(), end.getY());
+                    edgeShape = new Path(moveTo, cubicCurveTo);
                     break;
                 } else if (support != null) {
                     final MoveTo moveTo = new MoveTo(start.getX(), start.getY());
@@ -194,8 +196,11 @@ public class AEdgeView {
                 } // else fall through to next
             }
             case QuadCurve: {
+
                 if (layout == GraphLayout.Radial) {
-                    edgeShape = new QuadCurve(start.getX(), start.getY(), mid.getX(), mid.getY(), end.getX(), end.getY());
+                    final MoveTo moveTo = new MoveTo(start.getX(), start.getY());
+                    final QuadCurveTo quadCurveTo = new QuadCurveTo(mid.getX(), mid.getY(), end.getX(), end.getY());
+                    edgeShape = new Path(moveTo, quadCurveTo);
                     break;
                 } else if (support != null) {
                     final MoveTo moveTo = new MoveTo(start.getX(), start.getY());
@@ -217,13 +222,18 @@ public class AEdgeView {
                     edgeShape = new Path(moveTo, arcTo, lineTo);
                 } else // rectilinear:
                 {
-                    edgeShape = new Polyline(start.getX(), start.getY(), mid.getX(), mid.getY(), end.getX(), end.getY());
+                    final MoveTo moveTo = new MoveTo(start.getX(), start.getY());
+                    final LineTo lineTo = new LineTo(mid.getX(), mid.getY());
+                    final LineTo lineTo2 = new LineTo(end.getX(), end.getY());
+                    edgeShape = new Path(moveTo, lineTo, lineTo2);
                 }
                 break;
             }
             case Straight: {
                 if (start != null && end != null) {
-                    edgeShape = new Line(start.getX(), start.getY(), end.getX(), end.getY());
+                    final MoveTo moveTo = new MoveTo(start.getX(), start.getY());
+                    final LineTo lineTo = new LineTo(end.getX(), end.getY());
+                    edgeShape = new Path(moveTo, lineTo);
                 }
                 break;
             }
@@ -279,7 +289,7 @@ public class AEdgeView {
     }
 
     /**
-     * set the coordinates of this edge from locations
+     * set the coordinates of this edge from locations as a straight line
      *
      * @param start
      * @param end
@@ -299,6 +309,62 @@ public class AEdgeView {
     }
 
     /**
+     * rotate by given angle
+     *
+     * @param angle
+     */
+    public void rotateCoordinates(double angle) {
+        if (shape != null) {
+            if (shape instanceof Path) {
+                final Path path = (Path) shape;
+                final ArrayList<PathElement> elements = new ArrayList<>(path.getElements().size());
+                for (PathElement element : path.getElements()) {
+                    if (element instanceof MoveTo) {
+                        final Point2D p = GeometryUtils.rotate(((MoveTo) element).getX(), ((MoveTo) element).getY(), angle);
+                        elements.add(new MoveTo(p.getX(), p.getY()));
+                    } else if (element instanceof LineTo) {
+                        final Point2D p = GeometryUtils.rotate(((LineTo) element).getX(), ((LineTo) element).getY(), angle);
+                        elements.add(new LineTo(p.getX(), p.getY()));
+                    } else if (element instanceof ArcTo) {
+                        final ArcTo arcTo = (ArcTo) element;
+                        final Point2D p = GeometryUtils.rotate(arcTo.getX(), arcTo.getY(), angle);
+                        final ArcTo newArcTo = new ArcTo(arcTo.getRadiusX(), arcTo.getRadiusY(), 0, p.getX(), p.getY(), arcTo.isLargeArcFlag(), arcTo.isSweepFlag());
+                        elements.add(newArcTo);
+                    } else if (element instanceof QuadCurveTo) {
+                        final QuadCurveTo quadCurveTo = (QuadCurveTo) element;
+                        final Point2D c = GeometryUtils.rotate(quadCurveTo.getControlX(), quadCurveTo.getControlY(), angle);
+                        final Point2D p = GeometryUtils.rotate(quadCurveTo.getX(), quadCurveTo.getY(), angle);
+                        elements.add(new QuadCurveTo(c.getX(), c.getY(), p.getX(), p.getY()));
+                    } else if (element instanceof CubicCurveTo) {
+                        final CubicCurveTo cubicCurveTo = (CubicCurveTo) element;
+                        final Point2D c1 = GeometryUtils.rotate(cubicCurveTo.getControlX1(), cubicCurveTo.getControlY1(), angle);
+                        final Point2D c2 = GeometryUtils.rotate(cubicCurveTo.getControlX2(), cubicCurveTo.getControlY2(), angle);
+                        final Point2D p = GeometryUtils.rotate(cubicCurveTo.getX(), cubicCurveTo.getY(), angle);
+                        elements.add(new CubicCurveTo(c1.getX(), c1.getY(), c2.getX(), c2.getY(), p.getX(), p.getY()));
+                    }
+                }
+                path.getElements().setAll(elements);
+            } else if (shape instanceof Line) {
+                final Point2D start = GeometryUtils.rotate(((Line) shape).getStartX(), ((Line) shape).getStartY(), angle);
+                final Point2D end = GeometryUtils.rotate(((Line) shape).getEndX(), ((Line) shape).getEndY(), angle);
+                final Line line = (Line) shape;
+                line.setStartX(start.getX());
+                line.setEndX(end.getX());
+                line.setStartY(start.getY());
+                line.setEndY(end.getY());
+            } else {
+                throw new RuntimeException("rotateCoordinates()(): Unsupported edge shape: " + Basic.getShortName(shape.getClass()));
+            }
+        }
+        if (label != null) {
+            Point2D p = GeometryUtils.rotate(label.getLayoutX(), label.getLayoutY(), angle);
+            label.setLayoutX(p.getX());
+            label.setLayoutY(p.getY());
+        }
+        referencePoint = GeometryUtils.rotate(referencePoint, angle);
+    }
+
+    /**
      * scale the coordinates of this edge
      *
      * @param factorX
@@ -306,43 +372,7 @@ public class AEdgeView {
      */
     public void scaleCoordinates(double factorX, double factorY) {
         if (shape != null) {
-            if (shape instanceof Line) {
-                final Line line = (Line) shape;
-                line.setStartX(line.getStartX() * factorX);
-                line.setEndX(line.getEndX() * factorX);
-                line.setStartY(line.getStartY() * factorY);
-                line.setEndY(line.getEndY() * factorY);
-            } else if (shape instanceof Polyline) {
-                final Polyline line = (Polyline) shape;
-                ArrayList<Double> newPoints = new ArrayList<>(line.getPoints().size());
-                boolean isX = true;
-                for (Double value : line.getPoints()) {
-                    if (isX)
-                        newPoints.add(value * factorX);
-                    else
-                        newPoints.add(value * factorY);
-                    isX = !isX;
-                }
-                line.getPoints().setAll(newPoints);
-            } else if (shape instanceof QuadCurve) {
-                QuadCurve quadCurve = (QuadCurve) shape;
-                quadCurve.setStartX(quadCurve.getStartX() * factorX);
-                quadCurve.setStartY(quadCurve.getStartY() * factorY);
-                quadCurve.setEndX(quadCurve.getEndX() * factorX);
-                quadCurve.setEndY(quadCurve.getEndY() * factorY);
-                quadCurve.setControlX(quadCurve.getControlX() * factorX);
-                quadCurve.setControlY(quadCurve.getControlY() * factorY);
-            } else if (shape instanceof CubicCurve) {
-                CubicCurve quadCurve = (CubicCurve) shape;
-                quadCurve.setStartX(quadCurve.getStartX() * factorX);
-                quadCurve.setStartY(quadCurve.getStartY() * factorY);
-                quadCurve.setEndX(quadCurve.getEndX() * factorX);
-                quadCurve.setEndY(quadCurve.getEndY() * factorY);
-                quadCurve.setControlX1(quadCurve.getControlX1() * factorX);
-                quadCurve.setControlY1(quadCurve.getControlY1() * factorY);
-                quadCurve.setControlX2(quadCurve.getControlX2() * factorX);
-                quadCurve.setControlY2(quadCurve.getControlY2() * factorY);
-            } else if (shape instanceof Path) {
+            if (shape instanceof Path) {
                 final Path path = (Path) shape;
                 final ArrayList<PathElement> elements = new ArrayList<>(path.getElements().size());
                 for (PathElement element : path.getElements()) {
@@ -350,6 +380,10 @@ public class AEdgeView {
                         elements.add(new MoveTo(((MoveTo) element).getX() * factorX, ((MoveTo) element).getY() * factorY));
                     } else if (element instanceof LineTo) {
                         elements.add(new LineTo(((LineTo) element).getX() * factorX, ((LineTo) element).getY() * factorY));
+                    } else if (element instanceof ArcTo) {
+                        final ArcTo arcTo = (ArcTo) element;
+                        final ArcTo newArcTo = new ArcTo(arcTo.getRadiusX() * factorX, arcTo.getRadiusY() * factorY, 0, arcTo.getX() * factorX, arcTo.getY() * factorY, arcTo.isLargeArcFlag(), arcTo.isSweepFlag());
+                        elements.add(newArcTo);
                     } else if (element instanceof QuadCurveTo) {
                         elements.add(new QuadCurveTo(((QuadCurveTo) element).getControlX() * factorX, ((QuadCurveTo) element).getControlY() * factorY, ((QuadCurveTo) element).getX() * factorX, ((QuadCurveTo) element).getY() * factorY));
                     } else if (element instanceof CubicCurveTo) {
@@ -357,7 +391,14 @@ public class AEdgeView {
                     }
                 }
                 path.getElements().setAll(elements);
-            }
+            } else if (shape instanceof Line) {
+                final Line line = (Line) shape;
+                line.setStartX(line.getStartX() * factorX);
+                line.setEndX(line.getEndX() * factorY);
+                line.setStartY(line.getStartY() * factorX);
+                line.setEndY(line.getEndY() * factorY);
+            } else
+                throw new RuntimeException("scaleCoordinates(): Unsupported edge shape: " + Basic.getShortName(shape.getClass()));
         }
         if (label != null) {
             label.setLayoutX(label.getLayoutX() * factorX);

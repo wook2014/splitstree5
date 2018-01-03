@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -33,7 +33,7 @@ import java.util.*;
 
 /**
  * Selection model
- * Created by huson on 12/15/15.
+ * Daniel Huson, 12.2015
  */
 public class ASelectionModel<T> extends MultipleSelectionModel<T> {
 
@@ -264,10 +264,34 @@ public class ASelectionModel<T> extends MultipleSelectionModel<T> {
 
     /**
      * gets the focus index or -1
-     *
-     * @return focus index
      */
     public int getFocusIndex() {
         return focusIndex;
     }
+
+    /**
+     * iterate over all selected items, or all items, if none selected
+     */
+    public Iterable<T> getSelectedOrAll() {
+        return () -> {
+            if (getSelectedItems().size() > 0) {
+                return getSelectedItems().iterator();
+            } else {
+                return new Iterator<T>() {
+                    private int i = 0;
+
+                    @Override
+                    public boolean hasNext() {
+                        return i < items.length;
+                    }
+
+                    @Override
+                    public T next() {
+                        return items[i++];
+                    }
+                };
+            }
+        };
+    }
+
 }

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -30,6 +30,10 @@ import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+/**
+ * Resource utilities
+ * Daniel Huson and others, 2003
+ */
 public class ResourcesUtils {
     /**
      * Fetch all resources (i.e. files) that are directly under the specified package structure.

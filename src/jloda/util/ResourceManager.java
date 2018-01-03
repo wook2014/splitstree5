@@ -1,6 +1,6 @@
 /**
  * ResourceManager.java
- * Copyright (C) 2017 Daniel H. Huson
+ * Copyright (C) 2018 Daniel H. Huson
  * <p>
  * (Some files contain contributions from other authors, who are then mentioned separately.)
  * <p>
@@ -19,10 +19,10 @@
  */
 package jloda.util;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.image.BufferedImage;
+
+import javafx.scene.image.Image;
+
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,95 +32,34 @@ import java.util.HashMap;
 
 /**
  * get icons and  cursors from resources
+ * Daniel Huson and others, 2003, 2018
  */
 public class ResourceManager {
+    public static final String iconPackagePath = "resources.icons";
+    public static final String imagePackagePath = "resources.images";
+    public static final String filePackagePath = "resources.files";
+    public static final String cssPackagePath = "resources.css";
+
+    private static final HashMap<String, Image> iconMap = new HashMap<>();
+    private static final HashMap<String, Image> imageMap = new HashMap<>();
+    private static final HashMap<String, File> fileMap = new HashMap<>();
+
+    private static boolean warnMissing;
 
     /**
-     * Specifies the path where to look for icon files in a jar archive.
+     * gets the named icon
      */
-    public static final String iconPackagePath;
-
-    /**
-     * Specifies the path where to look for cursor files in a jar archive.
-     */
-    public static final String cursorPackagePath;
-    /**
-     * Specifies the path where to look for data files in a jar archive.
-     */
-    public static final String filePackagePath;
-
-    public static final String cssPackagePath;
-
-
-    /**
-     * Maps icon names to initialized icons that are reachable by a getter.
-     */
-    private static final HashMap<String, ImageIcon> iconMap;
-
-    /**
-     * Maps cursor names to initialized icons that are reachable by a getter.
-     */
-    private static final HashMap<String, Cursor> cursorMap;
-
-    /**
-     * Maps file names to initialized files that are reachable by a getter.
-     */
-    private static final HashMap<String, File> dataMap;
-
-    /**
-     * Static constructor.
-     */
-    static {
-        iconPackagePath = "resources.icons";
-        cursorPackagePath = "resources.cursors";
-        filePackagePath = "resources.files";
-        cssPackagePath = "resources.css";
-
-        iconMap = new HashMap<>();
-        cursorMap = new HashMap<>();
-        dataMap = new HashMap<>();
-    }
-
-    private static boolean warningMissingIcon;
-
-    /**
-     * get the icon package path
-     *
-     * @return icon package path
-     */
-    public static String getIconPackagePath() {
-        return iconPackagePath;
-    }
-
-    /**
-     * get the cursor package path
-     *
-     * @return path
-     */
-    public static String getCursorPackagePath() {
-        return cursorPackagePath;
-    }
-
-
-    public static String getFilePackagePath() {
-        return filePackagePath;
-    }
-
-    /**
-     * Returns the icon with name specified by the parameter, or <code>null</code> if there is none.
-     */
-    public static ImageIcon getIcon(String name) {
+    public static Image getIcon(String name) {
         if (!iconMap.containsKey(name)) {
             Image iconImage = getImageResource(iconPackagePath, name);
             if (iconImage != null) {
-                ImageIcon icon = new ImageIcon(iconImage);
-                iconMap.put(name, icon);
+                iconMap.put(name, iconImage);
             } else {
-                if (Basic.getDebugMode() && warningMissingIcon)
+                if (Basic.getDebugMode() && warnMissing)
                     System.err.println("ICON NOT FOUND: " + name + ", path: " + iconPackagePath);
                 Image image = getImageResource(iconPackagePath, "sun/toolbarButtonGraphics/general/Help16.gif");
                 if (image != null)
-                    return new ImageIcon(image);
+                    return image;
                 else
                     return null;
             }
@@ -129,14 +68,35 @@ public class ResourceManager {
     }
 
     /**
-     * Returns the file with name specified by the parameter, or <code>null</code> if there is none.
+     * gets the named icon
+     */
+    public static Image getImage(String name) {
+        if (!imageMap.containsKey(name)) {
+            Image image = getImageResource(imagePackagePath, name);
+            if (image != null) {
+                iconMap.put(name, image);
+            } else {
+                if (Basic.getDebugMode() && warnMissing)
+                    System.err.println("IMAGE NOT FOUND: " + name + ", path: " + imagePackagePath);
+                image = getImageResource(imagePackagePath, "sun/toolbarButtonGraphics/general/Help16.gif");
+                if (image != null)
+                    return image;
+                else
+                    return null;
+            }
+        }
+        return iconMap.get(name);
+    }
+
+    /**
+     * Gets the named file
      */
     public static File getFile(String name) {
-        if (!dataMap.containsKey(name)) {
-            File data = getFileResource(filePackagePath, name);
-            dataMap.put(name, data);
+        if (!fileMap.containsKey(name)) {
+            File file = getFileResource(filePackagePath, name);
+            fileMap.put(name, file);
         }
-        return dataMap.get(name);
+        return fileMap.get(name);
     }
 
     /**
@@ -150,11 +110,11 @@ public class ResourceManager {
      * Returns the path with name specified by the parameter, or just the name, else
      */
     public static String getFileName(String name) {
-        if (!dataMap.containsKey(name)) {
+        if (!fileMap.containsKey(name)) {
             File data = getFileResource(filePackagePath, name);
-            dataMap.put(name, data);
+            fileMap.put(name, data);
         }
-        File file = dataMap.get(name);
+        File file = fileMap.get(name);
         if (file != null)
             return file.getPath().replaceAll("%20", " ");
         else
@@ -184,7 +144,7 @@ public class ResourceManager {
      */
     public static InputStream getFileAsStream(String filePackage, String fileName) {
         if (fileName.contains("/") || fileName.contains("\\")) {
-            File file = new File(fileName);
+            final File file = new File(fileName);
             try {
                 return Basic.getInputStreamPossiblyZIPorGZIP(file.getPath());
             } catch (IOException e) {
@@ -197,25 +157,6 @@ public class ResourceManager {
 
     }
 
-    /**
-     * Returns the cursor with name specified by the parameter, or <code>null</code> if there is none.
-     */
-    public static Cursor getCursor(String name) {
-        if (!cursorMap.containsKey(name)) {
-            final Toolkit toolkit = Toolkit.getDefaultToolkit();
-            final Dimension dim = toolkit.getBestCursorSize(20, 20);
-            final int x = dim.width / 2;
-            final int y = dim.height / 2;
-
-            Image image = getImageResource(cursorPackagePath, name);
-            if ((new ImageIcon(image)).getImageLoadStatus() == MediaTracker.COMPLETE) {
-                Cursor cursor = toolkit.createCustomCursor(image, new Point(x, y), name);
-                cursorMap.put(name, cursor);
-
-            }
-        }
-        return cursorMap.get(name);
-    }
 
     /**
      * Returns an Image (icon) with specified file name at the location specified by <code>packageName</code>.
@@ -224,53 +165,25 @@ public class ResourceManager {
      * @param fileName       the name of the icon file
      */
     public static Image getImageResource(String packageName, String fileName) {
-        Image ret = null;
-        try {
             String resname = "/" + packageName.replace('.', '/') + "/" + fileName;
             resname = resname.replaceAll(" ", "\\ ");
-            InputStream is = ResourceManager.class.getResourceAsStream(resname);
-            if (is != null) {
-                byte[] buffer = new byte[0];
-                byte[] tmpbuf = new byte[1024];
-                while (true) {
-                    int len = is.read(tmpbuf);
-                    if (len <= 0)
-                        break;
-                    byte[] newbuf = new byte[buffer.length + len];
-                    System.arraycopy(buffer, 0, newbuf, 0, buffer.length);
-                    System.arraycopy(tmpbuf, 0, newbuf, buffer.length, len);
-                    buffer = newbuf;
-                }
-                ret = Toolkit.getDefaultToolkit().createImage(buffer);
-                is.close();
+        try (InputStream is = ResourceManager.class.getResourceAsStream(resname)) {
+            byte[] buffer = new byte[0];
+            byte[] tmpbuf = new byte[1024];
+            while (true) {
+                int len = is.read(tmpbuf);
+                if (len <= 0)
+                    break;
+                byte[] newbuf = new byte[buffer.length + len];
+                System.arraycopy(buffer, 0, newbuf, 0, buffer.length);
+                System.arraycopy(tmpbuf, 0, newbuf, buffer.length, len);
+                buffer = newbuf;
             }
+            return new Image(new ByteArrayInputStream(buffer));
         } catch (Exception exc) {
-            Basic.caught(exc);
+            return null;
         }
-        return ret;
     }
-
-    /**
-     * Returns an Image (icon) with specified file name at the location specified by <code>packageName</code>.
-     *
-     * @param packageName the path through a package (the name of the subpackage) where to look for the icon
-     * @param fileName       the name of the icon file
-     */
-    public static BufferedImage getBufferedImageResource(String packageName, String fileName) {
-        BufferedImage bufferedImage = null;
-        try {
-            final String resourceName = ("/" + packageName.replace('.', '/') + "/" + fileName).replaceAll(" ", "\\ ");
-            final InputStream is = ResourceManager.class.getResourceAsStream(resourceName);
-            if (is != null) {
-                bufferedImage = ImageIO.read(is);
-                is.close();
-            }
-        } catch (Exception exc) {
-            Basic.caught(exc);
-        }
-        return bufferedImage;
-    }
-
 
     /**
      * Returns File with specified file name at the location specified by <code>packageName</code>.
@@ -284,8 +197,8 @@ public class ResourceManager {
             final URL url = ResourceManager.class.getResource(resourceName);
             return new File(url.getFile());
         } catch (Exception exc) {
+            return null;
         }
-        return null;
     }
 
     /**
@@ -299,8 +212,8 @@ public class ResourceManager {
             final String resourceName = ("/" + packageName.replace('.', '/') + "/" + fileName).replaceAll(" ", "\\ ");
             return ResourceManager.class.getResource(resourceName);
         } catch (Exception exc) {
+            return null;
         }
-        return null;
     }
 
     /**
@@ -314,9 +227,8 @@ public class ResourceManager {
             final String resourceName = ("/" + packageName.replace('.', '/') + "/" + fileName).replace(" ", "\\ ");
             return ResourceManager.class.getResourceAsStream(resourceName);
         } catch (Exception ex) {
-            Basic.caught(ex);
+            return null;
         }
-        return null;
     }
 
     /**
@@ -326,15 +238,11 @@ public class ResourceManager {
      * @return true if file exists
      */
     public static boolean resourceFileExists(String fileName) {
-        try {
-            final InputStream ins = ResourceManager.class.getResourceAsStream("/resources/files/" + fileName);
-            if (ins != null) {
-                ins.close();
-                return true;
-            }
+        try (InputStream ins = ResourceManager.class.getResourceAsStream("/resources/files/" + fileName)) {
+            return (ins != null);
         } catch (Exception e) {
+            return false;
         }
-        return false;
     }
 
     /**
@@ -359,23 +267,15 @@ public class ResourceManager {
         if (name == null || name.length() == 0)
             return false;
 
-        InputStream ins = null;
-        try {
-            ins = getFileAsStream(name);
-            return (ins != null);
-        } catch (Exception ex) {
-        } finally {
-            if (ins != null)
-                try {
-                    ins.close();
-                } catch (IOException e) {
-                }
+        try (InputStream ins = getFileAsStream(name)) {
+            return ins != null;
+        } catch (IOException ex) {
+            return false;
         }
-        return false;
     }
 
     /**
-     * does the named file exist as a resource ?
+     * does the named file exist as a resource?
      *
      * @param packageName
      * @param name
@@ -385,32 +285,20 @@ public class ResourceManager {
         if (name == null || name.length() == 0)
             return false;
 
-        InputStream ins = null;
         boolean existsAsStream = false;
-        try {
-            ins = getFileResourceAsStream(packageName, name);
+        try (InputStream ins = getFileResourceAsStream(packageName, name)) {
             existsAsStream = (ins != null);
         } catch (Exception ex) {
-        } finally {
-            if (ins != null)
-                try {
-                    ins.close();
-                } catch (IOException e) {
-                }
         }
         return existsAsStream || (new File(name)).canRead();
     }
 
-    public static void setWarningMissingIcon(boolean warningMissingIcon) {
-        ResourceManager.warningMissingIcon = warningMissingIcon;
+    public static void setWarnMissing(boolean warnMissing) {
+        ResourceManager.warnMissing = warnMissing;
     }
 
-    public static boolean isWarningMissingIcon() {
-        return warningMissingIcon;
-    }
-
-    public static HashMap<String, ImageIcon> getIconMap() {
-        return iconMap;
+    public static boolean isWarnMissing() {
+        return warnMissing;
     }
 }
 

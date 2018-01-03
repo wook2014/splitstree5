@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -19,17 +19,59 @@
 
 package splitstree5.main;
 
+import javafx.scene.Node;
 import javafx.scene.control.Tab;
+import javafx.scene.control.ToolBar;
+import javafx.scene.layout.BorderPane;
+import splitstree5.undo.UndoRedoManager;
 
 /**
  * a viewer contained in a tab
  * Daniel Huson, 12.2017
  */
 public abstract class ViewerTab extends Tab {
+    private final BorderPane borderPane = new BorderPane();
+    protected ToolBar toolBar;
+    protected final UndoRedoManager undoRedoManager = new UndoRedoManager();
+
+    /**
+     * constructor
+     */
+    public ViewerTab() {
+        contentProperty().addListener((c, o, n) -> {
+            if (n != borderPane) {
+                borderPane.setCenter(n);
+                setContent(borderPane);
+            }
+        });
+    }
+
+
     /**
      * setup menu items and bind their disable properties
-     *
-     * @param controller
      */
     public abstract void updateMenus(MainWindowController controller);
+
+    public Node getCenter() {
+        return borderPane.getCenter();
+    }
+
+    /**
+     * get associated toolbar
+     */
+    public ToolBar getToolBar() {
+        return toolBar;
+    }
+
+    /**
+     * set associated toolbar
+     */
+    public void setToolBar(ToolBar toolBar) {
+        this.toolBar = toolBar;
+        borderPane.setTop(toolBar);
+    }
+
+    public UndoRedoManager getUndoRedoManager() {
+        return undoRedoManager;
+    }
 }

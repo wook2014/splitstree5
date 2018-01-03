@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -20,19 +20,17 @@ package splitstree5.core.datablocks;
 
 
 import javafx.application.Platform;
-import javafx.scene.Scene;
-import javafx.scene.control.TabPane;
-import javafx.stage.Stage;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToTreeView;
+import splitstree5.main.IHasTab;
 import splitstree5.main.graphtab.TreeViewTab;
 
 /**
  * This block represents the view of a tree
  * Daniel Huson, 11.2017
  */
-public class TreeViewBlock extends ADataBlock {
+public class TreeViewBlock extends ADataBlock implements IHasTab {
     private final TreeViewTab treeViewTab;
 
     /**
@@ -52,15 +50,6 @@ public class TreeViewBlock extends ADataBlock {
                 Platform.runLater(() -> { // setup tab
                     document.getMainWindow().add(treeViewTab);
                 });
-            } else { // this is for testing only: this opens the view in a standalone window
-                Platform.runLater(() -> {
-                    Stage stage = new Stage();
-                    final TabPane tabPane = new TabPane(treeViewTab);
-                    stage.setScene(new Scene(tabPane));
-                    stage.setWidth(800);
-                    stage.setHeight(800);
-                    stage.show();
-                });
             }
         }
     }
@@ -72,7 +61,7 @@ public class TreeViewBlock extends ADataBlock {
         treeViewTab.show();
     }
 
-    public TreeViewTab getTreeViewTab() {
+    public TreeViewTab getTab() {
         return treeViewTab;
     }
 
@@ -93,6 +82,6 @@ public class TreeViewBlock extends ADataBlock {
 
     @Override
     public String getInfo() {
-        return "Phylogenetic tree";
+        return "a tree drawing";
     }
 }

@@ -1,6 +1,6 @@
 /**
  * PluginClassLoader.java
- * Copyright (C) 2017 Daniel H. Huson
+ * Copyright (C) 2018 Daniel H. Huson
  * <p>
  * (Some files contain contributions from other authors, who are then mentioned separately.)
  * <p>
@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * Finds all classes in the named package, of the given type
  *
- * 2003
+ * Daniel Huson and others, 2003
  */
 public class PluginClassLoader {
     // Extended the PluginClassLoader to include the Plugins from the pluginFolder

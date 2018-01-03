@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -53,8 +53,15 @@ public class ADataNode<D extends ADataBlock> extends ANode {
     public void setState(UpdateState state) {
         System.err.println(getDataBlock().getName() + " " + getState() + " -> " + state);
         super.setState(state);
+        if (this == dataBlock.getDocument().getWorkflow().getWorkingTaxaNode())
+            dataBlock.getDocument().getWorkflow().getWorkingDataNode().setState(UpdateState.INVALID);
         for (ANode child : getChildren()) {
             child.setState(UpdateState.INVALID);
+            for (Object connector : getChildren()) {
+                ANode node = ((AConnector) connector).getChild();
+                if (node != null)
+                    node.setState(UpdateState.INVALID);
+            }
         }
     }
 

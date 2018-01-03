@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -54,7 +54,7 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
      * constructor
      */
     public NeighborNet() {
-        super("Neighbor net");
+        super("Neighbor Net");
     }
 
     public List<String> listOptions() {
@@ -155,7 +155,7 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
     /**
      * Run the neighbor net algorithm
      */
-    private static int[] runNeighborNet(ProgressListener progress, int ntax, double[][] dist) throws CanceledException {
+    public static int[] runNeighborNet(ProgressListener progress, int ntax, double[][] dist) throws CanceledException {
         //Special cases. When ntax<=3, the default circular ordering will work.
         if (ntax <= 3) // nnet can't do small data sets, so let's use split decomp
         {

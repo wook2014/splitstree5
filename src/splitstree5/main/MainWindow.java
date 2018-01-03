@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -20,26 +20,22 @@
 package splitstree5.main;
 
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import jloda.fx.ExtendedFXMLLoader;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 import splitstree5.core.Document;
 import splitstree5.core.misc.ProgramExecutorService;
+import splitstree5.gui.workflowtree.WorkFlowTreeViewSupport;
 import splitstree5.main.methodstab.MethodsViewTab;
 import splitstree5.main.workflowtab.WorkflowViewTab;
-import splitstree5.utils.tabs.TabPaneDragAndDropSupport;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +48,7 @@ public class MainWindow {
     private final Parent root;
     private final MainWindowController controller;
 
-    private TabPaneDragAndDropSupport tabPaneDragAndDropSupport;
+    private final WorkFlowTreeViewSupport workFlowTreeViewSupport;
 
     private final TabPane tabPane;
 
@@ -83,8 +79,13 @@ public class MainWindow {
         tabPane = controller.getTabPane();
 
         tabPane.getSelectionModel().selectedItemProperty().addListener((c, o, n) -> {
+            if (o instanceof ISavesPreviousSelection) {
+                ((ISavesPreviousSelection) o).saveAsPreviousSelection();
+            }
             updateMenus(n, controller);
         });
+
+        final TreeItem<String> rootItem = new TreeItem<>();
 
         document.fileNameProperty().addListener((e) -> {
             final String name;
@@ -93,8 +94,11 @@ public class MainWindow {
             else
                 name = (new File(document.getFileName())).getName();
             titleProperty.setValue("Main Window - " + name + " - SplitsTree5");
-            ;
+            rootItem.setValue(name);
         });
+
+        controller.getTreeView().setRoot(rootItem);
+        workFlowTreeViewSupport = new WorkFlowTreeViewSupport(controller.getTreeView(), document);
     }
 
     /**
@@ -103,8 +107,13 @@ public class MainWindow {
     public void show(Stage stage0, double screenX, double screenY) {
         if (stage != null)
             this.stage = stage0;
-        else
+        else {
             this.stage = new Stage();
+            stage.focusedProperty().addListener((c, o, n) -> {
+                if (!n && tabPane.getSelectionModel().getSelectedItem() instanceof ISavesPreviousSelection)
+                    ((ISavesPreviousSelection) tabPane.getSelectionModel().getSelectedItem()).saveAsPreviousSelection();
+            });
+        }
 
         stage.titleProperty().bind(titleProperty);
         stage.setScene(new Scene(root, 800, 600));
@@ -112,8 +121,7 @@ public class MainWindow {
         stage.setX(screenX);
         stage.setY(screenY);
 
-        tabPaneDragAndDropSupport = new TabPaneDragAndDropSupport(stage, controller.getTabPane());
-        tabPaneDragAndDropSupport.allowDragTearOffProperty().bind(Bindings.size(tabPane.getTabs()).greaterThan(1));
+        new TabPaneDragAndDropSupport(controller.getTabPane());
 
         stage.show();
         stage.sizeToScene();
@@ -160,6 +168,15 @@ public class MainWindow {
     public void add(ViewerTab viewerTab) {
         controller.getTabPane().getTabs().add(0, viewerTab);
         controller.getTabPane().getSelectionModel().select(0);
+    }
+
+    /**
+     * remove a tab
+     *
+     * @param viewerTab
+     */
+    public void remove(Tab viewerTab) {
+        controller.getTabPane().getTabs().remove(viewerTab);
     }
 
     /**

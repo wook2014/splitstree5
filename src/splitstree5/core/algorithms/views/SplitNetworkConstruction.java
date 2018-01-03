@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -19,10 +19,13 @@
 
 package splitstree5.core.algorithms.views;
 
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WeakChangeListener;
 import javafx.geometry.Point2D;
 import jloda.graph.Edge;
 import jloda.graph.Node;
@@ -37,6 +40,8 @@ import splitstree5.core.algorithms.views.algorithms.EqualAngle;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.SplitsViewBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.workflow.UpdateState;
+import splitstree5.main.graphtab.AlgorithmBreadCrumbsToolBar;
 import splitstree5.main.graphtab.SplitsViewTab;
 import splitstree5.main.graphtab.base.AEdgeView;
 import splitstree5.main.graphtab.base.ANodeView;
@@ -79,10 +84,17 @@ public class SplitNetworkConstruction extends Algorithm<SplitsBlock, SplitsViewB
         this.optionUseWeights.set(optionUseWeights);
     }
 
+    private ChangeListener<UpdateState> changeListener;
+
+
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxa, SplitsBlock splits, SplitsViewBlock child) throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxa, SplitsBlock parent, SplitsViewBlock child) throws Exception {
         progress.setTasks("Split network construction", "Init.");
-        final SplitsViewTab view = child.getSplitsViewTab();
+        final SplitsViewTab view = child.getTab();
+
+        if (view.getToolBar() == null) {
+            Platform.runLater(() -> view.setToolBar(new AlgorithmBreadCrumbsToolBar(parent.getDocument(), this.getConnector())));
+        }
 
         graph.clear();
         view.init(graph);
@@ -93,11 +105,11 @@ public class SplitNetworkConstruction extends Algorithm<SplitsBlock, SplitsViewB
         final BitSet usedSplits = new BitSet();
 
         if (getOptionAlgorithm() != Algorithm.ConvexHullOnly)
-            EqualAngle.apply(progress, isOptionUseWeights(), taxa, splits, graph, node2point, forbiddenSplits, usedSplits);
+            EqualAngle.apply(progress, isOptionUseWeights(), taxa, parent, graph, node2point, forbiddenSplits, usedSplits);
 
-        if (getOptionAlgorithm() != Algorithm.EqualAngleOnly && usedSplits.cardinality() < splits.getNsplits()) {
+        if (getOptionAlgorithm() != Algorithm.EqualAngleOnly && usedSplits.cardinality() < parent.getNsplits()) {
             progress.setProgress(60);
-            ConvexHull.apply(progress, isOptionUseWeights(), taxa, splits, graph, node2point, usedSplits);
+            ConvexHull.apply(progress, isOptionUseWeights(), taxa, parent, graph, node2point, usedSplits);
         }
 
         progress.setProgress(90);
@@ -131,5 +143,15 @@ public class SplitNetworkConstruction extends Algorithm<SplitsBlock, SplitsViewB
         child.show();
 
         progress.close();
+
+        if (view.getToolBar() instanceof AlgorithmBreadCrumbsToolBar) {
+            Platform.runLater(() -> ((AlgorithmBreadCrumbsToolBar) view.getToolBar()).update());
+        }
+
+        if (changeListener != null)
+            getConnector().stateProperty().removeListener(changeListener);
+        changeListener = (c, o, n) -> child.getTab().getCenter().setDisable(n != UpdateState.VALID);
+        getConnector().stateProperty().addListener(new WeakChangeListener<>(changeListener));
+
     }
 }

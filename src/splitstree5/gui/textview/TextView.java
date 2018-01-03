@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -19,35 +19,27 @@
 
 package splitstree5.gui.textview;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyStringProperty;
-import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import jloda.fx.ExtendedFXMLLoader;
 import splitstree5.gui.connectorview.ConnectorView;
+import splitstree5.gui.connectorview.IShowable;
 
 import java.io.IOException;
 
 /**
  * text view
- * Created by huson on 1/27/17.
+ * Daniel Huson, 2016
  */
-public class TextView {
+public class TextView implements IShowable {
     private final Parent root;
     private final TextViewController controller;
     private Stage stage;
-
-    /**
-     * constructor
-     *
-     * @param text
-     * @throws IOException
-     */
-    public TextView(String text) throws IOException {
-        this(new ReadOnlyStringWrapper(text));
-    }
+    private final ReadOnlyStringProperty nameProperty;
 
     /**
      * constructor
@@ -55,7 +47,8 @@ public class TextView {
      * @param textProperty
      * @throws IOException
      */
-    public TextView(ReadOnlyStringProperty textProperty) throws IOException {
+    public TextView(ReadOnlyStringProperty nameProperty, ReadOnlyStringProperty textProperty) throws IOException {
+        this.nameProperty = nameProperty;
         final ExtendedFXMLLoader<TextViewController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         root = extendedFXMLLoader.getRoot();
         controller = extendedFXMLLoader.getController();
@@ -75,7 +68,7 @@ public class TextView {
     public void show(double screenX, double screenY) {
         if (stage == null) {
             stage = new Stage();
-            stage.setTitle("Text Viewer - SplitsTree5");
+            stage.titleProperty().bind(Bindings.concat("TextViewer - ").concat(nameProperty).concat(" - SplitsTree5"));
             stage.setScene(new Scene(root, 600, 400));
 
             if (screenX == -1) {

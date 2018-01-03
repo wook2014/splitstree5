@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -18,7 +18,7 @@
  */
 
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -37,7 +37,7 @@
  */
 
 /*
- *  Copyright (C) 2017 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *  
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *  
@@ -59,7 +59,7 @@ package splitstree5.main.workflowtab;
 
 import javafx.event.Event;
 import javafx.geometry.Point2D;
-import javafx.scene.layout.Pane;
+import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import jloda.fx.ASelectionModel;
@@ -90,21 +90,31 @@ public class WorkflowViewMouseHandler {
     private final Line line = new Line();
     private static WorkflowNodeView lock = null;
 
+
+    /**
+     * install a mouse handler
+     *
+     * @param nodeView
+     */
+    public static void install(WorkflowViewTab workflowView, Group group, WorkflowNodeView nodeView) {
+        new WorkflowViewMouseHandler(workflowView, group, nodeView);
+    }
+
     /**
      * setup the mouse handler
      *
      * @param nodeView
      */
-    private WorkflowViewMouseHandler(WorkflowViewTab workflowView, Pane world, WorkflowNodeView nodeView) {
+    private WorkflowViewMouseHandler(WorkflowViewTab workflowView, Group group, WorkflowNodeView nodeView) {
         line.setStroke(Color.DARKGRAY);
 
         nodeView.setOnMousePressed((e) -> {
             if (lock == null) {
                 lock = nodeView;
                 dragged = false;
-                world.getChildren().remove(line);
+                group.getChildren().remove(line);
 
-                final Point2D point = world.screenToLocal(e.getScreenX(), e.getScreenY());
+                final Point2D point = group.screenToLocal(e.getScreenX(), e.getScreenY());
                 mouseDownX = point.getX();
                 mouseDownY = point.getY();
                 ;
@@ -119,7 +129,7 @@ public class WorkflowViewMouseHandler {
                     line.setStartY(mouseDownY);
                     line.setEndX(mouseDownX);
                     line.setEndY(mouseDownY);
-                    world.getChildren().add(line);
+                    group.getChildren().add(line);
                 }
             }
         });
@@ -139,7 +149,7 @@ public class WorkflowViewMouseHandler {
 
                     final boolean setupUndo = (node2change.size() == 0);
 
-                    final Point2D point = world.screenToLocal(e.getScreenX(), e.getScreenY());
+                    final Point2D point = group.screenToLocal(e.getScreenX(), e.getScreenY());
                     for (ANode node : selectionModel.getSelectedItems()) {
                         final WorkflowNodeView selectedNodeView = workflowView.getNodeView(node);
                         if (selectedNodeView != null) {
@@ -157,7 +167,7 @@ public class WorkflowViewMouseHandler {
 
                 }
                 if (controlDown && nodeView.getANode() instanceof ADataNode) {
-                    final Point2D point = world.screenToLocal(e.getScreenX(), e.getScreenY());
+                    final Point2D point = group.screenToLocal(e.getScreenX(), e.getScreenY());
                     line.setEndX(point.getX());
                     line.setEndY(point.getY());
                 }
@@ -196,21 +206,12 @@ public class WorkflowViewMouseHandler {
                                     Basic.caught(ex);
                                 }
                             }
-                            world.getChildren().remove(line);
+                            group.getChildren().remove(line);
                         }
                         lock = null;
                     }
                 }
         );
         nodeView.setOnMouseClicked(Event::consume);
-    }
-
-    /**
-     * install a mouse handler
-     *
-     * @param nodeView
-     */
-    public static void install(WorkflowViewTab workflowView, Pane world, WorkflowNodeView nodeView) {
-        new WorkflowViewMouseHandler(workflowView, world, nodeView);
     }
 }

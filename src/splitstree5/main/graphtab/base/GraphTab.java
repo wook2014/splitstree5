@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -18,7 +18,7 @@
  */
 
 /*
- *  Copyright (C) 2017 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -39,18 +39,16 @@ package splitstree5.main.graphtab.base;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.ListChangeListener;
+import javafx.geometry.Bounds;
 import javafx.geometry.Dimension2D;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
-import javafx.scene.control.Button;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import jloda.fx.ASelectionModel;
 import jloda.graph.Edge;
 import jloda.graph.EdgeArray;
@@ -58,17 +56,25 @@ import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import jloda.phylo.PhyloGraph;
 import jloda.phylo.PhyloTree;
+import jloda.util.Single;
+import splitstree5.core.project.ProjectManager;
+import splitstree5.main.ISavesPreviousSelection;
 import splitstree5.main.MainWindowController;
 import splitstree5.main.ViewerTab;
+import splitstree5.undo.UndoRedoManager;
+import splitstree5.undo.UndoableRedoableCommand;
+import splitstree5.utils.RubberBandSelection;
 import splitstree5.utils.SelectionEffect;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 /**
  * tree and split network tab base class
  * Daniel Huson,. 12.2017
  */
-public abstract class GraphTab extends ViewerTab {
+public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelection {
     protected final Group group = new Group();
     protected final Group edgesGroup = new Group();
     protected final Group nodesGroup = new Group();
@@ -83,13 +89,14 @@ public abstract class GraphTab extends ViewerTab {
 
     private final StackPane pane = new StackPane();
 
-    protected final Presenter presenter;
-
-    private double scaleChangeX = 1; // keep track of scale changes, used for reset
-    private double scaleChangeY = 1;
+    private DoubleProperty scaleChangeX = new SimpleDoubleProperty(1); // keep track of scale changes, used for reset
+    private DoubleProperty scaleChangeY = new SimpleDoubleProperty(1);
+    private DoubleProperty angleChange = new SimpleDoubleProperty(0);
 
     private final StringProperty title = new SimpleStringProperty("");
     private ObjectProperty<GraphLayout> layout = new SimpleObjectProperty<>(GraphLayout.LeftToRight);
+
+    private final RubberBandSelection rubberBandSelection;
 
     /**
      * constructor
@@ -99,7 +106,7 @@ public abstract class GraphTab extends ViewerTab {
         // pane.setStyle("-fx-border-color: red");
 
         nodeSelectionModel.getSelectedItems().addListener((ListChangeListener<Node>) c -> {
-            if (c.next()) {
+            while (c.next()) {
                 for (Node v : c.getAddedSubList()) {
                     if (v.getOwner() != null) {
                         final ANodeView nv = getNode2view().get(v);
@@ -151,7 +158,8 @@ public abstract class GraphTab extends ViewerTab {
             }
         });
 
-        presenter = new Presenter(this);
+        rubberBandSelection = new RubberBandSelection(pane, group, createRubberBandSelectionHandler());
+
     }
 
     public int size() {
@@ -208,7 +216,7 @@ public abstract class GraphTab extends ViewerTab {
     }
 
     /**
-     * initialize datastructures
+     * initialize data structures
      *
      * @param phyloGraph
      */
@@ -216,10 +224,13 @@ public abstract class GraphTab extends ViewerTab {
         this.phyloGraph = phyloGraph;
         node2view = new NodeArray<>(phyloGraph);
         edge2view = new EdgeArray<>(phyloGraph);
-        group.setScaleX(1);
-        group.setScaleY(1);
-        scaleChangeX = 1;
-        scaleChangeY = 1;
+        Platform.runLater(() -> {
+            group.setScaleX(1);
+            group.setScaleY(1);
+            scaleChangeX.set(1);
+            scaleChangeY.set(1);
+            angleChange.set(0);
+        });
     }
 
     /**
@@ -235,7 +246,6 @@ public abstract class GraphTab extends ViewerTab {
                     world.getChildren().add(group);
                     pane.getChildren().add(world);
 
-                    presenter.setup(pane);
                     final ScrollPane scrollPane = new ScrollPane(pane);
                     pane.minWidthProperty().bind(Bindings.createDoubleBinding(() ->
                             scrollPane.getViewportBounds().getWidth(), scrollPane.viewportBoundsProperty()).subtract(20));
@@ -249,28 +259,25 @@ public abstract class GraphTab extends ViewerTab {
                         }
                     });
 
+                    pane.setOnScroll(event -> {
+                        event.consume();
+                        final double SCALE_DELTA = 1.1;
 
-                    final BorderPane borderPane = new BorderPane(scrollPane);
-                    Button layoutLabels = new Button("Layout Labels");
-                    layoutLabels.setOnAction((e) -> {
-                        layoutLabels();
+                        if (getLayout() == GraphLayout.Radial) {
+                            final double scaleFactor = (event.getDeltaY() > 0) ? SCALE_DELTA : 1 / SCALE_DELTA;
+                            scale(scaleFactor, scaleFactor);
+                        } else {
+                            if (Math.abs(event.getDeltaY()) > Math.abs(event.getDeltaX())) {
+                                final double scaleFactor = (event.getDeltaY() > 0) ? SCALE_DELTA : 1 / SCALE_DELTA;
+                                scale(1, scaleFactor);
+                            } else {
+                                final double scaleFactor = (event.getDeltaX() > 0) ? SCALE_DELTA : 1 / SCALE_DELTA;
+                                scale(scaleFactor, 1);
+                            }
+                        }
                     });
 
-                    final Button zoomIn = new Button("Zoom In");
-                    zoomIn.setOnAction((e) -> {
-                                final double factor = 1.1;
-                                scale(factor, factor);
-                            }
-                    );
-                    final Button zoomOut = new Button("Zoom Out");
-                    zoomOut.setOnAction((e) -> {
-                                final double factor = 1.0 / 1.1;
-                                scale(factor, factor);
-                            }
-                    );
-
-                    borderPane.setRight(new VBox(layoutLabels, zoomIn, zoomOut));
-                    rootNode.setCenter(borderPane);
+                    rootNode.setCenter(pane);
                 }
 
                 group.getChildren().clear();
@@ -319,8 +326,6 @@ public abstract class GraphTab extends ViewerTab {
     }
 
     public void layoutLabels() {
-        System.err.println("layout labels");
-        // todo: use a service to update label layout
         if (getPhyloGraph() != null) {
             if (getLayout() == GraphLayout.Radial)
                 NodeLabelLayouter.radialLayout(getPhyloGraph(), getNode2view(), getEdge2view());
@@ -339,8 +344,8 @@ public abstract class GraphTab extends ViewerTab {
      * @param yFactor
      */
     public void scale(double xFactor, double yFactor) {
-        scaleChangeX *= xFactor;
-        scaleChangeY *= yFactor;
+        scaleChangeX.set(scaleChangeX.get() * xFactor);
+        scaleChangeY.set(scaleChangeY.get() * yFactor);
 
         for (ANodeView nodeView : getNode2view()) {
             nodeView.scaleCoordinates(xFactor, yFactor);
@@ -350,8 +355,197 @@ public abstract class GraphTab extends ViewerTab {
         }
     }
 
+    /**
+     * rotate by given angle
+     *
+     * @param angle
+     */
+    public void rotate(double angle) {
+        angleChange.set(angleChange.get() + angle);
+        for (ANodeView nodeView : getNode2view()) {
+            nodeView.rotateCoordinates(angle);
+        }
+        for (AEdgeView edgeView : getEdge2view()) {
+            edgeView.rotateCoordinates(angle);
+        }
+    }
+
+
+    /**
+     * select nodes and edges by labels
+     *
+     * @param set
+     */
+    public void selectByLabel(Set<String> set) {
+        for (Node node : getPhyloGraph().nodes()) {
+            String label = getPhyloGraph().getLabel(node);
+            if (label != null && set.contains(label))
+                nodeSelectionModel.select(node);
+        }
+        for (Edge edge : getPhyloGraph().edges()) {
+            String label = getPhyloGraph().getLabel(edge);
+            if (label != null && set.contains(label))
+                edgeSelectionModel.select(edge);
+        }
+    }
+
+    public void saveAsPreviousSelection() {
+        if (nodeSelectionModel.getSelectedItems().size() > 0 || edgeSelectionModel.getSelectedItems().size() > 0) {
+            ProjectManager.getInstance().getPreviousSelection().clear();
+            if (nodeSelectionModel.getSelectedItems().size() > 0) {
+                for (Node node : nodeSelectionModel.getSelectedItems()) {
+                    final String label = getPhyloGraph().getLabel(node);
+                    if (label != null)
+                        ProjectManager.getInstance().getPreviousSelection().add(label);
+                }
+            }
+            if (edgeSelectionModel.getSelectedItems().size() > 0) {
+                for (Edge edge : edgeSelectionModel.getSelectedItems()) {
+                    final String label = getPhyloGraph().getLabel(edge);
+                    if (label != null)
+                        ProjectManager.getInstance().getPreviousSelection().add(label);
+                }
+            }
+        }
+    }
+
+    public void addNodeLabelMovementSupport(ANodeView nodeView) {
+        final javafx.scene.Node label = nodeView.getLabel();
+        if (label != null) {
+            final Single<Point2D> oldLocation = new Single<>();
+            final Single<Point2D> point = new Single<>();
+            label.setOnMousePressed((e) -> {
+                if (nodeSelectionModel.getSelectedItems().contains(nodeView.getNode())) {
+                    point.set(new Point2D(e.getScreenX(), e.getScreenY()));
+                    oldLocation.set(new Point2D(label.getLayoutX(), label.getLayoutY()));
+                }
+                e.consume();
+            });
+            label.setOnMouseDragged((e) -> {
+                if (point.get() != null) {
+                    double deltaX = e.getScreenX() - point.get().getX();
+                    double deltaY = e.getScreenY() - point.get().getY();
+                    point.set(new Point2D(e.getScreenX(), e.getScreenY()));
+                    if (deltaX != 0)
+                        label.setLayoutX(label.getLayoutX() + deltaX);
+                    if (deltaY != 0)
+                        label.setLayoutY(label.getLayoutY() + deltaY);
+                    e.consume();
+                }
+            });
+            label.setOnMouseReleased((e) -> {
+                if (oldLocation.get() != null) {
+                    final Point2D newLocation = new Point2D(label.getLayoutX(), label.getLayoutY());
+                    if (!newLocation.equals(oldLocation.get())) {
+                        undoRedoManager.add(new UndoableRedoableCommand("Move Label") {
+                            private Node v = nodeView.getNode();
+                            double oldX = oldLocation.get().getX();
+                            double oldY = oldLocation.get().getY();
+                            double newX = newLocation.getX();
+                            double newY = newLocation.getY();
+
+                            @Override
+                            public void undo() {
+                                label.setLayoutX(oldX);
+                                label.setLayoutY(oldY);
+                            }
+
+                            @Override
+                            public void redo() {
+                                label.setLayoutX(newX);
+                                label.setLayoutY(newY);
+                            }
+
+                            @Override
+                            public boolean isUndoable() {
+                                return getNode2view().get(v) == nodeView; // still contained in graph
+                            }
+
+                            @Override
+                            public boolean isRedoable() {
+                                return getNode2view().get(v) == nodeView; // still contained in graph
+                            }
+                        });
+                    }
+                }
+                point.set(null);
+                e.consume();
+            });
+        }
+    }
+
+    private RubberBandSelection.Handler createRubberBandSelectionHandler() {
+        return (rectangle, extendSelection) -> {
+            if (!extendSelection) {
+                nodeSelectionModel.clearSelection();
+                edgeSelectionModel.clearSelection();
+            }
+            final Set<Node> previouslySelectedNodes = new HashSet<>(nodeSelectionModel.getSelectedItems());
+            final Set<Edge> previouslySelectedEdges = new HashSet<>(edgeSelectionModel.getSelectedItems());
+
+            for (Node node : phyloGraph.nodes()) {
+                final ANodeView nodeView = node2view.get(node);
+                if (nodeView.getShape() != null) {
+                    final Bounds bounds = nodeView.getShape().localToScene(nodeView.getShape().getBoundsInLocal());
+                    if (rectangle.contains(bounds.getMinX(), bounds.getMinY()) && rectangle.contains(bounds.getMaxX(), bounds.getMaxY())) {
+                        if (previouslySelectedNodes.contains(node))
+                            nodeSelectionModel.clearSelection(node);
+                        else
+                            nodeSelectionModel.select(node);
+                    }
+                }
+                if (nodeView.getLabel() != null) {
+                    final Bounds bounds = nodeView.getLabel().localToScene(nodeView.getLabel().getBoundsInLocal());
+                    if (rectangle.contains(bounds.getMinX(), bounds.getMinY()) && rectangle.contains(bounds.getMaxX(), bounds.getMaxY())) {
+                        if (previouslySelectedNodes.contains(node))
+                            nodeSelectionModel.clearSelection(node);
+                        else
+                            nodeSelectionModel.select(node);
+                    }
+                }
+                for (Edge edge : phyloGraph.edges()) {
+                    final AEdgeView edgeView = edge2view.get(edge);
+                    if (edgeView.getShape() != null) {
+                        final Bounds bounds = edgeView.getShape().localToScene(edgeView.getShape().getBoundsInLocal());
+                        if (rectangle.contains(bounds.getMinX(), bounds.getMinY()) && rectangle.contains(bounds.getMaxX(), bounds.getMaxY())) {
+                            if (previouslySelectedEdges.contains(edge))
+                                edgeSelectionModel.clearSelection(edge);
+                            else
+                                edgeSelectionModel.select(edge);
+                        }
+                    }
+                    if (edgeView.getLabel() != null) {
+                        final Bounds bounds = edgeView.getLabel().localToScene(edgeView.getLabel().getBoundsInLocal());
+                        if (rectangle.contains(bounds.getMinX(), bounds.getMinY()) && rectangle.contains(bounds.getMaxX(), bounds.getMaxY())) {
+                            if (previouslySelectedEdges.contains(edge))
+                                edgeSelectionModel.clearSelection(edge);
+                            else
+                                edgeSelectionModel.select(edge);
+                        }
+                    }
+                }
+            }
+        };
+    }
+
+    public UndoRedoManager getUndoRedoManager() {
+        return undoRedoManager;
+    }
+
     @Override
     public void updateMenus(MainWindowController controller) {
+        controller.getUndoMenuItem().setOnAction((e) -> {
+            undoRedoManager.undo();
+        });
+        controller.getUndoMenuItem().disableProperty().bind(undoRedoManager.canUndoProperty().not());
+        controller.getUndoMenuItem().textProperty().bind(undoRedoManager.undoNameProperty());
+
+        controller.getRedoMenuItem().setOnAction((e) -> {
+            undoRedoManager.redo();
+        });
+        controller.getRedoMenuItem().disableProperty().bind(undoRedoManager.canRedoProperty().not());
+        controller.getRedoMenuItem().textProperty().bind(undoRedoManager.redoNameProperty());
+
         controller.getSelectAllMenuItem().setOnAction((e) -> {
             nodeSelectionModel.selectAll();
             edgeSelectionModel.selectAll();
@@ -370,11 +564,66 @@ public abstract class GraphTab extends ViewerTab {
             }
         });
 
+        controller.getSelectFromPreviousMenuItem().setOnAction((e) -> {
+            selectByLabel(ProjectManager.getInstance().getPreviousSelection());
+
+        });
+        controller.getSelectFromPreviousMenuItem().disableProperty().bind(Bindings.isEmpty(ProjectManager.getInstance().getPreviousSelection()));
+
         controller.getZoomInMenuItem().setOnAction((e) -> scale(1.1, 1.1));
         controller.getZoomOutMenuItem().setOnAction((e) -> scale(1 / 1.1, 1 / 1.1));
 
-        controller.getResetMenuItem().setOnAction((e) -> scale(1 / scaleChangeX, 1 / scaleChangeY));
+        controller.getRotateLeftMenuItem().setOnAction((e) -> rotate(-10));
+        controller.getRotateLeftMenuItem().disableProperty().bind(layout.isNotEqualTo(GraphLayout.Radial));
+        controller.getRotateRightMenuItem().setOnAction((e) -> rotate(10));
+        controller.getRotateRightMenuItem().disableProperty().bind(layout.isNotEqualTo(GraphLayout.Radial));
+
+
+        controller.getResetMenuItem().setOnAction((e) -> {
+            scale(1 / scaleChangeX.get(), 1 / scaleChangeY.get());
+            rotate(-angleChange.get());
+            layoutLabels();
+        });
+        controller.getResetMenuItem().disableProperty().bind(scaleChangeX.isEqualTo(1).and(scaleChangeY.isEqualTo(1)).and(angleChange.isEqualTo(0)));
+
+        controller.getIncreaseFontSizeMenuItem().setOnAction((x) -> {
+            boolean hasSelected = nodeSelectionModel.getSelectedItems().size() > 0 || edgeSelectionModel.getSelectedItems().size() > 0;
+            for (Node v : (hasSelected ? nodeSelectionModel.getSelectedItems() : phyloGraph.nodes())) {
+                javafx.scene.Node label = node2view.get(v).getLabel();
+                if (label instanceof Labeled) {
+                    Labeled labeled = (Labeled) label;
+                    labeled.setStyle("-fx-font-size: " + (labeled.getFont().getSize() + 2) + ";");
+                }
+            }
+            for (Edge e : (hasSelected ? edgeSelectionModel.getSelectedItems() : phyloGraph.edges())) {
+                javafx.scene.Node label = edge2view.get(e).getLabel();
+                if (label instanceof Labeled) {
+                    Labeled labeled = (Labeled) label;
+                    labeled.setStyle("-fx-font-size: " + (labeled.getFont().getSize() + 2) + ";");
+                }
+            }
+        });
+        controller.getDecreaseFontSizeMenuItem().setOnAction((x) -> {
+            boolean hasSelected = nodeSelectionModel.getSelectedItems().size() > 0 || edgeSelectionModel.getSelectedItems().size() > 0;
+            for (Node v : (hasSelected ? nodeSelectionModel.getSelectedItems() : phyloGraph.nodes())) {
+                javafx.scene.Node label = node2view.get(v).getLabel();
+                if (label instanceof Labeled) {
+                    Labeled labeled = (Labeled) label;
+                    if (labeled.getFont().getSize() > 2)
+                        labeled.setStyle("-fx-font-size: " + (labeled.getFont().getSize() - 2) + ";");
+                }
+            }
+            for (Edge e : (hasSelected ? edgeSelectionModel.getSelectedItems() : phyloGraph.edges())) {
+                javafx.scene.Node label = edge2view.get(e).getLabel();
+                if (label instanceof Labeled) {
+                    Labeled labeled = (Labeled) label;
+                    if (labeled.getFont().getSize() > 2)
+                        labeled.setStyle("-fx-font-size: " + (labeled.getFont().getSize() - 2) + ";");
+                }
+            }
+        });
 
         controller.getLayoutLabelsMenuItem().setOnAction((e) -> layoutLabels());
     }
+
 }

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -151,6 +151,7 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
             final UpdateState oldState = getState();
 
             switch (state) {
+                case UPDATE_PENDING:
                 case INVALID:
                     if (!isApplicable()) {
                         super.setState(UpdateState.NOT_APPLICABLE);

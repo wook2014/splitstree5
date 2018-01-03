@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -21,7 +21,7 @@ package splitstree5.gui.connectorview;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
@@ -55,7 +55,7 @@ public class ConnectorViewController {
     private MenuItem aboutMenuItem;
 
     @FXML
-    private ChoiceBox<Algorithm> algorithmChoiceBox;
+    private ComboBox<Algorithm> algorithmComboBox;
 
     @FXML
     private Pane centerPane;
@@ -97,8 +97,8 @@ public class ConnectorViewController {
         return aboutMenuItem;
     }
 
-    public ChoiceBox<Algorithm> getAlgorithmChoiceBox() {
-        return algorithmChoiceBox;
+    public ComboBox<Algorithm> getAlgorithmComboBox() {
+        return algorithmComboBox;
     }
 
     public Pane getCenterPane() {

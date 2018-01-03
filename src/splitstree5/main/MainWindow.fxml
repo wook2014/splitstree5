@@ -2,12 +2,15 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.input.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
 <BorderPane fx:id="borderPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="splitstree5.main.MainWindowController">
     <top>
-        <VBox fx:id="topVBox" BorderPane.alignment="CENTER">
+        <VBox fx:id="topVBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+              BorderPane.alignment="CENTER">
             <children>
                 <MenuBar fx:id="menuBar">
                     <menus>
@@ -69,7 +72,7 @@
                                 <SeparatorMenuItem mnemonicParsing="false"/>
                                 <MenuItem fx:id="printMenuitem" mnemonicParsing="false" text="Print">
                                     <accelerator>
-                                        <KeyCodeCombination alt="UP" code="P" control="UP" meta="UP" shift="UP"
+                                        <KeyCodeCombination alt="UP" code="P" control="UP" meta="UP" shift="DOWN"
                                                             shortcut="DOWN"/>
                                     </accelerator>
                                 </MenuItem>
@@ -124,7 +127,7 @@
                                 <SeparatorMenuItem mnemonicParsing="false"/>
                                 <MenuItem fx:id="deleteMenuItem" text="Delete">
                                     <accelerator>
-                                        <KeyCodeCombination alt="UP" code="X" control="UP" meta="UP" shift="DOWN"
+                                        <KeyCodeCombination alt="UP" code="BACK_SPACE" control="UP" meta="UP" shift="UP"
                                                             shortcut="DOWN"/>
                                     </accelerator>
                                 </MenuItem>
@@ -150,6 +153,13 @@
                                     </accelerator>
                                 </MenuItem>
                                 <MenuItem fx:id="selectAllEdgeMenuItem" text="Select All Edges"/>
+                                <SeparatorMenuItem mnemonicParsing="false"/>
+                                <MenuItem fx:id="selectFromPreviousMenuItem" text="Select From Previous">
+                                    <accelerator>
+                                        <KeyCodeCombination alt="UP" code="P" control="UP" meta="UP" shift="UP"
+                                                            shortcut="DOWN"/>
+                                    </accelerator>
+                                </MenuItem>
                                 <SeparatorMenuItem mnemonicParsing="false"/>
                                 <MenuItem fx:id="findMenuItem" text="Find / Replace...">
                                     <accelerator>
@@ -183,7 +193,7 @@
                             <items>
                                 <MenuItem fx:id="increaseFontSizeMenuItem" text="Increase Font Size">
                                     <accelerator>
-                                        <KeyCodeCombination alt="UP" code="PLUS" control="UP" meta="UP" shift="UP"
+                                        <KeyCodeCombination alt="UP" code="EQUALS" control="UP" meta="UP" shift="UP"
                                                             shortcut="DOWN"/>
                                     </accelerator>
                                 </MenuItem>
@@ -196,13 +206,13 @@
                                 <SeparatorMenuItem mnemonicParsing="false"/>
                                 <MenuItem fx:id="zoomInMenuItem" text="Zoom In">
                                     <accelerator>
-                                        <KeyCodeCombination alt="UP" code="DIGIT1" control="UP" meta="UP" shift="UP"
+                                        <KeyCodeCombination alt="UP" code="UP" control="UP" meta="UP" shift="UP"
                                                             shortcut="DOWN"/>
                                     </accelerator>
                                 </MenuItem>
                                 <MenuItem fx:id="zoomOutMenuItem" text="Zoom Out">
                                     <accelerator>
-                                        <KeyCodeCombination alt="UP" code="DIGIT2" control="UP" meta="UP" shift="UP"
+                                        <KeyCodeCombination alt="UP" code="DOWN" control="UP" meta="UP" shift="UP"
                                                             shortcut="DOWN"/>
                                     </accelerator>
                                 </MenuItem>
@@ -216,14 +226,14 @@
                                 <SeparatorMenuItem mnemonicParsing="false"/>
                                 <MenuItem fx:id="rotateLeftMenuItem" text="Rotate Left">
                                     <accelerator>
-                                        <KeyCodeCombination alt="UP" code="OPEN_BRACKET" control="UP" meta="UP"
-                                                            shift="UP" shortcut="DOWN"/>
+                                        <KeyCodeCombination alt="UP" code="LEFT" control="UP" meta="UP" shift="UP"
+                                                            shortcut="DOWN"/>
                                     </accelerator>
                                 </MenuItem>
                                 <MenuItem fx:id="rotateRightMenuItem" text="Rotate Right">
                                     <accelerator>
-                                        <KeyCodeCombination alt="UP" code="CLOSE_BRACKET" control="UP" meta="UP"
-                                                            shift="UP" shortcut="DOWN"/>
+                                        <KeyCodeCombination alt="UP" code="RIGHT" control="UP" meta="UP" shift="UP"
+                                                            shortcut="DOWN"/>
                                     </accelerator>
                                 </MenuItem>
                                 <MenuItem fx:id="flipMenuItem" text="Flip">
@@ -243,7 +253,7 @@
                                 <SeparatorMenuItem mnemonicParsing="false"/>
                                 <MenuItem fx:id="layoutLabelsMenuItem" text="Layout Labels">
                                     <accelerator>
-                                        <KeyCodeCombination alt="UP" code="COMMA" control="UP" meta="UP" shift="UP"
+                                        <KeyCodeCombination alt="UP" code="L" control="UP" meta="UP" shift="DOWN"
                                                             shortcut="DOWN"/>
                                     </accelerator>
                                 </MenuItem>
@@ -272,23 +282,85 @@
                         <Menu mnemonicParsing="false" text="Help"/>
                     </menus>
                 </MenuBar>
-                <ToolBar fx:id="topToolBar" prefHeight="40.0" prefWidth="200.0"/>
+                <ToolBar fx:id="topToolBar" minHeight="40.0" prefHeight="40.0" prefWidth="200.0">
+                    <items>
+                        <Button fx:id="openCloseTreeView" maxHeight="10.0" maxWidth="10.0" mnemonicParsing="false"
+                                prefHeight="10.0" prefWidth="10.0"
+                                style="-fx-border-width: 0; -fx-border-style: none; -fx-background-color: transparent;"
+                                text="&gt;" translateX="-10.0">
+                            <font>
+                                <Font size="10.0"/>
+                            </font>
+                        </Button>
+                    </items>
+                </ToolBar>
             </children>
         </VBox>
     </top>
     <center>
-        <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE"
-                 BorderPane.alignment="CENTER">
-            <opaqueInsets>
-                <Insets/>
-            </opaqueInsets>
+        <SplitPane fx:id="splitPane" dividerPositions="0.0" maxHeight="1.7976931348623157E308"
+                   maxWidth="1.7976931348623157E308" pickOnBounds="false" BorderPane.alignment="CENTER">
             <BorderPane.margin>
                 <Insets/>
             </BorderPane.margin>
-            <padding>
-                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
-            </padding>
-        </TabPane>
+            <items>
+                <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                    <children>
+                        <ToolBar minHeight="0.0" minWidth="0.0" prefHeight="40.0" prefWidth="200.0">
+                            <items>
+                                <Button fx:id="expandAllButton" maxHeight="18.0" maxWidth="18.0" minHeight="18.0"
+                                        minWidth="18.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="18.0">
+                                    <graphic>
+                                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <image>
+                                                <Image smooth="false" url="/resources/icons/ExpandTreeView16.gif"/>
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </Button>
+                                <Button fx:id="collapseAllButton" maxHeight="18.0" maxWidth="18.0" minHeight="18.0"
+                                        minWidth="18.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="18.0">
+                                    <graphic>
+                                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <image>
+                                                <Image smooth="false" url="/resources/icons/CollapseTreeView16.gif"/>
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </Button>
+                                <Separator/>
+                                <Button fx:id="showButton" maxHeight="18.0" maxWidth="18.0" minHeight="18.0"
+                                        minWidth="18.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="18.0">
+                                    <graphic>
+                                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <image>
+                                                <Image smooth="false"
+                                                       url="/resources/icons/sun/toolbarButtonGraphics/general/Preferences16.gif"/>
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </Button>
+
+                            </items>
+                        </ToolBar>
+                        <TreeView fx:id="treeView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                                  minHeight="0.0" minWidth="0.0" VBox.vgrow="ALWAYS"/>
+                    </children>
+                </VBox>
+                <TabPane fx:id="tabPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                         tabClosingPolicy="UNAVAILABLE">
+                    <opaqueInsets>
+                        <Insets/>
+                    </opaqueInsets>
+                    <padding>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
+                    </padding>
+                </TabPane>
+            </items>
+        </SplitPane>
     </center>
     <bottom>
         <ToolBar fx:id="bottomToolBar" prefHeight="40.0" prefWidth="200.0" style="-fx-border-color: lightgray;"

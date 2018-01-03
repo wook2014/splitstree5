@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -18,7 +18,7 @@
  */
 
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -37,7 +37,7 @@
  */
 
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -56,7 +56,7 @@
  */
 
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -75,7 +75,7 @@
  */
 
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -94,7 +94,7 @@
  */
 
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -227,9 +227,22 @@ public class GeometryUtils {
      * @return q point rotated around origin
      */
     public static Point2D rotate(Point2D p, double alpha) {
+        return rotate(p.getX(), p.getY(), alpha);
+    }
+
+
+    /**
+     * Rotates a two-dimensional vector by the angle alpha.
+     *
+     * @param x
+     * @param y
+     * @param alpha angle in degree
+     * @return q point rotated around origin
+     */
+    public static Point2D rotate(double x, double y, double alpha) {
         double sina = Math.sin(DEG_TO_RAD_FACTOR * alpha);
         double cosa = Math.cos(DEG_TO_RAD_FACTOR * alpha);
-        return new Point2D(p.getX() * cosa - p.getY() * sina, p.getX() * sina + p.getY() * cosa);
+        return new Point2D(x * cosa - y * sina, x * sina + y * cosa);
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -18,16 +18,21 @@
  */
 package splitstree5.main;
 
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jloda.util.AppleStuff;
 import jloda.util.ProgramProperties;
+import splitstree5.gui.workflowtree.WorkFlowTreeItem;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class MainWindowController {
     @FXML
@@ -116,6 +121,10 @@ public class MainWindowController {
     private MenuItem selectAllEdgeMenuItem;
 
     @FXML
+    private MenuItem selectFromPreviousMenuItem;
+
+
+    @FXML
     private MenuItem findMenuItem;
 
     @FXML
@@ -167,6 +176,15 @@ public class MainWindowController {
     private ToolBar topToolBar;
 
     @FXML
+    private Button openCloseTreeView;
+
+    @FXML
+    private SplitPane splitPane;
+
+    @FXML
+    private TreeView<String> treeView;
+
+    @FXML
     private TabPane tabPane;
 
     @FXML
@@ -178,37 +196,14 @@ public class MainWindowController {
     @FXML
     private MenuItem aboutMenuItem;
 
+    @FXML
+    private Button collapseAllButton;
 
     @FXML
-    void initialize() {
-        // if we are running on MacOS, put the specific menu items in the right places
-        if (ProgramProperties.isMacOS()) {
-            final AppleStuff appleStuff = AppleStuff.getInstance();
-            appleStuff.setQuitAction(new AbstractAction("Quit") {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    getQuitMenuItem().fire();
-                }
-            });
-            fileMenu.getItems().remove(getQuitMenuItem());
+    private Button expandAllButton;
 
-            appleStuff.setAboutAction(new AbstractAction("About...") {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    getAboutMenuItem().fire();
-                }
-            });
-            windowMenu.getItems().remove(getAboutMenuItem());
-
-            appleStuff.setPreferencesAction(new AbstractAction("Preferences...") {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    getPreferencesMenuItem().fire();
-                }
-            });
-            editMenu.getItems().remove(getPreferencesMenuItem());
-        }
-    }
+    @FXML
+    private Button showButton;
 
     public BorderPane getBorderPane() {
         return borderPane;
@@ -322,6 +317,10 @@ public class MainWindowController {
         return selectAllEdgeMenuItem;
     }
 
+    public MenuItem getSelectFromPreviousMenuItem() {
+        return selectFromPreviousMenuItem;
+    }
+
     public MenuItem getFindMenuItem() {
         return findMenuItem;
     }
@@ -394,6 +393,14 @@ public class MainWindowController {
         return topToolBar;
     }
 
+    public SplitPane getSplitPane() {
+        return splitPane;
+    }
+
+    public TreeView<String> getTreeView() {
+        return treeView;
+    }
+
     public ToolBar getBottomToolBar() {
         return bottomToolBar;
     }
@@ -406,6 +413,71 @@ public class MainWindowController {
         return aboutMenuItem;
     }
 
+
+    @FXML
+    void initialize() {
+        // if we are running on MacOS, put the specific menu items in the right places
+        if (ProgramProperties.isMacOS()) {
+            final AppleStuff appleStuff = AppleStuff.getInstance();
+            appleStuff.setQuitAction(new AbstractAction("Quit") {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    getQuitMenuItem().fire();
+                }
+            });
+            fileMenu.getItems().remove(getQuitMenuItem());
+
+            appleStuff.setAboutAction(new AbstractAction("About...") {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    getAboutMenuItem().fire();
+                }
+            });
+            windowMenu.getItems().remove(getAboutMenuItem());
+
+            appleStuff.setPreferencesAction(new AbstractAction("Preferences...") {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    getPreferencesMenuItem().fire();
+                }
+            });
+            editMenu.getItems().remove(getPreferencesMenuItem());
+        }
+
+        // some specific toolbar buttons:
+        collapseAllButton.setOnAction((e) -> treeView.getRoot().setExpanded(false));
+        expandAllButton.setOnAction((e) -> {
+            final Queue<TreeItem> queue = new LinkedList<>();
+            queue.add(treeView.getRoot());
+            while (queue.size() > 0) {
+                final TreeItem item = queue.poll();
+                item.setExpanded(true);
+                queue.addAll(item.getChildren());
+            }
+        });
+
+        showButton.setOnAction((e) -> {
+            for (TreeItem item : treeView.getSelectionModel().getSelectedItems()) {
+                if (item instanceof WorkFlowTreeItem) {
+                    final Point2D point2D = item.getGraphic().localToScreen(item.getGraphic().getLayoutX(), item.getGraphic().getLayoutY());
+                    ((WorkFlowTreeItem) item).showView(point2D.getX(), point2D.getY());
+                }
+            }
+        });
+        showButton.disableProperty().bind(Bindings.isEmpty(treeView.getSelectionModel().getSelectedItems()));
+
+        openCloseTreeView.setOnAction((e) -> {
+            if (splitPane.getDividerPositions()[0] <= 0.01) {
+                System.err.println(treeView.getPrefWidth());
+                splitPane.setDividerPositions(300 / splitPane.getWidth());
+                openCloseTreeView.setText(("<"));
+            } else {
+                splitPane.setDividerPositions(0);
+                openCloseTreeView.setText((">"));
+            }
+        });
+    }
+
     /**
      * unbinds and disables all menu items
      */
@@ -416,6 +488,14 @@ public class MainWindowController {
                 menuItem.disableProperty().unbind();
                 menuItem.setDisable(true);
             }
+        }
+        if (undoMenuItem.textProperty().isBound()) {
+            undoMenuItem.textProperty().unbind();
+            undoMenuItem.setText("Undo");
+        }
+        if (redoMenuItem.textProperty().isBound()) {
+            redoMenuItem.textProperty().unbind();
+            redoMenuItem.setText("Redo");
         }
     }
 

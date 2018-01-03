@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -24,5 +24,5 @@ package splitstree5.core.workflow;
  * Created by huson on 12/25/16.
  */
 public enum UpdateState {
-    VALID, COMPUTING, INVALID, FAILED, NOT_APPLICABLE
+    VALID, COMPUTING, INVALID, FAILED, NOT_APPLICABLE, UPDATE_PENDING
 }

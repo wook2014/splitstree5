@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -18,7 +18,7 @@
  */
 
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -37,7 +37,7 @@
  */
 
 /*
- *  Copyright (C) 2017 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -58,14 +58,16 @@
 package splitstree5.main.workflowtab;
 
 import javafx.beans.InvalidationListener;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import jloda.fx.ASelectionModel;
 import splitstree5.core.Document;
 import splitstree5.core.connectors.AConnector;
@@ -94,7 +96,7 @@ public class WorkflowViewTab extends ViewerTab {
     private final Map<ANode, WorkflowNodeView> node2NodeView = new HashMap<>();
     private final Map<ANode, List<WorkflowEdgeView>> node2EdgeViews = new HashMap<>();
 
-    private final ScrollPane scrollPane;
+    private final ZoomableScrollPane scrollPane;
     private final Pane centerPane;
 
     /**
@@ -105,14 +107,18 @@ public class WorkflowViewTab extends ViewerTab {
         undoManager = new UndoRedoManager();
         setText("Workflow");
 
-        centerPane = new Pane();
-        scrollPane = new ScrollPane(centerPane);
+        centerPane = new StackPane(edgeViews, nodeViews);
+        centerPane.setPadding(new Insets(5, 5, 5, 5));
+        //centerPane.setStyle("-fx-border-color: red");
+        scrollPane = new ZoomableScrollPane(centerPane);
+        scrollPane.setPadding(new Insets(2, 2, 2, 2));
         setContent(scrollPane);
 
-        getCenterPane().getChildren().addAll(edgeViews, nodeViews);
+        centerPane.minWidthProperty().bind(Bindings.createDoubleBinding(() ->
+                scrollPane.getViewportBounds().getWidth(), scrollPane.viewportBoundsProperty()));
 
-        getScrollPane().setPrefViewportHeight(getCenterPane().getHeight());
-        getScrollPane().setPrefViewportWidth(getCenterPane().getWidth());
+        centerPane.minHeightProperty().bind(Bindings.createDoubleBinding(() ->
+                scrollPane.getViewportBounds().getHeight(), scrollPane.viewportBoundsProperty()));
 
         getScrollPane().setOnMouseClicked((e) -> {
             if (!e.isShiftDown())
@@ -248,7 +254,7 @@ public class WorkflowViewTab extends ViewerTab {
         return centerPane;
     }
 
-    public ScrollPane getScrollPane() {
+    public ZoomableScrollPane getScrollPane() {
         return scrollPane;
     }
 
@@ -389,12 +395,13 @@ public class WorkflowViewTab extends ViewerTab {
         controller.getDeleteMenuItem().disableProperty().bind(selectionModel.emptyProperty());
 
         controller.getZoomInMenuItem().setOnAction((e) -> {
-            getCenterPane().setScaleX(1.1 * getCenterPane().getScaleX());
-            getCenterPane().setScaleY(1.1 * getCenterPane().getScaleY());
+            scrollPane.zoomBy(1.1, 1.1);
         });
         controller.getZoomOutMenuItem().setOnAction((e) -> {
-            getCenterPane().setScaleX(1.0 / 1.1 * getCenterPane().getScaleX());
-            getCenterPane().setScaleY(1.0 / 1.1 * getCenterPane().getScaleY());
+            scrollPane.zoomBy(1.0 / 1.1, 1.0 / 1.1);
         });
+
+        controller.getResetMenuItem().setOnAction((e) -> scrollPane.resetZoom());
+
     }
 }

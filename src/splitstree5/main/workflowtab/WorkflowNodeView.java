@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -18,7 +18,7 @@
  */
 
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -37,7 +37,7 @@
  */
 
 /*
- *  Copyright (C) 2017 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *  
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *  
@@ -59,10 +59,6 @@ package splitstree5.main.workflowtab;
 
 import com.sun.istack.internal.NotNull;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.WeakChangeListener;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -74,12 +70,7 @@ import javafx.scene.transform.Shear;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.workflow.ANode;
-import splitstree5.core.workflow.UpdateState;
-import splitstree5.gui.connectorview.ConnectorView;
-import splitstree5.gui.textview.TextView;
-import splitstree5.io.nexus.NexusFileWriter;
-
-import java.io.IOException;
+import splitstree5.gui.connectorview.ANodeViewManager;
 
 /**
  * a workflow node view
@@ -88,10 +79,6 @@ import java.io.IOException;
 public class WorkflowNodeView extends Group {
     private final Rectangle rectangle;
     private final ANode aNode;
-    private TextView textView;
-    private ConnectorView connectorView;
-    private ChangeListener<UpdateState> stateChangeListener;
-
 
     /**
      * constructor
@@ -115,6 +102,9 @@ public class WorkflowNodeView extends Group {
                     break;
                 case INVALID:
                     rectangle.setFill(Color.LIGHTYELLOW.brighter());
+                    break;
+                case UPDATE_PENDING:
+                    rectangle.setFill(Color.SANDYBROWN.brighter());
                     break;
                 default:
                     rectangle.setFill(Color.LIGHTGRAY);
@@ -141,13 +131,7 @@ public class WorkflowNodeView extends Group {
             final Button openButton = new Button("Open...");
             openButton.setFont(new Font(openButton.getFont().getName(), 10));
             openButton.setOnAction((e) -> {
-                try {
-                    if (connectorView == null)
-                        connectorView = new ConnectorView(workflowView.getDocument(), (AConnector) aNode);
-                    connectorView.show(this.getX(), this.getY());
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
+                ANodeViewManager.getInstance().show(workflowView.getDocument(), (AConnector) aNode, this.getX(), this.getY());
             });
             openButton.setPrefWidth(50);
             openButton.setPrefHeight(20);
@@ -178,20 +162,8 @@ public class WorkflowNodeView extends Group {
 
             Button openButton = new Button("Open...");
             openButton.setFont(new Font(openButton.getFont().getName(), 10));
-            openButton.setOnAction((e) -> {
+            openButton.setOnAction((e) -> ANodeViewManager.getInstance().show(workflowView.getDocument(), aNode, this.getX(), this.getY()));
 
-                try {
-                    if (textView == null) {
-                        final StringProperty textProperty = new SimpleStringProperty(NexusFileWriter.toString(workflowView.getWorkflow().getWorkingTaxaNode().getDataBlock(), ((ADataNode) aNode).getDataBlock()));
-                        stateChangeListener = (observable, oldValue, newValue) -> textProperty.set(NexusFileWriter.toString(workflowView.getWorkflow().getWorkingTaxaNode().getDataBlock(), ((ADataNode) aNode).getDataBlock()));
-                        aNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
-                        textView = new TextView(textProperty);
-                    }
-                    textView.show(this.getX(), this.getY());
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-            });
             openButton.setPrefWidth(50);
             openButton.setPrefHeight(20);
             openButton.setLayoutX(rectangle.getWidth() - 58);
@@ -199,7 +171,7 @@ public class WorkflowNodeView extends Group {
             getChildren().add(openButton);
         }
 
-        WorkflowViewMouseHandler.install(workflowView, workflowView.getCenterPane(), this);
+        WorkflowViewMouseHandler.install(workflowView, workflowView.getScrollPane().getContentGroup(), this);
     }
 
     public double getX() {
@@ -212,7 +184,6 @@ public class WorkflowNodeView extends Group {
 
     public DoubleProperty xProperty() {
         return super.layoutXProperty();
-
     }
 
     public double getY() {

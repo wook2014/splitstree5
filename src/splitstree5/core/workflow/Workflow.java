@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -34,6 +34,7 @@ import splitstree5.core.algorithms.ReportNode;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.*;
 import splitstree5.core.topfilters.*;
+import splitstree5.main.IHasTab;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -51,16 +52,19 @@ public class Workflow {
     private final ObservableSet<ADataNode> dataNodes = FXCollections.observableSet();
 
     private final ObjectProperty<ADataNode<TaxaBlock>> topTaxaNode = new SimpleObjectProperty<>();
-    private AConnector<TaxaBlock, TaxaBlock> taxaFilter;
+    private final ObjectProperty<AConnector<TaxaBlock, TaxaBlock>> taxaFilter = new SimpleObjectProperty<>();
+
     private final ObjectProperty<ADataNode<TaxaBlock>> workingTaxaNode = new SimpleObjectProperty<>();
     private final ObjectProperty<ADataNode> topDataNode = new SimpleObjectProperty<>();
-    private ATopFilter<? extends ADataBlock> topFilter;
+    private ObjectProperty<ATopFilter<? extends ADataBlock>> topFilter = new SimpleObjectProperty<>();
     private final ObjectProperty<ADataNode> workingDataNode = new SimpleObjectProperty<>();
 
     private final BooleanProperty updating = new SimpleBooleanProperty();
     private final ObservableSet<ANode> invalidNodes = FXCollections.observableSet();
 
     private final ASelectionModel<ANode> nodeSelectionModel = new ASelectionModel<>();
+
+    private final LongProperty topologyChanged = new SimpleLongProperty(0);
 
     /**
      * constructor
@@ -105,23 +109,23 @@ public class Workflow {
     public void setupTopAndWorkingNodes(TaxaBlock topTaxaBlock, ADataBlock topDataBlock) {
         setTopTaxaNode(createDataNode(topTaxaBlock));
         setWorkingTaxaNode(createDataNode((TaxaBlock) topTaxaBlock.newInstance()));
-        taxaFilter = new AConnector<TaxaBlock, TaxaBlock>(getTopTaxaNode().getDataBlock(), getTopTaxaNode(), getWorkingTaxaNode(), new splitstree5.core.algorithms.filters.TaxaFilter());
-        register(taxaFilter);
+        taxaFilter.set(new AConnector<>(getTopTaxaNode().getDataBlock(), getTopTaxaNode(), getWorkingTaxaNode(), new splitstree5.core.algorithms.filters.TaxaFilter()));
+        register(taxaFilter.get());
         setTopDataNode(createDataNode(topDataBlock));
         getTopDataNode().getDataBlock().setName("Orig" + getTopDataNode().getDataBlock().getName());
         setWorkingDataNode(createDataNode(topDataBlock.newInstance()));
 
         if (topDataBlock instanceof CharactersBlock) {
-            topFilter = new CharactersTopFilter(getTopTaxaNode(), getWorkingTaxaNode(), getTopDataNode(), getWorkingDataNode());
+            topFilter.set(new CharactersTopFilter(getTopTaxaNode(), getWorkingTaxaNode(), getTopDataNode(), getWorkingDataNode()));
         } else if (topDataBlock instanceof DistancesBlock) {
-            topFilter = new DistancesTopFilter(getTopTaxaNode(), getWorkingTaxaNode(), getTopDataNode(), getWorkingDataNode());
+            topFilter.set(new DistancesTopFilter(getTopTaxaNode(), getWorkingTaxaNode(), getTopDataNode(), getWorkingDataNode()));
         } else if (topDataBlock instanceof SplitsBlock) {
-            topFilter = new SplitsTopFilter(getTopTaxaNode(), getWorkingTaxaNode(), getTopDataNode(), getWorkingDataNode());
+            topFilter.set(new SplitsTopFilter(getTopTaxaNode(), getWorkingTaxaNode(), getTopDataNode(), getWorkingDataNode()));
         } else if (topDataBlock instanceof TreesBlock) {
-            topFilter = new TreesTopFilter(getTopTaxaNode(), getWorkingTaxaNode(), getTopDataNode(), getWorkingDataNode());
+            topFilter.set(new TreesTopFilter(getTopTaxaNode(), getWorkingTaxaNode(), getTopDataNode(), getWorkingDataNode()));
         } else
             throw new RuntimeException("No top filter for block of type: " + Basic.getShortName(topDataBlock.getClass()));
-        register(topFilter);
+        register(topFilter.get());
     }
 
     /**
@@ -143,6 +147,7 @@ public class Workflow {
     public <D extends ADataBlock> ADataNode<D> addDataNode(ADataNode<D> dataNode) {
         if (!dataNodes.contains(dataNode))
             register(dataNode);
+        incrementTopologyChanged();
         return dataNode;
     }
 
@@ -157,7 +162,10 @@ public class Workflow {
      * @return connector node
      */
     public <P extends ADataBlock, C extends ADataBlock> AConnector<P, C> createConnector(ADataNode<P> parent, ADataNode<C> child, Algorithm<P, C> algorithm) {
-        return addConnector(new AConnector<>(getWorkingTaxaNode().getDataBlock(), parent, child, algorithm));
+        final AConnector<P, C> connector = addConnector(new AConnector<>(getWorkingTaxaNode().getDataBlock(), parent, child, algorithm));
+        if (algorithm != null)
+            algorithm.setConnector(connector);
+        return connector;
     }
 
     /**
@@ -179,6 +187,9 @@ public class Workflow {
     public <P extends ADataBlock, C extends ADataBlock> AConnector<P, C> addConnector(AConnector<P, C> connector) {
         if (!connectorNodes.contains(connector))
             register(connector);
+        if (connector.getAlgorithm() != null)
+            connector.getAlgorithm().setConnector(connector);
+        incrementTopologyChanged();
         return connector;
     }
 
@@ -234,11 +245,19 @@ public class Workflow {
         this.workingDataNode.set(workingDataNode);
     }
 
-    public AConnector<TaxaBlock, TaxaBlock> getTaxaFilter() {
+    public ObjectProperty<AConnector<TaxaBlock, TaxaBlock>> taxaFilterProperty() {
         return taxaFilter;
     }
 
+    public AConnector<TaxaBlock, TaxaBlock> getTaxaFilter() {
+        return taxaFilter.get();
+    }
+
     public ATopFilter<? extends ADataBlock> getTopFilter() {
+        return topFilter.get();
+    }
+
+    public ObjectProperty<ATopFilter<? extends ADataBlock>> topFilterProperty() {
         return topFilter;
     }
 
@@ -271,6 +290,10 @@ public class Workflow {
                 dataNodes.remove(node);
             else if (node instanceof AConnector)
                 connectorNodes.remove(node);
+
+            if (node instanceof ADataNode && ((ADataNode) node).getDataBlock() instanceof IHasTab) {
+                ((ADataNode) node).getDataBlock().getDocument().getMainWindow().remove(((IHasTab) ((ADataNode) node).getDataBlock()).getTab());
+            }
 
             if (invalidNodes.contains(node))
                 invalidNodes.remove(node);
@@ -352,6 +375,14 @@ public class Workflow {
             return ((AConnector) node).getParent();
         }
         return null;
+    }
+
+    public void incrementTopologyChanged() {
+        topologyChanged.set(topologyChanged.get() + 1);
+    }
+
+    public LongProperty getTopologyChanged() {
+        return topologyChanged;
     }
 
     public void updateSelectionModel() {
