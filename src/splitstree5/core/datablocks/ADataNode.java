@@ -29,8 +29,8 @@ import splitstree5.core.workflow.UpdateState;
 import java.util.ArrayList;
 
 /**
- * a data node
- * Created by huson on 12/21/16.
+ * A data node
+ * Daniel Huson, 12.2016
  */
 public class ADataNode<D extends ADataBlock> extends ANode {
     private final D dataBlock;
@@ -43,6 +43,7 @@ public class ADataNode<D extends ADataBlock> extends ANode {
      */
     public ADataNode(D dataBlock) {
         this.dataBlock = dataBlock;
+        this.dataBlock.setDataNode(this);
         this.children = FXCollections.observableArrayList();
     }
 
@@ -70,10 +71,8 @@ public class ADataNode<D extends ADataBlock> extends ANode {
     }
 
     public void disconnect() {
-        final ArrayList<ANode> children = new ArrayList<>(getChildren());
-        for (ANode connector : children) {
-            if (getChildren().contains(connector))
-                connector.disconnect();
+        for (ANode connector : new ArrayList<>(getChildren())) {
+            connector.disconnect();
         }
     }
 

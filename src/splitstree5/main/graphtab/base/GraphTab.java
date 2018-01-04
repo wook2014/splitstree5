@@ -314,6 +314,7 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
                 pane.minHeightProperty().bind(Bindings.createDoubleBinding(() ->
                         scrollPane.getViewportBounds().getHeight(), scrollPane.viewportBoundsProperty()));
             }
+            selectTab();
         });
     }
 

@@ -19,8 +19,8 @@
     <children>
         <Label text="Target Data:" GridPane.rowIndex="2"/>
         <Label text="Algorithm:" GridPane.rowIndex="3"/>
-        <ChoiceBox fx:id="targetDataChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-        <ChoiceBox fx:id="algorithmChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+        <ComboBox fx:id="targetDataComboBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <ComboBox fx:id="algorithmComboBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
         <ButtonBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0" GridPane.columnIndex="1"
                    GridPane.rowIndex="4">
             <buttons>

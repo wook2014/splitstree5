@@ -25,9 +25,10 @@ import jloda.fx.ASelectionModel;
 import jloda.graph.Edge;
 import jloda.phylo.PhyloGraph;
 import splitstree5.core.Document;
-import splitstree5.core.algorithms.interfaces.IFromSplits;
-import splitstree5.core.algorithms.interfaces.IToSplitsView;
+import splitstree5.core.algorithms.interfaces.IFromSplitsNetworkView;
+import splitstree5.core.algorithms.interfaces.IToSplitsNetworkView;
 import splitstree5.main.IHasTab;
+import splitstree5.main.graphtab.AlgorithmBreadCrumbsToolBar;
 import splitstree5.main.graphtab.SplitsViewTab;
 import splitstree5.main.graphtab.base.GraphLayout;
 
@@ -38,14 +39,14 @@ import java.util.Set;
  * This block represents the view of a split network
  * Daniel Huson, 11.2017
  */
-public class SplitsViewBlock extends ADataBlock implements IHasTab {
+public class SplitsNetworkViewBlock extends ADataBlock implements IHasTab {
     private final ASelectionModel<Integer> splitsSelectionModel = new ASelectionModel<>();
     private final SplitsViewTab splitsViewTab;
 
     /**
      * constructor
      */
-    public SplitsViewBlock() {
+    public SplitsNetworkViewBlock() {
         super();
         setTitle("Split Network Viewer");
         splitsViewTab = new SplitsViewTab();
@@ -81,6 +82,14 @@ public class SplitsViewBlock extends ADataBlock implements IHasTab {
         }
     }
 
+    @Override
+    public void setDataNode(ADataNode dataNode) {
+        super.setDataNode(dataNode);
+        Platform.runLater(() -> { // setup tab
+            splitsViewTab.setToolBar(new AlgorithmBreadCrumbsToolBar(getDocument(), getDataNode()));
+            ((AlgorithmBreadCrumbsToolBar) splitsViewTab.getToolBar()).update();
+        });
+    }
     public SplitsViewTab getTab() {
         return splitsViewTab;
     }
@@ -99,12 +108,12 @@ public class SplitsViewBlock extends ADataBlock implements IHasTab {
 
     @Override
     public Class getFromInterface() {
-        return IFromSplits.class;
+        return IFromSplitsNetworkView.class;
     }
 
     @Override
     public Class getToInterface() {
-        return IToSplitsView.class;
+        return IToSplitsNetworkView.class;
     }
 
     @Override

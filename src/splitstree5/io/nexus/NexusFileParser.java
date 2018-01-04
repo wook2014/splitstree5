@@ -77,7 +77,7 @@ public class NexusFileParser {
                 document.setupTaxonSelectionModel();
 
                 // todo: for debugging:
-                // new ReportNode<>(document.getWorkflow().getWorkingTaxaNode().getDataBlock(), document.getWorkflow().getWorkingDataNode());
+                // new ReportConnector<>(document.getWorkflow().getWorkingTaxaNode().getDataBlock(), document.getWorkflow().getWorkingDataNode());
 
                 if (Platform.isFxApplicationThread())
                     document.getWorkflow().getTopTaxaNode().setState(UpdateState.VALID);

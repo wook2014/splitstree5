@@ -21,9 +21,10 @@ package splitstree5.core.datablocks;
 
 import javafx.application.Platform;
 import splitstree5.core.Document;
-import splitstree5.core.algorithms.interfaces.IFromTrees;
+import splitstree5.core.algorithms.interfaces.IFromTreeView;
 import splitstree5.core.algorithms.interfaces.IToTreeView;
 import splitstree5.main.IHasTab;
+import splitstree5.main.graphtab.AlgorithmBreadCrumbsToolBar;
 import splitstree5.main.graphtab.TreeViewTab;
 
 /**
@@ -54,6 +55,15 @@ public class TreeViewBlock extends ADataBlock implements IHasTab {
         }
     }
 
+    @Override
+    public void setDataNode(ADataNode dataNode) {
+        super.setDataNode(dataNode);
+        Platform.runLater(() -> { // setup tab
+            treeViewTab.setToolBar(new AlgorithmBreadCrumbsToolBar(getDocument(), getDataNode()));
+            ((AlgorithmBreadCrumbsToolBar) treeViewTab.getToolBar()).update();
+        });
+    }
+
     /**
      * show the phyloGraph or network
      */
@@ -72,7 +82,7 @@ public class TreeViewBlock extends ADataBlock implements IHasTab {
 
     @Override
     public Class getFromInterface() {
-        return IFromTrees.class;
+        return IFromTreeView.class;
     }
 
     @Override

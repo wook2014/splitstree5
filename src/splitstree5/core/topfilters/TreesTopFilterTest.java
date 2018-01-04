@@ -22,7 +22,7 @@ package splitstree5.core.topfilters;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import splitstree5.core.Document;
-import splitstree5.core.algorithms.ReportNode;
+import splitstree5.core.algorithms.ReportConnector;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.gui.connectorview.ConnectorView;
@@ -46,7 +46,7 @@ public class TreesTopFilterTest extends Application {
             ConnectorView<TaxaBlock, TaxaBlock> connectorView = new ConnectorView<>(document, taxaFilter);
             connectorView.show();
 
-            new ReportNode<>(document.getWorkflow().getWorkingTaxaNode().getDataBlock(), document.getWorkflow().getWorkingTaxaNode());
+            new ReportConnector<>(document.getWorkflow().getWorkingTaxaNode().getDataBlock(), document.getWorkflow().getWorkingTaxaNode());
         }
 
         {

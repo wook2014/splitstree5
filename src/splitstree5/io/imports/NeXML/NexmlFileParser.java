@@ -2,18 +2,17 @@ package splitstree5.io.imports.NeXML;
 
 import jloda.phylo.PhyloTree;
 import splitstree5.core.algorithms.interfaces.IToChararacters;
-import splitstree5.core.algorithms.interfaces.IToNetwork;
 import splitstree5.core.algorithms.interfaces.IToTaxa;
 import splitstree5.core.algorithms.interfaces.IToTrees;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import java.io.File;
 
-import javax.xml.parsers.*;
-
-public class NexmlFileParser implements IToTaxa, IToChararacters, IToTrees, IToNetwork {
+public class NexmlFileParser implements IToTaxa, IToChararacters, IToTrees {
 
     public void parse(String inputFile, TaxaBlock taxa){
         try {

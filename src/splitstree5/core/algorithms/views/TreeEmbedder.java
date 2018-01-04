@@ -94,9 +94,6 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
         progressListener.setTasks("Tree viewer", "Init.");
 
         final TreeViewTab view = child.getTab();
-        if (view.getToolBar() == null) {
-            Platform.runLater(() -> view.setToolBar(new AlgorithmBreadCrumbsToolBar(parent.getDocument(), this.getConnector())));
-        }
         Platform.runLater(() -> view.setLayout(getOptionLayout()));
 
         if (parent.getNTrees() > 0) {
@@ -205,7 +202,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
         child.show();
 
         if (view.getToolBar() instanceof AlgorithmBreadCrumbsToolBar) {
-            Platform.runLater(() -> ((AlgorithmBreadCrumbsToolBar) view.getToolBar()).update());
+            // Platform.runLater(() -> ((AlgorithmBreadCrumbsToolBar) view.getToolBar()).update());
         }
 
         if (changeListener != null)

@@ -57,6 +57,7 @@
 
 package splitstree5.main.workflowtab;
 
+import javafx.geometry.Point2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
@@ -98,26 +99,28 @@ public class NewNodeDialog {
 
         controller.getSourceDataLabel().setText(sourceNode.getDataBlock().getName());
 
-        controller.getTargetDataChoiceBox().getItems().setAll(ADataBlock.getAllDataBlocks());
-        controller.getTargetDataChoiceBox().getSelectionModel().select(0);
+        controller.getTargetDataComboBox().getItems().setAll(ADataBlock.getAllDataBlocks());
+        controller.getTargetDataComboBox().getSelectionModel().select(0);
 
-        controller.getTargetDataChoiceBox().valueProperty().addListener((observable, oldValue, newValue) -> {
-            controller.getAlgorithmChoiceBox().getItems().setAll((new AConnector(workflow.getWorkingTaxaBlock(), sourceNode, new ADataNode(newValue))).getAllAlgorithms());
+
+        controller.getTargetDataComboBox().valueProperty().addListener((observable, oldValue, newValue) -> {
+            controller.getAlgorithmChoiceBox().getItems().setAll((new AConnector(workflow.getWorkingTaxaBlock(), sourceNode, new ADataNode(newValue), false)).getAllAlgorithms());
             controller.getAlgorithmChoiceBox().getSelectionModel().select(0);
         });
 
-        controller.getAlgorithmChoiceBox().getItems().setAll((new AConnector(workflow.getWorkingTaxaBlock(), sourceNode, new ADataNode(controller.getTargetDataChoiceBox().getValue()))).getAllAlgorithms());
+        controller.getAlgorithmChoiceBox().getItems().setAll((new AConnector(workflow.getWorkingTaxaBlock(), sourceNode, new ADataNode(controller.getTargetDataComboBox().getValue()), false)).getAllAlgorithms());
         controller.getAlgorithmChoiceBox().getSelectionModel().select(0);
-
 
         controller.getCancelButton().setOnAction((e) -> stage.close());
 
         controller.getApplyButton().setOnAction((e -> {
-            makeNewNodes(workflowView, sourceNodeView, controller.getTargetDataChoiceBox().getValue(), me.getSceneX(), me.getSceneY());
+            final Point2D point = workflowView.getScrollPane().getContentGroup().screenToLocal(me.getScreenX(), me.getScreenY());
+
+            makeNewNodes(workflowView, sourceNodeView, controller.getTargetDataComboBox().getValue(), point.getX(), point.getY());
             stage.close();
         }));
 
-        controller.getApplyButton().disableProperty().bind(controller.getTargetDataChoiceBox().valueProperty().isNull().or(controller.getAlgorithmChoiceBox().valueProperty().isNull()));
+        controller.getApplyButton().disableProperty().bind(controller.getTargetDataComboBox().valueProperty().isNull().or(controller.getAlgorithmChoiceBox().valueProperty().isNull()));
 
         stage = new Stage();
         stage.setTitle("New Node - SplitsTree5");
@@ -185,7 +188,6 @@ public class NewNodeDialog {
             }
         };
         undoableChange.redo();
-        connectorNode.forceRecompute();
 
         workflowView.getUndoManager().add(undoableChange);
     }

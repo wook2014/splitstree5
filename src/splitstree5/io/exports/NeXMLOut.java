@@ -6,7 +6,6 @@ import jloda.graph.Node;
 import jloda.graph.NodeSet;
 import jloda.phylo.PhyloTree;
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
-import splitstree5.core.algorithms.interfaces.IFromNetwork;
 import splitstree5.core.algorithms.interfaces.IFromTaxa;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.datablocks.ADataBlock;
@@ -21,7 +20,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
-public class NeXMLOut implements IFromTaxa, IFromChararacters, IFromTrees, IFromNetwork{
+public class NeXMLOut implements IFromTaxa, IFromChararacters, IFromTrees {
 
     public enum CharactersOutputType {cell, matrix, both}
 

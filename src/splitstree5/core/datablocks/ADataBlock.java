@@ -32,11 +32,13 @@ import java.util.ArrayList;
  */
 abstract public class ADataBlock extends OptionableBase {
     private Document document; // the document associated with this datablock
+    private ADataNode dataNode; // the node associated with this datablock
 
     /**
      * default constructor
      */
     public ADataBlock() {
+        setName(Basic.getShortName(this.getClass()).replaceAll("Block$", ""));
     }
 
     /**
@@ -94,5 +96,13 @@ abstract public class ADataBlock extends OptionableBase {
 
     public void setDocument(Document document) {
         this.document = document;
+    }
+
+    public ADataNode getDataNode() {
+        return dataNode;
+    }
+
+    public void setDataNode(ADataNode dataNode) {
+        this.dataNode = dataNode;
     }
 }

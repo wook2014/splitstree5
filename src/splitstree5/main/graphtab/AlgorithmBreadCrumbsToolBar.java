@@ -97,9 +97,13 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
 
     private Node makeBreadCrumb(Document document, AConnector aConnector) {
         final Button button = new Button();
-        button.setStyle("-fx-shape: \"M 0 0 L 0 18 L 100 18 L 110 9 L 100 0 z\";"); // arrow shape
+        final String shape = "-fx-shape: \"M 0 0 L 5 9 L 0 18 L 100 18 L 105 9 L 100 0 z\";"; // arrow shape
+        button.setStyle(shape);
         button.textProperty().bind(aConnector.nameProperty());
         button.disableProperty().bind(aConnector.applicableProperty().not().and(aConnector.stateProperty().isEqualTo(UpdateState.VALID).not()));
+        aConnector.stateColorProperty().addListener((c, o, n) -> {
+            button.setStyle(shape + n);
+        });
         button.setOnAction((e) -> {
             final Point2D location = button.localToScreen(button.getLayoutX(), button.getLayoutY());
             ANodeViewManager.getInstance().show(document, aConnector, location.getX(), location.getY());

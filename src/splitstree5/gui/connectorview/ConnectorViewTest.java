@@ -24,7 +24,7 @@ import javafx.application.Platform;
 import javafx.stage.Stage;
 import org.junit.Test;
 import splitstree5.core.Document;
-import splitstree5.core.algorithms.ReportNode;
+import splitstree5.core.algorithms.ReportConnector;
 import splitstree5.core.algorithms.distances2splits.NeighborNet;
 import splitstree5.core.algorithms.filters.SplitsFilter;
 import splitstree5.core.connectors.AConnector;
@@ -78,7 +78,7 @@ public class ConnectorViewTest extends Application {
             ConnectorView<TaxaBlock, TaxaBlock> connectorView = new ConnectorView<>(document, taxaFilter);
             connectorView.show();
 
-            new ReportNode<>(document.getWorkflow().getWorkingTaxaNode().getDataBlock(), document.getWorkflow().getWorkingTaxaNode());
+            new ReportConnector<>(document.getWorkflow().getWorkingTaxaNode().getDataBlock(), document.getWorkflow().getWorkingTaxaNode());
         }
 
         {

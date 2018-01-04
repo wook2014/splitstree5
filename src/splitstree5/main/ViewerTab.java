@@ -71,6 +71,14 @@ public abstract class ViewerTab extends Tab {
         borderPane.setTop(toolBar);
     }
 
+    /**
+     * select this tab
+     */
+    public void selectTab() {
+        if (getTabPane() != null)
+            getTabPane().getSelectionModel().select(this);
+    }
+
     public UndoRedoManager getUndoRedoManager() {
         return undoRedoManager;
     }

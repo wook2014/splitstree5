@@ -16,12 +16,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package splitstree5.core.algorithms.interfaces;
 
 /**
- * to tree view interface
+ * to splits network view interface.
  * This is used to identify algorithms at runtime
- * Daniel Huson, 11.2017
+ * Daniel Huson, 1.2018
  */
-public interface IToSplitsView {
+public interface IToSplitsNetworkView {
 }

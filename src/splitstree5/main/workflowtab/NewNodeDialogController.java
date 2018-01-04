@@ -59,7 +59,7 @@ package splitstree5.main.workflowtab;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.ADataBlock;
@@ -67,10 +67,10 @@ import splitstree5.core.datablocks.ADataBlock;
 public class NewNodeDialogController {
 
     @FXML
-    private ChoiceBox<ADataBlock> targetDataChoiceBox;
+    private ComboBox<ADataBlock> targetDataComboBox;
 
     @FXML
-    private ChoiceBox<Algorithm> algorithmChoiceBox;
+    private ComboBox<Algorithm> algorithmComboBox;
 
     @FXML
     private Button cancelButton;
@@ -81,12 +81,12 @@ public class NewNodeDialogController {
     @FXML
     private Label sourceDataLabel;
 
-    public ChoiceBox<ADataBlock> getTargetDataChoiceBox() {
-        return targetDataChoiceBox;
+    public ComboBox<ADataBlock> getTargetDataComboBox() {
+        return targetDataComboBox;
     }
 
-    public ChoiceBox<? extends Algorithm> getAlgorithmChoiceBox() {
-        return algorithmChoiceBox;
+    public ComboBox<? extends Algorithm> getAlgorithmChoiceBox() {
+        return algorithmComboBox;
     }
 
     public Button getCancelButton() {

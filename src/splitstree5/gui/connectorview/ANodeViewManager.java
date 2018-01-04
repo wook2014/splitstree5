@@ -22,7 +22,6 @@ package splitstree5.gui.connectorview;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.WeakChangeListener;
 import splitstree5.core.Document;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
@@ -41,7 +40,6 @@ import java.util.Map;
  */
 public class ANodeViewManager {
     private final Map<ANode, IShowable> map;
-
     private static ANodeViewManager instance;
 
     public static ANodeViewManager getInstance() {
@@ -62,7 +60,7 @@ public class ANodeViewManager {
                 else if (aNode instanceof ADataNode) {
                     final StringProperty textProperty = new SimpleStringProperty(NexusFileWriter.toString(document.getWorkflow().getWorkingTaxaNode().getDataBlock(), ((ADataNode) aNode).getDataBlock()));
                     final ChangeListener<UpdateState> stateChangeListener = (observable, oldValue, newValue) -> textProperty.set(NexusFileWriter.toString(document.getWorkflow().getWorkingTaxaNode().getDataBlock(), ((ADataNode) aNode).getDataBlock()));
-                    aNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
+                    aNode.stateProperty().addListener(stateChangeListener);
                     map.put(aNode, new TextView(aNode.nameProperty(), textProperty));
 
                 }

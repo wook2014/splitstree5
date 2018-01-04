@@ -47,7 +47,7 @@ import java.util.Map;
 
 /**
  * create a connector view
- * Created by huson on 12/31/16.
+ * Daniel Huson , 12.2016
  */
 public class ConnectorView<P extends ADataBlock, C extends ADataBlock> implements IShowable {
     private final Document document;

@@ -30,7 +30,7 @@ import jloda.fx.ASelectionModel;
 import jloda.util.Basic;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.algorithms.ReportNode;
+import splitstree5.core.algorithms.ReportConnector;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.*;
 import splitstree5.core.topfilters.*;
@@ -66,10 +66,14 @@ public class Workflow {
 
     private final LongProperty topologyChanged = new SimpleLongProperty(0);
 
+    private final Document document;
+
     /**
      * constructor
      */
     public Workflow(final Document document) {
+        this.document = document;
+
         invalidNodes.addListener((InvalidationListener) observable -> {
             updating.set(invalidNodes.size() > 0);
             System.err.println("Workflow updating: " + updating.get());
@@ -92,9 +96,6 @@ public class Workflow {
                 nodeSelectionModel.selectItems(selected);
                 updateSelectionModel();
             }
-
-            if (change.wasAdded())
-                change.getElementAdded().getDataBlock().setDocument(document);
         });
 
         updatingProperty().addListener((observable, oldValue, newValue) -> System.err.println("UPDATING: " + newValue));
@@ -136,7 +137,8 @@ public class Workflow {
      * @return data node
      */
     public <D extends ADataBlock> ADataNode<D> createDataNode(D dataBlock) {
-        return addDataNode(new ADataNode<D>(dataBlock));
+        dataBlock.setDocument(document);
+        return addDataNode(new ADataNode<>(dataBlock));
     }
 
     /**
@@ -176,7 +178,7 @@ public class Workflow {
      * @return connector node
      */
     public <P extends ADataBlock> AConnector createReporter(ADataNode<P> parent) {
-        return addConnector(new ReportNode<P>(getWorkingTaxaNode().getDataBlock(), parent));
+        return addConnector(new ReportConnector<P>(getWorkingTaxaNode().getDataBlock(), parent));
     }
 
     /**
@@ -298,6 +300,7 @@ public class Workflow {
             if (invalidNodes.contains(node))
                 invalidNodes.remove(node);
         }
+        topologyChanged.set(topologyChanged.get() + 1);
     }
 
     /**
@@ -319,10 +322,12 @@ public class Workflow {
      * @param node
      */
     private void register(final ANode node) {
-        if (node instanceof ADataNode)
+        if (node instanceof ADataNode) {
             dataNodes.add((ADataNode) node);
-        else
+            ((ADataNode) node).getDataBlock().setDocument(document);
+        } else {
             connectorNodes.add((AConnector) node);
+        }
         node.stateProperty().addListener((ObservableValue<? extends UpdateState> observable, UpdateState oldValue, UpdateState newValue) -> {
             if (newValue != UpdateState.VALID && newValue != UpdateState.FAILED) {
                 if (!invalidNodes.contains(node))

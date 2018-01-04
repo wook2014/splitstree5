@@ -32,6 +32,7 @@ import splitstree5.core.workflow.ANode;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.connectorview.ANodeViewManager;
 
+
 /**
  * a workflow tree node
  * Daniel Huson, 1.2018
@@ -58,9 +59,10 @@ public class WorkFlowTreeItem extends TreeItem<String> {
 
             if (aNode instanceof AConnector) {
                 disable.bind(((AConnector) aNode).applicableProperty().not().and(aNode.stateProperty().isEqualTo(UpdateState.VALID).not()));
-            } else
+            } else {
                 disable.bind(aNode.stateProperty().isEqualTo(UpdateState.VALID).not());
-
+            }
+            aNode.stateColorProperty().addListener((c, o, n) -> getGraphic().setStyle(n));
 
             label.setOnContextMenuRequested((e) -> {
                 if (!disable.get()) {
@@ -72,9 +74,14 @@ public class WorkFlowTreeItem extends TreeItem<String> {
                     contextMenu.show(label, e.getScreenX(), e.getScreenY());
                 }
             });
+            getGraphic().setOnMouseClicked((e) -> {
+                if (e.getClickCount() == 2) {
+                    showView(e.getScreenX(), e.getScreenY());
+                }
+            });
             setValue("");
-        } else
-            System.err.println("Node is null");
+        }
+
 
         disable.addListener((c, o, n) -> {
             if (n)

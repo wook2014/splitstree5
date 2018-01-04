@@ -32,7 +32,7 @@ import splitstree5.utils.OptionsAccessor;
 
 /**
  * An algorithm
- * Created by huson on 12/21/16.
+ * Daniel Huson 12.2016
  */
 abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> extends OptionableBase {
     private final BooleanProperty disabled = new SimpleBooleanProperty(true);
@@ -42,7 +42,7 @@ abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> exte
      * constructor
      */
     public Algorithm() {
-        setName(Basic.getShortName(getClass()));
+        setName(Basic.getShortName(getClass()).replaceAll("Algorithm$", ""));
     }
 
     /**
@@ -147,5 +147,15 @@ abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> exte
      */
     public void setConnector(AConnector<P, C> connector) {
         this.connector = connector;
+    }
+
+    /**
+     * gets the citations for this method
+     *
+     * @return citations in the format   Key; Citation; Key; Citation; ..
+     * e.g. Huson et al 2012; D.H. Huson, R. Rupp and C. Scornavacca, Phylogenetic Networks, Cambridge University Press, 2012
+     */
+    public String getCitation() {
+        return "???";
     }
 }

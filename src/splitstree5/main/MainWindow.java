@@ -132,6 +132,15 @@ public class MainWindow {
             add(new WorkflowViewTab(document));
         }
 
+        controller.getSplitPane().widthProperty().addListener((c, o, n) -> {
+            if (n.doubleValue() > 0) {
+                double oldPos = controller.getSplitPane().getDividerPositions()[0];
+                double oldWidth = oldPos * o.doubleValue();
+                double newPos = oldWidth / n.doubleValue();
+                controller.getSplitPane().setDividerPositions(newPos);
+            }
+        });
+
         openWindows.add(this);
     }
 

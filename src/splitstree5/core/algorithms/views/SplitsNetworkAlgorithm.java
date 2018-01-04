@@ -34,11 +34,11 @@ import jloda.phylo.PhyloGraph;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromSplits;
-import splitstree5.core.algorithms.interfaces.IToSplitsView;
+import splitstree5.core.algorithms.interfaces.IToSplitsNetworkView;
 import splitstree5.core.algorithms.views.algorithms.ConvexHull;
 import splitstree5.core.algorithms.views.algorithms.EqualAngle;
 import splitstree5.core.datablocks.SplitsBlock;
-import splitstree5.core.datablocks.SplitsViewBlock;
+import splitstree5.core.datablocks.SplitsNetworkViewBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.main.graphtab.AlgorithmBreadCrumbsToolBar;
@@ -53,7 +53,7 @@ import java.util.BitSet;
  * compute an implementing of a set of splits using the equal angle algorithm
  * Daniel Huson, 11.2017
  */
-public class SplitNetworkConstruction extends Algorithm<SplitsBlock, SplitsViewBlock> implements IFromSplits, IToSplitsView {
+public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, SplitsNetworkViewBlock> implements IFromSplits, IToSplitsNetworkView {
     public enum Algorithm {EqualAngleFollowedByConvexHull, EqualAngleOnly, ConvexHullOnly}
 
     private final PhyloGraph graph = new PhyloGraph();
@@ -88,13 +88,9 @@ public class SplitNetworkConstruction extends Algorithm<SplitsBlock, SplitsViewB
 
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxa, SplitsBlock parent, SplitsViewBlock child) throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxa, SplitsBlock parent, SplitsNetworkViewBlock child) throws Exception {
         progress.setTasks("Split network construction", "Init.");
         final SplitsViewTab view = child.getTab();
-
-        if (view.getToolBar() == null) {
-            Platform.runLater(() -> view.setToolBar(new AlgorithmBreadCrumbsToolBar(parent.getDocument(), this.getConnector())));
-        }
 
         graph.clear();
         view.init(graph);

@@ -57,7 +57,6 @@
 
 package splitstree5.main.workflowtab;
 
-import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
@@ -303,8 +302,6 @@ public class WorkflowViewTab extends ViewerTab {
         controller.getSelectAllMenuItem().setOnAction((e) -> selectionModel.selectAll());
         controller.getSelectNoneMenuItem().setOnAction((e) -> selectionModel.clearSelection());
         controller.getSelectNoneMenuItem().disableProperty().bind(selectionModel.emptyProperty());
-
-        selectionModel.getSelectedItems().addListener((InvalidationListener) (e) -> System.err.println("Selected: " + selectionModel.getSelectedItems().size()));
 
         controller.getDeleteMenuItem().setOnAction((e) -> {
             Set<ANode> deletableSelection = new HashSet<>(selectionModel.getSelectedItems());

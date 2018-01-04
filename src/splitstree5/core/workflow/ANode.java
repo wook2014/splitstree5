@@ -35,6 +35,8 @@ abstract public class ANode extends ANamed {
 
     private final ObjectProperty<UpdateState> state = new SimpleObjectProperty<>(UpdateState.VALID);
 
+    private final ObjectProperty<String> stateColor = new SimpleObjectProperty<>("");
+
     /**
      * constructor
      */
@@ -42,6 +44,23 @@ abstract public class ANode extends ANamed {
         synchronized (lock) {
             this.uid = (++created);
         }
+
+        state.addListener((c, o, n) -> {
+            switch (n) {
+                case COMPUTING:
+                    stateColor.set("-fx-background-color: LIGHTBLUE;");
+                    break;
+                case VALID:
+                    stateColor.set("");
+                    break;
+                case NOT_APPLICABLE:
+                case INVALID:
+                    stateColor.set("");
+                    break;
+                case FAILED:
+                    stateColor.set("-fx-background-color: PINK;");
+            }
+        });
     }
 
     public UpdateState getState() {
@@ -54,6 +73,10 @@ abstract public class ANode extends ANamed {
 
     public ObjectProperty<UpdateState> stateProperty() {
         return state;
+    }
+
+    public ObjectProperty<String> stateColorProperty() {
+        return stateColor;
     }
 
     /**

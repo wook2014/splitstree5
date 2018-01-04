@@ -8,6 +8,7 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ASplit;
+import splitstree5.core.misc.SplitsUtilities;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -91,6 +92,7 @@ public class BunemanTree extends Algorithm<DistancesBlock, SplitsBlock> implemen
         // copy splits to splits
         //splitsBlock.setFit(computeFit(distancesBlock, previousSplits));
         splitsBlock.getSplits().addAll(previousSplits);
+        splitsBlock.setCycle(SplitsUtilities.computeCycle(taxaBlock.getNtax(), previousSplits));
 
         progressListener.setProgress(ntax);   //set progress to 100%
         progressListener.close();

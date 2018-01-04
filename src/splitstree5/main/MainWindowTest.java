@@ -25,7 +25,7 @@ import splitstree5.core.Document;
 import splitstree5.core.algorithms.characters2distances.HammingDistances;
 import splitstree5.core.algorithms.distances2splits.NeighborNet;
 import splitstree5.core.algorithms.distances2trees.NeighborJoining;
-import splitstree5.core.algorithms.views.SplitNetworkConstruction;
+import splitstree5.core.algorithms.views.SplitsNetworkAlgorithm;
 import splitstree5.core.algorithms.views.TreeEmbedder;
 import splitstree5.core.datablocks.*;
 import splitstree5.core.workflow.Workflow;
@@ -49,8 +49,8 @@ public class MainWindowTest extends Application {
 
             final ADataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
             workflow.createConnector(distances, splits, new NeighborNet());
-            final ADataNode<SplitsViewBlock> splitsView = workflow.createDataNode(new SplitsViewBlock());
-            workflow.createConnector(splits, splitsView, new SplitNetworkConstruction());
+            final ADataNode<SplitsNetworkViewBlock> splitsView = workflow.createDataNode(new SplitsNetworkViewBlock());
+            workflow.createConnector(splits, splitsView, new SplitsNetworkAlgorithm());
 
             final ADataNode<TreesBlock> trees = workflow.createDataNode(new TreesBlock());
             workflow.createConnector(distances, trees, new NeighborJoining());

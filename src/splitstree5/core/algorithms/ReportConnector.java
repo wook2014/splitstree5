@@ -29,14 +29,14 @@ import splitstree5.core.datablocks.TaxaBlock;
  * report the content of a block
  * Created by huson on 12/26/16.
  */
-public class ReportNode<D extends ADataBlock> extends AConnector<D, AnalysisResultBlock> {
+public class ReportConnector<D extends ADataBlock> extends AConnector<D, AnalysisResultBlock> {
     /**
      * report the block
      *
      * @param taxaBlock
      * @param parent
      */
-    public ReportNode(TaxaBlock taxaBlock, ADataNode<D> parent) {
+    public ReportConnector(TaxaBlock taxaBlock, ADataNode<D> parent) {
         super(taxaBlock, parent, new ADataNode<>(new AnalysisResultBlock()));
         setAlgorithm((Algorithm) new Report());
     }

@@ -54,7 +54,6 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
      * constructor
      */
     public NeighborNet() {
-        super("Neighbor Net");
     }
 
     public List<String> listOptions() {

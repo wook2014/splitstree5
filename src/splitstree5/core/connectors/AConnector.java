@@ -76,14 +76,26 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
      * @param child
      */
     public AConnector(TaxaBlock taxaBlock, ADataNode<P> parent, ADataNode<C> child) {
+        this(taxaBlock, parent, child, true);
+    }
+
+    /**
+     * constructor
+     *
+     * @param taxaBlock
+     * @param parent
+     * @param child
+     */
+    public AConnector(TaxaBlock taxaBlock, ADataNode<P> parent, ADataNode<C> child, boolean connectToGraph) {
         this.taxaBlock = taxaBlock;
         this.parent = parent;
-        parent.getChildren().add(this);
+        if (connectToGraph)
+            parent.getChildren().add(this);
         this.child = child;
         this.children = FXCollections.observableArrayList(child);
         service = new ConnectorService<>(this);
-
-        parent.stateProperty().addListener(new WeakChangeListener<UpdateState>(parentStateChangeListener));
+        if (connectToGraph)
+            parent.stateProperty().addListener(new WeakChangeListener<>(parentStateChangeListener));
     }
 
     /**
@@ -151,7 +163,6 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
             final UpdateState oldState = getState();
 
             switch (state) {
-                case UPDATE_PENDING:
                 case INVALID:
                     if (!isApplicable()) {
                         super.setState(UpdateState.NOT_APPLICABLE);
