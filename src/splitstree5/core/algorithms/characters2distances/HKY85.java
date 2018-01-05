@@ -21,6 +21,13 @@ public class HKY85 extends DNAdistance implements IFromChararacters, IToDistance
     private double tratio = 2.0;
     public final static String DESCRIPTION = "Calculates distances using the Hasegawa, Kishino and Yano model";
 
+    @Override
+    public String getCitation() {
+        return "HKY85; Hasegawa, Kishino, Yano 1985; " +
+                "Hasegawa M, Kishino H, Yano T. \"Dating of human-ape splitting by a molecular clock of mitochondrial DNA\". " +
+                "Journal of Molecular Evolution. 22 (2): 160–174. PMID 3934395. doi:10.1007/BF02101694, 1985.";
+    }
+
     public HKY85() {
         super();
         setOptionMaximum_Likelihood(true);

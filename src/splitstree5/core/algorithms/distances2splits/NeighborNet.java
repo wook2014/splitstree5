@@ -50,6 +50,13 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
     private NeighborNetSplitWeightOptimizer.Regularization optionRegularization = NeighborNetSplitWeightOptimizer.Regularization.nnls;
     private double optionLambdaFrac = 1.0;
 
+    @Override
+    public String getCitation() {
+        return "NeighborNet; Bryant and Moulton 2004; " +
+                "D. Bryant and V. Moulton. Neighbor-net: An agglomerative method for the construction of phylogenetic networks. " +
+                "Molecular Biology and Evolution, 21(2):255– 265, 2004.";
+    }
+
     /**
      * constructor
      */

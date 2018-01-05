@@ -26,6 +26,11 @@ public class Upholt extends Algorithm<CharactersBlock, DistancesBlock> implement
     public final static String DESCRIPTION = "Calculates the Upholt (1979) distance for restriction site data";
 
     @Override
+    public String getCitation() {
+        return "Upholt 1979;";
+    }
+
+    @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 

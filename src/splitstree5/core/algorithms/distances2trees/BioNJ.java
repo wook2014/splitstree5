@@ -26,6 +26,13 @@ import java.util.HashMap;
 public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFromDistances, IToTrees {
 
     @Override
+    public String getCitation() {
+        return "BioNJ; Gascuel 1997; " +
+                "O. Gascuel, BIONJ: an improved version of the NJ algorithm based on a simple model of sequence data. " +
+                "Molecular Biology and Evolution. 1997 14:685-695.";
+    }
+
+    @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees) throws InterruptedException, CanceledException {
         progressListener.setTasks("BioNJ", "Creating nodes...");
         progressListener.setMaximum(distances.getNtax());

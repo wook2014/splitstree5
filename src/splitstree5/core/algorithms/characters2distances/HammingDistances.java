@@ -39,6 +39,13 @@ public class HammingDistances extends Algorithm<CharactersBlock, DistancesBlock>
     private boolean optionNormalize = true;
 
     @Override
+    public String getCitation() {
+        return "HammingDistances; Hamming 1950; " +
+                "Hamming, Richard W. \"Error detecting and error correcting codes\". " +
+                "Bell System Technical Journal. 29 (2): 147–160. MR 0035935, 1950.";
+    }
+
+    @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxa, CharactersBlock characters, DistancesBlock distances) throws Exception {
         progressListener.setMaximum(taxa.getNtax());
 

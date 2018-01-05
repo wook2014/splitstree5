@@ -28,6 +28,13 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
     protected boolean useSquareRoot;
 
     @Override
+    public String getCitation() {
+        return "Codominant; Smouse and Peakall 1999; " +
+                "Smouse PE, Peakall R Spatial autocorrelation analysis of individual multiallele and multilocus genetic structure. " +
+                "Heredity, 82, 561-573, 1999.";
+    }
+
+    @Override
     public boolean isApplicable(TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock){
         return !charactersBlock.isUseCharacterWeights() && charactersBlock.isDiploid();
     }

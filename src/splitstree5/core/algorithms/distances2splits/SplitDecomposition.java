@@ -42,6 +42,13 @@ import java.util.List;
 public class SplitDecomposition extends Algorithm<DistancesBlock, SplitsBlock> implements IFromDistances, IToSplits {
 
     @Override
+    public String getCitation() {
+        return "SplitDecomposition; Bandelt and Dress 1992; " +
+                "H.-J.Bandelt and A.W.M.Dress. A canonical decomposition theory for metrics on a finite set. " +
+                "Advances in Mathematics, 92:47–105, 1992.";
+    }
+
+    @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, DistancesBlock distancesBlock, SplitsBlock splitsBlock) throws InterruptedException, CanceledException {
         splitsBlock.getSplits().clear();
 

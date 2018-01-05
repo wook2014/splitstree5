@@ -23,6 +23,14 @@ public class F81 extends DNAdistance implements IFromChararacters, IToDistances 
     private double B;
 
     @Override
+    public String getCitation() {
+        return "F81; Swofford et al 1996; " +
+                "D.L. Swofford, G.J. Olsen, P.J. Waddell, and  D.M. Hillis. Chapter 11: Phylogenetic inference. " +
+                "In D. M. Hillis, C. Moritz, and B. K. Mable, editors, Molecular Systematics, pages 407–514. " +
+                "Sinauer Associates, Inc., 2nd edition, 1996.";
+    }
+
+    @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 

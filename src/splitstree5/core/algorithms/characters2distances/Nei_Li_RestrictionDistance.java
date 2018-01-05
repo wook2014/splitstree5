@@ -25,6 +25,11 @@ public class Nei_Li_RestrictionDistance extends Algorithm<CharactersBlock, Dista
     private double optionRestrictionSiteLength = 6.0;
 
     @Override
+    public String getCitation() {
+        return "Nei and Li 1979;";
+    }
+
+    @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 
