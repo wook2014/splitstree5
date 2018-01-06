@@ -36,9 +36,10 @@ import java.util.HashMap;
 
 /**
  * Neighbor joining algorithm
- *
+ * <p>
  * Created on 12/11/16. Original version : 2010-05-09.
- * @author  Christian Rausch, Daniel Huson and Daria Evseeva
+ *
+ * @author Christian Rausch, Daniel Huson and Daria Evseeva
  */
 public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> implements IFromDistances, IToTrees {
 

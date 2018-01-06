@@ -11,8 +11,9 @@ import splitstree5.core.models.K2Pmodel;
 
 /**
  * Computes the Kimura two parameter distance for a set of characters
- *
+ * <p>
  * Created on 12-Jun-2004
+ *
  * @author DJB
  */
 
@@ -44,7 +45,7 @@ public class K2P extends DNAdistance implements IFromChararacters, IToDistances 
         return dist;
     }
 
-    public String getDescription(){
+    public String getDescription() {
         return DESCRIPTION;
     }
 }

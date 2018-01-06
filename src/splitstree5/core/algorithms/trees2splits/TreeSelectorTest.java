@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Created on 24.01.2017.
+ *
  * @author Daria
  */
 
@@ -35,9 +36,9 @@ public class TreeSelectorTest {
         TaxaNexusIO.parse(np, taxaBlock);
         TreesNexusIO.parse(np, taxaBlock, treesBlock, null);
 
-        for(int which = 1; which<=treesBlock.getNTrees(); which++){
+        for (int which = 1; which <= treesBlock.getNTrees(); which++) {
 
-            System.err.println("COMPUTE SPLITS FOR TREE"+which);
+            System.err.println("COMPUTE SPLITS FOR TREE" + which);
 
             SplitsBlock splitsBlock = new SplitsBlock();
             treeSelector.setOptionWhich(which);
@@ -52,7 +53,7 @@ public class TreeSelectorTest {
 
             // compare splits
 
-            String fileName = "test/splits/tree selector/trees6-"+which+".nex";
+            String fileName = "test/splits/tree selector/trees6-" + which + ".nex";
 
             TaxaBlock taxaFromST4 = new TaxaBlock();
             SplitsBlock splitsFromST4 = new SplitsBlock();
@@ -64,7 +65,7 @@ public class TreeSelectorTest {
             assertEquals(splitsBlock.size(), splitsFromST4.size());
             for (int i = 0; i < splitsBlock.getNsplits(); i++) {
                 ASplit aSplit = splitsBlock.getSplits().get(i);
-                if(splitsFromST4.getSplits().contains(aSplit)){
+                if (splitsFromST4.getSplits().contains(aSplit)) {
                     int index = splitsFromST4.getSplits().indexOf(aSplit);
                     ASplit aSplitST4 = splitsFromST4.getSplits().get(index);
                     assertEquals(aSplit.getA(), aSplitST4.getA());

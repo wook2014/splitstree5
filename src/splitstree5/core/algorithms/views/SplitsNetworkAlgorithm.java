@@ -86,7 +86,6 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, SplitsNetwork
 
     private ChangeListener<UpdateState> changeListener;
 
-
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxa, SplitsBlock parent, SplitsNetworkViewBlock child) throws Exception {
         progress.setTasks("Split network construction", "Init.");

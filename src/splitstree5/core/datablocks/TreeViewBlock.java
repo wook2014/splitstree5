@@ -26,6 +26,7 @@ import splitstree5.core.algorithms.interfaces.IToTreeView;
 import splitstree5.main.IHasTab;
 import splitstree5.main.graphtab.AlgorithmBreadCrumbsToolBar;
 import splitstree5.main.graphtab.TreeViewTab;
+import splitstree5.main.graphtab.base.GraphLayout;
 
 /**
  * This block represents the view of a tree
@@ -69,6 +70,7 @@ public class TreeViewBlock extends ADataBlock implements IHasTab {
      */
     public void show() {
         treeViewTab.show();
+        Platform.runLater(() -> setShortDescription(getInfo()));
     }
 
     public TreeViewTab getTab() {
@@ -92,6 +94,8 @@ public class TreeViewBlock extends ADataBlock implements IHasTab {
 
     @Override
     public String getInfo() {
-        return "a tree drawing";
+        return "a " + (treeViewTab.getLayout() == GraphLayout.Radial ? "unrooted" : "rooted") + " tree drawing with "
+                + treeViewTab.getPhyloGraph().getNumberOfNodes() + " nodes and "
+                + treeViewTab.getPhyloGraph().getNumberOfEdges() + " edge";
     }
 }

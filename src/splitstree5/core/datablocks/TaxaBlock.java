@@ -19,6 +19,7 @@
 
 package splitstree5.core.datablocks;
 
+import javafx.beans.InvalidationListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -56,6 +57,7 @@ public class TaxaBlock extends ADataBlock {
                 name2taxon.put(taxon.getName(), taxon);
             }
         });
+        taxa.addListener((InvalidationListener) observable -> setShortDescription(getInfo()));
     }
 
     /**
@@ -70,10 +72,10 @@ public class TaxaBlock extends ADataBlock {
 
     @Override
     public void clear() {
+        super.clear();
         taxa.clear();
         taxon2index.clear();
         name2taxon.clear();
-        setShortDescription("");
     }
 
     /**

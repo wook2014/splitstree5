@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Created on 05.03.2017.
+ *
  * @author Daria
  */
 public class CodominantTest {
@@ -63,7 +64,7 @@ public class CodominantTest {
                         taxaFromSplitsTree40, distancesFromSplitsTree40, null));
 
 
-        for(int i = 0; i<distancesBlock0.getDistances().length; i++){
+        for (int i = 0; i < distancesBlock0.getDistances().length; i++) {
             assertArrayEquals(distancesFromSplitsTree40.getDistances()[i], distancesBlock0.getDistances()[i], 0.000001);
         }
 
@@ -87,7 +88,7 @@ public class CodominantTest {
                 (DistancesNexusIO.parse(new NexusStreamParser(new FileReader("test//distances//mini_rightDiploidCod.nex")),
                         taxaFromSplitsTree4, distancesFromSplitsTree4, null));
 
-        for(int i = 0; i<distancesBlock.getDistances().length; i++){
+        for (int i = 0; i < distancesBlock.getDistances().length; i++) {
             assertArrayEquals(distancesFromSplitsTree4.getDistances()[i], distancesBlock.getDistances()[i], 0.000001);
         }
 
@@ -113,7 +114,7 @@ public class CodominantTest {
                         taxaFromSplitsTree41, distancesFromSplitsTree41, null));
 
 
-        for(int i = 0; i<distancesBlock1.getDistances().length; i++){
+        for (int i = 0; i < distancesBlock1.getDistances().length; i++) {
             assertArrayEquals(distancesFromSplitsTree41.getDistances()[i], distancesBlock1.getDistances()[i], 0.000001);
         }
 
@@ -134,7 +135,7 @@ public class CodominantTest {
                         taxaFromSplitsTree4_2, distancesFromSplitsTree4_2, null));
 
 
-        for(int i = 0; i<distancesBlock2.getDistances().length; i++){
+        for (int i = 0; i < distancesBlock2.getDistances().length; i++) {
             assertArrayEquals(distancesFromSplitsTree4_2.getDistances()[i], distancesBlock2.getDistances()[i], 0.000001);
         }
 
@@ -160,7 +161,7 @@ public class CodominantTest {
                         taxaFromSplitsTree43, distancesFromSplitsTree43, null));
 
 
-        for(int i = 0; i<distancesBlock3.getDistances().length; i++){
+        for (int i = 0; i < distancesBlock3.getDistances().length; i++) {
             assertArrayEquals(distancesFromSplitsTree43.getDistances()[i], distancesBlock3.getDistances()[i], 0.000001);
         }
 
@@ -181,7 +182,7 @@ public class CodominantTest {
                         taxaFromSplitsTree44, distancesFromSplitsTree44, null));
 
 
-        for(int i = 0; i<distancesBlock4.getDistances().length; i++){
+        for (int i = 0; i < distancesBlock4.getDistances().length; i++) {
             assertArrayEquals(distancesFromSplitsTree44.getDistances()[i], distancesBlock4.getDistances()[i], 0.000001);
         }
     }

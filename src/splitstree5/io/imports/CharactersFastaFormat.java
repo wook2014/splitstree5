@@ -25,15 +25,15 @@ public enum CharactersFastaFormat {
 
     private final CharactersType dataType;
 
-    CharactersFastaFormat(CharactersType dataType){
+    CharactersFastaFormat(CharactersType dataType) {
         this.dataType = dataType;
     }
 
-    public CharactersType getDataType(){
+    public CharactersType getDataType() {
         return this.dataType;
     }
 
-    public static CharactersFastaFormat findID(String infoLine){
+    public static CharactersFastaFormat findID(String infoLine) {
         return CharactersFastaFormat.dbj;
     }
 }

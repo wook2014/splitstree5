@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Created on 06.06.2017.
+ *
  * @author Daria
  */
 
@@ -59,9 +60,9 @@ public class ConsensusNetworkTest {
         SplitsNexusIO.parse(np4, taxaFromST4, splitsFromST4, null);
 
         assertEquals(splitsBlock.size(), splitsFromST4.size());
-        for(int i=0; i<splitsBlock.getSplits().size(); i++){
+        for (int i = 0; i < splitsBlock.getSplits().size(); i++) {
             ASplit aSplit = splitsBlock.getSplits().get(i);
-            if(splitsFromST4.getSplits().contains(aSplit)){
+            if (splitsFromST4.getSplits().contains(aSplit)) {
                 int index = splitsFromST4.getSplits().indexOf(aSplit);
                 ASplit aSplitST4 = splitsFromST4.getSplits().get(index);
                 assertEquals(aSplit.getA(), aSplitST4.getA());

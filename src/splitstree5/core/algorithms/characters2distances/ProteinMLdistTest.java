@@ -18,6 +18,7 @@ import static org.junit.Assert.assertArrayEquals;
 
 /**
  * Created on Feb 2017.
+ *
  * @author Daria
  */
 
@@ -47,7 +48,7 @@ public class ProteinMLdistTest {
                         taxaFromSplitsTree4, distancesFromSplitsTree4, null));
 
 
-        for(int i = 0; i<distancesBlock.getDistances().length; i++){
+        for (int i = 0; i < distancesBlock.getDistances().length; i++) {
             assertArrayEquals(distancesFromSplitsTree4.getDistances()[i], distancesBlock.getDistances()[i], 0.000001);
         }
 
@@ -68,7 +69,7 @@ public class ProteinMLdistTest {
                         taxaFromSplitsTree4_2, distancesFromSplitsTree4_2, null));
 
 
-        for(int i = 0; i<distancesBlock2.getDistances().length; i++){
+        for (int i = 0; i < distancesBlock2.getDistances().length; i++) {
             assertArrayEquals(distancesFromSplitsTree4_2.getDistances()[i], distancesBlock2.getDistances()[i], 0.000001);
         }
     }

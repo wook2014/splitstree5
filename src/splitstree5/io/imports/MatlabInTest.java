@@ -2,12 +2,9 @@ package splitstree5.io.imports;
 
 import org.junit.Test;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.io.imports.NeXML.NexmlFileParser;
 import splitstree5.io.nexus.TaxaNexusIO;
 
 import java.io.StringWriter;
-
-import static org.junit.Assert.*;
 
 public class MatlabInTest {
 

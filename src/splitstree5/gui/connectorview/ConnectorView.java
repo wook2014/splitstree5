@@ -31,13 +31,19 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import jloda.fx.ExtendedFXMLLoader;
 import jloda.util.Basic;
+import jloda.util.ProgramProperties;
+import jloda.util.ResourceManager;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataBlock;
-import splitstree5.core.datablocks.ADataNode;
+import splitstree5.core.misc.Taxon;
+import splitstree5.core.project.ProjectManager;
 import splitstree5.core.workflow.UpdateState;
+import splitstree5.gui.taxafilterview.TaxaFilterPane;
 import splitstree5.info.MethodsTextGenerator;
+import splitstree5.main.ISavesPreviousSelection;
+import splitstree5.menu.MenuController;
 import splitstree5.undo.UndoRedoManager;
 
 import java.io.IOException;
@@ -53,6 +59,7 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> implement
     private final Document document;
     private final Parent root;
     private final ConnectorViewController controller;
+    private final MenuController menuController;
     private final UndoRedoManager undoManager;
     private AlgorithmPane algorithmPane;
     private Algorithm<P, C> currentAlgorithm;
@@ -70,9 +77,21 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> implement
         this.connector = connector;
         this.currentAlgorithm = connector.getAlgorithm();
 
-        final ExtendedFXMLLoader<ConnectorViewController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
-        root = extendedFXMLLoader.getRoot();
-        controller = extendedFXMLLoader.getController();
+        {
+            final ExtendedFXMLLoader<ConnectorViewController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
+            root = extendedFXMLLoader.getRoot();
+            controller = extendedFXMLLoader.getController();
+        }
+        {
+            final ExtendedFXMLLoader<MenuController> extendedFXMLLoader = new ExtendedFXMLLoader<>(MenuController.class);
+            menuController = extendedFXMLLoader.getController();
+        }
+        if (true || !ProgramProperties.isMacOS()) {
+            menuController.getMenuBar().getMenus().remove(2, menuController.getMenuBar().getMenus().size() - 2);
+            // keep File, Edit, Window and Help
+        }
+        controller.getBorderPane().setTop(menuController.getMenuBar());
+
         undoManager = new UndoRedoManager();
 
         connector.stateProperty().addListener((observable, oldValue, newValue) -> {
@@ -127,27 +146,14 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> implement
             algorithmComboBox.setDisable(true);
         }
 
-        controller.getUndoMenuItem().setOnAction((e) -> {
-            undoManager.undo();
-        });
-        controller.getUndoMenuItem().disableProperty().bind(new SimpleBooleanProperty(false).isEqualTo(undoManager.canUndoProperty()));
-        controller.getUndoMenuItem().textProperty().bind(undoManager.undoNameProperty());
-
-        controller.getRedoMenuItem().setOnAction((e) -> undoManager.redo());
-        controller.getRedoMenuItem().disableProperty().bind(new SimpleBooleanProperty(false).isEqualTo(undoManager.canRedoProperty()));
-        controller.getRedoMenuItem().textProperty().bind(undoManager.redoNameProperty());
-
         controller.getApplyButton().setOnAction((e) -> {
             if (connector.getAlgorithm() != currentAlgorithm)
                 connector.setAlgorithm(currentAlgorithm);
-            setUpdatePendingStateRec(connector.getChild());
             algorithmPane.syncController2Model();
             undoManager.addUndoableApply(algorithmPane::syncController2Model);
         });
 
         controller.getApplyButton().setDisable(!(currentAlgorithm.isApplicable(connector.getTaxaBlock(), connector.getParentDataBlock(), connector.getChildDataBlock())));
-        // controller.getApplyButton().disableProperty().bind(document.updatingProperty().or(algorithmPane.applicableProperty().not()));
-        // todo: need to bind to something that lets us know that something has changed
 
         connector.applicableProperty().addListener((c, o, n) -> {
             System.err.println(currentAlgorithm.getName() + " is applicable: " + n);
@@ -163,13 +169,6 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> implement
             }
             ConnectorView.this.stage.close();
         });
-        controller.getCloseMenuItem().setOnAction((e) -> ConnectorView.this.stage.close());
-
-        controller.getResetButton().setOnAction((e) -> {
-            algorithmPane.syncModel2Controller();
-            undoManager.clear();
-            controller.getCenterPane().getChildren().setAll(algorithmPane);
-        });
 
         algorithmComboBox.getItems().addAll(algorithms);
         algorithmComboBox.setValue(currentAlgorithm);
@@ -184,17 +183,49 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> implement
         algorithmPane.syncModel2Controller();
 
         controller.getCenterPane().getChildren().setAll(algorithmPane);
-    }
 
-    private void setUpdatePendingStateRec(ADataNode node) {
-        if (node != null) {
-            if (node == document.getWorkflow().getWorkingTaxaNode())
-                setUpdatePendingStateRec(document.getWorkflow().getTopDataNode());
-            else {
-                for (Object child : node.getChildren())
-                    setUpdatePendingStateRec(((AConnector) child).getChild());
-            }
+        menuController.unbindAndDisableAllMenuItems();
+
+        menuController.getUndoMenuItem().setOnAction((e) -> {
+            undoManager.undo();
+        });
+
+        menuController.getUndoMenuItem().disableProperty().bind(new SimpleBooleanProperty(false).isEqualTo(undoManager.canUndoProperty()));
+        menuController.getUndoMenuItem().textProperty().bind(undoManager.undoNameProperty());
+
+        menuController.getRedoMenuItem().setOnAction((e) -> undoManager.redo());
+        menuController.getRedoMenuItem().disableProperty().bind(new SimpleBooleanProperty(false).isEqualTo(undoManager.canRedoProperty()));
+        menuController.getRedoMenuItem().textProperty().bind(undoManager.redoNameProperty());
+
+        menuController.getCloseMenuItem().setOnAction((e) -> ConnectorView.this.stage.close());
+
+        if (algorithmPane instanceof TaxaFilterPane) {
+            final TaxaFilterPane taxaFilterPane = (TaxaFilterPane) algorithmPane;
+            menuController.getSelectNoneMenuItem().setOnAction((c) -> {
+                taxaFilterPane.getController().getActiveList().getSelectionModel().clearSelection();
+                taxaFilterPane.getController().getInactiveList().getSelectionModel().clearSelection();
+            });
+            menuController.getSelectAllMenuItem().setOnAction((c) -> {
+                taxaFilterPane.getController().getActiveList().getSelectionModel().selectAll();
+                taxaFilterPane.getController().getInactiveList().getSelectionModel().selectAll();
+            });
+            menuController.getSelectFromPreviousMenuItem().setOnAction((c) -> {
+                for (Taxon taxon : taxaFilterPane.getController().getActiveList().getItems()) {
+                    if (ProjectManager.getInstance().getPreviousSelection().contains(taxon.getName()))
+                        taxaFilterPane.getController().getActiveList().getSelectionModel().select(taxon);
+                }
+                taxaFilterPane.getController().getActiveList().scrollTo(taxaFilterPane.getController().getActiveList().getSelectionModel().getSelectedIndex());
+                for (Taxon taxon : taxaFilterPane.getController().getInactiveList().getItems()) {
+                    if (ProjectManager.getInstance().getPreviousSelection().contains(taxon.getName()))
+                        taxaFilterPane.getController().getInactiveList().getSelectionModel().select(taxon);
+                }
+                taxaFilterPane.getController().getInactiveList().scrollTo(taxaFilterPane.getController().getInactiveList().getSelectionModel().getSelectedIndex());
+
+            });
+            menuController.getSelectFromPreviousMenuItem().disableProperty().bind(Bindings.isEmpty(ProjectManager.getInstance().getPreviousSelection()));
         }
+
+        menuController.enableAllUnboundActionMenuItems();
     }
 
     /**
@@ -248,7 +279,14 @@ public class ConnectorView<P extends ADataBlock, C extends ADataBlock> implement
             }
             stage.setX(screenX);
             stage.setY(screenY);
+
+            if (algorithmPane instanceof ISavesPreviousSelection)
+                stage.focusedProperty().addListener((c, o, n) -> {
+                    if (!n)
+                        ((ISavesPreviousSelection) algorithmPane).saveAsPreviousSelection();
+                });
         }
+        stage.getIcons().setAll(ResourceManager.getIcon("Algorithm16.gif"));
         stage.show();
         stage.sizeToScene();
         stage.toFront();

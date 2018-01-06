@@ -35,8 +35,9 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * test the Hamming distances computation
- *
+ * <p>
  * Created on 2/3/17.
+ *
  * @author huson
  */
 public class HammingDistancesTest {

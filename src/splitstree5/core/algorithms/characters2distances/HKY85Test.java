@@ -18,6 +18,7 @@ import static org.junit.Assert.assertArrayEquals;
 
 /**
  * Created on 05.03.2017.
+ *
  * @author Daria
  */
 public class HKY85Test {
@@ -47,7 +48,7 @@ public class HKY85Test {
                         taxaFromSplitsTree4, distancesFromSplitsTree4, null));
 
 
-        for(int i = 0; i<distancesBlock.getDistances().length; i++){
+        for (int i = 0; i < distancesBlock.getDistances().length; i++) {
             assertArrayEquals(distancesFromSplitsTree4.getDistances()[i], distancesBlock.getDistances()[i], 0.00000001);
         }
 
@@ -72,7 +73,7 @@ public class HKY85Test {
                         taxaFromSplitsTree41, distancesFromSplitsTree41, null));
 
 
-        for(int i = 0; i<distancesBlock1.getDistances().length; i++){
+        for (int i = 0; i < distancesBlock1.getDistances().length; i++) {
             assertArrayEquals(distancesFromSplitsTree41.getDistances()[i], distancesBlock1.getDistances()[i], 0.00000001);
         }
 

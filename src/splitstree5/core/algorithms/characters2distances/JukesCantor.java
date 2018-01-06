@@ -11,8 +11,9 @@ import splitstree5.core.models.JCmodel;
 
 /**
  * Computes the Jukes Cantor distance for a set of characters
- *
+ * <p>
  * Created on 12-Jun-2004
+ *
  * @author DJB
  */
 

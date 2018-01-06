@@ -9,7 +9,7 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.CharactersType;
-import splitstree5.gui.dialog.Alert;
+import splitstree5.utils.Alert;
 
 /**
  * Implements the Upholt (1979) distance for restriction site data.
@@ -113,12 +113,12 @@ public class Upholt extends Algorithm<CharactersBlock, DistancesBlock> implement
         this.optionHandleAmbiguousStates = optionHandleAmbiguousStates;
     }
 
-    public double getOptionRestrictionSiteLength(){
+    public double getOptionRestrictionSiteLength() {
         return this.optionRestrictionSiteLength;
     }
 
-    public void setOptionRestrictionSiteLength(double restrictionSiteLength){
-        this.optionRestrictionSiteLength=restrictionSiteLength;
+    public void setOptionRestrictionSiteLength(double restrictionSiteLength) {
+        this.optionRestrictionSiteLength = restrictionSiteLength;
     }
 
 }

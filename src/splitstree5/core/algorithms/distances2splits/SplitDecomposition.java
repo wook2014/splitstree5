@@ -37,6 +37,7 @@ import java.util.List;
 /**
  * Split decomposition
  * Created on 12/30/16.
+ *
  * @author Daniel Huson and Daria Evseeva
  */
 public class SplitDecomposition extends Algorithm<DistancesBlock, SplitsBlock> implements IFromDistances, IToSplits {

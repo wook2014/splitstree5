@@ -19,6 +19,7 @@
 
 package splitstree5.core.datablocks;
 
+import javafx.beans.InvalidationListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import jloda.util.Basic;
@@ -63,6 +64,7 @@ public class SplitsBlock extends ADataBlock {
     public SplitsBlock(String name) {
         this();
         setName(name);
+        getSplits().addListener((InvalidationListener) observable -> setShortDescription(getInfo()));
     }
 
     /**

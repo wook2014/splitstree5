@@ -4,9 +4,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 import splitstree5.core.datablocks.characters.CharactersType;
-import splitstree5.io.nexus.stateLabeler.MicrostatStateLabeler;
-import splitstree5.io.nexus.stateLabeler.ProteinStateLabeler;
-import splitstree5.io.nexus.stateLabeler.StandardStateLabeler;
 import splitstree5.io.nexus.stateLabeler.StateLabeler;
 
 import java.io.IOException;
@@ -67,10 +64,10 @@ public class NexmlCharactersHandler extends DefaultHandler {
             type = type.replaceAll("Cells", "");
             dataType = CharactersType.valueOfIgnoreCase(type);
             System.out.println(dataType);
-        }else if (qName.equalsIgnoreCase("format") && bCells) {
+        } else if (qName.equalsIgnoreCase("format") && bCells) {
             column2state = new HashMap<>();
             id2states = new HashMap<>();
-        }else if (qName.equalsIgnoreCase("states") && bCells) {
+        } else if (qName.equalsIgnoreCase("states") && bCells) {
             states2symbols = new HashMap<>();
             currentStatesID = attributes.getValue("id");
             //column2state.keySet().add(id);
@@ -86,24 +83,24 @@ public class NexmlCharactersHandler extends DefaultHandler {
                     stateLabeler = new StandardStateLabeler()
                     break;
             }*/
-        }else if ((qName.equalsIgnoreCase("state") ||
+        } else if ((qName.equalsIgnoreCase("state") ||
                 qName.equalsIgnoreCase("uncertain_state_set") ||
                 qName.equalsIgnoreCase("polymorphic_state_set")) && bCells) {
             String id = attributes.getValue("id");
             Character symbol = attributes.getValue("symbol").charAt(0);
             states2symbols.put(id, symbol);
-        }else if (qName.equalsIgnoreCase("char") && bCells) {
+        } else if (qName.equalsIgnoreCase("char") && bCells) {
             String id = attributes.getValue("id");
             String states = attributes.getValue("states");
             column2state.put(id, id2states.get(states));
-        }else if (qName.equalsIgnoreCase("row")) {
+        } else if (qName.equalsIgnoreCase("row")) {
             tmp = new StringBuilder();
-        }else if (qName.equalsIgnoreCase("cell") && bCells) {
+        } else if (qName.equalsIgnoreCase("cell") && bCells) {
             String column = attributes.getValue("char");
             String state = attributes.getValue("state");
             tmp.append(column2state.get(column).get(state));
             //tmp.append(states2symbols.get(state));
-        }else if (qName.equalsIgnoreCase("seq")) {
+        } else if (qName.equalsIgnoreCase("seq")) {
             bSeq = true;
             tmp = new StringBuilder();
         }
@@ -134,28 +131,28 @@ public class NexmlCharactersHandler extends DefaultHandler {
             tmp.append(new String(buffer, start, length));
 
             //System.out.println("Found row : "
-              //      + new String(ch, start, length));
+            //      + new String(ch, start, length));
             //matrix.add(new String(ch, start, length));
             //bSeq = false;
         }
     }
 
-    public ArrayList<String> getTaxaLabels(){
+    public ArrayList<String> getTaxaLabels() {
         return this.taxaLabels;
     }
 
     public char[][] getMatrix() throws IOException {
         int ntax, nchar;
-        if(matrix.size() == 0)
+        if (matrix.size() == 0)
             throw new IOException("No Sequences was found");
         ntax = matrix.size();
         nchar = matrix.get(0).length();
         char[][] charMatrix = new char[ntax][nchar];
 
         System.err.println("Matrix");
-        for(int i=0; i<ntax; i++){
+        for (int i = 0; i < ntax; i++) {
             System.err.println();
-            for(int j=0; j<nchar; j++){
+            for (int j = 0; j < nchar; j++) {
                 // todo : check if char corresponds to the datatype
                 charMatrix[i][j] = matrix.get(i).charAt(j);
                 System.err.print(charMatrix[i][j]);
@@ -164,7 +161,7 @@ public class NexmlCharactersHandler extends DefaultHandler {
         return charMatrix;
     }
 
-    public CharactersType getDataType(){
+    public CharactersType getDataType() {
         return this.dataType;
     }
 

@@ -9,7 +9,7 @@ import splitstree5.io.nexus.TaxaNexusIO;
 
 import java.io.StringWriter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Daria on 27.09.2017.

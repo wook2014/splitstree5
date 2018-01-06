@@ -39,7 +39,7 @@ import java.util.List;
 
 /**
  * splits filter
- * Created by huson on 12/12/16.
+ * Daniel Huson 12/2016
  */
 public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements IFromSplits, IToSplits {
     public enum FilterAlgorithm {None, GreedyCompatible, ClosestTree, GreedyWeaklyCompatible}
@@ -56,19 +56,6 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
 
     public List<String> listOptions() {
         return Arrays.asList("optionFilterAlgorithm", "optionWeightThreshold", "optionConfidenceThreshold", "optionMaximumDimension");
-    }
-
-    /**
-     * constructor
-     */
-    public SplitsFilter() {
-        super("Splits Filter");
-    }
-
-    @Override
-    public void clear() {
-        enabledSplits.clear();
-        disabledSplits.clear();
     }
 
     /**
@@ -169,18 +156,21 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
             child.setCompatibility(compatibility);
             child.setThreshold(parent.getThreshold());
         }
+
+        if (enabledSplits.size() == 0 && disabledSplits.size() == 0)
+            setShortDescription(null);
+        else if (disabledSplits.size() == 0)
+            setShortDescription("Enabled: " + enabledSplits.size());
+        else
+            setShortDescription("Enabled: " + enabledSplits.size() + " (of " + (enabledSplits.size() + disabledSplits.size() + ")"));
     }
 
     @Override
-    public String getShortDescription() {
-        if (enabledSplits.size() == 0 && disabledSplits.size() == 0)
-            return "";
-        else if (disabledSplits.size() == 0)
-            return "Enabled: " + enabledSplits.size();
-        else
-            return "Enabled: " + enabledSplits.size() + " (of " + (enabledSplits.size() + disabledSplits.size() + ")");
+    public void clear() {
+        super.clear();
+        enabledSplits.clear();
+        disabledSplits.clear();
     }
-
 
     /**
      * get the set of enabledSplits data.

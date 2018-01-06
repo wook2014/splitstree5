@@ -18,6 +18,7 @@ import static org.junit.Assert.assertArrayEquals;
 
 /**
  * Created on 05.03.2017.
+ *
  * @author Daria
  */
 public class BaseFreqDistanceTest {
@@ -49,9 +50,9 @@ public class BaseFreqDistanceTest {
 
 
         System.out.println("MATRIX");
-        for(int i = 0; i<distancesBlock.getDistances().length; i++){
-            for(int j = 0; j < distancesBlock.getDistances()[i].length; j++){
-                System.out.print(distancesBlock.get(i+1,j+1)+" ");
+        for (int i = 0; i < distancesBlock.getDistances().length; i++) {
+            for (int j = 0; j < distancesBlock.getDistances()[i].length; j++) {
+                System.out.print(distancesBlock.get(i + 1, j + 1) + " ");
             }
             System.out.println();
             assertArrayEquals(distancesFromSplitsTree4.getDistances()[i], distancesBlock.getDistances()[i], 0.0000001);
@@ -79,9 +80,9 @@ public class BaseFreqDistanceTest {
 
 
         System.out.println("MATRIX");
-        for(int i = 0; i<distancesBlock1.getDistances().length; i++){
+        for (int i = 0; i < distancesBlock1.getDistances().length; i++) {
             //for(int j = 0; j < distancesBlock1.getDistances()[i].length; j++){
-              //  System.out.print(distancesBlock1.get(i+1,j+1)+" ");
+            //  System.out.print(distancesBlock1.get(i+1,j+1)+" ");
             //}
             //System.out.println();
             assertArrayEquals(distancesFromSplitsTree41.getDistances()[i], distancesBlock1.getDistances()[i], 0.0000001);
@@ -107,7 +108,7 @@ public class BaseFreqDistanceTest {
                         taxaFromSplitsTree4_2, distancesFromSplitsTree4_2, null));
 
 
-        for(int i = 0; i<distancesBlock2.getDistances().length; i++){
+        for (int i = 0; i < distancesBlock2.getDistances().length; i++) {
             assertArrayEquals(distancesFromSplitsTree4_2.getDistances()[i], distancesBlock2.getDistances()[i], 0.0000001);
         }
 

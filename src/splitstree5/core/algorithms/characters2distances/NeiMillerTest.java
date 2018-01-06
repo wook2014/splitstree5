@@ -18,6 +18,7 @@ import java.util.List;
 
 /**
  * Created on 22.02.2017.
+ *
  * @author Daria
  */
 public class NeiMillerTest {

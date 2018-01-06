@@ -20,19 +20,20 @@ import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
-import splitstree5.gui.dialog.Alert;
+import splitstree5.utils.Alert;
 import splitstree5.utils.nexus.TreesUtilities;
 
 import java.util.*;
 
 /**
  * compute network from partial trees
- *
+ * <p>
  * Created on 22.06.2017
+ *
  * @author Daniel Huson and Daria Evseeva
  */
 
-public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
+public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
 
     public final static String DESCRIPTION = "Z-closure super-network from partial trees (Huson, Dezulian, Kloepper and Steel 2004)";
     private boolean optionZRule = true;
@@ -43,7 +44,10 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
     private int optionSeed = 0;
 
     // edge weight options:
-    public enum EdgeWeights {AverageRelative, Mean, TreeSizeWeightedMean, Sum, Min, None}
+    public enum EdgeWeights {
+        AverageRelative, Mean, TreeSizeWeightedMean, Sum, Min, None
+    }
+
     private final SimpleObjectProperty<EdgeWeights> optionEdgeWeights = new SimpleObjectProperty<>(EdgeWeights.TreeSizeWeightedMean);
 
     @Override
@@ -160,7 +164,7 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
                             ok = false;     // found a tree that doesn't contain the induced split
                     }
                 }
-                if (ok){
+                if (ok) {
                     ASplit split = new ASplit(ps.getA(), taxaBlock.getNtax());
                     splits.getSplits().add(split);
                 }
@@ -173,9 +177,9 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
             ts.set(t);
             PartialSplit ps = new PartialSplit(ts);
             BitSet ts1 = new BitSet();
-            ts1.set(1, taxaBlock.getNtax()+1);
+            ts1.set(1, taxaBlock.getNtax() + 1);
             ps.setComplement(ts1);
-            if (!allPSplits.contains(ps)){
+            if (!allPSplits.contains(ps)) {
                 ASplit split = new ASplit(ps.getA(), taxaBlock.getNtax());
                 splits.getSplits().add(split);
             }
@@ -221,13 +225,13 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
      * @param splits
      */
     private void setWeightsConfidences(/*document doc*/ Map[] pSplits,
-                                       BitSet[] supportSet, TaxaBlock taxa, SplitsBlock splits) throws CanceledException {
+                                                        BitSet[] supportSet, TaxaBlock taxa, SplitsBlock splits) throws CanceledException {
         for (int s = 1; s <= splits.getNsplits(); s++) {
             //doc.notifySetProgress(-1);
-            PartialSplit current = new PartialSplit(splits.getSplits().get(s-1).getA(),
-                    splits.getSplits().get(s-1).getB());
-                    //new PartialSplit(splits.get(s),
-                    //splits.get(s).getComplement(taxa.getNtax()));
+            PartialSplit current = new PartialSplit(splits.getSplits().get(s - 1).getA(),
+                    splits.getSplits().get(s - 1).getB());
+            //new PartialSplit(splits.get(s),
+            //splits.get(s).getComplement(taxa.getNtax()));
 
             float min = 1000000;
             float sum = 0;
@@ -266,8 +270,8 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
                     value = sum;
                     break;
             }
-            splits.getSplits().get(s-1).setWeight(value);
-            splits.getSplits().get(s-1).setConfidence(total);
+            splits.getSplits().get(s - 1).setWeight(value);
+            splits.getSplits().get(s - 1).setConfidence(total);
         }
     }
 
@@ -281,7 +285,7 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
      * @param splits
      * @throws CanceledException
      */
-    private void setWeightAverageReleativeLength( Map[] pSplits,
+    private void setWeightAverageReleativeLength(Map[] pSplits,
                                                  BitSet[] supportSet, TaxaBlock taxa, SplitsBlock splits) throws
             CanceledException {
         // compute average of weights and num of edges for each input tree
@@ -302,10 +306,10 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
         for (int s = 1; s <= splits.getNsplits(); s++) {
             //doc.notifySetProgress(-1);
             PartialSplit current =
-                    new PartialSplit(splits.getSplits().get(s-1).getA(),
-                            splits.getSplits().get(s-1).getB());
-                    //new PartialSplit(splits.get(s),
-                    //splits.get(s).getComplement(taxa.getNtax()));
+                    new PartialSplit(splits.getSplits().get(s - 1).getA(),
+                            splits.getSplits().get(s - 1).getB());
+            //new PartialSplit(splits.get(s),
+            //splits.get(s).getComplement(taxa.getNtax()));
 
             BitSet activeTrees = new BitSet(); // trees that contain projection of
             // current split
@@ -325,7 +329,7 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
                         / averageWeight[t];
             }
             weight /= activeTrees.cardinality();
-            splits.getSplits().get(s-1).setWeight(weight); //setWeight(s, weight);
+            splits.getSplits().get(s - 1).setWeight(weight); //setWeight(s, weight);
         }
     }
 
@@ -339,7 +343,7 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
      */
     private void computePartialSplits(TaxaBlock taxa, TreesBlock trees, int which, Map pSplitsOfTree, BitSet support) {
         List list = new LinkedList(); // list of (onesided) partial splits
-        Node v = trees.getTrees().get(which-1).getFirstNode();
+        Node v = trees.getTrees().get(which - 1).getFirstNode();
         computePSplitsFromTreeRecursively(v, null, trees, taxa, list, which, support);
 
         for (Object aList : list) {
@@ -352,7 +356,7 @@ public class SuperNetwork  extends Algorithm<TreesBlock, SplitsBlock> implements
     // recursively compute the splits:
 
     private BitSet computePSplitsFromTreeRecursively(Node v, Edge e, TreesBlock trees, TaxaBlock taxa, List list, int which, BitSet seen) {
-        PhyloTree tree = trees.getTrees().get(which-1);
+        PhyloTree tree = trees.getTrees().get(which - 1);
         BitSet e_taxa = new BitSet();
         if (taxa.indexOf(tree.getLabel(v)) != -1)
             e_taxa.set(taxa.indexOf(tree.getLabel(v)));

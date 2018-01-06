@@ -44,6 +44,7 @@ import java.util.*;
 /**
  * implements consensus network
  * Created on 12/11/16.
+ *
  * @author Tobias Kloepper, Daniel Huson and David Bryant
  */
 public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
@@ -64,7 +65,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
      */
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock)
             throws CanceledException, SplitsException {
-        
+
         progressListener.setMaximum(100);
         final ObservableList<PhyloTree> trees = treesBlock.getTrees();
         TreeSelector trans;

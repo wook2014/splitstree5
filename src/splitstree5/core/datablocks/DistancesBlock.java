@@ -63,12 +63,11 @@ public class DistancesBlock extends ADataBlock {
         super.clear();
         distances = new double[0][0];
         variances = null;
-        setShortDescription("");
     }
 
     public void setNtax(int n) {
         distances = new double[n][n];
-
+        setShortDescription(getInfo());
     }
 
     @Override

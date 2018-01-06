@@ -8,13 +8,14 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.BitSet;
 import java.util.Comparator;
+
 /**
  * This is a simple implementation of a partial split
  *
  * @author huson
- *         Date: 19-Feb-2004
+ * Date: 19-Feb-2004
  */
-public class PartialSplit implements Comparator, Cloneable{
+public class PartialSplit implements Comparator, Cloneable {
 
     BitSet A;
     BitSet B;
@@ -283,7 +284,7 @@ public class PartialSplit implements Comparator, Cloneable{
      * @param qs1 output 1
      * @param qs2 output2
      * @return true, if rule was applied and resulting splits differ from the original
-     *         ones
+     * ones
      */
     public static boolean applyZigZagRule(PartialSplit ps1, PartialSplit ps2,
                                           PartialSplit qs1, PartialSplit qs2) {
@@ -317,7 +318,7 @@ public class PartialSplit implements Comparator, Cloneable{
      * @param qs1 output 1
      * @param qs2 output2
      * @return true, if rule was applied and resulting splits differ from the original
-     *         ones
+     * ones
      */
     public static boolean applyZigZagRuleAlsoOnInconsistent(PartialSplit ps1, PartialSplit ps2,
                                                             PartialSplit qs1, PartialSplit qs2, PartialSplit qs3, PartialSplit qs4) {

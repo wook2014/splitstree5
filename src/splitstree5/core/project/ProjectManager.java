@@ -19,17 +19,40 @@
 
 package splitstree5.core.project;
 
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.ReadOnlyLongProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
+import javafx.stage.Stage;
+import splitstree5.main.MainWindow;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * manages projects
  * Daniel Huson, 1.2018
  */
 public class ProjectManager {
+    private final ArrayList<MainWindow> mainWindows;
+    private final Map<MainWindow, ArrayList<Stage>> mainWindows2AdditionalWindows;
+
+    private final LongProperty changed = new SimpleLongProperty(0);
+
     private final ObservableSet<String> previousSelection;
 
     private static ProjectManager instance;
+
+    /**
+     * constructor
+     */
+    private ProjectManager() {
+        mainWindows = new ArrayList<>();
+        mainWindows2AdditionalWindows = new HashMap<>();
+        previousSelection = FXCollections.observableSet();
+    }
 
     /**
      * get the instance
@@ -42,8 +65,8 @@ public class ProjectManager {
         return instance;
     }
 
-    private ProjectManager() {
-        previousSelection = FXCollections.observableSet();
+    public int size() {
+        return mainWindows.size();
     }
 
     /**
@@ -53,5 +76,45 @@ public class ProjectManager {
      */
     public ObservableSet<String> getPreviousSelection() {
         return previousSelection;
+    }
+
+    public void addMainWindow(MainWindow mainWindow) {
+        mainWindows.add(mainWindow);
+        mainWindows2AdditionalWindows.put(mainWindow, new ArrayList<>());
+        changed.set(changed.get() + 1);
+    }
+
+    public void removeMainWindow(MainWindow mainWindow) {
+        mainWindows.remove(mainWindow);
+        mainWindows2AdditionalWindows.remove(mainWindow);
+        changed.set(changed.get() + 1);
+    }
+
+    public MainWindow getMainWindow(int index) {
+        return mainWindows.get(index);
+    }
+
+    public void addAuxiliaryWindow(MainWindow mainWindow, Stage stage) {
+        mainWindows2AdditionalWindows.get(mainWindow).add(stage);
+        changed.set(changed.get() + 1);
+    }
+
+    public void removeAuxiliaryWindow(MainWindow mainWindow, Stage stage) {
+        if (mainWindows2AdditionalWindows.containsKey(mainWindow)) {
+            mainWindows2AdditionalWindows.get(mainWindow).remove(stage);
+            changed.set(changed.get() + 1);
+        }
+    }
+
+    public ReadOnlyLongProperty changedProperty() {
+        return changed;
+    }
+
+    public ArrayList<MainWindow> getMainWindows() {
+        return mainWindows;
+    }
+
+    public ArrayList<Stage> getAuxiliaryWindows(MainWindow mainWindow) {
+        return mainWindows2AdditionalWindows.get(mainWindow);
     }
 }

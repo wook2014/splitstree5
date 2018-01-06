@@ -97,7 +97,6 @@ public class CharactersBlock extends ADataBlock {
     public void clear() {
         super.clear();
         matrix = new char[0][0];
-        setShortDescription("");
     }
 
     /**
@@ -111,6 +110,7 @@ public class CharactersBlock extends ADataBlock {
 
     public void setDimension(int ntax, int nchar) {
         matrix = new char[ntax][nchar];
+        setShortDescription(getInfo());
     }
 
     /**
@@ -211,8 +211,8 @@ public class CharactersBlock extends ADataBlock {
             this.characterWeights = null;
         else {
             this.characterWeights = new double[getNchar()];
-            System.arraycopy(characterWeights, 1, this.characterWeights, 0, characterWeights.length-1);
-            System.err.println("Debug: charWeights: "+Arrays.toString(this.characterWeights));
+            System.arraycopy(characterWeights, 1, this.characterWeights, 0, characterWeights.length - 1);
+            System.err.println("Debug: charWeights: " + Arrays.toString(this.characterWeights));
         }
     }
 
@@ -235,6 +235,7 @@ public class CharactersBlock extends ADataBlock {
     public void setDataType(CharactersType dataType) {
         this.dataType = dataType;
         resetSymbols();
+        setShortDescription(getInfo());
     }
 
     public boolean isHasAmbiguousStates() {

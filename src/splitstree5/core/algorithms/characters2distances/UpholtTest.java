@@ -20,6 +20,7 @@ import static org.junit.Assert.assertArrayEquals;
 
 /**
  * Created on 22.02.2017.
+ *
  * @author Daria
  */
 public class UpholtTest {
@@ -55,7 +56,7 @@ public class UpholtTest {
                         taxaFromSplitsTree4, distancesFromSplitsTree4, null));
 
 
-        for(int i = 0; i<distancesBlock.getDistances().length; i++){
+        for (int i = 0; i < distancesBlock.getDistances().length; i++) {
             assertArrayEquals(distancesFromSplitsTree4.getDistances()[i], distancesBlock.getDistances()[i], 0.000001);
         }
 

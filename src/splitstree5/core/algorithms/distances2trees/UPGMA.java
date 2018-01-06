@@ -14,8 +14,9 @@ import splitstree5.core.datablocks.TreesBlock;
 
 /**
  * UPGMA classic n³ version
- *
+ * <p>
  * Created on 2010-02-04
+ *
  * @author Christian Rausch, David Bryant, Daniel Huson
  */
 

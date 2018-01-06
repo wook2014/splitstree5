@@ -1,7 +1,6 @@
 package splitstree5.io.exports;
 
 import splitstree5.core.algorithms.interfaces.IFromDistances;
-import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
@@ -18,14 +17,14 @@ public class PhylipDistancesOut implements IFromDistances {
         int ntax = taxa.getNtax();
 
         int maxLabelLength = taxa.getLabel(1).length();
-        for(int i=2; i<=ntax; i++){
-            if(taxa.getLabel(i).length()>maxLabelLength)
+        for (int i = 2; i <= ntax; i++) {
+            if (taxa.getLabel(i).length() > maxLabelLength)
                 maxLabelLength = taxa.getLabel(i).length();
         }
 
-        w.write("\t"+ntax+"\n");
+        w.write("\t" + ntax + "\n");
 
-        if(!optionTriangular) {
+        if (!optionTriangular) {
             System.err.println("standard");
             for (int i = 1; i <= distances.getDistances().length; i++) {
                 StringBuilder sequence = new StringBuilder("");
@@ -33,7 +32,7 @@ public class PhylipDistancesOut implements IFromDistances {
                     sequence.append(distances.get(i, j));
                     sequence.append(" ");
                 }
-                if(taxa.getLabel(i).length() >= 10)
+                if (taxa.getLabel(i).length() >= 10)
                     w.write(taxa.getLabel(i).substring(0, 10));
                 else {
                     w.write(taxa.getLabel(i));
@@ -41,18 +40,18 @@ public class PhylipDistancesOut implements IFromDistances {
                         w.write(" ");
                     }
                 }
-                w.write("\t"+sequence + "\n");
+                w.write("\t" + sequence + "\n");
             }
         } else {
             System.err.println("triangular");
-            w.write(taxa.getLabel(1)+"\n");
+            w.write(taxa.getLabel(1) + "\n");
             for (int i = 2; i <= distances.getDistances().length; i++) {
                 StringBuilder sequence = new StringBuilder("");
-                for (int j = 1; j <= i-1; j++) {
+                for (int j = 1; j <= i - 1; j++) {
                     sequence.append(distances.get(i, j));
                     sequence.append(" ");
                 }
-                if(taxa.getLabel(i).length() >= 10)
+                if (taxa.getLabel(i).length() >= 10)
                     w.write(taxa.getLabel(i).substring(0, 10));
                 else {
                     w.write(taxa.getLabel(i));
@@ -60,7 +59,7 @@ public class PhylipDistancesOut implements IFromDistances {
                         w.write(" ");
                     }
                 }
-                w.write( "\t"+sequence + "\n");
+                w.write("\t" + sequence + "\n");
             }
         }
     }
@@ -69,7 +68,7 @@ public class PhylipDistancesOut implements IFromDistances {
         this.optionTriangular = optionTriangular;
     }
 
-    public boolean getOptionTriangular(){
+    public boolean getOptionTriangular() {
         return this.optionTriangular;
     }
 }

@@ -11,12 +11,13 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.CharactersType;
 import splitstree5.core.models.*;
-import splitstree5.gui.dialog.Alert;
+import splitstree5.utils.Alert;
 
 /**
  * Computes the maximum likelihood protein distance estimates for a set of characters
- *
+ * <p>
  * Created on Jun 8, 2004
+ *
  * @author bryant
  */
 
@@ -25,6 +26,7 @@ public class ProteinMLdist extends SequenceBasedDistance implements IFromCharara
     private PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates = PairwiseCompare.HandleAmbiguous.Ignore;
 
     public enum Model {cpREV45, Dayhoff, JTT, mtMAM, mtREV24, pmb, Rhodopsin, WAG}
+
     private final SimpleObjectProperty<Model> optionModel = new SimpleObjectProperty<>(Model.JTT);
 
     private double optionPInvar = 0.0;
@@ -81,8 +83,8 @@ public class ProteinMLdist extends SequenceBasedDistance implements IFromCharara
                 distancesBlock.set(t, s, dist);
 
                 double var = seqPair.bulmerVariance(dist, 0.93);
-                distancesBlock.setVariance(s-1, t-1, var);
-                distancesBlock.setVariance(t-1, s-1, var);
+                distancesBlock.setVariance(s - 1, t - 1, var);
+                distancesBlock.setVariance(t - 1, s - 1, var);
 
                 k++;
                 progressListener.incrementProgress();

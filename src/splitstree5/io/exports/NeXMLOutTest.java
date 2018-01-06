@@ -2,16 +2,17 @@ package splitstree5.io.exports;
 
 import jloda.util.parse.NexusStreamParser;
 import org.junit.Test;
-import splitstree5.core.datablocks.*;
+import splitstree5.core.datablocks.ADataBlock;
+import splitstree5.core.datablocks.CharactersBlock;
+import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.io.imports.NeXML.NexmlFileParser;
-import splitstree5.io.nexus.*;
+import splitstree5.io.nexus.CharactersNexusIO;
+import splitstree5.io.nexus.TaxaNexusIO;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class NeXMLOutTest {
 

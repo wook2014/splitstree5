@@ -14,8 +14,9 @@ import splitstree5.core.datablocks.TreesBlock;
 
 /**
  * implements consensus networks
- *
+ * <p>
  * Created on 07.06.2017
+ *
  * @author Tobias Kloepper, Daniel Huson and David Bryant
  */
 
@@ -46,7 +47,6 @@ public class AverageConsensus extends Algorithm<TreesBlock, SplitsBlock> impleme
         nnet.compute(pl, taxaBlock, pairwiseDistances, splitsBlock);
 
     }
-
 
 
     public String getDescription() {

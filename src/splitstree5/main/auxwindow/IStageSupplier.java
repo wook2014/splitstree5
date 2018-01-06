@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Daniel H. Huson
+ *  Copyright (C) 2016 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -17,25 +17,35 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.gui.textview;
+package splitstree5.main.auxwindow;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.Tab;
+import javafx.stage.Stage;
 
-public class TextViewController {
+/**
+ * stage supplier for tabs that can undocked to their own stage
+ * daniel Huson 1.2018
+ */
+public interface IStageSupplier {
+    /**
+     * supplies a stage to put the tab in
+     *
+     * @param tab
+     * @return stage
+     */
+    Stage supplyStage(Tab tab, double width, double height);
 
-    @FXML
-    private TextArea textArea;
+    /**
+     * handle opened stage
+     *
+     * @param stage
+     */
+    void openedStage(Stage stage, Tab tab);
 
-    @FXML
-    private Button closeButton;
-
-    public TextArea getTextArea() {
-        return textArea;
-    }
-
-    public Button getCloseButton() {
-        return closeButton;
-    }
+    /**
+     * handle closed stage
+     *
+     * @param stage
+     */
+    void closedStage(Stage stage, Tab tab);
 }

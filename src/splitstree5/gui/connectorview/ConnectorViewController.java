@@ -22,19 +22,16 @@ package splitstree5.gui.connectorview;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import splitstree5.core.algorithms.Algorithm;
 
 /**
  * connector view controller
- * Created by huson on 12/31/16.
+ * Daniel Huson 12/2016
  */
 public class ConnectorViewController {
-
-    @FXML
-    private Button resetButton;
 
     @FXML
     private Button cancelButton;
@@ -43,19 +40,10 @@ public class ConnectorViewController {
     private Button applyButton;
 
     @FXML
-    private MenuItem closeMenuItem;
-
-    @FXML
-    private MenuItem undoMenuItem;
-
-    @FXML
-    private MenuItem redoMenuItem;
-
-    @FXML
-    private MenuItem aboutMenuItem;
-
-    @FXML
     private ComboBox<Algorithm> algorithmComboBox;
+
+    @FXML
+    private BorderPane borderPane;
 
     @FXML
     private Pane centerPane;
@@ -69,10 +57,6 @@ public class ConnectorViewController {
     void initialize() {
     }
 
-    public Button getResetButton() {
-        return resetButton;
-    }
-
     public Button getCancelButton() {
         return cancelButton;
     }
@@ -81,24 +65,12 @@ public class ConnectorViewController {
         return applyButton;
     }
 
-    public MenuItem getCloseMenuItem() {
-        return closeMenuItem;
-    }
-
-    public MenuItem getUndoMenuItem() {
-        return undoMenuItem;
-    }
-
-    public MenuItem getRedoMenuItem() {
-        return redoMenuItem;
-    }
-
-    public MenuItem getAboutMenuItem() {
-        return aboutMenuItem;
-    }
-
     public ComboBox<Algorithm> getAlgorithmComboBox() {
         return algorithmComboBox;
+    }
+
+    public BorderPane getBorderPane() {
+        return borderPane;
     }
 
     public Pane getCenterPane() {

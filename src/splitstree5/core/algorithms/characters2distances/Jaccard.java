@@ -9,12 +9,13 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.CharactersType;
-import splitstree5.gui.dialog.Alert;
+import splitstree5.utils.Alert;
 
 /**
  * Simple implementation of hamming distances
- *
+ * <p>
  * Created on 2009-01-25
+ *
  * @author bryant
  */
 public class Jaccard extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
@@ -105,7 +106,7 @@ public class Jaccard extends Algorithm<CharactersBlock, DistancesBlock> implemen
         this.optionHandleAmbiguousStates = optionHandleAmbiguousStates;
     }
 
-    public String getTASK(){
+    public String getTASK() {
         return TASK;
     }
 }

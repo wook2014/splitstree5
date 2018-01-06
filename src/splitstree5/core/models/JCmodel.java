@@ -20,9 +20,9 @@ package splitstree5.core.models;
 
 /**
  * @author Miguel Jett�
- *         June 10th 2004
- *         <p/>
- *         Jukes Cantor model of evolution.
+ * June 10th 2004
+ * <p/>
+ * Jukes Cantor model of evolution.
  */
 
 public class JCmodel extends NucleotideModel {

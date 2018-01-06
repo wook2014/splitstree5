@@ -19,35 +19,24 @@
 
 package splitstree5.main.methodstab;
 
-import javafx.scene.control.TextArea;
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.scene.text.Font;
 import splitstree5.core.Document;
-import splitstree5.main.MainWindowController;
-import splitstree5.main.ViewerTab;
+import splitstree5.main.texttab.TextViewTab;
 
-public class MethodsViewTab extends ViewerTab {
-    private final TextArea methodTextArea;
-
+/**
+ * the methods view tab
+ */
+public class MethodsViewTab extends TextViewTab {
     /**
      * constructor
      *
      * @param document
      */
     public MethodsViewTab(Document document) {
-        setText("Methods");
-        this.methodTextArea = new TextArea();
-        methodTextArea.setEditable(false);
-        methodTextArea.setWrapText(true);
-        setContent(methodTextArea);
-        methodTextArea.textProperty().bind(document.methodsTextProperty());
-    }
-
-    @Override
-    public void updateMenus(MainWindowController controller) {
-        controller.getCopyMenuItem().setOnAction((e) -> methodTextArea.copy());
-        controller.getCopyMenuItem().disableProperty().bind(methodTextArea.textProperty().length().isEqualTo(0));
-
-        controller.getSelectAllMenuItem().setOnAction((e) -> methodTextArea.selectAll());
-        controller.getSelectNoneMenuItem().setOnAction((e) -> methodTextArea.selectHome());
-        controller.getSelectNoneMenuItem().disableProperty().bind(methodTextArea.selectedTextProperty().length().isEqualTo(0));
+        super(new ReadOnlyStringWrapper("Methods"), document.methodsTextProperty());
+        getTextArea().setWrapText(true);
+        getTextArea().setFont(new Font("System", 12));
+        setClosable(false);
     }
 }

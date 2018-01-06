@@ -1,6 +1,5 @@
 package splitstree5.io.imports.NeXML;
 
-import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
 import org.xml.sax.Attributes;
@@ -30,7 +29,7 @@ public class NexmlTreesHandler extends DefaultHandler {
             //otu = true;
             String label = attributes.getValue("label");
             String id = attributes.getValue("id");
-            if(label != null){
+            if (label != null) {
                 System.out.println("Label : " + label);
                 taxaLabels.add(label);
             } else {
@@ -62,18 +61,18 @@ public class NexmlTreesHandler extends DefaultHandler {
             else
                 tree.setLabel(node, id);
 
-        }else if (qName.equalsIgnoreCase("rootedge")&& bReadingTree){
+        } else if (qName.equalsIgnoreCase("rootedge") && bReadingTree) {
             Double weight = Double.parseDouble(attributes.getValue("length")); // todo : check if possible
             //tree.setWeight(tree.newEdge(tree.getRoot(), weight);
             tree.setWeight(weight); // todo what should i do here?
-        } else if (qName.equalsIgnoreCase("edge")&& bReadingTree) {
+        } else if (qName.equalsIgnoreCase("edge") && bReadingTree) {
             String source = attributes.getValue("source");
             String target = attributes.getValue("target");
             Double weight = Double.parseDouble(attributes.getValue("length")); // todo : check if possible
 
             Node sourceNode = tree.getLastNode();
             Node targetNode = tree.getFirstNode();
-            for(Node n : tree.getNodesAsSet()){
+            for (Node n : tree.getNodesAsSet()) {
                 if (n.getData().equals(source)) sourceNode = n; // todo : can I use data parameter here?
                 if (n.getData().equals(target)) targetNode = n;
             }
@@ -88,17 +87,17 @@ public class NexmlTreesHandler extends DefaultHandler {
                            String localName, String qName) throws SAXException {
         if (qName.equalsIgnoreCase("otus")) {
             System.out.println("End Element :" + qName);
-        }else if (qName.equalsIgnoreCase("tree")){
+        } else if (qName.equalsIgnoreCase("tree")) {
             bReadingTree = false;
             trees.add(tree);
         }
     }
 
-    public ArrayList<String> getTaxaLabels(){
+    public ArrayList<String> getTaxaLabels() {
         return this.taxaLabels;
     }
 
-    public ArrayList<PhyloTree> getTrees(){
+    public ArrayList<PhyloTree> getTrees() {
         return this.trees;
     }
 }

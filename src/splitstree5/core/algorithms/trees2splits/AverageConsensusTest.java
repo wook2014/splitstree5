@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Created on 09.06.2017.
+ *
  * @author Daria
  */
 
@@ -54,7 +55,7 @@ public class AverageConsensusTest {
         TaxaNexusIO.parse(np4, taxaFromST4);
         SplitsNexusIO.parse(np4, taxaFromST4, splitsFromST4, null);
 
-        for(int i=0; i<splitsBlock.getSplits().size(); i++){
+        for (int i = 0; i < splitsBlock.getSplits().size(); i++) {
             ASplit aSplit = splitsBlock.getSplits().get(i);
             ASplit aSplitST4 = splitsFromST4.getSplits().get(i);
             assertEquals(aSplit.getA(), aSplitST4.getA());
@@ -91,7 +92,7 @@ public class AverageConsensusTest {
         TaxaNexusIO.parse(np42, taxaFromST42);
         SplitsNexusIO.parse(np42, taxaFromST42, splitsFromST42, null);
 
-        for(int i=0; i<splitsBlock2.getSplits().size(); i++){
+        for (int i = 0; i < splitsBlock2.getSplits().size(); i++) {
             ASplit aSplit = splitsBlock2.getSplits().get(i);
             ASplit aSplitST4 = splitsFromST42.getSplits().get(i);
             assertEquals(aSplit.getA(), aSplitST4.getA());
@@ -129,9 +130,9 @@ public class AverageConsensusTest {
         SplitsNexusIO.parse(np43, taxaFromST43, splitsFromST43, null);
 
         assertEquals(splitsBlock3.size(), splitsFromST43.size());
-        for(int i=0; i<splitsBlock3.getSplits().size(); i++){
+        for (int i = 0; i < splitsBlock3.getSplits().size(); i++) {
             ASplit aSplit = splitsBlock3.getSplits().get(i);
-            if(splitsFromST43.getSplits().contains(aSplit)){
+            if (splitsFromST43.getSplits().contains(aSplit)) {
                 int index = splitsFromST43.getSplits().indexOf(aSplit);
                 ASplit aSplitST4 = splitsFromST43.getSplits().get(index);
                 assertEquals(aSplit.getA(), aSplitST4.getA());

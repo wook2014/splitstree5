@@ -22,7 +22,9 @@ package splitstree5.main.graphtab;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ToolBar;
+import javafx.scene.control.Tooltip;
 import splitstree5.core.Document;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.workflow.ANode;
@@ -58,7 +60,7 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
      */
     public void update() {
         final Workflow workflow = document.getWorkflow();
-        getItems().clear();
+        getItems().setAll(new Label("Algorithms:"));
         if (workflow.getTaxaFilter() != null) {
             getItems().add(makeBreadCrumb(document, workflow.getTaxaFilter()));
         }
@@ -101,9 +103,22 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
         button.setStyle(shape);
         button.textProperty().bind(aConnector.nameProperty());
         button.disableProperty().bind(aConnector.applicableProperty().not().and(aConnector.stateProperty().isEqualTo(UpdateState.VALID).not()));
-        aConnector.stateColorProperty().addListener((c, o, n) -> {
-            button.setStyle(shape + n);
-        });
+        final Tooltip tooltip = new Tooltip();
+        tooltip.textProperty().bind(aConnector.shortDescriptionProperty());
+        button.setTooltip(tooltip);
+        aConnector.stateProperty().addListener((c, o, n) -> {
+                    switch (n) {
+                        case COMPUTING:
+                            button.setStyle(shape + "-fx-background-color: LIGHTBLUE;");
+                            break;
+                        case FAILED:
+                            button.setStyle(shape + "-fx-background-color: PINK;");
+                            break;
+                        default:
+                            button.setStyle(shape);
+                    }
+                }
+        );
         button.setOnAction((e) -> {
             final Point2D location = button.localToScreen(button.getLayoutX(), button.getLayoutY());
             ANodeViewManager.getInstance().show(document, aConnector, location.getX(), location.getY());

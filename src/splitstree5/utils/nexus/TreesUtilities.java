@@ -16,7 +16,7 @@ import java.util.BitSet;
  * some computations on trees
  *
  * @author huson Date: 29-Feb-2004
- *         Created by Daria on 23.01.2017.
+ * Created by Daria on 23.01.2017.
  */
 public class TreesUtilities {
     /**
@@ -116,7 +116,7 @@ public class TreesUtilities {
 
         // false!!!
         System.out.println("TU splits");
-        for(int i = 0; i<splits.getSplits().size(); i++){
+        for (int i = 0; i < splits.getSplits().size(); i++) {
             System.out.println(splits.getSplits().get(i).getA());
         }
 
@@ -136,16 +136,16 @@ public class TreesUtilities {
      * @throws NotOwnerException
      */
     private static BitSet tree2splitsRec(Node v, Edge e, TreesBlock trees, int which,
-                                          TaxaBlock taxa, SplitsBlock splits, boolean skipNegativeSplitIds) throws NotOwnerException {
+                                         TaxaBlock taxa, SplitsBlock splits, boolean skipNegativeSplitIds) throws NotOwnerException {
         PhyloTree tree = trees.getTrees().get(which);
         //todo
         //BitSet e_taxa = trees.getTaxaForLabel(taxa, tree.getLabel(v));
         BitSet e_taxa = new BitSet();
         //e_taxa.set(tree.getId(v));
         if (taxa.indexOf(tree.getLabel(v)) != -1) //e_taxa.set(0);
-         e_taxa.set(taxa.indexOf(tree.getLabel(v)));
+            e_taxa.set(taxa.indexOf(tree.getLabel(v)));
 
-        System.out.println("e taxa   "+e_taxa); // right!!!
+        System.out.println("e taxa   " + e_taxa); // right!!!
 
         for (Edge f : v.adjacentEdges()) {
             if (f != e) {
@@ -181,11 +181,11 @@ public class TreesUtilities {
 
         for (int which = 1; which <= trees.getNTrees(); which++) {
             BitSet support = //trees.getSupport(taxa, which).getBits();
-            //---
-            new BitSet();
+                    //---
+                    new BitSet();
             PhyloTree tree = trees.getTrees().get(which);
-            for(String v : tree.getNodeLabels()){
-            support.set(taxa.indexOf(v)); //todo test???
+            for (String v : tree.getNodeLabels()) {
+                support.set(taxa.indexOf(v)); //todo test???
             }
             //---
             for (int i = support.nextSetBit(1); i > 0; i = support.nextSetBit(i + 1)) {

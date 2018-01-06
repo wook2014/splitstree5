@@ -8,7 +8,7 @@ import splitstree5.io.nexus.TreesNexusIO;
 
 import java.io.StringWriter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Daria on 17.10.2017.

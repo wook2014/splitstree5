@@ -39,6 +39,7 @@ public class Document {
     private MainWindow mainWindow;
 
     private final StringProperty fileName = new SimpleStringProperty();
+    private final StringProperty name = new SimpleStringProperty();
     private final ASelectionModel<Taxon> taxaSelectionModel = new ASelectionModel<>();
 
     private final StringProperty methodsText = new SimpleStringProperty();
@@ -52,6 +53,10 @@ public class Document {
         workflow = new Workflow(this);
         workflow.updatingProperty().addListener((c, o, n) -> updateMethodsText());
         workflow.incrementTopologyChanged();
+
+        fileName.addListener((c, o, n) -> {
+            name.set(Basic.getFileNameWithoutPath(fileName.get()));
+        });
     }
 
     /**
@@ -124,5 +129,9 @@ public class Document {
 
     public void setMainWindow(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
+    }
+
+    public ReadOnlyStringProperty nameProperty() {
+        return name;
     }
 }

@@ -11,9 +11,9 @@ import splitstree5.core.models.F84Model;
 
 /**
  * Implements the Felsenstein84 DNA distance model
- *
+ * <p>
  * Created on Jun 2004
- *
+ * <p>
  * todo : no authors
  */
 

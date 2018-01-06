@@ -23,14 +23,9 @@ import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import jloda.util.AppleStuff;
-import jloda.util.ProgramProperties;
-import splitstree5.gui.workflowtree.WorkFlowTreeItem;
+import splitstree5.main.workflowtree.WorkflowTreeItem;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -40,137 +35,6 @@ public class MainWindowController {
 
     @FXML
     private VBox topVBox;
-
-    @FXML
-    private MenuBar menuBar;
-
-    @FXML
-    private Menu fileMenu;
-
-    @FXML
-    private MenuItem newMenuItem;
-
-    @FXML
-    private MenuItem openMenuItem;
-
-    @FXML
-    private Menu openRecentMenu;
-
-    @FXML
-    private MenuItem enterDataMenuItem;
-
-    @FXML
-    private MenuItem saveMenuItem;
-
-    @FXML
-    private MenuItem saveAsMenuItem;
-
-    @FXML
-    private MenuItem ImportMenuItem;
-
-    @FXML
-    private MenuItem exportMenuItem;
-
-    @FXML
-    private MenuItem exportImageMenuItem;
-
-    @FXML
-    private MenuItem printMenuitem;
-
-    @FXML
-    private MenuItem closeMenuItem;
-
-    @FXML
-    private MenuItem quitMenuItem;
-
-    @FXML
-    private Menu editMenu;
-
-
-    @FXML
-    private MenuItem undoMenuItem;
-
-    @FXML
-    private MenuItem redoMenuItem;
-
-    @FXML
-    private MenuItem cutMenuItem;
-
-    @FXML
-    private MenuItem copyMenuItem;
-
-    @FXML
-    private MenuItem pasteMenuItem;
-
-    @FXML
-    private MenuItem deleteMenuItem;
-
-    @FXML
-    private MenuItem selectAllMenuItem;
-
-    @FXML
-    private MenuItem selectNoneMenuItem;
-
-    @FXML
-    private MenuItem selectAllNodesMenuItem;
-
-    @FXML
-    private MenuItem selectAllLabeledNodesMenuItem;
-
-    @FXML
-    private MenuItem selectAllEdgeMenuItem;
-
-    @FXML
-    private MenuItem selectFromPreviousMenuItem;
-
-
-    @FXML
-    private MenuItem findMenuItem;
-
-    @FXML
-    private MenuItem findAgainMenuItem;
-
-    @FXML
-    private MenuItem gotoLineMenuItem;
-
-    @FXML
-    private MenuItem preferencesMenuItem;
-
-    @FXML
-    private MenuItem increaseFontSizeMenuItem;
-
-    @FXML
-    private MenuItem decreaseFontSizeMenuItem;
-
-    @FXML
-    private MenuItem zoomInMenuItem;
-
-    @FXML
-    private MenuItem zoomOutMenuItem;
-
-    @FXML
-    private MenuItem resetMenuItem;
-
-    @FXML
-    private MenuItem rotateLeftMenuItem;
-
-    @FXML
-    private MenuItem rotateRightMenuItem;
-
-    @FXML
-    private MenuItem flipMenuItem;
-
-    @FXML
-    private MenuItem formatNodesMenuItem;
-
-    @FXML
-    private MenuItem formatEdgesMenuItem;
-
-    @FXML
-    private MenuItem layoutLabelsMenuItem;
-
-    @FXML
-    private HBox bottomHBox;
 
     @FXML
     private ToolBar topToolBar;
@@ -191,12 +55,6 @@ public class MainWindowController {
     private ToolBar bottomToolBar;
 
     @FXML
-    private Menu windowMenu;
-
-    @FXML
-    private MenuItem aboutMenuItem;
-
-    @FXML
     private Button collapseAllButton;
 
     @FXML
@@ -213,177 +71,6 @@ public class MainWindowController {
         return topVBox;
     }
 
-    public MenuBar getMenuBar() {
-        return menuBar;
-    }
-
-    public Menu getFileMenu() {
-        return fileMenu;
-    }
-
-    public MenuItem getNewMenuItem() {
-        return newMenuItem;
-    }
-
-    public MenuItem getOpenMenuItem() {
-        return openMenuItem;
-    }
-
-    public Menu getOpenRecentMenu() {
-        return openRecentMenu;
-    }
-
-    public MenuItem getEnterDataMenuItem() {
-        return enterDataMenuItem;
-    }
-
-    public MenuItem getSaveMenuItem() {
-        return saveMenuItem;
-    }
-
-    public MenuItem getSaveAsMenuItem() {
-        return saveAsMenuItem;
-    }
-
-    public MenuItem getImportMenuItem() {
-        return ImportMenuItem;
-    }
-
-    public MenuItem getExportMenuItem() {
-        return exportMenuItem;
-    }
-
-    public MenuItem getExportImageMenuItem() {
-        return exportImageMenuItem;
-    }
-
-    public MenuItem getPrintMenuitem() {
-        return printMenuitem;
-    }
-
-    public MenuItem getCloseMenuItem() {
-        return closeMenuItem;
-    }
-
-    public MenuItem getQuitMenuItem() {
-        return quitMenuItem;
-    }
-
-    public Menu getEditMenu() {
-        return editMenu;
-    }
-
-    public MenuItem getUndoMenuItem() {
-        return undoMenuItem;
-    }
-
-    public MenuItem getRedoMenuItem() {
-        return redoMenuItem;
-    }
-
-    public MenuItem getCutMenuItem() {
-        return cutMenuItem;
-    }
-
-    public MenuItem getCopyMenuItem() {
-        return copyMenuItem;
-    }
-
-    public MenuItem getPasteMenuItem() {
-        return pasteMenuItem;
-    }
-
-    public MenuItem getDeleteMenuItem() {
-        return deleteMenuItem;
-    }
-
-    public MenuItem getSelectAllMenuItem() {
-        return selectAllMenuItem;
-    }
-
-    public MenuItem getSelectNoneMenuItem() {
-        return selectNoneMenuItem;
-    }
-
-    public MenuItem getSelectAllNodesMenuItem() {
-        return selectAllNodesMenuItem;
-    }
-
-    public MenuItem getSelectAllLabeledNodesMenuItem() {
-        return selectAllLabeledNodesMenuItem;
-    }
-
-    public MenuItem getSelectAllEdgeMenuItem() {
-        return selectAllEdgeMenuItem;
-    }
-
-    public MenuItem getSelectFromPreviousMenuItem() {
-        return selectFromPreviousMenuItem;
-    }
-
-    public MenuItem getFindMenuItem() {
-        return findMenuItem;
-    }
-
-    public MenuItem getFindAgainMenuItem() {
-        return findAgainMenuItem;
-    }
-
-    public MenuItem getGotoLineMenuItem() {
-        return gotoLineMenuItem;
-    }
-
-    public MenuItem getPreferencesMenuItem() {
-        return preferencesMenuItem;
-    }
-
-    public MenuItem getIncreaseFontSizeMenuItem() {
-        return increaseFontSizeMenuItem;
-    }
-
-    public MenuItem getDecreaseFontSizeMenuItem() {
-        return decreaseFontSizeMenuItem;
-    }
-
-    public MenuItem getZoomInMenuItem() {
-        return zoomInMenuItem;
-    }
-
-    public MenuItem getZoomOutMenuItem() {
-        return zoomOutMenuItem;
-    }
-
-    public MenuItem getResetMenuItem() {
-        return resetMenuItem;
-    }
-
-    public MenuItem getRotateLeftMenuItem() {
-        return rotateLeftMenuItem;
-    }
-
-    public MenuItem getRotateRightMenuItem() {
-        return rotateRightMenuItem;
-    }
-
-    public MenuItem getFlipMenuItem() {
-        return flipMenuItem;
-    }
-
-    public MenuItem getFormatNodesMenuItem() {
-        return formatNodesMenuItem;
-    }
-
-    public MenuItem getFormatEdgesMenuItem() {
-        return formatEdgesMenuItem;
-    }
-
-    public MenuItem getLayoutLabelsMenuItem() {
-        return layoutLabelsMenuItem;
-    }
-
-    public HBox getBottomHBox() {
-        return bottomHBox;
-    }
 
     public TabPane getTabPane() {
         return tabPane;
@@ -405,45 +92,9 @@ public class MainWindowController {
         return bottomToolBar;
     }
 
-    public Menu getWindowMenu() {
-        return windowMenu;
-    }
-
-    public MenuItem getAboutMenuItem() {
-        return aboutMenuItem;
-    }
-
 
     @FXML
     void initialize() {
-        // if we are running on MacOS, put the specific menu items in the right places
-        if (ProgramProperties.isMacOS()) {
-            final AppleStuff appleStuff = AppleStuff.getInstance();
-            appleStuff.setQuitAction(new AbstractAction("Quit") {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    getQuitMenuItem().fire();
-                }
-            });
-            fileMenu.getItems().remove(getQuitMenuItem());
-
-            appleStuff.setAboutAction(new AbstractAction("About...") {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    getAboutMenuItem().fire();
-                }
-            });
-            windowMenu.getItems().remove(getAboutMenuItem());
-
-            appleStuff.setPreferencesAction(new AbstractAction("Preferences...") {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    getPreferencesMenuItem().fire();
-                }
-            });
-            editMenu.getItems().remove(getPreferencesMenuItem());
-        }
-
         // some specific toolbar buttons:
         collapseAllButton.setOnAction((e) -> treeView.getRoot().setExpanded(false));
         expandAllButton.setOnAction((e) -> {
@@ -458,9 +109,9 @@ public class MainWindowController {
 
         showButton.setOnAction((e) -> {
             for (TreeItem item : treeView.getSelectionModel().getSelectedItems()) {
-                if (item instanceof WorkFlowTreeItem) {
+                if (item instanceof WorkflowTreeItem) {
                     final Point2D point2D = item.getGraphic().localToScreen(item.getGraphic().getLayoutX(), item.getGraphic().getLayoutY());
-                    ((WorkFlowTreeItem) item).showView(point2D.getX(), point2D.getY());
+                    ((WorkflowTreeItem) item).showView(point2D.getX(), point2D.getY());
                 }
             }
         });
@@ -476,38 +127,5 @@ public class MainWindowController {
                 openCloseTreeView.setText((">"));
             }
         });
-    }
-
-    /**
-     * unbinds and disables all menu items
-     */
-    public void unbindAndDisableAllMenuItems() {
-        for (Menu menu : getMenuBar().getMenus()) {
-            for (MenuItem menuItem : menu.getItems()) {
-                menuItem.setOnAction(null);
-                menuItem.disableProperty().unbind();
-                menuItem.setDisable(true);
-            }
-        }
-        if (undoMenuItem.textProperty().isBound()) {
-            undoMenuItem.textProperty().unbind();
-            undoMenuItem.setText("Undo");
-        }
-        if (redoMenuItem.textProperty().isBound()) {
-            redoMenuItem.textProperty().unbind();
-            redoMenuItem.setText("Redo");
-        }
-    }
-
-    /**
-     * enables all memnu items whose disable property is not bound and that have an action
-     */
-    public void enableAllUnboundActionMenuItems() {
-        for (Menu menu : getMenuBar().getMenus()) {
-            for (MenuItem menuItem : menu.getItems()) {
-                if (!menuItem.disableProperty().isBound() && menuItem.getOnAction() != null)
-                    menuItem.setDisable(false);
-            }
-        }
     }
 }

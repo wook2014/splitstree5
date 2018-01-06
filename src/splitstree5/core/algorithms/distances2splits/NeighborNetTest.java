@@ -39,6 +39,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * test neighbor net
  * Created on 12/30/16.
+ *
  * @author huson
  */
 public class NeighborNetTest {

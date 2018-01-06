@@ -12,8 +12,9 @@ import splitstree5.utils.SplitMatrix;
 
 /**
  * Implements confidence networks using Beran's algorithm
- *
+ * <p>
  * Created on 07.06.2017
+ *
  * @author Daniel Huson and David Bryant
  */
 
@@ -37,9 +38,11 @@ public class BalancedConfidenceNetwork extends Algorithm<TreesBlock, SplitsBlock
     public String getDescription() {
         return BalancedConfidenceNetwork.DESCRIPTION;
     }
+
     public double getOptionLevel() {
         return level;
     }
+
     public void setOptionLevel(double level) {
         this.level = level;
     }

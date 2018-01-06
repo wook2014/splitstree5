@@ -10,11 +10,10 @@ import splitstree5.io.nexus.CharactersNexusIO;
 import java.io.*;
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 public class PhylipCharactersOutTest {
 
     private PhylipCharactersOut phylipCharactersOut = new PhylipCharactersOut();
+
     @Test
     public void export() throws Exception {
 

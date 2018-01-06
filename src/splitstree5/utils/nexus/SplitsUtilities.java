@@ -78,9 +78,9 @@ public class SplitsUtilities {
             for (int j = i + 1; j <= ntax; j++) {
                 float dij = 0;
                 for (int s = 1; s <= splits.getNsplits(); s++) {
-                    BitSet split = splits.getSplits().get(s-1).getA();
+                    BitSet split = splits.getSplits().get(s - 1).getA();
                     if (split.get(i) != split.get(j))
-                        dij += splits.getSplits().get(s-1).getWeight();
+                        dij += splits.getSplits().get(s - 1).getWeight();
                 }
                 sdist[i][j] = sdist[j][i] = dij;
             }
@@ -97,7 +97,7 @@ public class SplitsUtilities {
                 netsumSquare += sij * sij;
             }
         }
-        float fit =  100 * (1 - ssum / dsum);
+        float fit = 100 * (1 - ssum / dsum);
         fit = Math.max(fit, 0);
         splits.setFit(fit);
 

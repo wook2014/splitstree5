@@ -20,7 +20,7 @@ public class MatlabOut implements IFromTaxa, IFromDistances, IFromSplits {
 
     public void export(Writer w, TaxaBlock taxa) throws IOException {
 
-        if(bHeader){
+        if (bHeader) {
             w.write("%%MATLAB%%\n");
             bHeader = false;
         }
@@ -36,7 +36,7 @@ public class MatlabOut implements IFromTaxa, IFromDistances, IFromSplits {
 
     public void export(Writer w, TaxaBlock taxa, DistancesBlock distances) throws IOException {
 
-        if(bHeader){
+        if (bHeader) {
             w.write("%%MATLAB%%\n");
             bHeader = false;
         }
@@ -61,7 +61,7 @@ public class MatlabOut implements IFromTaxa, IFromDistances, IFromSplits {
 
     public void export(Writer w, TaxaBlock taxa, SplitsBlock splits) throws IOException {
 
-        if(bHeader){
+        if (bHeader) {
             w.write("%%MATLAB%%\n");
             bHeader = false;
         }
@@ -72,7 +72,7 @@ public class MatlabOut implements IFromTaxa, IFromDistances, IFromSplits {
         w.write("%%Number of splits, then row of split weights, then design matrix, same row ordering as distances\n");
 
         int ntax;
-        if(splits.getSplits().isEmpty())
+        if (splits.getSplits().isEmpty())
             throw new IOException("SplitsBlock is empty");
         else
             ntax = splits.get(0).ntax();
@@ -81,7 +81,7 @@ public class MatlabOut implements IFromTaxa, IFromDistances, IFromSplits {
         w.write("" + nsplits + "\n");
         w.write("%% Split weights\n");
         for (int j = 0; j < nsplits; j++)
-            w.write(" "+ (float) splits.getWeight(j)); // todo output format: float - double
+            w.write(" " + (float) splits.getWeight(j)); // todo output format: float - double
         w.write("\n");
 
         //int ntax = splits.getNtax();
@@ -101,11 +101,11 @@ public class MatlabOut implements IFromTaxa, IFromDistances, IFromSplits {
         w.flush();
     }
 
-    public boolean getOptionExportDataBlockWithTaxa(){
+    public boolean getOptionExportDataBlockWithTaxa() {
         return this.optionExportDataBlockWithTaxa;
     }
 
-    public void setOptionExportDataBlockWithTaxa(boolean exportDataBlockWithTaxa){
-        this.optionExportDataBlockWithTaxa=exportDataBlockWithTaxa;
+    public void setOptionExportDataBlockWithTaxa(boolean exportDataBlockWithTaxa) {
+        this.optionExportDataBlockWithTaxa = exportDataBlockWithTaxa;
     }
 }

@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Created on 05.03.2017.
+ *
  * @author Daria
  */
 public class DiceTest {
@@ -92,7 +93,7 @@ public class DiceTest {
                         taxaFromSplitsTree4, distancesFromSplitsTree4, null));
 
 
-        for(int i = 0; i<distancesBlock.getDistances().length; i++){
+        for (int i = 0; i < distancesBlock.getDistances().length; i++) {
             assertArrayEquals(distancesFromSplitsTree4.getDistances()[i], distancesBlock.getDistances()[i], 0.000001);
         }
 

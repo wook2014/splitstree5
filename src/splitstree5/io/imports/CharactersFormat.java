@@ -6,7 +6,8 @@ import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.datablocks.characters.CharactersType;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Map;
 
 /**
  * Created by Daria on 15.08.2017.
@@ -15,7 +16,7 @@ public abstract class CharactersFormat implements IToChararacters {
 
     private static char gap = '-';
     private static char missing = '?';
-    private static char matchChar='.';
+    private static char matchChar = '.';
 
 
     public static void estimateDataType(String foundSymbols, CharactersBlock characters, Map<Character, Integer> frequency) throws IOException {
@@ -28,30 +29,34 @@ public abstract class CharactersFormat implements IToChararacters {
         String sortedSymbols = new String(chars);
 
         switch (sortedSymbols) {
-            case "01": characters.setDataType(CharactersType.standard);
+            case "01":
+                characters.setDataType(CharactersType.standard);
                 break;
-            case "acgt": characters.setDataType(CharactersType.DNA);
+            case "acgt":
+                characters.setDataType(CharactersType.DNA);
                 break;
-            case "acgu": characters.setDataType(CharactersType.RNA);
+            case "acgu":
+                characters.setDataType(CharactersType.RNA);
                 break;
-            case "acdefghiklmnpqrstvwyz": characters.setDataType(CharactersType.protein);
+            case "acdefghiklmnpqrstvwyz":
+                characters.setDataType(CharactersType.protein);
                 break;
             default:
                 char x = getUnknownSymbols(sortedSymbols);
-                if(x =='\u0000'){
-                    if(sortedSymbols.contains("b") || hasMostNucleotide(frequency)){
+                if (x == '\u0000') {
+                    if (sortedSymbols.contains("b") || hasMostNucleotide(frequency)) {
                         characters.setHasAmbiguousStates(true);
-                        if(sortedSymbols.contains("t")) characters.setDataType(CharactersType.DNA);
-                        if(sortedSymbols.contains("u")) characters.setDataType(CharactersType.RNA);
-                        if(sortedSymbols.contains("t") && sortedSymbols.contains("u"))
+                        if (sortedSymbols.contains("t")) characters.setDataType(CharactersType.DNA);
+                        if (sortedSymbols.contains("u")) characters.setDataType(CharactersType.RNA);
+                        if (sortedSymbols.contains("t") && sortedSymbols.contains("u"))
                             throw new IOException("Nucleotide sequence contains Thymine and Uracil at the same time");
                     }
-                    if(hasAAOnlySybols(sortedSymbols))
+                    if (hasAAOnlySybols(sortedSymbols))
                         characters.setDataType(CharactersType.protein);
-                }else{
+                } else {
                     characters.setDataType(CharactersType.unknown);
                     System.err.println("Warning : can not recognize characters type!");
-                    System.err.println("Unexpected character: '"+x+"'");
+                    System.err.println("Unexpected character: '" + x + "'");
                 }
 
                /* if (checkSubset(foundSymbols)) {
@@ -74,55 +79,55 @@ public abstract class CharactersFormat implements IToChararacters {
                 }*/
                 break;
         }
-        System.err.println("symbols: "+sortedSymbols);
-        System.err.println("frequencies : "+ frequency);
+        System.err.println("symbols: " + sortedSymbols);
+        System.err.println("frequencies : " + frequency);
     }
 
-    private static char getUnknownSymbols(String sortedSymbols){
-        String knownSymbols = CharactersType.protein.getSymbols() + CharactersType.DNA.getSymbols()+
+    private static char getUnknownSymbols(String sortedSymbols) {
+        String knownSymbols = CharactersType.protein.getSymbols() + CharactersType.DNA.getSymbols() +
                 CharactersType.RNA.getSymbols() + AmbiguityCodes.CODES;
-        for(char c : sortedSymbols.toCharArray()){
-            if(knownSymbols.indexOf(c)==-1){
+        for (char c : sortedSymbols.toCharArray()) {
+            if (knownSymbols.indexOf(c) == -1) {
                 return c;
             }
         }
         return '\u0000';
     }
 
-    private static boolean hasAAOnlySybols (String foundSymbols){
-        final String IUPAC = ("acgtu"+ AmbiguityCodes.CODES);
+    private static boolean hasAAOnlySybols(String foundSymbols) {
+        final String IUPAC = ("acgtu" + AmbiguityCodes.CODES);
         final String AA = CharactersType.protein.getSymbols();
-        for(char c : foundSymbols.toCharArray()){
-            if(AA.contains(c+"") && !IUPAC.contains(c+"")) return true;
+        for (char c : foundSymbols.toCharArray()) {
+            if (AA.contains(c + "") && !IUPAC.contains(c + "")) return true;
         }
         return false;
     }
 
-    private static boolean hasMostNucleotide(Map<Character, Integer> frequency){
+    private static boolean hasMostNucleotide(Map<Character, Integer> frequency) {
         int nFreq = 0;
         int otherFreq = 0;
-        for(char c : frequency.keySet()){
-            if(c=='a' || c=='g' || c=='c' || c=='t' || c =='u')
-                nFreq+=frequency.get(c);
+        for (char c : frequency.keySet()) {
+            if (c == 'a' || c == 'g' || c == 'c' || c == 't' || c == 'u')
+                nFreq += frequency.get(c);
             else
-                otherFreq+=frequency.get(c);
+                otherFreq += frequency.get(c);
         }
-        return nFreq>= otherFreq;
+        return nFreq >= otherFreq;
     }
 
-    private static boolean isAmbiguous(String foundSymbols){
-        final String IUPAC = "acgtu"+ AmbiguityCodes.CODES;
-        for(char c : foundSymbols.toCharArray()){
-            if(!IUPAC.contains(c+"")) return false;
+    private static boolean isAmbiguous(String foundSymbols) {
+        final String IUPAC = "acgtu" + AmbiguityCodes.CODES;
+        for (char c : foundSymbols.toCharArray()) {
+            if (!IUPAC.contains(c + "")) return false;
         }
         return true;
     }
 
-    private static boolean checkSubset(String sortedSymbols){
-        boolean isSubSet=true;
-        for(char c : sortedSymbols.toCharArray()){
-            if("acdefghiklmnpqrstvwyz".indexOf(c)==-1){
-                isSubSet=false;
+    private static boolean checkSubset(String sortedSymbols) {
+        boolean isSubSet = true;
+        for (char c : sortedSymbols.toCharArray()) {
+            if ("acdefghiklmnpqrstvwyz".indexOf(c) == -1) {
+                isSubSet = false;
                 break;
             }
         }
@@ -131,39 +136,39 @@ public abstract class CharactersFormat implements IToChararacters {
 
     // GETTER AND SETTER
 
-    public static char getGap(){
+    public static char getGap() {
         return gap;
     }
 
-    public static String getStringGap(){
-        return gap+"";
+    public static String getStringGap() {
+        return gap + "";
     }
 
-    public static void setGap(char newGap){
+    public static void setGap(char newGap) {
         gap = newGap;
     }
 
-    public static char getMissing(){
+    public static char getMissing() {
         return missing;
     }
 
-    public static String getStringMissing(){
-        return missing+"";
+    public static String getStringMissing() {
+        return missing + "";
     }
 
-    public static void setMissing(char newMissing){
+    public static void setMissing(char newMissing) {
         missing = newMissing;
     }
 
-    public static char getMatchChar(){
+    public static char getMatchChar() {
         return matchChar;
     }
 
-    public static String getStringMatchChar(){
-        return matchChar+"";
+    public static String getStringMatchChar() {
+        return matchChar + "";
     }
 
-    public static void setMatchChar(char newMatchChar){
+    public static void setMatchChar(char newMatchChar) {
         matchChar = newMatchChar;
     }
 }

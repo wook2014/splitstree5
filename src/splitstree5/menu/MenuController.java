@@ -37,12 +37,20 @@
  */
 package splitstree5.menu;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.fxml.FXML;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.input.KeyCharacterCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.stage.Stage;
 import jloda.util.AppleStuff;
 import jloda.util.ProgramProperties;
+import splitstree5.core.project.ProjectManager;
+import splitstree5.main.MainWindow;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -363,6 +371,8 @@ public class MenuController {
     void initialize() {
         // if we are running on MacOS, put the specific menu items in the right places
         if (ProgramProperties.isMacOS()) {
+            getMenuBar().setUseSystemMenuBar(true);
+
             final AppleStuff appleStuff = AppleStuff.getInstance();
             appleStuff.setQuitAction(new AbstractAction("Quit") {
                 @Override
@@ -388,17 +398,44 @@ public class MenuController {
             });
             editMenu.getItems().remove(getPreferencesMenuItem());
         }
+
+        final InvalidationListener invalidationListener = new InvalidationListener() {
+            @Override
+            public void invalidated(Observable observable) {
+                windowMenu.getItems().clear();
+                int count = 0;
+                for (MainWindow mainWindow : ProjectManager.getInstance().getMainWindows()) {
+                    if (count == 0)
+                        windowMenu.getItems().add(new SeparatorMenuItem());
+                    {
+                        final MenuItem menuItem = new MenuItem(mainWindow.getStage().getTitle().replaceAll("- SplitsTree5", ""));
+                        menuItem.setOnAction((e) -> mainWindow.getStage().toFront());
+                        menuItem.setAccelerator(new KeyCharacterCombination("" + (++count), KeyCombination.SHORTCUT_DOWN));
+                        windowMenu.getItems().add(menuItem);
+                    }
+                    for (Stage auxStage : ProjectManager.getInstance().getAuxiliaryWindows(mainWindow)) {
+                        final MenuItem menuItem = new MenuItem(auxStage.getTitle().replaceAll("- SplitsTree5", ""));
+                        menuItem.setOnAction((e) -> auxStage.toFront());
+                        windowMenu.getItems().add(menuItem);
+                    }
+                }
+            }
+        };
+        ProjectManager.getInstance().changedProperty().addListener(invalidationListener);
+        invalidationListener.invalidated(null);
     }
 
     /**
      * unbinds and disables all menu items
      */
     public void unbindAndDisableAllMenuItems() {
-        for (Menu menu : getMenuBar().getMenus()) {
-            for (MenuItem menuItem : menu.getItems()) {
-                menuItem.setOnAction(null);
-                menuItem.disableProperty().unbind();
-                menuItem.setDisable(true);
+        for (Menu menu : menuBar.getMenus()) {
+            if (menu != windowMenu) { // don't disable window menu
+                for (MenuItem menuItem : menu.getItems()) {
+                    menuItem.setOnAction(null);
+                    menuItem.disableProperty().unbind();
+                    menuItem.setDisable(true);
+                }
             }
         }
         if (undoMenuItem.textProperty().isBound()) {
@@ -421,5 +458,6 @@ public class MenuController {
                     menuItem.setDisable(false);
             }
         }
+        getQuitMenuItem().setDisable(false);
     }
 }

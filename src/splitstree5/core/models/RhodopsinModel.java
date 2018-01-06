@@ -22,9 +22,9 @@ package splitstree5.core.models;
 
 /**
  * @author bryant
- *         <p/>
- *         To change the template for this generated type comment go to
- *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * <p/>
+ * To change the template for this generated type comment go to
+ * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class RhodopsinModel extends ProteinModel {
 
@@ -32,16 +32,16 @@ public class RhodopsinModel extends ProteinModel {
     public RhodopsinModel() {
 
         /*
-           * Protein evolution matrix based on
-           *    B. Chang's data of 54 vertebrate rhodopsin proteins
-           *
-           * The matrix was recovered from the .dat files circulated with PAML 3.13d
-           */
+         * Protein evolution matrix based on
+         *    B. Chang's data of 54 vertebrate rhodopsin proteins
+         *
+         * The matrix was recovered from the .dat files circulated with PAML 3.13d
+         */
 
         /* For efficiency, we precompute the eigenvalue decomposition
-           *     V'DV = Pi^(1/2) Q Pi(-1/2)
-           * We used matlab for this.
-           */
+         *     V'DV = Pi^(1/2) Q Pi(-1/2)
+         * We used matlab for this.
+         */
 
         this.evals = new double[]{
                 -2.87083,

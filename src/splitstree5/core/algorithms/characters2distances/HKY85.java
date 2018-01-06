@@ -11,8 +11,9 @@ import splitstree5.core.models.HKY85model;
 
 /**
  * Computes the Hasegawa, Kishino and Yano distance for a set of characters.
- *
+ * <p>
  * Created on 12-Jun-2004
+ *
  * @author Mig
  */
 

@@ -40,6 +40,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * test split decomposition
  * Created on 12/30/16.
+ *
  * @author Daniel Huson, Daria Evseeva
  */
 public class SplitDecompositionTest {
@@ -76,7 +77,7 @@ public class SplitDecompositionTest {
         TaxaNexusIO.parse(np, taxaFromST4);
         SplitsNexusIO.parse(np, taxaFromST4, splitsFromST4, null);
 
-        for(int i=0; i<splitsBlock.getSplits().size(); i++){
+        for (int i = 0; i < splitsBlock.getSplits().size(); i++) {
             ASplit aSplit = splitsBlock.getSplits().get(i);
             ASplit aSplitST4 = splitsFromST4.getSplits().get(i);
             assertEquals(aSplit.getA(), aSplitST4.getA());

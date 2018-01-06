@@ -1,18 +1,18 @@
 /*
  *  Copyright (C) 2018 Daniel H. Huson
- *  
+ *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
- *  
+ *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
- *  
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -26,11 +26,11 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.datablocks.characters.CharactersType;
-import splitstree5.gui.dialog.Alert;
 import splitstree5.io.nexus.stateLabeler.MicrostatStateLabeler;
 import splitstree5.io.nexus.stateLabeler.ProteinStateLabeler;
 import splitstree5.io.nexus.stateLabeler.StandardStateLabeler;
 import splitstree5.io.nexus.stateLabeler.StateLabeler;
+import splitstree5.utils.Alert;
 
 import java.io.IOException;
 import java.io.StreamTokenizer;
@@ -315,7 +315,7 @@ public class CharactersNexusIO {
                 }
             }
             if (tokenList != null) {
-                System.err.print("StateLabeler is "+ characters.getStateLabeler());
+                System.err.print("StateLabeler is " + characters.getStateLabeler());
                 str = characters.getStateLabeler().parseSequence(tokenList, 1, false);
             }
 
@@ -804,7 +804,7 @@ public class CharactersNexusIO {
         }
 
         int maxColumns;
-        if(format.getColumnsPerBlock() == 0)
+        if (format.getColumnsPerBlock() == 0)
             // will use 60 columns per block
             maxColumns = Math.max(1, 60 / columnWidth); //Maximum number of sites to print on one line.
         else

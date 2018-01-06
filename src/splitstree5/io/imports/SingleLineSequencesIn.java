@@ -26,25 +26,24 @@ public class SingleLineSequencesIn extends CharactersFormat {
             String line;
 
             while ((line = in.readLine()) != null) {
-                counter ++;
+                counter++;
                 if (line.length() > 0 && !line.startsWith("#")) {
-                    if(nchar == 0)
-                        nchar=line.length();
-                    else
-                        if(nchar != line.length())
-                            throw new IOException("Sequences must be the same length. Wrong number of chars at the line " + counter);
+                    if (nchar == 0)
+                        nchar = line.length();
+                    else if (nchar != line.length())
+                        throw new IOException("Sequences must be the same length. Wrong number of chars at the line " + counter);
                     ntax++;
-                    taxonNames.add("Sequence "+ntax);
+                    taxonNames.add("Sequence " + ntax);
                     matrix.add(line);
                 }
             }
         }
 
-        System.err.println("ntax: "+ntax+" nchar: "+nchar);
-        for(String s : matrix){
+        System.err.println("ntax: " + ntax + " nchar: " + nchar);
+        for (String s : matrix) {
             System.err.println(s);
         }
-        for(String s : taxonNames){
+        for (String s : taxonNames) {
             System.err.println(s);
         }
 
@@ -59,15 +58,15 @@ public class SingleLineSequencesIn extends CharactersFormat {
 
         Map<Character, Integer> frequency = new LinkedHashMap<>();
         StringBuilder foundSymbols = new StringBuilder("");
-        for(int i = 1; i<=characters.getNtax(); i++){
-            for(int j = 1; j<=characters.getNchar(); j++){
-                char symbol = Character.toLowerCase(matrix.get(i-1).charAt(j-1));
-                if(foundSymbols.toString().indexOf(symbol) == -1) {
+        for (int i = 1; i <= characters.getNtax(); i++) {
+            for (int j = 1; j <= characters.getNchar(); j++) {
+                char symbol = Character.toLowerCase(matrix.get(i - 1).charAt(j - 1));
+                if (foundSymbols.toString().indexOf(symbol) == -1) {
                     foundSymbols.append(symbol);
                     frequency.put(symbol, 1);
                 } else
-                    frequency.put(symbol, frequency.get(symbol)+1);
-                characters.set(i, j, matrix.get(i-1).charAt(j-1));
+                    frequency.put(symbol, frequency.get(symbol) + 1);
+                characters.set(i, j, matrix.get(i - 1).charAt(j - 1));
             }
         }
 
@@ -105,7 +104,7 @@ public class SingleLineSequencesIn extends CharactersFormat {
         return length > 0;
     }
 
-    private boolean isAcceptable (char c){
+    private boolean isAcceptable(char c) {
         return Character.isLetter(c) || c == getGap() || c == getMissing() || c == getMatchChar();
     }
 }

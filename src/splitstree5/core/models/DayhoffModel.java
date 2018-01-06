@@ -26,8 +26,8 @@ package splitstree5.core.models;
 
 /**
  * @author bryant
- *         <p/>
- *         Dayhoff model
+ * <p/>
+ * Dayhoff model
  */
 public class DayhoffModel extends ProteinModel {
 

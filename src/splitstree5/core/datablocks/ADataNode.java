@@ -45,6 +45,7 @@ public class ADataNode<D extends ADataBlock> extends ANode {
         this.dataBlock = dataBlock;
         this.dataBlock.setDataNode(this);
         this.children = FXCollections.observableArrayList();
+        this.shortDescriptionProperty().bind(dataBlock.shortDescriptionProperty());
     }
 
     public D getDataBlock() {

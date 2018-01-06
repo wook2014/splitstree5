@@ -18,8 +18,9 @@ import java.util.HashMap;
 
 /**
  * Implementation of the Bio-Neighbor-Joining algorithm (Gascuel 1997)
- *
+ * <p>
  * Created on 2008-02-26
+ *
  * @author David Bryant and Daniel Huson
  */
 
@@ -77,7 +78,7 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
         Edge e, f; //from tax_old to new=merged edge
         double lambda; //lambda value in BioNJ
 
-        active.set(1, nbNtax+1);
+        active.set(1, nbNtax + 1);
 
         for (int i = 1; i <= nbNtax; i++) {
             h[i][i] = 0.0;
@@ -121,7 +122,7 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
             //dist_f=0.5*(h[i_min][j_min] + b[j_min]/((double)actual-2.0)
             //	- b[i_min]/((double)actual-2.0) );
 
-            active.set(j_min,false);
+            active.set(j_min, false);
 
             // tax taxa update:
             tax_old_i = new StringBuffer(tax[i_min].toString());

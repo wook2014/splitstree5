@@ -90,6 +90,7 @@ public class SplitsNetworkViewBlock extends ADataBlock implements IHasTab {
             ((AlgorithmBreadCrumbsToolBar) splitsViewTab.getToolBar()).update();
         });
     }
+
     public SplitsViewTab getTab() {
         return splitsViewTab;
     }
@@ -99,6 +100,7 @@ public class SplitsNetworkViewBlock extends ADataBlock implements IHasTab {
      */
     public void show() {
         splitsViewTab.show();
+        Platform.runLater(() -> setShortDescription(getInfo()));
     }
 
     public void updateSelectionModels(PhyloGraph graph) {

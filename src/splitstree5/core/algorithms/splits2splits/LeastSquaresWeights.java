@@ -15,7 +15,7 @@ import splitstree5.utils.nexus.SplitsUtilities;
  * wrapper for the least squares computations
  *
  * @author huson
- *         Date: 17-Feb-2004
+ * Date: 17-Feb-2004
  */
 public class LeastSquaresWeights extends Algorithm<SplitsBlock, SplitsBlock> implements IFromSplits, IToSplits {
 
@@ -88,7 +88,7 @@ public class LeastSquaresWeights extends Algorithm<SplitsBlock, SplitsBlock> imp
         this.optionConstrain = optionConstrain;
     }
 
-    public void setDistancesBlock(DistancesBlock dist){
+    public void setDistancesBlock(DistancesBlock dist) {
         this.distancesBlock.copy(dist);
     }
 }

@@ -23,12 +23,15 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
+import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import jloda.fx.ASelectionModel;
 import jloda.graph.*;
 import jloda.phylo.PhyloGraph;
-import splitstree5.main.MainWindowController;
+import jloda.util.ResourceManager;
 import splitstree5.main.graphtab.base.*;
+import splitstree5.menu.MenuController;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -46,7 +49,11 @@ public class SplitsViewTab extends GraphTab {
      */
     public SplitsViewTab() {
         super();
-        setText("Split Network");
+        final Label label = new Label("Splits Network");
+        label.setGraphic(new ImageView(ResourceManager.getIcon("SplitsNetworkView16.gif")));
+        setText("");
+        setGraphic(label);
+
         setLayout(GraphLayout.Radial);
 
         splitsSelectionModel.getSelectedItems().addListener((ListChangeListener<Integer>) c -> {
@@ -86,7 +93,7 @@ public class SplitsViewTab extends GraphTab {
      * create a node view
      */
     public ANodeView createNodeView(final Node v, Point2D location, String label) {
-        final ANodeView nodeView = new ANodeView(v, location, label, nodeSelectionModel);
+        final ANodeView nodeView = new ANodeView(v, location, label);
 
         if (nodeView.getShape() != null) {
             nodeView.getShape().setOnMousePressed((e) -> {
@@ -112,7 +119,10 @@ public class SplitsViewTab extends GraphTab {
                 edgeSelectionModel.clearSelection();
                 if (!x.isShiftDown())
                     nodeSelectionModel.clearSelection();
-                nodeSelectionModel.select(v);
+                if (nodeSelectionModel.getSelectedItems().contains(v))
+                    nodeSelectionModel.clearSelection(v);
+                else
+                    nodeSelectionModel.select(v);
                 if (x.getClickCount() == 2) {
                     Edge e = getEdgeWithMostWeight(v);
                     selectBySplit(e);
@@ -121,13 +131,16 @@ public class SplitsViewTab extends GraphTab {
             });
         }
         if (nodeView.getLabel() != null) {
-            nodeView.getLabel().setOnMouseClicked((e) -> {
+            nodeView.getLabel().setOnMouseClicked((x) -> {
                 splitsSelectionModel.clearSelection();
                 edgeSelectionModel.clearSelection();
-                if (!e.isShiftDown())
+                if (!x.isShiftDown())
                     nodeSelectionModel.clearSelection();
-                nodeSelectionModel.select(nodeView.getNode());
-                e.consume();
+                if (nodeSelectionModel.getSelectedItems().contains(v))
+                    nodeSelectionModel.clearSelection(v);
+                else
+                    nodeSelectionModel.select(v);
+                x.consume();
             });
         }
         addNodeLabelMovementSupport(nodeView);
@@ -269,7 +282,7 @@ public class SplitsViewTab extends GraphTab {
     }
 
     @Override
-    public void updateMenus(MainWindowController controller) {
+    public void updateMenus(MenuController controller) {
         super.updateMenus(controller);
     }
 }

@@ -1,6 +1,5 @@
 package splitstree5.io.imports;
 
-import splitstree5.core.algorithms.interfaces.IFromChararacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
@@ -36,7 +35,7 @@ public class FastaIn extends CharactersFormat {
 
         int counter = 0;
         try (BufferedReader in = new BufferedReader(new FileReader(inputFile))) {
-            counter ++;
+            counter++;
             String line;
             int sequenceLength = 0;
             StringBuilder sequence = new StringBuilder("");
@@ -80,11 +79,11 @@ public class FastaIn extends CharactersFormat {
                 throw new IOException("Sequences must be the same length. Wrong number of chars at the sequence " + ntax);
 
         }
-        System.err.println("ntax: "+ntax+" nchar: "+nchar);
-        for(String s : matrix){
+        System.err.println("ntax: " + ntax + " nchar: " + nchar);
+        for (String s : matrix) {
             System.err.println(s);
         }
-        for(String s : taxonNamesFound){
+        for (String s : taxonNamesFound) {
             System.err.println(s);
         }
 
@@ -99,15 +98,15 @@ public class FastaIn extends CharactersFormat {
 
         Map<Character, Integer> frequency = new LinkedHashMap<>();
         StringBuilder foundSymbols = new StringBuilder("");
-        for(int i = 1; i<=characters.getNtax(); i++){
-            for(int j = 1; j<=characters.getNchar(); j++){
-                char symbol = Character.toLowerCase(matrix.get(i-1).charAt(j-1));
-                if(foundSymbols.toString().indexOf(symbol) == -1) {
+        for (int i = 1; i <= characters.getNtax(); i++) {
+            for (int j = 1; j <= characters.getNchar(); j++) {
+                char symbol = Character.toLowerCase(matrix.get(i - 1).charAt(j - 1));
+                if (foundSymbols.toString().indexOf(symbol) == -1) {
                     foundSymbols.append(symbol);
                     frequency.put(symbol, 1);
                 } else
-                    frequency.put(symbol, frequency.get(symbol)+1);
-                characters.set(i, j, matrix.get(i-1).charAt(j-1));
+                    frequency.put(symbol, frequency.get(symbol) + 1);
+                characters.set(i, j, matrix.get(i - 1).charAt(j - 1));
             }
         }
 
@@ -116,15 +115,15 @@ public class FastaIn extends CharactersFormat {
 
     private static void addTaxaName(String infoLine, ArrayList<String> taxonNamesFound) throws IOException {
 
-        if(infoLine.contains("[organism=")){
-            int index1 = infoLine.indexOf("[organism=")+10;
+        if (infoLine.contains("[organism=")) {
+            int index1 = infoLine.indexOf("[organism=") + 10;
             int index2 = infoLine.indexOf(']');
 
             // todo test whole line or only taxon name???
-            if(taxonNamesFound.contains(infoLine.substring(index1,index2))){
-                throw new IOException("Double taxon name: "+infoLine.substring(index1,index2));
+            if (taxonNamesFound.contains(infoLine.substring(index1, index2))) {
+                throw new IOException("Double taxon name: " + infoLine.substring(index1, index2));
             }
-            taxonNamesFound.add(infoLine.substring(index1,index2));
+            taxonNamesFound.add(infoLine.substring(index1, index2));
             return;
         }
 
@@ -135,29 +134,29 @@ public class FastaIn extends CharactersFormat {
 
         infoLine = infoLine.toLowerCase();
         String foundID = "";
-        for(String id : possibleIDs){
-            if(infoLine.contains(">"+id+"|") || infoLine.contains("|"+id+"|")){
+        for (String id : possibleIDs) {
+            if (infoLine.contains(">" + id + "|") || infoLine.contains("|" + id + "|")) {
                 foundID = id;
                 break;
             }
         }
 
-        if(!foundID.equals("")){
-            String afterID = infoLine.substring(infoLine.indexOf(foundID)+foundID.length());
-            int index1 = afterID.indexOf('|')+1;
-            int index2 = afterID.substring(index1+1).indexOf('|')+2;
+        if (!foundID.equals("")) {
+            String afterID = infoLine.substring(infoLine.indexOf(foundID) + foundID.length());
+            int index1 = afterID.indexOf('|') + 1;
+            int index2 = afterID.substring(index1 + 1).indexOf('|') + 2;
 
-            if(taxonNamesFound.contains(afterID.substring(index1,index2))){
-                throw new IOException("Double taxon name: "+afterID.substring(index1,index2));
+            if (taxonNamesFound.contains(afterID.substring(index1, index2))) {
+                throw new IOException("Double taxon name: " + afterID.substring(index1, index2));
             }
-            System.err.println("name-"+afterID.substring(index1,index2).toUpperCase());
-            taxonNamesFound.add(afterID.substring(index1,index2).toUpperCase());
+            System.err.println("name-" + afterID.substring(index1, index2).toUpperCase());
+            taxonNamesFound.add(afterID.substring(index1, index2).toUpperCase());
             return;
         }
 
 
-        if(taxonNamesFound.contains(infoLine.substring(1))){
-            throw new IOException("Double taxon name: "+infoLine.substring(1));
+        if (taxonNamesFound.contains(infoLine.substring(1))) {
+            throw new IOException("Double taxon name: " + infoLine.substring(1));
         }
         taxonNamesFound.add(infoLine.substring(1));
     }

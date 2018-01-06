@@ -19,6 +19,7 @@
 
 package splitstree5.core.datablocks;
 
+import javafx.beans.InvalidationListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import jloda.phylo.PhyloTree;
@@ -41,6 +42,7 @@ public class TreesBlock extends ADataBlock {
     public TreesBlock(String name) {
         this();
         setName(name);
+        trees.addListener((InvalidationListener) observable -> setShortDescription(getInfo()));
     }
 
     /**
@@ -61,7 +63,6 @@ public class TreesBlock extends ADataBlock {
         trees.clear();
         partial = false;
         rooted = false;
-        setShortDescription("");
     }
 
     @Override

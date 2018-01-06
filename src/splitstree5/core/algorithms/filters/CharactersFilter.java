@@ -28,9 +28,7 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.gui.connectorview.AlgorithmPane;
 
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * removes columns from a character alignment
@@ -38,7 +36,6 @@ import java.util.Map;
  */
 public class CharactersFilter extends Algorithm<CharactersBlock, CharactersBlock> implements IFromChararacters, IToChararacters {
     private final BitSet columnMask = new BitSet(); // positions set here are ignored
-    private int totalColumns;
 
     private boolean optionExcludeGapSites = false;
     private boolean optionExcludeParsimonyUninformativeSites = false;
@@ -52,7 +49,7 @@ public class CharactersFilter extends Algorithm<CharactersBlock, CharactersBlock
     public void compute(ProgressListener progress, TaxaBlock taxa, CharactersBlock parent, CharactersBlock child) throws InterruptedException, CanceledException {
         child.clear();
 
-        totalColumns = parent.getNchar();
+        int totalColumns = parent.getNchar();
 
         final Map<Integer, Integer> ch2count = new HashMap<>();
 
@@ -121,20 +118,19 @@ public class CharactersFilter extends Algorithm<CharactersBlock, CharactersBlock
                 pos++;
             }
         }
+
+        if (totalColumns == 0)
+            setShortDescription(null);
+        else if (columnMask.cardinality() > 0)
+            setShortDescription("Enabled: " + (totalColumns - columnMask.cardinality()) + " (of " + totalColumns + ") chars");
+        else
+            setShortDescription("Enabled: all " + totalColumns + " chars");
     }
 
     @Override
     public void clear() {
+        super.clear();
     }
-
-    @Override
-    public String getShortDescription() {
-        if (columnMask.cardinality() > 0)
-            return "Enabled: " + (totalColumns - columnMask.cardinality()) + " (of " + totalColumns + ") chars";
-        else
-            return "Enabled: all " + totalColumns + " chars";
-    }
-
 
     public AlgorithmPane getControl() {
         return super.getControl();
@@ -186,5 +182,9 @@ public class CharactersFilter extends Algorithm<CharactersBlock, CharactersBlock
 
     public void setOptionExcludeThirdCodonPosition(boolean optionExcludeThirdCodonPosition) {
         this.optionExcludeThirdCodonPosition = optionExcludeThirdCodonPosition;
+    }
+
+    public List<String> listOptions() {
+        return Arrays.asList("optionExcludeGapSites", "optionExcludeConstantSites", "optionExcludeParsimonyUninformativeSites", "optionExcludeFirstCodonPosition", "optionExcludeSecondCodonPosition", "optionExcludeThirdCodonPosition");
     }
 }

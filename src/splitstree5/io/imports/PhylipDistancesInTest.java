@@ -25,7 +25,7 @@ public class PhylipDistancesInTest {
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
         TaxaNexusIO.write(w1, taxaBlock);
-        DistancesNexusIO.write(w1,taxaBlock, distancesBlock, null);
+        DistancesNexusIO.write(w1, taxaBlock, distancesBlock, null);
         System.err.println(w1.toString());
         String s1 = w1.toString();
 
@@ -34,7 +34,7 @@ public class PhylipDistancesInTest {
         final StringWriter w2 = new StringWriter();
         w2.write("#nexus\n");
         TaxaNexusIO.write(w2, taxaBlock);
-        DistancesNexusIO.write(w2,taxaBlock, distancesBlock, null);
+        DistancesNexusIO.write(w2, taxaBlock, distancesBlock, null);
         System.err.println(w2.toString());
         String s2 = w2.toString();
 
@@ -43,7 +43,7 @@ public class PhylipDistancesInTest {
         final StringWriter w3 = new StringWriter();
         w3.write("#nexus\n");
         TaxaNexusIO.write(w3, taxaBlock);
-        DistancesNexusIO.write(w3,taxaBlock, distancesBlock, null);
+        DistancesNexusIO.write(w3, taxaBlock, distancesBlock, null);
         System.err.println(w3.toString());
 
         // todo
@@ -52,7 +52,7 @@ public class PhylipDistancesInTest {
         final StringWriter w4 = new StringWriter();
         w4.write("#nexus\n");
         TaxaNexusIO.write(w4, taxaBlock);
-        DistancesNexusIO.write(w4,taxaBlock, distancesBlock, null);
+        DistancesNexusIO.write(w4, taxaBlock, distancesBlock, null);
         System.err.println(w4.toString());
     }
 

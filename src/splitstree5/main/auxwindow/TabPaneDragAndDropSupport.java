@@ -1,4 +1,23 @@
 /*
+ *  Copyright (C) 2016 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
  *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
@@ -36,12 +55,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.main;
+package splitstree5.main.auxwindow;
 
 import javafx.beans.InvalidationListener;
 import javafx.collections.ListChangeListener.Change;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.ClipboardContent;
@@ -49,6 +67,7 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.stage.Stage;
+import splitstree5.main.ISavesPreviousSelection;
 
 /**
  * drag and drop support
@@ -58,12 +77,14 @@ public class TabPaneDragAndDropSupport {
     private final TabPane mainTabPane;
     private Image transferImage;
     private Tab currentDraggingTab;
+    private final IStageSupplier stageSupplier;
 
     /**
      * implements drag and drop support
      */
-    public TabPaneDragAndDropSupport(TabPane mainTabPane) {
+    public TabPaneDragAndDropSupport(TabPane mainTabPane, IStageSupplier stageSupplier) {
         this.mainTabPane = mainTabPane;
+        this.stageSupplier = stageSupplier;
 
         mainTabPane.getTabs().forEach(this::addDragHandlers);
         mainTabPane.getTabs().addListener((Change<? extends Tab> c) -> {
@@ -97,7 +118,7 @@ public class TabPaneDragAndDropSupport {
      * add drag handles to tab
      */
     private void addDragHandlers(Tab tab) {
-        if (tab.getText() != null && !tab.getText().isEmpty()) {
+        if (tab.getGraphic() == null) {
             Label label = new Label(tab.getText(), tab.getGraphic());
             tab.setText(null);
             tab.setGraphic(label);
@@ -127,6 +148,20 @@ public class TabPaneDragAndDropSupport {
                 });
                 redockItem.setDisable(tab.getTabPane() == mainTabPane);
                 contextMenu.getItems().add(redockItem);
+
+                contextMenu.getItems().add(new SeparatorMenuItem());
+                final MenuItem closeItem = new MenuItem("Close");
+                closeItem.setOnAction((x) -> {
+                    final TabPane theTabPane = tab.getTabPane();
+                    theTabPane.getTabs().remove(tab);
+                    if (theTabPane != mainTabPane) { // is in auxiliary window
+                        if (theTabPane.getTabs().size() == 0)
+                            ((Stage) theTabPane.getScene().getWindow()).close();
+                    }
+                });
+                closeItem.setDisable(!tab.isClosable());
+                contextMenu.getItems().add(closeItem);
+
                 if (contextMenu.getItems().size() > 0)
                     contextMenu.show(tab.getTabPane(), e.getScreenX(), e.getScreenY());
             });
@@ -156,7 +191,6 @@ public class TabPaneDragAndDropSupport {
                     currentDraggingTab = null;
                 }
             });
-            tab.setClosable(false);
         }
     }
 
@@ -176,15 +210,14 @@ public class TabPaneDragAndDropSupport {
     private Stage createAuxiliaryWindow(final Tab tab, double width, double height) {
         tab.setClosable(false);
 
-        final Stage stage = new Stage();
+        final Stage stage = stageSupplier.supplyStage(tab, width, height);
 
         stage.focusedProperty().addListener((c, o, n) -> {
             if (!n && tab instanceof ISavesPreviousSelection)
                 ((ISavesPreviousSelection) tab).saveAsPreviousSelection();
         });
 
-
-        final TabPane newTabPane = new TabPane(tab);
+        final TabPane newTabPane = tab.getTabPane();
         addDragHandlers(tab);
 
         newTabPane.getTabs().addListener((InvalidationListener) (c) -> {
@@ -211,20 +244,21 @@ public class TabPaneDragAndDropSupport {
             }
         });
 
-        stage.setScene(new Scene(newTabPane, width, height));
-        if (tab.getGraphic() instanceof Labeled)
+        if ((stage.getTitle() == null || stage.getTitle().length() == 0) && tab.getGraphic() instanceof Labeled)
             stage.setTitle(((Labeled) tab.getGraphic()).getText());
-
-        stage.sizeToScene();
 
         stage.setOnCloseRequest((e) -> {
             while (newTabPane.getTabs().size() > 0) {
                 final Tab a = newTabPane.getTabs().remove(0);
                 mainTabPane.getTabs().add(a);
                 if (newTabPane.getTabs().size() == 0) // select the last one
+                {
                     mainTabPane.getSelectionModel().select(mainTabPane.getTabs().size() - 1);
+                    stageSupplier.closedStage(stage, a);
+                }
             }
         });
+        stageSupplier.openedStage(stage, tab);
         return stage;
     }
 

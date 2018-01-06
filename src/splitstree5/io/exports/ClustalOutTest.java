@@ -10,11 +10,10 @@ import splitstree5.io.nexus.CharactersNexusIO;
 import java.io.*;
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 public class ClustalOutTest {
 
     private ClustalOut clustalOut = new ClustalOut();
+
     @Test
     public void export() throws Exception {
 

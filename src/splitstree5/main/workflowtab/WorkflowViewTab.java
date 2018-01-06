@@ -72,8 +72,8 @@ import splitstree5.core.Document;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.workflow.ANode;
 import splitstree5.core.workflow.Workflow;
-import splitstree5.main.MainWindowController;
 import splitstree5.main.ViewerTab;
+import splitstree5.menu.MenuController;
 import splitstree5.undo.UndoRedoManager;
 import splitstree5.undo.UndoableChangeList;
 import splitstree5.undo.UndoableRedoableCommand;
@@ -288,7 +288,7 @@ public class WorkflowViewTab extends ViewerTab {
      * @param controller
      */
     @Override
-    public void updateMenus(MainWindowController controller) {
+    public void updateMenus(MenuController controller) {
         final ASelectionModel<ANode> selectionModel = getWorkflow().getNodeSelectionModel();
 
         controller.getUndoMenuItem().setOnAction((e) -> undoManager.undo());

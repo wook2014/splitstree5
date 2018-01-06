@@ -118,7 +118,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import jloda.fx.ASelectionModel;
 
 /**
  * node view
@@ -138,7 +137,7 @@ public class ANodeView {
      * @param text
      * @return
      */
-    public ANodeView(jloda.graph.Node v, Point2D location, String text, ASelectionModel<jloda.graph.Node> selectionModel) {
+    public ANodeView(jloda.graph.Node v, Point2D location, String text) {
         this.v = v;
         setLocation(location);
         final Circle circle = new Circle(5);
@@ -146,7 +145,6 @@ public class ANodeView {
         circle.setLayoutY(location.getY());
         setShape(circle);
         circle.setFill(Color.BLUE);
-        final Label label;
         if (text != null && text.length() > 0) {
             label = new Label(text);
             label.setLayoutX(location.getX() + circle.getRadius());
@@ -154,26 +152,6 @@ public class ANodeView {
             setLabel(label);
         } else
             label = null;
-        circle.setOnMouseClicked((e) -> {
-            if (!e.isShiftDown())
-                selectionModel.clearSelection();
-            if (selectionModel.getSelectedItems().contains(v))
-                selectionModel.clearSelection(v);
-            else
-                selectionModel.select(v);
-            e.consume();
-        });
-        if (label != null) {
-            label.setOnMouseClicked((e) -> {
-                if (!e.isShiftDown())
-                    selectionModel.clearSelection();
-                if (selectionModel.getSelectedItems().contains(v))
-                    selectionModel.clearSelection(v);
-                else
-                    selectionModel.select(v);
-                e.consume();
-            });
-        }
     }
 
     public void setShape(Node shape) {

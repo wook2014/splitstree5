@@ -49,11 +49,11 @@ public class SplitMatrix {
     private Map splitIndices; // Map from splits to indices
     private SplitsBlock allSplits; //Splits block containing all splits
 
-    public void print(){
+    public void print() {
         System.out.println("print Split matrix:");
-        for(int i = 0; i<=allSplits.getNsplits(); i++){
-            for(int j=0; j<=nblocks; j++){
-                System.out.print(matrix.get(i,j)+" ");
+        for (int i = 0; i <= allSplits.getNsplits(); i++) {
+            for (int j = 0; j <= nblocks; j++) {
+                System.out.print(matrix.get(i, j) + " ");
             }
             System.out.println();
         }

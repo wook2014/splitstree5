@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class StockholmIn extends CharactersFormat{
+public class StockholmIn extends CharactersFormat {
 
     public void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters) throws IOException {
 
@@ -21,13 +21,13 @@ public class StockholmIn extends CharactersFormat{
 
         int counter = 0;
         try (BufferedReader in = new BufferedReader(new FileReader(inputFile))) {
-            counter ++;
+            counter++;
             String line;
             int sequenceLength = 0;
             String sequence = "";
             boolean startedNewSequence = false;
 
-            if(!in.readLine().equals("# STOCKHOLM 1.0"))
+            if (!in.readLine().equals("# STOCKHOLM 1.0"))
                 throw new IOException("STOCKHOLM header expected");
 
             while ((line = in.readLine()) != null) {
@@ -46,11 +46,10 @@ public class StockholmIn extends CharactersFormat{
                 matrix.add(seq);
                 ntax++;
 
-                if(nchar == 0)
+                if (nchar == 0)
                     nchar = seq.length();
-                else
-                    if(nchar != seq.length())
-                        throw new IOException("Sequences must be the same length. line: "+counter);
+                else if (nchar != seq.length())
+                    throw new IOException("Sequences must be the same length. line: " + counter);
             }
 
             /*if (sequence.length() == 0)
@@ -60,11 +59,11 @@ public class StockholmIn extends CharactersFormat{
                 throw new IOException("Sequences must be the same length. Wrong number of chars at the sequence " + ntax);*/
 
         }
-        System.err.println("ntax: "+ntax+" nchar: "+nchar);
-        for(String s : matrix){
+        System.err.println("ntax: " + ntax + " nchar: " + nchar);
+        for (String s : matrix) {
             System.err.println(s);
         }
-        for(String s : taxonNamesFound){
+        for (String s : taxonNamesFound) {
             System.err.println(s);
         }
 
@@ -80,15 +79,15 @@ public class StockholmIn extends CharactersFormat{
         System.err.println("ddddddddddddddddd");
         Map<Character, Integer> frequency = new LinkedHashMap<>();
         StringBuilder foundSymbols = new StringBuilder("");
-        for(int i = 1; i<=characters.getNtax(); i++){
-            for(int j = 1; j<=characters.getNchar(); j++){
-                char symbol = Character.toLowerCase(matrix.get(i-1).charAt(j-1));
-                if(foundSymbols.toString().indexOf(symbol) == -1) {
+        for (int i = 1; i <= characters.getNtax(); i++) {
+            for (int j = 1; j <= characters.getNchar(); j++) {
+                char symbol = Character.toLowerCase(matrix.get(i - 1).charAt(j - 1));
+                if (foundSymbols.toString().indexOf(symbol) == -1) {
                     foundSymbols.append(symbol);
                     frequency.put(symbol, 1);
                 } else
-                    frequency.put(symbol, frequency.get(symbol)+1);
-                characters.set(i, j, matrix.get(i-1).charAt(j-1));
+                    frequency.put(symbol, frequency.get(symbol) + 1);
+                characters.set(i, j, matrix.get(i - 1).charAt(j - 1));
             }
         }
 

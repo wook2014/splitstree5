@@ -10,8 +10,9 @@ import splitstree5.core.datablocks.TaxaBlock;
 
 /**
  * Implementation of the Co-dominant genetic distance
- *
+ * <p>
  * Created on Nov 2009
+ *
  * @author bryant
  */
 
@@ -28,7 +29,7 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
     protected boolean useSquareRoot;
 
     @Override
-    public boolean isApplicable(TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock){
+    public boolean isApplicable(TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock) {
         return !charactersBlock.isUseCharacterWeights() && charactersBlock.isDiploid();
     }
 
@@ -61,9 +62,9 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
                 for (int k = 0; k < nLoci; k++) {
 
                     char ci1 = seqi[2 * k];
-                    char ci2 = seqi[2 * k+1];
+                    char ci2 = seqi[2 * k + 1];
                     char cj1 = seqj[2 * k];
-                    char cj2 = seqj[2 * k+1];
+                    char cj2 = seqj[2 * k + 1];
 
                     if (ci1 == missingchar || ci2 == missingchar || cj1 == missingchar || cj2 == missingchar)
                         continue;
@@ -109,8 +110,8 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
                 if (getOptionUseSquareRoot())
                     dij = Math.sqrt(dij);
 
-                distancesBlock.set(i+1, j+1, Math.sqrt(dij));
-                distancesBlock.set(j+1, i+1, Math.sqrt(dij));
+                distancesBlock.set(i + 1, j + 1, Math.sqrt(dij));
+                distancesBlock.set(j + 1, i + 1, Math.sqrt(dij));
             }
             progressListener.incrementProgress();
         }

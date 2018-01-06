@@ -1,7 +1,7 @@
 package splitstree5.utils.nexus;
 
 import splitstree5.core.datablocks.CharactersBlock;
-import splitstree5.gui.dialog.Alert;
+import splitstree5.utils.Alert;
 
 public class CharactersUtilities {
 
@@ -31,26 +31,26 @@ public class CharactersUtilities {
             char[] seq = chars.getMatrix()[i];
             for (int k = 1; k < chars.getNchar(); k++) {
                 //if (!chars.isMasked(k)) { // todo not implemented yet
-                    char c = seq[k];
+                char c = seq[k];
 
-                    //Convert to lower case if the respectCase option is not set
-                    if (!chars.isRespectCase()) {
-                        if (c != missingchar && c != gapchar)
-                            c = Character.toLowerCase(c);
+                //Convert to lower case if the respectCase option is not set
+                if (!chars.isRespectCase()) {
+                    if (c != missingchar && c != gapchar)
+                        c = Character.toLowerCase(c);
+                }
+                if (c != missingchar && c != gapchar) {
+                    numNotMissing = numNotMissing + 1;
+
+                    int state = symbols.indexOf(c);
+
+                    if (state >= 0) {
+                        Fcount[state] += 1.0;
+                    } else if (state < 0 && !warned) {
+
+                        new Alert("Unknown symbol encountered in characters: " + c);
+                        warned = true;
                     }
-                    if (c != missingchar && c != gapchar) {
-                        numNotMissing = numNotMissing + 1;
-
-                        int state = symbols.indexOf(c);
-
-                        if (state >= 0) {
-                            Fcount[state] += 1.0;
-                        } else if (state < 0 && !warned) {
-
-                            new Alert("Unknown symbol encountered in characters: " + c);
-                            warned = true;
-                        }
-                    }
+                }
                 //}
             }
         }

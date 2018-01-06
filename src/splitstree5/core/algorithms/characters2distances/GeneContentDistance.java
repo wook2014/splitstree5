@@ -26,7 +26,7 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
 
         System.err.println("Not tested under construction");
         /*@todo: test this class
-        */
+         */
         BitSet genes[] = computeGenes(charactersBlock);
         if (!useMLDistance)
             computeSnelBorkDistance(distancesBlock, taxaBlock.getNtax(), genes);
@@ -43,7 +43,7 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
      */
     public boolean isApplicable(TaxaBlock taxa, CharactersBlock ch) {
         //return taxa != null && ch != null && ch.getFormat().getDatatype().equalsIgnoreCase(Characters.Datatypes.STANDARD);
-        return  taxa != null && ch != null && ch.getDataType().equals(CharactersType.standard);
+        return taxa != null && ch != null && ch.getDataType().equals(CharactersType.standard);
     }
 
     /**

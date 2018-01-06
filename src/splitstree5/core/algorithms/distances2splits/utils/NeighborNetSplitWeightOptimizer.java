@@ -1,18 +1,18 @@
 /*
  *  Copyright (C) 2018 Daniel H. Huson
- *  
+ *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
- *  
+ *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
- *  
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -85,7 +85,7 @@ public class NeighborNetSplitWeightOptimizer {
         double[] v = setupV(distances, leastSquares, cycle);
         double[] x = new double[npairs];
 
-            /* Initialize the weight matrix */
+        /* Initialize the weight matrix */
         double[] W = new double[npairs];
         for (int k = 0; k < npairs; k++) {
             if (v[k] == 0.0)
@@ -93,7 +93,7 @@ public class NeighborNetSplitWeightOptimizer {
             else
                 W[k] = 1.0 / v[k];
         }
-            /* Find the constrained optimal values for x */
+        /* Find the constrained optimal values for x */
 
         runActiveConjugate(ntax, d, W, x, regularization, lambdaFrac);
 
@@ -334,7 +334,7 @@ public class NeighborNetSplitWeightOptimizer {
                     maxAtWd = val;
             lambda = maxAtWd * (1.0 - lambdaFrac);
 
-        	/* Replace AtWd with AtWd = lambda. This has same effect as regularisation term */
+            /* Replace AtWd with AtWd = lambda. This has same effect as regularisation term */
             for (int k = 0; k < npairs; k++)
                 AtWd[k] -= lambda;
         }
@@ -389,8 +389,8 @@ public class NeighborNetSplitWeightOptimizer {
             calculateAtx(ntax, y, r); /* r = AtWAx */
 
             /* We check to see that we are at a constrained minimum.... that is that the gradient is positive for
-            * all i,j in the active set.
-            */
+             * all i,j in the active set.
+             */
             int min_i = -1;
             double min_grad = 1.0;
             for (int i = 0; i < npairs; i++) {
@@ -424,7 +424,7 @@ public class NeighborNetSplitWeightOptimizer {
         }
     }
 
-/* Compute the row sum in d. */
+    /* Compute the row sum in d. */
 
     static private double rowsum(int n, double[] d, int k) {
         double r = 0;
@@ -580,7 +580,7 @@ public class NeighborNetSplitWeightOptimizer {
     static private void circularConjugateGrads(int ntax, int npairs, double[] r, double[] w, double[] p, double[] y,
                                                double[] W, double[] b, boolean[] active, double[] x) {
         int kmax = ntax * (ntax - 1) / 2;
-/* Maximum number of iterations of the cg algorithm (probably too many) */
+        /* Maximum number of iterations of the cg algorithm (probably too many) */
 
         calculateAb(ntax, x, y);
 
@@ -628,7 +628,7 @@ public class NeighborNetSplitWeightOptimizer {
                 alpha += p[i] * w[i];
             alpha = rho / alpha;
 
-/* Update x and the residual, r */
+            /* Update x and the residual, r */
             for (int i = 0; i < npairs; i++) {
                 x[i] += alpha * p[i];
                 r[i] -= alpha * w[i];

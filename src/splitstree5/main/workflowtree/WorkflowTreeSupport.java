@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.gui.workflowtree;
+package splitstree5.main.workflowtree;
 
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -29,27 +29,31 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 
-public class WorkFlowTreeViewSupport {
+public class WorkflowTreeSupport {
     /**
      * constructor sets up tree view support
      *
      * @param treeView
      * @param document
      */
-    public WorkFlowTreeViewSupport(TreeView<String> treeView, Document document) {
+    public WorkflowTreeSupport(TreeView<String> treeView, Document document) {
         final Workflow workflow = document.getWorkflow();
+
+        treeView.setOnMouseEntered((e) -> treeView.requestFocus());
+        treeView.setOnMouseExited((e) -> document.getMainWindow().getMainWindowController().getTabPane().requestFocus());
+
 
         workflow.getTopologyChanged().addListener((c, o, n) -> {
             treeView.getRoot().getChildren().clear();
-            WorkFlowTreeItem topTaxaItem = new WorkFlowTreeItem(document, workflow.getTopTaxaNode());
+            WorkflowTreeItem topTaxaItem = new WorkflowTreeItem(document, workflow.getTopTaxaNode());
             treeView.getRoot().getChildren().add(topTaxaItem);
-            WorkFlowTreeItem taxaFilterItem = new WorkFlowTreeItem(document, workflow.getTaxaFilter());
+            WorkflowTreeItem taxaFilterItem = new WorkflowTreeItem(document, workflow.getTaxaFilter());
             topTaxaItem.getChildren().add(taxaFilterItem);
-            WorkFlowTreeItem workingTaxaItem = new WorkFlowTreeItem(document, workflow.getWorkingTaxaNode());
+            WorkflowTreeItem workingTaxaItem = new WorkflowTreeItem(document, workflow.getWorkingTaxaNode());
             topTaxaItem.getChildren().add(workingTaxaItem);
 
             if (workflow.getTopDataNode() != null) {
-                WorkFlowTreeItem topDataItem = new WorkFlowTreeItem(document, workflow.getTopDataNode());
+                WorkflowTreeItem topDataItem = new WorkflowTreeItem(document, workflow.getTopDataNode());
                 treeView.getRoot().getChildren().add(topDataItem);
                 addToTreeRec(document, topDataItem, workflow.getTopDataNode());
             }
@@ -73,9 +77,9 @@ public class WorkFlowTreeViewSupport {
      * @param treeItem
      * @param aNode
      */
-    private void addToTreeRec(final Document document, final WorkFlowTreeItem treeItem, final ANode aNode) {
+    private void addToTreeRec(final Document document, final WorkflowTreeItem treeItem, final ANode aNode) {
         for (ANode child : aNode.getChildren()) {
-            WorkFlowTreeItem childItem = new WorkFlowTreeItem(document, child);
+            WorkflowTreeItem childItem = new WorkflowTreeItem(document, child);
             treeItem.getChildren().add(childItem);
             if (child.getChildren().size() == 1 && aNode.getChildren().size() == 1)
                 addToTreeRec(document, treeItem, child);

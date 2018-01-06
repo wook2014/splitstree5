@@ -11,9 +11,9 @@ import splitstree5.core.models.F81model;
 
 /**
  * Implements the Felsenstein81 DNA distance model
- *
+ * <p>
  * Created on Jun 2004
- *
+ * <p>
  * todo : no authors
  */
 
@@ -45,7 +45,8 @@ public class F81 extends DNAdistance implements IFromChararacters, IToDistances 
     }
 
     /**
-     *  return the exact distance
+     * return the exact distance
+     *
      * @param F
      * @return
      * @throws SaturatedDistancesException

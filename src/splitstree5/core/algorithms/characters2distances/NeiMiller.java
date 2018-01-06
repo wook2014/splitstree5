@@ -11,8 +11,9 @@ import splitstree5.core.datablocks.characters.CharactersType;
 
 /**
  * Computes the Nei and Miller (1990) distance from a set of characters
- *
+ * <p>
  * Created on 2008-03-17
+ *
  * @author bryant
  */
 public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
@@ -47,9 +48,9 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
 
         // Determine enzyme classes etc:
 
-        double[] class_value = new double[nchar+1];     // Value for given enzyme class
-        int[] class_size = new int[nchar+1];                  // number of positions for class
-        int[] char2class = new int[nchar+1];        // Maps characters to enzyme classes
+        double[] class_value = new double[nchar + 1];     // Value for given enzyme class
+        int[] class_size = new int[nchar + 1];                  // number of positions for class
+        int[] char2class = new int[nchar + 1];        // Maps characters to enzyme classes
         int num_classes = 0;                    // Number of different classes
 
 
@@ -60,22 +61,22 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
 
         for (c = 1; c <= nchar; c++) {
             //if (!characters.isMasked(c)) {
-                boolean found = false;
-                for (k = 1; k <= num_classes; k++) {
-                    if (class_value[k] == charactersBlock.getCharacterWeight(c)) {// belongs to class already encountered
-                        char2class[c] = k;
-                        class_size[k]++;
-                        found = true;
-                        break;
-                    }
+            boolean found = false;
+            for (k = 1; k <= num_classes; k++) {
+                if (class_value[k] == charactersBlock.getCharacterWeight(c)) {// belongs to class already encountered
+                    char2class[c] = k;
+                    class_size[k]++;
+                    found = true;
+                    break;
                 }
-                if (!found) // new class
-                {
-                    ++num_classes;
-                    char2class[c] = num_classes;
-                    class_value[num_classes] = charactersBlock.getCharacterWeight(c);
-                    class_size[num_classes] = 1;
-                }
+            }
+            if (!found) // new class
+            {
+                ++num_classes;
+                char2class[c] = num_classes;
+                class_value[num_classes] = charactersBlock.getCharacterWeight(c);
+                class_size[num_classes] = 1;
+            }
             //}
 
             //doc.notifySetProgress(100 * c / maxProgress);
@@ -84,15 +85,15 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
 
         // Compute mij_k:
 
-        int[][][] mij_k = new int[ntax+1][ntax+1][num_classes+1];
+        int[][][] mij_k = new int[ntax + 1][ntax + 1][num_classes + 1];
 
         for (i = 1; i <= ntax; i++) {
             for (j = i; j <= ntax; j++) {
                 for (c = 1; c <= nchar; c++) {
                     //if (!characters.isMasked(c)) {
-                        if (charactersBlock.get(i, c) == '1' && charactersBlock.get(j, c) == '1') {
-                            mij_k[i][j][char2class[c]]++;
-                        }
+                    if (charactersBlock.get(i, c) == '1' && charactersBlock.get(j, c) == '1') {
+                        mij_k[i][j][char2class[c]]++;
+                    }
                     //}
                 }
             }
@@ -103,7 +104,7 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
 
         // Compute sij_k  (equation 2):
 
-        double[][][] sij_k = new double[ntax+1][ntax+1][num_classes+1];
+        double[][][] sij_k = new double[ntax + 1][ntax + 1][num_classes + 1];
         for (i = 1; i <= ntax; i++) {
             for (j = i + 1; j <= ntax; j++) {
                 for (k = 1; k <= num_classes; k++) {
@@ -127,7 +128,7 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
 
         // Compute dhij_k (i.e. dij_k_hat in equation (3)):
 
-        double[][][] dhij_k = new double[ntax+1][ntax+1][num_classes+1];
+        double[][][] dhij_k = new double[ntax + 1][ntax + 1][num_classes + 1];
 
         for (i = 1; i <= ntax; i++) {
             for (j = i + 1; j <= ntax; j++) {
@@ -150,7 +151,7 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
 
         // Compute mk_k (mk_bar=(mii_k+mjj_k)/2):
 
-        double[][][] mk_k = new double[ntax+1][ntax+1][num_classes+1];
+        double[][][] mk_k = new double[ntax + 1][ntax + 1][num_classes + 1];
 
         for (i = 1; i <= ntax; i++) {
             for (j = i; j <= ntax; j++) {

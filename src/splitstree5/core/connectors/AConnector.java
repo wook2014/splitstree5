@@ -24,6 +24,7 @@ import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.WeakChangeListener;
@@ -148,8 +149,13 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
     public void setAlgorithm(Algorithm<P, C> algorithm) {
         if (this.algorithm != null) {
             this.algorithm.disabledProperty().unbind();
+            shortDescriptionProperty().unbind();
         }
         this.algorithm = algorithm;
+
+        if (algorithm != null)
+            shortDescriptionProperty().bind(algorithm.shortDescriptionProperty());
+
         applicable.set(algorithm != null && algorithm.isApplicable(taxaBlock, parent.getDataBlock(), child.getDataBlock()));
         if (algorithm != null)
             setName(algorithm.getName());
@@ -225,11 +231,8 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
     }
 
     @Override
-    public String getShortDescription() {
-        if (algorithm == null)
-            return super.getShortDescription();
-        else
-            return algorithm.getShortDescription();
+    public StringProperty shortDescriptionProperty() {
+        return super.shortDescriptionProperty();
     }
 
     public ConnectorService<P, C> getService() {

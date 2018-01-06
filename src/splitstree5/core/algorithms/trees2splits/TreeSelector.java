@@ -17,8 +17,9 @@ import java.util.BitSet;
 
 /**
  * Obtains splits from a selected tree
- *
+ * <p>
  * Created on 20.01.2017, original version: 2005
+ *
  * @author Daniel Huson
  */
 public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {

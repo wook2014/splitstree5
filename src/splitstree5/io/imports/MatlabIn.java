@@ -1,6 +1,5 @@
 package splitstree5.io.imports;
 
-import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
 import java.io.BufferedReader;
@@ -18,7 +17,7 @@ public class MatlabIn {
         int counter = 1;
 
         try (BufferedReader in = new BufferedReader(new FileReader(inputFile))) {
-            counter ++;
+            counter++;
             /*String line;
             int sequenceLength = 0;
             StringBuilder sequence = new StringBuilder("");

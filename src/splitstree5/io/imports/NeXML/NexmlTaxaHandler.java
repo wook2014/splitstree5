@@ -6,7 +6,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import java.util.ArrayList;
 
-public class NexmlTaxaHandler extends DefaultHandler{
+public class NexmlTaxaHandler extends DefaultHandler {
 
     boolean otu = false;
     private ArrayList<String> taxaLabels = new ArrayList<>();
@@ -24,7 +24,7 @@ public class NexmlTaxaHandler extends DefaultHandler{
             otu = true;
             String label = attributes.getValue("label");
             String id = attributes.getValue("id");
-            if(label != null){
+            if (label != null) {
                 System.out.println("Label : " + label);
                 taxaLabels.add(label);
             } else {
@@ -42,7 +42,7 @@ public class NexmlTaxaHandler extends DefaultHandler{
         }
     }
 
-    public ArrayList<String> getTaxaLabels(){
+    public ArrayList<String> getTaxaLabels() {
         return this.taxaLabels;
     }
 }

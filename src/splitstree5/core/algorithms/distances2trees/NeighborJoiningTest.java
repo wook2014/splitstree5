@@ -41,6 +41,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * nj test
  * Created on 1/12/17.
+ *
  * @author Daniel Huson, Daria Evseeva
  */
 public class NeighborJoiningTest {
@@ -126,7 +127,7 @@ public class NeighborJoiningTest {
         uncorrected_p.compute(pl, taxaBlock3, charactersBlock3, distancesBlock3);
 
         // CHECK MATRIX
-        for(int i = 0; i<distancesBlock3.getDistances().length; i++){
+        for (int i = 0; i < distancesBlock3.getDistances().length; i++) {
             assertArrayEquals(distancesBlock2.getDistances()[i], distancesBlock3.getDistances()[i], 0.000001);
             //assertArrayEquals(distancesBlock2.getDistances()[i], distancesBlock3.getDistances()[i], 0.0);
         }

@@ -2,12 +2,8 @@ package splitstree5.io.exports;
 
 import jloda.util.parse.NexusStreamParser;
 import org.junit.Test;
-import splitstree5.core.datablocks.DistancesBlock;
-import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.io.nexus.DistancesNexusIO;
-import splitstree5.io.nexus.SplitsNexusIO;
 import splitstree5.io.nexus.TaxaNexusIO;
 import splitstree5.io.nexus.TreesNexusIO;
 
@@ -16,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class NewickTreeOutTest {
 

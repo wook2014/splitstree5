@@ -11,8 +11,9 @@ import splitstree5.core.models.K3STmodel;
 
 /**
  * Calculates distances using the Kimura-3ST model
- *
+ * <p>
  * Created on 12-Jun-2004
+ *
  * @author DJB
  */
 

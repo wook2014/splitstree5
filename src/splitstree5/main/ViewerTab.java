@@ -23,6 +23,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
+import splitstree5.menu.MenuController;
 import splitstree5.undo.UndoRedoManager;
 
 /**
@@ -30,6 +31,7 @@ import splitstree5.undo.UndoRedoManager;
  * Daniel Huson, 12.2017
  */
 public abstract class ViewerTab extends Tab {
+    private MainWindow mainWindow;
     private final BorderPane borderPane = new BorderPane();
     protected ToolBar toolBar;
     protected final UndoRedoManager undoRedoManager = new UndoRedoManager();
@@ -44,13 +46,13 @@ public abstract class ViewerTab extends Tab {
                 setContent(borderPane);
             }
         });
+        //setClosable(true);
     }
-
 
     /**
      * setup menu items and bind their disable properties
      */
-    public abstract void updateMenus(MainWindowController controller);
+    public abstract void updateMenus(MenuController controller);
 
     public Node getCenter() {
         return borderPane.getCenter();
@@ -81,5 +83,13 @@ public abstract class ViewerTab extends Tab {
 
     public UndoRedoManager getUndoRedoManager() {
         return undoRedoManager;
+    }
+
+    public MainWindow getMainWindow() {
+        return mainWindow;
+    }
+
+    public void setMainWindow(MainWindow mainWindow) {
+        this.mainWindow = mainWindow;
     }
 }

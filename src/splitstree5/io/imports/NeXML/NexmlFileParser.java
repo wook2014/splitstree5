@@ -14,7 +14,7 @@ import java.io.File;
 
 public class NexmlFileParser implements IToTaxa, IToChararacters, IToTrees {
 
-    public void parse(String inputFile, TaxaBlock taxa){
+    public void parse(String inputFile, TaxaBlock taxa) {
         try {
             File file = new File(inputFile);
             SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -22,12 +22,12 @@ public class NexmlFileParser implements IToTaxa, IToChararacters, IToTrees {
             NexmlTaxaHandler handler = new NexmlTaxaHandler();
             saxParser.parse(file, handler);
             taxa.addTaxaByNames(handler.getTaxaLabels());
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters){
+    public void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters) {
         try {
             File file = new File(inputFile);
             SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -38,18 +38,18 @@ public class NexmlFileParser implements IToTaxa, IToChararacters, IToTrees {
             //characters.set(handler.getMatrix());
             char[][] matrix = handler.getMatrix();
             characters.setDimension(matrix.length, matrix[0].length);
-            for(int i=0; i<matrix.length; i++){
-                for(int j=0; j<matrix[0].length; j++){
-                    characters.set(i+1, j+1, matrix[i][j]);
+            for (int i = 0; i < matrix.length; i++) {
+                for (int j = 0; j < matrix[0].length; j++) {
+                    characters.set(i + 1, j + 1, matrix[i][j]);
                 }
             }
             characters.setDataType(handler.getDataType());
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void parse(String inputFile, TaxaBlock taxa, TreesBlock trees){
+    public void parse(String inputFile, TaxaBlock taxa, TreesBlock trees) {
         try {
             File file = new File(inputFile);
             SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -57,10 +57,10 @@ public class NexmlFileParser implements IToTaxa, IToChararacters, IToTrees {
             NexmlTreesHandler handler = new NexmlTreesHandler();
             saxParser.parse(file, handler);
             taxa.addTaxaByNames(handler.getTaxaLabels());
-            for (PhyloTree t : handler.getTrees()){
+            for (PhyloTree t : handler.getTrees()) {
                 trees.getTrees().add(t);
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

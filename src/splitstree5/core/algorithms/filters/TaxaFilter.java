@@ -1,18 +1,18 @@
 /*
  *  Copyright (C) 2018 Daniel H. Huson
- *  
+ *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
- *  
+ *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
- *  
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -55,22 +55,19 @@ public class TaxaFilter extends Algorithm<TaxaBlock, TaxaBlock> implements IFrom
                 }
             }
         }
+        if (enabledTaxa.size() == 0 && disabledTaxa.size() == 0)
+            setShortDescription(Basic.fromCamelCase(Basic.getShortName(this.getClass())));
+        else if (disabledTaxa.size() == 0)
+            setShortDescription("Enabled: " + enabledTaxa.size());
+        else
+            setShortDescription("Enabled: " + enabledTaxa.size() + " (of " + (enabledTaxa.size() + disabledTaxa.size() + ")"));
     }
 
     @Override
     public void clear() {
+        super.clear();
         enabledTaxa.clear();
         disabledTaxa.clear();
-    }
-
-    @Override
-    public String getShortDescription() {
-        if (enabledTaxa.size() == 0 && disabledTaxa.size() == 0)
-            return "";
-        else if (disabledTaxa.size() == 0)
-            return "Enabled: " + enabledTaxa.size();
-        else
-            return "Enabled: " + enabledTaxa.size() + " (of " + (enabledTaxa.size() + disabledTaxa.size() + ")");
     }
 
     public ArrayList<Taxon> getEnabledTaxa() {
@@ -89,4 +86,6 @@ public class TaxaFilter extends Algorithm<TaxaBlock, TaxaBlock> implements IFrom
             return null;
         }
     }
+
+
 }

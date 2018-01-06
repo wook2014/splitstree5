@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Created on 29.05.2017.
+ *
  * @author Daria
  */
 
@@ -58,7 +59,7 @@ public class BunemanTreeTest {
         TaxaNexusIO.parse(np, taxaFromST4);
         SplitsNexusIO.parse(np, taxaFromST4, splitsFromST4, null);
 
-        for(int i=0; i<splitsBlock.getSplits().size(); i++){
+        for (int i = 0; i < splitsBlock.getSplits().size(); i++) {
             ASplit aSplit = splitsBlock.getSplits().get(i);
             ASplit aSplitST4 = splitsFromST4.getSplits().get(i);
             assertEquals(aSplit.getA(), aSplitST4.getA());
@@ -106,7 +107,7 @@ public class BunemanTreeTest {
         TaxaNexusIO.parse(np2, taxaFromST42);
         SplitsNexusIO.parse(np2, taxaFromST42, splitsFromST42, null);
 
-        for(int i=0; i<splitsBlock2.getSplits().size(); i++){
+        for (int i = 0; i < splitsBlock2.getSplits().size(); i++) {
             ASplit aSplit = splitsBlock2.getSplits().get(i);
             ASplit aSplitST4 = splitsFromST42.getSplits().get(i);
             assertEquals(aSplit.getA(), aSplitST4.getA());

@@ -20,13 +20,16 @@ package splitstree5.main.graphtab;
 
 
 import javafx.geometry.Point2D;
+import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import jloda.graph.Edge;
 import jloda.graph.Node;
-import splitstree5.main.MainWindowController;
+import jloda.util.ResourceManager;
 import splitstree5.main.graphtab.base.AEdgeView;
 import splitstree5.main.graphtab.base.ANodeView;
 import splitstree5.main.graphtab.base.GraphLayout;
 import splitstree5.main.graphtab.base.GraphTab;
+import splitstree5.menu.MenuController;
 
 /**
  * The tree viewer tab
@@ -38,7 +41,10 @@ public class TreeViewTab extends GraphTab {
      */
     public TreeViewTab() {
         super();
-        setText("Tree");
+        final Label label = new Label("Tree");
+        label.setGraphic(new ImageView(ResourceManager.getIcon("TreeView16.gif")));
+        setText("");
+        setGraphic(label);
     }
 
     /**
@@ -57,7 +63,30 @@ public class TreeViewTab extends GraphTab {
      * @return
      */
     public ANodeView createNodeView(Node v, Point2D location, String text) {
-        final ANodeView nodeView = new ANodeView(v, location, text, nodeSelectionModel);
+        final ANodeView nodeView = new ANodeView(v, location, text);
+        nodeView.getShape().setOnMouseClicked((x) -> {
+            edgeSelectionModel.clearSelection();
+            if (!x.isShiftDown())
+                nodeSelectionModel.clearSelection();
+            if (nodeSelectionModel.getSelectedItems().contains(v))
+                nodeSelectionModel.clearSelection(v);
+            else
+                nodeSelectionModel.select(v);
+            x.consume();
+        });
+
+        if (nodeView.getLabel() != null) {
+            nodeView.getLabel().setOnMouseClicked((x) -> {
+                edgeSelectionModel.clearSelection();
+                if (!x.isShiftDown())
+                    nodeSelectionModel.clearSelection();
+                if (nodeSelectionModel.getSelectedItems().contains(v))
+                    nodeSelectionModel.clearSelection(v);
+                else
+                    nodeSelectionModel.select(v);
+                x.consume();
+            });
+        }
         addNodeLabelMovementSupport(nodeView);
         return nodeView;
     }
@@ -112,7 +141,7 @@ public class TreeViewTab extends GraphTab {
     }
 
     @Override
-    public void updateMenus(MainWindowController controller) {
+    public void updateMenus(MenuController controller) {
         super.updateMenus(controller);
     }
 }

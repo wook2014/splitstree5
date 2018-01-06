@@ -10,8 +10,9 @@ import splitstree5.core.datablocks.TaxaBlock;
 
 /**
  * Computes the gap distance from a set of sequences
- *
+ * <p>
  * created on Nov 2009
+ *
  * @author bryant
  */
 public class GapDist extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
@@ -59,8 +60,8 @@ public class GapDist extends Algorithm<CharactersBlock, DistancesBlock> implemen
                 }
                 double v = 1.0;
                 if (sim != 0 && len != 0) v = (1.0 - sim / len);
-                distancesBlock.set(s+1, t+1, v);
-                distancesBlock.set(t+1, s+1, v);
+                distancesBlock.set(s + 1, t + 1, v);
+                distancesBlock.set(t + 1, s + 1, v);
             }
             progressListener.incrementProgress();
         }

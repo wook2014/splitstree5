@@ -9,11 +9,11 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.CharactersType;
 import splitstree5.core.models.NucleotideModel;
-import splitstree5.gui.dialog.Alert;
+import splitstree5.utils.Alert;
 import splitstree5.utils.nexus.CharactersUtilities;
 import splitstree5.utils.nexus.SplitsException;
 
-public abstract class DNAdistance extends SequenceBasedDistance{
+public abstract class DNAdistance extends SequenceBasedDistance {
 
     private PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates = PairwiseCompare.HandleAmbiguous.Ignore;
 
@@ -79,8 +79,8 @@ public abstract class DNAdistance extends SequenceBasedDistance{
         return taxa != null && ch != null
                 && (ch.getDataType().equals(CharactersType.DNA)
                 || ch.getDataType().equals(CharactersType.RNA));
-                //&& (ch.getFormat().getDatatype().equalsIgnoreCase(Characters.Datatypes.DNA)
-                //|| ch.getFormat().getDatatype().equalsIgnoreCase(Characters.Datatypes.RNA));
+        //&& (ch.getFormat().getDatatype().equalsIgnoreCase(Characters.Datatypes.DNA)
+        //|| ch.getFormat().getDatatype().equalsIgnoreCase(Characters.Datatypes.RNA));
     }
 
     /**
@@ -118,7 +118,7 @@ public abstract class DNAdistance extends SequenceBasedDistance{
     /**
      * Fill in the distance matrix
      *
-     * @param progressListener   used to display the progress
+     * @param progressListener used to display the progress
      * @param characters
      * @param model
      * @return
@@ -134,7 +134,7 @@ public abstract class DNAdistance extends SequenceBasedDistance{
         //distances.setTriangle("both"); // todo always so?
         String states;
         //if (characters.getFormat().getDatatypeID() == Characters.Datatypes.RNAID)
-        if(characters.getDataType().equals(CharactersType.RNA))
+        if (characters.getDataType().equals(CharactersType.RNA))
             states = RNASTATES;
         else
             states = DNASTATES;
@@ -174,15 +174,15 @@ public abstract class DNAdistance extends SequenceBasedDistance{
                 distances.set(t, s, dist);
 
                 double var = seqPair.bulmerVariance(dist, 0.75);
-                distances.setVariance(s-1, t-1, var);
-                distances.setVariance(t-1, s-1, var);
+                distances.setVariance(s - 1, t - 1, var);
+                distances.setVariance(t - 1, s - 1, var);
             }
             //if (doc != null)
-              //  doc.notifySetProgress(s * 100 / ntax);
+            //  doc.notifySetProgress(s * 100 / ntax);
             progressListener.incrementProgress();
         }
         //if (doc != null)
-          //  doc.notifySetProgress(100); //set progress to 100%
+        //  doc.notifySetProgress(100); //set progress to 100%
         progressListener.close();
 
         if (numMissing > 0) {
@@ -200,10 +200,10 @@ public abstract class DNAdistance extends SequenceBasedDistance{
     }*/
 
     //abstract protected Distances computeDist(Document doc, Characters characters)
-      //      throws CanceledException, SplitsException;
+    //      throws CanceledException, SplitsException;
 
     //public Distances apply(Document doc, Taxa taxa, Characters characters) throws SplitsException, CanceledException {
-      //  return computeDist(doc, characters);
+    //  return computeDist(doc, characters);
     //}
 
 

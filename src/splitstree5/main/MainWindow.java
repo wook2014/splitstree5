@@ -20,35 +20,42 @@
 package splitstree5.main;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import jloda.fx.ExtendedFXMLLoader;
 import jloda.util.Basic;
-import jloda.util.ProgramProperties;
+import jloda.util.ResourceManager;
 import splitstree5.core.Document;
+import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.misc.ProgramExecutorService;
-import splitstree5.gui.workflowtree.WorkFlowTreeViewSupport;
+import splitstree5.core.project.ProjectManager;
+import splitstree5.main.auxwindow.AuxWindow;
+import splitstree5.main.auxwindow.TabPaneDragAndDropSupport;
+import splitstree5.main.datatab.DataViewTab;
 import splitstree5.main.methodstab.MethodsViewTab;
 import splitstree5.main.workflowtab.WorkflowViewTab;
+import splitstree5.main.workflowtree.WorkflowTreeSupport;
+import splitstree5.menu.MenuController;
 
-import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.Optional;
 
 public class MainWindow {
-    public final static ObservableList<MainWindow> openWindows = FXCollections.observableArrayList();
     private Document document;
 
     private final Parent root;
-    private final MainWindowController controller;
+    private final MainWindowController mainWindowController;
+    private final MenuController menuController;
 
-    private final WorkFlowTreeViewSupport workFlowTreeViewSupport;
+    private final WorkflowTreeSupport workflowTreeSupport;
 
     private final TabPane tabPane;
 
@@ -58,6 +65,8 @@ public class MainWindow {
 
     private boolean allowClose = false;
 
+    private final ObservableMap<ADataNode, ViewerTab> dataNode2ViewerTab;
+
     /**
      * constructor
      *
@@ -66,39 +75,37 @@ public class MainWindow {
     public MainWindow() throws IOException {
         this.document = new Document();
         document.setMainWindow(this);
+        dataNode2ViewerTab = FXCollections.observableHashMap();
 
         Platform.setImplicitExit(false);
 
-        final ExtendedFXMLLoader<MainWindowController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
-        root = extendedFXMLLoader.getRoot();
-        controller = extendedFXMLLoader.getController();
-        if (ProgramProperties.isMacOS()) {
-            controller.getMenuBar().setUseSystemMenuBar(true);
+        {
+            final ExtendedFXMLLoader<MainWindowController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
+            root = extendedFXMLLoader.getRoot();
+            root.getStylesheets().add("resources/css/styles.css");
+            mainWindowController = extendedFXMLLoader.getController();
         }
+        {
+            final ExtendedFXMLLoader<MenuController> extendedFXMLLoader = new ExtendedFXMLLoader<>(MenuController.class);
+            menuController = extendedFXMLLoader.getController();
+        }
+        mainWindowController.getTopVBox().getChildren().add(0, menuController.getMenuBar());
 
-        tabPane = controller.getTabPane();
+        tabPane = mainWindowController.getTabPane();
 
         tabPane.getSelectionModel().selectedItemProperty().addListener((c, o, n) -> {
             if (o instanceof ISavesPreviousSelection) {
                 ((ISavesPreviousSelection) o).saveAsPreviousSelection();
             }
-            updateMenus(n, controller);
+            updateMenus(n, menuController);
         });
 
         final TreeItem<String> rootItem = new TreeItem<>();
 
-        document.fileNameProperty().addListener((e) -> {
-            final String name;
-            if (document.getFileName() == null || document.getFileName().length() == 0)
-                name = "Untitled";
-            else
-                name = (new File(document.getFileName())).getName();
-            titleProperty.setValue("Main Window - " + name + " - SplitsTree5");
-            rootItem.setValue(name);
-        });
+        titleProperty.bind(Bindings.concat("Main Window - ").concat(document.nameProperty()).concat(" - SplitsTree5"));
 
-        controller.getTreeView().setRoot(rootItem);
-        workFlowTreeViewSupport = new WorkFlowTreeViewSupport(controller.getTreeView(), document);
+        mainWindowController.getTreeView().setRoot(rootItem);
+        workflowTreeSupport = new WorkflowTreeSupport(mainWindowController.getTreeView(), document);
     }
 
     /**
@@ -113,6 +120,7 @@ public class MainWindow {
                 if (!n && tabPane.getSelectionModel().getSelectedItem() instanceof ISavesPreviousSelection)
                     ((ISavesPreviousSelection) tabPane.getSelectionModel().getSelectedItem()).saveAsPreviousSelection();
             });
+            stage.getIcons().setAll(ResourceManager.getIcon("SplitsTree5-16.png"));
         }
 
         stage.titleProperty().bind(titleProperty);
@@ -121,7 +129,7 @@ public class MainWindow {
         stage.setX(screenX);
         stage.setY(screenY);
 
-        new TabPaneDragAndDropSupport(controller.getTabPane());
+        new TabPaneDragAndDropSupport(mainWindowController.getTabPane(), new AuxWindow());
 
         stage.show();
         stage.sizeToScene();
@@ -132,16 +140,16 @@ public class MainWindow {
             add(new WorkflowViewTab(document));
         }
 
-        controller.getSplitPane().widthProperty().addListener((c, o, n) -> {
+        mainWindowController.getSplitPane().widthProperty().addListener((c, o, n) -> {
             if (n.doubleValue() > 0) {
-                double oldPos = controller.getSplitPane().getDividerPositions()[0];
+                double oldPos = mainWindowController.getSplitPane().getDividerPositions()[0];
                 double oldWidth = oldPos * o.doubleValue();
                 double newPos = oldWidth / n.doubleValue();
-                controller.getSplitPane().setDividerPositions(newPos);
+                mainWindowController.getSplitPane().setDividerPositions(newPos);
             }
         });
 
-        openWindows.add(this);
+        ProjectManager.getInstance().addMainWindow(this);
     }
 
     /**
@@ -153,8 +161,12 @@ public class MainWindow {
         return document;
     }
 
-    public MainWindowController getController() {
-        return controller;
+    public MainWindowController getMainWindowController() {
+        return mainWindowController;
+    }
+
+    public MenuController getMenuController() {
+        return menuController;
     }
 
     public Stage getStage() {
@@ -175,8 +187,9 @@ public class MainWindow {
      * @param viewerTab
      */
     public void add(ViewerTab viewerTab) {
-        controller.getTabPane().getTabs().add(0, viewerTab);
-        controller.getTabPane().getSelectionModel().select(0);
+        mainWindowController.getTabPane().getTabs().add(0, viewerTab);
+        mainWindowController.getTabPane().getSelectionModel().select(0);
+        viewerTab.setMainWindow(this);
     }
 
     /**
@@ -185,15 +198,18 @@ public class MainWindow {
      * @param viewerTab
      */
     public void remove(Tab viewerTab) {
-        controller.getTabPane().getTabs().remove(viewerTab);
+        mainWindowController.getTabPane().getTabs().remove(viewerTab);
     }
 
     /**
      * closes the current window. If it is the last to close, will ask for confirmation and then quit
+     *
+     * @return true if closed, false if canceled
      */
-    public void close() {
+    public boolean close() {
         boolean openNewDocument = false;
-        if (openWindows.size() == 1) {
+
+        if (ProjectManager.getInstance().size() == 1) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.initOwner(this.getStage());
             alert.setTitle("SplitsTree5 - Confirm Quit");
@@ -203,7 +219,7 @@ public class MainWindow {
             if (result.isPresent() && result.get() == ButtonType.CANCEL)
                 openNewDocument = true;
         }
-        openWindows.remove(this);
+        ProjectManager.getInstance().removeMainWindow(this);
         if (openNewDocument) {
             try {
                 MainWindow mainWindow = new MainWindow();
@@ -213,10 +229,11 @@ public class MainWindow {
             }
         }
         this.getStage().close();
-        if (openWindows.size() == 0) {
+        if (ProjectManager.getInstance().size() == 0) {
             ProgramExecutorService.getExecutorService().shutdownNow();
             Platform.exit();
         }
+        return !openNewDocument;
     }
 
     /**
@@ -225,7 +242,7 @@ public class MainWindow {
      * @param tab
      * @param controller
      */
-    private void updateMenus(Tab tab, MainWindowController controller) {
+    private void updateMenus(Tab tab, MenuController controller) {
         controller.unbindAndDisableAllMenuItems();
         MainWindowMenuController.setupMainMenus(this);
         if (tab instanceof ViewerTab) {
@@ -235,4 +252,35 @@ public class MainWindow {
         controller.enableAllUnboundActionMenuItems();
     }
 
+    /**
+     * show a data view node
+     *
+     * @param aNode
+     */
+    public void showDataView(ADataNode aNode) {
+        // if the data block as a getTab method, then assume that it is present and select it
+        try {
+            Method method = aNode.getDataBlock().getClass().getMethod("getTab");
+            if (method != null) {
+                Tab tab = (Tab) method.invoke(aNode.getDataBlock());
+                if (tab != null)
+                    tab.getTabPane().getSelectionModel().select(tab);
+                return;
+            }
+        } catch (Exception ex) {
+            // doesn't matter
+        }
+
+        ViewerTab viewerTab = dataNode2ViewerTab.get(aNode);
+        if (viewerTab == null || viewerTab.getTabPane() == null) {
+            viewerTab = new DataViewTab(document, aNode);
+            dataNode2ViewerTab.put(aNode, viewerTab);
+            tabPane.getTabs().add(0, viewerTab);
+        }
+        final Stage stage = (Stage) viewerTab.getTabPane().getScene().getWindow();
+        if (stage != null) {
+            stage.toFront();
+        }
+        tabPane.getSelectionModel().select(viewerTab);
+    }
 }

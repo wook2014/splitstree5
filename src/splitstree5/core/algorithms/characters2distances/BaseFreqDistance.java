@@ -10,8 +10,9 @@ import splitstree5.core.datablocks.TaxaBlock;
 
 /**
  * Simple implementation of hamming distances
- *
+ * <p>
  * Created on Sep 2008
+ *
  * @author bryant
  */
 

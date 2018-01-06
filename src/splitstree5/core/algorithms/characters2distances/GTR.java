@@ -13,8 +13,9 @@ import splitstree5.core.models.GTRmodel;
 
 /**
  * Computes the distance matrix from a set of characters using the General Time Revisible model.
- *
+ * <p>
  * Created on 12-Jun-2004
+ *
  * @author DJB
  */
 
@@ -33,7 +34,7 @@ public class GTR extends DNAdistance implements IFromChararacters, IToDistances 
         model.setPinv(getOptionPInvar());
         model.setGamma(getOptionGamma());
 
-        distancesBlock.copy(fillDistanceMatrix(progressListener, charactersBlock,model));
+        distancesBlock.copy(fillDistanceMatrix(progressListener, charactersBlock, model));
     }
 
     @Override

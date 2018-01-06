@@ -18,6 +18,7 @@ import static org.junit.Assert.assertArrayEquals;
 
 /**
  * Created on 07.06.2017.
+ *
  * @author Daria
  */
 
@@ -46,7 +47,7 @@ public class AverageDistancesTest {
                 (DistancesNexusIO.parse(new NexusStreamParser(new FileReader("test/distances/trees6-averageDist.nex")),
                         taxaFromSplitsTree4, distancesFromSplitsTree4, null));
 
-        for(int i = 0; i<distancesBlock.getDistances().length; i++){
+        for (int i = 0; i < distancesBlock.getDistances().length; i++) {
             assertArrayEquals(distancesFromSplitsTree4.getDistances()[i], distancesBlock.getDistances()[i], 0.000001);
         }
 
@@ -74,7 +75,7 @@ public class AverageDistancesTest {
                 (DistancesNexusIO.parse(new NexusStreamParser(new FileReader("test/distances/colors-NJ-averageDist.nex")),
                         taxaFromSplitsTree42, distancesFromSplitsTree42, null));
 
-        for(int i = 0; i<distancesBlock2.getDistances().length; i++){
+        for (int i = 0; i < distancesBlock2.getDistances().length; i++) {
             assertArrayEquals(distancesFromSplitsTree42.getDistances()[i], distancesBlock2.getDistances()[i], 0.00001);
         }
 
@@ -97,7 +98,7 @@ public class AverageDistancesTest {
                 (DistancesNexusIO.parse(new NexusStreamParser(new FileReader("test/distances/dolphins-NJ-averageDist.nex")),
                         taxaFromSplitsTree43, distancesFromSplitsTree43, null));
 
-        for(int i = 0; i<distancesBlock3.getDistances().length; i++){
+        for (int i = 0; i < distancesBlock3.getDistances().length; i++) {
             assertArrayEquals(distancesFromSplitsTree43.getDistances()[i], distancesBlock3.getDistances()[i], 0.000001);
         }
 

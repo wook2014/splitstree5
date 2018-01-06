@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Created on 09.06.2017.
+ *
  * @author Daria
  */
 
@@ -56,7 +57,7 @@ public class BalancedConfidenceNetworkTest {
 
         double[] confidence = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
         assertEquals(splitsBlock.getSplits().size(), splitsFromST4.getSplits().size());
-        for(int i=0; i<splitsBlock.getSplits().size(); i++){
+        for (int i = 0; i < splitsBlock.getSplits().size(); i++) {
             ASplit aSplit = splitsBlock.getSplits().get(i);
             ASplit aSplitST4 = splitsFromST4.getSplits().get(i);
             assertEquals(aSplit.getA(), aSplitST4.getA());

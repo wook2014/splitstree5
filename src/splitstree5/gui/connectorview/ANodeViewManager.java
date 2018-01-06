@@ -19,27 +19,19 @@
 
 package splitstree5.gui.connectorview;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
 import splitstree5.core.Document;
 import splitstree5.core.connectors.AConnector;
-import splitstree5.core.datablocks.ADataNode;
-import splitstree5.core.workflow.ANode;
-import splitstree5.core.workflow.UpdateState;
-import splitstree5.gui.textview.TextView;
-import splitstree5.io.nexus.NexusFileWriter;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * manages node viewers
+ * manages connector nodes
  * Daniel Huson, 1.2018
  */
 public class ANodeViewManager {
-    private final Map<ANode, IShowable> map;
+    private final Map<AConnector, IShowable> map;
     private static ANodeViewManager instance;
 
     public static ANodeViewManager getInstance() {
@@ -52,18 +44,11 @@ public class ANodeViewManager {
         map = new HashMap<>();
     }
 
-    public IShowable show(Document document, ANode aNode, double x, double y) {
+    public IShowable show(Document document, AConnector aNode, double x, double y) {
         if (!map.containsKey(aNode)) {
             try {
                 if (aNode instanceof AConnector)
-                    map.put(aNode, new ConnectorView(document, (AConnector) aNode));
-                else if (aNode instanceof ADataNode) {
-                    final StringProperty textProperty = new SimpleStringProperty(NexusFileWriter.toString(document.getWorkflow().getWorkingTaxaNode().getDataBlock(), ((ADataNode) aNode).getDataBlock()));
-                    final ChangeListener<UpdateState> stateChangeListener = (observable, oldValue, newValue) -> textProperty.set(NexusFileWriter.toString(document.getWorkflow().getWorkingTaxaNode().getDataBlock(), ((ADataNode) aNode).getDataBlock()));
-                    aNode.stateProperty().addListener(stateChangeListener);
-                    map.put(aNode, new TextView(aNode.nameProperty(), textProperty));
-
-                }
+                    map.put(aNode, new ConnectorView(document, aNode));
             } catch (IOException e) {
                 e.printStackTrace();
             }

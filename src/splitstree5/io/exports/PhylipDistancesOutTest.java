@@ -5,12 +5,8 @@ import org.junit.Test;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.nexus.DistancesNexusIO;
-import splitstree5.io.nexus.TaxaNexusIO;
 
 import java.io.*;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.*;
 
 public class PhylipDistancesOutTest {
 
@@ -28,7 +24,7 @@ public class PhylipDistancesOutTest {
         TaxaBlock taxa = new TaxaBlock();
         DistancesBlock distances = new DistancesBlock();
         taxa.addTaxaByNames(DistancesNexusIO.parse(new NexusStreamParser(
-                new FileReader("test/distances/algaeCod.nex")),
+                        new FileReader("test/distances/algaeCod.nex")),
                 taxa, distances, null));
 
         phylipDistancesOut.export(writer1, taxa, distances);

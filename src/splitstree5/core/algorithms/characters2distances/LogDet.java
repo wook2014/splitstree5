@@ -9,15 +9,16 @@ import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.gui.dialog.Alert;
+import splitstree5.utils.Alert;
 
 /**
  * Calculation of the LogDet transform.
- *
+ * <p>
  * Created on  2008-03-17
+ *
  * @author bryant
- *
- *
+ * <p>
+ * <p>
  * The standard formula that we use for computing log det distances is
  * \[d_{xy} = -1/r ln(\frac{ det F_{xy} }{\sqrt{det(\Pi_x \Pi_y)}}\]
  * which is formula (23) on page 460 of Swofford et al.
@@ -215,7 +216,6 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
     }
 
 
-
     public boolean isApplicable(TaxaBlock taxa, CharactersBlock characters) {
 
         /*if (taxa == null || c == null)
@@ -224,8 +224,8 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
         /* We can apply as long as there is more than one symbol
         return (c.getFormat().getSymbols().length() > 1);*/
 
-       //todo
-       return true;
+        //todo
+        return true;
     }
 
     // GETTER AND SETTER

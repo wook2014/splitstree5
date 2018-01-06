@@ -22,6 +22,7 @@ package splitstree5.core.datablocks;
 import jloda.util.Basic;
 import jloda.util.PluginClassLoader;
 import splitstree5.core.Document;
+import splitstree5.core.workflow.UpdateState;
 import splitstree5.utils.OptionableBase;
 
 import java.util.ArrayList;
@@ -65,7 +66,6 @@ abstract public class ADataBlock extends OptionableBase {
         return getName();
     }
 
-
     /**
      * gets instances of all known datablocks
      *
@@ -104,5 +104,13 @@ abstract public class ADataBlock extends OptionableBase {
 
     public void setDataNode(ADataNode dataNode) {
         this.dataNode = dataNode;
+        if (dataNode != null) {
+            dataNode.stateProperty().addListener((c, o, n) -> {
+                if (n == UpdateState.VALID) {
+                    setShortDescription(getInfo());
+                } else
+                    setShortDescription(getName());
+            });
+        }
     }
 }

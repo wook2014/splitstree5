@@ -15,8 +15,9 @@ import java.util.BitSet;
 
 /**
  * Implements the buneman tree
- *
+ * <p>
  * Created on 2007-09-11
+ *
  * @author Daniel Huson, David Bryant, Tobias Kloepper and Daria Evseeva
  */
 

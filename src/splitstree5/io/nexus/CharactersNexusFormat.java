@@ -93,11 +93,11 @@ public class CharactersNexusFormat {
         this.ignoreMatrix = ignoreMatrix;
     }
 
-    public int getColumnsPerBlock(){
+    public int getColumnsPerBlock() {
         return this.columnsPerBlock;
     }
 
-    public void setColumnsPerBlock(int columnsPerBlock){
+    public void setColumnsPerBlock(int columnsPerBlock) {
         this.columnsPerBlock = columnsPerBlock;
     }
 }

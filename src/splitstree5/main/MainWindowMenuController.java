@@ -25,8 +25,10 @@ import javafx.scene.control.ButtonType;
 import javafx.stage.FileChooser;
 import jloda.util.Basic;
 import splitstree5.core.Document;
+import splitstree5.core.project.ProjectManager;
 import splitstree5.io.nexus.NexusFileParser;
 import splitstree5.io.nexus.NexusFileWriter;
+import splitstree5.menu.MenuController;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,7 +43,7 @@ public class MainWindowMenuController {
      * setup the main menus
      */
     public static void setupMainMenus(MainWindow mainWindow) {
-        final MainWindowController controller = mainWindow.getController();
+        final MenuController controller = mainWindow.getMenuController();
         final Document document = mainWindow.getDocument();
 
         controller.getNewMenuItem().setOnAction((e) -> {
@@ -96,15 +98,15 @@ public class MainWindowMenuController {
                 Basic.caught(ex);
             }
         });
-        controller.getSaveMenuItem().disableProperty().bind(document.dirtyProperty().not().or(document.fileNameProperty().isNotEmpty()).or(document.updatingProperty()));
+        controller.getSaveMenuItem().disableProperty().bind(document.dirtyProperty().not().or(document.nameProperty().isNotEmpty()).or(document.updatingProperty()));
 
         controller.getSaveAsMenuItem().setOnAction((e) -> {
             showSaveDialog(mainWindow);
         });
 
         controller.getQuitMenuItem().setOnAction((e) -> {
-            while (MainWindow.openWindows.size() > 0) {
-                final MainWindow window = MainWindow.openWindows.get(MainWindow.openWindows.size() - 1);
+            while (ProjectManager.getInstance().size() > 0) {
+                final MainWindow window = ProjectManager.getInstance().getMainWindow(ProjectManager.getInstance().size() - 1);
                 if (!saveBeforeClose(window))
                     return;
                 window.setAllowClose();

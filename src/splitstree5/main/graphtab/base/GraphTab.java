@@ -59,8 +59,8 @@ import jloda.phylo.PhyloTree;
 import jloda.util.Single;
 import splitstree5.core.project.ProjectManager;
 import splitstree5.main.ISavesPreviousSelection;
-import splitstree5.main.MainWindowController;
 import splitstree5.main.ViewerTab;
+import splitstree5.menu.MenuController;
 import splitstree5.undo.UndoRedoManager;
 import splitstree5.undo.UndoableRedoableCommand;
 import splitstree5.utils.RubberBandSelection;
@@ -159,6 +159,8 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
         });
 
         rubberBandSelection = new RubberBandSelection(pane, group, createRubberBandSelectionHandler());
+        setClosable(false);
+
 
     }
 
@@ -371,7 +373,6 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
         }
     }
 
-
     /**
      * select nodes and edges by labels
      *
@@ -391,21 +392,19 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
     }
 
     public void saveAsPreviousSelection() {
-        if (nodeSelectionModel.getSelectedItems().size() > 0 || edgeSelectionModel.getSelectedItems().size() > 0) {
-            ProjectManager.getInstance().getPreviousSelection().clear();
-            if (nodeSelectionModel.getSelectedItems().size() > 0) {
-                for (Node node : nodeSelectionModel.getSelectedItems()) {
-                    final String label = getPhyloGraph().getLabel(node);
-                    if (label != null)
-                        ProjectManager.getInstance().getPreviousSelection().add(label);
-                }
+        ProjectManager.getInstance().getPreviousSelection().clear();
+        if (nodeSelectionModel.getSelectedItems().size() > 0) {
+            for (Node node : nodeSelectionModel.getSelectedItems()) {
+                final String label = getPhyloGraph().getLabel(node);
+                if (label != null)
+                    ProjectManager.getInstance().getPreviousSelection().add(label);
             }
-            if (edgeSelectionModel.getSelectedItems().size() > 0) {
-                for (Edge edge : edgeSelectionModel.getSelectedItems()) {
-                    final String label = getPhyloGraph().getLabel(edge);
-                    if (label != null)
-                        ProjectManager.getInstance().getPreviousSelection().add(label);
-                }
+        }
+        if (edgeSelectionModel.getSelectedItems().size() > 0) {
+            for (Edge edge : edgeSelectionModel.getSelectedItems()) {
+                final String label = getPhyloGraph().getLabel(edge);
+                if (label != null)
+                    ProjectManager.getInstance().getPreviousSelection().add(label);
             }
         }
     }
@@ -534,7 +533,7 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
     }
 
     @Override
-    public void updateMenus(MainWindowController controller) {
+    public void updateMenus(MenuController controller) {
         controller.getUndoMenuItem().setOnAction((e) -> {
             undoRedoManager.undo();
         });

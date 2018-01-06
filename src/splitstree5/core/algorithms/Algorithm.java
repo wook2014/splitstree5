@@ -43,6 +43,10 @@ abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> exte
      */
     public Algorithm() {
         setName(Basic.getShortName(getClass()).replaceAll("Algorithm$", ""));
+        if (getName().endsWith("Filter"))
+            setShortDescription(Basic.fromCamelCase(getName()).replaceAll("Filter", "filter"));
+        else
+            setShortDescription(Basic.fromCamelCase(getName()) + " algorithm");
     }
 
     /**

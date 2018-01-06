@@ -27,15 +27,15 @@ public class LeastSquares {
     static public void optimizeLS(SplitsBlock splits, DistancesBlock dist, boolean constrain) {
 
         //if (splits.getNtax() != dist.getNtax())
-          //  throw new IllegalArgumentException("Splits and distances have different numbers of taxa");
+        //  throw new IllegalArgumentException("Splits and distances have different numbers of taxa");
 
         //First compute the matrices AtWA and vector AtWd
         Matrix Amat;
         // todo use varType from DistancesFormat?
         //if (dist.getFormat().getVarType().equalsIgnoreCase("ols"))
-            Amat = getTopoMatrixOLS(dist.getNtax(), splits); //Much faster in the case of OLS
+        Amat = getTopoMatrixOLS(dist.getNtax(), splits); //Much faster in the case of OLS
         //else
-            //Amat = getTopoMatrixWLS(splits, dist);
+        //Amat = getTopoMatrixWLS(splits, dist);
 
         Matrix AtWd = getAtWd(splits, dist);
 
@@ -214,7 +214,7 @@ public class LeastSquares {
         int ntaxa = dist.getNtax();
 
         //if (splits.getNtax() != dist.getNtax()) //todo test? can happens?
-          //  throw new IllegalArgumentException("Splits and distances have different numbers of taxa");
+        //  throw new IllegalArgumentException("Splits and distances have different numbers of taxa");
 
 
         Matrix AtWd = new Matrix(nsplits, 1);

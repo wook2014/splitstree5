@@ -4,13 +4,13 @@ import org.junit.Test;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.io.imports.ClustalIn;
-import splitstree5.io.nexus.*;
+import splitstree5.io.nexus.CharactersNexusIO;
+import splitstree5.io.nexus.TaxaNexusIO;
+import splitstree5.io.nexus.TreesNexusFormat;
+import splitstree5.io.nexus.TreesNexusIO;
 
 import java.io.IOException;
 import java.io.StringWriter;
-
-import static org.junit.Assert.*;
 
 public class NexmlFileParserTest {
     @Test

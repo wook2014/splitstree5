@@ -62,7 +62,7 @@ public class ANamed {
 
     public StringProperty shortDescriptionProperty() {
         if (shortDescription == null)
-            shortDescription = new SimpleStringProperty();
+            shortDescription = new SimpleStringProperty(Basic.fromCamelCase(Basic.getShortName(this.getClass())));
         return shortDescription;
     }
 
@@ -81,6 +81,8 @@ public class ANamed {
      * @param shortDescription
      */
     public void setShortDescription(String shortDescription) {
+        if (shortDescription == null)
+            shortDescription = Basic.fromCamelCase(Basic.getShortName(this.getClass()));
         shortDescriptionProperty().set(shortDescription);
     }
 
@@ -128,5 +130,6 @@ public class ANamed {
     public void clear() {
         title = null;
         links = null;
+        setShortDescription(Basic.fromCamelCase(Basic.getShortName(this.getClass())));
     }
 }

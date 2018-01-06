@@ -141,7 +141,7 @@ public class ConfidenceNetwork {
             double cutoffRij = row[cutoffH].Rij;
             double low = median - cutoffRij;
             double high = median + cutoffRij;
-            BitSet sp = M.getSplit(i-1);
+            BitSet sp = M.getSplit(i - 1);
             if (high > 0.0) {
                 ASplit split = new ASplit(sp, ntax, (float) median, 0);
                 //newSplits.getSplits().add(sp, (float) median, 0, new Interval(low, high), "");

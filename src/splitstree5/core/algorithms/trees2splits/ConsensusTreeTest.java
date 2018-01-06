@@ -11,7 +11,7 @@ public class ConsensusTreeTest {
     @Test
     public void compute() throws Exception {
         System.err.println("Not implemented, needs ConsensusNetwork");
-        assertEquals(2,3);
+        assertEquals(2, 3);
     }
 
 }

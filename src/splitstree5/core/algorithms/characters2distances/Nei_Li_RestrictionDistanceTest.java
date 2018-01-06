@@ -20,6 +20,7 @@ import static org.junit.Assert.assertArrayEquals;
 
 /**
  * Created on 22.02.2017.
+ *
  * @author Daria
  */
 public class Nei_Li_RestrictionDistanceTest {
@@ -55,7 +56,7 @@ public class Nei_Li_RestrictionDistanceTest {
                         taxaFromSplitsTree4, distancesFromSplitsTree4, null));
 
 
-        for(int i = 0; i<distancesBlock.getDistances().length; i++){
+        for (int i = 0; i < distancesBlock.getDistances().length; i++) {
             assertArrayEquals(distancesFromSplitsTree4.getDistances()[i], distancesBlock.getDistances()[i], 0.000001);
         }
 
