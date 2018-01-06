@@ -55,6 +55,14 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
 
     public final static String DESCRIPTION = "Computes the consensus splits of trees (Holland and Moulton 2003)";
 
+    @Override
+    public String getCitation() {
+        return "ConsensusNetwork; Holland and Moulton 2003; " +
+                "B. Holland and V. Moulton. Consensus networks:  A method for visualizing incompatibilities in  collections  of  trees.   " +
+                "In  G.  Benson  and  R.  Page,  editors, Proceedings  of  “Workshop  on Algorithms in Bioinformatics”, " +
+                "volume 2812 of LNBI, pages 165–176. Springer, 2003.";
+    }
+
     /**
      * compute the consensus splits
      *

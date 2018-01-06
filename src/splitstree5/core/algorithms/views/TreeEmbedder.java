@@ -90,6 +90,12 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
     private ChangeListener<UpdateState> changeListener;
 
     @Override
+    public String getCitation() {
+        return "TreeEmbedder; Huson et al 2012; " +
+                "D.H. Huson, R. Rupp and C. Scornavacca, Phylogenetic Networks, Cambridge, 2012.";
+    }
+
+    @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock parent, TreeViewBlock child) throws Exception {
         progressListener.setTasks("Tree viewer", "Init.");
 

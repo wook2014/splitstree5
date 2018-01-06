@@ -24,6 +24,13 @@ public class BalancedConfidenceNetwork extends Algorithm<TreesBlock, SplitsBlock
     public final static String DESCRIPTION = "Computes a confidence network using Beran's algorithm. cf Huson and Bryant (2006)";
 
     @Override
+    public String getCitation() {
+        return "BalancedConfidenceNetwork; Huson and Bryant 2006; " +
+                "Daniel H. Huson and David Bryant. Application of Phylogenetic Networks in Evolutionary Studies. " +
+                "Mol. Biol. Evol. 23(2):254–267. 2006";
+    }
+
+    @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock)
             throws Exception {
 

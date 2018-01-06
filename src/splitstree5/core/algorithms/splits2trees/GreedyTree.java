@@ -43,6 +43,11 @@ import java.util.*;
 public class GreedyTree extends Algorithm<SplitsBlock, TreesBlock> implements IFromSplits, IToTrees {
 
     @Override
+    public String getCitation() {
+        return "GreedyTree; greedy selection of compatible splits;";
+    }
+
+    @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, SplitsBlock splits, TreesBlock trees)
             throws InterruptedException, CanceledException {
 

@@ -21,6 +21,12 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
     private boolean useMLDistance = false;
 
     @Override
+    public String getCitation() {
+        return "GeneContentDistance; Huson and Steel 2004; " +
+                "D.H. Huson  and  M. Steel. Phylogenetic  trees  based  on  gene  content. Bioinformatics, 20(13):2044–9, 2004.";
+    }
+
+    @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 

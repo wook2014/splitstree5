@@ -51,6 +51,13 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
     private final SimpleObjectProperty<EdgeWeights> optionEdgeWeights = new SimpleObjectProperty<>(EdgeWeights.TreeSizeWeightedMean);
 
     @Override
+    public String getCitation() {
+        return "SuperNetwork; Huson et al 2004; " +
+                "D.H. Huson, T. Dezulian, T. Kloepper, and M. A. Steel. Phylogenetic super-networks from partial trees. " +
+                "IEEE/ACM Transactions in Computational Biology and Bioinformatics, 1(4):151–158, 2004.";
+    }
+
+    @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock)
             throws Exception {
 

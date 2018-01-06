@@ -27,6 +27,13 @@ public class Dice extends Algorithm<CharactersBlock, DistancesBlock> implements 
     private String TASK = "Dice Coefficient Distance";
 
     @Override
+    public String getCitation() {
+        return "Dice; Hamming 1950; " +
+                "Hamming, Richard W. \"Error detecting and error correcting codes\". " +
+                "Bell System Technical Journal. 29 (2): 147–160. MR 0035935, 1950.";
+    }
+
+    @Override
     public boolean isApplicable(TaxaBlock taxaBlock, CharactersBlock parent, DistancesBlock child) {
         return parent.getDataType().equals(CharactersType.standard);
     }

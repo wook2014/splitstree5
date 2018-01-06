@@ -76,6 +76,13 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
     private double pInvar;
 
     @Override
+    public String getCitation() {
+        return "Steel 1994; " +
+                "M.A. Steel.  Recovering a tree from the leaf colorations it generates under a Markov model. " +
+                "Appl. Math. Lett., 7(2):19–24, 1994.";
+    }
+
+    @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 

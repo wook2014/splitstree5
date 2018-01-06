@@ -23,6 +23,13 @@ import splitstree5.core.datablocks.TreesBlock;
 public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> implements IFromDistances, IToTrees {
 
     @Override
+    public String getCitation() {
+        return "UPGMA; Sokal and Michener 1958; " +
+                "R.R. Sokal and C.D.Michener. A statistical method for evaluating systematic relationships. " +
+                "University of Kansas Scientific Bulletin, 28:1409-1438, 1958.";
+    }
+
+    @Override
     public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees)
             throws InterruptedException, CanceledException {
 

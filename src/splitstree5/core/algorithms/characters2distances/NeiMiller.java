@@ -20,6 +20,13 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
 
     public final static String DESCRIPTION = "Calculate distances from restriction-sites using Nei and Miller (1990).";
 
+    @Override
+    public String getCitation() {
+        return "Nei and Miller 1990; " +
+                "M. Nei and J.C. Miller. " +
+                "A simple method for estimating average number of nucleotide substitutions within and between populations from restriction data. " +
+                "Genetics, 125:873–879, 1990.";
+    }
 
     @Override
     public boolean isApplicable(TaxaBlock taxa, CharactersBlock chars, DistancesBlock distancesBlock) {
