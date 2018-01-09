@@ -72,7 +72,6 @@ import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.workflow.ANode;
 import splitstree5.core.workflow.UpdateState;
-import splitstree5.gui.connectorview.ANodeViewManager;
 
 /**
  * a workflow node view
@@ -135,7 +134,8 @@ public class WorkflowNodeView extends Group {
             final Button openButton = new Button("Open...");
             openButton.setStyle("-fx-font-size: 10");
             openButton.setOnAction((e) -> {
-                ANodeViewManager.getInstance().show(workflowView.getDocument(), (AConnector) aNode, this.getX(), this.getY());
+                if (!((AConnector) aNode).getAlgorithm().getName().endsWith("TopFilter"))
+                    workflowView.getDocument().getMainWindow().showAlgorithmView((AConnector) aNode);
             });
             openButton.disableProperty().bind(Bindings.equal(UpdateState.VALID, aNode.stateProperty()).not());
             openButton.setPrefWidth(50);

@@ -20,12 +20,11 @@
 package splitstree5.main.workflowtree;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.geometry.Orientation;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
 import jloda.util.ResourceManager;
 import splitstree5.core.Document;
@@ -33,7 +32,6 @@ import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.workflow.ANode;
 import splitstree5.core.workflow.UpdateState;
-import splitstree5.gui.connectorview.ANodeViewManager;
 
 
 /**
@@ -51,6 +49,7 @@ public class WorkflowTreeItem extends TreeItem<String> {
      * @param aNode
      */
     public WorkflowTreeItem(Document document, ANode aNode) {
+        super("");
         this.document = document;
         this.aNode = aNode;
 
@@ -62,16 +61,16 @@ public class WorkflowTreeItem extends TreeItem<String> {
             final Tooltip tooltip = new Tooltip();
 
             if (aNode instanceof AConnector) {
-                disable.bind(((AConnector) aNode).applicableProperty().not().and(aNode.stateProperty().isEqualTo(UpdateState.VALID).not()));
-                Image icon = ResourceManager.getIcon(aNode.getName().endsWith("Filter") ? "Filter16.gif" : "Algorithm16.gif");
+                disable.bind(((AConnector) aNode).applicableProperty().not().and(aNode.stateProperty().isEqualTo(UpdateState.VALID).not()).or(new ReadOnlyBooleanWrapper(aNode.getName().endsWith("TopFilter"))));
+                final Image icon = ResourceManager.getIcon(aNode.getName().endsWith("Filter") ? "Filter16.gif" : "Algorithm16.gif");
                 if (icon != null) {
-                    setGraphic(new FlowPane(Orientation.HORIZONTAL, new ImageView(icon), label));
+                    label.setGraphic(new ImageView(icon));
                 }
             } else {
                 disable.bind(aNode.stateProperty().isEqualTo(UpdateState.VALID).not());
                 Image icon = ResourceManager.getIcon(aNode.getName().replaceAll("^Orig", "") + "16.gif");
                 if (icon != null) {
-                    setGraphic(new FlowPane(Orientation.HORIZONTAL, new ImageView(icon), label));
+                    label.setGraphic(new ImageView(icon));
                 }
             }
             tooltip.textProperty().bind(aNode.shortDescriptionProperty());
@@ -92,22 +91,21 @@ public class WorkflowTreeItem extends TreeItem<String> {
             );
 
             label.setOnContextMenuRequested((e) -> {
-                if (!disable.get()) {
                     final MenuItem show = new MenuItem("Open...");
                     show.setOnAction((x) -> {
                         showView(e.getScreenX(), e.getScreenY());
                     });
+                show.disableProperty().bind(disable);
                     final ContextMenu contextMenu = new ContextMenu(show);
                     contextMenu.show(label, e.getScreenX(), e.getScreenY());
-                }
             });
             getGraphic().setOnMouseClicked((e) -> {
                 if (e.getClickCount() == 2) {
-                    showView(e.getScreenX(), e.getScreenY());
+                    if (!disable.get())
+                        showView(e.getScreenX(), e.getScreenY());
                     e.consume();
                 }
             });
-            setValue("");
         }
 
         disable.addListener((c, o, n) -> {
@@ -127,7 +125,8 @@ public class WorkflowTreeItem extends TreeItem<String> {
     public void showView(double screenX, double screenY) {
         if (aNode instanceof ADataNode)
             document.getMainWindow().showDataView((ADataNode) aNode);
-        else
-            ANodeViewManager.getInstance().show(document, (AConnector) aNode, screenX, screenY);
+        else {
+            document.getMainWindow().showAlgorithmView((AConnector) aNode);
+        }
     }
 }

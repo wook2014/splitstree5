@@ -19,10 +19,8 @@
 
 package splitstree5.main.graphtab;
 
-import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import splitstree5.core.Document;
@@ -30,7 +28,6 @@ import splitstree5.core.connectors.AConnector;
 import splitstree5.core.workflow.ANode;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.core.workflow.Workflow;
-import splitstree5.gui.connectorview.ANodeViewManager;
 
 import java.util.ArrayList;
 
@@ -60,7 +57,7 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
      */
     public void update() {
         final Workflow workflow = document.getWorkflow();
-        getItems().setAll(new Label("Algorithms:"));
+        getItems().clear();
         if (workflow.getTaxaFilter() != null) {
             getItems().add(makeBreadCrumb(document, workflow.getTaxaFilter()));
         }
@@ -120,8 +117,7 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
                 }
         );
         button.setOnAction((e) -> {
-            final Point2D location = button.localToScreen(button.getLayoutX(), button.getLayoutY());
-            ANodeViewManager.getInstance().show(document, aConnector, location.getX(), location.getY());
+            document.getMainWindow().showAlgorithmView(aConnector);
         });
         return button;
     }

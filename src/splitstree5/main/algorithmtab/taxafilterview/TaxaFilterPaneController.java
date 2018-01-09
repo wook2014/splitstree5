@@ -17,25 +17,20 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.gui.taxafilterview;
+package splitstree5.main.algorithmtab.taxafilterview;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.layout.HBox;
 import splitstree5.core.misc.Taxon;
 
 /**
- * controller
- * Created by huson on 12/23/16.
+ * Taxa filter controller
+ * Daniel Huson, 12/2016
  */
 public class TaxaFilterPaneController {
-
-    @FXML
-    private HBox hbox;
-
     @FXML
     private ListView<Taxon> activeList;
 
@@ -53,7 +48,6 @@ public class TaxaFilterPaneController {
 
     @FXML
     private ListView<Taxon> inactiveList;
-
 
     @FXML
         // This method is called by the FXMLLoader when initialization is complete

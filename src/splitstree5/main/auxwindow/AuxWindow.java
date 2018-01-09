@@ -109,8 +109,6 @@ public class AuxWindow implements IStageSupplier {
         menuController.getCloseMenuItem().setOnAction((e) -> close(stage));
         menuController.getCloseMenuItem().setDisable(false);
 
-        controller.getCloseButton().setOnAction((e) -> close(stage));
-
         stage.setScene(new Scene(root, width, height));
         stage.sizeToScene();
 

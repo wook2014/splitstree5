@@ -18,12 +18,16 @@
  */
 package splitstree5.main;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 import splitstree5.main.workflowtree.WorkflowTreeItem;
 
 import java.util.LinkedList;
@@ -37,10 +41,19 @@ public class MainWindowController {
     private VBox topVBox;
 
     @FXML
+    private VBox rightVBox;
+
+    @FXML
     private ToolBar topToolBar;
 
     @FXML
-    private Button openCloseTreeView;
+    private ToolBar leftToolBar;
+
+    @FXML
+    private Button openCloseLeft;
+
+    @FXML
+    private Button openCloseRight;
 
     @FXML
     private SplitPane splitPane;
@@ -49,7 +62,15 @@ public class MainWindowController {
     private TreeView<String> treeView;
 
     @FXML
-    private TabPane tabPane;
+    private TabPane mainTabPane;
+
+    @FXML
+    private SplitPane algorithmSplitPane;
+
+    @FXML
+    private TabPane algorithmTabPane;
+    @FXML
+    private ToolBar algorithmToolBar;
 
     @FXML
     private ToolBar bottomToolBar;
@@ -72,16 +93,24 @@ public class MainWindowController {
     }
 
 
-    public TabPane getTabPane() {
-        return tabPane;
+    public TabPane getMainTabPane() {
+        return mainTabPane;
     }
 
+    public TabPane getAlgorithmTabPane() {
+        return algorithmTabPane;
+    }
     public ToolBar getTopToolBar() {
         return topToolBar;
     }
 
+
     public SplitPane getSplitPane() {
         return splitPane;
+    }
+
+    public SplitPane getAlgorithmSplitPane() {
+        return algorithmSplitPane;
     }
 
     public TreeView<String> getTreeView() {
@@ -117,15 +146,39 @@ public class MainWindowController {
         });
         showButton.disableProperty().bind(Bindings.isEmpty(treeView.getSelectionModel().getSelectedItems()));
 
-        openCloseTreeView.setOnAction((e) -> {
-            if (splitPane.getDividerPositions()[0] <= 0.01) {
-                System.err.println(treeView.getPrefWidth());
-                splitPane.setDividerPositions(300 / splitPane.getWidth());
-                openCloseTreeView.setText(("<"));
-            } else {
-                splitPane.setDividerPositions(0);
-                openCloseTreeView.setText((">"));
-            }
+        openCloseLeft.setOnAction((e) -> {
+            if (splitPane.getDividerPositions()[0] <= 0.01)
+                animateSplitPane(splitPane, 300 / splitPane.getWidth(), () -> openCloseLeft.setText(("<")));
+            else
+                animateSplitPane(splitPane, 0, () -> openCloseLeft.setText((">")));
         });
+
+        openCloseRight.setOnAction((e) -> {
+            ensureTreeViewIsOpen();
+            if (algorithmSplitPane.getDividerPositions()[0] >= 0.99)
+                animateSplitPane(algorithmSplitPane, (algorithmSplitPane.getHeight() - 300) / algorithmSplitPane.getHeight(), () -> openCloseRight.setText(("<")));
+            else
+                animateSplitPane(algorithmSplitPane, 1.0, () -> openCloseRight.setText((">")));
+        });
+    }
+
+    private void animateSplitPane(SplitPane splitPane, double target, Runnable runnable) {
+        KeyValue keyValue = new KeyValue(splitPane.getDividers().get(0).positionProperty(), target);
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500), keyValue));
+        timeline.play();
+        timeline.setOnFinished((x) -> runnable.run());
+
+    }
+
+    public void ensureTreeViewIsOpen() {
+        if (splitPane.getDividerPositions()[0] <= 0.01)
+            animateSplitPane(splitPane, 300 / splitPane.getWidth(), () -> openCloseLeft.setText(("<")));
+
+    }
+
+    public void ensureAlgorithmsTabPaneIsOpen() {
+        ensureTreeViewIsOpen();
+        if (algorithmSplitPane.getDividerPositions()[0] >= 0.99)
+            animateSplitPane(algorithmSplitPane, (algorithmSplitPane.getHeight() - 300) / algorithmSplitPane.getHeight(), () -> openCloseRight.setText(("<")));
     }
 }

@@ -41,13 +41,13 @@ import java.util.ArrayList;
 
 /**
  * taxon filter pane
- * Created by huson on 12/23/16.
+ * Daniel Huson, 12/2016
  */
 public class TreeFilterPane extends AlgorithmPane {
     private final TreeFilter treeFilter;
     private final TreeFilterPaneController controller;
-    private Document document = null;
-    private UndoRedoManager undoManager = new UndoRedoManager();
+    private Document document;
+    private UndoRedoManager undoManager;
 
     private ArrayList<String> prevActiveTrees = new ArrayList<>(); // used to facilitate undo/redo, do not modify
     private ArrayList<String> prevInactiveTrees = new ArrayList<>(); // used to facilitate undo/redo, do not modify
@@ -65,7 +65,7 @@ public class TreeFilterPane extends AlgorithmPane {
         this.treeFilter = treeFilter;
         final ExtendedFXMLLoader extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         controller = (TreeFilterPaneController) extendedFXMLLoader.getController();
-        this.getChildren().add(extendedFXMLLoader.getRoot());
+        this.getChildren().setAll(extendedFXMLLoader.getRoot());
         undoManager = new UndoRedoManager();
     }
 

@@ -36,7 +36,7 @@ public class SelectionEffect extends DropShadow {
     }
 
     private SelectionEffect() {
-        setColor(Color.GOLD);
+        setColor(Color.LIGHTBLUE);
         setRadius(3);
         setSpread(1);
 

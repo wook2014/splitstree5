@@ -17,14 +17,21 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.gui.taxafilterview;
+package splitstree5.main.algorithmtab.taxafilterview;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.WeakInvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
+import javafx.collections.WeakListChangeListener;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Tab;
 import jloda.fx.ExtendedFXMLLoader;
+import jloda.graph.Node;
+import jloda.util.Basic;
+import jloda.util.Triplet;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.filters.TaxaFilter;
 import splitstree5.core.connectors.AConnector;
@@ -34,16 +41,17 @@ import splitstree5.core.project.ProjectManager;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.connectorview.AlgorithmPane;
 import splitstree5.main.ISavesPreviousSelection;
+import splitstree5.main.graphtab.base.GraphTab;
 import splitstree5.undo.UndoRedoManager;
 import splitstree5.undo.UndoableChangeListViews2;
 import splitstree5.utils.DragAndDropSupportListView2;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * taxon filter pane
- * Created by huson on 12/23/16.
+ * Daniel Huson, 12/2016
  */
 public class TaxaFilterPane extends AlgorithmPane implements ISavesPreviousSelection {
     private final TaxaFilter taxaFilter;
@@ -55,6 +63,8 @@ public class TaxaFilterPane extends AlgorithmPane implements ISavesPreviousSelec
     private ArrayList<Taxon> prevInactiveTaxa = new ArrayList<>(); // used to facilitate undo/redo, do not modify
 
     final SimpleBooleanProperty applicableProperty = new SimpleBooleanProperty();
+
+    private final Map<GraphTab, Triplet<ListChangeListener<Taxon>, InvalidationListener, Boolean>> graphTab2SelectionListeners = new HashMap<>();
 
     private AConnector connector;
 
@@ -81,6 +91,99 @@ public class TaxaFilterPane extends AlgorithmPane implements ISavesPreviousSelec
     @Override
     public void setDocument(Document document) {
         this.document = document;
+        document.getMainWindow().getMainWindowController().getMainTabPane().getSelectionModel().selectedItemProperty().addListener((c, o, n) -> {
+            if (n instanceof GraphTab) {
+                connectSelectionModels(getController().getActiveList(), getController().getInactiveList(), (GraphTab) n);
+            }
+        });
+
+        final Tab tab = document.getMainWindow().getMainWindowController().getMainTabPane().getSelectionModel().getSelectedItem();
+        if (tab != null && tab instanceof GraphTab)
+            connectSelectionModels(getController().getActiveList(), getController().getInactiveList(), (GraphTab) tab);
+    }
+
+    /**
+     * todo: this is nonsense, should do this via taxaSelection model
+     * <p>
+     * connects taxon filter selection to graph node selection
+     *
+     * @param activeList
+     * @param inactiveList
+     * @param graphTab
+     */
+    private void connectSelectionModels(ListView<Taxon> activeList, ListView<Taxon> inactiveList, GraphTab graphTab) {
+        if (!graphTab2SelectionListeners.containsKey(graphTab)) {
+            final Triplet<ListChangeListener<Taxon>, InvalidationListener, Boolean> triplet = new Triplet<>(null, null, false);
+            graphTab2SelectionListeners.put(graphTab, triplet);
+            triplet.set1((c) -> {
+                if (!triplet.get3()) {
+                    try {
+                        triplet.set3(true);
+                        while (c.next()) {
+                            try {
+                                final Set<String> labels = new HashSet<>();
+                                for (Taxon t : c.getAddedSubList()) {
+                                    labels.add(t.getName());
+                                }
+                                if (labels.size() > 0)
+                                    graphTab.selectNodesByLabel(labels, true);
+                            } catch (IndexOutOfBoundsException ex) {
+                                Basic.caught(ex);
+                            }
+                            {
+                                final Set<String> labels = new HashSet<>();
+                                for (Taxon t : c.getRemoved()) {
+                                    labels.add(t.getName());
+                                }
+                                if (labels.size() > 0)
+                                    graphTab.selectNodesByLabel(labels, false);
+                            }
+                        }
+                    } finally {
+                        triplet.set3(false);
+                    }
+                }
+            });
+            triplet.set2((c) -> {
+                if (!triplet.get3()) {
+                    try {
+                        triplet.set3(true);
+                        final Set<String> labels = new HashSet<>();
+                        for (Node v : graphTab.getNodeSelectionModel().getSelectedItems()) {
+                            String label = graphTab.getPhyloGraph().getLabel(v);
+                            if (label != null)
+                                labels.add(label);
+                        }
+
+                        activeList.getSelectionModel().clearSelection();
+                        inactiveList.getSelectionModel().clearSelection();
+                        if (labels.size() > 0) {
+                            boolean first = true;
+                            for (Taxon taxon : activeList.getItems()) {
+                                if (labels.contains(taxon.getName())) {
+                                    activeList.getSelectionModel().select(taxon);
+                                    if (first) {
+                                        activeList.scrollTo(taxon);
+                                        first = false;
+                                    }
+                                }
+                            }
+                            for (Taxon taxon : inactiveList.getItems()) {
+                                if (labels.contains(taxon.getName())) {
+                                    inactiveList.getSelectionModel().select(taxon);
+                                }
+                            }
+                        }
+                    } finally {
+                        triplet.set3(false);
+                    }
+                }
+            });
+
+            activeList.getSelectionModel().getSelectedItems().addListener(new WeakListChangeListener<>(triplet.get1()));
+            inactiveList.getSelectionModel().getSelectedItems().addListener(new WeakListChangeListener<>(triplet.get1()));
+            graphTab.getNodeSelectionModel().getSelectedItems().addListener(new WeakInvalidationListener(triplet.get2()));
+        }
     }
 
     @Override
@@ -141,29 +244,42 @@ public class TaxaFilterPane extends AlgorithmPane implements ISavesPreviousSelec
         });
 
         controller.getInactivateAllButton().setOnAction((e) -> {
+            final ArrayList<Taxon> selected = new ArrayList<>(controller.getActiveList().getSelectionModel().getSelectedItems());
             controller.getInactiveList().getItems().addAll(controller.getActiveList().getItems());
             controller.getActiveList().getItems().clear();
+            for (Taxon t : selected)
+                controller.getInactiveList().getSelectionModel().select(t);
         });
         controller.getInactivateAllButton().disableProperty().bind(Bindings.isEmpty(controller.getActiveList().getItems()));
 
 
         controller.getInactivateSelectedButton().setOnAction((e) -> {
-            controller.getInactiveList().getItems().addAll(controller.getActiveList().getSelectionModel().getSelectedItems());
-            controller.getActiveList().getItems().removeAll(controller.getActiveList().getSelectionModel().getSelectedItems());
+            final ArrayList<Taxon> selected = new ArrayList<>(controller.getActiveList().getSelectionModel().getSelectedItems());
+            controller.getActiveList().getSelectionModel().clearSelection();
+            controller.getActiveList().getItems().removeAll(selected);
+            controller.getInactiveList().getItems().addAll(selected);
+            for (Taxon t : selected)
+                controller.getInactiveList().getSelectionModel().select(t);
         });
         controller.getInactivateSelectedButton().disableProperty().bind(Bindings.isEmpty(controller.getActiveList().getSelectionModel().getSelectedIndices()));
 
         controller.getActivateAllButton().setOnAction((e) -> {
-            final ArrayList<Taxon> list = new ArrayList<>(controller.getInactiveList().getItems());
+            final ArrayList<Taxon> selected = new ArrayList<>(controller.getInactiveList().getSelectionModel().getSelectedItems());
+            controller.getInactiveList().getSelectionModel().clearSelection();
             controller.getInactiveList().getItems().clear();
-            controller.getActiveList().getItems().addAll(list);
+            controller.getActiveList().getItems().addAll(selected);
+            for (Taxon t : selected)
+                controller.getActiveList().getSelectionModel().select(t);
         });
         controller.getActivateAllButton().disableProperty().bind(Bindings.isEmpty(controller.getInactiveList().getItems()));
 
         controller.getActivateSelectedButton().setOnAction((e) -> {
-            final ArrayList<Taxon> list = new ArrayList<>(controller.getInactiveList().getSelectionModel().getSelectedItems());
-            controller.getInactiveList().getItems().removeAll(list);
-            controller.getActiveList().getItems().addAll(list);
+            final ArrayList<Taxon> selected = new ArrayList<>(controller.getInactiveList().getSelectionModel().getSelectedItems());
+            controller.getInactiveList().getSelectionModel().clearSelection();
+            controller.getInactiveList().getItems().removeAll(selected);
+            controller.getActiveList().getItems().addAll(selected);
+            for (Taxon t : selected)
+                controller.getActiveList().getSelectionModel().select(t);
         });
         controller.getActivateSelectedButton().disableProperty().bind(Bindings.isEmpty(controller.getInactiveList().getSelectionModel().getSelectedIndices()));
 

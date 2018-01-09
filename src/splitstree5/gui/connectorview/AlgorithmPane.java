@@ -19,18 +19,16 @@
 
 package splitstree5.gui.connectorview;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import splitstree5.core.Document;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.undo.UndoRedoManager;
 
 /**
  * An algorithm controller pane
- * Created by huson on 1/8/17.
+ * Daniel Huson 1/2017
  */
-public abstract class AlgorithmPane extends Pane {
+public abstract class AlgorithmPane extends StackPane {
     /**
      * sets the document
      *
@@ -53,10 +51,6 @@ public abstract class AlgorithmPane extends Pane {
      * @param connector
      */
     public void setConnector(AConnector connector) {
-    }
-
-    public BooleanProperty applicableProperty() {
-        return new SimpleBooleanProperty();
     }
 
     /**

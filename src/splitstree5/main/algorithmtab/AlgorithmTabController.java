@@ -36,29 +36,49 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.main.auxwindow;
+package splitstree5.main.algorithmtab;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
+import splitstree5.core.algorithms.Algorithm;
 
 /**
- * controller for auxilary window
- * Daniel Huson, 1.2018
+ * Algorithm tab controller
+ * Daniel Huson 1/2018
  */
-public class AuxWindowController {
+public class AlgorithmTabController {
+    @FXML
+    private Button applyButton;
+
+    @FXML
+    private ComboBox<Algorithm> algorithmComboBox;
 
     @FXML
     private BorderPane borderPane;
 
     @FXML
-    private TabPane tabPane;
+    private Pane centerPane;
+
+    @FXML
+    void initialize() {
+    }
+
+    public Button getApplyButton() {
+        return applyButton;
+    }
+
+    public ComboBox<Algorithm> getAlgorithmComboBox() {
+        return algorithmComboBox;
+    }
 
     public BorderPane getBorderPane() {
         return borderPane;
     }
 
-    public TabPane getTabPane() {
-        return tabPane;
+    public Pane getCenterPane() {
+        return centerPane;
     }
 }

@@ -137,7 +137,7 @@ public class TabPaneDragAndDropSupport {
                     newStage.sizeToScene();
                     newStage.show();
                 });
-                undockItem.setDisable(tab.getTabPane() != mainTabPane || mainTabPane.getTabs().size() < 2);
+                undockItem.setDisable(tab.getTabPane() != mainTabPane);
                 contextMenu.getItems().add(undockItem);
                 final MenuItem redockItem = new MenuItem("Redock");
                 redockItem.setOnAction((x) -> {

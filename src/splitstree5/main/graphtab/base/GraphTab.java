@@ -66,6 +66,7 @@ import splitstree5.undo.UndoableRedoableCommand;
 import splitstree5.utils.RubberBandSelection;
 import splitstree5.utils.SelectionEffect;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -374,11 +375,27 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
     }
 
     /**
+     * select nodes  labels
+     *
+     * @param set
+     */
+    public void selectNodesByLabel(Collection<String> set, boolean select) {
+        for (Node node : getPhyloGraph().nodes()) {
+            String label = getPhyloGraph().getLabel(node);
+            if (label != null && set.contains(label))
+                if (select)
+                    nodeSelectionModel.select(node);
+                else
+                    nodeSelectionModel.clearSelection(node);
+        }
+    }
+
+    /**
      * select nodes and edges by labels
      *
      * @param set
      */
-    public void selectByLabel(Set<String> set) {
+    public void selectByLabel(Collection<String> set) {
         for (Node node : getPhyloGraph().nodes()) {
             String label = getPhyloGraph().getLabel(node);
             if (label != null && set.contains(label))

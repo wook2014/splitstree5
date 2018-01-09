@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
@@ -11,18 +11,25 @@
         <VBox fx:id="topVBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
               BorderPane.alignment="CENTER">
             <children>
-                <ToolBar fx:id="topToolBar" minHeight="40.0" prefHeight="40.0" prefWidth="200.0">
-                    <items>
-                        <Button fx:id="openCloseTreeView" maxHeight="10.0" maxWidth="10.0" mnemonicParsing="false"
+                <AnchorPane>
+                    <children>
+                        <ToolBar fx:id="topToolBar" minHeight="40.0" prefHeight="40.0" prefWidth="200.0"
+                                 AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                                 AnchorPane.topAnchor="0.0">
+                            <padding>
+                                <Insets left="20.0" right="20.0"/>
+                            </padding>
+                        </ToolBar>
+                        <Button fx:id="openCloseLeft" maxHeight="10.0" maxWidth="10.0" mnemonicParsing="false"
                                 prefHeight="10.0" prefWidth="10.0"
                                 style="-fx-border-width: 0; -fx-border-style: none; -fx-background-color: transparent;"
-                                text="&gt;" translateX="-10.0">
+                                text="&gt;" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="10.0">
                             <font>
                                 <Font size="10.0"/>
                             </font>
                         </Button>
-                    </items>
-                </ToolBar>
+                    </children>
+                </AnchorPane>
             </children>
         </VBox>
     </top>
@@ -30,56 +37,75 @@
         <SplitPane fx:id="splitPane" dividerPositions="0.0" maxHeight="1.7976931348623157E308"
                    maxWidth="1.7976931348623157E308" pickOnBounds="false" BorderPane.alignment="CENTER">
             <BorderPane.margin>
-                <Insets/>
+                <Insets left="2.0" right="2.0"/>
             </BorderPane.margin>
             <items>
-                <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
-                    <children>
-                        <ToolBar minHeight="0.0" minWidth="0.0" prefHeight="40.0" prefWidth="200.0">
-                            <items>
-                                <Button fx:id="expandAllButton" maxHeight="18.0" maxWidth="18.0" minHeight="18.0"
-                                        minWidth="18.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="18.0">
-                                    <graphic>
-                                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true"
-                                                   preserveRatio="true">
-                                            <image>
-                                                <Image smooth="false" url="/resources/icons/ExpandTreeView16.gif"/>
-                                            </image>
-                                        </ImageView>
-                                    </graphic>
-                                </Button>
-                                <Button fx:id="collapseAllButton" maxHeight="18.0" maxWidth="18.0" minHeight="18.0"
-                                        minWidth="18.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="18.0">
-                                    <graphic>
-                                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true"
-                                                   preserveRatio="true">
-                                            <image>
-                                                <Image smooth="false" url="/resources/icons/CollapseTreeView16.gif"/>
-                                            </image>
-                                        </ImageView>
-                                    </graphic>
-                                </Button>
-                                <Separator/>
-                                <Button fx:id="showButton" maxHeight="18.0" maxWidth="18.0" minHeight="18.0"
-                                        minWidth="18.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="18.0">
-                                    <graphic>
-                                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true"
-                                                   preserveRatio="true">
-                                            <image>
-                                                <Image smooth="false"
-                                                       url="/resources/icons/sun/toolbarButtonGraphics/general/Preferences16.gif"/>
-                                            </image>
-                                        </ImageView>
-                                    </graphic>
-                                </Button>
+                <SplitPane fx:id="algorithmSplitPane" dividerPositions="1.0" orientation="VERTICAL">
+                    <items>
+                        <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                            <children>
+                                <ToolBar fx:id="leftToolBar" minHeight="30.0" minWidth="0.0" prefHeight="30.0"
+                                         prefWidth="200.0">
+                                    <items>
+                                        <Button fx:id="expandAllButton" maxHeight="18.0" maxWidth="18.0"
+                                                minHeight="18.0" minWidth="18.0" mnemonicParsing="false"
+                                                prefHeight="18.0" prefWidth="18.0">
+                                            <graphic>
+                                                <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true"
+                                                           preserveRatio="true">
+                                                    <image>
+                                                        <Image smooth="false"
+                                                               url="/resources/icons/ExpandTreeView16.gif"/>
+                                                    </image>
+                                                </ImageView>
+                                            </graphic>
+                                        </Button>
+                                        <Button fx:id="collapseAllButton" maxHeight="18.0" maxWidth="18.0"
+                                                minHeight="18.0" minWidth="18.0" mnemonicParsing="false"
+                                                prefHeight="18.0" prefWidth="18.0">
+                                            <graphic>
+                                                <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true"
+                                                           preserveRatio="true">
+                                                    <image>
+                                                        <Image smooth="false"
+                                                               url="/resources/icons/CollapseTreeView16.gif"/>
+                                                    </image>
+                                                </ImageView>
+                                            </graphic>
+                                        </Button>
+                                        <Separator/>
+                                        <Button fx:id="showButton" maxHeight="18.0" maxWidth="18.0" minHeight="18.0"
+                                                minWidth="18.0" mnemonicParsing="false" prefHeight="18.0"
+                                                prefWidth="18.0">
+                                            <graphic>
+                                                <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true"
+                                                           preserveRatio="true">
+                                                    <image>
+                                                        <Image smooth="false"
+                                                               url="/resources/icons/sun/toolbarButtonGraphics/general/Preferences16.gif"/>
+                                                    </image>
+                                                </ImageView>
+                                            </graphic>
+                                        </Button>
 
-                            </items>
-                        </ToolBar>
-                        <TreeView fx:id="treeView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-                                  minHeight="0.0" minWidth="0.0" VBox.vgrow="ALWAYS"/>
-                    </children>
-                </VBox>
-                <TabPane fx:id="tabPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                                    </items>
+                                </ToolBar>
+                                <TreeView fx:id="treeView" maxHeight="1.7976931348623157E308"
+                                          maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0"
+                                          VBox.vgrow="ALWAYS"/>
+                            </children>
+                        </VBox>
+                        <VBox fx:id="rightVBox" minHeight="0.0" style="-fx-background-color: white;">
+                            <children>
+                                <ToolBar fx:id="algorithmToolBar" minHeight="0.0" minWidth="0.0" prefHeight="30.0"
+                                         VBox.vgrow="NEVER"/>
+                                <TabPane fx:id="algorithmTabPane" maxHeight="1.7976931348623157E308"
+                                         maxWidth="1.7976931348623157E308" side="TOP" tabClosingPolicy="UNAVAILABLE"/>
+                            </children>
+                        </VBox>
+                    </items>
+                </SplitPane>
+                <TabPane fx:id="mainTabPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
                          tabClosingPolicy="UNAVAILABLE">
                     <opaqueInsets>
                         <Insets/>
@@ -92,7 +118,23 @@
         </SplitPane>
     </center>
     <bottom>
-        <ToolBar fx:id="bottomToolBar" prefHeight="40.0" prefWidth="200.0" style="-fx-border-color: lightgray;"
-                 BorderPane.alignment="CENTER"/>
+        <AnchorPane BorderPane.alignment="CENTER">
+            <children>
+                <ToolBar fx:id="bottomToolBar" prefHeight="40.0" prefWidth="200.0" style="-fx-border-color: lightgray;"
+                         AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                         AnchorPane.topAnchor="0.0"/>
+                <Button fx:id="openCloseRight" maxHeight="10.0" maxWidth="10.0" mnemonicParsing="false"
+                        prefHeight="10.0" prefWidth="10.0" rotate="-90.0"
+                        style="-fx-border-width: 0; -fx-border-style: none; -fx-background-color: transparent;"
+                        text="&gt;" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="0.0">
+                    <font>
+                        <Font size="10.0"/>
+                    </font>
+                </Button>
+            </children>
+        </AnchorPane>
     </bottom>
+    <opaqueInsets>
+        <Insets/>
+    </opaqueInsets>
 </BorderPane>

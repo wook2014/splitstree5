@@ -38,7 +38,6 @@
 package splitstree5.menu;
 
 import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.fxml.FXML;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -399,25 +398,22 @@ public class MenuController {
             editMenu.getItems().remove(getPreferencesMenuItem());
         }
 
-        final InvalidationListener invalidationListener = new InvalidationListener() {
-            @Override
-            public void invalidated(Observable observable) {
-                windowMenu.getItems().clear();
-                int count = 0;
-                for (MainWindow mainWindow : ProjectManager.getInstance().getMainWindows()) {
-                    if (count == 0)
-                        windowMenu.getItems().add(new SeparatorMenuItem());
-                    {
-                        final MenuItem menuItem = new MenuItem(mainWindow.getStage().getTitle().replaceAll("- SplitsTree5", ""));
-                        menuItem.setOnAction((e) -> mainWindow.getStage().toFront());
-                        menuItem.setAccelerator(new KeyCharacterCombination("" + (++count), KeyCombination.SHORTCUT_DOWN));
-                        windowMenu.getItems().add(menuItem);
-                    }
-                    for (Stage auxStage : ProjectManager.getInstance().getAuxiliaryWindows(mainWindow)) {
-                        final MenuItem menuItem = new MenuItem(auxStage.getTitle().replaceAll("- SplitsTree5", ""));
-                        menuItem.setOnAction((e) -> auxStage.toFront());
-                        windowMenu.getItems().add(menuItem);
-                    }
+        final InvalidationListener invalidationListener = observable -> {
+            windowMenu.getItems().clear();
+            int count = 0;
+            for (MainWindow mainWindow : ProjectManager.getInstance().getMainWindows()) {
+                if (count == 0)
+                    windowMenu.getItems().add(new SeparatorMenuItem());
+                {
+                    final MenuItem menuItem = new MenuItem(mainWindow.getStage().getTitle().replaceAll("- SplitsTree5", ""));
+                    menuItem.setOnAction((e) -> mainWindow.getStage().toFront());
+                    menuItem.setAccelerator(new KeyCharacterCombination("" + (++count), KeyCombination.SHORTCUT_DOWN));
+                    windowMenu.getItems().add(menuItem);
+                }
+                for (Stage auxStage : ProjectManager.getInstance().getAuxiliaryWindows(mainWindow)) {
+                    final MenuItem menuItem = new MenuItem(auxStage.getTitle().replaceAll("- SplitsTree5", ""));
+                    menuItem.setOnAction((e) -> auxStage.toFront());
+                    windowMenu.getItems().add(menuItem);
                 }
             }
         };

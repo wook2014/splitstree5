@@ -28,14 +28,18 @@ import javafx.collections.ObservableMap;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import jloda.fx.ExtendedFXMLLoader;
 import jloda.util.Basic;
 import jloda.util.ResourceManager;
 import splitstree5.core.Document;
+import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.misc.ProgramExecutorService;
 import splitstree5.core.project.ProjectManager;
+import splitstree5.core.workflow.ANode;
+import splitstree5.main.algorithmtab.AlgorithmTab;
 import splitstree5.main.auxwindow.AuxWindow;
 import splitstree5.main.auxwindow.TabPaneDragAndDropSupport;
 import splitstree5.main.datatab.DataViewTab;
@@ -57,7 +61,8 @@ public class MainWindow {
 
     private final WorkflowTreeSupport workflowTreeSupport;
 
-    private final TabPane tabPane;
+    private final TabPane mainTabPane;
+    private final TabPane algorithmsTabPane;
 
     private Stage stage;
 
@@ -65,7 +70,7 @@ public class MainWindow {
 
     private boolean allowClose = false;
 
-    private final ObservableMap<ADataNode, ViewerTab> dataNode2ViewerTab;
+    private final ObservableMap<ANode, ViewerTab> aNode2ViewerTab;
 
     /**
      * constructor
@@ -75,7 +80,7 @@ public class MainWindow {
     public MainWindow() throws IOException {
         this.document = new Document();
         document.setMainWindow(this);
-        dataNode2ViewerTab = FXCollections.observableHashMap();
+        aNode2ViewerTab = FXCollections.observableHashMap();
 
         Platform.setImplicitExit(false);
 
@@ -91,21 +96,29 @@ public class MainWindow {
         }
         mainWindowController.getTopVBox().getChildren().add(0, menuController.getMenuBar());
 
-        tabPane = mainWindowController.getTabPane();
+        mainTabPane = mainWindowController.getMainTabPane();
 
-        tabPane.getSelectionModel().selectedItemProperty().addListener((c, o, n) -> {
+        mainTabPane.getSelectionModel().selectedItemProperty().addListener((c, o, n) -> {
             if (o instanceof ISavesPreviousSelection) {
                 ((ISavesPreviousSelection) o).saveAsPreviousSelection();
             }
             updateMenus(n, menuController);
         });
 
-        final TreeItem<String> rootItem = new TreeItem<>();
+        algorithmsTabPane = mainWindowController.getAlgorithmTabPane();
+
 
         titleProperty.bind(Bindings.concat("Main Window - ").concat(document.nameProperty()).concat(" - SplitsTree5"));
 
-        mainWindowController.getTreeView().setRoot(rootItem);
-        workflowTreeSupport = new WorkflowTreeSupport(mainWindowController.getTreeView(), document);
+        {
+            final TreeItem<String> rootItem = new TreeItem<>("");
+            Label label = new Label();
+            label.textProperty().bind(document.nameProperty());
+            label.setGraphic(new ImageView(ResourceManager.getIcon("Document16.gif")));
+            rootItem.setGraphic(label);
+            mainWindowController.getTreeView().setRoot(rootItem);
+            workflowTreeSupport = new WorkflowTreeSupport(mainWindowController.getTreeView(), document);
+        }
     }
 
     /**
@@ -117,10 +130,10 @@ public class MainWindow {
         else {
             this.stage = new Stage();
             stage.focusedProperty().addListener((c, o, n) -> {
-                if (!n && tabPane.getSelectionModel().getSelectedItem() instanceof ISavesPreviousSelection)
-                    ((ISavesPreviousSelection) tabPane.getSelectionModel().getSelectedItem()).saveAsPreviousSelection();
+                if (!n && mainTabPane.getSelectionModel().getSelectedItem() instanceof ISavesPreviousSelection)
+                    ((ISavesPreviousSelection) mainTabPane.getSelectionModel().getSelectedItem()).saveAsPreviousSelection();
             });
-            stage.getIcons().setAll(ResourceManager.getIcon("SplitsTree5-16.png"));
+            Platform.runLater(() -> stage.getIcons().setAll(ResourceManager.getIcon("SplitsTree5-16.png"), ResourceManager.getIcon("SplitsTree5-32.png"), ResourceManager.getIcon("SplitsTree5-64.png"), ResourceManager.getIcon("SplitsTree5-128.png")));
         }
 
         stage.titleProperty().bind(titleProperty);
@@ -129,7 +142,10 @@ public class MainWindow {
         stage.setX(screenX);
         stage.setY(screenY);
 
-        new TabPaneDragAndDropSupport(mainWindowController.getTabPane(), new AuxWindow());
+        new TabPaneDragAndDropSupport(mainWindowController.getMainTabPane(), new AuxWindow());
+
+        new TabPaneDragAndDropSupport(mainWindowController.getAlgorithmTabPane(), new AuxWindow());
+
 
         stage.show();
         stage.sizeToScene();
@@ -142,10 +158,16 @@ public class MainWindow {
 
         mainWindowController.getSplitPane().widthProperty().addListener((c, o, n) -> {
             if (n.doubleValue() > 0) {
-                double oldPos = mainWindowController.getSplitPane().getDividerPositions()[0];
-                double oldWidth = oldPos * o.doubleValue();
-                double newPos = oldWidth / n.doubleValue();
-                mainWindowController.getSplitPane().setDividerPositions(newPos);
+                double[] dividerPositions = mainWindowController.getSplitPane().getDividerPositions();
+                {
+                    double oldWidth = dividerPositions[0] * o.doubleValue();
+                    dividerPositions[0] = oldWidth / n.doubleValue();
+                }
+                if (false) {
+                    double oldWidth = (1.0 - dividerPositions[1]) * o.doubleValue();
+                    dividerPositions[1] = 1.0 - oldWidth / n.doubleValue();
+                }
+                mainWindowController.getSplitPane().setDividerPositions(dividerPositions);
             }
         });
 
@@ -187,8 +209,8 @@ public class MainWindow {
      * @param viewerTab
      */
     public void add(ViewerTab viewerTab) {
-        mainWindowController.getTabPane().getTabs().add(0, viewerTab);
-        mainWindowController.getTabPane().getSelectionModel().select(0);
+        mainWindowController.getMainTabPane().getTabs().add(0, viewerTab);
+        mainWindowController.getMainTabPane().getSelectionModel().select(0);
         viewerTab.setMainWindow(this);
     }
 
@@ -198,7 +220,7 @@ public class MainWindow {
      * @param viewerTab
      */
     public void remove(Tab viewerTab) {
-        mainWindowController.getTabPane().getTabs().remove(viewerTab);
+        mainWindowController.getMainTabPane().getTabs().remove(viewerTab);
     }
 
     /**
@@ -271,16 +293,42 @@ public class MainWindow {
             // doesn't matter
         }
 
-        ViewerTab viewerTab = dataNode2ViewerTab.get(aNode);
+        ViewerTab viewerTab = aNode2ViewerTab.get(aNode);
         if (viewerTab == null || viewerTab.getTabPane() == null) {
             viewerTab = new DataViewTab(document, aNode);
-            dataNode2ViewerTab.put(aNode, viewerTab);
-            tabPane.getTabs().add(0, viewerTab);
+            aNode2ViewerTab.put(aNode, viewerTab);
+            mainTabPane.getTabs().add(0, viewerTab);
         }
         final Stage stage = (Stage) viewerTab.getTabPane().getScene().getWindow();
         if (stage != null) {
             stage.toFront();
         }
-        tabPane.getSelectionModel().select(viewerTab);
+        mainTabPane.getSelectionModel().select(viewerTab);
+    }
+
+    /**
+     * show a data view node
+     *
+     * @param aNode
+     */
+    public void showAlgorithmView(AConnector aNode) {
+        ViewerTab viewerTab = aNode2ViewerTab.get(aNode);
+        if (viewerTab == null || viewerTab.getTabPane() == null) {
+            try {
+                viewerTab = new AlgorithmTab<>(document, aNode);
+                aNode2ViewerTab.put(aNode, viewerTab);
+                algorithmsTabPane.getTabs().add(0, viewerTab);
+            } catch (IOException e) {
+                Basic.caught(e);
+            }
+        }
+        if (viewerTab != null) {
+            final Stage stage = (Stage) viewerTab.getTabPane().getScene().getWindow();
+            if (stage != null) {
+                stage.toFront();
+            }
+            getMainWindowController().ensureAlgorithmsTabPaneIsOpen();
+            algorithmsTabPane.getSelectionModel().select(viewerTab);
+        }
     }
 }

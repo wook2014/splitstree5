@@ -40,9 +40,10 @@ import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.misc.Taxon;
 import splitstree5.core.project.ProjectManager;
 import splitstree5.core.workflow.UpdateState;
-import splitstree5.gui.taxafilterview.TaxaFilterPane;
 import splitstree5.info.MethodsTextGenerator;
 import splitstree5.main.ISavesPreviousSelection;
+import splitstree5.main.algorithmtab.GenericAlgorithmPane;
+import splitstree5.main.algorithmtab.taxafilterview.TaxaFilterPane;
 import splitstree5.menu.MenuController;
 import splitstree5.undo.UndoRedoManager;
 

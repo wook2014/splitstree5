@@ -1,4 +1,23 @@
 /*
+ *  Copyright (C) 2016 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
  *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
@@ -17,10 +36,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.gui.connectorview;
+package splitstree5.main.algorithmtab;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -36,6 +53,7 @@ import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.workflow.UpdateState;
+import splitstree5.gui.connectorview.AlgorithmPane;
 import splitstree5.undo.UndoRedoManager;
 import splitstree5.utils.Option;
 import splitstree5.utils.OptionsAccessor;
@@ -52,8 +70,6 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
 
     private final AConnector<P, C> connector;
     private final ArrayList<Option> options = new ArrayList<>();
-
-    final SimpleBooleanProperty applicableProperty = new SimpleBooleanProperty();
 
     /**
      * constructor
@@ -109,6 +125,7 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
                     }
                     case "int": {
                         javafx.scene.control.TextField control = new TextField();
+                        control.setPrefColumnCount(6);
                         control.addEventFilter(KeyEvent.ANY, e -> {
                             if (e.getCode() == KeyCode.Z && e.isShortcutDown()) {
                                 e.consume();
@@ -133,6 +150,7 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
                     }
                     case "double": {
                         javafx.scene.control.TextField control = new TextField();
+                        control.setPrefColumnCount(8);
                         control.addEventFilter(KeyEvent.ANY, e -> {
                             if (e.getCode() == KeyCode.Z && e.isShortcutDown()) {
                                 e.consume();
@@ -157,6 +175,7 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
                     }
                     case "float": {
                         javafx.scene.control.TextField control = new TextField();
+                        control.setPrefColumnCount(6);
                         control.addEventFilter(KeyEvent.ANY, e -> {
                             if (e.getCode() == KeyCode.Z && e.isShortcutDown()) {
                                 e.consume();
@@ -195,6 +214,7 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
                             control = choiceBox;
                         } else {
                             final TextField textField = new TextField();
+                            textField.setPrefColumnCount(6);
                             textField.addEventFilter(KeyEvent.ANY, e -> {
                                 if (e.getCode() == KeyCode.Z && e.isShortcutDown()) {
                                     e.consume();
@@ -219,16 +239,6 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
         } catch (Exception ex) {
             Basic.caught(ex);
         }
-        applicableProperty.bind(undoManager.canUndoProperty());
-    }
-
-    /**
-     * is algorithm applicable
-     *
-     * @return true, if parameters changed
-     */
-    public BooleanProperty applicableProperty() {
-        return applicableProperty;
     }
 
     /**

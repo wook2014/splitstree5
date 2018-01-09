@@ -37,6 +37,10 @@ public class UndoRedoManager {
     private final StringProperty undoName = new SimpleStringProperty("Undo");
     private final StringProperty redoName = new SimpleStringProperty("Redo");
 
+    private final IntegerProperty undoStackSize = new SimpleIntegerProperty(0);
+    private final IntegerProperty redoStackSize = new SimpleIntegerProperty(0);
+
+
     private final BooleanProperty isPerformingUndoOrRedo = new SimpleBooleanProperty(false);
 
     private boolean recordChanges = true;
@@ -47,9 +51,11 @@ public class UndoRedoManager {
     public UndoRedoManager() {
         undoStack.addListener((InvalidationListener) (e) -> {
             undoName.set(undoStack.size() > 0 ? "Undo " + peek(undoStack).getName() : "Undo");
+            undoStackSize.set(undoStack.size());
         });
         redoStack.addListener((InvalidationListener) (e) -> {
             redoName.set(redoStack.size() > 0 ? "Redo " + peek(redoStack).getName() : "Redo");
+            redoStackSize.set(redoStack.size());
         });
     }
 
@@ -103,6 +109,13 @@ public class UndoRedoManager {
         }
     }
 
+    public ReadOnlyIntegerProperty undoStackSizeProperty() {
+        return undoStackSize;
+    }
+
+    public ReadOnlyIntegerProperty redoStackSizeProperty() {
+        return redoStackSize;
+    }
 
     /**
      * undo the current undoable command
