@@ -6,20 +6,49 @@ import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.datablocks.characters.CharactersType;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Daria on 15.08.2017.
  */
 public abstract class CharactersFormat implements IToChararacters {
 
-    private static char gap = '-';
-    private static char missing = '?';
-    private static char matchChar = '.';
+    private char gap = '-';
+    private char missing = '?';
+    private char matchChar = '.';
 
+    static void addTaxaName(String line, ArrayList<String> taxonNames, int linesCounter){
 
-    public static void estimateDataType(String foundSymbols, CharactersBlock characters, Map<Character, Integer> frequency) throws IOException {
+        int sameNamesCounter = 0;
+        if (taxonNames.contains(line.substring(1))) {
+            System.err.println("Repeating taxon name in line "+linesCounter);
+            sameNamesCounter++;
+        }
+        while (taxonNames.contains(line.substring(1)+sameNamesCounter)){
+            sameNamesCounter++;
+        }
+
+        if (sameNamesCounter == 0)
+            taxonNames.add(line.substring(1));
+        else
+            taxonNames.add(line.substring(1)+sameNamesCounter);
+    }
+
+    static void checkIfCharactersValid(String line, int counter, String allowedChars) throws IOException {
+
+        String regex = "[^a-z0-9 \t"+allowedChars+"]";
+        Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher(line);
+        boolean found = m.find();
+        if (found)
+            throw new IOException("Unexpected character in line "+counter);
+    }
+
+    void estimateDataType(String foundSymbols, CharactersBlock characters, Map<Character, Integer> frequency) throws IOException {
         foundSymbols = foundSymbols.replace(getStringGap(), "");
         foundSymbols = foundSymbols.replace(getStringMissing(), "");
         foundSymbols = foundSymbols.replace(getStringMatchChar(), "");
@@ -59,24 +88,7 @@ public abstract class CharactersFormat implements IToChararacters {
                     System.err.println("Unexpected character: '" + x + "'");
                 }
 
-               /* if (checkSubset(foundSymbols)) {
-                    characters.setDataType(CharactersType.protein);
-                    break;
-                }
-
-                // todo statistic to distinguish protein and ambiguous dna
-
-                if(isAmbiguous(sortedSymbols)){
-                    characters.setHasAmbiguousStates(true);
-                    if(sortedSymbols.contains("t")) characters.setDataType(CharactersType.DNA);
-                    if(sortedSymbols.contains("u")) characters.setDataType(CharactersType.RNA);
-                    if(sortedSymbols.contains("t") && sortedSymbols.contains("u"))
-                        throw new IOException("Nucleotide sequence contains Thymine and Uracil at tha same time");
-                }else{
-                    characters.setDataType(CharactersType.unknown);
-                    System.err.println("Warning : can not recognize characters type!");
-                    // todo set new gap/missing/match chars and try again
-                }*/
+                // todo set new gap/missing/match chars and try again
                 break;
         }
         System.err.println("symbols: " + sortedSymbols);
@@ -136,39 +148,39 @@ public abstract class CharactersFormat implements IToChararacters {
 
     // GETTER AND SETTER
 
-    public static char getGap() {
+    public char getGap() {
         return gap;
     }
 
-    public static String getStringGap() {
+    private String getStringGap() {
         return gap + "";
     }
 
-    public static void setGap(char newGap) {
+    public void setGap(char newGap) {
         gap = newGap;
     }
 
-    public static char getMissing() {
+    public char getMissing() {
         return missing;
     }
 
-    public static String getStringMissing() {
+    private String getStringMissing() {
         return missing + "";
     }
 
-    public static void setMissing(char newMissing) {
+    public void setMissing(char newMissing) {
         missing = newMissing;
     }
 
-    public static char getMatchChar() {
+    public char getMatchChar() {
         return matchChar;
     }
 
-    public static String getStringMatchChar() {
+    private String getStringMatchChar() {
         return matchChar + "";
     }
 
-    public static void setMatchChar(char newMatchChar) {
+    public void setMatchChar(char newMatchChar) {
         matchChar = newMatchChar;
     }
 }

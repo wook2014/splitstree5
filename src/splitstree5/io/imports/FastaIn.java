@@ -16,12 +16,8 @@ import java.util.Map;
  */
 public class FastaIn extends CharactersFormat {
 
-    // todo : check parameter for all sequences or only for the first one?
-    //public enum ID {ncbi, gb, emb, dbj, pir, prf, sp, pdb, pat, bbs, gnl, ref, lcl, unknown}
-
     private static final String[] possibleIDs =
-            {"gb", "emb", "ena", //???
-                    "dbj", "pir", "prf", "sp", "pdb", "pat", "bbs", "gnl", "ref", "lcl"};
+            {"gb", "emb", "ena", "dbj", "pir", "prf", "sp", "pdb", "pat", "bbs", "gnl", "ref", "lcl"};
 
     public final String[] extensions = {"fasta", "fas", "fa", "seq", "fsa"};
 
@@ -32,29 +28,31 @@ public class FastaIn extends CharactersFormat {
         ArrayList<String> matrix = new ArrayList<>();
         int ntax = 0;
         int nchar = 0;
-
         int counter = 0;
+
         try (BufferedReader in = new BufferedReader(new FileReader(inputFile))) {
-            counter++;
             String line;
             int sequenceLength = 0;
             StringBuilder sequence = new StringBuilder("");
             boolean startedNewSequence = false;
 
-
             while ((line = in.readLine()) != null) {
                 counter++;
-
                 if (line.startsWith(";"))
                     continue;
                 if (line.equals(">"))
-                    throw new IOException("No taxa label given at the sequence " + (ntax + 1) + " in line: " + counter);
+                    throw new IOException("No taxa label given in line: " + counter);
 
                 if (line.startsWith(">")) {
                     startedNewSequence = true;
-                    addTaxaName(line, taxonNamesFound);
+                    addTaxaName(line, taxonNamesFound, counter);
+                    if (taxonNamesFound.contains(line.substring(1))) {
+                        System.err.println("");
+                    }
                     ntax++;
                 } else {
+                    String allowedChars = ""+getMissing()+getMatchChar()+getGap();
+                    checkIfCharactersValid(line, counter, allowedChars);
                     if (startedNewSequence) {
                         if (!sequence.toString().equals("")) matrix.add(sequence.toString());
                         if (nchar != 0 && nchar != sequenceLength) {
@@ -93,7 +91,7 @@ public class FastaIn extends CharactersFormat {
         readMatrix(matrix, characters);
     }
 
-    private static void readMatrix(ArrayList<String> matrix, CharactersBlock characters) throws IOException {
+    private void readMatrix(ArrayList<String> matrix, CharactersBlock characters) throws IOException {
         // todo check if valid and set parameters here
 
         Map<Character, Integer> frequency = new LinkedHashMap<>();
@@ -113,7 +111,7 @@ public class FastaIn extends CharactersFormat {
         estimateDataType(foundSymbols.toString(), characters, frequency);
     }
 
-    private static void addTaxaName(String infoLine, ArrayList<String> taxonNamesFound) throws IOException {
+    /*private static void addTaxaName(String infoLine, ArrayList<String> taxonNamesFound) throws IOException {
 
         if (infoLine.contains("[organism=")) {
             int index1 = infoLine.indexOf("[organism=") + 10;
@@ -159,6 +157,6 @@ public class FastaIn extends CharactersFormat {
             throw new IOException("Double taxon name: " + infoLine.substring(1));
         }
         taxonNamesFound.add(infoLine.substring(1));
-    }
+    }*/
 
 }

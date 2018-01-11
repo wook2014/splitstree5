@@ -73,7 +73,7 @@ public class StockholmIn extends CharactersFormat {
         readMatrix(matrix, characters);
     }
 
-    private static void readMatrix(ArrayList<String> matrix, CharactersBlock characters) throws IOException {
+    private void readMatrix(ArrayList<String> matrix, CharactersBlock characters) throws IOException {
         // todo check if valid and set parameters here
 
         System.err.println("ddddddddddddddddd");

@@ -92,7 +92,7 @@ public class ClustalIn extends CharactersFormat {
         format.setColumnsPerBlock(sequenceInLineLength);
     }
 
-    private static void setCharacters(Map<String, String> taxa2seq, int ntax, int nchar, CharactersBlock characters) throws IOException {
+    private void setCharacters(Map<String, String> taxa2seq, int ntax, int nchar, CharactersBlock characters) throws IOException {
         characters.clear();
         characters.setDimension(ntax, nchar);
 

@@ -53,7 +53,7 @@ public class SingleLineSequencesIn extends CharactersFormat {
         readMatrix(matrix, characters);
     }
 
-    private static void readMatrix(ArrayList<String> matrix, CharactersBlock characters) throws IOException {
+    private void readMatrix(ArrayList<String> matrix, CharactersBlock characters) throws IOException {
         // todo check if valid and set parameters here
 
         Map<Character, Integer> frequency = new LinkedHashMap<>();
