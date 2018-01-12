@@ -65,11 +65,13 @@ public class RubberBandSelection {
 
         pane.addEventHandler(MouseEvent.MOUSE_PRESSED, (e) -> {
             start = group.screenToLocal(e.getScreenX(), e.getScreenY());
-            end = null;
-            rectangle.setX(start.getX());
-            rectangle.setY(start.getY());
-            rectangle.setWidth(0);
-            rectangle.setHeight(0);
+            if (start != null) {
+                end = null;
+                rectangle.setX(start.getX());
+                rectangle.setY(start.getY());
+                rectangle.setWidth(0);
+                rectangle.setHeight(0);
+            }
             e.consume();
         });
 

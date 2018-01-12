@@ -25,8 +25,10 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import jloda.fx.ExtendedFXMLLoader;
 import jloda.util.Basic;
+import splitstree5.io.imports.IImporter;
 import splitstree5.main.ImportManager;
 import splitstree5.main.MainWindow;
+import splitstree5.utils.Alert;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,11 +80,15 @@ public class ImportDialog {
 
         controller.getImportButton().setOnAction((e) -> {
             stage.close();
-            Importer.apply(parentMainWindow, ImportManager.getInstance().getImporterByDataTypeAndFileFormat(controller.getDataTypeComboBox().getSelectionModel().getSelectedItem(),
-                    controller.getFileFormatComboBox().getSelectionModel().getSelectedItem()), controller.getFileTextField().getText());
+            final IImporter importer = ImportManager.getInstance().getImporterByDataTypeAndFileFormat(controller.getDataTypeComboBox().getSelectionModel().getSelectedItem(),
+                    controller.getFileFormatComboBox().getSelectionModel().getSelectedItem());
+            if (importer == null)
+                new Alert("Can't import selected data type and file format");
+            Importer.apply(parentMainWindow, importer, controller.getFileTextField().getText());
         });
-        controller.getImportButton().disableProperty().bind(Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), "Unknown")
-                .or(Bindings.equal(controller.getFileFormatComboBox().getSelectionModel().selectedItemProperty(), "Unknown")));
+        controller.getImportButton().disableProperty().bind(
+                Bindings.isNull(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty()).or(Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), "Unknown"))
+                        .or(Bindings.isNull(controller.getFileFormatComboBox().getSelectionModel().selectedItemProperty())).or(Bindings.equal(controller.getFileFormatComboBox().getSelectionModel().selectedItemProperty(), "Unknown")));
     }
 
     public void show() {
