@@ -22,7 +22,7 @@ package splitstree5.core.datablocks;
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
-import splitstree5.core.algorithms.interfaces.IToChararacters;
+import splitstree5.core.algorithms.interfaces.IToCharacters;
 import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.datablocks.characters.CharactersType;
 import splitstree5.io.nexus.stateLabeler.StateLabeler;
@@ -33,7 +33,7 @@ import java.util.Map;
 
 /**
  * A characters block
- * Created by huson on 14/1/2017
+ * Daniel Huson, 14/1/2017
  */
 public class CharactersBlock extends ADataBlock {
     // characters matrix
@@ -402,7 +402,7 @@ public class CharactersBlock extends ADataBlock {
 
     @Override
     public Class getToInterface() {
-        return IToChararacters.class;
+        return IToCharacters.class;
     }
 
     public boolean isRespectCase() {

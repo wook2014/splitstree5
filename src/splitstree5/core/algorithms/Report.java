@@ -32,7 +32,7 @@ import java.io.StringWriter;
 
 /**
  * report on the contents of a block
- * Created by huson on 1/31/17.
+ * Daniel Huson, 1/31/17.
  */
 public class Report extends Algorithm<ADataBlock, AnalysisResultBlock> implements IFromAnalysisResults, IFromChararacters, IFromTrees, IFromDistances, IFromSplits, IFromTaxa, IFromSplitsNetworkView, IFromTreeView, IToAnalysisResults {
     @Override

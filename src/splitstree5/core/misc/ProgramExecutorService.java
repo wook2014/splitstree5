@@ -25,7 +25,7 @@ import java.util.concurrent.Executors;
 /**
  * program executor service
  * all concurrent services should use this executor service
- * Created by huson on 12/11/16.
+ * Daniel Huson, 12/11/16.
  */
 public class ProgramExecutorService {
     private static ExecutorService executorService;

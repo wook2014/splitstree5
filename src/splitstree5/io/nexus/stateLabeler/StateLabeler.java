@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * Character state labeler
  * Original author: David Bryant
- * Created by Daria on 30.10.2016.
+ * Daria Evseeva,30.10.2016.
  */
 public abstract class StateLabeler {
 

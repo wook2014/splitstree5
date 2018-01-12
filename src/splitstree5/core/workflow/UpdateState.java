@@ -21,7 +21,7 @@ package splitstree5.core.workflow;
 
 /**
  * update state
- * Created by huson on 12/25/16.
+ * Daniel Huson, 12/25/16.
  */
 public enum UpdateState {
     VALID, COMPUTING, INVALID, FAILED, NOT_APPLICABLE

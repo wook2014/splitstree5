@@ -27,7 +27,7 @@ import java.io.Writer;
 
 /**
  * interface for reader and writer
- * Created by huson on 12/22/16.
+ * Daniel Huson, 12/22/16.
  */
 public interface IBlockReaderWriter {
     /**

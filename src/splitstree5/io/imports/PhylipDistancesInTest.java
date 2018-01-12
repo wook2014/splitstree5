@@ -8,7 +8,7 @@ import splitstree5.io.nexus.TaxaNexusIO;
 import java.io.StringWriter;
 
 /**
- * Created by Daria on 03.10.2017.
+ * Daria Evseeva,03.10.2017.
  */
 public class PhylipDistancesInTest {
 

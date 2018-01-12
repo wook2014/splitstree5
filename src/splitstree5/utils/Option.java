@@ -25,7 +25,7 @@ import java.lang.reflect.Type;
 
 /**
  * extract all properties in an Optionable class by reflection
- * Created by huson on 12/31/16.
+ * Daniel Huson, 12/31/16.
  */
 public class Option {
     private final String name;

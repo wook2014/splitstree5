@@ -35,7 +35,7 @@ import java.util.List;
 
 /**
  * input and output of a splits block in Nexus format
- * Created by huson on 12/28/16.
+ * Daniel Huson, 12/28/16.
  */
 public class SplitsNexusIO {
     public static final String NAME = "SPLITS";

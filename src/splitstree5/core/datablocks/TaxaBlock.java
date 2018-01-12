@@ -34,7 +34,7 @@ import java.util.*;
 
 /**
  * A taxa block
- * Created by huson on 12/21/16.
+ * Daniel Huson, 12/21/16.
  */
 public class TaxaBlock extends ADataBlock {
     private final ObservableList<Taxon> taxa;

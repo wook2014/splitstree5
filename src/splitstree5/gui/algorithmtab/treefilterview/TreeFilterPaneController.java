@@ -28,7 +28,7 @@ import javafx.scene.layout.HBox;
 
 /**
  * controller
- * Created by huson on 12/23/16.
+ * Daniel Huson, 12/23/16.
  */
 public class TreeFilterPaneController {
 

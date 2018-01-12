@@ -32,7 +32,7 @@ import java.util.List;
 
 /**
  * utilities for splits
- * Created by huson on 12/30/16.
+ * Daniel Huson, 12/30/16.
  */
 public class SplitsUtilities {
     /**

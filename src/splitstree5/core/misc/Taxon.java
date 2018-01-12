@@ -23,7 +23,7 @@ import java.io.Serializable;
 
 /**
  * a taxon
- * Created by huson on Dec-2016
+ * Daniel Huson, Dec-2016
  */
 public class Taxon implements Serializable {
     private String name;

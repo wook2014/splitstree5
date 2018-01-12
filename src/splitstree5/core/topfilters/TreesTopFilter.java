@@ -34,7 +34,7 @@ import java.util.List;
 
 /**
  * splits top taxon filter
- * Created by huson on 12/12/16.
+ * Daniel Huson, 12/12/16.
  */
 public class TreesTopFilter extends ATopFilter<TreesBlock> {
     /**

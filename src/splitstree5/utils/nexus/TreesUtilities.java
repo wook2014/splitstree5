@@ -16,7 +16,7 @@ import java.util.BitSet;
  * some computations on trees
  *
  * @author huson Date: 29-Feb-2004
- * Created by Daria on 23.01.2017.
+ * Daria Evseeva,23.01.2017.
  */
 public class TreesUtilities {
     /**

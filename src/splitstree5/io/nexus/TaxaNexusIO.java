@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 /**
  * Taxa block block nexus implementation
- * Created by huson on 12/22/16.
+ * Daniel Huson, 12/22/16.
  */
 public class TaxaNexusIO {
     private static final String NAME = "TAXA";

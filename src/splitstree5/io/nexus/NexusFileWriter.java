@@ -29,7 +29,7 @@ import java.io.*;
 
 /**
  * writes a document in nexus format
- * Created by huson on 12/27/16.
+ * Daniel Huson, 12/27/16.
  */
 public class NexusFileWriter {
     /**

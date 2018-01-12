@@ -22,7 +22,7 @@ package splitstree5.core.algorithms.interfaces;
 /**
  * from characters interface.
  * This is used to identify algorithms at runtime
- * Created by huson on 1/31/17.
+ * Daniel Huson 1/31/17.
  */
 public interface IFromChararacters {
 }

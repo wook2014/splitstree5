@@ -3,7 +3,7 @@ package splitstree5.io.imports;
 import splitstree5.core.datablocks.characters.CharactersType;
 
 /**
- * Created by Daria on 02.07.2017.
+ * Daria Evseeva,02.07.2017.
  */
 public enum CharactersFastaFormat {
 

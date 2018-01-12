@@ -1,7 +1,7 @@
 package splitstree5.io.imports;
 
 /**
- * Created by Daria on 05.08.2017.
+ * Daria Evseeva,05.08.2017.
  */
 
 import splitstree5.core.datablocks.CharactersBlock;

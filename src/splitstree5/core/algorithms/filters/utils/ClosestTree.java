@@ -31,7 +31,7 @@ import java.util.List;
 
 /**
  * computes the closest tree
- * Created by huson on 12/31/16.
+ * Daniel Huson, 12/31/16.
  */
 public class ClosestTree {
     /**

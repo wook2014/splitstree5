@@ -75,7 +75,7 @@ import splitstree5.core.workflow.UpdateState;
 
 /**
  * a workflow node view
- * Created by huson on 1/27/17.
+ * Daniel Huson, 1/27/17.
  */
 public class WorkflowNodeView extends Group {
     private final Rectangle rectangle;

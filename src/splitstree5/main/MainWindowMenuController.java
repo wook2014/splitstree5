@@ -26,6 +26,7 @@ import javafx.stage.FileChooser;
 import jloda.util.Basic;
 import splitstree5.core.Document;
 import splitstree5.core.project.ProjectManager;
+import splitstree5.dialogs.imports.ImportDialog;
 import splitstree5.io.nexus.NexusFileParser;
 import splitstree5.io.nexus.NexusFileWriter;
 import splitstree5.menu.MenuController;
@@ -54,6 +55,8 @@ public class MainWindowMenuController {
                 Basic.caught(ex);
             }
         });
+
+        controller.getImportMenuItem().setOnAction((e) -> ImportDialog.show(mainWindow.getStage(), mainWindow.getDocument()));
 
         controller.getOpenMenuItem().setOnAction((e) -> {
             final FileChooser fileChooser = new FileChooser();
@@ -141,7 +144,7 @@ public class MainWindowMenuController {
             if (result.isPresent()) {
                 if (result.get() == buttonTypeYes) {
                     return showSaveDialog(mainWindow);
-                } else if (result.get() == buttonTypeYes) {
+                } else if (result.get() == buttonTypeNo) {
                     return true;
                 }
             }

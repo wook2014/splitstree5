@@ -31,7 +31,7 @@ import java.util.Collection;
 
 /**
  * tree utilities
- * Created by huson on 2/6/17.
+ * Daniel Huson, 2/6/17.
  */
 public class TreeUtilities {
     /**

@@ -26,7 +26,7 @@ import java.util.List;
 
 /**
  * determines compatibility
- * Created by huson on 12/31/16.
+ * Daniel Huson, 12/31/16.
  */
 public enum Compatibility {
     compatible, cyclic, weaklyCompatible, incompatible, unknown;

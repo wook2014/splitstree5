@@ -21,7 +21,7 @@ package splitstree5.io.nexus;
 
 /**
  * trees block nexus format
- * Created by huson on 12/30/16.
+ * Daniel Huson, 12/30/16.
  */
 public class TreesNexusFormat {
     private boolean translate = true; // use translation table

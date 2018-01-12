@@ -34,7 +34,7 @@ import java.util.Set;
 
 /**
  * performs nexus input and output for an algorithm
- * Created by huson on 12/27/16.
+ * Daniel Huson, 12/27/16.
  */
 public class AlgorithmNexusIO<P extends ADataBlock, C extends ADataBlock> {
     public static final String NAME = "ST_ALGORITHM";

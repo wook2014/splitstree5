@@ -1,26 +1,25 @@
 package splitstree5.io.imports;
 
+import jloda.util.Basic;
+import splitstree5.core.algorithms.interfaces.IToCharacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Import Characters in FastA format.
  * Daria Evseeva, 07.2017
  */
-public class FastaIn extends CharactersFormat {
+public class FastaIn extends CharactersFormat implements IToCharacters, IImportCharacters {
 
     private static final String[] possibleIDs =
             {"gb", "emb", "ena", "dbj", "pir", "prf", "sp", "pdb", "pat", "bbs", "gnl", "ref", "lcl"};
 
-    public final String[] extensions = {"fasta", "fas", "fa", "seq", "fsa"};
-
+    public static final List<String> extensions = new ArrayList<>(Arrays.asList("fasta", "fas", "fa", "seq", "fsa", "fna"));
 
     public void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters) throws IOException {
 
@@ -30,7 +29,7 @@ public class FastaIn extends CharactersFormat {
         int nchar = 0;
         int counter = 0;
 
-        try (BufferedReader in = new BufferedReader(new FileReader(inputFile))) {
+        try (BufferedReader in = new BufferedReader(Basic.getReaderPossiblyZIPorGZIP(inputFile))) {
             String line;
             int sequenceLength = 0;
             StringBuilder sequence = new StringBuilder("");
@@ -159,4 +158,14 @@ public class FastaIn extends CharactersFormat {
         taxonNamesFound.add(infoLine.substring(1));
     }*/
 
+    @Override
+    public List<String> getExtensions() {
+        return extensions;
+    }
+
+    @Override
+    public boolean isApplicable(String fileName) throws IOException {
+        String line = Basic.getFirstLineFromFile(new File(fileName));
+        return line != null && line.startsWith(">");
+    }
 }

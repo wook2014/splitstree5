@@ -27,7 +27,7 @@ import splitstree5.core.workflow.UpdateState;
 
 /**
  * top filter
- * Created by huson on 12/21/16.
+ * Daniel Huson, 12/21/16.
  */
 public class ATopFilter<D extends ADataBlock> extends AConnector<D, D> {
     private final TaxaBlock originalTaxaBlock;

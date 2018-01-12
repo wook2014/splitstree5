@@ -21,7 +21,7 @@ package splitstree5.core.datablocks.characters;
 
 /**
  * Ambiguity codes
- * Created by huson on 1/16/17.
+ * Daniel Huson, 1/16/17.
  */
 public class AmbiguityCodes {
     public static String CODES = "wrkysmbhdvn";

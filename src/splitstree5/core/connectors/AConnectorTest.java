@@ -28,7 +28,7 @@ import splitstree5.core.datablocks.TaxaBlock;
 
 /**
  * test
- * Created by huson on 1/31/17.
+ * Daniel Huson, 1/31/17.
  */
 public class AConnectorTest {
     @Test

@@ -83,7 +83,7 @@ import java.util.*;
 
 /**
  * create a connector view
- * Created by huson on 12/31/16.
+ * Daniel Huson, 12/31/16.
  */
 public class WorkflowViewTab extends ViewerTab {
     private final Document document;

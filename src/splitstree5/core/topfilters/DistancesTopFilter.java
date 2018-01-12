@@ -29,7 +29,7 @@ import splitstree5.core.misc.Taxon;
 
 /**
  * distances top taxon filter
- * Created by huson on 12/12/16.
+ * Daniel Huson, 12/12/16.
  */
 public class DistancesTopFilter extends ATopFilter<DistancesBlock> {
     /**

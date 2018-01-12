@@ -22,7 +22,7 @@ package splitstree5.core.algorithms.interfaces;
 /**
  * from splits network view interface.
  * This is used to identify algorithms at runtime
- * Daniel Huson, 1.20§8
+ * Daniel Huson, 1.2018
  */
 public interface IFromSplitsNetworkView {
 }

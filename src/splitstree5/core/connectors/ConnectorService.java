@@ -29,7 +29,7 @@ import splitstree5.core.workflow.UpdateState;
 
 /**
  * a service used by a method node
- * Created by huson on 12/21/16.
+ * Daniel Huson, 12/21/16.
  */
 public class ConnectorService<P extends ADataBlock, C extends ADataBlock> extends Service<Boolean> {
     public static boolean verbose = true;

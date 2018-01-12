@@ -35,7 +35,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * test cases for CharacterBlock io
- * Created by huson on 1/19/17.
+ * Daniel Huson, 1/19/17.
  */
 public class CharactersNexusIOTest {
 

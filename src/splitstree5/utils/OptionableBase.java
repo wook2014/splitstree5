@@ -26,7 +26,7 @@ import java.util.List;
 
 /**
  * A base class to help implement IOptionable
- * Created by huson on 8/1/17.
+ * Daniel Huson, 8/1/17.
  */
 public class OptionableBase extends ANamed implements IOptionable {
 

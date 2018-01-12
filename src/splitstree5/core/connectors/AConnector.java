@@ -42,7 +42,7 @@ import java.util.ArrayList;
 
 /**
  * A connector between data nodes. This is where algorithms are run
- * Created by huson on 12/21/16.
+ * Daniel Huson, 12/21/16.
  */
 public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANode {
     private final ConnectorService<P, C> service;

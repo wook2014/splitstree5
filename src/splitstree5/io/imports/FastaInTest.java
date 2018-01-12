@@ -9,7 +9,7 @@ import splitstree5.io.nexus.TaxaNexusIO;
 import java.io.StringWriter;
 
 /**
- * Created by Daria on 01.07.2017.
+ * Daria Evseeva,01.07.2017.
  */
 public class FastaInTest {
 

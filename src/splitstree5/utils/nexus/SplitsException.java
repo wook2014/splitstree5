@@ -21,7 +21,7 @@ package splitstree5.utils.nexus;
 
 /**
  * splits exception
- * Created by huson on 1/26/17.
+ * Daniel Huson, 1/26/17.
  */
 public class SplitsException extends Exception {
     public SplitsException(String message) {

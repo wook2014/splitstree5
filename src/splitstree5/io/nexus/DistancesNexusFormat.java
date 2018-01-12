@@ -23,7 +23,7 @@ import java.io.IOException;
 
 /**
  * Distances format
- * Created by huson on 12/22/16.
+ * Daniel Huson, 12/22/16.
  */
 public class DistancesNexusFormat {
     private String triangle;

@@ -21,7 +21,7 @@ package splitstree5.io.nexus;
 
 /**
  * splits format
- * Created by huson on 12/29/16.
+ * Daniel Huson, 12/29/16.
  */
 public class SplitsNexusFormat {
 

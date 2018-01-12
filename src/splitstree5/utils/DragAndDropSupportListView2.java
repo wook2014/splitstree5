@@ -32,7 +32,7 @@ import java.util.List;
 
 /**
  * drag and drop support between a pair of list views
- * Created by huson on 12/26/16.
+ * Daniel Huson, 12/26/16.
  */
 public class DragAndDropSupportListView2<T> {
     private ListView<T> fromList;

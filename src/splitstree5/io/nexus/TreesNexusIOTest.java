@@ -34,7 +34,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * test io
- * Created by huson on 12/30/16.
+ * Daniel Huson, 12/30/16.
  */
 public class TreesNexusIOTest {
 

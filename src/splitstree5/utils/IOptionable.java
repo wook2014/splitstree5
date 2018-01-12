@@ -36,7 +36,7 @@ import java.util.List;
  * <p>
  * Optionally, provide a method called getControl() that returns a JavaFX pane that can be used to get and set the options
  * <p>
- * Created by huson on 8/1/17.
+ * Daniel Huson, 8/1/17.
  */
 public interface IOptionable {
     /**

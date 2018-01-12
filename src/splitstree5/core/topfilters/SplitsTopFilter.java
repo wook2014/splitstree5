@@ -32,7 +32,7 @@ import java.util.Map;
 
 /**
  * splits top taxon filter
- * Created by huson on 12/12/16.
+ * Daniel Huson, 12/12/16.
  */
 public class SplitsTopFilter extends ATopFilter<SplitsBlock> {
     /**

@@ -26,7 +26,7 @@ import splitstree5.core.misc.ANamed;
 
 /**
  * A Workflow node
- * Created by huson on 12/21/16.
+ * Daniel Huson, 12/21/16.
  */
 abstract public class ANode extends ANamed {
     private static int created = 0;

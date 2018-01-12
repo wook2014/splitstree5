@@ -27,7 +27,7 @@ import java.util.HashMap;
 /**
  * state labeler for protein sequences
  * Original author: David Bryant
- * Created by Daria on 30.10.2016.
+ * Daria Evseeva,30.10.2016.
  */
 public class ProteinStateLabeler extends StateLabeler {
     private final HashMap<String, Character>[] token2charMaps; //Map from strings to char, one for each site

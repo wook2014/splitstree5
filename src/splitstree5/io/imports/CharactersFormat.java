@@ -1,6 +1,5 @@
 package splitstree5.io.imports;
 
-import splitstree5.core.algorithms.interfaces.IToChararacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.datablocks.characters.CharactersType;
@@ -13,9 +12,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by Daria on 15.08.2017.
+ * Import characters in FastA format
+ * Daria Evseeva,15.08.2017.
  */
-public abstract class CharactersFormat implements IToChararacters {
+public abstract class CharactersFormat {
 
     private char gap = '-';
     private char missing = '?';

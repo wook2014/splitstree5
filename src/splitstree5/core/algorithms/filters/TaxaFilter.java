@@ -35,7 +35,7 @@ import java.util.ArrayList;
 
 /**
  * taxa filter
- * Created by huson on 12/31/16.
+ * Daniel Huson, 12/31/16.
  */
 public class TaxaFilter extends Algorithm<TaxaBlock, TaxaBlock> implements IFromTaxa, IToTaxa {
 

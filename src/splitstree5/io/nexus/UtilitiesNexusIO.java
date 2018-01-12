@@ -28,7 +28,7 @@ import java.io.Writer;
 
 /**
  * code for reading and writing links
- * Created by huson on 2/24/17.
+ * Daniel Huson, 2/24/17.
  */
 public class UtilitiesNexusIO {
     /**

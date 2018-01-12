@@ -31,7 +31,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * test algorithm io
- * Created by huson on 12/30/16.
+ * Daniel Huson, 12/30/16.
  */
 public class AlgorithmNexusIOTest {
 

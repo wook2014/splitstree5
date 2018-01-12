@@ -27,7 +27,7 @@ import java.util.*;
 
 /**
  * gets all the options of an optionable class
- * Created by huson on 1/8/17.
+ * Daniel Huson, 1/8/17.
  */
 public class OptionsAccessor {
     /**

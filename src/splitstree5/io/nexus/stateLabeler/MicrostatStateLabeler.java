@@ -24,7 +24,7 @@ import java.util.TreeSet;
 /**
  * State labeler for Microsat data
  * Original author: David Bryant
- * Created by Daria on 30.10.2016.
+ * Daria Evseeva,30.10.2016.
  */
 public class MicrostatStateLabeler extends StateLabeler {
     private final static int OFFSET = 256; //Offset for chars used to store microsattelite alleles (to avoid conflicts)

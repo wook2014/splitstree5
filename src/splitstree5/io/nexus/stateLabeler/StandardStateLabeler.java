@@ -27,7 +27,7 @@ import java.util.HashMap;
 /**
  * state labeler for standard data
  * Original author: David Bryant
- * Created by Daria on 30.10.2016.
+ * Daria Evseeva,30.10.2016.
  */
 public class StandardStateLabeler extends StateLabeler {
 

@@ -36,7 +36,7 @@ import java.util.List;
 
 /**
  * dimension filter
- * Created by huson on 12/31/16.
+ * Daniel Huson, 12/31/16.
  */
 public class DimensionFilter {
     /**

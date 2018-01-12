@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.StreamTokenizer;
 
 /**
- * Created by Daria on 02.10.2017.
+ * Daria Evseeva,02.10.2017.
  */
 public class PhylipDistancesIn implements IToDistances {
 

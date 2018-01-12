@@ -23,7 +23,7 @@ import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
-import splitstree5.core.algorithms.interfaces.IToChararacters;
+import splitstree5.core.algorithms.interfaces.IToCharacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.gui.algorithmtab.AlgorithmPane;
@@ -34,7 +34,7 @@ import java.util.*;
  * removes columns from a character alignment
  * Daniel Huson, 1.2018
  */
-public class CharactersFilter extends Algorithm<CharactersBlock, CharactersBlock> implements IFromChararacters, IToChararacters {
+public class CharactersFilter extends Algorithm<CharactersBlock, CharactersBlock> implements IFromChararacters, IToCharacters {
     private final BitSet columnMask = new BitSet(); // positions set here are ignored
 
     private boolean optionExcludeGapSites = false;

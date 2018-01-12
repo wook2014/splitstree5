@@ -21,9 +21,7 @@ package jloda.util;
 
 import java.io.IOException;
 import java.lang.reflect.Modifier;
-import java.net.URLClassLoader;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,9 +31,6 @@ import java.util.List;
  * Daniel Huson and others, 2003
  */
 public class PluginClassLoader {
-    // Extended the PluginClassLoader to include the Plugins from the pluginFolder
-    static private HashMap<String, URLClassLoader> pluginName2URLClassLoader = new HashMap<>();
-
     /**
      * get an instance of each class of the given type in the given packages
      *
@@ -43,7 +38,7 @@ public class PluginClassLoader {
      * @param packageNames
      * @return instances
      */
-    public static List<Object> getInstances(Class clazz, String... packageNames) {
+    public static <T> List<T> getInstances(Class<T> clazz, String... packageNames) {
         return getInstances(clazz, null, packageNames);
     }
 
@@ -55,8 +50,8 @@ public class PluginClassLoader {
      * @param packageNames
      * @return instances
      */
-    public static List<Object> getInstances(Class clazz1, Class clazz2, String... packageNames) {
-        final List<Object> plugins = new LinkedList<>();
+    public static <T> List<T> getInstances(Class<T> clazz1, Class clazz2, String... packageNames) {
+        final List<T> plugins = new LinkedList<>();
         final LinkedList<String> packageNameQueue = new LinkedList<>();
         packageNameQueue.addAll(Arrays.asList(packageNames));
         while (packageNameQueue.size() > 0) {
@@ -69,7 +64,7 @@ public class PluginClassLoader {
                     if (resources[i].endsWith(".class")) {
                         try {
                             resources[i] = resources[i].substring(0, resources[i].length() - 6);
-                            Class c = ResourcesUtils.classForName(packageName.concat(".").concat(resources[i]));
+                            final Class<T> c = ResourcesUtils.classForName(packageName.concat(".").concat(resources[i]));
                             if (!c.isInterface() && !Modifier.isAbstract(c.getModifiers()) && clazz1.isAssignableFrom(c) && (clazz2 == null || clazz2.isAssignableFrom(c))) {
                                 try {
                                     plugins.add(c.newInstance());
@@ -106,18 +101,8 @@ public class PluginClassLoader {
      * @param clazz
      * @return instances
      */
-    public static List<Object> getInstances(String[] packageNames, Class clazz) {
+    public static <T> List<T> getInstances(String[] packageNames, Class<T> clazz) {
         return getInstances(clazz, null, packageNames);
     }
-
-
-    public static HashMap<String, URLClassLoader> getPluginName2URLClassLoader() {
-        return pluginName2URLClassLoader;
-    }
-
-    public static void setPluginName2URLClassLoader(HashMap<String, URLClassLoader> pluginClass2URLClassLoader) {
-        pluginName2URLClassLoader = pluginClass2URLClassLoader;
-    }
-
 }
 

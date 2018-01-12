@@ -27,7 +27,7 @@ import splitstree5.core.datablocks.TaxaBlock;
 
 /**
  * report the content of a block
- * Created by huson on 12/26/16.
+ * Daniel Huson, 12/26/16.
  */
 public class ReportConnector<D extends ADataBlock> extends AConnector<D, AnalysisResultBlock> {
     /**

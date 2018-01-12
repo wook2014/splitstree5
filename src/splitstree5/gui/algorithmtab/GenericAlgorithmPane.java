@@ -62,7 +62,7 @@ import java.util.ArrayList;
 /**
  * generates a generic algorithm pane
  * <p>
- * Created by huson on 1/8/17.
+ * Daniel Huson, 1/8/17.
  */
 public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> extends AlgorithmPane {
     private UndoRedoManager undoManager;

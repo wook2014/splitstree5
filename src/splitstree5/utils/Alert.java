@@ -40,7 +40,7 @@ package splitstree5.utils;
 
 /**
  * a user alert
- * Created by huson on 2/3/17.
+ * Daniel Huson, 2/3/17.
  */
 public class Alert {
     public Alert(String message) {

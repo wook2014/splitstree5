@@ -32,7 +32,7 @@ import java.util.List;
 
 /**
  * a document
- * Created by huson on 12/25/16.
+ * Daniel Huson, 12/25/16.
  */
 public class Document {
     private final Workflow workflow;

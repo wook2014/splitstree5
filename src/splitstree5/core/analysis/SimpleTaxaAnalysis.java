@@ -28,7 +28,7 @@ import splitstree5.core.datablocks.TaxaBlock;
 
 /**
  * Taxa analysis
- * Created by huson on 12/22/16.
+ * Daniel Huson, 12/22/16.
  */
 public class SimpleTaxaAnalysis extends AConnector<TaxaBlock, AnalysisResultBlock> {
     /**

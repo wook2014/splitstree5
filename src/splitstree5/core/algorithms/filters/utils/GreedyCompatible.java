@@ -30,7 +30,7 @@ import java.util.List;
 
 /**
  * greedily compute compatible splits
- * Created by huson on 12/31/16.
+ * Daniel Huson, 12/31/16.
  */
 public class GreedyCompatible {
 

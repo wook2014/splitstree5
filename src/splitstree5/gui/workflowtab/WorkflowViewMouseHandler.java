@@ -75,7 +75,7 @@ import java.util.Map;
 
 /**
  * installs a mouse handler
- * Created by huson on 1/31/17.
+ * Daniel Huson, 1/31/17.
  */
 public class WorkflowViewMouseHandler {
     private double mouseDownX;

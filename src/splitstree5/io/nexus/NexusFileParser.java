@@ -35,7 +35,7 @@ import java.util.List;
 
 /**
  * parses a nexus file
- * Created by huson on 12/27/16.
+ * Daniel Huson, 12/27/16.
  */
 public class NexusFileParser {
     /**

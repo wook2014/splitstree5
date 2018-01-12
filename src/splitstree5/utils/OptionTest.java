@@ -24,7 +24,7 @@ import splitstree5.core.algorithms.filters.SplitsFilter;
 
 /**
  * test option
- * Created by huson on 12/31/16.
+ * Daniel Huson, 12/31/16.
  */
 public class OptionTest {
 

@@ -8,19 +8,23 @@ import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.utils.nexus.TreesUtilities;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 /**
- * Created by Daria on 04.10.2017.
+ * Newick tree importer
+ * Daria Evseeva,04.10.2017.
  */
-public class NewickTreeIn implements IToTrees {
+public class NewickTreeIn implements IToTrees, IImportTrees {
+    public static final List<String> extensions = new ArrayList<>(Arrays.asList("new", "nwk", "tree", "tre"));
 
     /*
     Implement first the Importer Interface
     */
-    public static String Description = "Newick Tree Files (*.new,*.tre, *.tree)";
     private boolean optionConvertMultiLabeledTree = false;
 
     public void parse(String inputFile, TaxaBlock taxa, TreesBlock trees) throws IOException {
@@ -28,7 +32,7 @@ public class NewickTreeIn implements IToTrees {
         taxa.clear();
         trees.clear();
 
-        try (BufferedReader in = new BufferedReader(new FileReader(inputFile))) {
+        try (BufferedReader in = new BufferedReader(Basic.getReaderPossiblyZIPorGZIP(inputFile))) {
             // importing first tree and generating taxa object
             //String str;
             HashSet<String> labels = new HashSet<>();
@@ -97,6 +101,17 @@ public class NewickTreeIn implements IToTrees {
             taxa.addTaxaByNames(labels);
 
         }
+    }
+
+    @Override
+    public List<String> getExtensions() {
+        return extensions;
+    }
+
+    @Override
+    public boolean isApplicable(String fileName) throws IOException {
+        final String line = Basic.getFirstLineFromFile(new File(fileName));
+        return line != null && line.startsWith("(");
     }
 
     public boolean getOptionConvertMultiLabeledTree() {

@@ -26,7 +26,7 @@ import splitstree5.core.datablocks.TaxaBlock;
 
 /**
  * some utilities for working with the Workflow
- * Created by huson on 12/27/16.
+ * Daniel Huson, 12/27/16.
  */
 public class WorkflowUtils {
     public static void print(ADataNode<TaxaBlock> originalTaxonNode, ADataNode originalDataNode) {

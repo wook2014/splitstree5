@@ -29,7 +29,7 @@ import java.util.List;
 
 /**
  * a class with name and short description
- * Created by huson on 1/16/17.
+ * Daniel Huson, 1/16/17.
  */
 public class ANamed {
     private StringProperty name;

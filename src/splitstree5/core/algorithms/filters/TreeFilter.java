@@ -38,7 +38,7 @@ import java.util.Map;
 
 /**
  * Trees filter
- * Created by huson on 12/31/16.
+ * Daniel Huson, 12/31/16.
  */
 public class TreeFilter extends Algorithm<TreesBlock, TreesBlock> implements IFromTrees, IToTrees {
     public enum Consensus {Strict, Majority, Loose, Network, None}

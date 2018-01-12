@@ -75,7 +75,7 @@ import java.util.Arrays;
 
 /**
  * displays the new node dialog and creates a new node, if desired
- * Created by huson on 1/31/17.
+ * Daniel Huson, 1/31/17.
  */
 public class NewNodeDialog {
     private final Parent root;

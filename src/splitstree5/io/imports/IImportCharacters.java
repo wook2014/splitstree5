@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Daniel H. Huson
+ *  Copyright (C) 2016 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -17,12 +17,23 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.algorithms.interfaces;
+package splitstree5.io.imports;
 
-/**
- * to characters interface.
- * This is used to identify algorithms at runtime
- * Created by huson on 1/31/17.
- */
-public interface IToChararacters {
+import splitstree5.core.datablocks.CharactersBlock;
+import splitstree5.core.datablocks.TaxaBlock;
+
+import java.io.IOException;
+
+public interface IImportCharacters extends IImporter {
+
+    /**
+     * parse a file
+     *
+     * @param fileName
+     * @param taxaBlock
+     * @param dataBlock
+     */
+    void parse(String fileName, TaxaBlock taxaBlock, CharactersBlock dataBlock) throws IOException;
+
+
 }

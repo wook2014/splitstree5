@@ -28,7 +28,7 @@ import splitstree5.core.algorithms.interfaces.IToTrees;
 
 /**
  * A trees block
- * Created by huson on 12/21/16.
+ * Daniel Huson, 12/21/16.
  */
 public class TreesBlock extends ADataBlock {
     private final ObservableList<PhyloTree> trees;

@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 /**
  * A data block
- * Created by huson on 12/21/16.
+ * Daniel Huson, 12/21/16.
  */
 abstract public class ADataBlock extends OptionableBase {
     private Document document; // the document associated with this datablock

@@ -24,7 +24,7 @@ import java.util.Comparator;
 
 /**
  * simple split implementation
- * Created by huson on 12/9/16.
+ * Daniel Huson, 12/9/16.
  */
 public final class ASplit {
     private final BitSet A;

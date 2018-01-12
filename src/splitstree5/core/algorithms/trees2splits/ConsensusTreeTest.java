@@ -5,7 +5,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by Daria on 09.06.2017.
+ * Daria Evseeva,09.06.2017.
  */
 public class ConsensusTreeTest {
     @Test

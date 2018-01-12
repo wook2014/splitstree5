@@ -33,7 +33,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * test splits test
- * Created by huson on 12/30/16.
+ * Daniel Huson, 12/30/16.
  */
 public class SplitsNexusIOTest {
 

@@ -21,7 +21,7 @@ package splitstree5.io.nexus;
 
 /**
  * Characters nexus format
- * Created by huson on 12/22/16.
+ * Daniel Huson, 12/22/16.
  */
 public class CharactersNexusFormat {
     private boolean transpose;
