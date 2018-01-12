@@ -38,8 +38,8 @@ public class Document {
     private final Workflow workflow;
     private MainWindow mainWindow;
 
-    private final StringProperty fileName = new SimpleStringProperty("Untitled");
-    private final StringProperty name = new SimpleStringProperty();
+    private final StringProperty fileName = new SimpleStringProperty();
+    private final StringProperty name = new SimpleStringProperty("Untitled");
     private final ASelectionModel<Taxon> taxaSelectionModel = new ASelectionModel<>();
 
     private final StringProperty methodsText = new SimpleStringProperty();

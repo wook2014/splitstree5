@@ -389,32 +389,7 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
 
                     if (getLayout() == GraphLayout.Radial) {
                         final double scaleFactor = (event.getDeltaY() > 0) ? SCALE_DELTA : 1 / SCALE_DELTA;
-
-                        final Point2D screenLocation = new Point2D(event.getScreenX(), event.getScreenY());
-                        Point2D before = pane.screenToLocal(event.getScreenX(), event.getScreenY());
-
-                        Point2D afterLocal = before.multiply(scaleFactor);
-
-                        final Point2D diffScreen = pane.localToScreen(afterLocal).subtract(event.getScreenX(), event.getScreenY());
-
-                        System.err.println("diffScreen: " + diffScreen);
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                final Point2D newScreenLocation = pane.localToScreen(afterLocal);
-                                // scrollPane.setVvalue(scrollPane.getVvalue()+diffScreen.getY()/height);
-                                //scrollPane.setHvalue(scrollPane.getHvalue()+diffScreen.getX()/width);
-                            }
-                        });
-
-
                         scale(scaleFactor, scaleFactor);
-
-
-                        Point2D after = pane.screenToLocal(event.getScreenX(), event.getScreenY());
-
-                        System.err.println(before + " -> " + after);
-
                     } else {
                         if (Math.abs(event.getDeltaY()) > Math.abs(event.getDeltaX())) {
                             final double scaleFactor = (event.getDeltaY() > 0) ? SCALE_DELTA : 1 / SCALE_DELTA;

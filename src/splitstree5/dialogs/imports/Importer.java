@@ -106,7 +106,7 @@ public class Importer {
                 if (mainWindow == parentMainWindow) // using existing document
                     mainWindow.getStage().toFront();
                 else // new document
-                    mainWindow.show(new Stage(), 100, 100);
+                    mainWindow.show(new Stage(), parentMainWindow.getStage().getX() + 50, parentMainWindow.getStage().getY() + 50);
             } catch (IOException ex) {
                 new Alert("Import failed: " + ex.getMessage());
             }

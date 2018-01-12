@@ -41,7 +41,7 @@ public class ImportManager {
         importers = new ArrayList<>(PluginClassLoader.getInstances(IImporter.class, "splitstree5.io.imports"));
         extensionFilters = new HashSet<>();
         for (IImporter importer : importers) {
-            extensionFilters.add(new FileChooser.ExtensionFilter(Basic.getShortName(importer.getClass()), completeExtensions(importer.getExtensions())));
+            extensionFilters.add(new FileChooser.ExtensionFilter(getDataType(importer) + ": " + Basic.toString(completeExtensions(importer.getExtensions()), ", "), completeExtensions(importer.getExtensions())));
         }
     }
 
@@ -117,7 +117,7 @@ public class ImportManager {
     }
 
     private static String getFileFormat(IImporter importer) {
-        return Basic.getShortName(importer.getClass());
+        return Basic.getShortName(importer.getClass()).replaceAll("In$", "");
     }
 
 
