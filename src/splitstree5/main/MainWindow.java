@@ -74,6 +74,9 @@ public class MainWindow {
 
     private final ObservableMap<ANode, ViewerTab> aNode2ViewerTab;
 
+    private final StringProperty dirtyStar = new SimpleStringProperty("");
+
+
     /**
      * constructor
      *
@@ -109,8 +112,11 @@ public class MainWindow {
 
         algorithmsTabPane = mainWindowController.getAlgorithmTabPane();
 
+        document.dirtyProperty().addListener((c, o, n) -> {
+            dirtyStar.set(n ? "*" : "");
+        });
 
-        titleProperty.bind(Bindings.concat("Main Window - ").concat(document.nameProperty()).concat(" - SplitsTree5"));
+        titleProperty.bind(Bindings.concat("Main Window - ").concat(document.nameProperty()).concat(dirtyStar).concat(" - SplitsTree5"));
 
         {
             final TreeItem<String> rootItem = new TreeItem<>("");
@@ -243,15 +249,16 @@ public class MainWindow {
             if (result.isPresent() && result.get() == ButtonType.CANCEL)
                 openNewDocument = true;
         }
-        ProjectManager.getInstance().removeMainWindow(this);
         if (openNewDocument) {
             try {
                 MainWindow mainWindow = new MainWindow();
+                ProjectManager.getInstance().addMainWindow(mainWindow);
                 mainWindow.show(null, this.getStage().getX(), this.getStage().getY());
             } catch (IOException e) {
                 Basic.caught(e);
             }
         }
+        ProjectManager.getInstance().removeMainWindow(this);
         this.getStage().close();
         if (ProjectManager.getInstance().size() == 0) {
             ProgramExecutorService.getExecutorService().shutdownNow();

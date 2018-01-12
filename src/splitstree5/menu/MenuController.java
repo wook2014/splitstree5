@@ -419,16 +419,18 @@ public class MenuController {
             for (MainWindow mainWindow : ProjectManager.getInstance().getMainWindows()) {
                 if (count == 0)
                     windowMenu.getItems().add(new SeparatorMenuItem());
-                {
+                if (mainWindow.getStage() != null) {
                     final MenuItem menuItem = new MenuItem(mainWindow.getStage().getTitle().replaceAll("- SplitsTree5", ""));
                     menuItem.setOnAction((e) -> mainWindow.getStage().toFront());
                     menuItem.setAccelerator(new KeyCharacterCombination("" + (++count), KeyCombination.SHORTCUT_DOWN));
                     windowMenu.getItems().add(menuItem);
                 }
-                for (Stage auxStage : ProjectManager.getInstance().getAuxiliaryWindows(mainWindow)) {
-                    final MenuItem menuItem = new MenuItem(auxStage.getTitle().replaceAll("- SplitsTree5", ""));
-                    menuItem.setOnAction((e) -> auxStage.toFront());
-                    windowMenu.getItems().add(menuItem);
+                if (ProjectManager.getInstance().getAuxiliaryWindows(mainWindow) != null) {
+                    for (Stage auxStage : ProjectManager.getInstance().getAuxiliaryWindows(mainWindow)) {
+                        final MenuItem menuItem = new MenuItem(auxStage.getTitle().replaceAll("- SplitsTree5", ""));
+                        menuItem.setOnAction((e) -> auxStage.toFront());
+                        windowMenu.getItems().add(menuItem);
+                    }
                 }
             }
         };

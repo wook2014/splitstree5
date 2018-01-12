@@ -43,11 +43,24 @@ import java.io.IOException;
  * Daniel Huson, 1.2018
  */
 public class Importer {
-    public static void apply(IImporter importer, String filename) {
+    /**
+     * import from a file
+     *
+     * @param parentMainWindow
+     * @param importer
+     * @param filename
+     */
+    public static void apply(MainWindow parentMainWindow, IImporter importer, String filename) {
         if (importer != null) {
             try {
-                final MainWindow mainWindow = new MainWindow();
+                final MainWindow mainWindow;
+                if (parentMainWindow.getDocument().getWorkflow().getWorkingDataNode() == null) {
+                    mainWindow = parentMainWindow;
+                } else {
+                    mainWindow = new MainWindow();
+                }
                 final Document document = mainWindow.getDocument();
+
                 document.setFileName(filename);
                 Workflow workflow = document.getWorkflow();
                 TaxaBlock taxaBlock = new TaxaBlock();
@@ -90,7 +103,10 @@ public class Importer {
                 document.getWorkflow().getTopTaxaNode().setState(UpdateState.VALID);
                 document.setDirty(true);
 
-                mainWindow.show(new Stage(), 100, 100);
+                if (mainWindow == parentMainWindow) // using existing document
+                    mainWindow.getStage().toFront();
+                else // new document
+                    mainWindow.show(new Stage(), 100, 100);
             } catch (IOException ex) {
                 new Alert("Import failed: " + ex.getMessage());
             }

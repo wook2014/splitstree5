@@ -19,6 +19,7 @@
 
 package splitstree5.core.project;
 
+import javafx.application.Platform;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.ReadOnlyLongProperty;
 import javafx.beans.property.SimpleLongProperty;
@@ -88,6 +89,8 @@ public class ProjectManager {
         mainWindows.remove(mainWindow);
         mainWindows2AdditionalWindows.remove(mainWindow);
         changed.set(changed.get() + 1);
+        if (mainWindows.size() == 0)
+            Platform.exit();
     }
 
     public MainWindow getMainWindow(int index) {

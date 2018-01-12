@@ -50,13 +50,14 @@ public class MainWindowMenuController {
         controller.getNewMenuItem().setOnAction((e) -> {
             try {
                 final MainWindow newMainWindow = new MainWindow();
+                ProjectManager.getInstance().addMainWindow(newMainWindow);
                 newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50);
             } catch (IOException ex) {
                 Basic.caught(ex);
             }
         });
 
-        controller.getImportMenuItem().setOnAction((e) -> ImportDialog.show(mainWindow.getStage(), mainWindow.getDocument()));
+        controller.getImportMenuItem().setOnAction((e) -> ImportDialog.show(mainWindow));
 
         controller.getOpenMenuItem().setOnAction((e) -> {
             final FileChooser fileChooser = new FileChooser();
@@ -84,13 +85,19 @@ public class MainWindowMenuController {
         });
 
         controller.getCloseMenuItem().setOnAction((e) -> {
-            if (!saveBeforeClose(mainWindow))
+            if (saveBeforeClose(mainWindow)) {
+                mainWindow.close();
+                ProjectManager.getInstance().removeMainWindow(mainWindow);
+            }
                 e.consume();
         });
 
         mainWindow.getStage().setOnCloseRequest((e) -> {
-            if (!saveBeforeClose(mainWindow))
-                e.consume();
+            if (saveBeforeClose(mainWindow)) {
+                mainWindow.close();
+                ProjectManager.getInstance().removeMainWindow(mainWindow);
+            }
+            e.consume();
         });
 
         controller.getSaveMenuItem().setOnAction((e) -> {

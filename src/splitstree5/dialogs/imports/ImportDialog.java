@@ -25,8 +25,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import jloda.fx.ExtendedFXMLLoader;
 import jloda.util.Basic;
-import splitstree5.core.Document;
 import splitstree5.main.ImportManager;
+import splitstree5.main.MainWindow;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,16 +39,16 @@ public class ImportDialog {
     private final ImportDialogController controller;
     private final Stage stage;
 
-    public ImportDialog(Stage other) throws IOException {
+    public ImportDialog(MainWindow parentMainWindow) throws IOException {
         final ExtendedFXMLLoader<ImportDialogController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         controller = extendedFXMLLoader.getController();
 
         stage = new Stage();
         stage.setScene(new Scene(extendedFXMLLoader.getRoot()));
         stage.sizeToScene();
-        if (other != null) {
-            stage.setX(other.getX() + 50);
-            stage.setY(other.getY() + 50);
+        if (parentMainWindow != null) {
+            stage.setX(parentMainWindow.getStage().getX() + 50);
+            stage.setY(parentMainWindow.getStage().getY() + 50);
         }
 
         controller.getDataTypeComboBox().getItems().addAll(ImportManager.getInstance().getAllDataTypes());
@@ -78,7 +78,7 @@ public class ImportDialog {
 
         controller.getImportButton().setOnAction((e) -> {
             stage.close();
-            Importer.apply(ImportManager.getInstance().getImporterByDataTypeAndFileFormat(controller.getDataTypeComboBox().getSelectionModel().getSelectedItem(),
+            Importer.apply(parentMainWindow, ImportManager.getInstance().getImporterByDataTypeAndFileFormat(controller.getDataTypeComboBox().getSelectionModel().getSelectedItem(),
                     controller.getFileFormatComboBox().getSelectionModel().getSelectedItem()), controller.getFileTextField().getText());
         });
         controller.getImportButton().disableProperty().bind(Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), "Unknown")
@@ -94,7 +94,7 @@ public class ImportDialog {
      *
      * @param other
      */
-    public static void show(Stage other, Document document) {
+    public static void show(MainWindow other) {
         try {
             ImportDialog importDialog = new ImportDialog(other);
             importDialog.show();
