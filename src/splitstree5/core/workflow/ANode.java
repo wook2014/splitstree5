@@ -33,6 +33,8 @@ abstract public class ANode extends ANamed {
     private static final Object lock = new Object();
     private final int uid;
 
+    private int pathId;
+
     private final ObjectProperty<UpdateState> state = new SimpleObjectProperty<>(UpdateState.VALID);
 
     /**
@@ -77,4 +79,21 @@ abstract public class ANode extends ANamed {
      * @return children
      */
     abstract public ObservableList<? extends ANode> getChildren();
+
+
+    public int getPathId() {
+        return pathId;
+    }
+
+    public void setPathId(int id) {
+        pathId = id;
+        int pos = getName().indexOf("]");
+        if (id <= 1) {
+            if (pos != -1)
+                this.setName(getName().substring(pos + 1));
+        } else if (pos == -1)
+            this.setName("[" + id + "]" + getName());
+        else
+            this.setName("[" + id + "]" + getName().substring(0, pos));
+    }
 }

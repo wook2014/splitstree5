@@ -59,12 +59,14 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreeViewBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.workflow.UpdateState;
-import splitstree5.main.graphtab.AlgorithmBreadCrumbsToolBar;
-import splitstree5.main.graphtab.TreeViewTab;
-import splitstree5.main.graphtab.base.*;
+import splitstree5.gui.graphtab.TreeViewTab;
+import splitstree5.gui.graphtab.base.*;
+import splitstree5.gui.style.Style;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * compute a visualization of a tree
@@ -87,12 +89,16 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
 
     private final IntegerProperty leafGroupGapProperty = new SimpleIntegerProperty(20);
 
+    private final Map<String, Style> nodeLabel2Style = new HashMap<>();
+
     private ChangeListener<UpdateState> changeListener;
 
+    public TreeEmbedder() {
+        System.err.println("CONSTRUCT");
+    }
     @Override
     public String getCitation() {
-        return "TreeEmbedder; Huson et al 2012; " +
-                "D.H. Huson, R. Rupp and C. Scornavacca, Phylogenetic Networks, Cambridge, 2012.";
+        return "TreeEmbedder; Huson et al 2012;D.H. Huson, R. Rupp and C. Scornavacca, Phylogenetic Networks, Cambridge, 2012.";
     }
 
     @Override
@@ -100,12 +106,16 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
         progressListener.setTasks("Tree viewer", "Init.");
 
         final TreeViewTab view = child.getTab();
-        Platform.runLater(() -> view.setLayout(getOptionLayout()));
+        view.setNodeLabel2Style(nodeLabel2Style);
+
+        Platform.runLater(() -> {
+            child.getTab().setName(child.getName());
+            view.setLayout(getOptionLayout());
+        });
 
         if (parent.getNTrees() > 0) {
             final PhyloTree tree = parent.getTrees().get(0);
             view.init(tree);
-            view.updateSelectionModels(tree);
 
             if (tree.getRoot() == null && tree.getNumberOfNodes() > 0) {
                 for (Node v : tree.nodes()) {
@@ -164,7 +174,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
 
                 // compute all views and put their parts into the appropriate groups
                 for (Node v : tree.nodes()) {
-                    final StringBuilder text = new StringBuilder();
+                    final StringBuilder buf = new StringBuilder();
                     final String label = tree.getLabel(v);
                     if (label != null) {
                         if (label.startsWith("<")) // multi-labeled node
@@ -172,18 +182,23 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                             final String[] tokens = Basic.split(label.substring(1, label.length() - 1), ',');
                             for (String token : tokens) {
                                 if (Basic.isInteger(token)) {
-                                    if (text.length() > 0)
-                                        text.append(", ");
-                                    text.append(taxaBlock.get(Basic.parseInt(token)));
+                                    if (buf.length() > 0)
+                                        buf.append(", ");
+                                    buf.append(taxaBlock.get(Basic.parseInt(token)));
                                 }
 
                             }
                         } else if (Basic.isInteger(label))
-                            text.append(taxaBlock.get(Basic.parseInt(label)));
+                            buf.append(taxaBlock.get(Basic.parseInt(label)));
                         else
-                            text.append(label);
+                            buf.append(label);
                     }
-                    final ANodeView nodeView = view.createNodeView(v, node2point.getValue(v), text.toString());
+                    final String text = buf.toString();
+                    final ANodeView nodeView = view.createNodeView(v, node2point.getValue(v), text);
+                    if (text.length() > 0 && view.getNodeLabel2Style().containsKey(text)) {
+                        nodeView.setStyling(view.getNodeLabel2Style().get(text));
+                    }
+
                     view.getNode2view().put(v, nodeView);
                     if (nodeView.getShape() != null)
                         view.getNodesGroup().getChildren().addAll(nodeView.getShape());
@@ -202,14 +217,9 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                         view.getEdgeLabelsGroup().getChildren().addAll(edgeView.getLabel());
                 }
             }
+            Platform.runLater(() -> view.updateSelectionModels(tree, taxaBlock, child.getDocument()));
         }
-        //view.addNodeLabelMovement();
-
         child.show();
-
-        if (view.getToolBar() instanceof AlgorithmBreadCrumbsToolBar) {
-            // Platform.runLater(() -> ((AlgorithmBreadCrumbsToolBar) view.getToolBar()).update());
-        }
 
         if (changeListener != null)
             getConnector().stateProperty().removeListener(changeListener);

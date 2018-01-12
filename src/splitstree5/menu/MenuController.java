@@ -117,6 +117,9 @@ public class MenuController {
     private MenuItem pasteMenuItem;
 
     @FXML
+    private MenuItem duplicateMenuItem;
+
+    @FXML
     private MenuItem deleteMenuItem;
 
     @FXML
@@ -133,6 +136,10 @@ public class MenuController {
 
     @FXML
     private MenuItem selectAllEdgeMenuItem;
+
+    @FXML
+    private MenuItem selectAllBelowMenuItem;
+
 
     @FXML
     private MenuItem selectFromPreviousMenuItem;
@@ -265,6 +272,10 @@ public class MenuController {
         return copyMenuItem;
     }
 
+    public MenuItem getDuplicateMenuItem() {
+        return duplicateMenuItem;
+    }
+
     public MenuItem getPasteMenuItem() {
         return pasteMenuItem;
     }
@@ -291,6 +302,10 @@ public class MenuController {
 
     public MenuItem getSelectAllEdgeMenuItem() {
         return selectAllEdgeMenuItem;
+    }
+
+    public MenuItem getSelectAllBelowMenuItem() {
+        return selectAllBelowMenuItem;
     }
 
     public MenuItem getSelectFromPreviousMenuItem() {

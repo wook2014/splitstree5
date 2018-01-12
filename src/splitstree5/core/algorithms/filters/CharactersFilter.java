@@ -26,7 +26,7 @@ import splitstree5.core.algorithms.interfaces.IFromChararacters;
 import splitstree5.core.algorithms.interfaces.IToChararacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.gui.connectorview.AlgorithmPane;
+import splitstree5.gui.algorithmtab.AlgorithmPane;
 
 import java.util.*;
 

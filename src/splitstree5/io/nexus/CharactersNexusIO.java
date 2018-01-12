@@ -100,7 +100,11 @@ public class CharactersNexusIO {
         if (format == null)
             format = new CharactersNexusFormat();
 
-        np.matchBeginBlock(NAME);
+        if (np.peekMatchIgnoreCase("begin " + NAME))
+            np.matchBeginBlock(NAME);
+        else if (np.peekMatchIgnoreCase("begin Data"))
+            np.matchBeginBlock("begin Data");
+
         UtilitiesNexusIO.readTitleLinks(np, characters);
 
         if (taxa.getNtax() == 0) {

@@ -56,40 +56,6 @@ public class Pair<S, T> implements Comparable<Pair<S, T>>, Comparator<Pair<S, T>
         this.second = second;
     }
 
-    public int getFirstInt() {
-        return ((Integer) first);
-    }
-
-    public int getSecondInt() {
-        return ((Integer) second);
-    }
-
-    public double getFirstDouble() {
-        return ((Double) first);
-    }
-
-    public long getFirstLong() {
-        return ((Long) first);
-    }
-
-
-    public long getSecondLong() {
-        return (Long) second;
-    }
-
-    public double getSecondDouble() {
-        return ((Double) second);
-    }
-
-    public float getFirstFloat() {
-        return ((Float) first);
-    }
-
-
-    public float getSecondFloat() {
-        return ((Float) second);
-    }
-
     public String toString() {
         return "[" + first.toString() + " ; " + second.toString() + "]";
     }

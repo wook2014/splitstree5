@@ -153,6 +153,22 @@ abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> exte
         this.connector = connector;
     }
 
+
+    /**
+     * gets a new instance of this algorithm
+     *
+     * @return new instance
+     */
+    public Algorithm newInstance() {
+        try {
+            return getClass().newInstance();
+        } catch (Exception e) {
+            Basic.caught(e);
+            return null;
+        }
+
+    }
+
     /**
      * gets the citations for this method
      *

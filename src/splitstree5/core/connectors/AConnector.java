@@ -161,6 +161,7 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
             setName(algorithm.getName());
         else
             setName("AConnector");
+        setPathId(getPathId());
     }
 
     @Override
@@ -222,13 +223,6 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
         return ReadOnlyBooleanProperty.readOnlyBooleanProperty(applicable);
     }
 
-    @Override
-    public String getName() {
-        if (algorithm != null && algorithm.getName() != null)
-            return algorithm.getName();
-        else
-            return super.getName();
-    }
 
     @Override
     public StringProperty shortDescriptionProperty() {

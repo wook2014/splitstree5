@@ -36,17 +36,20 @@ import java.util.*;
  * Daniel Huson, 12.2015
  */
 public class ASelectionModel<T> extends MultipleSelectionModel<T> {
+    private final ObservableSet<Integer> selectedIndices = FXCollections.observableSet();
+    private final ObservableList<Integer> selectedIndicesAsList = FXCollections.observableArrayList();
+    private final ObservableList<T> selectedItems = FXCollections.observableArrayList();
+    private final ObservableList<Integer> unmodifiableSelectedIndices = FXCollections.unmodifiableObservableList(selectedIndicesAsList);
+    private final ObservableList<T> unmodifiableSelectedItems = FXCollections.unmodifiableObservableList(selectedItems);
 
-    private final ObservableSet<Integer> selectedIndices; // the set of selected indices
+    private final ReadOnlyBooleanProperty empty = (new SimpleSetProperty<>(selectedIndices).emptyProperty());
 
     private T[] items; // need a copy of this array to map indices to objects, when required
 
     private int focusIndex = -1; // focus index
 
-    private final ObservableList<Integer> unmodifiableSelectedIndices; // unmodifiable list of selected indices
-    private final ObservableList<T> unmodifiableSelectedItems; // unmodifiable list of selected items
+    private boolean suspendListeners = false;
 
-    private final ReadOnlyBooleanProperty empty;
 
     /**
      * Constructor
@@ -56,31 +59,30 @@ public class ASelectionModel<T> extends MultipleSelectionModel<T> {
     @SafeVarargs
     public ASelectionModel(T... items) {
         this.items = Arrays.copyOf(items, items.length);  // use copy for safety
-        selectedIndices = FXCollections.observableSet();
 
         // setup unmodifiable lists
         {
             // first setup observable array lists that listen for changes of the selectedIndices set
-            final ObservableList<Integer> selectedIndicesAsList = FXCollections.observableArrayList();
-            final ObservableList<T> selectedItems = FXCollections.observableArrayList();
-            selectedIndices.addListener(new SetChangeListener<Integer>() {
-                @Override
-                public void onChanged(Change<? extends Integer> c) {
+
+            selectedIndices.addListener((SetChangeListener<Integer>) c -> {
+                if (!suspendListeners) {
                     if (c.wasAdded()) {
                         selectedIndicesAsList.add(c.getElementAdded());
                         selectedItems.add(ASelectionModel.this.getItems()[c.getElementAdded()]);
                     } else if (c.wasRemoved()) {
                         selectedIndicesAsList.remove(c.getElementRemoved());
-                        selectedItems.remove(ASelectionModel.this.getItems()[c.getElementRemoved()]);
+                        final T item = ASelectionModel.this.getItems()[c.getElementRemoved()];
+                        if (selectedItems.size() > 0 && selectedItems.contains(item)) {
+                            try {
+                                selectedItems.remove(item);
+                            } catch (Exception ex) {
+                                Basic.caught(ex);
+                            }
+                        }
                     }
                 }
             });
-            // wrap a unmodifiable observable list around the observable arrays lists
-            unmodifiableSelectedIndices = FXCollections.unmodifiableObservableList(selectedIndicesAsList);
-            unmodifiableSelectedItems = FXCollections.unmodifiableObservableList(selectedItems);
         }
-
-        empty = (new SimpleSetProperty<>(selectedIndices).emptyProperty());
     }
 
     @Override
@@ -133,9 +135,11 @@ public class ASelectionModel<T> extends MultipleSelectionModel<T> {
         }
     }
 
-    public void selectItems(Collection<T> items) {
-        for (T item : items) {
-            select(item);
+    public void selectItems(Collection<? extends T> toSelect) {
+        for (int i = 0; i < items.length; i++) {
+            if (toSelect.contains(items[i])) {
+                select(i);
+            }
         }
     }
 
@@ -148,7 +152,7 @@ public class ASelectionModel<T> extends MultipleSelectionModel<T> {
         }
     }
 
-    public void clearSelection(Collection<T> items) {
+    public void clearSelection(Collection<? extends T> items) {
         for (T item : items) {
             clearSelection(item);
         }
@@ -294,4 +298,11 @@ public class ASelectionModel<T> extends MultipleSelectionModel<T> {
         };
     }
 
+    public boolean isSuspendListeners() {
+        return suspendListeners;
+    }
+
+    public void setSuspendListeners(boolean suspendListeners) {
+        this.suspendListeners = suspendListeners;
+    }
 }

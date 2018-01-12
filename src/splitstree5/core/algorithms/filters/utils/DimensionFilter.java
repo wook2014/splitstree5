@@ -73,7 +73,7 @@ public class DimensionFilter {
 
             while (graph.getNumberOfNodes() > 0) {
                 Node worstNode = getWorstNode(graph);
-                int s = ((Pair) worstNode.getInfo()).getFirstInt();
+                int s = ((Pair<Integer, Integer>) worstNode.getInfo()).getFirst();
                 toDelete.set(s);
                 graph.deleteNode(worstNode);
                 //System.err.println("deleted: "+graph);
@@ -109,7 +109,7 @@ public class DimensionFilter {
 
         final Node[] split2node = new Node[splits.size()];
         for (int s = 0; s < splits.size(); s++) {
-            Pair<Integer, Integer> pair = new Pair<>(s, (int) (10000 * splits.get(s).getWeight()));
+            final Pair<Integer, Integer> pair = new Pair<>(s, (int) (10000 * splits.get(s).getWeight()));
             split2node[s] = graph.newNode(pair);
         }
         for (int s = 0; s < splits.size(); s++) {
@@ -130,10 +130,10 @@ public class DimensionFilter {
      */
     private static void computeDSubgraph(ProgressListener progress, Graph graph, int d) throws CanceledException {
         //System.err.print("Compute D-subgraph: ");
-        NodeSet keep = new NodeSet(graph);
-        NodeSet discard = new NodeSet(graph);
-        NodeSet clique = new NodeSet(graph);
-        for (Node v = graph.getFirstNode(); v != null; v = graph.getNextNode(v)) {
+        final NodeSet keep = new NodeSet(graph);
+        final NodeSet discard = new NodeSet(graph);
+        final NodeSet clique = new NodeSet(graph);
+        for (Node v : graph.nodes()) {
             if (!keep.contains(v)) {
                 clique.clear();
                 clique.add(v);
@@ -239,7 +239,7 @@ public class DimensionFilter {
 
 
     /**
-     * gets the node will the lowest compatability score
+     * gets the node will the lowest compatibility score
      *
      * @param graph
      * @return worst node
@@ -248,7 +248,7 @@ public class DimensionFilter {
         float worstCompatibility = 0;
         Node worstNode = null;
         for (Node v = graph.getFirstNode(); v != null; v = graph.getNextNode(v)) {
-            float compatibility = getCompatibilityScore(graph, v);
+            float compatibility = getCompatibilityScore(v);
             if (worstNode == null || compatibility < worstCompatibility) {
                 worstNode = v;
                 worstCompatibility = compatibility;
@@ -261,15 +261,14 @@ public class DimensionFilter {
      * gets the compatibility score of a node.
      * This is the weight oif the splits minus the weight of all contradicting splits
      *
-     * @param graph
      * @param v
      * @return compatibility score
      */
-    private static int getCompatibilityScore(Graph graph, Node v) {
-        int score = ((Pair) v.getInfo()).getSecondInt();
+    private static int getCompatibilityScore(Node v) {
+        int score = ((Pair<Integer, Integer>) v.getInfo()).getSecond();
 
         for (Node w : v.adjacentNodes()) {
-            score -= ((Pair) w.getInfo()).getSecondInt();
+            score -= ((Pair<Integer, Integer>) w.getInfo()).getSecond();
         }
         return score;
     }

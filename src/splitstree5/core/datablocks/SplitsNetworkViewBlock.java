@@ -27,10 +27,10 @@ import jloda.phylo.PhyloGraph;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.interfaces.IFromSplitsNetworkView;
 import splitstree5.core.algorithms.interfaces.IToSplitsNetworkView;
-import splitstree5.main.IHasTab;
-import splitstree5.main.graphtab.AlgorithmBreadCrumbsToolBar;
-import splitstree5.main.graphtab.SplitsViewTab;
-import splitstree5.main.graphtab.base.GraphLayout;
+import splitstree5.gui.IHasTab;
+import splitstree5.gui.graphtab.AlgorithmBreadCrumbsToolBar;
+import splitstree5.gui.graphtab.SplitsViewTab;
+import splitstree5.gui.graphtab.base.GraphLayout;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -103,8 +103,8 @@ public class SplitsNetworkViewBlock extends ADataBlock implements IHasTab {
         Platform.runLater(() -> setShortDescription(getInfo()));
     }
 
-    public void updateSelectionModels(PhyloGraph graph) {
-        splitsViewTab.updateSelectionModels(graph);
+    public void updateSelectionModels(PhyloGraph graph, TaxaBlock taxa, Document document) {
+        splitsViewTab.updateSelectionModels(graph, taxa, document);
         splitsSelectionModel.setItems(graph.getSplitIds());
     }
 

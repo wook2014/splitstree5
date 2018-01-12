@@ -34,11 +34,9 @@ import splitstree5.core.algorithms.ReportConnector;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.*;
 import splitstree5.core.topfilters.*;
-import splitstree5.main.IHasTab;
+import splitstree5.gui.IHasTab;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The workflow graph
@@ -65,6 +63,8 @@ public class Workflow {
     private final ASelectionModel<ANode> nodeSelectionModel = new ASelectionModel<>();
 
     private final LongProperty topologyChanged = new SimpleLongProperty(0);
+
+    private final BitSet pathIds = new BitSet();
 
     private final Document document;
 
@@ -99,6 +99,38 @@ public class Workflow {
         });
 
         updatingProperty().addListener((observable, oldValue, newValue) -> System.err.println("UPDATING: " + newValue));
+
+        topologyChanged.addListener(observable -> {
+            ANode root = topDataNode.get();
+            if (root != null) {
+                setPathIdsRec(root, pathIds.nextClearBit(1), pathIds);
+            }
+        });
+    }
+
+    /**
+     * recursively update the pathIds
+     *
+     * @param v
+     * @param currentId
+     * @param pathIds
+     */
+    private void setPathIdsRec(ANode v, int currentId, BitSet pathIds) {
+        if (v.getPathId() == 0) {
+            v.setPathId(currentId);
+            pathIds.set(currentId);
+        } else
+            currentId = v.getPathId();
+
+        boolean first = true;
+        for (Object obj : v.getChildren()) {
+            final ANode w = (ANode) obj;
+            if (first) {
+                setPathIdsRec(w, currentId, pathIds);
+                first = false;
+            } else
+                setPathIdsRec(w, pathIds.nextClearBit(currentId + 1), pathIds);
+        }
     }
 
     /**
@@ -301,6 +333,78 @@ public class Workflow {
                 invalidNodes.remove(node);
         }
         topologyChanged.set(topologyChanged.get() + 1);
+    }
+
+    public void delete(Collection<ANode> nodes) {
+        for (ANode node : nodes) {
+            delete(node, true, false);
+        }
+    }
+
+    /**
+     * duplicates the given set of nodes
+     *
+     * @param nodes
+     * @return new nodes
+     */
+    public Collection<ANode> duplicate(Collection<ANode> nodes) {
+        final ADataNode root = getTopDataNode(); // only allow duplication below top data node
+        final Set<ANode> newNodes = new HashSet<>();
+        if (root != null) {
+            for (Object v : root.getChildren()) {
+                duplicateRec(root, root, nodes, newNodes);
+            }
+        }
+        return newNodes;
+    }
+
+    /**
+     * recursively does the work
+     *
+     * @param parent
+     * @param parentCopy
+     * @param nodesToDuplicate
+     * @param newNodes
+     */
+    private void duplicateRec(ADataNode parent, ADataNode parentCopy, Collection<ANode> nodesToDuplicate, Set<ANode> newNodes) {
+        ArrayList<AConnector> children = new ArrayList<>(parent.getChildren());
+        for (AConnector connector : children) {
+            if (!newNodes.contains(connector)) {
+                if (nodesToDuplicate.contains(connector)) {
+                    final ADataNode childCopy = createDataNode(connector.getChild().getDataBlock().newInstance());
+                    newNodes.add(childCopy);
+                    final AConnector connectorCopy = createConnector(parentCopy, childCopy, connector.getAlgorithm().newInstance());
+                    newNodes.add(connectorCopy);
+                    duplicateRec(connector.getChild(), childCopy, nodesToDuplicate, newNodes);
+                } else {
+                    duplicateRec(connector.getChild(), connector.getChild(), nodesToDuplicate, newNodes);
+                }
+            }
+        }
+    }
+
+    /**
+     * recompute the first nodes encountered in nodes
+     *
+     * @param nodes
+     */
+    public void recomputeTop(Collection<ANode> nodes) {
+        final ADataNode root = getTopDataNode(); // only allow duplication below top data node
+        if (root != null) {
+            final Stack<ANode> stack = new Stack<>();
+            stack.push(root);
+            while (stack.size() > 0) {
+                ANode node = stack.pop();
+                if (node instanceof AConnector && nodes.contains(node)) {
+                    ((AConnector) node).forceRecompute();
+                } else {
+                    stack.addAll(node.getChildren());
+                }
+            }
+
+        }
+
+
     }
 
     /**

@@ -72,9 +72,9 @@ public class Document {
             taxaSelectionModel.setItems(taxa.toArray(new Taxon[taxa.size()]));
         }
 
-        // todo: for debugging:
+        // for debugging:
         if (false) {
-            taxaSelectionModel.getSelectedItems().addListener((ListChangeListener<Taxon>) c -> System.err.println("Taxa selection changed: " +
+            taxaSelectionModel.getSelectedItems().addListener((ListChangeListener<Taxon>) c -> System.err.println("Taxa selection is: " +
                     Basic.toString(taxaSelectionModel.getSelectedItems(), ",")));
         }
     }

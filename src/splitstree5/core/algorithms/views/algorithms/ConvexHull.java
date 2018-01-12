@@ -29,7 +29,7 @@ import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.main.graphtab.base.GeometryUtils;
+import splitstree5.gui.graphtab.base.GeometryUtils;
 
 import java.util.*;
 

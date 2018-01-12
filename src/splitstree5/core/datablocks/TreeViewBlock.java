@@ -23,10 +23,10 @@ import javafx.application.Platform;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.interfaces.IFromTreeView;
 import splitstree5.core.algorithms.interfaces.IToTreeView;
-import splitstree5.main.IHasTab;
-import splitstree5.main.graphtab.AlgorithmBreadCrumbsToolBar;
-import splitstree5.main.graphtab.TreeViewTab;
-import splitstree5.main.graphtab.base.GraphLayout;
+import splitstree5.gui.IHasTab;
+import splitstree5.gui.graphtab.AlgorithmBreadCrumbsToolBar;
+import splitstree5.gui.graphtab.TreeViewTab;
+import splitstree5.gui.graphtab.base.GraphLayout;
 
 /**
  * This block represents the view of a tree

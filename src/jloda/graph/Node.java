@@ -586,7 +586,7 @@ public class Node extends NodeEdge implements Comparable {
 
     public Iterable<Node> adjacentNodes() {
         return () -> new Iterator<Node>() {
-            Edge e = getFirstAdjacentEdge();
+            private Edge e = getFirstAdjacentEdge();
 
             @Override
             public boolean hasNext() {
@@ -595,8 +595,44 @@ public class Node extends NodeEdge implements Comparable {
 
             @Override
             public Node next() {
-                Node result = e.getOpposite(Node.this);
+                final Node result = e.getOpposite(Node.this);
                 e = getNextAdjacentEdge(e);
+                return result;
+            }
+        };
+    }
+
+    public Iterable<Node> children() {
+        return () -> new Iterator<Node>() {
+            private Edge e = getFirstOutEdge();
+
+            @Override
+            public boolean hasNext() {
+                return e != null;
+            }
+
+            @Override
+            public Node next() {
+                final Node result = e.getTarget();
+                e = getNextOutEdge(e);
+                return result;
+            }
+        };
+    }
+
+    public Iterable<Node> parents() {
+        return () -> new Iterator<Node>() {
+            private Edge e = getFirstInEdge();
+
+            @Override
+            public boolean hasNext() {
+                return e != null;
+            }
+
+            @Override
+            public Node next() {
+                final Node result = e.getSource();
+                e = getNextInEdge(e);
                 return result;
             }
         };

@@ -28,7 +28,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-import splitstree5.main.workflowtree.WorkflowTreeItem;
+import splitstree5.gui.workflowtree.WorkflowTreeItem;
 
 import java.util.LinkedList;
 import java.util.Queue;

@@ -41,13 +41,15 @@ import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.SplitsNetworkViewBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.UpdateState;
-import splitstree5.main.graphtab.AlgorithmBreadCrumbsToolBar;
-import splitstree5.main.graphtab.SplitsViewTab;
-import splitstree5.main.graphtab.base.AEdgeView;
-import splitstree5.main.graphtab.base.ANodeView;
-import splitstree5.main.graphtab.base.GraphLayout;
+import splitstree5.gui.graphtab.SplitsViewTab;
+import splitstree5.gui.graphtab.base.AEdgeView;
+import splitstree5.gui.graphtab.base.ANodeView;
+import splitstree5.gui.graphtab.base.GraphLayout;
+import splitstree5.gui.style.Style;
 
 import java.util.BitSet;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * compute an implementing of a set of splits using the equal angle algorithm
@@ -59,6 +61,8 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, SplitsNetwork
     private final PhyloGraph graph = new PhyloGraph();
     private ObjectProperty<Algorithm> optionAlgorithm = new SimpleObjectProperty<>(Algorithm.EqualAngleFollowedByConvexHull);
     private BooleanProperty optionUseWeights = new SimpleBooleanProperty(true);
+
+    private final Map<String, Style> nodeLabel2Style = new HashMap<>();
 
     public Algorithm getOptionAlgorithm() {
         return optionAlgorithm.get();
@@ -93,11 +97,15 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, SplitsNetwork
                 "in IEEE/ACM Transactions on Computational Biology and Bioinformatics, vol. 1, no. 3, pp. 109-115, July-Sept. 2004.";
     }
 
-
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxa, SplitsBlock parent, SplitsNetworkViewBlock child) throws Exception {
         progress.setTasks("Split network construction", "Init.");
         final SplitsViewTab view = child.getTab();
+        view.setNodeLabel2Style(nodeLabel2Style);
+
+        Platform.runLater(() -> {
+            child.getTab().setName(child.getName());
+        });
 
         graph.clear();
         view.init(graph);
@@ -142,14 +150,10 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, SplitsNetwork
             if (edgeView.getLabel() != null)
                 view.getEdgeLabelsGroup().getChildren().addAll(edgeView.getLabel());
         }
-        child.updateSelectionModels(graph); // need to do this after graph has been computed
+        Platform.runLater(() -> child.updateSelectionModels(graph, taxa, child.getDocument()));
         child.show();
 
         progress.close();
-
-        if (view.getToolBar() instanceof AlgorithmBreadCrumbsToolBar) {
-            Platform.runLater(() -> ((AlgorithmBreadCrumbsToolBar) view.getToolBar()).update());
-        }
 
         if (changeListener != null)
             getConnector().stateProperty().removeListener(changeListener);

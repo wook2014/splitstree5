@@ -504,6 +504,10 @@ public class Basic {
         return ins;
     }
 
+    public static Reader getReaderPossiblyZIPorGZIP(String fileName) throws IOException {
+        return new InputStreamReader(getInputStreamPossiblyZIPorGZIP(fileName));
+    }
+
     /**
      * gets a outputstream. If file ends on gz or zip opens appropriate zipping stream
      *
@@ -1015,8 +1019,90 @@ public class Basic {
         }
         return result;
     }
-}
 
+    /**
+     * gets the first line in a file. File may be zgipped or zipped
+     *
+     * @param file
+     * @return first line or null
+     * @throws IOException
+     */
+    public static String getFirstLineFromFile(File file) {
+        try {
+            try (BufferedReader ins = new BufferedReader(new InputStreamReader(getInputStreamPossiblyZIPorGZIP(file.getPath())))) {
+                return ins.readLine();
+            }
+        } catch (IOException ex) {
+            return null;
+        }
+    }
+
+    /**
+     * gets the first line in a file. File may be zgipped or zipped
+     *
+     * @param file
+     * @return first line or null
+     * @throws IOException
+     */
+    public static String getFirstLineFromFile(File file, String ignoreLinesThatStartWithThis, int maxLines) {
+        try {
+            int count = 0;
+            try (BufferedReader ins = new BufferedReader(new InputStreamReader(getInputStreamPossiblyZIPorGZIP(file.getPath())))) {
+                String aLine;
+                while ((aLine = ins.readLine()) != null) {
+                    if (!aLine.startsWith(ignoreLinesThatStartWithThis))
+                        return aLine;
+                    if (++count == maxLines)
+                        break;
+                }
+            }
+        } catch (IOException ex) {
+        }
+        return null;
+    }
+
+    /**
+     * gets the first line in a file. File may be zgipped or zipped
+     *
+     * @param file
+     * @return first line or null
+     * @throws IOException
+     */
+    public static String[] getFirstLinesFromFile(File file, int count) {
+        try {
+            String[] lines = new String[count];
+            try (BufferedReader ins = new BufferedReader(new InputStreamReader(getInputStreamPossiblyZIPorGZIP(file.getPath())))) {
+                for (int i = 0; i < count; i++) {
+                    lines[i] = ins.readLine();
+                    if (lines[i] == null)
+                        break;
+                }
+            }
+            return lines;
+        } catch (IOException ex) {
+            return null;
+        }
+    }
+
+    /**
+     * gets the first bytes from a file. File may be zgipped or zipped
+     *
+     * @param file
+     * @return first bytes
+     * @throws IOException
+     */
+    public static byte[] getFirstBytesFromFile(File file, int count) {
+        try {
+            try (InputStream ins = getInputStreamPossiblyZIPorGZIP(file.getPath())) {
+                byte[] bytes = new byte[count];
+                ins.read(bytes, 0, count);
+                return bytes;
+            }
+        } catch (IOException ex) {
+            return null;
+        }
+    }
+}
 
 /**
  * silent stream

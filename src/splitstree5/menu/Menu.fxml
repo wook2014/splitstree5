@@ -19,7 +19,6 @@
   ~  along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.input.*?>
 <MenuBar fx:id="menuBar" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
@@ -29,75 +28,64 @@
             <items>
                 <MenuItem fx:id="newMenuItem" text="New...">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="N" control="UP" meta="UP" shift="UP"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="N" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="openMenuItem" mnemonicParsing="false" text="Open...">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="UP"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <Menu fx:id="openRecentMenu" mnemonicParsing="false" text="Open Recent"/>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="enterDataMenuItem" text="Enter Data">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="DOWN"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="saveMenuItem" text="Save">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="S" control="UP" meta="UP" shift="UP"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="S" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <MenuItem fx:id="saveAsMenuItem" text="Save As...">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="S" control="UP" meta="UP" shift="DOWN"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="S" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="ImportMenuItem" mnemonicParsing="false" text="Import...">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="I" control="UP" meta="UP" shift="UP"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="I" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <MenuItem fx:id="exportMenuItem" mnemonicParsing="false" text="Export...">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="E" control="UP" meta="UP" shift="UP"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="E" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <MenuItem fx:id="exportImageMenuItem" mnemonicParsing="false" text="Export Image...">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="E" control="UP" meta="UP" shift="DOWN"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="E" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="printMenuitem" mnemonicParsing="false" text="Print">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="P" control="UP" meta="UP" shift="DOWN"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="P" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="closeMenuItem" text="Close">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="W" control="UP" meta="UP" shift="UP"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="W" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <MenuItem fx:id="quitMenuItem" text="Quit">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="Q" control="UP" meta="UP" shift="UP"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="Q" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
             </items>
@@ -106,35 +94,37 @@
             <items>
                 <MenuItem fx:id="undoMenuItem" text="Undo">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="Z" control="UP" meta="UP" shift="UP"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="Z" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <MenuItem fx:id="redoMenuItem" text="Redo">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="Z" control="UP" meta="UP" shift="DOWN"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="Z" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="cutMenuItem" text="Cut">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="X" control="UP" meta="UP" shift="UP"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="X" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <MenuItem fx:id="copyMenuItem" text="Copy">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="C" control="UP" meta="UP" shift="UP"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="C" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <MenuItem fx:id="pasteMenuItem" text="Paste">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="V" control="UP" meta="UP" shift="UP"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="V" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="duplicateMenuItem" text="Duplicate">
+                    <accelerator>
+                        <KeyCodeCombination alt="UP" code="D" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
+                    </accelerator>
+                </MenuItem>
+
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="deleteMenuItem" text="Delete">
                     <accelerator>
@@ -145,57 +135,54 @@
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="selectAllMenuItem" text="Select All">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="A" control="UP" meta="UP" shift="UP"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="A" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <MenuItem fx:id="selectNoneMenuItem" text="Select None">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="A" control="UP" meta="UP" shift="DOWN"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="A" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="selectAllNodesMenuItem" text="Select All Nodes"/>
                 <MenuItem fx:id="selectAllLabeledNodesMenuItem" text="Select All Labeled Nodes">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="L" control="UP" meta="UP" shift="UP"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="L" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <MenuItem fx:id="selectAllEdgeMenuItem" text="Select All Edges"/>
                 <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="selectAllBelowMenuItem" text="Select All Below">
+                    <accelerator>
+                        <KeyCodeCombination alt="UP" code="B" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
+                    </accelerator>
+                </MenuItem>
                 <MenuItem fx:id="selectFromPreviousMenuItem" text="Select From Previous">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="P" control="UP" meta="UP" shift="UP"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="P" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="findMenuItem" text="Find / Replace...">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="F" control="UP" meta="UP" shift="UP"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="F" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <MenuItem fx:id="findAgainMenuItem" text="Find Again">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="G" control="UP" meta="UP" shift="UP"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="G" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="gotoLineMenuItem" text="Goto Line">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="G" control="UP" meta="UP" shift="DOWN"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="G" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="preferencesMenuItem" text="Preferences...">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="P" control="UP" meta="UP" shift="DOWN"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="P" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
             </items>
@@ -204,68 +191,58 @@
             <items>
                 <MenuItem fx:id="increaseFontSizeMenuItem" text="Increase Font Size">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="EQUALS" control="UP" meta="UP" shift="UP"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="EQUALS" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <MenuItem fx:id="decreaseFontSizeMenuItem" text="Decrease Font Size">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="MINUS" control="UP" meta="UP" shift="UP"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="MINUS" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="zoomInMenuItem" text="Zoom In">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="UP" control="UP" meta="UP" shift="UP"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="UP" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <MenuItem fx:id="zoomOutMenuItem" text="Zoom Out">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="DOWN" control="UP" meta="UP" shift="UP"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="DOWN" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="resetMenuItem" mnemonicParsing="false" text="Reset">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="DIGIT0" control="UP" meta="UP" shift="UP"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="DIGIT0" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="rotateLeftMenuItem" text="Rotate Left">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="LEFT" control="UP" meta="UP" shift="UP"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="LEFT" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <MenuItem fx:id="rotateRightMenuItem" text="Rotate Right">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="RIGHT" control="UP" meta="UP" shift="UP"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="RIGHT" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <MenuItem fx:id="flipMenuItem" text="Flip">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="F" control="UP" meta="UP" shift="DOWN"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="F" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="formatNodesMenuItem" text="Format Nodes...">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="F" control="UP" meta="UP" shift="DOWN"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="F" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <MenuItem fx:id="formatEdgesMenuItem" text="Format Edges..."/>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="layoutLabelsMenuItem" text="Layout Labels">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="L" control="UP" meta="UP" shift="DOWN"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="L" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
             </items>
@@ -284,8 +261,7 @@
             <items>
                 <MenuItem fx:id="aboutMenuItem" mnemonicParsing="false" text="About...">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="H" control="UP" meta="UP" shift="UP"
-                                            shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="H" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
             </items>

@@ -20,7 +20,7 @@
 package splitstree5.utils;
 
 import splitstree5.core.misc.ANamed;
-import splitstree5.gui.connectorview.AlgorithmPane;
+import splitstree5.gui.algorithmtab.AlgorithmPane;
 
 import java.util.List;
 

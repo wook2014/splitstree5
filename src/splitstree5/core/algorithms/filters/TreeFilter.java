@@ -28,8 +28,8 @@ import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToTrees;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.gui.connectorview.AlgorithmPane;
-import splitstree5.gui.treefilterview.TreeFilterPane;
+import splitstree5.gui.algorithmtab.AlgorithmPane;
+import splitstree5.gui.algorithmtab.treefilterview.TreeFilterPane;
 
 import java.io.IOException;
 import java.util.ArrayList;
