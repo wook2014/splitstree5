@@ -24,18 +24,15 @@ import javafx.beans.property.ReadOnlyLongProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import jloda.util.Basic;
+import splitstree5.dialogs.ClosingLastDocument;
 import splitstree5.main.MainWindow;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * manages projects
@@ -93,17 +90,7 @@ public class ProjectManager {
     public boolean closeMainWindow(MainWindow mainWindow) {
         if (mainWindows.size() == 1) {
             if (ProjectManager.getInstance().size() == 1) {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.initOwner(mainWindow.getStage());
-                alert.setTitle("SplitsTree5 - Confirm Quit");
-                alert.setHeaderText("Closing the last open document");
-                alert.setContentText("Do you really want to quit?");
-                final ButtonType buttonTypeCancel = new ButtonType("No", ButtonBar.ButtonData.CANCEL_CLOSE);
-                final ButtonType buttonTypeYes = new ButtonType("Yes", ButtonBar.ButtonData.OK_DONE);
-                alert.getButtonTypes().setAll(buttonTypeCancel, buttonTypeYes);
-
-                Optional<ButtonType> result = alert.showAndWait();
-                if (result.isPresent() && result.get() == buttonTypeCancel) {
+                if (!ClosingLastDocument.apply(mainWindow.getStage())) {
                     if (mainWindow.getDocument().getWorkflow().getWorkingDataNode() == null)
                         return false;
                     try {
