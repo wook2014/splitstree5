@@ -19,9 +19,6 @@
 
 package splitstree5.main;
 
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
 import javafx.stage.FileChooser;
 import jloda.util.Basic;
 import splitstree5.core.Document;
@@ -32,8 +29,9 @@ import splitstree5.io.nexus.NexusFileWriter;
 import splitstree5.menu.MenuController;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Optional;
+import java.io.Writer;
 
 /**
  * controller class for main window menus
@@ -50,7 +48,6 @@ public class MainWindowMenuController {
         controller.getNewMenuItem().setOnAction((e) -> {
             try {
                 final MainWindow newMainWindow = new MainWindow();
-                ProjectManager.getInstance().addMainWindow(newMainWindow);
                 newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50);
             } catch (IOException ex) {
                 Basic.caught(ex);
@@ -85,18 +82,11 @@ public class MainWindowMenuController {
         });
 
         controller.getCloseMenuItem().setOnAction((e) -> {
-            if (saveBeforeClose(mainWindow)) {
                 mainWindow.close();
-                ProjectManager.getInstance().removeMainWindow(mainWindow);
-            }
-                e.consume();
         });
 
         mainWindow.getStage().setOnCloseRequest((e) -> {
-            if (saveBeforeClose(mainWindow)) {
                 mainWindow.close();
-                ProjectManager.getInstance().removeMainWindow(mainWindow);
-            }
             e.consume();
         });
 
@@ -117,47 +107,10 @@ public class MainWindowMenuController {
         controller.getQuitMenuItem().setOnAction((e) -> {
             while (ProjectManager.getInstance().size() > 0) {
                 final MainWindow window = ProjectManager.getInstance().getMainWindow(ProjectManager.getInstance().size() - 1);
-                if (!saveBeforeClose(window))
-                    return;
-                window.setAllowClose();
-                window.close();
+                if (!window.close())
+                    break;
             }
         });
-    }
-
-    /**
-     * ask whether to save before closing
-     *
-     * @param mainWindow
-     * @return false, if canceled
-     */
-    public static boolean saveBeforeClose(MainWindow mainWindow) {
-        final Document document = mainWindow.getDocument();
-        if (!document.isDirty()) {
-            mainWindow.close();
-            return true;
-        } else {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.initOwner(mainWindow.getStage());
-            alert.setTitle("Save File Dialog");
-            alert.setHeaderText("This document has unsaved changes");
-            alert.setContentText("Save changes before closing?");
-            ButtonType buttonTypeYes = new ButtonType("Yes", ButtonBar.ButtonData.YES);
-            ButtonType buttonTypeNo = new ButtonType("No", ButtonBar.ButtonData.NO);
-            ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-            alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeCancel);
-
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent()) {
-                if (result.get() == buttonTypeYes) {
-                    return showSaveDialog(mainWindow);
-                } else if (result.get() == buttonTypeNo) {
-                    return true;
-                }
-            }
-            return false; // canceled
-
-        }
     }
 
     /**
@@ -176,7 +129,11 @@ public class MainWindowMenuController {
         if (file != null) {
             try {
                 mainWindow.getDocument().setFileName(file.getPath());
-                NexusFileWriter.write(mainWindow.getDocument());
+                System.err.println("Save!");
+                mainWindow.getDocument().setDirty(false);
+                try (Writer w = new FileWriter(new File(file.getPath()))) {
+                }
+                // NexusFileWriter.write(mainWindow.getDocument());
             } catch (IOException e) {
                 Basic.caught(e);
             }

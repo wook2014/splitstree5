@@ -20,13 +20,17 @@
 package splitstree5.dialogs.imports;
 
 import javafx.stage.Stage;
+import jloda.util.Basic;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.characters2distances.HammingDistances;
 import splitstree5.core.algorithms.distances2splits.NeighborNet;
+import splitstree5.core.algorithms.filters.DFilter;
 import splitstree5.core.algorithms.filters.TreeFilter;
 import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.algorithms.interfaces.IToSplits;
 import splitstree5.core.algorithms.interfaces.IToTrees;
+import splitstree5.core.algorithms.trees2splits.ConsensusNetwork;
+import splitstree5.core.algorithms.trees2splits.SuperNetwork;
 import splitstree5.core.algorithms.views.SplitsNetworkAlgorithm;
 import splitstree5.core.algorithms.views.TreeEmbedder;
 import splitstree5.core.datablocks.*;
@@ -61,7 +65,7 @@ public class Importer {
                 }
                 final Document document = mainWindow.getDocument();
 
-                document.setFileName(filename);
+                document.setFileName(Basic.replaceFileSuffix(filename, ".st5"));
                 Workflow workflow = document.getWorkflow();
                 TaxaBlock taxaBlock = new TaxaBlock();
 
@@ -88,10 +92,27 @@ public class Importer {
                     final TreesBlock dataBlock = new TreesBlock();
                     ((IImportTrees) importer).parse(filename, taxaBlock, dataBlock);
                     workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
-                    final ADataNode<TreesBlock> trees = workflow.createDataNode(new TreesBlock());
-                    workflow.createConnector(workflow.getWorkingDataNode(), trees, new TreeFilter());
-                    final ADataNode<TreeViewBlock> treesView = workflow.createDataNode(new TreeViewBlock());
-                    workflow.createConnector(trees, treesView, new TreeEmbedder());
+                    if (dataBlock.size() == 1) { // only one tree, don't need a filter
+                        final ADataNode<TreeViewBlock> treesView = workflow.createDataNode(new TreeViewBlock());
+                        workflow.createConnector(workflow.getWorkingDataNode(), treesView, new TreeEmbedder());
+                    } else { // more than one tree, need a filter:
+                        final ADataNode<TreesBlock> trees = workflow.createDataNode(new TreesBlock());
+                        workflow.createConnector(workflow.getWorkingDataNode(), trees, new TreeFilter());
+                        final ADataNode<TreeViewBlock> treesView = workflow.createDataNode(new TreeViewBlock());
+                        workflow.createConnector(trees, treesView, new TreeEmbedder());
+
+                        final ADataNode<SplitsBlock> splits0 = workflow.createDataNode(new SplitsBlock());
+                        if (dataBlock.isPartial()) {
+                            workflow.createConnector(trees, splits0, new SuperNetwork());
+                        } else {
+                            workflow.createConnector(trees, splits0, new ConsensusNetwork());
+                        }
+                        final ADataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
+                        workflow.createConnector(splits0, splits, new DFilter());
+
+                        final ADataNode<SplitsNetworkViewBlock> splitsNetworkViewBlockADataNode = workflow.createDataNode(new SplitsNetworkViewBlock());
+                        workflow.createConnector(splits, splitsNetworkViewBlockADataNode, new SplitsNetworkAlgorithm());
+                    }
                 } else if (importer instanceof IToSplits) {
                     final SplitsBlock dataBlock = new SplitsBlock();
                     ((IImportSplits) importer).parse(filename, taxaBlock, dataBlock);

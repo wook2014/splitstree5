@@ -38,6 +38,8 @@
 
 package splitstree5.gui.algorithmtab;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -69,6 +71,8 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
 
     private final AConnector<P, C> connector;
     private final ArrayList<Option> options = new ArrayList<>();
+
+    private final BooleanProperty applicable = new SimpleBooleanProperty(true);
 
     /**
      * constructor
@@ -238,6 +242,11 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
         } catch (Exception ex) {
             Basic.caught(ex);
         }
+    }
+
+    @Override
+    public BooleanProperty applicableProperty() {
+        return applicable;
     }
 
     /**

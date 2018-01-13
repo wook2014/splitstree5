@@ -38,6 +38,7 @@
 
 package splitstree5.gui.algorithmtab;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.scene.layout.StackPane;
 import splitstree5.core.Document;
 import splitstree5.core.connectors.AConnector;
@@ -86,4 +87,11 @@ public abstract class AlgorithmPane extends StackPane {
      * syncs the view to the model
      */
     abstract public void syncController2Model();
+
+    /**
+     * is algorithm applicable with current setings?
+     *
+     * @return is applicable
+     */
+    abstract public BooleanProperty applicableProperty();
 }

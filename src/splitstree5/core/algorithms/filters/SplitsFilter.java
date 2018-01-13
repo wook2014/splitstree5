@@ -32,6 +32,7 @@ import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
+import splitstree5.core.misc.SplitsUtilities;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -149,7 +150,8 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
             child.setCompatibility(parent.getCompatibility());
             child.setThreshold(parent.getThreshold());
         } else {
-            child.setCycle(parent.getCycle());
+            child.setCycle(SplitsUtilities.computeCycle(taxaBlock.getNtax(), child.getSplits()));
+
             child.setFit(-1);
             if (compatibility == Compatibility.unknown)
                 compatibility = Compatibility.compute(taxaBlock.getNtax(), child.getSplits(), child.getCycle());

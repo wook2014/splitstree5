@@ -50,7 +50,7 @@ import java.util.*;
 public class TaxaFilterPane extends AlgorithmPane {
     private final TaxaFilter taxaFilter;
     private final TaxaFilterPaneController controller;
-    private Document document = null;
+    private Document document;
     private UndoRedoManager undoManager;
 
     private ArrayList<Taxon> prevActiveTaxa = new ArrayList<>(); // used to facilitate undo/redo, do not modify
@@ -161,29 +161,26 @@ public class TaxaFilterPane extends AlgorithmPane {
             final ArrayList<Taxon> selected = new ArrayList<>(controller.getActiveList().getSelectionModel().getSelectedItems());
             controller.getInactiveList().getItems().addAll(controller.getActiveList().getItems());
             controller.getActiveList().getItems().clear();
-            for (Taxon t : selected)
-                controller.getInactiveList().getSelectionModel().select(t);
+            select(selected, true);
         });
         controller.getInactivateAllButton().disableProperty().bind(Bindings.isEmpty(controller.getActiveList().getItems()));
-
 
         controller.getInactivateSelectedButton().setOnAction((e) -> {
             final ArrayList<Taxon> selected = new ArrayList<>(controller.getActiveList().getSelectionModel().getSelectedItems());
             controller.getActiveList().getSelectionModel().clearSelection();
             controller.getActiveList().getItems().removeAll(selected);
             controller.getInactiveList().getItems().addAll(selected);
-            for (Taxon t : selected)
-                controller.getInactiveList().getSelectionModel().select(t);
+            select(selected, true);
         });
         controller.getInactivateSelectedButton().disableProperty().bind(Bindings.isEmpty(controller.getActiveList().getSelectionModel().getSelectedIndices()));
 
         controller.getActivateAllButton().setOnAction((e) -> {
             final ArrayList<Taxon> selected = new ArrayList<>(controller.getInactiveList().getSelectionModel().getSelectedItems());
+            final ArrayList<Taxon> inactivated = new ArrayList<>(controller.getInactiveList().getItems());
             controller.getInactiveList().getSelectionModel().clearSelection();
             controller.getInactiveList().getItems().clear();
-            controller.getActiveList().getItems().addAll(selected);
-            for (Taxon t : selected)
-                controller.getActiveList().getSelectionModel().select(t);
+            controller.getActiveList().getItems().addAll(inactivated);
+            select(selected, true);
         });
         controller.getActivateAllButton().disableProperty().bind(Bindings.isEmpty(controller.getInactiveList().getItems()));
 
@@ -192,8 +189,7 @@ public class TaxaFilterPane extends AlgorithmPane {
             controller.getInactiveList().getSelectionModel().clearSelection();
             controller.getInactiveList().getItems().removeAll(selected);
             controller.getActiveList().getItems().addAll(selected);
-            for (Taxon t : selected)
-                controller.getActiveList().getSelectionModel().select(t);
+            select(selected, true);
         });
         controller.getActivateSelectedButton().disableProperty().bind(Bindings.isEmpty(controller.getInactiveList().getSelectionModel().getSelectedIndices()));
 
@@ -237,7 +233,7 @@ public class TaxaFilterPane extends AlgorithmPane {
                     }
                 } else if (controller.getInactiveList().getItems().contains(taxon) && !controller.getInactiveList().getSelectionModel().getSelectedItems().contains(taxon)) {
                     controller.getInactiveList().getSelectionModel().select(taxon);
-                    if (firstActive) {
+                    if (firstInactive) {
                         controller.getInactiveList().scrollTo(taxon);
                         firstActive = false;
                     }

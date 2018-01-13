@@ -19,18 +19,23 @@
 
 package splitstree5.core.project;
 
-import javafx.application.Platform;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.ReadOnlyLongProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
+import jloda.util.Basic;
 import splitstree5.main.MainWindow;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * manages projects
@@ -85,12 +90,41 @@ public class ProjectManager {
         changed.set(changed.get() + 1);
     }
 
-    public void removeMainWindow(MainWindow mainWindow) {
+    public boolean closeMainWindow(MainWindow mainWindow) {
+        if (mainWindows.size() == 1) {
+            if (ProjectManager.getInstance().size() == 1) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.initOwner(mainWindow.getStage());
+                alert.setTitle("SplitsTree5 - Confirm Quit");
+                alert.setHeaderText("Closing the last open document");
+                alert.setContentText("Do you really want to quit?");
+                final ButtonType buttonTypeCancel = new ButtonType("No", ButtonBar.ButtonData.CANCEL_CLOSE);
+                final ButtonType buttonTypeYes = new ButtonType("Yes", ButtonBar.ButtonData.OK_DONE);
+                alert.getButtonTypes().setAll(buttonTypeCancel, buttonTypeYes);
+
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.isPresent() && result.get() == buttonTypeCancel) {
+                    if (mainWindow.getDocument().getWorkflow().getWorkingDataNode() == null)
+                        return false;
+                    try {
+                        MainWindow newWindow = new MainWindow();
+                        newWindow.show(null, mainWindow.getStage().getX(), mainWindow.getStage().getY());
+                    } catch (IOException e) {
+                        Basic.caught(e);
+                    }
+                }
+            }
+        }
         mainWindows.remove(mainWindow);
-        mainWindows2AdditionalWindows.remove(mainWindow);
+        closeAndRemoveAuxilaryWindows(mainWindow);
         changed.set(changed.get() + 1);
-        if (mainWindows.size() == 0)
-            Platform.exit();
+
+        mainWindow.getStage().close();
+
+        if (mainWindows.size() == 0) {
+            System.exit(0); // todo: replace by Platform.exit();
+        }
+        return true;
     }
 
     public MainWindow getMainWindow(int index) {
@@ -100,6 +134,14 @@ public class ProjectManager {
     public void addAuxiliaryWindow(MainWindow mainWindow, Stage stage) {
         mainWindows2AdditionalWindows.get(mainWindow).add(stage);
         changed.set(changed.get() + 1);
+    }
+
+    public void closeAndRemoveAuxilaryWindows(MainWindow mainWindow) {
+        if (mainWindows2AdditionalWindows.containsKey(mainWindow)) {
+            for (Stage stage : mainWindows2AdditionalWindows.get(mainWindow))
+                stage.close();
+            mainWindows2AdditionalWindows.remove(mainWindow);
+        }
     }
 
     public void removeAuxiliaryWindow(MainWindow mainWindow, Stage stage) {

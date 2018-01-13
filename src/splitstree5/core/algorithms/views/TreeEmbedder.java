@@ -79,7 +79,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
 
     public enum ParentPlacement {LeafAverage, ChildrenAverage}
 
-    private final Property<GraphLayout> layout = new SimpleObjectProperty<>(GraphLayout.LeftToRight);
+    private final Property<GraphLayout> layout = new SimpleObjectProperty<>(GraphLayout.Radial);
     private final Property<EdgeLengths> edgeLengths = new SimpleObjectProperty<>(EdgeLengths.Weights);
     private final Property<ParentPlacement> parentPlacement = new SimpleObjectProperty<>(ParentPlacement.ChildrenAverage);
     private final Property<AEdgeView.EdgeShape> edgeShape = new SimpleObjectProperty<>(AEdgeView.EdgeShape.Straight);

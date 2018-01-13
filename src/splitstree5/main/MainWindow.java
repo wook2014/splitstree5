@@ -27,7 +27,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import jloda.fx.ExtendedFXMLLoader;
@@ -36,9 +39,9 @@ import jloda.util.ResourceManager;
 import splitstree5.core.Document;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
-import splitstree5.core.misc.ProgramExecutorService;
 import splitstree5.core.project.ProjectManager;
 import splitstree5.core.workflow.ANode;
+import splitstree5.dialogs.SaveBeforeClose;
 import splitstree5.gui.ISavesPreviousSelection;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.algorithmtab.AlgorithmTab;
@@ -52,7 +55,6 @@ import splitstree5.menu.MenuController;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.Optional;
 
 public class MainWindow {
     private Document document;
@@ -231,41 +233,6 @@ public class MainWindow {
         mainWindowController.getMainTabPane().getTabs().remove(viewerTab);
     }
 
-    /**
-     * closes the current window. If it is the last to close, will ask for confirmation and then quit
-     *
-     * @return true if closed, false if canceled
-     */
-    public boolean close() {
-        boolean openNewDocument = false;
-
-        if (ProjectManager.getInstance().size() == 1) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.initOwner(this.getStage());
-            alert.setTitle("SplitsTree5 - Confirm Quit");
-            alert.setHeaderText("Closing the last open document");
-            alert.setContentText("Do you really want to quit?");
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.CANCEL)
-                openNewDocument = true;
-        }
-        if (openNewDocument) {
-            try {
-                MainWindow mainWindow = new MainWindow();
-                ProjectManager.getInstance().addMainWindow(mainWindow);
-                mainWindow.show(null, this.getStage().getX(), this.getStage().getY());
-            } catch (IOException e) {
-                Basic.caught(e);
-            }
-        }
-        ProjectManager.getInstance().removeMainWindow(this);
-        this.getStage().close();
-        if (ProjectManager.getInstance().size() == 0) {
-            ProgramExecutorService.getExecutorService().shutdownNow();
-            Platform.exit();
-        }
-        return !openNewDocument;
-    }
 
     /**
      * update the menus
@@ -340,4 +307,14 @@ public class MainWindow {
             algorithmsTabPane.getSelectionModel().select(viewerTab);
         }
     }
+
+    /**
+     * closes the current window. If it is the last to close, will ask for confirmation and then quit
+     *
+     * @return true if closed, false if canceled
+     */
+    public boolean close() {
+        return !SaveBeforeClose.apply(this) || ProjectManager.getInstance().closeMainWindow(this);
+    }
+
 }

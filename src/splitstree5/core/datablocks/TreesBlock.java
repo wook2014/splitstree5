@@ -19,8 +19,8 @@
 
 package splitstree5.core.datablocks;
 
-import javafx.beans.InvalidationListener;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import jloda.phylo.PhyloTree;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
@@ -42,7 +42,7 @@ public class TreesBlock extends ADataBlock {
     public TreesBlock(String name) {
         this();
         setName(name);
-        trees.addListener((InvalidationListener) observable -> setShortDescription(getInfo()));
+        trees.addListener((ListChangeListener<? super PhyloTree>) c -> setShortDescription(getInfo()));
     }
 
     /**

@@ -28,15 +28,12 @@ import javafx.scene.control.ListView;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import jloda.fx.ExtendedFXMLLoader;
-import jloda.util.Basic;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.algorithms.filters.TaxaFilter;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.ViewerTab;
-import splitstree5.gui.algorithmtab.taxafilterview.TaxaFilterPane;
 import splitstree5.menu.MenuController;
 import splitstree5.undo.UndoRedoManager;
 
@@ -58,7 +55,8 @@ public class AlgorithmTab<P extends ADataBlock, C extends ADataBlock> extends Vi
     private final UndoRedoManager undoManager;
     private AlgorithmPane algorithmPane;
     private Algorithm<P, C> currentAlgorithm;
-    private final BooleanProperty algorithmIsApplicable = new SimpleBooleanProperty();
+    private final BooleanProperty algorithmIsApplicable = new SimpleBooleanProperty(); // is the algorithm generally applicable to the given type of input data?
+    private final BooleanProperty algorithmSettingsIsApplicable = new SimpleBooleanProperty(); // are the current settings applicable?
     private final BooleanProperty applicableChangeHasBeenMade = new SimpleBooleanProperty();
 
     private Map<Algorithm<P, C>, AlgorithmPane> algorithm2pane = new HashMap<>(); // we keep used panes around in case we want to undo back to one
@@ -169,8 +167,7 @@ public class AlgorithmTab<P extends ADataBlock, C extends ADataBlock> extends Vi
         });
 
         algorithmIsApplicable.setValue(currentAlgorithm.isApplicable(connector.getTaxaBlock(), connector.getParentDataBlock(), connector.getChildDataBlock()));
-        controller.getApplyButton().disableProperty().bind((applicableChangeHasBeenMade.and(algorithmIsApplicable)).not());
-
+        controller.getApplyButton().disableProperty().bind((applicableChangeHasBeenMade.and(algorithmIsApplicable).and(algorithmSettingsIsApplicable)).not());
     }
 
     /**
@@ -179,19 +176,14 @@ public class AlgorithmTab<P extends ADataBlock, C extends ADataBlock> extends Vi
     private AlgorithmPane updateAlgorithmPane() {
         algorithmPane = algorithm2pane.get(currentAlgorithm);
         if (algorithmPane == null) {
-            if (currentAlgorithm instanceof TaxaFilter) {
-                try {
-                    algorithmPane = new TaxaFilterPane((TaxaFilter) currentAlgorithm);
-                } catch (IOException e) {
-                    Basic.caught(e);
-                }
-            } else algorithmPane = currentAlgorithm.getControl(); // todo: remove this whole mechanism?
+            algorithmPane = currentAlgorithm.getAlgorithmPane(); // some algorithms have their own control pane
             if (algorithmPane == null)
                 algorithmPane = new GenericAlgorithmPane<>(connector, currentAlgorithm);
             algorithm2pane.put(currentAlgorithm, algorithmPane);
             algorithmPane.setDocument(document);
             algorithmPane.setUndoManager(undoManager);
             algorithmPane.setConnector(connector);
+            algorithmSettingsIsApplicable.bind(algorithmPane.applicableProperty());
             /*
             algorithmPane.setPrefWidth(controller.getCenterPane().getWidth());
             algorithmPane.setPrefHeight(controller.getCenterPane().getHeight());

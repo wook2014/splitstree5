@@ -62,7 +62,7 @@ public class ConnectorService<P extends ADataBlock, C extends ADataBlock> extend
                     connector.stateProperty().set(UpdateState.COMPUTING);
 
                     connector.getChild().getDataBlock().clear(); // always start with a fresh datablock
-                    Thread.sleep(1000);
+                    Thread.sleep(100);
                     connector.getAlgorithm().compute(getProgressListener(), connector.getTaxaBlock(), connector.getParent().getDataBlock(), connector.getChild().getDataBlock());
                 } catch (CanceledException ex) {
                     System.err.println("USER CANCELED");

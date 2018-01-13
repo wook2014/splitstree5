@@ -35,11 +35,13 @@ import java.util.List;
  * Daniel Huson, 12/25/16.
  */
 public class Document {
+    private static int untitledCount = 0;
+
     private final Workflow workflow;
     private MainWindow mainWindow;
 
     private final StringProperty fileName = new SimpleStringProperty();
-    private final StringProperty name = new SimpleStringProperty("Untitled");
+    private final StringProperty name = new SimpleStringProperty();
     private final ASelectionModel<Taxon> taxaSelectionModel = new ASelectionModel<>();
 
     private final StringProperty methodsText = new SimpleStringProperty();
@@ -50,6 +52,7 @@ public class Document {
      * constructor
      */
     public Document() {
+        name.set((++untitledCount < 2) ? "Untitled" : ("Untitled [" + untitledCount + "]"));
         workflow = new Workflow(this);
         workflow.updatingProperty().addListener((c, o, n) -> updateMethodsText());
         workflow.incrementTopologyChanged();

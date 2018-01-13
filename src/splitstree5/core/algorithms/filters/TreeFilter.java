@@ -41,15 +41,11 @@ import java.util.Map;
  * Daniel Huson, 12/31/16.
  */
 public class TreeFilter extends Algorithm<TreesBlock, TreesBlock> implements IFromTrees, IToTrees {
-    public enum Consensus {Strict, Majority, Loose, Network, None}
-
-    private Consensus optionConsensusMethod = Consensus.None;
-
     private final ArrayList<String> enabledTrees = new ArrayList<>();
     private final ArrayList<String> disabledTrees = new ArrayList<>();
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock ignored, TreesBlock parent, TreesBlock child) throws InterruptedException, CanceledException {
+    public void compute(ProgressListener progress, TaxaBlock ignored, TreesBlock parent, TreesBlock child) throws CanceledException {
         if (enabledTrees.size() == 0 && disabledTrees.size() == 0) // nothing has been explicitly set, copy everything
         {
             progress.setMaximum(0);
@@ -94,7 +90,7 @@ public class TreeFilter extends Algorithm<TreesBlock, TreesBlock> implements IFr
         return disabledTrees;
     }
 
-    public AlgorithmPane getControl() {
+    public AlgorithmPane getAlgorithmPane() {
         try {
             return new TreeFilterPane(this);
         } catch (IOException e) {

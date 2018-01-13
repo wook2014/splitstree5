@@ -132,8 +132,8 @@ public class CharactersFilter extends Algorithm<CharactersBlock, CharactersBlock
         super.clear();
     }
 
-    public AlgorithmPane getControl() {
-        return super.getControl();
+    public AlgorithmPane getAlgorithmPane() {
+        return super.getAlgorithmPane();
     }
 
     public boolean isOptionExcludeGapSites() {

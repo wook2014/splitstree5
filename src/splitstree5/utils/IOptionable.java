@@ -80,5 +80,5 @@ public interface IOptionable {
      *
      * @return pane or null
      */
-    AlgorithmPane getControl();
+    AlgorithmPane getAlgorithmPane();
 }

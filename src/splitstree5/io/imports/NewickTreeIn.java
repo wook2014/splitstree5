@@ -10,10 +10,7 @@ import splitstree5.utils.nexus.TreesUtilities;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * Newick tree importer
@@ -89,16 +86,23 @@ public class NewickTreeIn implements IToTrees, IImportTrees {
                         }
                     }*/
 
-                    labels.addAll(tree.getNodeLabels());
-                    // this is for partial Trees
-                    if (size == 0) size = labels.size();
-                    if (labels.size() != size) partial = true;
-                    //treesString.append("tree t").append(count++).append("=").append(str).append("\n");
+                    final Set<String> treeNodeLabels = tree.getNodeLabels();
+                    if (labels.size() == 0)
+                        labels.addAll(treeNodeLabels);
+                    else {
+                        if (!treeNodeLabels.equals(labels)) {
+                            partial = true;
+                            labels.addAll(treeNodeLabels);
+                        }
+
+                    }
+                    tree.setName(String.format("Tree-%05d", trees.size()));
                     trees.getTrees().add(tree);
                 }
             }
 
             taxa.addTaxaByNames(labels);
+            trees.setPartial(partial);
 
         }
     }

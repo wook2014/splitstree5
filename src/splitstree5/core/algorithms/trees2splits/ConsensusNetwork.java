@@ -19,6 +19,8 @@
 
 package splitstree5.core.algorithms.trees2splits;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import jloda.phylo.PhyloTree;
@@ -51,7 +53,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
     public enum EdgeWeights {Median, Mean, Count, Sum, None}
 
     private final SimpleObjectProperty<EdgeWeights> optionEdgeWeights = new SimpleObjectProperty<>(EdgeWeights.Mean);
-    private double optionThreshold = 0.33;
+    private DoubleProperty optionThreshold = new SimpleDoubleProperty(0.5);
 
     public final static String DESCRIPTION = "Computes the consensus splits of trees (Holland and Moulton 2003)";
 
@@ -104,11 +106,13 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
             }
         }
 
+        final double threshold = (optionThreshold.getValue() < 1 ? optionThreshold.getValue() : 0.999999);
+
         int count = 0;
         for (BitSet aSet : split2weights.keySet()) {
             final WeightStats weightStats = split2weights.get(aSet);
             final double wgt;
-            if (weightStats.getCount() / (double) trees.size() > optionThreshold) {
+            if (weightStats.getCount() / (double) trees.size() > threshold) {
                 switch (getOptionEdgeWeights()) {
                     case Count:
                         wgt = weightStats.getCount();
@@ -172,11 +176,15 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
     }
 
     public double getOptionThreshold() {
+        return optionThreshold.get();
+    }
+
+    public DoubleProperty optionThresholdProperty() {
         return optionThreshold;
     }
 
     public void setOptionThreshold(double optionThreshold) {
-        this.optionThreshold = optionThreshold;
+        this.optionThreshold.set(optionThreshold);
     }
 
     /**

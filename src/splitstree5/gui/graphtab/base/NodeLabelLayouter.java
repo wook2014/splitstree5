@@ -131,59 +131,61 @@ public class NodeLabelLayouter {
         }
 
         for (Node v : phyloGraph.nodes()) {
-            final ANodeView nv = node2view.getValue(v);
-            final javafx.scene.Node shape = nv.getShape();
-            final Bounds shapeBounds = new BoundingBox(shape.getLayoutX(), shape.getLayoutY(), shape.getBoundsInLocal().getWidth(), shape.getBoundsInLocal().getHeight());
+            if (v.getDegree() > 0) {
+                final ANodeView nv = node2view.getValue(v);
+                final javafx.scene.Node shape = nv.getShape();
+                final Bounds shapeBounds = new BoundingBox(shape.getLayoutX(), shape.getLayoutY(), shape.getBoundsInLocal().getWidth(), shape.getBoundsInLocal().getHeight());
 
-            final double angle;
-            if (v.getDegree() == 1) {
-                Edge e = v.getFirstAdjacentEdge();
-                AEdgeView ev = edge2view.getValue(e);
-                angle = GeometryUtils.computeAngle(nv.getLocation().subtract(ev.getReferencePoint()));
-            } else {
-                final ArrayList<Integer> array = new ArrayList<>(v.getDegree());
-                for (Edge e : v.adjacentEdges()) {
-                    final AEdgeView ev = edge2view.getValue(e);
-                    final double alpha = GeometryUtils.modulo360(GeometryUtils.computeAngle(ev.getReferencePoint().subtract(nv.getLocation())));
-                    array.add((int) Math.round(alpha));
-                }
-                array.sort(Comparator.naturalOrder());
-                array.add(360 + array.get(0));
-                int gap = 0;
-                int best = 0;
-                for (int next = 0; next < array.size() - 1; next++) {
-                    final int nextGap = (int) Math.round(GeometryUtils.modulo360(array.get(next + 1) - array.get(next)));
-                    if (nextGap > gap) {
-                        best = next;
-                        gap = nextGap;
+                final double angle;
+                if (v.getDegree() == 1) {
+                    Edge e = v.getFirstAdjacentEdge();
+                    AEdgeView ev = edge2view.getValue(e);
+                    angle = GeometryUtils.computeAngle(nv.getLocation().subtract(ev.getReferencePoint()));
+                } else {
+                    final ArrayList<Integer> array = new ArrayList<>(v.getDegree());
+                    for (Edge e : v.adjacentEdges()) {
+                        final AEdgeView ev = edge2view.getValue(e);
+                        final double alpha = GeometryUtils.modulo360(GeometryUtils.computeAngle(ev.getReferencePoint().subtract(nv.getLocation())));
+                        array.add((int) Math.round(alpha));
                     }
-                }
-                angle = 0.5 * (array.get(best) + array.get(best + 1));
-            }
-
-            final javafx.scene.Node label = nv.getLabel();
-            if (label != null) {
-                // System.err.println("Label " + label.getLayoutBounds());
-
-                Point2D location = new Point2D(0.5 * (shapeBounds.getMaxX() + shapeBounds.getMinX() - label.getLayoutBounds().getWidth()),
-                        0.5 * (shapeBounds.getMaxY() + shapeBounds.getMinY() - label.getLayoutBounds().getHeight()));
-                BoundingBox bbox = new BoundingBox(location.getX(), location.getY(), label.getLayoutBounds().getWidth(), label.getLayoutBounds().getHeight());
-
-                boolean ok = false;
-                while (!ok) {
-                    ok = true;
-                    for (BoundingBox other : boundsList) {
-                        if (other.intersects(bbox)) {
-                            location = GeometryUtils.translateByAngle(location, angle, 0.2 * bbox.getHeight());
-                            bbox = new BoundingBox(location.getX(), location.getY(), Math.max(1, label.getLayoutBounds().getWidth()), Math.max(1, label.getLayoutBounds().getHeight()));
-                            ok = false;
-                            break;
+                    array.sort(Comparator.naturalOrder());
+                    array.add(360 + array.get(0));
+                    int gap = 0;
+                    int best = 0;
+                    for (int next = 0; next < array.size() - 1; next++) {
+                        final int nextGap = (int) Math.round(GeometryUtils.modulo360(array.get(next + 1) - array.get(next)));
+                        if (nextGap > gap) {
+                            best = next;
+                            gap = nextGap;
                         }
                     }
+                    angle = 0.5 * (array.get(best) + array.get(best + 1));
                 }
-                boundsList.add(bbox);
-                label.setLayoutX(bbox.getMinX());
-                label.setLayoutY(bbox.getMinY());
+
+                final javafx.scene.Node label = nv.getLabel();
+                if (label != null) {
+                    // System.err.println("Label " + label.getLayoutBounds());
+
+                    Point2D location = new Point2D(0.5 * (shapeBounds.getMaxX() + shapeBounds.getMinX() - label.getLayoutBounds().getWidth()),
+                            0.5 * (shapeBounds.getMaxY() + shapeBounds.getMinY() - label.getLayoutBounds().getHeight()));
+                    BoundingBox bbox = new BoundingBox(location.getX(), location.getY(), label.getLayoutBounds().getWidth(), label.getLayoutBounds().getHeight());
+
+                    boolean ok = false;
+                    while (!ok) {
+                        ok = true;
+                        for (BoundingBox other : boundsList) {
+                            if (other.intersects(bbox)) {
+                                location = GeometryUtils.translateByAngle(location, angle, 0.2 * bbox.getHeight());
+                                bbox = new BoundingBox(location.getX(), location.getY(), Math.max(1, label.getLayoutBounds().getWidth()), Math.max(1, label.getLayoutBounds().getHeight()));
+                                ok = false;
+                                break;
+                            }
+                        }
+                    }
+                    boundsList.add(bbox);
+                    label.setLayoutX(bbox.getMinX());
+                    label.setLayoutY(bbox.getMinY());
+                }
             }
         }
     }

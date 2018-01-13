@@ -78,7 +78,7 @@ public class TaxaFilter extends Algorithm<TaxaBlock, TaxaBlock> implements IFrom
         return disabledTaxa;
     }
 
-    public AlgorithmPane getControl() {
+    public AlgorithmPane getAlgorithmPane() {
         try {
             return new TaxaFilterPane(this);
         } catch (IOException e) {

@@ -59,7 +59,7 @@ public class OptionableBase extends ANamed implements IOptionable {
      *
      * @return pane or null
      */
-    public AlgorithmPane getControl() {
+    public AlgorithmPane getAlgorithmPane() {
         return null;
     }
 }
