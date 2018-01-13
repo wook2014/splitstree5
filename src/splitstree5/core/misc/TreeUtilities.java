@@ -24,7 +24,7 @@ import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.utils.nexus.TreesUtilities;
+import splitstree5.utils.TreesUtilities;
 
 import java.util.BitSet;
 import java.util.Collection;

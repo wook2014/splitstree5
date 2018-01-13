@@ -25,10 +25,10 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import jloda.fx.ExtendedFXMLLoader;
 import jloda.util.Basic;
+import splitstree5.gui.utils.Alert;
 import splitstree5.io.imports.IImporter;
-import splitstree5.main.ImportManager;
+import splitstree5.main.ImporterManager;
 import splitstree5.main.MainWindow;
-import splitstree5.utils.Alert;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,13 +53,13 @@ public class ImportDialog {
             stage.setY(parentMainWindow.getStage().getY() + 50);
         }
 
-        controller.getDataTypeComboBox().getItems().addAll(ImportManager.getInstance().getAllDataTypes());
-        controller.getFileFormatComboBox().getItems().addAll(ImportManager.getInstance().getAllFileFormats());
+        controller.getDataTypeComboBox().getItems().addAll(ImporterManager.getInstance().getAllDataTypes());
+        controller.getFileFormatComboBox().getItems().addAll(ImporterManager.getInstance().getAllFileFormats());
 
         controller.getBrowseButton().setOnAction((e) -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Open Import File");
-            fileChooser.getExtensionFilters().addAll(ImportManager.getInstance().getAllExtensionFilters());
+            fileChooser.getExtensionFilters().addAll(ImporterManager.getInstance().getAllExtensionFilters());
             // show file browser
             File selectedFile = fileChooser.showOpenDialog(stage);
             if (selectedFile != null)
@@ -69,9 +69,9 @@ public class ImportDialog {
         controller.getDataTypeComboBox().getItems().addAll();
 
         controller.getFileTextField().textProperty().addListener((c, o, n) -> {
-            String dataType = ImportManager.getInstance().getDataType(n);
+            String dataType = ImporterManager.getInstance().getDataType(n);
             controller.getDataTypeComboBox().setValue(dataType);
-            String dataFormat = ImportManager.getInstance().getFileFormat(n);
+            String dataFormat = ImporterManager.getInstance().getFileFormat(n);
             controller.getFileFormatComboBox().setValue(dataFormat);
 
         });
@@ -80,7 +80,7 @@ public class ImportDialog {
 
         controller.getImportButton().setOnAction((e) -> {
             stage.close();
-            final IImporter importer = ImportManager.getInstance().getImporterByDataTypeAndFileFormat(controller.getDataTypeComboBox().getSelectionModel().getSelectedItem(),
+            final IImporter importer = ImporterManager.getInstance().getImporterByDataTypeAndFileFormat(controller.getDataTypeComboBox().getSelectionModel().getSelectedItem(),
                     controller.getFileFormatComboBox().getSelectionModel().getSelectedItem());
             if (importer == null)
                 new Alert("Can't import selected data type and file format");

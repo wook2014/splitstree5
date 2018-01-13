@@ -36,9 +36,9 @@ import splitstree5.core.misc.Taxon;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.algorithmtab.AlgorithmPane;
 import splitstree5.gui.graphtab.base.GraphTab;
+import splitstree5.gui.utils.DragAndDropSupportListView2;
 import splitstree5.undo.UndoRedoManager;
 import splitstree5.undo.UndoableChangeListViews2;
-import splitstree5.utils.DragAndDropSupportListView2;
 
 import java.io.IOException;
 import java.util.*;

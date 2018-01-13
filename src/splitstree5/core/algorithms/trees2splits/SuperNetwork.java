@@ -21,8 +21,8 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.SplitsUtilities;
-import splitstree5.utils.Alert;
-import splitstree5.utils.nexus.TreesUtilities;
+import splitstree5.gui.utils.Alert;
+import splitstree5.utils.TreesUtilities;
 
 import java.util.*;
 

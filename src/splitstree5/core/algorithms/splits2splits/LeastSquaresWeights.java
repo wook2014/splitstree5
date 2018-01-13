@@ -9,7 +9,7 @@ import splitstree5.core.algorithms.interfaces.IToSplits;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.utils.nexus.SplitsUtilities;
+import splitstree5.utils.SplitsUtilities;
 
 /**
  * wrapper for the least squares computations
@@ -59,6 +59,11 @@ public class LeastSquaresWeights extends Algorithm<SplitsBlock, SplitsBlock> imp
         }
         */
 
+    }
+
+    @Override
+    public boolean isApplicable(TaxaBlock taxaBlock, SplitsBlock parent, SplitsBlock child) {
+        return !parent.isPartial();
     }
 
     /**

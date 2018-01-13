@@ -34,12 +34,14 @@ import splitstree5.core.datablocks.TreesBlock;
  * Daniel Huson, 1/2018
  */
 public class TreeSelector extends Algorithm<TreesBlock, TreesBlock> implements IFromTrees, IToTrees {
-    private final IntegerProperty selectedOption = new SimpleIntegerProperty(1);
+    private final IntegerProperty optionSelected = new SimpleIntegerProperty(1);
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock ignored, TreesBlock parent, TreesBlock child) throws CanceledException {
-        int which = Math.max(0, Math.min(parent.size() - 1, selectedOption.get() - 1));
+        int which = Math.max(0, Math.min(parent.size() - 1, optionSelected.get() - 1));
         child.getTrees().add(parent.getTrees().get(which));
+        child.setRooted(parent.isRooted());
+        child.setPartial(parent.isPartial());
     }
 
     @Override
@@ -48,19 +50,19 @@ public class TreeSelector extends Algorithm<TreesBlock, TreesBlock> implements I
 
     @Override
     public String getShortDescription() {
-        return "Selected: " + selectedOption.get();
+        return "Selected: " + optionSelected.get();
     }
 
-    public int getSelectedOption() {
-        return selectedOption.get();
+    public int getOptionSelected() {
+        return optionSelected.get();
     }
 
-    public IntegerProperty selectedOptionProperty() {
-        return selectedOption;
+    public IntegerProperty optionSelectedProperty() {
+        return optionSelected;
     }
 
-    public void setSelectedOption(int selectedOption) {
-        this.selectedOption.set(selectedOption);
+    public void setOptionSelected(int optionSelected) {
+        this.optionSelected.set(optionSelected);
     }
 
     /*

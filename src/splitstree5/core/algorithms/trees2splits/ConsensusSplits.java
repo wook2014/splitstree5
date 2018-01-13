@@ -59,7 +59,7 @@ public class ConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> implemen
 
     @Override
     public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent, SplitsBlock child) {
-        return parent.size() > 0 && !parent.isPartial();
+        return !parent.isPartial();
     }
 
     @Override

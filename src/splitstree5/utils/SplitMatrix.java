@@ -23,7 +23,6 @@ import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
-import splitstree5.utils.nexus.TreesUtilities;
 
 import java.util.BitSet;
 import java.util.HashMap;

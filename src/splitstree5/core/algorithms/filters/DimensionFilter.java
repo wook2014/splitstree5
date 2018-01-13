@@ -49,6 +49,8 @@ import jloda.util.CanceledException;
 import jloda.util.Pair;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
+import splitstree5.core.algorithms.interfaces.IFromSplits;
+import splitstree5.core.algorithms.interfaces.IToSplits;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Compatibility;
@@ -60,8 +62,8 @@ import java.util.BitSet;
  * heuristic dimension filter
  * Daniel Huson, 5.2004
  */
-public class DFilter extends Algorithm<SplitsBlock, SplitsBlock> {
-    private final IntegerProperty maxDimension = new SimpleIntegerProperty(4);
+public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> implements IFromSplits, IToSplits {
+    private final IntegerProperty optionMaxDimension = new SimpleIntegerProperty(4);
 
     /**
      * heuristically remove high-dimension configurations in split graph
@@ -73,8 +75,8 @@ public class DFilter extends Algorithm<SplitsBlock, SplitsBlock> {
      */
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, SplitsBlock parent, SplitsBlock child) throws CanceledException {
         final int COMPUTE_DSUBGRAPH_MAXDIMENSION = 5;
-        progress.setTasks("Dimension filter", "maxDimension=" + maxDimension);
-        System.err.println("\nRunning Dimension-Filter for d=" + maxDimension);
+        progress.setTasks("Dimension filter", "optionMaxDimension=" + optionMaxDimension.get());
+        System.err.println("\nRunning Dimension-Filter for d=" + optionMaxDimension.get());
         BitSet toDelete = new BitSet(); // set of splits to be removed from split set
 
         try {
@@ -86,12 +88,12 @@ public class DFilter extends Algorithm<SplitsBlock, SplitsBlock> {
             progress.setMaximum(origNumberOfNodes);    //initialize maximum progress
             progress.setProgress(0);
 
-            if (maxDimension.get() <= COMPUTE_DSUBGRAPH_MAXDIMENSION) {
+            if (optionMaxDimension.get() <= COMPUTE_DSUBGRAPH_MAXDIMENSION) {
                 System.err.println("(Small D: using D-subgraph)");
-                computeDSubgraph(progress, graph, maxDimension.get() + 1);
+                computeDSubgraph(progress, graph, optionMaxDimension.get() + 1);
             } else {
                 System.err.println("(Large D: using maxDegree heuristic)");
-                relaxGraph(progress, graph, maxDimension.get() - 1);
+                relaxGraph(progress, graph, optionMaxDimension.get() - 1);
             }
             //System.err.println("relaxed: "+graph);
 
@@ -102,10 +104,10 @@ public class DFilter extends Algorithm<SplitsBlock, SplitsBlock> {
                 graph.deleteNode(worstNode);
                 //System.err.println("deleted: "+graph);
 
-                if (maxDimension.get() <= COMPUTE_DSUBGRAPH_MAXDIMENSION)
-                    computeDSubgraph(progress, graph, maxDimension.get() + 1);
+                if (optionMaxDimension.get() <= COMPUTE_DSUBGRAPH_MAXDIMENSION)
+                    computeDSubgraph(progress, graph, optionMaxDimension.get() + 1);
                 else
-                    relaxGraph(progress, graph, maxDimension.get() - 1);
+                    relaxGraph(progress, graph, optionMaxDimension.get() - 1);
                 //System.err.println("relaxed: "+graph);
                 progress.setProgress(origNumberOfNodes - graph.getNumberOfNodes());
             }
@@ -328,16 +330,16 @@ public class DFilter extends Algorithm<SplitsBlock, SplitsBlock> {
         }
     }
 
-    public int getMaxDimension() {
-        return maxDimension.get();
+    public int getOptionMaxDimension() {
+        return optionMaxDimension.get();
     }
 
-    public IntegerProperty maxDimensionProperty() {
-        return maxDimension;
+    public IntegerProperty optionMaxDimensionProperty() {
+        return optionMaxDimension;
     }
 
-    public void setMaxDimension(int maxDimension) {
-        this.maxDimension.set(maxDimension);
+    public void setOptionMaxDimension(int optionMaxDimension) {
+        this.optionMaxDimension.set(optionMaxDimension);
     }
 }
 

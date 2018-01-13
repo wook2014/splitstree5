@@ -60,4 +60,9 @@ public class AverageConsensus extends Algorithm<TreesBlock, SplitsBlock> impleme
     public void setOptionAnalyseDistances(boolean analyseDistances) {
         this.analyseDistances = analyseDistances;
     }
+
+    @Override
+    public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent, SplitsBlock child) {
+        return !parent.isPartial();
+    }
 }

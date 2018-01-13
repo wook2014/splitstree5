@@ -9,7 +9,7 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.CharactersType;
-import splitstree5.utils.Alert;
+import splitstree5.gui.utils.Alert;
 
 /**
  * Implements the Upholt (1979) distance for restriction site data.

@@ -21,7 +21,7 @@ package splitstree5.core.algorithms.characters2distances.utils;
 
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.models.SubstitutionModel;
-import splitstree5.utils.nexus.SplitsException;
+import splitstree5.utils.SplitsException;
 
 
 /**

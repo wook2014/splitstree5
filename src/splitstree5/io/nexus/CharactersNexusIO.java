@@ -26,11 +26,11 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.datablocks.characters.CharactersType;
+import splitstree5.gui.utils.Alert;
 import splitstree5.io.nexus.stateLabeler.MicrostatStateLabeler;
 import splitstree5.io.nexus.stateLabeler.ProteinStateLabeler;
 import splitstree5.io.nexus.stateLabeler.StandardStateLabeler;
 import splitstree5.io.nexus.stateLabeler.StateLabeler;
-import splitstree5.utils.Alert;
 
 import java.io.IOException;
 import java.io.StreamTokenizer;

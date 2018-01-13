@@ -9,7 +9,7 @@ import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.utils.Alert;
+import splitstree5.gui.utils.Alert;
 
 /**
  * Calculation of the LogDet transform.

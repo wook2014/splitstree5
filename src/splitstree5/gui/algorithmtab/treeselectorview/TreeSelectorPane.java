@@ -65,14 +65,14 @@ import javafx.scene.control.ListView;
 import jloda.fx.ExtendedFXMLLoader;
 import jloda.phylo.PhyloTree;
 import splitstree5.core.Document;
-import splitstree5.core.algorithms.filters.TreeFilter;
+import splitstree5.core.algorithms.filters.TreesFilter;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.algorithmtab.AlgorithmPane;
+import splitstree5.gui.utils.DragAndDropSupportListView2;
 import splitstree5.undo.UndoRedoManager;
 import splitstree5.undo.UndoableChangeListViews2;
-import splitstree5.utils.DragAndDropSupportListView2;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -82,7 +82,7 @@ import java.util.ArrayList;
  * Daniel Huson, 12/2016
  */
 public class TreeSelectorPane extends AlgorithmPane {
-    private final TreeFilter treeFilter;
+    private final TreesFilter treesFilter;
     private final TreeSelectorPaneController controller;
     private Document document;
     private UndoRedoManager undoManager;
@@ -99,8 +99,8 @@ public class TreeSelectorPane extends AlgorithmPane {
     /**
      * constructor
      */
-    public TreeSelectorPane(TreeFilter treeFilter) throws IOException {
-        this.treeFilter = treeFilter;
+    public TreeSelectorPane(TreesFilter treesFilter) throws IOException {
+        this.treesFilter = treesFilter;
         final ExtendedFXMLLoader extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         controller = (TreeSelectorPaneController) extendedFXMLLoader.getController();
         this.getChildren().setAll(extendedFXMLLoader.getRoot());
@@ -211,15 +211,15 @@ public class TreeSelectorPane extends AlgorithmPane {
             activeList.getItems().clear();
             inactiveList.getItems().clear();
 
-            if (treeFilter.getEnabledTrees().size() == 0 && treeFilter.getDisabledTrees().size() == 0) {
+            if (treesFilter.getEnabledTrees().size() == 0 && treesFilter.getDisabledTrees().size() == 0) {
                 for (PhyloTree phyloTree : ((TreesBlock) connector.getParent().getDataBlock()).getTrees()) {
                     activeList.getItems().add(phyloTree.getName());
                 }
             } else {
-                for (String name : treeFilter.getEnabledTrees()) {
+                for (String name : treesFilter.getEnabledTrees()) {
                     activeList.getItems().add(name);
                 }
-                for (String name : treeFilter.getDisabledTrees()) {
+                for (String name : treesFilter.getDisabledTrees()) {
                     inactiveList.getItems().add(name);
                 }
             }
@@ -232,10 +232,10 @@ public class TreeSelectorPane extends AlgorithmPane {
      * sync controller to model
      */
     public void syncController2Model() {
-        treeFilter.getEnabledTrees().clear();
-        treeFilter.getEnabledTrees().addAll(controller.getActiveList().getItems());
-        treeFilter.getDisabledTrees().clear();
-        treeFilter.getDisabledTrees().addAll(controller.getInactiveList().getItems());
+        treesFilter.getEnabledTrees().clear();
+        treesFilter.getEnabledTrees().addAll(controller.getActiveList().getItems());
+        treesFilter.getDisabledTrees().clear();
+        treesFilter.getDisabledTrees().addAll(controller.getInactiveList().getItems());
         connector.setState(UpdateState.INVALID);
     }
 }

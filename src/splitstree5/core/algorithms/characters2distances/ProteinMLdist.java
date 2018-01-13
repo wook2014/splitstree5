@@ -11,7 +11,7 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.CharactersType;
 import splitstree5.core.models.*;
-import splitstree5.utils.Alert;
+import splitstree5.gui.utils.Alert;
 
 /**
  * Computes the maximum likelihood protein distance estimates for a set of characters

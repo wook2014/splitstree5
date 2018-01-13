@@ -31,13 +31,13 @@ import java.util.*;
  * manages all import classes
  * Daniel Huson, 1.2018
  */
-public class ImportManager {
+public class ImporterManager {
     private final ArrayList<IImporter> importers;
     private final Set<FileChooser.ExtensionFilter> extensionFilters;
 
-    private static ImportManager instance;
+    private static ImporterManager instance;
 
-    private ImportManager() {
+    private ImporterManager() {
         importers = new ArrayList<>(PluginClassLoader.getInstances(IImporter.class, "splitstree5.io.imports"));
         extensionFilters = new HashSet<>();
         for (IImporter importer : importers) {
@@ -57,14 +57,14 @@ public class ImportManager {
             if (!ext.startsWith("*."))
                 ext = "*." + ext;
             set.add(ext);
-            set.add("ext.gz");
+            set.add(ext + ".gz");
         }
         return new ArrayList<>(set);
     }
 
-    public static ImportManager getInstance() {
+    public static ImporterManager getInstance() {
         if (instance == null)
-            instance = new ImportManager();
+            instance = new ImporterManager();
         return instance;
     }
 

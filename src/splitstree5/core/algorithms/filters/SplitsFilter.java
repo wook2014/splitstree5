@@ -174,6 +174,11 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
         disabledSplits.clear();
     }
 
+    @Override
+    public boolean isApplicable(TaxaBlock taxaBlock, SplitsBlock parent, SplitsBlock child) {
+        return !parent.isPartial();
+    }
+
     /**
      * get the set of enabledSplits data.
      *

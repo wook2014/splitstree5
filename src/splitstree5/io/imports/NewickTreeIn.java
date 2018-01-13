@@ -5,7 +5,7 @@ import jloda.util.Basic;
 import splitstree5.core.algorithms.interfaces.IToTrees;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.utils.nexus.TreesUtilities;
+import splitstree5.utils.TreesUtilities;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -94,7 +94,6 @@ public class NewickTreeIn implements IToTrees, IImportTrees {
                             partial = true;
                             labels.addAll(treeNodeLabels);
                         }
-
                     }
                     tree.setName(String.format("Tree-%05d", trees.size()));
                     trees.getTrees().add(tree);
@@ -103,7 +102,6 @@ public class NewickTreeIn implements IToTrees, IImportTrees {
 
             taxa.addTaxaByNames(labels);
             trees.setPartial(partial);
-
         }
     }
 

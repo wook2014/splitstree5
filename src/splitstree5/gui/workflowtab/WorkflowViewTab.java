@@ -57,7 +57,6 @@
 
 package splitstree5.gui.workflowtab;
 
-import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
@@ -76,11 +75,11 @@ import splitstree5.core.connectors.AConnector;
 import splitstree5.core.workflow.ANode;
 import splitstree5.core.workflow.Workflow;
 import splitstree5.gui.ViewerTab;
+import splitstree5.gui.utils.SelectionEffect;
 import splitstree5.menu.MenuController;
 import splitstree5.undo.UndoRedoManager;
 import splitstree5.undo.UndoableChangeList;
 import splitstree5.undo.UndoableRedoableCommand;
-import splitstree5.utils.SelectionEffect;
 
 import java.util.*;
 
@@ -94,11 +93,12 @@ public class WorkflowViewTab extends ViewerTab {
 
     private final Group nodeViews = new Group();
     private final Group edgeViews = new Group();
+    private final Group all = new Group();
 
     private final Map<ANode, WorkflowNodeView> node2NodeView = new HashMap<>();
     private final Map<ANode, List<WorkflowEdgeView>> node2EdgeViews = new HashMap<>();
 
-    private final Label noDataLabel = new Label("No data - import or open an input file");
+    private final Label noDataLabel = new Label("No data - open or import data from a file");
 
     private final ZoomableScrollPane scrollPane;
     private final Pane centerPane;
@@ -142,17 +142,17 @@ public class WorkflowViewTab extends ViewerTab {
             }
         });
 
-        getWorkflow().updatingProperty().addListener((InvalidationListener) (c) -> {
+        getWorkflow().updatingProperty().addListener((c) -> {
             if (getWorkflow().getNumberOfDataNodes() == 0)
-                centerPane.getChildren().add(noDataLabel);
-            else
-                centerPane.getChildren().remove(noDataLabel);
+                nodeViews.getChildren().add(noDataLabel);
+            else {
+                recompute();
+            }
         });
+
         noDataLabel.setTextFill(Color.DARKGRAY);
         if (getWorkflow().getNumberOfDataNodes() == 0)
-            centerPane.getChildren().add(noDataLabel);
-
-        recompute();
+            nodeViews.getChildren().add(noDataLabel);
     }
 
     /**

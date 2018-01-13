@@ -36,15 +36,27 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.utils;
+package splitstree5.gui.utils;
+
+import javafx.scene.effect.DropShadow;
+import javafx.scene.paint.Color;
 
 /**
- * a user alert
- * Daniel Huson, 2/3/17.
+ * effect used to indicate selection
+ * Daniel Huson, 11.2017
  */
-public class Alert {
-    public Alert(String message) {
-        System.err.println(message);
-        // todo: show an alert box, if in guimode
+public class SelectionEffect extends DropShadow {
+    private static SelectionEffect instance;
+
+    public static SelectionEffect getInstance() {
+        if (instance == null)
+            instance = new SelectionEffect();
+        return instance;
+    }
+
+    private SelectionEffect() {
+        setColor(Color.LIGHTBLUE);
+        setRadius(3);
+        setSpread(1);
     }
 }

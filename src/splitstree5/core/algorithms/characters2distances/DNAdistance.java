@@ -9,9 +9,9 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.CharactersType;
 import splitstree5.core.models.NucleotideModel;
-import splitstree5.utils.Alert;
-import splitstree5.utils.nexus.CharactersUtilities;
-import splitstree5.utils.nexus.SplitsException;
+import splitstree5.gui.utils.Alert;
+import splitstree5.gui.utils.CharactersUtilities;
+import splitstree5.utils.SplitsException;
 
 public abstract class DNAdistance extends SequenceBasedDistance {
 
@@ -125,11 +125,9 @@ public abstract class DNAdistance extends SequenceBasedDistance {
      * @throws SplitsException
      * @throws CanceledException
      */
-    protected DistancesBlock fillDistanceMatrix(ProgressListener progressListener, CharactersBlock characters, NucleotideModel model)
-            throws SplitsException, CanceledException {
-
-        int ntax = characters.getNtax();
-        DistancesBlock distances = new DistancesBlock();
+    protected DistancesBlock fillDistanceMatrix(ProgressListener progressListener, CharactersBlock characters, NucleotideModel model) throws SplitsException, CanceledException {
+        final int ntax = characters.getNtax();
+        final DistancesBlock distances = new DistancesBlock();
         distances.setNtax(ntax);
         //distances.setTriangle("both"); // todo always so?
         String states;
@@ -144,8 +142,7 @@ public abstract class DNAdistance extends SequenceBasedDistance {
 
         for (int s = 1; s <= ntax; s++) {
             for (int t = s + 1; t <= ntax; t++) {
-                PairwiseCompare seqPair =
-                        new PairwiseCompare(characters, states, s, t, optionHandleAmbiguousStates);
+                final PairwiseCompare seqPair = new PairwiseCompare(characters, states, s, t, optionHandleAmbiguousStates);
                 double dist = 100.0;
 
                 if (this.useML) {

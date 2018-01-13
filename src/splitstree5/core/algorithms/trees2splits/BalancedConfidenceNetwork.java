@@ -31,12 +31,11 @@ public class BalancedConfidenceNetwork extends Algorithm<TreesBlock, SplitsBlock
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock)
-            throws Exception {
+    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock) throws Exception {
 
         progressListener.setMaximum(100);
 
-        SplitMatrix M = new SplitMatrix(treesBlock, taxaBlock);
+        final SplitMatrix M = new SplitMatrix(treesBlock, taxaBlock);
         M.print();
 
         splitsBlock.copy(ConfidenceNetwork.getConfidenceNetwork(M, getOptionLevel(), taxaBlock.getNtax(), progressListener));
@@ -52,5 +51,10 @@ public class BalancedConfidenceNetwork extends Algorithm<TreesBlock, SplitsBlock
 
     public void setOptionLevel(double level) {
         this.level = level;
+    }
+
+    @Override
+    public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent, SplitsBlock child) {
+        return !parent.isPartial();
     }
 }

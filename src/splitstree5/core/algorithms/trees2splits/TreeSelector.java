@@ -11,7 +11,7 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.Compatibility;
 import splitstree5.core.misc.TreeUtilities;
-import splitstree5.utils.nexus.SplitsUtilities;
+import splitstree5.utils.SplitsUtilities;
 
 import java.util.BitSet;
 

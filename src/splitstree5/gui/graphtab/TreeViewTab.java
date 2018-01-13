@@ -45,7 +45,7 @@ public class TreeViewTab extends GraphTab {
     public TreeViewTab() {
         super();
         label.setGraphic(new ImageView(ResourceManager.getIcon("TreeView16.gif")));
-        setText("");
+        setText("Tree View");
         setGraphic(label);
     }
 

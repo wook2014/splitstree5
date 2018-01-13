@@ -37,7 +37,7 @@ import splitstree5.core.misc.Compatibility;
 import splitstree5.core.misc.SplitsUtilities;
 import splitstree5.core.misc.TreeUtilities;
 import splitstree5.io.nexus.SplitsNexusIO;
-import splitstree5.utils.nexus.SplitsException;
+import splitstree5.utils.SplitsException;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -135,7 +135,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
             }
             progressListener.setProgress(50 + 50 * ((count++) / split2weights.size()));
         }
-        splitstree5.utils.nexus.SplitsUtilities.verifySplits(splitsBlock, taxaBlock);
+        splitstree5.utils.SplitsUtilities.verifySplits(splitsBlock, taxaBlock);
 
 
         splitsBlock.setCycle(SplitsUtilities.computeCycle(taxaBlock.getNtax(), splitsBlock.getSplits()));
