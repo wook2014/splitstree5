@@ -103,7 +103,7 @@ public class ProjectManager {
             }
         }
         mainWindows.remove(mainWindow);
-        closeAndRemoveAuxilaryWindows(mainWindow);
+        closeAndRemoveAuxiliaryWindows(mainWindow);
         changed.set(changed.get() + 1);
 
         mainWindow.getStage().close();
@@ -123,7 +123,7 @@ public class ProjectManager {
         changed.set(changed.get() + 1);
     }
 
-    public void closeAndRemoveAuxilaryWindows(MainWindow mainWindow) {
+    public void closeAndRemoveAuxiliaryWindows(MainWindow mainWindow) {
         if (mainWindows2AdditionalWindows.containsKey(mainWindow)) {
             for (Stage stage : mainWindows2AdditionalWindows.get(mainWindow))
                 stage.close();
