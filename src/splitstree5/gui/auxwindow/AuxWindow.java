@@ -32,12 +32,12 @@ import javafx.stage.WindowEvent;
 import jloda.fx.ExtendedFXMLLoader;
 import jloda.util.ResourceManager;
 import splitstree5.core.Document;
-import splitstree5.core.project.ProjectManager;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.graphtab.SplitsViewTab;
 import splitstree5.gui.graphtab.TreeViewTab;
 import splitstree5.gui.texttab.TextViewTab;
 import splitstree5.main.MainWindow;
+import splitstree5.main.MainWindowManager;
 import splitstree5.menu.MenuController;
 
 import java.io.IOException;
@@ -133,7 +133,7 @@ public class AuxWindow implements IStageSupplier {
         stage.getIcons().setAll(ResourceManager.getIcon("SplitsTree5-16.png"));
         if (tab instanceof ViewerTab) {
             MainWindow mainWindow = ((ViewerTab) tab).getMainWindow();
-            ProjectManager.getInstance().addAuxiliaryWindow(mainWindow, stage);
+            MainWindowManager.getInstance().addAuxiliaryWindow(mainWindow, stage);
         }
     }
 
@@ -141,7 +141,7 @@ public class AuxWindow implements IStageSupplier {
     public void closedStage(Stage stage, Tab tab) {
         if (tab instanceof ViewerTab) {
             MainWindow mainWindow = ((ViewerTab) tab).getMainWindow();
-            ProjectManager.getInstance().removeAuxiliaryWindow(mainWindow, stage);
+            MainWindowManager.getInstance().removeAuxiliaryWindow(mainWindow, stage);
         }
     }
 }

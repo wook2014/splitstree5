@@ -22,7 +22,6 @@ package splitstree5.main;
 import javafx.stage.FileChooser;
 import jloda.util.Basic;
 import splitstree5.core.Document;
-import splitstree5.core.project.ProjectManager;
 import splitstree5.dialogs.imports.ImportDialog;
 import splitstree5.io.nexus.NexusFileParser;
 import splitstree5.io.nexus.NexusFileWriter;
@@ -105,8 +104,8 @@ public class MainWindowMenuController {
         });
 
         controller.getQuitMenuItem().setOnAction((e) -> {
-            while (ProjectManager.getInstance().size() > 0) {
-                final MainWindow window = ProjectManager.getInstance().getMainWindow(ProjectManager.getInstance().size() - 1);
+            while (MainWindowManager.getInstance().size() > 0) {
+                final MainWindow window = MainWindowManager.getInstance().getMainWindow(MainWindowManager.getInstance().size() - 1);
                 if (!window.close())
                     break;
             }

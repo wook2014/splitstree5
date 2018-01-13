@@ -1,4 +1,23 @@
 /*
+ *  Copyright (C) 2016 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
  *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
@@ -17,7 +36,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.project;
+package splitstree5.main;
 
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.ReadOnlyLongProperty;
@@ -27,7 +46,6 @@ import javafx.collections.ObservableSet;
 import javafx.stage.Stage;
 import jloda.util.Basic;
 import splitstree5.dialogs.ClosingLastDocument;
-import splitstree5.main.MainWindow;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,10 +53,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * manages projects
+ * manages all open main windows
  * Daniel Huson, 1.2018
  */
-public class ProjectManager {
+public class MainWindowManager {
     private final ArrayList<MainWindow> mainWindows;
     private final Map<MainWindow, ArrayList<Stage>> mainWindows2AdditionalWindows;
 
@@ -46,12 +64,12 @@ public class ProjectManager {
 
     private final ObservableSet<String> previousSelection;
 
-    private static ProjectManager instance;
+    private static MainWindowManager instance;
 
     /**
      * constructor
      */
-    private ProjectManager() {
+    private MainWindowManager() {
         mainWindows = new ArrayList<>();
         mainWindows2AdditionalWindows = new HashMap<>();
         previousSelection = FXCollections.observableSet();
@@ -62,9 +80,9 @@ public class ProjectManager {
      *
      * @return instance
      */
-    public static ProjectManager getInstance() {
+    public static MainWindowManager getInstance() {
         if (instance == null)
-            instance = new ProjectManager();
+            instance = new MainWindowManager();
         return instance;
     }
 
@@ -89,7 +107,7 @@ public class ProjectManager {
 
     public boolean closeMainWindow(MainWindow mainWindow) {
         if (mainWindows.size() == 1) {
-            if (ProjectManager.getInstance().size() == 1) {
+            if (MainWindowManager.getInstance().size() == 1) {
                 if (!ClosingLastDocument.apply(mainWindow.getStage())) {
                     if (mainWindow.getDocument().getWorkflow().getWorkingDataNode() == null)
                         return false;

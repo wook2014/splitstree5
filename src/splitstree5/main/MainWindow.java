@@ -39,7 +39,6 @@ import jloda.util.ResourceManager;
 import splitstree5.core.Document;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
-import splitstree5.core.project.ProjectManager;
 import splitstree5.core.workflow.ANode;
 import splitstree5.dialogs.SaveBeforeClose;
 import splitstree5.gui.ISavesPreviousSelection;
@@ -181,7 +180,7 @@ public class MainWindow {
             }
         });
 
-        ProjectManager.getInstance().addMainWindow(this);
+        MainWindowManager.getInstance().addMainWindow(this);
     }
 
     /**
@@ -314,7 +313,7 @@ public class MainWindow {
      * @return true if closed, false if canceled
      */
     public boolean close() {
-        return !SaveBeforeClose.apply(this) || ProjectManager.getInstance().closeMainWindow(this);
+        return !SaveBeforeClose.apply(this) || MainWindowManager.getInstance().closeMainWindow(this);
     }
 
 }

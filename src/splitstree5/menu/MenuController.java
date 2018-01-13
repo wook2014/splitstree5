@@ -48,8 +48,8 @@ import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 import jloda.util.AppleStuff;
 import jloda.util.ProgramProperties;
-import splitstree5.core.project.ProjectManager;
 import splitstree5.main.MainWindow;
+import splitstree5.main.MainWindowManager;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -416,7 +416,7 @@ public class MenuController {
         final InvalidationListener invalidationListener = observable -> {
             windowMenu.getItems().clear();
             int count = 0;
-            for (MainWindow mainWindow : ProjectManager.getInstance().getMainWindows()) {
+            for (MainWindow mainWindow : MainWindowManager.getInstance().getMainWindows()) {
                 if (count == 0)
                     windowMenu.getItems().add(new SeparatorMenuItem());
                 if (mainWindow.getStage() != null) {
@@ -425,8 +425,8 @@ public class MenuController {
                     menuItem.setAccelerator(new KeyCharacterCombination("" + (++count), KeyCombination.SHORTCUT_DOWN));
                     windowMenu.getItems().add(menuItem);
                 }
-                if (ProjectManager.getInstance().getAuxiliaryWindows(mainWindow) != null) {
-                    for (Stage auxStage : ProjectManager.getInstance().getAuxiliaryWindows(mainWindow)) {
+                if (MainWindowManager.getInstance().getAuxiliaryWindows(mainWindow) != null) {
+                    for (Stage auxStage : MainWindowManager.getInstance().getAuxiliaryWindows(mainWindow)) {
                         final MenuItem menuItem = new MenuItem(auxStage.getTitle().replaceAll("- SplitsTree5", ""));
                         menuItem.setOnAction((e) -> auxStage.toFront());
                         windowMenu.getItems().add(menuItem);
@@ -434,7 +434,7 @@ public class MenuController {
                 }
             }
         };
-        ProjectManager.getInstance().changedProperty().addListener(invalidationListener);
+        MainWindowManager.getInstance().changedProperty().addListener(invalidationListener);
         invalidationListener.invalidated(null);
     }
 

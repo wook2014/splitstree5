@@ -57,6 +57,7 @@
 
 package splitstree5.gui.workflowtab;
 
+import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
@@ -65,8 +66,10 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import jloda.fx.ASelectionModel;
 import splitstree5.core.Document;
 import splitstree5.core.connectors.AConnector;
@@ -94,6 +97,8 @@ public class WorkflowViewTab extends ViewerTab {
 
     private final Map<ANode, WorkflowNodeView> node2NodeView = new HashMap<>();
     private final Map<ANode, List<WorkflowEdgeView>> node2EdgeViews = new HashMap<>();
+
+    private final Label noDataLabel = new Label("No data - import or open an input file");
 
     private final ZoomableScrollPane scrollPane;
     private final Pane centerPane;
@@ -136,6 +141,16 @@ public class WorkflowViewTab extends ViewerTab {
                 }
             }
         });
+
+        getWorkflow().updatingProperty().addListener((InvalidationListener) (c) -> {
+            if (getWorkflow().getNumberOfDataNodes() == 0)
+                centerPane.getChildren().add(noDataLabel);
+            else
+                centerPane.getChildren().remove(noDataLabel);
+        });
+        noDataLabel.setTextFill(Color.DARKGRAY);
+        if (getWorkflow().getNumberOfDataNodes() == 0)
+            centerPane.getChildren().add(noDataLabel);
 
         recompute();
     }

@@ -66,10 +66,10 @@ import jloda.util.Single;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
-import splitstree5.core.project.ProjectManager;
 import splitstree5.gui.ISavesPreviousSelection;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.style.Style;
+import splitstree5.main.MainWindowManager;
 import splitstree5.menu.MenuController;
 import splitstree5.undo.UndoRedoManager;
 import splitstree5.undo.UndoableRedoableCommand;
@@ -500,13 +500,13 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
     }
 
     public void saveAsPreviousSelection() {
-        ProjectManager.getInstance().getPreviousSelection().clear();
+        MainWindowManager.getInstance().getPreviousSelection().clear();
         if (nodeSelectionModel.getSelectedItems().size() > 0) {
             for (Node node : nodeSelectionModel.getSelectedItems()) {
                 if (node.getOwner() == getPhyloGraph()) {
                     final String label = getPhyloGraph().getLabel(node);
                     if (label != null)
-                        ProjectManager.getInstance().getPreviousSelection().add(label);
+                        MainWindowManager.getInstance().getPreviousSelection().add(label);
                 }
             }
         }
@@ -514,7 +514,7 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
             for (Edge edge : edgeSelectionModel.getSelectedItems()) {
                 final String label = getPhyloGraph().getLabel(edge);
                 if (label != null)
-                    ProjectManager.getInstance().getPreviousSelection().add(label);
+                    MainWindowManager.getInstance().getPreviousSelection().add(label);
             }
         }
     }
@@ -675,10 +675,10 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
         });
 
         controller.getSelectFromPreviousMenuItem().setOnAction((e) -> {
-            selectByLabel(ProjectManager.getInstance().getPreviousSelection());
+            selectByLabel(MainWindowManager.getInstance().getPreviousSelection());
 
         });
-        controller.getSelectFromPreviousMenuItem().disableProperty().bind(Bindings.isEmpty(ProjectManager.getInstance().getPreviousSelection()));
+        controller.getSelectFromPreviousMenuItem().disableProperty().bind(Bindings.isEmpty(MainWindowManager.getInstance().getPreviousSelection()));
 
         controller.getZoomInMenuItem().setOnAction((e) -> scale(1.1, 1.1));
         controller.getZoomOutMenuItem().setOnAction((e) -> scale(1 / 1.1, 1 / 1.1));
