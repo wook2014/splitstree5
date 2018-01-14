@@ -1200,28 +1200,6 @@ public class PhyloTree extends PhyloGraph {
             }
         };
     }
-
-    /**
-     * /**
-     * iterates over all leaf labels
-     *
-     * @return node labels
-     */
-    public Iterable<String> leafLabels() {
-        return () -> new Iterator<String>() {
-            final private Iterator<Node> it = leaves().iterator();
-
-            @Override
-            public boolean hasNext() {
-                return it.hasNext();
-            }
-
-            @Override
-            public String next() {
-                return getLabel(it.next());
-            }
-        };
-    }
 }
 
 // EOF
