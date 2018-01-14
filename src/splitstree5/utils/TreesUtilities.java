@@ -203,7 +203,7 @@ public class TreesUtilities {
                     //---
                     new BitSet();
             PhyloTree tree = trees.getTrees().get(which);
-            for (String v : tree.getNodeLabels()) {
+            for (String v : tree.nodeLabels()) {
                 support.set(taxa.indexOf(v)); //todo test???
             }
             //---

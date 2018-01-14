@@ -24,10 +24,7 @@ import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Daniel Huson
@@ -305,7 +302,6 @@ public class PhyloTree extends PhyloGraph {
         parseBracketNotation(str, rooted, true);
     }
 
-
     /**
      * parse a tree in newick format, as a rooted tree, if desired.
      *
@@ -479,7 +475,7 @@ public class PhyloTree extends PhyloGraph {
                             {
                                 if (label.startsWith("'") && label.endsWith("'") && label.length() > 1)
                                     label = label.substring(1, label.length() - 1);
-                                // give first occurence of this label the suffix .1
+                                // give first occurrence of this label the suffix .1
                                 final Node old = seen.get(label);
                                 if (old != null) // change label of node
                                 {
@@ -627,7 +623,7 @@ public class PhyloTree extends PhyloGraph {
     }
 
     /**
-     * deletes divertex
+     * deletes di-vertex
      *
      * @param v Node
      * @return the new edge
@@ -1169,6 +1165,62 @@ public class PhyloTree extends PhyloGraph {
 
     public void setWeight(double weight) {
         this.weight = weight;
+    }
+
+    /**
+     * /**
+     * iterates over leaves
+     *
+     * @return leaves
+     */
+    public Iterable<Node> leaves() {
+        return () -> new Iterator<Node>() {
+            private Node v = getFirstNode();
+
+            {
+                while (v != null && v.getOutDegree() > 0) {
+                    v = getNextNode(v);
+                }
+            }
+
+            @Override
+            public boolean hasNext() {
+                return v != null;
+            }
+
+            @Override
+            public Node next() {
+                final Node result = v;
+                {
+                    while (v != null && v.getOutDegree() > 0) {
+                        v = getNextNode(v);
+                    }
+                }
+                return result;
+            }
+        };
+    }
+
+    /**
+     * /**
+     * iterates over all leaf labels
+     *
+     * @return node labels
+     */
+    public Iterable<String> leafLabels() {
+        return () -> new Iterator<String>() {
+            final private Iterator<Node> it = leaves().iterator();
+
+            @Override
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+
+            @Override
+            public String next() {
+                return getLabel(it.next());
+            }
+        };
     }
 }
 

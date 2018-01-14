@@ -26,16 +26,23 @@
             xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="splitstree5.dialogs.imports.ImportDialogController">
     <bottom>
-        <ButtonBar maxHeight="40.0" minWidth="100.0" prefHeight="40.0" prefWidth="100.0"
-                   style="-fx-border-color: lightgray;" BorderPane.alignment="CENTER">
-            <buttons>
-                <Button fx:id="cancelButton" cancelButton="true" mnemonicParsing="false" text="Cancel"/>
-                <Button fx:id="importButton" defaultButton="true" mnemonicParsing="false" text="Import"/>
-            </buttons>
+        <HBox minHeight="40.0" style="-fx-border-color: lightgray;" BorderPane.alignment="CENTER">
+            <children>
+                <ProgressBar fx:id="progressBar" maxWidth="1.7976931348623157E308" progress="0.0" HBox.hgrow="ALWAYS">
+                    <padding>
+                        <Insets top="5.0"/>
+                    </padding>
+                </ProgressBar>
+                <Pane HBox.hgrow="ALWAYS"/>
+                <Button fx:id="cancelButton" cancelButton="true" mnemonicParsing="false" text="Cancel"
+                        HBox.hgrow="NEVER"/>
+                <Button fx:id="importButton" defaultButton="true" mnemonicParsing="false" text="Import"
+                        HBox.hgrow="NEVER"/>
+            </children>
             <padding>
-                <Insets right="5.0"/>
+                <Insets bottom="5.0" left="10.0" right="10.0" top="5.0"/>
             </padding>
-        </ButtonBar>
+        </HBox>
     </bottom>
     <center>
         <VBox fx:id="mainVBox" BorderPane.alignment="CENTER">

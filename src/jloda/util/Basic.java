@@ -1102,6 +1102,21 @@ public class Basic {
             return null;
         }
     }
+
+    /**
+     * abbreviate a string to the given length
+     *
+     * @param string
+     * @param length
+     * @return abbreviated string
+     */
+    public static String abbreviateDotDotDot(String string, int length) {
+        if (string.length() <= length)
+            return string;
+        else
+            return string.substring(0, length - 1) + "...";
+
+    }
 }
 
 /**

@@ -8,106 +8,88 @@ import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IToTrees;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
+import splitstree5.io.imports.utils.SimpleNewickParser;
 import splitstree5.utils.TreesUtilities;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * Newick tree importer
  * Daria Evseeva,04.10.2017.
  */
 public class NewickTreeIn implements IToTrees, IImportTrees {
-    public static final List<String> extensions = new ArrayList<>(Arrays.asList("new", "nwk", "tree", "tre"));
+    public static final List<String> extensions = new ArrayList<>(Arrays.asList("new", "nwk", "tree", "tre", "treefile"));
 
-    /*
-    Implement first the Importer Interface
-    */
-    private boolean optionConvertMultiLabeledTree = false;
+    boolean optionConvertMultiLabeledTree = false;
 
+    /**
+     * parse trees
+     *
+     * @param progressListener
+     * @param inputFile
+     * @param taxa
+     * @param trees
+     * @throws IOException
+     * @throws CanceledException
+     */
     public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, TreesBlock trees) throws IOException, CanceledException {
+        try {
+            taxa.clear();
+            trees.clear();
 
-        taxa.clear();
-        trees.clear();
+            try (FileInputIterator it = new FileInputIterator(inputFile)) {
+                progressListener.setMaximum(it.getMaximumProgress());
+                progressListener.setProgress(0);
 
-        try (FileInputIterator it = new FileInputIterator(inputFile)) {
-            progressListener.setMaximum(it.getMaximumProgress());
-            progressListener.setProgress(0);
-            // importing first tree and generating taxa object
-            //String str;
-            HashSet<String> labels = new HashSet<>();
-            boolean haveWarnedMultipleLabels = false;
+                final HashSet<String> leafLabels = new HashSet<>();
+                final SimpleNewickParser newickParser = new SimpleNewickParser();
+                boolean partial = false;
+                final ArrayList<String> parts = new ArrayList<>();
 
-            // read in the trees
-            int count = 1, size = 0;
-            boolean partial = false;
-            while (it.hasNext()) {
-                String aLine = it.next();
-
-                if (aLine.trim().length() == 0 || aLine.startsWith("#"))
-                    continue; // skip empty lines and comment lines
-                //System.err.println("Tree: " + aLine);
-                //str = "";
-                final StringBuilder s = new StringBuilder();
-                s.append(aLine);
-                while (!aLine.contains(";") && it.hasNext()) {
-                    //str += aLine;
-                    s.append(aLine);
-                    aLine = it.next();
-                }
-                String str = s.toString().trim();
-
-                if (str.length() > 0) {
-                    str = str.replaceAll(" ", "").replaceAll("\t", "");
-                    PhyloTree tree = new PhyloTree();
-                    tree.parseBracketNotation(Basic.removeComments(str, '[', ']'), true);
-                    try {
-                        tree.parseBracketNotation(Basic.removeComments(str, '[', ']'), true);
-                        if (TreesUtilities.hasNumbersOnInternalNodes(tree))
+                // read in the trees
+                int count = 0;
+                while (it.hasNext()) {
+                    final String line = Basic.removeComments(it.next(), '[', ']');
+                    if (line.endsWith(";")) {
+                        final String treeLine;
+                        if (parts.size() > 0) {
+                            parts.add(line);
+                            treeLine = Basic.toString(parts, "");
+                            parts.clear();
+                        } else
+                            treeLine = line;
+                        final PhyloTree tree = newickParser.parse(treeLine);
+                        if (TreesUtilities.hasNumbersOnInternalNodes(tree)) {
                             TreesUtilities.changeNumbersOnInternalNodesToEdgeConfidencies(tree);
-                    } catch (Exception ex) {
-                        System.err.println(ex.getMessage());
-                        throw ex;
+                        }
+                        if (leafLabels.size() == 0) {
+                            leafLabels.addAll(newickParser.getLeafLabels());
+
+                        } else {
+                            if (!leafLabels.equals(newickParser.getLeafLabels())) {
+                                partial = true;
+                                leafLabels.addAll(newickParser.getLeafLabels());
+                            }
+                        }
+                        tree.setName(String.format("Tree-%05d", (++count)));
+                        trees.getTrees().add(tree);
+                        progressListener.setProgress(it.getProgress());
                     }
-
-                    // todo : convertMultiTree2Splits: return taxa and splits in the case of a multi-labeled tree
-
-/*
-                    if (getOptionConvertMultiLabeledTree()) {
-                        try {
-                            Document doc = convertMultiTree2Splits(tree);
-                            StringWriter sw = new StringWriter();
-                            doc.write(sw);
-                            //System.err.println(sw.toString());
-                            return sw.toString();
-                        } catch (NotMultiLabeledException ex) {
-                            Basic.caught(ex);
-                        }
-                    } else {
-                        if (tree.getInputHasMultiLabels() && !haveWarnedMultipleLabels) {
-                            new Alert("One or more trees contain multiple occurrences of the same taxon-label,"
-                                    + " these have been made unique by adding suffixes .1, .2 etc");
-                            haveWarnedMultipleLabels = true;
-                        }
-                    }*/
-
-                    final Set<String> treeNodeLabels = tree.getNodeLabels();
-                    if (labels.size() == 0)
-                        labels.addAll(treeNodeLabels);
-                    else {
-                        if (!treeNodeLabels.equals(labels)) {
-                            partial = true;
-                            labels.addAll(treeNodeLabels);
-                        }
-                    }
-                    tree.setName(String.format("Tree-%05d", trees.size()));
-                    trees.getTrees().add(tree);
                 }
+                if (parts.size() > 0)
+                    System.err.println("Ignoring trailing lines at end of file:\n" + Basic.abbreviateDotDotDot(Basic.toString(parts, "\n"), 400));
+                taxa.addTaxaByNames(leafLabels);
+                trees.setPartial(partial);
+                trees.setRooted(true);
             }
-            taxa.addTaxaByNames(labels);
-            trees.setPartial(partial);
-            progressListener.setProgress(it.getProgress());
+        } catch (Exception ex) {
+            Basic.caught(ex);
+            throw ex;
         }
     }
 

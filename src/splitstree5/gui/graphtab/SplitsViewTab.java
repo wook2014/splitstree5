@@ -23,7 +23,6 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
-import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import jloda.fx.ASelectionModel;
@@ -50,7 +49,7 @@ public class SplitsViewTab extends GraphTab {
      */
     public SplitsViewTab() {
         super();
-        final Label label = new Label("Splits Network");
+        label.setText("Splits Network");
         label.setGraphic(new ImageView(ResourceManager.getIcon("SplitsNetworkView16.gif")));
         setText("");
         setGraphic(label);

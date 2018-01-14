@@ -19,10 +19,11 @@
 
 package splitstree5.dialogs.imports;
 
+import javafx.application.Platform;
 import javafx.stage.Stage;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
-import jloda.util.ProgressPercentage;
+import jloda.util.ProgressListener;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.characters2distances.HammingDistances;
 import splitstree5.core.algorithms.distances2splits.NeighborNet;
@@ -57,10 +58,11 @@ public class Importer {
      * @param importer
      * @param filename
      */
-    public static void apply(MainWindow parentMainWindow, IImporter importer, String filename) {
+    public static void apply(ProgressListener progress, MainWindow parentMainWindow, IImporter importer, String filename) {
         if (importer != null) {
             try {
                 final MainWindow mainWindow;
+
                 if (parentMainWindow.getDocument().getWorkflow().getWorkingDataNode() == null) {
                     mainWindow = parentMainWindow;
                 } else {
@@ -71,8 +73,6 @@ public class Importer {
                 document.setFileName(Basic.replaceFileSuffix(filename, ".st5"));
                 Workflow workflow = document.getWorkflow();
                 TaxaBlock taxaBlock = new TaxaBlock();
-
-                ProgressPercentage progress = new ProgressPercentage();
 
                 if (importer instanceof IImportCharacters) {
                     final CharactersBlock dataBlock = new CharactersBlock();
@@ -122,8 +122,6 @@ public class Importer {
 
                         final ADataNode<TreeViewBlock> treesView = workflow.createDataNode(new TreeViewBlock());
                         workflow.createConnector(singleTree, treesView, new TreeEmbedder());
-
-
                     }
                 } else if (importer instanceof IToSplits) {
                     final SplitsBlock dataBlock = new SplitsBlock();
@@ -133,13 +131,15 @@ public class Importer {
                     workflow.createConnector(workflow.getWorkingDataNode(), splitsView, new SplitsNetworkAlgorithm());
                 }
                 document.setupTaxonSelectionModel();
-                document.getWorkflow().getTopTaxaNode().setState(UpdateState.VALID);
                 document.setDirty(true);
 
-                if (mainWindow == parentMainWindow) // using existing document
-                    mainWindow.getStage().toFront();
-                else // new document
-                    mainWindow.show(new Stage(), parentMainWindow.getStage().getX() + 50, parentMainWindow.getStage().getY() + 50);
+                Platform.runLater(() -> {
+                    document.getWorkflow().getTopTaxaNode().setState(UpdateState.VALID);
+                    if (mainWindow == parentMainWindow) // using existing document
+                        mainWindow.getStage().toFront();
+                    else // new document
+                        mainWindow.show(new Stage(), parentMainWindow.getStage().getX() + 50, parentMainWindow.getStage().getY() + 50);
+                });
             } catch (IOException ex) {
                 new Alert("Import failed: " + ex.getMessage());
             } catch (CanceledException ex) {

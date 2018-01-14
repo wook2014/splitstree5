@@ -39,10 +39,7 @@
 package splitstree5.core.algorithms.views;
 
 import javafx.application.Platform;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
 import javafx.geometry.Dimension2D;
@@ -79,15 +76,17 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
 
     public enum ParentPlacement {LeafAverage, ChildrenAverage}
 
-    private final Property<GraphLayout> layout = new SimpleObjectProperty<>(GraphLayout.Radial);
-    private final Property<EdgeLengths> edgeLengths = new SimpleObjectProperty<>(EdgeLengths.Weights);
-    private final Property<ParentPlacement> parentPlacement = new SimpleObjectProperty<>(ParentPlacement.ChildrenAverage);
-    private final Property<AEdgeView.EdgeShape> edgeShape = new SimpleObjectProperty<>(AEdgeView.EdgeShape.Straight);
+    private final Property<GraphLayout> optionLayout = new SimpleObjectProperty<>(GraphLayout.Radial);
+    private final Property<EdgeLengths> optionEdgeLengths = new SimpleObjectProperty<>(EdgeLengths.Weights);
+    private final Property<ParentPlacement> optionParentPlacement = new SimpleObjectProperty<>(ParentPlacement.ChildrenAverage);
+    private final Property<AEdgeView.EdgeShape> optionEdgeShape = new SimpleObjectProperty<>(AEdgeView.EdgeShape.Straight);
 
-    private final IntegerProperty cubicCurveParentControl = new SimpleIntegerProperty(20);
-    private final IntegerProperty cubicCurveChildControl = new SimpleIntegerProperty(50);
+    private final IntegerProperty optionCubicCurveParentControl = new SimpleIntegerProperty(20);
+    private final IntegerProperty optionCubicCurveChildControl = new SimpleIntegerProperty(50);
 
-    private final IntegerProperty leafGroupGapProperty = new SimpleIntegerProperty(20);
+    private final IntegerProperty optionLeafGroupGapProperty = new SimpleIntegerProperty(20);
+
+    private final BooleanProperty optionShowInternalNodeLabels = new SimpleBooleanProperty();
 
     private final Map<String, Style> nodeLabel2Style = new HashMap<>();
 
@@ -175,8 +174,9 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                 // compute all views and put their parts into the appropriate groups
                 for (Node v : tree.nodes()) {
                     final StringBuilder buf = new StringBuilder();
+                    final String text;
                     final String label = tree.getLabel(v);
-                    if (label != null) {
+                    if (label != null && (v.getOutDegree() == 0 || optionShowInternalNodeLabels.get())) {
                         if (label.startsWith("<")) // multi-labeled node
                         {
                             final String[] tokens = Basic.split(label.substring(1, label.length() - 1), ',');
@@ -192,10 +192,12 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                             buf.append(taxaBlock.get(Basic.parseInt(label)));
                         else
                             buf.append(label);
-                    }
-                    final String text = buf.toString();
+                        text = buf.toString();
+                    } else
+                        text = null;
+
                     final ANodeView nodeView = view.createNodeView(v, node2point.getValue(v), text);
-                    if (text.length() > 0 && view.getNodeLabel2Style().containsKey(text)) {
+                    if (text != null && text.length() > 0 && view.getNodeLabel2Style().containsKey(text)) {
                         nodeView.setStyling(view.getNodeLabel2Style().get(text));
                     }
 
@@ -289,8 +291,8 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
         } else {
             if (isAllChildrenAreLeaves(v)) { // treat these separately because we want to place them all slightly closer together
                 final int numberOfChildren = v.getOutDegree();
-                final float firstAngle = (float) ((360.0 / angleParts) * (nextLeafNum + leafGroupGapProperty.get() / 200f));
-                final float deltaAngle = (float) ((360.0 / angleParts) * (nextLeafNum + numberOfChildren - 1.0 - leafGroupGapProperty.get() / 200f)) - firstAngle;
+                final float firstAngle = (float) ((360.0 / angleParts) * (nextLeafNum + optionLeafGroupGapProperty.get() / 200f));
+                final float deltaAngle = (float) ((360.0 / angleParts) * (nextLeafNum + numberOfChildren - 1.0 - optionLeafGroupGapProperty.get() / 200f)) - firstAngle;
                 float angle = firstAngle;
                 for (Edge e : v.outEdges()) {
                     edgeAngles.put(e, angle);
@@ -313,7 +315,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                 }
 
                 if (f != null) {
-                    if (parentPlacement.getValue() == ParentPlacement.ChildrenAverage)
+                    if (optionParentPlacement.getValue() == ParentPlacement.ChildrenAverage)
                         edgeAngles.put(f, 0.5f * (firstAngle + lastAngle));
                     else {
                         edgeAngles.put(f, (float) (180.0 / angleParts * (firstLeaf + nextLeafNum - 1)));
@@ -420,8 +422,8 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
 
             if (isAllChildrenAreLeaves(v)) { // treat these separately because we want to place them all slightly closer together
                 final int numberOfChildren = v.getOutDegree();
-                final float firstHeight = (nextLeafRank + leafGroupGapProperty.get() / 200.0f);
-                final float deltaHeight = (nextLeafRank + numberOfChildren - 1 - leafGroupGapProperty.get() / 200.0f) - firstHeight;
+                final float firstHeight = (nextLeafRank + optionLeafGroupGapProperty.get() / 200.0f);
+                final float deltaHeight = (nextLeafRank + numberOfChildren - 1 - optionLeafGroupGapProperty.get() / 200.0f) - firstHeight;
                 float lastHeight = 0;
                 float height = firstHeight;
                 for (Edge e : v.outEdges()) {
@@ -445,7 +447,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                     lastHeight = eh;
                     lastLeaf = nextLeafRank;
                 }
-                if (parentPlacementProperty().getValue() == ParentPlacement.ChildrenAverage)
+                if (optionParentPlacementProperty().getValue() == ParentPlacement.ChildrenAverage)
                     nodeHeights.setValue(v, 0.5f * (firstHeight + lastHeight));
                 else
                     nodeHeights.setValue(v, 0.5f * (firstLeafRnak + lastLeaf - 1));
@@ -490,8 +492,8 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                 final Point2D end = node2point.getValue(w);
                 final Point2D mid = new Point2D(start.getX(), end.getY());
                 final Point2D support = new Point2D(closestChild.getX(), end.getY());
-                final Point2D control1 = start.add(cubicCurveParentControl.get() / 100.0 * (support.getX() - start.getX()), 0);
-                final Point2D control2 = support.add(-cubicCurveChildControl.get() / 100.0 * (support.getX() - start.getX()), 0);
+                final Point2D control1 = start.add(optionCubicCurveParentControl.get() / 100.0 * (support.getX() - start.getX()), 0);
+                final Point2D control2 = support.add(-optionCubicCurveChildControl.get() / 100.0 * (support.getX() - start.getX()), 0);
 
                 edge2controlPoints.put(e, new EdgeControlPoints(control1, mid, control2, support));
 
@@ -528,91 +530,103 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
 
 
     public GraphLayout getOptionLayout() {
-        return layout.getValue();
+        return optionLayout.getValue();
     }
 
-    public Property<GraphLayout> layoutProperty() {
-        return layout;
+    public Property<GraphLayout> optionLayoutProperty() {
+        return optionLayout;
     }
 
     public String getShortDescriptionOptionLayout() {
-        return "Sets the tree layout to radial or fromLeft";
+        return "Sets the tree optionLayout to radial or fromLeft";
     }
 
     public void setOptionLayout(GraphLayout layoutProperty) {
-        this.layout.setValue(layoutProperty);
+        this.optionLayout.setValue(layoutProperty);
     }
 
     public EdgeLengths getOptionEdgeLengths() {
-        return edgeLengths.getValue();
+        return optionEdgeLengths.getValue();
     }
 
-    public Property<EdgeLengths> edgeLengthsProperty() {
-        return edgeLengths;
+    public Property<EdgeLengths> optionEdgeLengthsProperty() {
+        return optionEdgeLengths;
     }
 
     public void setOptionEdgeLengths(EdgeLengths edgeLengthsProperty) {
-        this.edgeLengths.setValue(edgeLengthsProperty);
+        this.optionEdgeLengths.setValue(edgeLengthsProperty);
     }
 
     public ParentPlacement getOptionParentPlacement() {
-        return parentPlacement.getValue();
+        return optionParentPlacement.getValue();
     }
 
-    public Property<ParentPlacement> parentPlacementProperty() {
-        return parentPlacement;
+    public Property<ParentPlacement> optionParentPlacementProperty() {
+        return optionParentPlacement;
     }
 
     public void setOptionParentPlacement(ParentPlacement parentPlacementProperty) {
-        this.parentPlacement.setValue(parentPlacementProperty);
+        this.optionParentPlacement.setValue(parentPlacementProperty);
     }
 
     public AEdgeView.EdgeShape getOptionEdgeShape() {
-        return edgeShape.getValue();
+        return optionEdgeShape.getValue();
     }
 
-    public Property<AEdgeView.EdgeShape> edgeShapeProperty() {
-        return edgeShape;
+    public Property<AEdgeView.EdgeShape> optionEdgeShapeProperty() {
+        return optionEdgeShape;
     }
 
     public void setOptionEdgeShape(AEdgeView.EdgeShape edgeShapeProperty) {
-        this.edgeShape.setValue(edgeShapeProperty);
+        this.optionEdgeShape.setValue(edgeShapeProperty);
     }
 
     public int getOptionCubicCurveParentControl() {
-        return cubicCurveParentControl.get();
+        return optionCubicCurveParentControl.get();
     }
 
-    public IntegerProperty cubicCurveParentControlProperty() {
-        return cubicCurveParentControl;
+    public IntegerProperty optionCubicCurveParentControlProperty() {
+        return optionCubicCurveParentControl;
     }
 
     public void setOptionCubicCurveParentControl(int parentScale) {
-        this.cubicCurveParentControl.set(parentScale);
+        this.optionCubicCurveParentControl.set(parentScale);
     }
 
     public int getOptionCubicCurveChildControl() {
-        return cubicCurveChildControl.get();
+        return optionCubicCurveChildControl.get();
     }
 
-    public IntegerProperty cubicCurveChildControlProperty() {
-        return cubicCurveChildControl;
+    public IntegerProperty optionCubicCurveChildControlProperty() {
+        return optionCubicCurveChildControl;
     }
 
     public void setOptionCubicCurveChildControl(int childScale) {
-        this.cubicCurveChildControl.set(childScale);
+        this.optionCubicCurveChildControl.set(childScale);
     }
 
     public int getOptionLeafGroupGapProperty() {
-        return leafGroupGapProperty.get();
+        return optionLeafGroupGapProperty.get();
     }
 
-    public IntegerProperty leafGroupGapPropertyProperty() {
-        return leafGroupGapProperty;
+    public IntegerProperty optionLeafGroupGapPropertyProperty() {
+        return optionLeafGroupGapProperty;
     }
 
     public void setOptionLeafGroupGapProperty(int leafGroupGapProperty) {
-        this.leafGroupGapProperty.set(leafGroupGapProperty);
+        this.optionLeafGroupGapProperty.set(leafGroupGapProperty);
+    }
+
+    public boolean isOptionShowInternalNodeLabels() {
+        return optionShowInternalNodeLabels.get();
+    }
+
+    public BooleanProperty optionShowInternalNodeLabelsProperty() {
+        return optionShowInternalNodeLabels;
+    }
+
+    public void setOptionShowInternalNodeLabels(boolean optionShowInternalNodeLabels) {
+        this.optionShowInternalNodeLabels.set(optionShowInternalNodeLabels);
     }
 
     public List<String> listOptions() {

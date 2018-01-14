@@ -231,7 +231,7 @@ public class TaxaBlock extends ADataBlock {
      */
     public BitSet getTaxaSet() {
         final BitSet taxa = new BitSet();
-        taxa.set(1, getNtax());
+        taxa.set(1, getNtax() + 1);
         return taxa;
     }
 

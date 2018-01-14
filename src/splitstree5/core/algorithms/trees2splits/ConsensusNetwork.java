@@ -50,6 +50,8 @@ import java.util.*;
  * @author Tobias Kloepper, Daniel Huson and David Bryant
  */
 public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
+    private boolean debug = false;
+
     public enum EdgeWeights {Median, Mean, Count, Sum, None}
 
     private final SimpleObjectProperty<EdgeWeights> optionEdgeWeights = new SimpleObjectProperty<>(EdgeWeights.Mean);
@@ -68,42 +70,38 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
     /**
      * compute the consensus splits
      *
-     * @param progressListener
+     * @param progress
      * @param taxaBlock
      * @param treesBlock
      * @param splitsBlock
      */
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock)
-            throws CanceledException, SplitsException {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock) throws CanceledException, SplitsException {
 
-        progressListener.setMaximum(100);
         final ObservableList<PhyloTree> trees = treesBlock.getTrees();
-        TreeSelector trans;
         final Map<BitSet, WeightStats> split2weights = new HashMap<>();
-        BitSet taxaInTree = taxaBlock.getTaxaSet();
+        final BitSet taxaInTree = taxaBlock.getTaxaSet();
 
         if (treesBlock.getNTrees() == 1) System.err.println("Consensus network: only one Tree specified");
 
+        progress.setMaximum(100);
+        progress.setProgress(0);
+
         for (int which = 0; which < trees.size(); which++) {
             final PhyloTree tree = trees.get(which);
-            progressListener.setProgress(50 * which / trees.size());
-            try {
-                final List<ASplit> splits = new ArrayList<>();
-                TreeUtilities.computeSplits(taxaBlock, taxaInTree, tree, splits);
+            final List<ASplit> splits = new ArrayList<>();
+            TreeUtilities.computeSplits(taxaBlock, taxaInTree, tree, splits);
                 /*SplitsBlock tmp = new SplitsBlock();
                 TreesBlock tmpT= new TreesBlock();
                 tmpT.getTrees().add(tree);
                 trans = new TreeSelector();
                 trans.compute(progressListener, taxaBlock, treesBlock, tmp);*/
 
-                for (ASplit split : splits) {
-                    System.err.println(split.getA());
-                    final WeightStats weightStats = split2weights.computeIfAbsent(split.getA(), k -> new WeightStats());
-                    weightStats.add((float) split.getWeight());
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            for (ASplit split : splits) {
+                System.err.println(split.getA());
+                final WeightStats weightStats = split2weights.computeIfAbsent(split.getA(), k -> new WeightStats());
+                weightStats.add((float) split.getWeight());
             }
+            progress.setProgress((long) (which * 50.0 / trees.size()));
         }
 
         final double threshold = (optionThreshold.getValue() < 1 ? optionThreshold.getValue() : 0.999999);
@@ -133,24 +131,25 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
                 final float confidence = (float) weightStats.getCount() / (float) trees.size();
                 splitsBlock.getSplits().add(new ASplit(aSet, taxaBlock.getNtax(), wgt, confidence));
             }
-            progressListener.setProgress(50 + 50 * ((count++) / split2weights.size()));
+            progress.setProgress(50 + 50 * ((count++) / split2weights.size()));
         }
         splitstree5.utils.SplitsUtilities.verifySplits(splitsBlock, taxaBlock);
-
 
         splitsBlock.setCycle(SplitsUtilities.computeCycle(taxaBlock.getNtax(), splitsBlock.getSplits()));
         splitsBlock.setFit(-1);
         splitsBlock.setCompatibility(Compatibility.compute(taxaBlock.getNtax(), splitsBlock.getSplits(), splitsBlock.getCycle()));
 
-        System.err.println("DEBUG 2");
-        final StringWriter w1 = new StringWriter();
-        w1.write("#nexus\n");
-        try {
-            SplitsNexusIO.write(w1, taxaBlock, splitsBlock, null);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (debug) {
+            System.err.println("DEBUG 2");
+            final StringWriter w1 = new StringWriter();
+            w1.write("#nexus\n");
+            try {
+                SplitsNexusIO.write(w1, taxaBlock, splitsBlock, null);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.err.println(w1.toString());
         }
-        System.err.println(w1.toString());
     }
 
     @Override

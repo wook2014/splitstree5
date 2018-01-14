@@ -38,12 +38,15 @@ import java.io.IOException;
  * Daniel Huson, 1.2018
  */
 public class ImportDialog {
+    private final ImporterService importerService;
     private final ImportDialogController controller;
     private final Stage stage;
 
     public ImportDialog(MainWindow parentMainWindow) throws IOException {
         final ExtendedFXMLLoader<ImportDialogController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         controller = extendedFXMLLoader.getController();
+
+        importerService = new ImporterService();
 
         stage = new Stage();
         stage.setScene(new Scene(extendedFXMLLoader.getRoot()));
@@ -53,8 +56,13 @@ public class ImportDialog {
             stage.setY(parentMainWindow.getStage().getY() + 50);
         }
 
+        controller.getProgressBar().setVisible(false);
+
         controller.getDataTypeComboBox().getItems().addAll(ImporterManager.getInstance().getAllDataTypes());
+        controller.getDataTypeComboBox().disableProperty().bind(controller.getProgressBar().visibleProperty());
+
         controller.getFileFormatComboBox().getItems().addAll(ImporterManager.getInstance().getAllFileFormats());
+        controller.getFileFormatComboBox().disableProperty().bind(controller.getProgressBar().visibleProperty());
 
         controller.getBrowseButton().setOnAction((e) -> {
             FileChooser fileChooser = new FileChooser();
@@ -65,30 +73,31 @@ public class ImportDialog {
             if (selectedFile != null)
                 controller.getFileTextField().setText(selectedFile.getPath());
         });
+        controller.getBrowseButton().disableProperty().bind(controller.getProgressBar().visibleProperty());
 
-        controller.getDataTypeComboBox().getItems().addAll();
 
         controller.getFileTextField().textProperty().addListener((c, o, n) -> {
             String dataType = ImporterManager.getInstance().getDataType(n);
             controller.getDataTypeComboBox().setValue(dataType);
             String dataFormat = ImporterManager.getInstance().getFileFormat(n);
             controller.getFileFormatComboBox().setValue(dataFormat);
-
         });
+        controller.getFileTextField().disableProperty().bind(controller.getProgressBar().visibleProperty());
 
-        controller.getCancelButton().setOnAction((e) -> stage.close());
+
+        controller.getCancelButton().setOnAction((e) -> close());
 
         controller.getImportButton().setOnAction((e) -> {
-            stage.close();
             final IImporter importer = ImporterManager.getInstance().getImporterByDataTypeAndFileFormat(controller.getDataTypeComboBox().getSelectionModel().getSelectedItem(),
                     controller.getFileFormatComboBox().getSelectionModel().getSelectedItem());
             if (importer == null)
                 new Alert("Can't import selected data type and file format");
-            Importer.apply(parentMainWindow, importer, controller.getFileTextField().getText());
+            importerService.setup(parentMainWindow, importer, controller.getFileTextField().getText(), ImportDialog.this);
+            importerService.restart();
         });
-        controller.getImportButton().disableProperty().bind(
+        controller.getImportButton().disableProperty().bind(controller.getProgressBar().visibleProperty().or(
                 Bindings.isNull(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty()).or(Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), "Unknown"))
-                        .or(Bindings.isNull(controller.getFileFormatComboBox().getSelectionModel().selectedItemProperty())).or(Bindings.equal(controller.getFileFormatComboBox().getSelectionModel().selectedItemProperty(), "Unknown")));
+                        .or(Bindings.isNull(controller.getFileFormatComboBox().getSelectionModel().selectedItemProperty())).or(Bindings.equal(controller.getFileFormatComboBox().getSelectionModel().selectedItemProperty(), "Unknown"))));
     }
 
     public void show() {
@@ -107,5 +116,13 @@ public class ImportDialog {
         } catch (IOException e) {
             Basic.caught(e);
         }
+    }
+
+    public ImportDialogController getController() {
+        return controller;
+    }
+
+    public void close() {
+        stage.close();
     }
 }

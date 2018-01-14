@@ -156,12 +156,43 @@ public class PhyloGraph extends Graph {
      */
     public Set<String> getNodeLabels() {
         Set<String> set = new HashSet<>();
-
-        for (Node v = getFirstNode(); v != null; v = getNextNode(v))
+        for (Node v : nodes())
             if (getLabel(v) != null && getLabel(v).length() > 0)
                 set.add(getLabel(v));
-
         return set;
+    }
+
+    /**
+     * iterates over all node labels
+     *
+     * @return node labels
+     */
+    public Iterable<String> nodeLabels() {
+        return () -> new Iterator<String>() {
+            private Node v;
+
+            {
+                while (v != null && getLabel(v) == null) {
+                    v = getNextNode(v);
+                }
+            }
+
+            @Override
+            public boolean hasNext() {
+                return v != null;
+            }
+
+            @Override
+            public String next() {
+                final String result = getLabel(v);
+                {
+                    while (v != null && getLabel(v) == null) {
+                        v = getNextNode(v);
+                    }
+                }
+                return result;
+            }
+        };
     }
 
     public void setSpecial(Edge e, boolean special) {

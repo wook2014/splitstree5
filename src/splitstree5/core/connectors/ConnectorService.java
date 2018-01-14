@@ -23,7 +23,6 @@ import javafx.application.Platform;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import jloda.util.CanceledException;
-import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.misc.ProgramExecutorService;
 import splitstree5.core.workflow.UpdateState;
@@ -54,7 +53,7 @@ public class ConnectorService<P extends ADataBlock, C extends ADataBlock> extend
     /**
      * create a task that also provides support for the old progress listener interface
      */
-    private class MyTask extends Task<Boolean> {
+    private class MyTask extends TaskWithProgressListener<Boolean> {
         private ProgressPane progressPane;
 
         @Override
@@ -67,6 +66,7 @@ public class ConnectorService<P extends ADataBlock, C extends ADataBlock> extend
 
                     connector.getChild().getDataBlock().clear(); // always start with a fresh datablock
                     Thread.sleep(100);
+                    getProgressListener().setTasks(connector.getAlgorithm().getName(), "Running");
                     connector.getAlgorithm().compute(getProgressListener(), connector.getTaxaBlock(), connector.getParent().getDataBlock(), connector.getChild().getDataBlock());
                 } catch (CanceledException ex) {
                     System.err.println("USER CANCELED");
@@ -129,101 +129,6 @@ public class ConnectorService<P extends ADataBlock, C extends ADataBlock> extend
             connector.setState(UpdateState.FAILED);
             if (progressPane != null)
                 connector.getParent().getDataBlock().getDocument().getMainWindow().getMainWindowController().getBottomToolBar().getItems().remove(progressPane);
-        }
-
-        public ProgressListener getProgressListener() {
-            return new ProgressListener() {
-                private long currentProgress = 0;
-                private long maxProgress = 0;
-                private boolean cancelable = true;
-                private boolean isCanceled = false;
-                private boolean debug = false;
-
-                @Override
-                public void setMaximum(long maxProgress) {
-                    if (debug)
-                        System.err.println("progress.setMaximum(" + maxProgress + ")");
-                    this.maxProgress = maxProgress;
-                    MyTask.this.updateProgress(currentProgress, maxProgress);
-                }
-
-                @Override
-                public void setProgress(long currentProgress) throws CanceledException {
-                    checkForCancel();
-                    this.currentProgress = currentProgress;
-                    if (debug)
-                        System.err.println("progress.setProgress(" + currentProgress + ")");
-                    MyTask.this.updateProgress(currentProgress, maxProgress);
-                }
-
-                @Override
-                public long getProgress() {
-                    return currentProgress;
-                }
-
-                @Override
-                public void checkForCancel() throws CanceledException {
-                    isCanceled = MyTask.this.isCancelled();
-                    if (cancelable && isCanceled) {
-                        if (debug)
-                            System.err.println("progress.checkForCancel()=true");
-                        throw new CanceledException();
-                    }
-                }
-
-                @Override
-                public void setTasks(String taskName, String subtaskName) {
-                    MyTask.this.updateTitle(taskName);
-                    MyTask.this.updateMessage(subtaskName);
-                    if (debug)
-                        System.err.println("progress.setTasks(" + taskName + "," + subtaskName + ")");
-                }
-
-                @Override
-                public void setSubtask(String subtaskName) {
-                    MyTask.this.updateMessage(subtaskName);
-                    if (debug)
-                        System.err.println("progress.setSubtask(" + subtaskName + ")");
-                }
-
-                @Override
-                public void setCancelable(boolean enabled) {
-                    this.cancelable = enabled;
-                }
-
-                @Override
-                public boolean isUserCancelled() {
-                    return false;
-                }
-
-                @Override
-                public void setUserCancelled(boolean userCancelled) {
-                    this.isCanceled = userCancelled;
-                }
-
-                @Override
-                public void incrementProgress() throws CanceledException {
-                    if (debug)
-                        System.err.println("progress.incrementProgress()");
-                    MyTask.this.updateProgress(++currentProgress, maxProgress);
-                }
-
-                @Override
-                public void close() {
-                    if (debug)
-                        System.err.println("progress.close()");
-                }
-
-                @Override
-                public boolean isCancelable() {
-                    return cancelable;
-                }
-
-                @Override
-                public void setDebug(boolean debug) {
-                    this.debug = debug;
-                }
-            };
         }
     }
 }

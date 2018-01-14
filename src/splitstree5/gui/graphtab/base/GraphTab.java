@@ -95,7 +95,7 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
     protected final ASelectionModel<Node> nodeSelectionModel = new ASelectionModel<>();
     protected final ASelectionModel<Edge> edgeSelectionModel = new ASelectionModel<>();
     protected final BorderPane rootNode = new BorderPane();
-    protected final Label label = new Label("Tree");
+    protected final Label label = new Label("GraphTab");
     private PhyloGraph phyloGraph;
     protected NodeArray<ANodeView> node2view;
     protected EdgeArray<AEdgeView> edge2view;
