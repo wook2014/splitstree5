@@ -18,6 +18,8 @@
  */
 package splitstree5.io.imports;
 
+import jloda.util.CanceledException;
+import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
@@ -32,7 +34,5 @@ public interface IImportDistances extends IImporter {
      * @param taxaBlock
      * @param dataBlock
      */
-    void parse(String fileName, TaxaBlock taxaBlock, DistancesBlock dataBlock) throws IOException;
-
-
+    void parse(ProgressListener progressListener, String fileName, TaxaBlock taxaBlock, DistancesBlock dataBlock) throws CanceledException, IOException;
 }

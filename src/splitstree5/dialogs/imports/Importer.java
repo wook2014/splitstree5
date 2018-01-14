@@ -21,6 +21,8 @@ package splitstree5.dialogs.imports;
 
 import javafx.stage.Stage;
 import jloda.util.Basic;
+import jloda.util.CanceledException;
+import jloda.util.ProgressPercentage;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.characters2distances.HammingDistances;
 import splitstree5.core.algorithms.distances2splits.NeighborNet;
@@ -70,9 +72,11 @@ public class Importer {
                 Workflow workflow = document.getWorkflow();
                 TaxaBlock taxaBlock = new TaxaBlock();
 
+                ProgressPercentage progress = new ProgressPercentage();
+
                 if (importer instanceof IImportCharacters) {
                     final CharactersBlock dataBlock = new CharactersBlock();
-                    ((IImportCharacters) importer).parse(filename, taxaBlock, dataBlock);
+                    ((IImportCharacters) importer).parse(progress, filename, taxaBlock, dataBlock);
                     workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
                     final ADataNode<DistancesBlock> distances = workflow.createDataNode(new DistancesBlock());
                     workflow.createConnector(workflow.getWorkingDataNode(), distances, new HammingDistances());
@@ -82,7 +86,7 @@ public class Importer {
                     workflow.createConnector(splits, splitsView, new SplitsNetworkAlgorithm());
                 } else if (importer instanceof IToDistances) {
                     final DistancesBlock dataBlock = new DistancesBlock();
-                    ((IImportDistances) importer).parse(filename, taxaBlock, dataBlock);
+                    ((IImportDistances) importer).parse(progress, filename, taxaBlock, dataBlock);
                     workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
                     final ADataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
                     workflow.createConnector(workflow.getWorkingDataNode(), splits, new NeighborNet());
@@ -91,7 +95,7 @@ public class Importer {
 
                 } else if (importer instanceof IToTrees) {
                     final TreesBlock dataBlock = new TreesBlock();
-                    ((IImportTrees) importer).parse(filename, taxaBlock, dataBlock);
+                    ((IImportTrees) importer).parse(progress, filename, taxaBlock, dataBlock);
                     workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
                     if (dataBlock.size() == 1) { // only one tree, don't need a filter
                         final ADataNode<TreeViewBlock> treesView = workflow.createDataNode(new TreeViewBlock());
@@ -123,7 +127,7 @@ public class Importer {
                     }
                 } else if (importer instanceof IToSplits) {
                     final SplitsBlock dataBlock = new SplitsBlock();
-                    ((IImportSplits) importer).parse(filename, taxaBlock, dataBlock);
+                    ((IImportSplits) importer).parse(progress, filename, taxaBlock, dataBlock);
                     workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
                     final ADataNode<SplitsNetworkViewBlock> splitsView = workflow.createDataNode(new SplitsNetworkViewBlock());
                     workflow.createConnector(workflow.getWorkingDataNode(), splitsView, new SplitsNetworkAlgorithm());
@@ -137,6 +141,8 @@ public class Importer {
                 else // new document
                     mainWindow.show(new Stage(), parentMainWindow.getStage().getX() + 50, parentMainWindow.getStage().getY() + 50);
             } catch (IOException ex) {
+                new Alert("Import failed: " + ex.getMessage());
+            } catch (CanceledException ex) {
                 new Alert("Import failed: " + ex.getMessage());
             }
         }

@@ -2,12 +2,14 @@ package splitstree5.io.imports;
 
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
+import jloda.util.CanceledException;
+import jloda.util.FileInputIterator;
+import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IToTrees;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.utils.TreesUtilities;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -24,12 +26,14 @@ public class NewickTreeIn implements IToTrees, IImportTrees {
     */
     private boolean optionConvertMultiLabeledTree = false;
 
-    public void parse(String inputFile, TaxaBlock taxa, TreesBlock trees) throws IOException {
+    public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, TreesBlock trees) throws IOException, CanceledException {
 
         taxa.clear();
         trees.clear();
 
-        try (BufferedReader in = new BufferedReader(Basic.getReaderPossiblyZIPorGZIP(inputFile))) {
+        try (FileInputIterator it = new FileInputIterator(inputFile)) {
+            progressListener.setMaximum(it.getMaximumProgress());
+            progressListener.setProgress(0);
             // importing first tree and generating taxa object
             //String str;
             HashSet<String> labels = new HashSet<>();
@@ -38,21 +42,23 @@ public class NewickTreeIn implements IToTrees, IImportTrees {
             // read in the trees
             int count = 1, size = 0;
             boolean partial = false;
-            String aLine;
-            while ((aLine = in.readLine()) != null) {
+            while (it.hasNext()) {
+                String aLine = it.next();
+
                 if (aLine.trim().length() == 0 || aLine.startsWith("#"))
                     continue; // skip empty lines and comment lines
-                System.err.println("Tree: " + aLine);
+                //System.err.println("Tree: " + aLine);
                 //str = "";
-                StringBuilder s = new StringBuilder("");
-                while (aLine != null && (!aLine.contains(";"))) {
+                final StringBuilder s = new StringBuilder();
+                s.append(aLine);
+                while (!aLine.contains(";") && it.hasNext()) {
                     //str += aLine;
                     s.append(aLine);
-                    aLine = in.readLine();
+                    aLine = it.next();
                 }
-                String str = s.toString();
-                if (aLine != null) str += aLine;
-                if (str.trim().length() != 0) {
+                String str = s.toString().trim();
+
+                if (str.length() > 0) {
                     str = str.replaceAll(" ", "").replaceAll("\t", "");
                     PhyloTree tree = new PhyloTree();
                     tree.parseBracketNotation(Basic.removeComments(str, '[', ']'), true);
@@ -99,9 +105,9 @@ public class NewickTreeIn implements IToTrees, IImportTrees {
                     trees.getTrees().add(tree);
                 }
             }
-
             taxa.addTaxaByNames(labels);
             trees.setPartial(partial);
+            progressListener.setProgress(it.getProgress());
         }
     }
 

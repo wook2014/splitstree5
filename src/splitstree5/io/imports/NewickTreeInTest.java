@@ -1,5 +1,6 @@
 package splitstree5.io.imports;
 
+import jloda.util.ProgressPercentage;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.io.nexus.TaxaNexusIO;
@@ -27,7 +28,9 @@ public class NewickTreeInTest {
 
         TaxaBlock taxaBlock = new TaxaBlock();
         TreesBlock treesBlock = new TreesBlock();
-        newickTreeIn.parse("test/notNexusFiles/colors-nj.tre", taxaBlock, treesBlock);
+        try (ProgressPercentage progress = new ProgressPercentage("Test")) {
+            newickTreeIn.parse(progress, "test/notNexusFiles/colors-nj.tre", taxaBlock, treesBlock);
+        }
         //NewickTreeIn.parse("test/notNexusFiles/trees3.tre", taxaBlock, treesBlock);
 
         // printing

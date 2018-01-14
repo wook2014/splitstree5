@@ -18,6 +18,8 @@
  */
 package splitstree5.io.imports;
 
+import jloda.util.CanceledException;
+import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 
@@ -31,7 +33,5 @@ public interface IImportTrees extends IImporter {
      * @param taxaBlock
      * @param dataBlock
      */
-    void parse(String fileName, TaxaBlock taxaBlock, TreesBlock dataBlock) throws IOException;
-
-
+    void parse(ProgressListener progressListener, String fileName, TaxaBlock taxaBlock, TreesBlock dataBlock) throws CanceledException, IOException;
 }

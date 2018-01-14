@@ -1,5 +1,6 @@
 package splitstree5.io.imports;
 
+import jloda.util.ProgressPercentage;
 import org.junit.Test;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -20,7 +21,9 @@ public class FastaInTest {
 
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
-        fastaIn.parse("test/notNexusFiles/fasta/smallTest.fasta", taxaBlock, charactersBlock);
+        try (ProgressPercentage progress = new ProgressPercentage("Test")) {
+            fastaIn.parse(progress, "test/notNexusFiles/fasta/smallTest.fasta", taxaBlock, charactersBlock);
+        }
 
         // printing
         final StringWriter w = new StringWriter();

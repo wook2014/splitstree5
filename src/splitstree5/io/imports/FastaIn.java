@@ -1,11 +1,13 @@
 package splitstree5.io.imports;
 
 import jloda.util.Basic;
+import jloda.util.CanceledException;
+import jloda.util.FileInputIterator;
+import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IToCharacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -21,21 +23,32 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
 
     public static final List<String> extensions = new ArrayList<>(Arrays.asList("fasta", "fas", "fa", "seq", "fsa", "fna"));
 
-    public void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters) throws IOException {
-
-        ArrayList<String> taxonNamesFound = new ArrayList<>();
-        ArrayList<String> matrix = new ArrayList<>();
+    /**
+     * parse a file
+     *
+     * @param progressListener
+     * @param inputFile
+     * @param taxa
+     * @param characters
+     * @throws IOException
+     */
+    public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, CharactersBlock characters) throws IOException, CanceledException {
+        final ArrayList<String> taxonNamesFound = new ArrayList<>();
+        final ArrayList<String> matrix = new ArrayList<>();
         int ntax = 0;
         int nchar = 0;
         int counter = 0;
 
-        try (BufferedReader in = new BufferedReader(Basic.getReaderPossiblyZIPorGZIP(inputFile))) {
-            String line;
+        try (FileInputIterator it = new FileInputIterator(inputFile)) {
+            progressListener.setMaximum(it.getMaximumProgress());
+            progressListener.setProgress(0);
             int sequenceLength = 0;
             StringBuilder sequence = new StringBuilder("");
             boolean startedNewSequence = false;
 
-            while ((line = in.readLine()) != null) {
+            while (it.hasNext()) {
+                final String line = it.next();
+
                 counter++;
                 if (line.startsWith(";"))
                     continue;
@@ -67,6 +80,7 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
                     sequenceLength += add.length();
                     sequence.append(line.replaceAll("\\s+", ""));
                 }
+                progressListener.setProgress(it.getProgress());
             }
 
             if (sequence.length() == 0)

@@ -33,16 +33,19 @@ import java.util.*;
  */
 public class ImporterManager {
     private final ArrayList<IImporter> importers;
-    private final Set<FileChooser.ExtensionFilter> extensionFilters;
+    private final ArrayList<FileChooser.ExtensionFilter> extensionFilters;
 
     private static ImporterManager instance;
 
     private ImporterManager() {
         importers = new ArrayList<>(PluginClassLoader.getInstances(IImporter.class, "splitstree5.io.imports"));
-        extensionFilters = new HashSet<>();
+        extensionFilters = new ArrayList<>();
         for (IImporter importer : importers) {
-            extensionFilters.add(new FileChooser.ExtensionFilter(getDataType(importer) + ": " + Basic.toString(completeExtensions(importer.getExtensions()), ", "), completeExtensions(importer.getExtensions())));
+            final List<String> list = completeExtensions(importer.getExtensions());
+            extensionFilters.add(new FileChooser.ExtensionFilter(getDataType(importer) + ": " + Basic.toString(list, " "), list));
         }
+        extensionFilters.sort(Comparator.comparing(FileChooser.ExtensionFilter::getDescription));
+        extensionFilters.add(new FileChooser.ExtensionFilter("All files: *.* *.gz", "*.*", "*.gz"));
     }
 
     /**
@@ -57,9 +60,13 @@ public class ImporterManager {
             if (!ext.startsWith("*."))
                 ext = "*." + ext;
             set.add(ext);
-            set.add(ext + ".gz");
         }
-        return new ArrayList<>(set);
+        final ArrayList<String> list = new ArrayList<>(set);
+        for (String ex : set) {
+            if (!ex.endsWith(".gz") && !set.contains(ex + ".gz"))
+                list.add(ex + ".gz");
+        }
+        return list;
     }
 
     public static ImporterManager getInstance() {

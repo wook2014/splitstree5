@@ -19,6 +19,8 @@
 
 package splitstree5.io.imports;
 
+import jloda.util.CanceledException;
+import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
@@ -33,7 +35,5 @@ public interface IImportCharacters extends IImporter {
      * @param taxaBlock
      * @param dataBlock
      */
-    void parse(String fileName, TaxaBlock taxaBlock, CharactersBlock dataBlock) throws IOException;
-
-
+    void parse(ProgressListener progressListener, String fileName, TaxaBlock taxaBlock, CharactersBlock dataBlock) throws CanceledException, IOException;
 }
