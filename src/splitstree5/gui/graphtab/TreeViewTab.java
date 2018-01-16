@@ -21,6 +21,7 @@ package splitstree5.gui.graphtab;
 
 import javafx.geometry.Point2D;
 import javafx.scene.image.ImageView;
+import jloda.fx.ASelectionModel;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.util.ResourceManager;
@@ -74,8 +75,12 @@ public class TreeViewTab extends GraphTab {
                     nodeSelectionModel.clearSelection();
                 if (nodeSelectionModel.getSelectedItems().contains(v))
                     nodeSelectionModel.clearSelection(v);
-                else
+                else {
                     nodeSelectionModel.select(v);
+                    if (nodeSelectionModel.getSelectedItems().contains(v) && x.getClickCount() == 2) {
+                        selectAllBelowRec(v, nodeSelectionModel, edgeSelectionModel);
+                    }
+                }
                 x.consume();
             });
         }
@@ -95,6 +100,7 @@ public class TreeViewTab extends GraphTab {
         addNodeLabelMovementSupport(nodeView);
         return nodeView;
     }
+
 
     /**
      * create an edge view
@@ -123,8 +129,12 @@ public class TreeViewTab extends GraphTab {
                 }
                 if (edgeSelectionModel.getSelectedItems().contains(e))
                     edgeSelectionModel.clearSelection(e);
-                else
+                else {
                     edgeSelectionModel.select(e);
+                    if (edgeSelectionModel.getSelectedItems().contains(e) && x.getClickCount() == 2) {
+                        selectAllBelowRec(e.getTarget(), nodeSelectionModel, edgeSelectionModel);
+                    }
+                }
                 x.consume();
             });
         }
@@ -143,6 +153,20 @@ public class TreeViewTab extends GraphTab {
             });
         }
         return edgeView;
+    }
+
+    /**
+     * select all nodes below the given one
+     *
+     * @param v
+     * @param nodeSelectionModel
+     */
+    private void selectAllBelowRec(Node v, ASelectionModel<Node> nodeSelectionModel, ASelectionModel<Edge> edgeSelectionModel) {
+        for (Edge e : v.outEdges()) {
+            nodeSelectionModel.select(e.getTarget());
+            edgeSelectionModel.select(e);
+            selectAllBelowRec(e.getTarget(), nodeSelectionModel, edgeSelectionModel);
+        }
     }
 
     @Override

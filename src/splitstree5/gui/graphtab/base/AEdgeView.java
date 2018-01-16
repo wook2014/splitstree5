@@ -130,8 +130,8 @@ import java.util.ArrayList;
  * Daniel Huson, 10.2017
  */
 public class AEdgeView {
-    private static final EventHandler<MouseEvent> mouseEnteredHandler = (x) -> ((Shape) x.getSource()).setStrokeWidth(5 * ((Shape) x.getSource()).getStrokeWidth());
-    private static final EventHandler<MouseEvent> mouseExitedHandler = (x) -> ((Shape) x.getSource()).setStrokeWidth(0.2 * ((Shape) x.getSource()).getStrokeWidth());
+    private static final EventHandler<MouseEvent> mouseEnteredHandler = (x) -> ((Shape) x.getSource()).setStrokeWidth(4 * ((Shape) x.getSource()).getStrokeWidth());
+    private static final EventHandler<MouseEvent> mouseExitedHandler = (x) -> ((Shape) x.getSource()).setStrokeWidth(0.25 * ((Shape) x.getSource()).getStrokeWidth());
 
     public enum EdgeShape {Straight, Angular, QuadCurve, CubicCurve}
 
@@ -247,6 +247,7 @@ public class AEdgeView {
         }
 
         if (edgeShape != null) {
+            edgeShape.setPickOnBounds(false);
             edgeShape.setFill(Color.TRANSPARENT);
             edgeShape.setStroke(Color.BLACK);
             edgeShape.setStrokeLineCap(StrokeLineCap.ROUND);
@@ -256,6 +257,9 @@ public class AEdgeView {
                 setReferencePoint(start.add(end).multiply(0.5));
             else
                 setReferencePoint(mid);
+
+            edgeShape.setOnMouseEntered(mouseEnteredHandler);
+            edgeShape.setOnMouseExited(mouseExitedHandler);
         }
 
         if (false && weight != null && start != null && end != null) {
@@ -265,9 +269,6 @@ public class AEdgeView {
             label.setLayoutY(m.getY());
             setLabel(label);
         }
-
-        getShape().setOnMouseEntered(mouseEnteredHandler);
-        getShape().setOnMouseExited(mouseExitedHandler);
     }
 
     public void setShape(Node shape) {

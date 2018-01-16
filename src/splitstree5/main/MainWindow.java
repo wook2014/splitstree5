@@ -51,6 +51,7 @@ import splitstree5.gui.methodstab.MethodsViewTab;
 import splitstree5.gui.workflowtab.WorkflowViewTab;
 import splitstree5.gui.workflowtree.WorkflowTreeSupport;
 import splitstree5.menu.MenuController;
+import splitstree5.styletab.StyleTab;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -156,8 +157,16 @@ public class MainWindow {
                         menuController.getDecreaseFontSizeMenuItem().fire();
                     e.consume();
                 });
-                stage.getIcons().setAll(ResourceManager.getIcon("SplitsTree5-16.png"),
-                        ResourceManager.getIcon("SplitsTree5-32.png"), ResourceManager.getIcon("SplitsTree5-64.png"), ResourceManager.getIcon("SplitsTree5-128.png"));
+                stage.getIcons().setAll(ResourceManager.getIcon("SplitsTree5-16.png"), ResourceManager.getIcon("SplitsTree5-32.png"),
+                        ResourceManager.getIcon("SplitsTree5-64.png"), ResourceManager.getIcon("SplitsTree5-128.png"));
+
+
+                try {
+                    StyleTab styleTab = new StyleTab(this);
+                    getMainWindowController().getAlgorithmTabPane().getTabs().add(styleTab);
+                } catch (IOException e) {
+                    Basic.caught(e);
+                }
             });
         }
 

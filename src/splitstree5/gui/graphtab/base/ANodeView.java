@@ -125,7 +125,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
-import splitstree5.gui.style.Style;
+import splitstree5.styletab.Styles;
 
 /**
  * node view
@@ -361,7 +361,7 @@ public class ANodeView {
         return null;
     }
 
-    public void setStyling(Style styling) {
+    public void setStyling(Styles styling) {
         setFont(styling.getFont());
         setStroke(styling.getStroke());
         setFill(styling.getFill());

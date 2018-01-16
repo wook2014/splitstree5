@@ -68,11 +68,11 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
 import splitstree5.gui.ISavesPreviousSelection;
 import splitstree5.gui.ViewerTab;
-import splitstree5.gui.style.Style;
 import splitstree5.gui.utils.RubberBandSelection;
 import splitstree5.gui.utils.SelectionEffect;
 import splitstree5.main.MainWindowManager;
 import splitstree5.menu.MenuController;
+import splitstree5.styletab.Styles;
 import splitstree5.undo.UndoRedoManager;
 import splitstree5.undo.UndoableRedoableCommand;
 
@@ -102,7 +102,7 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
 
     private final StackPane pane = new StackPane();
 
-    private final BooleanProperty sparseLabels = new SimpleBooleanProperty(true);
+    private final BooleanProperty sparseLabels = new SimpleBooleanProperty(false);
 
     private DoubleProperty scaleChangeX = new SimpleDoubleProperty(1); // keep track of scale changes, used for reset
     private DoubleProperty scaleChangeY = new SimpleDoubleProperty(1);
@@ -113,7 +113,7 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
 
     private final RubberBandSelection rubberBandSelection;
 
-    private Map<String, Style> nodeLabel2Style;
+    private Map<String, Styles> nodeLabel2Style;
 
     private ListChangeListener<Node> nodeSelectionChangeListener;
     private ListChangeListener<Taxon> documentTaxonSelectionChangeListener;
@@ -738,6 +738,7 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
         });
 
         controller.getLayoutLabelsMenuItem().setOnAction((e) -> layoutLabels());
+        controller.getSparseLabelsCheckMenuItem().setSelected(sparseLabels.get());
         controller.getSparseLabelsCheckMenuItem().selectedProperty().unbindBidirectional(sparseLabels);
         controller.getSparseLabelsCheckMenuItem().setOnAction((e) -> layoutLabels());
         controller.getSparseLabelsCheckMenuItem().disableProperty().bind(layout.isNotEqualTo(GraphLayout.Radial));
@@ -771,10 +772,10 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
                         node2view.get(node).setTextFill(colorPicker.getValue());
 
                         if (phyloGraph.getLabel(node) != null) {
-                            Style style = nodeLabel2Style.get(phyloGraph.getLabel(node));
-                            if (style == null)
-                                style = new Style();
-                            style.setStroke(colorPicker.getValue());
+                            Styles styles = nodeLabel2Style.get(phyloGraph.getLabel(node));
+                            if (styles == null)
+                                styles = new Styles();
+                            styles.setStroke(colorPicker.getValue());
                         }
                     }
                     stage.close();
@@ -784,11 +785,11 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
         controller.getFormatNodesMenuItem().disableProperty().bind(nodeSelectionModel.emptyProperty());
     }
 
-    public void setNodeLabel2Style(Map<String, Style> nodeLabel2Style) {
+    public void setNodeLabel2Style(Map<String, Styles> nodeLabel2Style) {
         this.nodeLabel2Style = nodeLabel2Style;
     }
 
-    public Map<String, Style> getNodeLabel2Style() {
+    public Map<String, Styles> getNodeLabel2Style() {
         return nodeLabel2Style;
     }
 

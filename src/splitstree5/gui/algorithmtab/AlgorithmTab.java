@@ -152,7 +152,6 @@ public class AlgorithmTab<P extends ADataBlock, C extends ADataBlock> extends Vi
         algorithmPane.syncModel2Controller();
 
         final Label label = new Label();
-        label.setRotate(-90);
         setText("");
         setGraphic(label);
         label.setText(connector.getName());

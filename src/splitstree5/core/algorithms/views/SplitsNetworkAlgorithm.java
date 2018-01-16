@@ -44,7 +44,7 @@ import splitstree5.gui.graphtab.SplitsViewTab;
 import splitstree5.gui.graphtab.base.AEdgeView;
 import splitstree5.gui.graphtab.base.ANodeView;
 import splitstree5.gui.graphtab.base.GraphLayout;
-import splitstree5.gui.style.Style;
+import splitstree5.styletab.Styles;
 
 import java.util.*;
 
@@ -54,7 +54,7 @@ import java.util.*;
  */
 public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, SplitsNetworkViewBlock> implements IFromSplits, IToSplitsNetworkView {
     private final PhyloGraph graph = new PhyloGraph();
-    private final Map<String, Style> nodeLabel2Style = new HashMap<>();
+    private final Map<String, Styles> nodeLabel2Style = new HashMap<>();
 
     private ChangeListener<UpdateState> changeListener;
 

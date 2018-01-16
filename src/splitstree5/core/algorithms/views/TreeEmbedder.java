@@ -58,7 +58,7 @@ import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.graphtab.TreeViewTab;
 import splitstree5.gui.graphtab.base.*;
-import splitstree5.gui.style.Style;
+import splitstree5.styletab.Styles;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -88,7 +88,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
 
     private final BooleanProperty optionShowInternalNodeLabels = new SimpleBooleanProperty();
 
-    private final Map<String, Style> nodeLabel2Style = new HashMap<>();
+    private final Map<String, Styles> nodeLabel2Style = new HashMap<>();
 
     private ChangeListener<UpdateState> changeListener;
 

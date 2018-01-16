@@ -17,7 +17,26 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.gui.style;
+/*
+ *  Copyright (C) 2016 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package splitstree5.styletab;
 
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -25,7 +44,7 @@ import javafx.scene.text.Font;
 /**
  * contains all style attributes associated with a node or edge
  */
-public class Style {
+public class Styles {
     private static final Font defaultFont = Font.font("System");
     private Font font;
     private Color stroke = Color.BLACK;
@@ -33,9 +52,9 @@ public class Style {
     private Color textFill = Color.BLACK;
     private double strokeWidth = 1;
 
-    private static Style defaultStyle;
+    private static Styles defaultStyles;
 
-    public Style() {
+    public Styles() {
     }
 
     public Font getFont() {
@@ -74,9 +93,9 @@ public class Style {
         this.strokeWidth = strokeWidth;
     }
 
-    public static Style getDefaultStyle() {
-        if (defaultStyle == null)
-            defaultStyle = new Style();
-        return defaultStyle;
+    public static Styles getDefaultStyles() {
+        if (defaultStyles == null)
+            defaultStyles = new Styles();
+        return defaultStyles;
     }
 }
