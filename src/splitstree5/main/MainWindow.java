@@ -128,6 +128,7 @@ public class MainWindow {
             mainWindowController.getTreeView().setRoot(rootItem);
             workflowTreeSupport = new WorkflowTreeSupport(mainWindowController.getTreeView(), document);
         }
+
     }
 
     /**
@@ -142,7 +143,22 @@ public class MainWindow {
                 if (!n && mainTabPane.getSelectionModel().getSelectedItem() instanceof ISavesPreviousSelection)
                     ((ISavesPreviousSelection) mainTabPane.getSelectionModel().getSelectedItem()).saveAsPreviousSelection();
             });
-            Platform.runLater(() -> stage.getIcons().setAll(ResourceManager.getIcon("SplitsTree5-16.png"), ResourceManager.getIcon("SplitsTree5-32.png"), ResourceManager.getIcon("SplitsTree5-64.png"), ResourceManager.getIcon("SplitsTree5-128.png")));
+
+            Platform.runLater(() ->
+            {
+                stage.getScene().setOnKeyTyped((e) -> {
+                    if (e.getCharacter().equals("+") && e.isShortcutDown())
+                        menuController.getIncreaseFontSizeMenuItem().fire();
+                    e.consume();
+                });
+                stage.getScene().setOnKeyTyped((e) -> {
+                    if (e.getCharacter().equals("-") && e.isShortcutDown())
+                        menuController.getDecreaseFontSizeMenuItem().fire();
+                    e.consume();
+                });
+                stage.getIcons().setAll(ResourceManager.getIcon("SplitsTree5-16.png"),
+                        ResourceManager.getIcon("SplitsTree5-32.png"), ResourceManager.getIcon("SplitsTree5-64.png"), ResourceManager.getIcon("SplitsTree5-128.png"));
+            });
         }
 
         stage.titleProperty().bind(titleProperty);

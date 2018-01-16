@@ -453,7 +453,7 @@ public class Basic {
      * @param separator
      * @return string
      */
-    public static String toString(BitSet set, char separator) {
+    public static String toString(BitSet set, String separator) {
         StringBuilder buf = new StringBuilder();
         boolean first = true;
         for (int i = set.nextSetBit(0); i != -1; i = set.nextSetBit(i + 1)) {
@@ -1008,9 +1008,7 @@ public class Basic {
      * @return array in random order
      */
     public static <T> T[] randomize(T[] array, Random random) {
-        T[] result = (T[]) new Object[array.length];
-        System.arraycopy(array, 0, result, 0, array.length);
-
+        final T[] result = Arrays.copyOf(array, array.length);
         for (int i = result.length - 1; i >= 1; i--) {
             int j = random.nextInt(i + 1);
             T tmp = result[i];

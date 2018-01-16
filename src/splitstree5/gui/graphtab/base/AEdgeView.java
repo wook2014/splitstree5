@@ -113,9 +113,11 @@
  */
 package splitstree5.gui.graphtab.base;
 
+import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import jloda.graph.Edge;
@@ -128,6 +130,9 @@ import java.util.ArrayList;
  * Daniel Huson, 10.2017
  */
 public class AEdgeView {
+    private static final EventHandler<MouseEvent> mouseEnteredHandler = (x) -> ((Shape) x.getSource()).setStrokeWidth(5 * ((Shape) x.getSource()).getStrokeWidth());
+    private static final EventHandler<MouseEvent> mouseExitedHandler = (x) -> ((Shape) x.getSource()).setStrokeWidth(0.2 * ((Shape) x.getSource()).getStrokeWidth());
+
     public enum EdgeShape {Straight, Angular, QuadCurve, CubicCurve}
 
     private Node shape;
@@ -157,7 +162,7 @@ public class AEdgeView {
             edgeShape.setFill(Color.TRANSPARENT);
             edgeShape.setStroke(Color.BLACK);
             edgeShape.setStrokeLineCap(StrokeLineCap.ROUND);
-            edgeShape.setStrokeWidth(3);
+            edgeShape.setStrokeWidth(1);
             setShape(edgeShape);
             setReferencePoint(start.add(end).multiply(0.5));
         }
@@ -169,6 +174,8 @@ public class AEdgeView {
             label.setLayoutY(m.getY());
             setLabel(label);
         }
+        getShape().setOnMouseEntered(mouseEnteredHandler);
+        getShape().setOnMouseExited(mouseExitedHandler);
     }
 
     /**
@@ -243,7 +250,7 @@ public class AEdgeView {
             edgeShape.setFill(Color.TRANSPARENT);
             edgeShape.setStroke(Color.BLACK);
             edgeShape.setStrokeLineCap(StrokeLineCap.ROUND);
-            edgeShape.setStrokeWidth(3);
+            edgeShape.setStrokeWidth(1);
             setShape(edgeShape);
             if (shape == AEdgeView.EdgeShape.Straight)
                 setReferencePoint(start.add(end).multiply(0.5));
@@ -258,6 +265,9 @@ public class AEdgeView {
             label.setLayoutY(m.getY());
             setLabel(label);
         }
+
+        getShape().setOnMouseEntered(mouseEnteredHandler);
+        getShape().setOnMouseExited(mouseExitedHandler);
     }
 
     public void setShape(Node shape) {

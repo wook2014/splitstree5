@@ -20,10 +20,7 @@
 package splitstree5.core.algorithms.views;
 
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
 import javafx.geometry.Point2D;
@@ -35,7 +32,9 @@ import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromSplits;
 import splitstree5.core.algorithms.interfaces.IToSplitsNetworkView;
+import splitstree5.core.algorithms.views.algorithms.BoxOptimizer;
 import splitstree5.core.algorithms.views.algorithms.ConvexHull;
+import splitstree5.core.algorithms.views.algorithms.DaylightOptimizer;
 import splitstree5.core.algorithms.views.algorithms.EqualAngle;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.SplitsNetworkViewBlock;
@@ -47,48 +46,30 @@ import splitstree5.gui.graphtab.base.ANodeView;
 import splitstree5.gui.graphtab.base.GraphLayout;
 import splitstree5.gui.style.Style;
 
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * compute an implementing of a set of splits using the equal angle algorithm
  * Daniel Huson, 11.2017
  */
 public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, SplitsNetworkViewBlock> implements IFromSplits, IToSplitsNetworkView {
-    public enum Algorithm {EqualAngleFollowedByConvexHull, EqualAngleOnly, ConvexHullOnly}
-
     private final PhyloGraph graph = new PhyloGraph();
-    private ObjectProperty<Algorithm> optionAlgorithm = new SimpleObjectProperty<>(Algorithm.EqualAngleFollowedByConvexHull);
-    private BooleanProperty optionUseWeights = new SimpleBooleanProperty(true);
-
     private final Map<String, Style> nodeLabel2Style = new HashMap<>();
 
-    public Algorithm getOptionAlgorithm() {
-        return optionAlgorithm.get();
-    }
-
-    public ObjectProperty<Algorithm> optionAlgorithmProperty() {
-        return optionAlgorithm;
-    }
-
-    public void setOptionAlgorithm(Algorithm optionAlgorithm) {
-        this.optionAlgorithm.set(optionAlgorithm);
-    }
-
-    public boolean isOptionUseWeights() {
-        return optionUseWeights.get();
-    }
-
-    public BooleanProperty optionUseWeightsProperty() {
-        return optionUseWeights;
-    }
-
-    public void setOptionUseWeights(boolean optionUseWeights) {
-        this.optionUseWeights.set(optionUseWeights);
-    }
-
     private ChangeListener<UpdateState> changeListener;
+
+    public enum Algorithm {Both, EqualAngleOnly, ConvexHullOnly}
+
+    private final ObjectProperty<Algorithm> optionAlgorithm = new SimpleObjectProperty<>(Algorithm.Both);
+    private final BooleanProperty optionUseWeights = new SimpleBooleanProperty(true);
+
+    private final IntegerProperty optionDaylightIterations = new SimpleIntegerProperty(0);
+
+    private final IntegerProperty optionBoxOpenIterations = new SimpleIntegerProperty(0);
+
+    public List<String> listOptions() {
+        return Arrays.asList("optionAlgorithm", "optionUseWeights", "optionBoxOpenIterations", "optionDaylightIterations");
+    }
 
     @Override
     public String getCitation() {
@@ -115,17 +96,35 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, SplitsNetwork
 
         final BitSet usedSplits = new BitSet();
 
-        if (getOptionAlgorithm() != Algorithm.ConvexHullOnly)
+        if (getOptionAlgorithm() != Algorithm.ConvexHullOnly) {
             EqualAngle.apply(progress, isOptionUseWeights(), taxa, parent, graph, node2point, forbiddenSplits, usedSplits);
+        }
+
+        if (getOptionBoxOpenIterations() > 0) {
+            final BoxOptimizer box = new BoxOptimizer();
+            box.setOptionIterations(getOptionBoxOpenIterations());
+            box.setOptionUseWeights(isOptionUseWeights());
+            box.apply(progress, taxa, parent.getNsplits(), graph, node2point);
+        }
 
         if (getOptionAlgorithm() != Algorithm.EqualAngleOnly && usedSplits.cardinality() < parent.getNsplits()) {
             progress.setProgress(60);
             ConvexHull.apply(progress, isOptionUseWeights(), taxa, parent, graph, node2point, usedSplits);
         }
 
+        EqualAngle.assignCoordinatesToNodes(isOptionUseWeights(), graph, node2point); // need coordinates
+
+        if (getOptionDaylightIterations() > 0) {
+            final DaylightOptimizer daylightOptimizer = new DaylightOptimizer();
+            daylightOptimizer.setOptionIterations(getOptionDaylightIterations());
+            daylightOptimizer.setOptionUseWeights(isOptionUseWeights());
+            daylightOptimizer.apply(progress, taxa, graph, node2point);
+            EqualAngle.assignCoordinatesToNodes(isOptionUseWeights(), graph, node2point);
+        }
+
+
         progress.setProgress(90);
 
-        EqualAngle.assignCoordinatesToNodes(isOptionUseWeights(), graph, node2point); // need coordinates
 
         progress.setProgress(100);   //set progress to 100%
 
@@ -160,5 +159,55 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, SplitsNetwork
         changeListener = (c, o, n) -> child.getTab().getCenter().setDisable(n != UpdateState.VALID);
         getConnector().stateProperty().addListener(new WeakChangeListener<>(changeListener));
 
+    }
+
+    public Algorithm getOptionAlgorithm() {
+        return optionAlgorithm.get();
+    }
+
+    public ObjectProperty<Algorithm> optionAlgorithmProperty() {
+        return optionAlgorithm;
+    }
+
+    public void setOptionAlgorithm(Algorithm optionAlgorithm) {
+        this.optionAlgorithm.set(optionAlgorithm);
+    }
+
+    public boolean isOptionUseWeights() {
+        return optionUseWeights.get();
+    }
+
+    public BooleanProperty optionUseWeightsProperty() {
+        return optionUseWeights;
+    }
+
+    public void setOptionUseWeights(boolean optionUseWeights) {
+        this.optionUseWeights.set(optionUseWeights);
+    }
+
+
+    public int getOptionDaylightIterations() {
+        return optionDaylightIterations.get();
+    }
+
+    public IntegerProperty optionDaylightIterationsProperty() {
+        return optionDaylightIterations;
+    }
+
+    public void setOptionDaylightIterations(int optionDaylightIterations) {
+        this.optionDaylightIterations.set(optionDaylightIterations);
+    }
+
+
+    public int getOptionBoxOpenIterations() {
+        return optionBoxOpenIterations.get();
+    }
+
+    public IntegerProperty optionBoxOpenIterationsProperty() {
+        return optionBoxOpenIterations;
+    }
+
+    public void setOptionBoxOpenIterations(int optionBoxOpenIterations) {
+        this.optionBoxOpenIterations.set(optionBoxOpenIterations);
     }
 }

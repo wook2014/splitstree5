@@ -47,9 +47,12 @@ public class TreeUtilities {
         TreesUtilities.setNode2taxa(tree, taxaBlock);
         if (taxaInTree == null)
             taxaInTree = TreesUtilities.getTaxa(tree);
-        Node root = tree.getRoot();
-        if (root == null) {
-            // choose an arbitrary labeled root
+
+        Node root = null;
+        if (tree.getRoot() != null)
+            root = tree.getRoot();
+        else {
+            // choose an arbitrary leaf
             for (Node v : tree.nodes()) {
                 if (tree.getNode2Taxa(v).size() > 0 && v.getDegree() == 1) {
                     root = v;

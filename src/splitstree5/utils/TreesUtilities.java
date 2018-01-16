@@ -128,7 +128,7 @@ public class TreesUtilities {
 
 
         try {
-            SplitsUtilities.verifySplits(splits, taxa);
+            SplitsUtilities.verifySplits(splits.getSplits(), taxa);
         } catch (SplitsException ex) {
             //splits = null;
         }

@@ -216,14 +216,16 @@ public class SplitsViewTab extends GraphTab {
         double y = 0;
         if (edges.size() > 0) {
             for (Edge edge : edges) {
-                final ANodeView nodeView;
-                if (selectedNodes.contains(edge.getSource()))
-                    nodeView = node2view.get(edge.getTarget());
-                else
-                    nodeView = node2view.get(edge.getSource());
-                x += nodeView.getLocation().getX();
-                y += nodeView.getLocation().getY();
+                if (edge.getOwner() == getPhyloGraph()) {
+                    final ANodeView nodeView;
+                    if (selectedNodes.contains(edge.getSource()))
+                        nodeView = node2view.get(edge.getTarget());
+                    else
+                        nodeView = node2view.get(edge.getSource());
+                    x += nodeView.getLocation().getX();
+                    y += nodeView.getLocation().getY();
 
+                }
             }
             x /= edges.size();
             y /= edges.size();
@@ -236,28 +238,33 @@ public class SplitsViewTab extends GraphTab {
      */
     private void applySplitRotation(double angle, ObservableList<Edge> selectedEdges, HashSet<Node> selectedNodes, NodeArray<ANodeView> node2view, EdgeArray<AEdgeView> edge2view) {
         final Edge e = selectedEdges.get(0);
-        final Node anchorNode;
-        final Node selectedNode;
-        if (selectedNodes.contains(e.getSource())) {
-            anchorNode = e.getTarget();
-            selectedNode = e.getSource();
+        if (e.getOwner() == getPhyloGraph()) {
+            final Node anchorNode;
+            final Node selectedNode;
+            if (selectedNodes.contains(e.getSource())) {
+                anchorNode = e.getTarget();
+                selectedNode = e.getSource();
 
-        } else {
-            anchorNode = e.getSource();
-            selectedNode = e.getTarget();
-        }
-        final Point2D anchorPoint = node2view.get(anchorNode).getLocation();
-        final Point2D selectedPoint = node2view.get(selectedNode).getLocation();
-        Point2D newSelectedPoint = GeometryUtils.rotateAbout(selectedPoint, angle, anchorPoint);
-        Point2D translate = newSelectedPoint.subtract(selectedPoint);
+            } else {
+                anchorNode = e.getSource();
+                selectedNode = e.getTarget();
+            }
+            final Point2D anchorPoint = node2view.get(anchorNode).getLocation();
+            final Point2D selectedPoint = node2view.get(selectedNode).getLocation();
+            Point2D newSelectedPoint = GeometryUtils.rotateAbout(selectedPoint, angle, anchorPoint);
+            Point2D translate = newSelectedPoint.subtract(selectedPoint);
 
-        for (Node v : selectedNodes) {
-            node2view.get(v).translateCoordinates(translate.getX(), translate.getY());
-        }
-        for (Node v : selectedNodes) {
-            for (Edge edge : v.adjacentEdges()) {
-                if (v == edge.getTarget() || !selectedNodes.contains(edge.getTarget())) {
-                    edge2view.get(edge).setCoordinates(node2view.get(edge.getSource()).getLocation(), node2view.get(edge.getTarget()).getLocation());
+            for (Node v : selectedNodes) {
+                if (v.getOwner() == getPhyloGraph())
+                    node2view.get(v).translateCoordinates(translate.getX(), translate.getY());
+            }
+            for (Node v : selectedNodes) {
+                if (v.getOwner() == getPhyloGraph()) {
+                    for (Edge edge : v.adjacentEdges()) {
+                        if (v == edge.getTarget() || !selectedNodes.contains(edge.getTarget())) {
+                            edge2view.get(edge).setCoordinates(node2view.get(edge.getSource()).getLocation(), node2view.get(edge.getTarget()).getLocation());
+                        }
+                    }
                 }
             }
         }

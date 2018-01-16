@@ -105,7 +105,6 @@ public class SplitsNetworkViewBlock extends ADataBlock implements IHasTab {
 
     public void updateSelectionModels(PhyloGraph graph, TaxaBlock taxa, Document document) {
         splitsViewTab.updateSelectionModels(graph, taxa, document);
-        splitsSelectionModel.setItems(graph.getSplitIds());
     }
 
     @Override

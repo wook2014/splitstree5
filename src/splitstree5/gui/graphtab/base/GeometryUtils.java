@@ -158,18 +158,46 @@ public class GeometryUtils {
      * @return angle
      */
     public static double computeObservedAngle(Point2D center, Point2D a, Point2D b) {
-        Point2D da = a.subtract(center);
-        Point2D db = b.subtract(center);
+        final Point2D da = a.subtract(center);
+        final Point2D db = b.subtract(center);
         double angle = Math.abs(computeAngle(da) - computeAngle(db));
         if (angle > 180)
             angle = 360 - angle;
 
-        double det = da.getX() * db.getY() - da.getY() * db.getX();
+        final double det = da.getX() * db.getY() - da.getY() * db.getX();
 
         if (det >= 0)
             return angle;
         else
             return -angle;
+    }
+
+    /**
+     * computes the angle difference between a and b as viewed from center
+     *
+     * @param center
+     * @param a
+     * @param b
+     * @return angle
+     */
+    public static double basicComputeAngle(Point2D center, Point2D a, Point2D b) {
+        Point2D da = a.subtract(center);
+        Point2D db = b.subtract(center);
+        return modulo360(computeAngle(db) - computeAngle(da));
+    }
+
+    /**
+     * returns the signed difference of angles A and B
+     *
+     * @param AngleA
+     * @param AngleB
+     */
+    public static double signedDiffAngle(double AngleA, double AngleB) {
+        if (modulo360(AngleA - AngleB) > 180) {
+            return -(360 - modulo360(AngleA - AngleB));
+        } else {
+            return modulo360(AngleA - AngleB);
+        }
     }
 
 
@@ -271,7 +299,32 @@ public class GeometryUtils {
         } else {
             return modulo360(AngleB - (modulo360(AngleB - AngleA)) / 2);
         }
-
     }
 
+    static final double PI2 = 2 * Math.PI;
+
+    /**
+     * clamp to range 0..2PI
+     *
+     * @param x
+     * @return modulo 2PI
+     */
+    static public double moduloTwoPI(double x) {
+        while (x < 0)
+            x += PI2;
+        while (x > PI2)
+            x -= PI2;
+        return x;
+    }
+
+    /**
+     * returns the difference of angles A and B
+     *
+     * @param A
+     * @param B
+     */
+    public static double squaredDistance(Point2D A, Point2D B) {
+
+        return (B.getX() - A.getX()) * (B.getX() - A.getX()) + (B.getY() - A.getY()) * (B.getY() - A.getY());
+    }
 }

@@ -91,7 +91,8 @@ public class ConvexHull {
 
         //process one split at a time
         progress.setMaximum(order.length);    //initialize maximum progress
-        try {
+        progress.setProgress(0);
+
             for (int z = 0; z < order.length; z++) {
 
                 progress.setProgress(z);
@@ -246,9 +247,7 @@ public class ConvexHull {
                 //add split to usedSplits
                 usedSplits.set(order[z], true);
             }
-        } catch (CanceledException e) {
-            progress.setUserCancelled(false);
-        }
+
 
         progress.setProgress(-1);
         for (Node n : graph.nodes()) {
@@ -280,7 +279,7 @@ public class ConvexHull {
                 maxNumberOfTaxaOnNode = graph.getNode2Taxa(v).size();
         }
 
-        BitSet seen = new BitSet();
+        final BitSet seen = new BitSet();
         for (Edge e = graph.getFirstEdge(); e != null; e = e.getNext()) {
             int s = graph.getSplit(e);
             if (s > 0 && !seen.get(s)) {
@@ -452,12 +451,8 @@ public class ConvexHull {
                     Integer sId = graph.getSplit(e);
                     Node v = graph.getOpposite(u, e);
                     if (!seen.contains(v) && !crossedSplits.contains(sId)) {
-                        if (u == null)
-                            System.err.println("null");
                         toVisit.push(u);
                         backtrack.push(true);
-                        if (v == null)
-                            System.err.println("null");
                         toVisit.push(v);
                         backtrack.push(false);
                         // push edge twice (visit & backtrack)

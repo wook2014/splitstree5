@@ -26,6 +26,7 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ASplit;
 
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -43,10 +44,10 @@ public class SplitsUtilities {
      * @param taxa
      * @throws SplitsException
      */
-    public static void verifySplits(SplitsBlock splits, TaxaBlock taxa) throws SplitsException {
+    public static void verifySplits(Collection<ASplit> splits, TaxaBlock taxa) throws SplitsException {
         final Set<BitSet> seen = new HashSet<>();
 
-        for (ASplit split : splits.getSplits()) {
+        for (ASplit split : splits) {
             final BitSet aSet = split.getA();
             if (seen.contains(aSet))
                 throw new SplitsException("Split " + aSet + " occurs multiple times");

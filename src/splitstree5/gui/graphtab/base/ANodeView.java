@@ -113,10 +113,13 @@
  */
 package splitstree5.gui.graphtab.base;
 
+import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
+import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
@@ -129,6 +132,15 @@ import splitstree5.gui.style.Style;
  * Daniel Huson, 10.2107
  */
 public class ANodeView {
+    private static final EventHandler<MouseEvent> mouseEnteredHandler = (x) -> {
+        ((Shape) x.getSource()).setScaleX(4 * ((Shape) x.getSource()).getScaleX());
+        ((Shape) x.getSource()).setScaleY(4 * ((Shape) x.getSource()).getScaleY());
+    };
+
+    private static final EventHandler<MouseEvent> mouseExitedHandler = (x) -> {
+        ((Shape) x.getSource()).setScaleX(0.25 * ((Shape) x.getSource()).getScaleX());
+        ((Shape) x.getSource()).setScaleY(0.25 * ((Shape) x.getSource()).getScaleY());
+    };
     private Node shape;
     private Node label;
     private Point2D location;
@@ -145,19 +157,50 @@ public class ANodeView {
     public ANodeView(jloda.graph.Node v, Point2D location, String text) {
         this.v = v;
         setLocation(location);
-        final Circle circle = new Circle(5);
+        final Circle circle = new Circle();
         circle.setLayoutX(location.getX());
         circle.setLayoutY(location.getY());
         setShape(circle);
-        circle.setFill(Color.WHITE);
-        circle.setStroke(Color.BLACK);
         if (text != null && text.length() > 0) {
+            circle.setStroke(Color.BLACK);
+            circle.setFill(Color.WHITE);
+            circle.setRadius(2);
+
             label = new Label(text);
             label.setLayoutX(location.getX() + circle.getRadius());
             label.setLayoutY(location.getY());
+
+            final Tooltip tooltip = new Tooltip();
+            tooltip.textProperty().bind(((Labeled) label).textProperty());
+            Tooltip.install(circle, tooltip);
+            Tooltip.install(label, tooltip);
             setLabel(label);
-        } else
+
+            circle.setOnMouseEntered((x) -> {
+                circle.setScaleX(2 * circle.getScaleX());
+                circle.setScaleY(2 * circle.getScaleY());
+                label.setScaleX(1.2 * label.getScaleX());
+                label.setScaleY(1.2 * label.getScaleY());
+            });
+            label.setOnMouseEntered(circle.getOnMouseEntered());
+
+            circle.setOnMouseExited((x) -> {
+                circle.setScaleX(0.5 * circle.getScaleX());
+                circle.setScaleY(0.5 * circle.getScaleY());
+                label.setScaleX(1.0 / 1.2 * label.getScaleX());
+                label.setScaleY(1.0 / 1.2 * label.getScaleY());
+            });
+            label.setOnMouseExited(circle.getOnMouseExited());
+
+        } else {
+            circle.setFill(Color.BLACK);
+            circle.setRadius(1);
+
+            circle.setOnMouseEntered(mouseEnteredHandler);
+            circle.setOnMouseExited(mouseExitedHandler);
+
             label = null;
+        }
     }
 
     public void setShape(Node shape) {

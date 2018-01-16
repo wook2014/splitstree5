@@ -55,7 +55,7 @@ public enum Compatibility {
             return compatible;
         else if (isCyclic(ntax, splits, cycle))
             return cyclic;
-        else if (isWeaklyCompatible(splits))
+        else if (ntax < 100 && isWeaklyCompatible(splits))
             return weaklyCompatible;
         else
             return incompatible;

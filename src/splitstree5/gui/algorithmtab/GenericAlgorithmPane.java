@@ -40,8 +40,6 @@ package splitstree5.gui.algorithmtab;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
@@ -105,14 +103,18 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
     public void setup() {
         final GridPane grid = new GridPane();
         grid.setPadding(new Insets(10, 5, 10, 5));
-        grid.setHgap(20);
+        grid.setHgap(10);
+        grid.setVgap(4);
+
         getChildren().setAll(grid);
 
         int row = 1;
         try {
             for (final Option option : options) {
                 final String text = Basic.fromCamelCase(option.getName());
-                grid.add(new Label(text), 0, row);
+                final Label label = new Label(text);
+                label.setTooltip(new Tooltip(text));
+                grid.add(label, 0, row);
                 switch (option.getType().getTypeName()) {
                     case "boolean": {
                         final CheckBox control = new CheckBox("");
@@ -207,12 +209,9 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
                             final ChoiceBox<String> choiceBox = new ChoiceBox<>();
                             choiceBox.getItems().addAll(option.getLegalValues());
                             choiceBox.setValue(option.getValue().toString());
-                            choiceBox.valueProperty().addListener(new ChangeListener<String>() {
-                                @Override
-                                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                                    undoManager.add(text, choiceBox.valueProperty(), oldValue, newValue);
-                                    option.holdValue(newValue);
-                                }
+                            choiceBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+                                undoManager.add(text, choiceBox.valueProperty(), oldValue, newValue);
+                                option.holdValue(newValue);
                             });
                             control = choiceBox;
                         } else {

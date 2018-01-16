@@ -66,7 +66,7 @@ public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> implements 
         splits.setPartial(taxaInTree.cardinality() < taxaBlock.getNtax());
         splits.setCompatibility(Compatibility.compatible);
 
-        SplitsUtilities.verifySplits(splits, taxaBlock);
+        SplitsUtilities.verifySplits(splits.getSplits(), taxaBlock);
         progressListener.close();
     }
 

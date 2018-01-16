@@ -29,7 +29,6 @@ import splitstree5.core.Document;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.texttab.TextViewTab;
-import splitstree5.io.nexus.NexusFileWriter;
 
 /**
  * a data block viewer tab
@@ -44,10 +43,10 @@ public class DataViewTab extends TextViewTab {
      */
     public DataViewTab(Document document, ADataNode aNode) {
         super(aNode.nameProperty());
-        final StringProperty textProperty = new SimpleStringProperty(NexusFileWriter.toString(document.getWorkflow().getWorkingTaxaNode().getDataBlock(), ((ADataNode) aNode).getDataBlock()));
+        final StringProperty textProperty = new SimpleStringProperty(aNode.getDataBlock().getDisplayText());
         aNode.stateProperty().addListener((c, o, n) -> {
             if (n == UpdateState.VALID) {
-                textProperty.set(NexusFileWriter.toString(document.getWorkflow().getWorkingTaxaNode().getDataBlock(), ((ADataNode) aNode).getDataBlock()));
+                textProperty.set(aNode.getDataBlock().getDisplayText());
             }
         });
         getTextArea().textProperty().bind(textProperty);

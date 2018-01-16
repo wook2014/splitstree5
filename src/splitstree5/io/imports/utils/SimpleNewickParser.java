@@ -110,6 +110,8 @@ public class SimpleNewickParser {
                         tree.setLabel(w, label);
                         if (w.getOutDegree() == 0)
                             leafLabels.add(label);
+                        else
+                            internalLabels.add(label);
                     }
                 } else // everything to next ) : or , is considered a label:
                 {
@@ -136,17 +138,12 @@ public class SimpleNewickParser {
                     tree.setLabel(w, label);
                     if (w.getOutDegree() == 0)
                         leafLabels.add(label);
+                    else
+                        internalLabels.add(label);
                 }
                 Edge e = null;
                 if (v != null) {
                     e = tree.newEdge(v, w);
-
-                    // v is not a leaf, move its label to the correct set:
-                    final String labelV = tree.getLabel(v);
-                    if (labelV != null) {
-                        leafLabels.remove(labelV);
-                        internalLabels.add(labelV);
-                    }
                 }
 
                 // detect and read embedded bootstrap values:

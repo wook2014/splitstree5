@@ -115,6 +115,15 @@ public class TreesBlock extends ADataBlock {
 
     @Override
     public String getInfo() {
-        return (getNTrees() == 1 ? "a tree" : getNTrees() + " trees") + (isPartial() ? ", partial" : "") + (isRooted() ? ", rooted" : "");
+        return (getNTrees() == 1 ? "one tree" : getNTrees() + " trees") + (isPartial() ? ", partial" : "");
+    }
+
+    @Override
+    public String getDisplayText() {
+        if (getDocument().getWorkflow().getTopTaxaNode().getDataBlock().getNtax() * size() < 10000)
+            return super.getDisplayText();
+        else {
+            return "Number of trees: " + size() + " (too many to list here)\n";
+        }
     }
 }

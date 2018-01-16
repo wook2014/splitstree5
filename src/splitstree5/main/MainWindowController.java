@@ -28,6 +28,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import jloda.util.MemoryUsage;
 import splitstree5.gui.workflowtree.WorkflowTreeItem;
 
 import java.util.LinkedList;
@@ -83,6 +84,9 @@ public class MainWindowController {
 
     @FXML
     private Button showButton;
+
+    @FXML
+    private Label memoryUsageLabel;
 
     public BorderPane getBorderPane() {
         return borderPane;
@@ -160,6 +164,9 @@ public class MainWindowController {
             else
                 animateSplitPane(algorithmSplitPane, 1.0, () -> openCloseRight.setText((">")));
         });
+
+        final MemoryUsage memoryUsage = MemoryUsage.getInstance();
+        memoryUsageLabel.textProperty().bind(memoryUsage.memoryUsageStringProperty());
     }
 
     private void animateSplitPane(SplitPane splitPane, double target, Runnable runnable) {

@@ -20,6 +20,8 @@
 package splitstree5.dialogs.imports;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Scene;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -55,6 +57,7 @@ public class ImportDialog {
             stage.setX(parentMainWindow.getStage().getX() + 50);
             stage.setY(parentMainWindow.getStage().getY() + 50);
         }
+        stage.setTitle("Import - SplitsTree5");
 
         controller.getProgressBar().setVisible(false);
 
@@ -64,14 +67,20 @@ public class ImportDialog {
         controller.getFileFormatComboBox().getItems().addAll(ImporterManager.getInstance().getAllFileFormats());
         controller.getFileFormatComboBox().disableProperty().bind(controller.getProgressBar().visibleProperty());
 
+        final ObjectProperty<FileChooser.ExtensionFilter> selectedExtensionFilter = new SimpleObjectProperty<>();
         controller.getBrowseButton().setOnAction((e) -> {
-            FileChooser fileChooser = new FileChooser();
+            final FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Open Import File");
             fileChooser.getExtensionFilters().addAll(ImporterManager.getInstance().getAllExtensionFilters());
+            if (selectedExtensionFilter.get() != null)
+                fileChooser.setSelectedExtensionFilter(selectedExtensionFilter.get());
             // show file browser
-            File selectedFile = fileChooser.showOpenDialog(stage);
-            if (selectedFile != null)
+            final File selectedFile = fileChooser.showOpenDialog(stage);
+            if (selectedFile != null) {
                 controller.getFileTextField().setText(selectedFile.getPath());
+                selectedExtensionFilter.set(fileChooser.getSelectedExtensionFilter());
+
+            }
         });
         controller.getBrowseButton().disableProperty().bind(controller.getProgressBar().visibleProperty());
 

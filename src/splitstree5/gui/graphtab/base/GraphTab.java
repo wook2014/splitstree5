@@ -102,6 +102,8 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
 
     private final StackPane pane = new StackPane();
 
+    private final BooleanProperty sparseLabels = new SimpleBooleanProperty(true);
+
     private DoubleProperty scaleChangeX = new SimpleDoubleProperty(1); // keep track of scale changes, used for reset
     private DoubleProperty scaleChangeY = new SimpleDoubleProperty(1);
     private DoubleProperty angleChange = new SimpleDoubleProperty(0);
@@ -423,7 +425,7 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
     public void layoutLabels() {
         if (getPhyloGraph() != null) {
             if (getLayout() == GraphLayout.Radial)
-                NodeLabelLayouter.radialLayout(getPhyloGraph(), getNode2view(), getEdge2view());
+                NodeLabelLayouter.radialLayout(isSparseLabels(), getPhyloGraph(), getNode2view(), getEdge2view());
             else {
                 if (getPhyloGraph() instanceof PhyloTree) {
                     NodeLabelLayouter.leftToRightLayout(getPhyloGraph(), ((PhyloTree) getPhyloGraph()).getRoot(), getNode2view(), getEdge2view());
@@ -512,9 +514,11 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
         }
         if (edgeSelectionModel.getSelectedItems().size() > 0) {
             for (Edge edge : edgeSelectionModel.getSelectedItems()) {
-                final String label = getPhyloGraph().getLabel(edge);
-                if (label != null)
-                    MainWindowManager.getInstance().getPreviousSelection().add(label);
+                if (edge.getOwner() == getPhyloGraph()) {
+                    final String label = getPhyloGraph().getLabel(edge);
+                    if (label != null)
+                        MainWindowManager.getInstance().getPreviousSelection().add(label);
+                }
             }
         }
     }
@@ -734,6 +738,9 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
         });
 
         controller.getLayoutLabelsMenuItem().setOnAction((e) -> layoutLabels());
+        controller.getSparseLabelsCheckMenuItem().selectedProperty().unbindBidirectional(sparseLabels);
+        controller.getSparseLabelsCheckMenuItem().setOnAction((e) -> layoutLabels());
+        controller.getSparseLabelsCheckMenuItem().disableProperty().bind(layout.isNotEqualTo(GraphLayout.Radial));
 
 
         controller.getFormatNodesMenuItem().setOnAction((e) -> {
@@ -783,5 +790,17 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
 
     public Map<String, Style> getNodeLabel2Style() {
         return nodeLabel2Style;
+    }
+
+    public boolean isSparseLabels() {
+        return sparseLabels.get();
+    }
+
+    public BooleanProperty sparseLabelsProperty() {
+        return sparseLabels;
+    }
+
+    public void setSparseLabels(boolean sparseLabels) {
+        this.sparseLabels.set(sparseLabels);
     }
 }

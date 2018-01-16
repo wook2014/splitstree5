@@ -134,11 +134,14 @@ public class Importer {
                 document.setDirty(true);
 
                 Platform.runLater(() -> {
-                    document.getWorkflow().getTopTaxaNode().setState(UpdateState.VALID);
                     if (mainWindow == parentMainWindow) // using existing document
                         mainWindow.getStage().toFront();
                     else // new document
                         mainWindow.show(new Stage(), parentMainWindow.getStage().getX() + 50, parentMainWindow.getStage().getY() + 50);
+                });
+
+                Platform.runLater(() -> {
+                    document.getWorkflow().getTopTaxaNode().setState(UpdateState.VALID);
                 });
             } catch (IOException ex) {
                 new Alert("Import failed: " + ex.getMessage());

@@ -24,8 +24,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import jloda.phylo.PhyloTree;
-import jloda.util.CanceledException;
-import jloda.util.ProgressListener;
+import jloda.util.*;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToSplits;
@@ -36,26 +35,25 @@ import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
 import splitstree5.core.misc.SplitsUtilities;
 import splitstree5.core.misc.TreeUtilities;
-import splitstree5.io.nexus.SplitsNexusIO;
 import splitstree5.utils.SplitsException;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * implements consensus network
- * Created on 12/11/16.
  *
- * @author Tobias Kloepper, Daniel Huson and David Bryant
+ * @author Daniel Huson, 1/2017
  */
 public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
-    private boolean debug = false;
-
     public enum EdgeWeights {Median, Mean, Count, Sum, None}
 
     private final SimpleObjectProperty<EdgeWeights> optionEdgeWeights = new SimpleObjectProperty<>(EdgeWeights.Mean);
     private DoubleProperty optionThreshold = new SimpleDoubleProperty(0.5);
+
+    private final Object sync = new Object();
 
     public final static String DESCRIPTION = "Computes the consensus splits of trees (Holland and Moulton 2003)";
 
@@ -78,78 +76,141 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock) throws CanceledException, SplitsException {
 
         final ObservableList<PhyloTree> trees = treesBlock.getTrees();
-        final Map<BitSet, WeightStats> split2weights = new HashMap<>();
+        final Map<BitSet, Pair<BitSet, WeightStats>> splitsAndWeights = new HashMap<>();
         final BitSet taxaInTree = taxaBlock.getTaxaSet();
 
-        if (treesBlock.getNTrees() == 1) System.err.println("Consensus network: only one Tree specified");
+        if (treesBlock.getNTrees() == 1) System.err.println("Consensus network: only one tree specified");
 
         progress.setMaximum(100);
         progress.setProgress(0);
 
-        for (int which = 0; which < trees.size(); which++) {
-            final PhyloTree tree = trees.get(which);
-            final List<ASplit> splits = new ArrayList<>();
-            TreeUtilities.computeSplits(taxaBlock, taxaInTree, tree, splits);
-                /*SplitsBlock tmp = new SplitsBlock();
-                TreesBlock tmpT= new TreesBlock();
-                tmpT.getTrees().add(tree);
-                trans = new TreeSelector();
-                trans.compute(progressListener, taxaBlock, treesBlock, tmp);*/
+        {
+            final int numberOfThreads = Math.min(trees.size(), 8);
+            final ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
+            try {
+                final CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
+                final Single<CanceledException> exception = new Single<>();
 
-            for (ASplit split : splits) {
-                System.err.println(split.getA());
-                final WeightStats weightStats = split2weights.computeIfAbsent(split.getA(), k -> new WeightStats());
-                weightStats.add((float) split.getWeight());
-            }
-            progress.setProgress((long) (which * 50.0 / trees.size()));
-        }
-
-        final double threshold = (optionThreshold.getValue() < 1 ? optionThreshold.getValue() : 0.999999);
-
-        int count = 0;
-        for (BitSet aSet : split2weights.keySet()) {
-            final WeightStats weightStats = split2weights.get(aSet);
-            final double wgt;
-            if (weightStats.getCount() / (double) trees.size() > threshold) {
-                switch (getOptionEdgeWeights()) {
-                    case Count:
-                        wgt = weightStats.getCount();
-                        break;
-                    case Mean:
-                        wgt = weightStats.getMean();
-                        break;
-                    case Median:
-                        wgt = weightStats.getMedian();
-                        break;
-                    case Sum:
-                        wgt = weightStats.getSum();
-                        break;
-                    default:
-                        wgt = 1;
-                        break;
+                for (int i = 0; i < numberOfThreads; i++) {
+                    final int threadNumber = i;
+                    executor.execute(() -> {
+                        try {
+                            for (int which = threadNumber; which < trees.size(); which += numberOfThreads) {
+                                final PhyloTree tree = trees.get(which);
+                                final List<ASplit> splits = new ArrayList<>();
+                                TreeUtilities.computeSplits(taxaBlock, taxaInTree, tree, splits);
+                                for (ASplit split : splits) {
+                                    synchronized (sync) {
+                                        final Pair<BitSet, WeightStats> pair = splitsAndWeights.computeIfAbsent(split.getPartContaining(1), k -> new Pair<>(k, new WeightStats()));
+                                        pair.getSecond().add((float) split.getWeight());
+                                    }
+                                }
+                                if (threadNumber == 0) {
+                                    try {
+                                        progress.setProgress((long) (which * 80.0 / trees.size()));
+                                    } catch (CanceledException ex) {
+                                        while (countDownLatch.getCount() > 0)
+                                            countDownLatch.countDown(); // flush
+                                        exception.set(ex);
+                                        return;
+                                    }
+                                }
+                            }
+                        } finally {
+                            countDownLatch.countDown();
+                        }
+                    });
                 }
-                final float confidence = (float) weightStats.getCount() / (float) trees.size();
-                splitsBlock.getSplits().add(new ASplit(aSet, taxaBlock.getNtax(), wgt, confidence));
+
+                try {
+                    countDownLatch.await();
+                } catch (InterruptedException e) {
+                    Basic.caught(e);
+                }
+                if (exception.get() != null) {
+                    throw exception.get();
+                }
+            } finally {
+                executor.shutdownNow();
             }
-            progress.setProgress(50 + 50 * ((count++) / split2weights.size()));
         }
-        splitstree5.utils.SplitsUtilities.verifySplits(splitsBlock, taxaBlock);
+
+        {
+            final int numberOfThreads = Math.min(splitsAndWeights.size(), 8);
+            final ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
+            try {
+                final CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
+                final Single<CanceledException> exception = new Single<>();
+
+                final double threshold = (optionThreshold.getValue() < 1 ? optionThreshold.getValue() : 0.999999);
+
+                final ArrayList<Pair<BitSet, WeightStats>> array = new ArrayList<>(splitsAndWeights.values());
+
+                for (int i = 0; i < numberOfThreads; i++) {
+                    final int threadNumber = i;
+                    executor.execute(() -> {
+                        try {
+                            for (int which = threadNumber; which < array.size(); which += numberOfThreads) {
+                                final BitSet side = array.get(which).getFirst();
+                                final WeightStats weightStats = array.get(which).getSecond();
+                                final double wgt;
+                                if (weightStats.getCount() / (double) trees.size() > threshold) {
+                                    switch (getOptionEdgeWeights()) {
+                                        case Count:
+                                            wgt = weightStats.getCount();
+                                            break;
+                                        case Mean:
+                                            wgt = weightStats.getMean();
+                                            break;
+                                        case Median:
+                                            wgt = weightStats.getMedian();
+                                            break;
+                                        case Sum:
+                                            wgt = weightStats.getSum();
+                                            break;
+                                        default:
+                                            wgt = 1;
+                                            break;
+                                    }
+                                    final float confidence = (float) weightStats.getCount() / (float) trees.size();
+                                    synchronized (sync) {
+                                        splitsBlock.getSplits().add(new ASplit(side, taxaBlock.getNtax(), wgt, confidence));
+                                    }
+                                }
+                                if (threadNumber == 0) {
+                                    try {
+                                        progress.setProgress(80 + 20 * (which / array.size()));
+                                    } catch (CanceledException ex) {
+                                        while (countDownLatch.getCount() > 0)
+                                            countDownLatch.countDown(); // flush
+                                        exception.set(ex);
+                                        return;
+                                    }
+                                }
+                            }
+                        } finally {
+                            countDownLatch.countDown();
+                        }
+                    });
+                }
+                try {
+                    countDownLatch.await();
+                } catch (InterruptedException e) {
+                    Basic.caught(e);
+                }
+                if (exception.get() != null) {
+                    throw exception.get();
+                }
+            } finally {
+                executor.shutdownNow();
+            }
+        }
+
+        splitstree5.utils.SplitsUtilities.verifySplits(splitsBlock.getSplits(), taxaBlock);
 
         splitsBlock.setCycle(SplitsUtilities.computeCycle(taxaBlock.getNtax(), splitsBlock.getSplits()));
         splitsBlock.setFit(-1);
         splitsBlock.setCompatibility(Compatibility.compute(taxaBlock.getNtax(), splitsBlock.getSplits(), splitsBlock.getCycle()));
-
-        if (debug) {
-            System.err.println("DEBUG 2");
-            final StringWriter w1 = new StringWriter();
-            w1.write("#nexus\n");
-            try {
-                SplitsNexusIO.write(w1, taxaBlock, splitsBlock, null);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            System.err.println(w1.toString());
-        }
     }
 
     @Override

@@ -304,7 +304,7 @@ public class SplitsNexusIO {
             if (splitsNexusFormat.isConfidences()) {
                 w.write(" " + split.getConfidence() + " \t");
             }
-            w.write(" " + Basic.toString(split.getA(), ' ') + ",\n");
+            w.write(" " + Basic.toString(split.getA(), " ") + ",\n");
         }
         w.write(";\n");
         w.write("END; [" + NAME + "]\n");

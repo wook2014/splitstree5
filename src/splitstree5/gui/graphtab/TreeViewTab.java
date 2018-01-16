@@ -67,16 +67,18 @@ public class TreeViewTab extends GraphTab {
      */
     public ANodeView createNodeView(Node v, Point2D location, String text) {
         final ANodeView nodeView = new ANodeView(v, location, text);
-        nodeView.getShape().setOnMouseClicked((x) -> {
-            edgeSelectionModel.clearSelection();
-            if (!x.isShiftDown())
-                nodeSelectionModel.clearSelection();
-            if (nodeSelectionModel.getSelectedItems().contains(v))
-                nodeSelectionModel.clearSelection(v);
-            else
-                nodeSelectionModel.select(v);
-            x.consume();
-        });
+        if (nodeView.getShape() != null) {
+            nodeView.getShape().setOnMouseClicked((x) -> {
+                edgeSelectionModel.clearSelection();
+                if (!x.isShiftDown())
+                    nodeSelectionModel.clearSelection();
+                if (nodeSelectionModel.getSelectedItems().contains(v))
+                    nodeSelectionModel.clearSelection(v);
+                else
+                    nodeSelectionModel.select(v);
+                x.consume();
+            });
+        }
 
         if (nodeView.getLabel() != null) {
             nodeView.getLabel().setOnMouseClicked((x) -> {

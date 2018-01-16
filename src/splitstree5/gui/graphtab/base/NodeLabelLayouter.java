@@ -107,9 +107,11 @@ import jloda.phylo.PhyloGraph;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 
 /**
  * node label layouter
+ * Daniel Huson, 12.2017
  */
 public class NodeLabelLayouter {
     /**
@@ -119,22 +121,28 @@ public class NodeLabelLayouter {
      * @param node2view
      * @param edge2view
      */
-    public static void radialLayout(PhyloGraph phyloGraph, NodeArray<ANodeView> node2view, EdgeArray<AEdgeView> edge2view) {
-        ArrayList<BoundingBox> boundsList = new ArrayList<>();
+    public static void radialLayout(boolean sparseLabels, PhyloGraph phyloGraph, NodeArray<ANodeView> node2view, EdgeArray<AEdgeView> edge2view) {
+        final ArrayList<BoundingBox> shapeBoundsList = new ArrayList<>();
 
         for (Node v : phyloGraph.nodes()) {
             final ANodeView nv = node2view.getValue(v);
             if (phyloGraph.getLabel(v) != null) {
                 final javafx.scene.Node shape = nv.getShape();
-                boundsList.add(new BoundingBox(shape.getLayoutX(), shape.getLayoutY(), shape.getLayoutBounds().getWidth(), shape.getLayoutBounds().getHeight()));
+                shapeBoundsList.add(new BoundingBox(shape.getLayoutX(), shape.getLayoutY(), shape.getLayoutBounds().getWidth(), shape.getLayoutBounds().getHeight()));
             }
         }
+
+        final ArrayList<BoundingBox> labelBoundsList = new ArrayList<>();
 
         for (Node v : phyloGraph.nodes()) {
             if (v.getDegree() > 0) {
                 final ANodeView nv = node2view.getValue(v);
                 final javafx.scene.Node shape = nv.getShape();
-                final Bounds shapeBounds = new BoundingBox(shape.getLayoutX(), shape.getLayoutY(), shape.getBoundsInLocal().getWidth(), shape.getBoundsInLocal().getHeight());
+                final Bounds shapeBounds;
+                if (shape != null)
+                    shapeBounds = new BoundingBox(shape.getLayoutX(), shape.getLayoutY(), shape.getBoundsInLocal().getWidth(), shape.getBoundsInLocal().getHeight());
+                else
+                    shapeBounds = new BoundingBox(nv.getLocation().getX(), nv.getLocation().getY(), 2, 2);
 
                 final double angle;
                 if (v.getDegree() == 1) {
@@ -164,7 +172,7 @@ public class NodeLabelLayouter {
 
                 final javafx.scene.Node label = nv.getLabel();
                 if (label != null) {
-                    // System.err.println("Label " + label.getLayoutBounds());
+                    nv.getLabel().setVisible(true);
 
                     Point2D location = new Point2D(0.5 * (shapeBounds.getMaxX() + shapeBounds.getMinX() - label.getLayoutBounds().getWidth()),
                             0.5 * (shapeBounds.getMaxY() + shapeBounds.getMinY() - label.getLayoutBounds().getHeight()));
@@ -173,16 +181,22 @@ public class NodeLabelLayouter {
                     boolean ok = false;
                     while (!ok) {
                         ok = true;
-                        for (BoundingBox other : boundsList) {
+                        int count = 0;
+                        for (BoundingBox other : iterator(shapeBoundsList.iterator(), labelBoundsList.iterator())) {
                             if (other.intersects(bbox)) {
+                                if (count >= shapeBoundsList.size() && sparseLabels)
+                                    nv.getLabel().setVisible(false);
+
                                 location = GeometryUtils.translateByAngle(location, angle, 0.2 * bbox.getHeight());
                                 bbox = new BoundingBox(location.getX(), location.getY(), Math.max(1, label.getLayoutBounds().getWidth()), Math.max(1, label.getLayoutBounds().getHeight()));
                                 ok = false;
                                 break;
                             }
+                            count++;
                         }
                     }
-                    boundsList.add(bbox);
+                    if (nv.getLabel().isVisible())
+                        labelBoundsList.add(bbox);
                     label.setLayoutX(bbox.getMinX());
                     label.setLayoutY(bbox.getMinY());
                 }
@@ -230,6 +244,33 @@ public class NodeLabelLayouter {
                 }
             }
         }
+    }
+
+    /**
+     * iterate over multiple iterators sequentially
+     *
+     * @param iterators
+     * @param <T>
+     * @return iterable over all given iterators
+     */
+    @SafeVarargs
+    public static <T> Iterable<T> iterator(Iterator<T>... iterators) {
+        return () -> new Iterator<T>() {
+            private int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < iterators.length && iterators[i].hasNext();
+            }
+
+            @Override
+            public T next() {
+                T result = iterators[i].next();
+                if (!iterators[i].hasNext())
+                    i++;
+                return result;
+            }
+        };
     }
 }
 

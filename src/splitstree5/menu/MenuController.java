@@ -39,10 +39,7 @@ package splitstree5.menu;
 
 import javafx.beans.InvalidationListener;
 import javafx.fxml.FXML;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCharacterCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
@@ -189,6 +186,9 @@ public class MenuController {
 
     @FXML
     private MenuItem layoutLabelsMenuItem;
+
+    @FXML
+    private CheckMenuItem sparseLabelsCheckMenuItem;
 
     @FXML
     private Menu windowMenu;
@@ -372,6 +372,10 @@ public class MenuController {
         return layoutLabelsMenuItem;
     }
 
+    public CheckMenuItem getSparseLabelsCheckMenuItem() {
+        return sparseLabelsCheckMenuItem;
+    }
+
     public Menu getWindowMenu() {
         return windowMenu;
     }
@@ -412,6 +416,10 @@ public class MenuController {
             });
             editMenu.getItems().remove(getPreferencesMenuItem());
         }
+
+        increaseFontSizeMenuItem.setAccelerator(new KeyCharacterCombination("+", KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_ANY));
+        decreaseFontSizeMenuItem.setAccelerator(new KeyCharacterCombination("-", KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_ANY));
+
 
         final InvalidationListener invalidationListener = observable -> {
             windowMenu.getItems().clear();

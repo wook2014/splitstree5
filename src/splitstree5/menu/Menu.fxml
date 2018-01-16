@@ -147,7 +147,7 @@
                 <MenuItem fx:id="selectAllNodesMenuItem" text="Select All Nodes"/>
                 <MenuItem fx:id="selectAllLabeledNodesMenuItem" text="Select All Labeled Nodes">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="L" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="L" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <MenuItem fx:id="selectAllEdgeMenuItem" text="Select All Edges"/>
@@ -191,7 +191,7 @@
             <items>
                 <MenuItem fx:id="increaseFontSizeMenuItem" text="Increase Font Size">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="EQUALS" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="PLUS" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <MenuItem fx:id="decreaseFontSizeMenuItem" text="Decrease Font Size">
@@ -242,9 +242,10 @@
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="layoutLabelsMenuItem" text="Layout Labels">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="L" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="L" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
+                <CheckMenuItem fx:id="sparseLabelsCheckMenuItem" mnemonicParsing="false" text="Sparse Labels"/>
             </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Distances"/>

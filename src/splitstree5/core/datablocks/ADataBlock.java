@@ -23,6 +23,7 @@ import jloda.util.Basic;
 import jloda.util.PluginClassLoader;
 import splitstree5.core.Document;
 import splitstree5.core.workflow.UpdateState;
+import splitstree5.io.nexus.NexusFileWriter;
 import splitstree5.utils.OptionableBase;
 
 import java.util.ArrayList;
@@ -114,4 +115,12 @@ abstract public class ADataBlock extends OptionableBase {
         }
     }
 
+    /**
+     * gets the text for interactive display
+     *
+     * @return display text
+     */
+    public String getDisplayText() {
+        return NexusFileWriter.toString(document.getWorkflow().getWorkingTaxaNode().getDataBlock(), this);
+    }
 }

@@ -225,6 +225,9 @@ public class ASelectionModel<T> extends MultipleSelectionModel<T> {
      */
     public void setItems(T... items) {
         clearSelection();
+        selectedItems.clear();
+        selectedIndices.clear();
+        selectedIndicesAsList.clear();
         this.items = Arrays.copyOf(items, items.length);  // use copy for safety
     }
 
