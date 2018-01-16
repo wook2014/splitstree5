@@ -1,35 +1,47 @@
 package splitstree5.io.imports;
 
+import jloda.util.CanceledException;
+import jloda.util.FileInputIterator;
+import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IToSplits;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ASplit;
+import splitstree5.core.misc.SplitsUtilities;
+import splitstree5.io.imports.interfaces.IImportSplits;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
+import java.util.List;
 
-public class FastaSplitsIn implements IToSplits{
+public class FastaSplitsIn implements IToSplits, IImportSplits{
 
-    public void parse(String inputFile, TaxaBlock taxa, SplitsBlock splits) throws IOException {
+    public static final List<String> extensions = new ArrayList<>(Arrays.asList("fasta", "fas", "fa", "seq", "fsa", "fna"));
 
-        ArrayList<String> taxonNamesFound = new ArrayList<>();
-        ArrayList<String> binarySplits = new ArrayList<>();
+    @Override
+    public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxa, SplitsBlock splits) throws CanceledException, IOException {
+
+        final ArrayList<String> taxonNamesFound = new ArrayList<>();
+        final ArrayList<String> binarySplits = new ArrayList<>();
         int ntax = 0;
         int nsplits = 0;
         int counter = 0;
 
-        try (BufferedReader in = new BufferedReader(new FileReader(inputFile))) {
+        try (FileInputIterator it = new FileInputIterator(fileName)) {
+            progressListener.setMaximum(it.getMaximumProgress());
+            progressListener.setProgress(0);
             counter++;
-            String line;
             int sequenceLength = 0;
             StringBuilder sequence = new StringBuilder("");
             boolean startedNewSequence = false;
 
-            while ((line = in.readLine()) != null) {
+            while (it.hasNext()) {
+                final String line = it.next();
                 counter++;
 
                 if (line.startsWith(";"))
@@ -60,6 +72,7 @@ public class FastaSplitsIn implements IToSplits{
                     sequenceLength += add.length();
                     sequence.append(line.replaceAll("\\s+", ""));
                 }
+                progressListener.setProgress(it.getProgress());
             }
 
             if (sequence.length() == 0)
@@ -80,8 +93,17 @@ public class FastaSplitsIn implements IToSplits{
         taxa.addTaxaByNames(taxonNamesFound);
         splits.clear();
         readSplits(ntax, nsplits, binarySplits, splits);
-        //characters.setDimension(ntax, nchar);
-        //readMatrix(matrix, characters);
+        splits.setCycle(SplitsUtilities.computeCycle(ntax, splits.getSplits()));
+    }
+
+    @Override
+    public List<String> getExtensions() {
+        return extensions;
+    }
+
+    @Override
+    public boolean isApplicable(String fileName) throws IOException {
+        return false;
     }
 
     private static void readSplits( int ntax, int nsplits, ArrayList<String> binarySplits, SplitsBlock splitsBlock){

@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.io.imports;
+package splitstree5.io.imports.interfaces;
 
 
 import java.io.IOException;

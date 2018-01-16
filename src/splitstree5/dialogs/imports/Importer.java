@@ -41,7 +41,8 @@ import splitstree5.core.datablocks.*;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.core.workflow.Workflow;
 import splitstree5.gui.utils.Alert;
-import splitstree5.io.imports.*;
+import splitstree5.io.imports.interfaces.*;
+import splitstree5.io.nexus.CharactersNexusFormat;
 import splitstree5.main.MainWindow;
 
 import java.io.IOException;
@@ -76,7 +77,8 @@ public class Importer {
 
                 if (importer instanceof IImportCharacters) {
                     final CharactersBlock dataBlock = new CharactersBlock();
-                    ((IImportCharacters) importer).parse(progress, filename, taxaBlock, dataBlock);
+                    final CharactersNexusFormat format = new CharactersNexusFormat();
+                    ((IImportCharacters) importer).parse(progress, filename, taxaBlock, dataBlock, format);
                     workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
                     final ADataNode<DistancesBlock> distances = workflow.createDataNode(new DistancesBlock());
                     workflow.createConnector(workflow.getWorkingDataNode(), distances, new HammingDistances());

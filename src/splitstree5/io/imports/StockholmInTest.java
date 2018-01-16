@@ -1,8 +1,11 @@
 package splitstree5.io.imports;
 
+import jloda.util.ProgressListener;
+import jloda.util.ProgressPercentage;
 import org.junit.Test;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.io.nexus.CharactersNexusFormat;
 import splitstree5.io.nexus.CharactersNexusIO;
 import splitstree5.io.nexus.TaxaNexusIO;
 
@@ -17,7 +20,9 @@ public class StockholmInTest {
 
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
-        stockholmIn.parse("test/notNexusFiles/PF02171_seed.txt", taxaBlock, charactersBlock);
+        ProgressListener pl = new ProgressPercentage();
+        CharactersNexusFormat format = new CharactersNexusFormat();
+        stockholmIn.parse(pl,"test/notNexusFiles/PF02171_seed.txt", taxaBlock, charactersBlock, format);
 
         // printing
         final StringWriter w = new StringWriter();

@@ -8,6 +8,7 @@ import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IToTrees;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
+import splitstree5.io.imports.interfaces.IImportTrees;
 import splitstree5.io.imports.utils.SimpleNewickParser;
 import splitstree5.utils.TreesUtilities;
 

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -16,18 +16,16 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package splitstree5.io.imports;
+package splitstree5.io.imports.interfaces;
 
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
-import splitstree5.core.datablocks.CharactersBlock;
+import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
 import java.io.IOException;
 
-public interface IImportCharacters extends IImporter {
-
+public interface IImportSplits extends IImporter {
     /**
      * parse a file
      *
@@ -35,5 +33,7 @@ public interface IImportCharacters extends IImporter {
      * @param taxaBlock
      * @param dataBlock
      */
-    void parse(ProgressListener progressListener, String fileName, TaxaBlock taxaBlock, CharactersBlock dataBlock) throws CanceledException, IOException;
+    void parse(ProgressListener progressListener, String fileName, TaxaBlock taxaBlock, SplitsBlock dataBlock) throws CanceledException, IOException;
+
+
 }

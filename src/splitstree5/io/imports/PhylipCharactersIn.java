@@ -1,26 +1,31 @@
 package splitstree5.io.imports;
 
+import jloda.util.CanceledException;
+import jloda.util.FileInputIterator;
+import jloda.util.ProgressListener;
+import splitstree5.core.algorithms.interfaces.IToCharacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.io.imports.interfaces.IImportCharacters;
 import splitstree5.io.nexus.CharactersNexusFormat;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Daria Evseeva,27.09.2017.
  */
-public class PhylipCharactersIn extends CharactersFormat {
+public class PhylipCharactersIn extends CharactersFormat implements IToCharacters, IImportCharacters {
 
-    public void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format) throws IOException {
+    public static final List<String> extensions = new ArrayList<>(Arrays.asList("phy", "phylip"));
 
-        ArrayList<String> labels = new ArrayList<>();
-        ArrayList<String> sequences = new ArrayList<>();
+    @Override
+    public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format)
+            throws CanceledException, IOException {
+        final ArrayList<String> labels = new ArrayList<>();
+        final ArrayList<String> sequences = new ArrayList<>();
 
         int ntax = 0;
         int nchar = 0;
@@ -31,11 +36,11 @@ public class PhylipCharactersIn extends CharactersFormat {
 
         boolean readDim = true;
 
-        try (BufferedReader in = new BufferedReader(new FileReader(inputFile))) {
-            String line;
-
-            while ((line = in.readLine()) != null) {
-
+        try (FileInputIterator it = new FileInputIterator(fileName)) {
+            progressListener.setMaximum(it.getMaximumProgress());
+            progressListener.setProgress(0);
+            while (it.hasNext()) {
+                final String line = it.next();
                 counter++;
                 if (line.equals("")) continue;
 
@@ -68,6 +73,7 @@ public class PhylipCharactersIn extends CharactersFormat {
                     if (readLines > ntax && standard)
                         throw new IOException("Unexpected symbol at the line " + counter);
                 }
+                progressListener.setProgress(it.getProgress());
             }
         }
 
@@ -92,6 +98,16 @@ public class PhylipCharactersIn extends CharactersFormat {
             else
                 nchar =  taxa2seq.get(s).length();
         }*/
+    }
+
+    @Override
+    public List<String> getExtensions() {
+        return extensions;
+    }
+
+    @Override
+    public boolean isApplicable(String fileName) throws IOException {
+        return false;
     }
 
     private void setCharactersStandard(ArrayList<String> labels, ArrayList<String> sequences,
