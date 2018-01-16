@@ -14,10 +14,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StreamTokenizer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * Daria Evseeva,02.10.2017.
@@ -50,27 +47,73 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
         distances.clear();
         int ntax;
 
+        final Map<String, Vector<Double>> matrix = new LinkedHashMap<>();
+        boolean square = true;
+        //final double[][] matrix = new double[ntax][ntax];
+
         try (FileInputIterator it = new FileInputIterator(inputFile)) {
 
             //progressListener.setMaximum(it.getMaximumProgress());
             //progressListener.setProgress(0);
-            if (it.hasNext()) {
-                final String line = it.next();
-                StringTokenizer st = new StringTokenizer(line);
-                ntax = Integer.parseInt(st.nextToken());
-                distances.setNtax(ntax);
-            } else {
-                throw new IOException("Empty File");
-            }
+            int counter = 0;
+
+            final String firstLine = it.next();
+            counter++;
+            //StringTokenizer st = new StringTokenizer(line);
+            ntax = Integer.parseInt(firstLine.replaceAll(" ", ""));
+            System.err.println(ntax);
+            distances.setNtax(ntax);
+
+            int tokensInPreviousRow = 0;
+            int tokensInCurrentRow = 0;
+            boolean newRow = false;
+            Vector<Double> row;
+            String currentLabel = "";
+            boolean foundFirstLabel = false;
 
             while (it.hasNext()) {
+                counter++;
                 final String line = it.next();
                 StringTokenizer st = new StringTokenizer(line);
                 while (st.hasMoreTokens()) {
-                    System.err.println(st.nextToken());
+
+                    String token = st.nextToken();
+                    if (!isNumeric(token)) {
+
+                        if (tokensInCurrentRow > ntax || tokensInCurrentRow < tokensInPreviousRow)
+                            throw  new IOException("line "+counter+": Wrong number of entries for Taxa "+currentLabel);
+                        if (tokensInCurrentRow != tokensInPreviousRow && matrix.keySet().size() >= 2)
+                            square = false;
+
+                        foundFirstLabel = true;
+                        System.err.println("curr " +tokensInCurrentRow + " pref "+tokensInPreviousRow);
+                        tokensInPreviousRow = tokensInCurrentRow;
+                        tokensInCurrentRow = 0;
+
+                        row = new Vector<>();
+                        matrix.put(token, row);
+                        currentLabel = token;
+                    } else {
+
+                        if (!foundFirstLabel)
+                            throw new IOException("line "+counter+": Taxa label expected");
+
+                        tokensInCurrentRow++;
+                        matrix.get(currentLabel).add(Double.parseDouble(token));
+                    }
                 }
             }
         }
+        System.err.println(square);
+        for (String s : matrix.keySet()){
+            System.err.println("Row " +s+" "+matrix.get(s));
+        }
+
+        taxa.addTaxaByNames(matrix.keySet());
+        if (square)
+            readSquareMatrix(matrix, distances);
+        else
+            readTriangularMatrix(matrix, distances);
             /*StreamTokenizer st = new StreamTokenizer(in);
             st.resetSyntax();
             st.eolIsSignificant(true);
@@ -122,12 +165,36 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
 
     @Override
     public List<String> getExtensions() {
-        return null;
+        return extensions;
     }
 
     @Override
     public boolean isApplicable(String fileName) throws IOException {
         return false;
+    }
+
+    private static void readSquareMatrix(Map<String, Vector<Double>> matrix, DistancesBlock distancesBlock){
+        int ntax = distancesBlock.getNtax();
+        int taxaCounter = 0;
+        for (String taxa : matrix.keySet()) {
+            taxaCounter++;
+            for (int j = 1; j <= ntax; j++) {
+                distancesBlock.set(taxaCounter, j, matrix.get(taxa).get(j-1));
+            }
+        }
+    }
+
+    private static void readTriangularMatrix(Map<String, Vector<Double>> matrix, DistancesBlock distancesBlock){
+        int ntax = distancesBlock.getNtax();
+        int taxaCounter = 0;
+        for (String taxa : matrix.keySet()) {
+            taxaCounter++;
+            for (int j = 1; j < taxaCounter; j++) {
+                distancesBlock.set(taxaCounter, j, matrix.get(taxa).get(j-1));
+                distancesBlock.set(j, taxaCounter, matrix.get(taxa).get(j-1));
+            }
+            distancesBlock.set(taxaCounter, taxaCounter, 0.0);
+        }
     }
 
     private static void makeTriangularBoth(DistancesBlock distances) {

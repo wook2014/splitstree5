@@ -17,23 +17,6 @@ import java.util.*;
 public class StockholmIn extends CharactersFormat implements IToCharacters, IImportCharacters {
 
     public static final List<String> extensions = new ArrayList<>(Arrays.asList("stk", "sto", "stockholm"));
-    /*
-        todo :
-        -----------------------------------------
-        final ArrayList<String> taxonNamesFound = new ArrayList<>();
-        final ArrayList<String> matrix = new ArrayList<>();
-        -----------------------------------------
-        try (FileInputIterator it = new FileInputIterator(inputFile))
-        -----------------------------------------
-        progressListener.setMaximum(it.getMaximumProgress());
-        progressListener.setProgress(0);
-        ...
-        progressListener.setProgress(it.getProgress());
-        -----------------------------------------
-        while (it.hasNext()) {
-            final String line = it.next();
-        -----------------------------------------
-        */
 
     @Override
     public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format) throws CanceledException, IOException {
