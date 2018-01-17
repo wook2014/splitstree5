@@ -152,7 +152,6 @@ public class FontSelector extends ComboBox<String> {
     }
 
     private void updateFontValue() {
-        System.err.println("UP");
         final String family = controller.getFontFamilyComboBox().getSelectionModel().getSelectedItem();
         if (controller.getFontFamilyComboBox().getItems().contains(family) && Basic.isDouble(controller.getFontSizeComboBox().getSelectionModel().getSelectedItem())) {
             final Double size = Math.max(1, Basic.parseDouble(controller.getFontSizeComboBox().getSelectionModel().getSelectedItem()));
@@ -165,7 +164,6 @@ public class FontSelector extends ComboBox<String> {
 
     @Override
     public void hide() {
-        updateFontValue();
         popup.hide();
     }
 
