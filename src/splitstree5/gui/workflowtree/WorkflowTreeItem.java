@@ -91,13 +91,13 @@ public class WorkflowTreeItem extends TreeItem<String> {
             );
 
             label.setOnContextMenuRequested((e) -> {
-                    final MenuItem show = new MenuItem("Open...");
-                    show.setOnAction((x) -> {
-                        showView(e.getScreenX(), e.getScreenY());
-                    });
+                final MenuItem show = new MenuItem("Open...");
+                show.setOnAction((x) -> {
+                    showView(e.getScreenX(), e.getScreenY());
+                });
                 show.disableProperty().bind(disable);
-                    final ContextMenu contextMenu = new ContextMenu(show);
-                    contextMenu.show(label, e.getScreenX(), e.getScreenY());
+                final ContextMenu contextMenu = new ContextMenu(show);
+                contextMenu.show(label, e.getScreenX(), e.getScreenY());
             });
             getGraphic().setOnMouseClicked((e) -> {
                 if (e.getClickCount() == 2) {

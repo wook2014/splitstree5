@@ -27,7 +27,7 @@ public class ProteinSL implements StateLabeler {
      * @param characters Characters block, from which we get number sites, gap, match and missing characters.
      */
 
-    public ProteinSL(Characters characters){
+    public ProteinSL(Characters characters) {
         maxState = -1;
         availableChars = DataTypesChar.PROTEIN.getSymbols();
         String[] codes = {"ala", "arg", "asn", "asp", "cys", "gln", "glu", "gly", "his", "ile", "leu",

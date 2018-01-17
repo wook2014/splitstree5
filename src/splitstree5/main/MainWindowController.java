@@ -104,6 +104,7 @@ public class MainWindowController {
     public TabPane getAlgorithmTabPane() {
         return algorithmTabPane;
     }
+
     public ToolBar getTopToolBar() {
         return topToolBar;
     }

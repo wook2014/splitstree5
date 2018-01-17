@@ -44,10 +44,8 @@ import javafx.beans.property.SimpleLongProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import javafx.stage.Stage;
-import jloda.util.Basic;
 import splitstree5.dialogs.ClosingLastDocument;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -111,12 +109,9 @@ public class MainWindowManager {
                 if (!ClosingLastDocument.apply(mainWindow.getStage())) {
                     if (mainWindow.getDocument().getWorkflow().getWorkingDataNode() == null)
                         return false;
-                    try {
-                        MainWindow newWindow = new MainWindow();
-                        newWindow.show(null, mainWindow.getStage().getX(), mainWindow.getStage().getY());
-                    } catch (IOException e) {
-                        Basic.caught(e);
-                    }
+
+                    MainWindow newWindow = new MainWindow();
+                    newWindow.show(null, mainWindow.getStage().getX(), mainWindow.getStage().getY());
                 }
             }
         }

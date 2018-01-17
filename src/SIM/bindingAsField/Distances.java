@@ -7,7 +7,7 @@ public class Distances {
 
     private IntegerBinding ntax;
 
-    public Distances(IntegerBinding ntax){
+    public Distances(IntegerBinding ntax) {
 
         /*this.ntax = new IntegerBinding() {
             @Override
@@ -15,11 +15,11 @@ public class Distances {
                 return n.getValue();
             }
         };*/
-        this.ntax=ntax;
+        this.ntax = ntax;
     }
 
     // GETTERS
-    public IntegerBinding getNtax(){
+    public IntegerBinding getNtax() {
         return this.ntax;
     }
 }

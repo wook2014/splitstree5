@@ -63,7 +63,7 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
                     }
                     ntax++;
                 } else {
-                    String allowedChars = ""+getMissing()+getMatchChar()+getGap();
+                    String allowedChars = "" + getMissing() + getMatchChar() + getGap();
                     checkIfCharactersValid(line, counter, allowedChars);
                     if (startedNewSequence) {
                         if (!sequence.toString().equals("")) matrix.add(sequence.toString());

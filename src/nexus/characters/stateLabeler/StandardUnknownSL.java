@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by Daria on 30.10.2016.
  */
-public class StandardUnknownSL implements StateLabeler{
+public class StandardUnknownSL implements StateLabeler {
 
     int nChars; //todo: changed, instead of getNchar function
 
@@ -25,7 +25,7 @@ public class StandardUnknownSL implements StateLabeler{
      *
      * @param characters
      */
-    public StandardUnknownSL(Characters characters){
+    public StandardUnknownSL(Characters characters) {
         maxState = -1;
 
         availableChars = "1234567890";  //These are the standard ones for paup, mesquite etc.

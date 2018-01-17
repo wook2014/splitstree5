@@ -23,7 +23,7 @@ public interface Distances {
      * @param taxa
      * @return a clone
      */
-    Distances clone(Taxa taxa) ;
+    Distances clone(Taxa taxa);
 
     /**
      * return the induced object obtained by hiding taxa
@@ -42,20 +42,22 @@ public interface Distances {
      *
      * @param ps the print stream
      */
-    void showUsage(PrintStream ps) ;
+    void showUsage(PrintStream ps);
 
     /**
      * Produces a string representation of the distances object
      *
      * @return string representation
      */
-    String toString() ;
+    String toString();
+
     /**
      * Produces a string representation of the distances object
      *
      * @return string representation
      */
     String toString(Taxa taxa);
+
     /**
      * Write out matrix according to the specified format
      *
@@ -73,14 +75,16 @@ public interface Distances {
     void read(NexusStreamParser np, Taxa taxa);
 
     /********************
-    * GETTER AND SETTER *
+     * GETTER AND SETTER *
      ********************/
 
     void setFormat(Format format);
-    Format getFormat() ;
+
+    Format getFormat();
 
     int getNtax();
-    void setNtax(int ntax) ;
+
+    void setNtax(int ntax);
 
     /**
      * Get the matrix value.
@@ -89,7 +93,8 @@ public interface Distances {
      * @param j the colum
      * @return the matix value  matrix[i][j]
      */
-    double get(int i, int j) ;
+    double get(int i, int j);
+
     /**
      * Set the matrix value.
      *
@@ -114,9 +119,9 @@ public interface Distances {
      * @param j the colum
      * @return the variance estimate on the matrix[i][j];
      */
-    double getVar(int i, int j) ;
+    double getVar(int i, int j);
 
-    void setVar(int i, int j, double var) ;
+    void setVar(int i, int j, double var);
 
 
     /**

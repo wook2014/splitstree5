@@ -23,7 +23,7 @@ public class Characters {
     private Format fmt;
     private Properties properties;
 
-    public Characters(){
+    public Characters() {
         this.ntax = new SimpleIntegerProperty(0);
         this.nchar = 0;
         this.nactive = 0;
@@ -35,27 +35,30 @@ public class Characters {
         this.ntax.addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                System.out.println("Ntax in Characters class is changed: "+newValue);
+                System.out.println("Ntax in Characters class is changed: " + newValue);
             }
         });
         this.changes.addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                System.out.println("Update Characters according to "+changes.getValue());
+                System.out.println("Update Characters according to " + changes.getValue());
             }
         });
 
     }
+
     //SETTERS
-    public void setNchar(int nchar){
-        this.nchar=nchar;
-        this.changes.setValue("Changed number of characters to "+nchar);
+    public void setNchar(int nchar) {
+        this.nchar = nchar;
+        this.changes.setValue("Changed number of characters to " + nchar);
     }
+
     //GETTERS
-    public SimpleIntegerProperty getNtax(){
+    public SimpleIntegerProperty getNtax() {
         return this.ntax;
     }
-    public StringProperty getChanges(){
+
+    public StringProperty getChanges() {
         return this.changes;
     }
 

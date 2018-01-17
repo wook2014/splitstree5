@@ -5,7 +5,10 @@ import org.junit.Test;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.io.nexus.*;
+import splitstree5.io.nexus.CharactersNexusFormat;
+import splitstree5.io.nexus.CharactersNexusIO;
+import splitstree5.io.nexus.SplitsNexusIO;
+import splitstree5.io.nexus.TaxaNexusIO;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

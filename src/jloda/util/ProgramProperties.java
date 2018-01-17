@@ -33,7 +33,7 @@ import java.util.LinkedList;
  * track program properties
  *
  * @author huson
- *         Date: 08-Nov-2004
+ * Date: 08-Nov-2004
  */
 public class ProgramProperties {
     static public final java.util.Properties props = new java.util.Properties();
@@ -92,6 +92,7 @@ public class ProgramProperties {
 
     /**
      * gets a int property
+     *
      * @return set property or default
      */
     public static int get(Object name, int def) {
@@ -104,6 +105,7 @@ public class ProgramProperties {
 
     /**
      * gets a int[] property
+     *
      * @return set property or default
      */
     public static int[] get(Object name, int[] def) {
@@ -125,6 +127,7 @@ public class ProgramProperties {
 
     /**
      * gets a color property
+     *
      * @return set property or default
      */
     public static Color get(Object name, Color def) {
@@ -230,7 +233,6 @@ public class ProgramProperties {
 
     /**
      * set the default properties file name
-     *
      */
     public static void setPropertiesFileName(String defaultFileName) {
         ProgramProperties.defaultFileName = defaultFileName;
@@ -245,7 +247,6 @@ public class ProgramProperties {
 
     /**
      * remove a property
-     *
      */
     public static void remove(String key) {
         props.remove(key);
@@ -253,7 +254,6 @@ public class ProgramProperties {
 
     /**
      * put a property
-     *
      */
     public static void put(String key, int value) {
         props.setProperty(key, "" + value);
@@ -261,7 +261,6 @@ public class ProgramProperties {
 
     /**
      * put a property
-     *
      */
     public static void put(String key, int[] value) {
         StringBuilder buf = new StringBuilder();
@@ -271,7 +270,6 @@ public class ProgramProperties {
 
     /**
      * put a property
-     *
      */
     public static void put(String key, double value) {
         props.setProperty(key, "" + value);
@@ -279,7 +277,6 @@ public class ProgramProperties {
 
     /**
      * put a property
-     *
      */
     public static void put(String key, boolean value) {
         props.setProperty(key, "" + value);
@@ -287,7 +284,6 @@ public class ProgramProperties {
 
     /**
      * put a property
-     *
      */
     public static void put(String key, String value) {
         props.setProperty(key, value);
@@ -295,7 +291,6 @@ public class ProgramProperties {
 
     /**
      * put a file property
-     *
      */
     public static void put(String key, File value) {
         props.setProperty(key, value.getAbsolutePath());
@@ -304,7 +299,6 @@ public class ProgramProperties {
 
     /**
      * put a property
-     *
      */
     public static void put(String key, Color value) {
         if (value == null)
@@ -316,7 +310,6 @@ public class ProgramProperties {
 
     /**
      * put a property
-     *
      */
     public static void put(String key, Font value) {
         put(key, value.getFamily(), value.getStyle(), value.getSize());
@@ -364,7 +357,6 @@ public class ProgramProperties {
 
     /**
      * put a property
-     *
      */
     public static void put(String key, Collection<Pair<String, String>> value) {
         StringBuilder buf = new StringBuilder();
@@ -377,7 +369,6 @@ public class ProgramProperties {
 
     /**
      * put a property
-     *
      */
     public static void put(String key, String[] value) {
         StringBuilder buf = new StringBuilder();
@@ -404,7 +395,6 @@ public class ProgramProperties {
 
     /**
      * sets the name of the program generating these properties
-     *
      */
     public static void setProgramName(String programName) {
         ProgramProperties.programName = programName;
@@ -421,7 +411,6 @@ public class ProgramProperties {
 
     /**
      * sets the program version string, if not already set...
-     *
      */
     public static void setProgramVersion(String version) {
         if (programVersion == null || programVersion.length() == 0)
@@ -443,7 +432,6 @@ public class ProgramProperties {
 
     /**
      * sets the program title string
-     *
      */
     public static void setProgramTitle(String title) {
         ProgramProperties.programTitle = title;
@@ -451,7 +439,6 @@ public class ProgramProperties {
 
     /**
      * gets the program titles string
-     *
      */
     public static String getProgramTitle() {
         return programTitle;
@@ -477,7 +464,6 @@ public class ProgramProperties {
 
     /**
      * sets the program icon
-     *
      */
     public static void setProgramIcon(ImageIcon icon) {
         ProgramProperties.programIcon = icon;

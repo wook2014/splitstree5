@@ -56,9 +56,9 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreeViewBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.workflow.UpdateState;
+import splitstree5.formattab.Styles;
 import splitstree5.gui.graphtab.TreeViewTab;
 import splitstree5.gui.graphtab.base.*;
-import splitstree5.styletab.Styles;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -95,6 +95,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
     public TreeEmbedder() {
         System.err.println("CONSTRUCT");
     }
+
     @Override
     public String getCitation() {
         return "TreeEmbedder; Huson et al 2012;D.H. Huson, R. Rupp and C. Scornavacca, Phylogenetic Networks, Cambridge, 2012.";

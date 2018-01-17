@@ -19,6 +19,8 @@
  *
  * @version $Id: NodeSet.java,v 1.13 2007-07-10 13:21:52 huson Exp $
  * @author Daniel Huson
+ * @version $Id: NodeSet.java,v 1.13 2007-07-10 13:21:52 huson Exp $
+ * @author Daniel Huson
  */
 /**
  * @version $Id: NodeSet.java,v 1.13 2007-07-10 13:21:52 huson Exp $
@@ -90,7 +92,7 @@ public class NodeSet extends GraphBase implements Set<Node>, Iterable<Node> {
                 return true;
             }
         }
-            return false;
+        return false;
 
     }
 

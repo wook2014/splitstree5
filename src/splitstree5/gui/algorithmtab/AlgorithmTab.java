@@ -37,7 +37,6 @@ import splitstree5.gui.ViewerTab;
 import splitstree5.menu.MenuController;
 import splitstree5.undo.UndoRedoManager;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,7 +65,7 @@ public class AlgorithmTab<P extends ADataBlock, C extends ADataBlock> extends Vi
     /**
      * constructor
      */
-    public AlgorithmTab(Document document, AConnector<P, C> connector) throws IOException {
+    public AlgorithmTab(Document document, AConnector<P, C> connector) {
         this.document = document;
         this.connector = connector;
         this.currentAlgorithm = connector.getAlgorithm();

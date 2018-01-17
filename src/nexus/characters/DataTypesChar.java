@@ -5,7 +5,7 @@ package nexus.characters;
  */
 public enum DataTypesChar {
 
-    STANDARD("01",1),
+    STANDARD("01", 1),
     DNA("atgc", 2),
     RNA("augc", 3),
     PROTEIN("arndcqeghilkmfpstwyvz", 4),
@@ -15,16 +15,21 @@ public enum DataTypesChar {
     private final String symbols;
     private final int ID;
 
-    DataTypesChar(String symbols, int id){
-        this.symbols=symbols;
+    DataTypesChar(String symbols, int id) {
+        this.symbols = symbols;
         this.ID = id;
     }
 
     //GETTER
-    public String getSymbols(){ return this.symbols; }
-    public int getID(){ return this.ID; }
+    public String getSymbols() {
+        return this.symbols;
+    }
 
-    public int getMaxRepeat(){
+    public int getID() {
+        return this.ID;
+    }
+
+    public int getMaxRepeat() {
         return Character.MAX_VALUE - 256;
     }
 

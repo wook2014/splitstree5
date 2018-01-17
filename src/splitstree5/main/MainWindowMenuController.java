@@ -45,12 +45,8 @@ public class MainWindowMenuController {
         final Document document = mainWindow.getDocument();
 
         controller.getNewMenuItem().setOnAction((e) -> {
-            try {
-                final MainWindow newMainWindow = new MainWindow();
-                newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50);
-            } catch (IOException ex) {
-                Basic.caught(ex);
-            }
+            final MainWindow newMainWindow = new MainWindow();
+            newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50);
         });
 
         controller.getImportMenuItem().setOnAction((e) -> ImportDialog.show(mainWindow));
@@ -81,11 +77,11 @@ public class MainWindowMenuController {
         });
 
         controller.getCloseMenuItem().setOnAction((e) -> {
-                mainWindow.close();
+            mainWindow.close();
         });
 
         mainWindow.getStage().setOnCloseRequest((e) -> {
-                mainWindow.close();
+            mainWindow.close();
             e.consume();
         });
 

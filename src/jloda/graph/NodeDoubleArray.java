@@ -19,6 +19,8 @@
  *
  * @version $Id: NodeDoubleArray.java,v 1.7 2007-10-23 13:10:53 huson Exp $
  * @author Daniel Huson
+ * @version $Id: NodeDoubleArray.java,v 1.7 2007-10-23 13:10:53 huson Exp $
+ * @author Daniel Huson
  */
 /**
  * @version $Id: NodeDoubleArray.java,v 1.7 2007-10-23 13:10:53 huson Exp $

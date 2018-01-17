@@ -40,7 +40,6 @@ import splitstree5.gui.utils.DragAndDropSupportListView2;
 import splitstree5.undo.UndoRedoManager;
 import splitstree5.undo.UndoableChangeListViews2;
 
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -73,7 +72,7 @@ public class TaxaFilterPane extends AlgorithmPane {
      *
      * @param taxaFilter
      */
-    public TaxaFilterPane(TaxaFilter taxaFilter) throws IOException {
+    public TaxaFilterPane(TaxaFilter taxaFilter) {
         this.taxaFilter = taxaFilter;
         final ExtendedFXMLLoader extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         controller = (TaxaFilterPaneController) extendedFXMLLoader.getController();
@@ -306,6 +305,7 @@ public class TaxaFilterPane extends AlgorithmPane {
         taxaFilter.getDisabledTaxa().addAll(controller.getInactiveList().getItems());
         connector.setState(UpdateState.INVALID);
     }
+
     public TaxaFilterPaneController getController() {
         return controller;
     }

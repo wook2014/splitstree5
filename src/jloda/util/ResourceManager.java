@@ -140,7 +140,7 @@ public class ResourceManager {
      * Returns file resource as stream, unless the string contains a slash, in which case returns Stream from the file system
      *
      * @param filePackage the package containing file
-     * @param fileName       the name of the file
+     * @param fileName    the name of the file
      */
     public static InputStream getFileAsStream(String filePackage, String fileName) {
         if (fileName.contains("/") || fileName.contains("\\")) {
@@ -162,11 +162,11 @@ public class ResourceManager {
      * Returns an Image (icon) with specified file name at the location specified by <code>packageName</code>.
      *
      * @param packageName the path through a package (the name of the subpackage) where to look for the icon
-     * @param fileName       the name of the icon file
+     * @param fileName    the name of the icon file
      */
     public static Image getImageResource(String packageName, String fileName) {
-            String resname = "/" + packageName.replace('.', '/') + "/" + fileName;
-            resname = resname.replaceAll(" ", "\\ ");
+        String resname = "/" + packageName.replace('.', '/') + "/" + fileName;
+        resname = resname.replaceAll(" ", "\\ ");
         try (InputStream is = ResourceManager.class.getResourceAsStream(resname)) {
             byte[] buffer = new byte[0];
             byte[] tmpbuf = new byte[1024];
@@ -189,7 +189,7 @@ public class ResourceManager {
      * Returns File with specified file name at the location specified by <code>packageName</code>.
      *
      * @param packageName the path through a package (the name of the subpackage) where to look for the icon
-     * @param fileName       the name of the file
+     * @param fileName    the name of the file
      */
     public static File getFileResource(String packageName, String fileName) {
         try {
@@ -220,7 +220,7 @@ public class ResourceManager {
      * Returns file resource as stream
      *
      * @param packageName the path through a package (the name of the subpackage) where to look for the icon
-     * @param fileName       the name of the file
+     * @param fileName    the name of the file
      */
     public static InputStream getFileResourceAsStream(String packageName, String fileName) {
         try {

@@ -1,7 +1,6 @@
 package splitstree5.io.imports;
 
 import splitstree5.core.algorithms.interfaces.IToSplits;
-import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ASplit;
@@ -12,7 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.BitSet;
 
-public class FastaSplitsIn implements IToSplits{
+public class FastaSplitsIn implements IToSplits {
 
     public void parse(String inputFile, TaxaBlock taxa, SplitsBlock splits) throws IOException {
 
@@ -84,24 +83,24 @@ public class FastaSplitsIn implements IToSplits{
         //readMatrix(matrix, characters);
     }
 
-    private static void readSplits( int ntax, int nsplits, ArrayList<String> binarySplits, SplitsBlock splitsBlock){
+    private static void readSplits(int ntax, int nsplits, ArrayList<String> binarySplits, SplitsBlock splitsBlock) {
 
-        for (int s = 0; s < nsplits; s++){
-            BitSet A = new BitSet(ntax+1);
-            for (int t = 0; t < ntax; t++){
-                if (binarySplits.get(t).charAt(s) == '1') A.set(t+1);
+        for (int s = 0; s < nsplits; s++) {
+            BitSet A = new BitSet(ntax + 1);
+            for (int t = 0; t < ntax; t++) {
+                if (binarySplits.get(t).charAt(s) == '1') A.set(t + 1);
             }
-            System.err.println("bitset: "+A);
+            System.err.println("bitset: " + A);
             ASplit aSplit = new ASplit(A, ntax);
             splitsBlock.getSplits().add(aSplit);
         }
     }
 
-    private static void addTaxaName(String line, ArrayList<String> taxonNames, int linesCounter){
+    private static void addTaxaName(String line, ArrayList<String> taxonNames, int linesCounter) {
 
         int sameNamesCounter = 0;
         if (taxonNames.contains(line.substring(1))) {
-            System.err.println("Repeating taxon name in line "+linesCounter);
+            System.err.println("Repeating taxon name in line " + linesCounter);
             sameNamesCounter++;
         }
         while (taxonNames.contains(line.substring(1)))
@@ -110,6 +109,6 @@ public class FastaSplitsIn implements IToSplits{
         if (sameNamesCounter == 0)
             taxonNames.add(line.substring(1));
         else
-            taxonNames.add(line.substring(1)+sameNamesCounter);
+            taxonNames.add(line.substring(1) + sameNamesCounter);
     }
 }

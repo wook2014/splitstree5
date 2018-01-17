@@ -9,7 +9,7 @@ import java.util.TreeSet;
 /**
  * Created by Daria on 30.10.2016.
  */
-public class MicrosatSL  implements StateLabeler{
+public class MicrosatSL implements StateLabeler {
 
     TreeSet charsUsed; //Set of characters used in microsatelite data.
 
@@ -20,7 +20,7 @@ public class MicrosatSL  implements StateLabeler{
      *
      * @param characters Characters block, from which we get number sites, gap, match and missing characters.
      */
-    public MicrosatSL(Characters characters){
+    public MicrosatSL(Characters characters) {
         charsUsed = new TreeSet();
     }
 

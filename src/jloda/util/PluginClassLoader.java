@@ -27,7 +27,7 @@ import java.util.List;
 
 /**
  * Finds all classes in the named package, of the given type
- *
+ * <p>
  * Daniel Huson and others, 2003
  */
 public class PluginClassLoader {

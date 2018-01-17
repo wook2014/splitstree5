@@ -1,16 +1,13 @@
 package splitstree5.io.imports;
 
 import org.junit.Test;
-import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.io.nexus.CharactersNexusIO;
 import splitstree5.io.nexus.SplitsNexusIO;
-import splitstree5.io.nexus.TaxaNexusIO;
 
 import java.io.StringWriter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class FastaSplitsInTest {
 

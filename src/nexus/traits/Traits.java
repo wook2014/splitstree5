@@ -25,19 +25,21 @@ public interface Traits {
      * @param taxa Taxa block that this characters block is associated to
      * @return a clone
      */
-    Traits clone(Taxa taxa) ;
+    Traits clone(Taxa taxa);
+
     /**
      * return the induced object obtained by hiding taxa
      *
-     * @param origTaxa   original (full?) taxa block
+     * @param origTaxa original (full?) taxa block
      */
-    void hideTaxa(Taxa origTaxa, TaxaSet hiddenTaxa) ;
+    void hideTaxa(Taxa origTaxa, TaxaSet hiddenTaxa);
 
     /***************
      * INPUT OUTPUT *
      ***************/
 
     void read(NexusStreamParser np, Taxa taxa);
+
     /**
      * write a block, blocks should override this
      *
@@ -45,7 +47,7 @@ public interface Traits {
      * @param taxa Taxa block for this document
      * @throws java.io.IOException
      */
-    void write(Writer w, Taxa taxa) ;
+    void write(Writer w, Taxa taxa);
 
     static void showUsage(PrintStream ps) {
         String Usage = "";
@@ -68,15 +70,24 @@ public interface Traits {
 
     /*** GETTER AND SETTER ***/
 
-    Format getFormat() ;
-    int getNtax() ;
-    int getNtraits() ;
-    String get(int taxon, String traitName) ;
-    String get(int taxon, int traitNumber) ;
-    String[] getTraitValues(String traitName) ;
-    int getTraitNumber(String traitName) ;
-    String getTraitName(int traitNumber) ;
-    void setTraitName(int i, String lab) ;
-    String[] getTraitNames() ;
+    Format getFormat();
+
+    int getNtax();
+
+    int getNtraits();
+
+    String get(int taxon, String traitName);
+
+    String get(int taxon, int traitNumber);
+
+    String[] getTraitValues(String traitName);
+
+    int getTraitNumber(String traitName);
+
+    String getTraitName(int traitNumber);
+
+    void setTraitName(int i, String lab);
+
+    String[] getTraitNames();
 
 }

@@ -66,13 +66,13 @@ import jloda.util.Single;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
+import splitstree5.formattab.Styles;
 import splitstree5.gui.ISavesPreviousSelection;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.utils.RubberBandSelection;
 import splitstree5.gui.utils.SelectionEffect;
 import splitstree5.main.MainWindowManager;
 import splitstree5.menu.MenuController;
-import splitstree5.styletab.Styles;
 import splitstree5.undo.UndoRedoManager;
 import splitstree5.undo.UndoableRedoableCommand;
 

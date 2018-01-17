@@ -24,7 +24,7 @@ package jloda.util;
  * progress listener that writes percentages to the command line
  *
  * @author huson
- *         Date: 26-Jun-2004
+ * Date: 26-Jun-2004
  */
 public class ProgressPercentage implements ProgressListener {
     private long steps = 0;
@@ -47,6 +47,7 @@ public class ProgressPercentage implements ProgressListener {
 
     /**
      * constructor
+     *
      * @param maxSteps
      */
     public ProgressPercentage(long maxSteps) {
@@ -57,6 +58,7 @@ public class ProgressPercentage implements ProgressListener {
 
     /**
      * constructor
+     *
      * @param taskName
      */
     public ProgressPercentage(final String taskName) {
@@ -66,6 +68,7 @@ public class ProgressPercentage implements ProgressListener {
 
     /**
      * constructor
+     *
      * @param taskName
      * @param maxSteps
      */

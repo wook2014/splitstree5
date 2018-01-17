@@ -10,7 +10,7 @@ public class Properties implements Cloneable {
     private double pInvar = -1;
 
 
-        /* Options for the program only */
+    /* Options for the program only */
 
     public boolean hasGamma() {
         return hasGamma;
@@ -20,7 +20,7 @@ public class Properties implements Cloneable {
         return hasPinvar;
     }
 
-        /* Options that can be read in and are written */
+    /* Options that can be read in and are written */
 
     public double getGammaParam() {
         return gammaParam;

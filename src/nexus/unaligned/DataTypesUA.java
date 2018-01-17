@@ -13,10 +13,12 @@ public enum DataTypesUA {
 
     private final String symbols;
 
-    DataTypesUA(String symbols){
-        this.symbols=symbols;
+    DataTypesUA(String symbols) {
+        this.symbols = symbols;
     }
 
     //GETTER
-    public String getSymbols(){ return this.symbols; }
+    public String getSymbols() {
+        return this.symbols;
+    }
 }

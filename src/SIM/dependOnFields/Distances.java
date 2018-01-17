@@ -1,14 +1,13 @@
 package SIM.dependOnFields;
 
 import javafx.beans.InvalidationListener;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
-public class Distances{
+public class Distances {
 
     private boolean isSet = false;
 
@@ -29,7 +28,7 @@ public class Distances{
         this.ntax.addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                System.out.println("Distances changed! new ntax is "+newValue);
+                System.out.println("Distances changed! new ntax is " + newValue);
                 recalculateMatrixAndVariance();
             }
         });
@@ -46,21 +45,21 @@ public class Distances{
     }
 
     // private functions
-    private void recalculateMatrixAndVariance(){
-        System.out.println("recalculate the matrix and the variance according to: "+this.changes.getValue());
+    private void recalculateMatrixAndVariance() {
+        System.out.println("recalculate the matrix and the variance according to: " + this.changes.getValue());
     }
 
 
     // GETTERS
-    public SimpleIntegerProperty getNtax(){
+    public SimpleIntegerProperty getNtax() {
         return this.ntax;
     }
 
-    public StringProperty getChanges(){
+    public StringProperty getChanges() {
         return this.changes;
     }
 
-    public DFormat getFormat(){
+    public DFormat getFormat() {
         return this.format;
     }
 }

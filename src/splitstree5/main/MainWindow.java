@@ -34,13 +34,13 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import jloda.fx.ExtendedFXMLLoader;
-import jloda.util.Basic;
 import jloda.util.ResourceManager;
 import splitstree5.core.Document;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.workflow.ANode;
 import splitstree5.dialogs.SaveBeforeClose;
+import splitstree5.formattab.FormatTab;
 import splitstree5.gui.ISavesPreviousSelection;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.algorithmtab.AlgorithmTab;
@@ -51,7 +51,6 @@ import splitstree5.gui.methodstab.MethodsViewTab;
 import splitstree5.gui.workflowtab.WorkflowViewTab;
 import splitstree5.gui.workflowtree.WorkflowTreeSupport;
 import splitstree5.menu.MenuController;
-import splitstree5.styletab.StyleTab;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -84,7 +83,7 @@ public class MainWindow {
      *
      * @throws IOException
      */
-    public MainWindow() throws IOException {
+    public MainWindow() {
         this.document = new Document();
         document.setMainWindow(this);
         aNode2ViewerTab = FXCollections.observableHashMap();
@@ -161,12 +160,9 @@ public class MainWindow {
                         ResourceManager.getIcon("SplitsTree5-64.png"), ResourceManager.getIcon("SplitsTree5-128.png"));
 
 
-                try {
-                    StyleTab styleTab = new StyleTab(this);
-                    getMainWindowController().getAlgorithmTabPane().getTabs().add(styleTab);
-                } catch (IOException e) {
-                    Basic.caught(e);
-                }
+                final FormatTab formatTab = new FormatTab(this);
+                getMainWindowController().getAlgorithmTabPane().getTabs().add(formatTab);
+
             });
         }
 
@@ -314,22 +310,16 @@ public class MainWindow {
     public void showAlgorithmView(AConnector aNode) {
         ViewerTab viewerTab = aNode2ViewerTab.get(aNode);
         if (viewerTab == null || viewerTab.getTabPane() == null) {
-            try {
-                viewerTab = new AlgorithmTab<>(document, aNode);
-                aNode2ViewerTab.put(aNode, viewerTab);
-                algorithmsTabPane.getTabs().add(0, viewerTab);
-            } catch (IOException e) {
-                Basic.caught(e);
-            }
+            viewerTab = new AlgorithmTab<>(document, aNode);
+            aNode2ViewerTab.put(aNode, viewerTab);
+            algorithmsTabPane.getTabs().add(0, viewerTab);
         }
-        if (viewerTab != null) {
-            final Stage stage = (Stage) viewerTab.getTabPane().getScene().getWindow();
-            if (stage != null) {
-                stage.toFront();
-            }
-            getMainWindowController().ensureAlgorithmsTabPaneIsOpen();
-            algorithmsTabPane.getSelectionModel().select(viewerTab);
+        final Stage stage = (Stage) viewerTab.getTabPane().getScene().getWindow();
+        if (stage != null) {
+            stage.toFront();
         }
+        getMainWindowController().ensureAlgorithmsTabPaneIsOpen();
+        algorithmsTabPane.getSelectionModel().select(viewerTab);
     }
 
     /**

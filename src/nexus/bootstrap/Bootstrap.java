@@ -1,9 +1,9 @@
 package nexus.bootstrap;
 
 import jloda.util.parse.NexusStreamParser;
-import nexus.splits.Splits;
 import nexus.Taxa;
 import nexus.characters.Characters;
+import nexus.splits.Splits;
 import splitstree4.algorithms.util.PaupNode;
 import splitstree4.models.SubstitutionModel;
 import splitstree4.util.SplitMatrix;
@@ -28,7 +28,7 @@ public interface Bootstrap {
      *
      * @param doc
      */
-    void compute(Document doc) ;
+    void compute(Document doc);
 
     /**
      * Performs a parametric bootstrap, generating replicate alignments on the tree T with model M.
@@ -40,7 +40,6 @@ public interface Bootstrap {
     void computeParametric(Document doc, PaupNode T, SubstitutionModel M);
 
 
-
     /**
      * IO Handling
      */
@@ -50,7 +49,7 @@ public interface Bootstrap {
      *
      * @param ps the print stream
      */
-    void showUsage(PrintStream ps) ;
+    void showUsage(PrintStream ps);
 
     /**
      * Read the st_bootstrap
@@ -88,28 +87,28 @@ public interface Bootstrap {
      *
      * @return the number of runs
      */
-    int getRuns() ;
+    int getRuns();
 
     /**
      * Gets the random seed
      *
      * @return the random seed
      */
-    int getSeed() ;
+    int getSeed();
 
     /**
      * Gets the split matrix.
      *
      * @return the matrix of all split weights over all replicates
      */
-    SplitMatrix getSplitMatrix() ;
+    SplitMatrix getSplitMatrix();
 
     /**
      * Gets the number of characters
      *
      * @return the number of characters
      */
-    int getNchar() ;
+    int getNchar();
 
     /**
      * Gets the ntax
@@ -123,7 +122,7 @@ public interface Bootstrap {
      *
      * @return nsplits the number of splits
      */
-    int getNsplits() ;
+    int getNsplits();
 
     /**
      * Gets the number of resampled characters
@@ -131,7 +130,7 @@ public interface Bootstrap {
      * @return length
      */
 
-    int getLength() ;
+    int getLength();
 
     /**
      * Gets the bootstrap splits
@@ -146,14 +145,14 @@ public interface Bootstrap {
      *
      * @return boolean flag indicating whether the user should have the option to save trees
      */
-    boolean getCanSaveTrees() ;
+    boolean getCanSaveTrees();
 
     /**
      * Get the flag indicating whether the user should have the option to save trees
      *
      * @param canSavetrees flag indicating whether the user should have the option to save trees
      */
-    void setCanSaveTrees(boolean canSavetrees) ;
+    void setCanSaveTrees(boolean canSavetrees);
 
 
     /**
@@ -161,14 +160,14 @@ public interface Bootstrap {
      *
      * @return boolean flag indicating whether a new document should be opened with the bootstrap trees.
      */
-    boolean getSaveTrees() ;
+    boolean getSaveTrees();
 
     /**
      * Get the flag indicating whether a new document should be opened with the bootstrap trees
      *
      * @param savetrees flag indicating whether a new document should be opened with the bootstrap trees.
      */
-    void setSaveTrees(boolean savetrees) ;
+    void setSaveTrees(boolean savetrees);
 
 
     /**
@@ -176,35 +175,35 @@ public interface Bootstrap {
      *
      * @param n the number of runs
      */
-    void setRuns(int n) ;
+    void setRuns(int n);
 
     /**
      * Sets the random seed
      *
      * @param n the random seed
      */
-    void setSeed(int n) ;
+    void setSeed(int n);
 
     /**
      * Sets the split matrix
      *
      * @param splitMatrix
      */
-    void setSplitMatrix(SplitMatrix splitMatrix) ;
+    void setSplitMatrix(SplitMatrix splitMatrix);
 
     /**
      * Sets the number of characters
      *
      * @param n the number of characters
      */
-    void setNchar(int n) ;
+    void setNchar(int n);
 
     /**
      * Sets the ntax
      *
      * @param n
      */
-    void setNtax(int n) ;
+    void setNtax(int n);
 
     /**
      * Sets the nsplits
@@ -214,8 +213,8 @@ public interface Bootstrap {
     void setNsplits(int n);
 
     /*Sets the length
-   *@param len
-   */
+     *@param len
+     */
     void setLength(int len);
 
     /**
@@ -223,7 +222,7 @@ public interface Bootstrap {
      *
      * @param bsplits the splits computed by bootstrapping
      */
-    void setBsplits(Splits bsplits) ;
+    void setBsplits(Splits bsplits);
 
     /**
      * gets the value of a format switch

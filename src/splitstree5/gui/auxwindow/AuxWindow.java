@@ -40,8 +40,6 @@ import splitstree5.main.MainWindow;
 import splitstree5.main.MainWindowManager;
 import splitstree5.menu.MenuController;
 
-import java.io.IOException;
-
 /**
  * auxiliary window for showing tabs
  * Daniel  Huson, 1.2018
@@ -52,18 +50,15 @@ public class AuxWindow implements IStageSupplier {
         final AuxWindowController controller;
         final Parent root;
         final MenuController menuController;
-        try {
+
+        {
             final ExtendedFXMLLoader<AuxWindowController> extendedFXMLLoader = new ExtendedFXMLLoader<>(AuxWindow.class);
             root = extendedFXMLLoader.getRoot();
             controller = extendedFXMLLoader.getController();
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
         }
-        try {
+        {
             final ExtendedFXMLLoader<MenuController> extendedFXMLLoader = new ExtendedFXMLLoader<>(MenuController.class);
             menuController = extendedFXMLLoader.getController();
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
         }
 
         final Stage stage = new Stage();

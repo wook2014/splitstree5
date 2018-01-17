@@ -44,7 +44,7 @@ public interface Analysis {
     }
 
     /********************
-    * GETTER AND SETTER *
+     * GETTER AND SETTER *
      ********************/
 
     int getNanalyzers();

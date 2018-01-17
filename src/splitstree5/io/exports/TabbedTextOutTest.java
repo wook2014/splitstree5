@@ -9,11 +9,6 @@ import splitstree5.io.nexus.SplitsNexusIO;
 import splitstree5.io.nexus.TaxaNexusIO;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-import static org.junit.Assert.*;
 
 public class TabbedTextOutTest {
 

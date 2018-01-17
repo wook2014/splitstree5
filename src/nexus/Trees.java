@@ -7,7 +7,6 @@ import splitstree4.core.TaxaSet;
 import java.io.PrintStream;
 import java.io.Writer;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by Daria on 15.09.2016.
@@ -30,7 +29,7 @@ public interface Trees {
      * @param taxa
      * @return a clone
      */
-    Trees clone(Taxa taxa) ;
+    Trees clone(Taxa taxa);
 
 
     /**
@@ -57,7 +56,7 @@ public interface Trees {
      *
      * @param i
      */
-    void removeTree(int i) ;
+    void removeTree(int i);
 
     /**
      * Adds a tree to the list of trees. If this is called to add the first
@@ -99,7 +98,7 @@ public interface Trees {
      * @param i number of the tree
      * @return true if tree i is rooted
      */
-    boolean isRooted(int i) ;
+    boolean isRooted(int i);
 
     /**
      * induces trees not containing the hidden taxa
@@ -107,21 +106,21 @@ public interface Trees {
      * @param origTaxa
      * @param hiddenTaxa
      */
-    void hideTaxa(Taxa origTaxa, TaxaSet hiddenTaxa) ;
+    void hideTaxa(Taxa origTaxa, TaxaSet hiddenTaxa);
 
     /**
      * restores the original splits
      *
      * @param originalTaxa
      */
-    void restoreOriginal(Taxa originalTaxa) ;
+    void restoreOriginal(Taxa originalTaxa);
 
     /**
      * changes all node labels using the mapping old-to-new
      *
      * @param old2new maps old names to new names
      */
-    void changeNodeLabels(Map old2new) ;
+    void changeNodeLabels(Map old2new);
 
     /***************
      * INPUT OUTPUT *
@@ -132,7 +131,7 @@ public interface Trees {
      *
      * @param w a writer
      */
-    void write(Writer w, Taxa taxa) ;
+    void write(Writer w, Taxa taxa);
 
     /**
      * Reads a tree object in NexusBlock format
@@ -140,14 +139,14 @@ public interface Trees {
      * @param np   nexus stream parser
      * @param taxa the taxa block
      */
-    void read(NexusStreamParser np, Taxa taxa) ;
+    void read(NexusStreamParser np, Taxa taxa);
 
     /**
      * Produces a string representation of a NexusBlock object
      *
      * @return object in nexus format
      */
-    String toString(Taxa taxa) ;
+    String toString(Taxa taxa);
 
     /**
      * show the usage of this block
@@ -224,7 +223,7 @@ public interface Trees {
      *
      * @return the map
      */
-    Map getTranslate() ;
+    Map getTranslate();
 
     /**
      * sets the node-label to taxon translation map
@@ -246,21 +245,21 @@ public interface Trees {
      *
      * @return true, if rooted
      */
-    boolean getRooted() ;
+    boolean getRooted();
 
     /**
      * are trees considered rooted?
      *
      * @param rooted
      */
-    void setRooted(boolean rooted) ;
+    void setRooted(boolean rooted);
 
     /**
      * does trees block contain a partial tree?
      *
      * @return true, if contains a partial tree
      */
-    boolean getPartial() ;
+    boolean getPartial();
 
     /**
      * does trees block contain a partial tree
@@ -300,10 +299,9 @@ public interface Trees {
      * If the block contains partial trees, then the translate statement must mention all
      * taxa. We use this info to build a taxa block
      *
-     * @param taxa
-     * //@throws SplitsException
+     * @param taxa //@throws SplitsException
      */
-    void setTaxaFromPartialTrees(Taxa taxa) ;
+    void setTaxaFromPartialTrees(Taxa taxa);
 
     /**
      * returns the original set of trees or null
@@ -317,7 +315,7 @@ public interface Trees {
      *
      * @param originalTaxa
      */
-    void setOriginal(Taxa originalTaxa) ;
+    void setOriginal(Taxa originalTaxa);
 
 
     /**
@@ -325,13 +323,13 @@ public interface Trees {
      *
      * @param taxa
      */
-    void setIdentityTranslate(Taxa taxa) ;
+    void setIdentityTranslate(Taxa taxa);
 
     /**
      * Sets the translate map to taxaid->taxa
      *
      * @param taxa
      */
-    void setNumberedIdentityTranslate(Taxa taxa) ;
+    void setNumberedIdentityTranslate(Taxa taxa);
 
 }

@@ -36,7 +36,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.styletab;
+package splitstree5.formattab;
 
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;

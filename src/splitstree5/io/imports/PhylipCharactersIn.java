@@ -95,7 +95,7 @@ public class PhylipCharactersIn extends CharactersFormat {
     }
 
     private void setCharactersStandard(ArrayList<String> labels, ArrayList<String> sequences,
-                                              int ntax, int nchar, TaxaBlock taxa, CharactersBlock characters) throws IOException {
+                                       int ntax, int nchar, TaxaBlock taxa, CharactersBlock characters) throws IOException {
         taxa.clear();
         taxa.addTaxaByNames(labels);
         characters.clear();
@@ -124,7 +124,7 @@ public class PhylipCharactersIn extends CharactersFormat {
     }
 
     private void setCharactersInterleaved(ArrayList<String> labels, ArrayList<String> sequences,
-                                                 int ntax, int nchar, TaxaBlock taxa, CharactersBlock characters) throws IOException {
+                                          int ntax, int nchar, TaxaBlock taxa, CharactersBlock characters) throws IOException {
 
         List<String> taxaNames = labels.subList(0, ntax);
 
@@ -176,7 +176,7 @@ public class PhylipCharactersIn extends CharactersFormat {
     }
 
     private void setCharactersStandardEOL(ArrayList<String> labels, ArrayList<String> sequences,
-                                                 int ntax, int nchar, TaxaBlock taxa, CharactersBlock characters) throws IOException {
+                                          int ntax, int nchar, TaxaBlock taxa, CharactersBlock characters) throws IOException {
 
         List<String> taxaNames = new ArrayList<>();
         characters.clear();

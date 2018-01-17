@@ -520,11 +520,11 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
      * in a list of tokens, returns value, if found and defaultValue, if not.
      * If tokens are found, then they are removed from tokens
      *
-     * @param tokens a list of tokens
-     * @param query  the list of tokens to be found in tokens
-     * @param value    the return value, if first the list of tokens is found
+     * @param tokens       a list of tokens
+     * @param query        the list of tokens to be found in tokens
+     * @param value        the return value, if first the list of tokens is found
      * @param defaultValue the value to be returned, if the list of tokens is
-     *               not found
+     *                     not found
      * @return value
      */
     public boolean findIgnoreCase(List<String> tokens, String query, boolean value, boolean defaultValue) throws IOException {
@@ -558,10 +558,10 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
      * in a list of tokens, returns value, if found and defaultValue, if not.
      * If tokens and the number are found, then they are removed from tokens
      *
-     * @param tokens a list of tokens
-     * @param query  the list of tokens to be found in tokens
+     * @param tokens       a list of tokens
+     * @param query        the list of tokens to be found in tokens
      * @param defaultValue the value to be returned, if the list of tokens is
-     *               not found
+     *                     not found
      * @return value
      */
     public float findIgnoreCase(List<String> tokens, String query, float defaultValue) throws IOException {
@@ -599,11 +599,11 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
      * Returns a string containing all values, or
      * a default value, if token does not occur
      *
-     * @param tokens       the list of tokens
+     * @param tokens         the list of tokens
      * @param token          the token to look for
      * @param leftDelimiter  the left delimiter
      * @param rightDelimiter the left delimiter
-     * @param defaultValue       the return value, if token not found
+     * @param defaultValue   the return value, if token not found
      * @return the value
      */
     public String findIgnoreCase(List<String> tokens, String token, String leftDelimiter, String rightDelimiter, String defaultValue) throws IOException {
@@ -648,10 +648,10 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
      * string occuring in legalValues, returning value, if found, or
      * a default value, if token does not occur
      *
-     * @param tokens    the list of tokens
-     * @param token       the token to look for
-     * @param legalValues if not null, string containing all legal values of the token
-     * @param defaultValue    the return value, if token not found
+     * @param tokens       the list of tokens
+     * @param token        the token to look for
+     * @param legalValues  if not null, string containing all legal values of the token
+     * @param defaultValue the return value, if token not found
      * @return the value
      */
     public String findIgnoreCase(List<String> tokens, String token, String legalValues, String defaultValue) throws IOException {
@@ -684,11 +684,11 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
      * character occuring in legalValues, returning value, if found, or
      * a default value, if token does not occur
      *
-     * @param tokens    the list of tokens
-     * @param token       the token to look for
-     * @param legalValues if not null, string containing all legal values of the
-     *                  character
-     * @param defaultValue    the return value, if token not found
+     * @param tokens       the list of tokens
+     * @param token        the token to look for
+     * @param legalValues  if not null, string containing all legal values of the
+     *                     character
+     * @param defaultValue the return value, if token not found
      * @return the value
      */
     public char findIgnoreCase(List<String> tokens, String token, String legalValues, char defaultValue) throws IOException {
@@ -725,11 +725,11 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
      * Searches for an occurrence of a token=value, where value is a double
      * between minValue and maxValue
      *
-     * @param tokens   the list of tokens
-     * @param token      the token to look for
-     * @param minValue the minimal value
-     * @param maxValue the maximal value
-     * @param defaultValue   the return value, if token not found
+     * @param tokens       the list of tokens
+     * @param token        the token to look for
+     * @param minValue     the minimal value
+     * @param maxValue     the maximal value
+     * @param defaultValue the return value, if token not found
      * @return the value
      */
     public double findIgnoreCase(List<String> tokens, String token, double minValue, double maxValue, double defaultValue) throws IOException {
@@ -769,11 +769,11 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
      * Searches for an occurrence of a token=value, where value is a double
      * between minValue and maxValue
      *
-     * @param tokens   the list of tokens
-     * @param token      the token to look for
-     * @param minValue the minimal value
-     * @param maxValue the maximal value
-     * @param defaultValue   the return value, if token not found
+     * @param tokens       the list of tokens
+     * @param token        the token to look for
+     * @param minValue     the minimal value
+     * @param maxValue     the maximal value
+     * @param defaultValue the return value, if token not found
      * @return the value
      */
     public int findIgnoreCase(List<String> tokens, String token, int minValue, int maxValue, int defaultValue) throws IOException {
@@ -812,7 +812,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
      * Determines whether a given token occurs anywhere in a list of tokens
      *
      * @param tokens list of tokens
-     * @param token    the token to find
+     * @param token  the token to find
      * @return true, if token contained in values
      */
     public boolean findIgnoreCase(List<String> tokens, String token) throws IOException {
@@ -839,8 +839,8 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
      * Determines whether a given token occurs anywhere in a string
      * containing tokens
      *
-     * @param vals string of tokens
-     * @param token  the token to find
+     * @param vals  string of tokens
+     * @param token the token to find
      * @return true, if token contained in values
      */
     public boolean findIgnoreCase(String vals, String token) throws IOException {

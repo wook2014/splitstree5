@@ -1,9 +1,7 @@
 package nexus.characters;
 
 import jloda.util.parse.NexusStreamParser;
-import jloda.util.parse.NexusStreamTokenizer;
 import nexus.Taxa;
-import splitstree4.core.SplitsException;
 import splitstree4.core.TaxaSet;
 
 import javax.swing.text.Document;
@@ -48,9 +46,9 @@ public interface Characters {
      * Determines whether character weights are stored for this block
      *
      * @return boolean true if character weights are being stored for this block (they could still be
-     *         all constant)
+     * all constant)
      */
-    boolean hasCharweights() ;
+    boolean hasCharweights();
 
 
     /************************ Colouring  and states ******************************/
@@ -60,7 +58,7 @@ public interface Characters {
      *
      * @return boolean. True if datatype is RNA or DNA
      */
-    boolean isNucleotides() ;
+    boolean isNucleotides();
 
     /**
      * Computes the colors2symbols and symbols2colors maps
@@ -97,12 +95,12 @@ public interface Characters {
      * @param p the index of that site
      * @return true, if site is masked
      */
-    boolean isMasked(int p) ;
+    boolean isMasked(int p);
 
     /**
      * Clears the mask
      */
-    void clearMask() ;
+    void clearMask();
 
     /**
      * remove all masked sites from the dataset
@@ -128,7 +126,7 @@ public interface Characters {
      *
      * @param ps the print stream
      */
-    void showUsage(PrintStream ps) ;
+    void showUsage(PrintStream ps);
 
     /**
      * read the characters block
@@ -136,7 +134,7 @@ public interface Characters {
      * @param np   NexusStreamParser
      * @param taxa taxa block
      */
-    void read(NexusStreamParser np, Taxa taxa) ;
+    void read(NexusStreamParser np, Taxa taxa);
 
 
     /**
@@ -146,7 +144,7 @@ public interface Characters {
      * @param taxa the taxa block
      * @param doc  needed for progress bar   //ToDO: Replace with progress bar reference
      */
-    void read(NexusStreamParser np, Taxa taxa, Document doc) ;
+    void read(NexusStreamParser np, Taxa taxa, Document doc);
 
     /**
      * Write the characters block
@@ -180,7 +178,7 @@ public interface Characters {
      * @param t sequence number
      * @return a sequence
      */
-    String getRowAsString(int t) ;
+    String getRowAsString(int t);
 
 
     /*********************
@@ -188,16 +186,20 @@ public interface Characters {
      *********************/
 
     void setFormat(Format format);
-    Format getFormat() ;
+
+    Format getFormat();
 
     Properties getProperties();
+
     void setProperties(Properties properties);
 
     int getNtax();
+
     void setNtax(int ntax);
 
     int getNchar();
-    void setNchar(int i) ;
+
+    void setNchar(int i);
 
     boolean getFormatSwitchValue(String name);
 
@@ -227,7 +229,7 @@ public interface Characters {
      * @param c number of character
      * @return String name of character, of null if there is non specified.
      */
-    String getCharLabel(int c) ;
+    String getCharLabel(int c);
 
 
     /**
@@ -236,7 +238,7 @@ public interface Characters {
      * @param ch a character
      * @return the color of the character or -1 if the character is not found.
      */
-    int getColor(char ch) ;
+    int getColor(char ch);
 
     /**
      * Returns a Array with the symbols of the color
@@ -251,7 +253,7 @@ public interface Characters {
      *
      * @return the number of colors
      */
-    int getNcolors() ;
+    int getNcolors();
 
     /**************************Access to elements in the alignment ****************/
 
@@ -285,7 +287,7 @@ public interface Characters {
      * @param site the site (character)
      * @return char.  missing character returned.
      */
-    char getOriginal(int seq, int site) ;
+    char getOriginal(int seq, int site);
 
 
     /**
@@ -294,7 +296,7 @@ public interface Characters {
      * @param seq the row
      * @return the matix row seq
      */
-    char[] getRow(int seq) ;
+    char[] getRow(int seq);
 
     /**
      * gets a copy of the named column of the alignment
@@ -302,7 +304,7 @@ public interface Characters {
      * @param pos
      * @return column of characters block
      */
-    String getColumn(int pos) ;
+    String getColumn(int pos);
 
 
     /**
@@ -312,7 +314,7 @@ public interface Characters {
      * @param toShow List (of Integer) specifying sites to show
      * @return boolean
      */
-    String getRowSubset(int seq, List toShow) ;
+    String getRowSubset(int seq, List toShow);
 
     /***********************Ambiguity strings************************/
 
@@ -328,7 +330,7 @@ public interface Characters {
      * @param c   character (site)
      * @return string containing original states, or null if there are no ambiguity characters stored.
      */
-    String getAmbigString(int seq, int c) ;
+    String getAmbigString(int seq, int c);
 
     /*********************** Masks ***********************/
 
@@ -353,6 +355,6 @@ public interface Characters {
      *
      * @return the mask
      */
-    boolean[] getMask() ;
+    boolean[] getMask();
 
 }

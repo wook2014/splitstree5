@@ -42,21 +42,25 @@ public class ExtendedFXMLLoader<C> {
      * @param clazz
      * @throws IOException
      */
-    public ExtendedFXMLLoader(Class clazz) throws IOException {
-        fxmlLoader = new FXMLLoader();
-        String path = clazz.getCanonicalName().replaceAll("Controller$", "").replaceAll("\\.", "/") + ".fxml";
-        final URL url = clazz.getClassLoader().getResource(path);
-        // System.err.println("path: " + path + " URL: " + url);
-        if (url == null)
-            throw new IOException("Failed to get resource: " + path);
+    public ExtendedFXMLLoader(Class clazz) {
+        try {
+            fxmlLoader = new FXMLLoader();
+            String path = clazz.getCanonicalName().replaceAll("Controller$", "").replaceAll("\\.", "/") + ".fxml";
+            final URL url = clazz.getClassLoader().getResource(path);
+            // System.err.println("path: " + path + " URL: " + url);
+            if (url == null)
+                throw new IOException("Failed to get resource: " + path);
 
-        try (final InputStream ins = url.openStream()) {
-            if (ins == null)
-                throw new IOException("Failed to open input stream for URL: " + url);
+            try (final InputStream ins = url.openStream()) {
+                if (ins == null)
+                    throw new IOException("Failed to open input stream for URL: " + url);
 
-            root = fxmlLoader.load(ins);
+                root = fxmlLoader.load(ins);
+            }
+            controller = fxmlLoader.getController();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
         }
-        controller = fxmlLoader.getController();
     }
 
     /**

@@ -1,6 +1,8 @@
 package SIM.dependOnAlgos;
 
-import javafx.beans.property.*;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
@@ -22,7 +24,7 @@ public class Distances {
         this.ntax.addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                System.out.println("Ntax in Distances is changed :"+newValue);
+                System.out.println("Ntax in Distances is changed :" + newValue);
                 recalculateMatrixAndVariance();
             }
         });
@@ -30,33 +32,33 @@ public class Distances {
         this.changes.addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if(newValue.equals("gapDist") || newValue.equals("Jukes Cantor") ||
-                        newValue.equals("Kimura 2P") || newValue.equals("Hamming")){
-                    System.out.println("Distances : update with new algorithm "+changes.getValue());
-                }else{
-                    System.out.println("Update Distances according to "+changes.getValue());
+                if (newValue.equals("gapDist") || newValue.equals("Jukes Cantor") ||
+                        newValue.equals("Kimura 2P") || newValue.equals("Hamming")) {
+                    System.out.println("Distances : update with new algorithm " + changes.getValue());
+                } else {
+                    System.out.println("Update Distances according to " + changes.getValue());
                 }
             }
         });
     }
 
     // private functions
-    private void recalculateMatrixAndVariance(){
-        System.out.println("recalculate the matrix and the variance according to: "+this.changes.getValue());
+    private void recalculateMatrixAndVariance() {
+        System.out.println("recalculate the matrix and the variance according to: " + this.changes.getValue());
     }
 
     //Setters
-    public void setChanges(String changes){
+    public void setChanges(String changes) {
         this.changes.setValue(changes);
     }
 
 
     // GETTERS
-    public SimpleIntegerProperty getNtax(){
+    public SimpleIntegerProperty getNtax() {
         return this.ntax;
     }
 
-    public StringProperty getChanges(){
+    public StringProperty getChanges() {
         return this.changes;
     }
 }

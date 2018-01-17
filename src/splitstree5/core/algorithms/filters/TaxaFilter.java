@@ -30,7 +30,6 @@ import splitstree5.core.misc.Taxon;
 import splitstree5.gui.algorithmtab.AlgorithmPane;
 import splitstree5.gui.algorithmtab.taxafilterview.TaxaFilterPane;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -79,12 +78,7 @@ public class TaxaFilter extends Algorithm<TaxaBlock, TaxaBlock> implements IFrom
     }
 
     public AlgorithmPane getAlgorithmPane() {
-        try {
-            return new TaxaFilterPane(this);
-        } catch (IOException e) {
-            Basic.caught(e);
-            return null;
-        }
+        return new TaxaFilterPane(this);
     }
 
 

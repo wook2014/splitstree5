@@ -20,6 +20,9 @@
  * tokenizer for nexus streams and similar input
  *
  * @author Daniel Huson, 2002
+ * <p>
+ * tokenizer for nexus streams and similar input
+ * @author Daniel Huson, 2002
  */
 /**
  * tokenizer for nexus streams and similar input

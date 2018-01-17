@@ -8,6 +8,7 @@ import java.io.Writer;
 public interface NexusBlock {
 
     void setValid(boolean valid);
+
     boolean isValid();
 
     void write(Writer w, Taxa taxa);

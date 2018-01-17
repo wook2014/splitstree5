@@ -109,7 +109,7 @@ public class PhyloTreeUtils {
      *
      * @param label
      * @return string without label or null, if string only consisted of
-     *         substring
+     * substring
      */
     public static String removeReticulateNodeSuffix(String label) {
         if (CAN_READ_OLD_HnmH_SYNTAX) {
@@ -248,8 +248,7 @@ public class PhyloTreeUtils {
     }
 
     /**
-
-     /**
+     * /**
      * is given phyloTree a bifurcating tree?
      *
      * @param phyloTree

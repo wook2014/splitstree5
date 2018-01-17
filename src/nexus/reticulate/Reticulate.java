@@ -25,7 +25,7 @@ public interface Reticulate {
      *
      * @return
      */
-    Object clone() ;
+    Object clone();
 
     /************************ ROOT COMPONENT *****************************/
 
@@ -37,21 +37,23 @@ public interface Reticulate {
      * @param active  is this the active root component
      * @return
      */
-    boolean addRootComponent(String label, String eNewick, boolean active) ;
+    boolean addRootComponent(String label, String eNewick, boolean active);
+
     /**
      * deletes a root component from the list
      *
      * @param which which root component
      * @return
      */
-    boolean deleteRootComponent(int which) ;
+    boolean deleteRootComponent(int which);
+
     /**
      * deletes a root component from the list
      *
      * @param label which root component
      * @return
      */
-    boolean deleteRootComponent(String label) ;
+    boolean deleteRootComponent(String label);
 
 
     /**************** TREE COMPONENT*************************/
@@ -63,21 +65,23 @@ public interface Reticulate {
      * @param eNewick the eNewick string of the TreeComponent
      * @return
      */
-    boolean addTreeComponent(String label, String eNewick) ;
+    boolean addTreeComponent(String label, String eNewick);
+
     /**
      * remove a TreeComponent from the list
      *
      * @param which which TreeComponent
      * @return
      */
-    boolean deleteTreeComponent(int which) ;
+    boolean deleteTreeComponent(int which);
+
     /**
      * remove a TreeComponent from the list
      *
      * @param label which TreeComponent
      * @return
      */
-    boolean deleteTreeComponent(String label) ;
+    boolean deleteTreeComponent(String label);
 
 
     /********************** the netted components **********************/
@@ -87,21 +91,23 @@ public interface Reticulate {
      * @param componentLabel the label of the netted component
      * @return
      */
-    boolean addNettedComponent(String componentLabel) ;
+    boolean addNettedComponent(String componentLabel);
+
     /**
      * delete a netted component from the list
      *
      * @param which which netted component
      * @return
      */
-    boolean deleteNettedComponent(int which) ;
+    boolean deleteNettedComponent(int which);
+
     /**
      * deleta a netted component from the list
      *
      * @param label which netted component
      * @return
      */
-    boolean deleteNettedComponent(String label) ;
+    boolean deleteNettedComponent(String label);
 
     /*************** backbone in a netted component *******************************/
 
@@ -110,31 +116,32 @@ public interface Reticulate {
      *
      * @param nettedComponent which netted component
      * @param backboneLabel   the label of the backbone
-     * @param eNewick    the eNewick representation
+     * @param eNewick         the eNewick representation
      * @return
      */
-    boolean addNettedComponentBackbone(int nettedComponent, String backboneLabel, String eNewick, boolean active) ;
+    boolean addNettedComponentBackbone(int nettedComponent, String backboneLabel, String eNewick, boolean active);
 
     /**
      * deletes a backbone from a netted component
      *
      * @param nettedComponent which netted component
-     * @param which which backbone
+     * @param which           which backbone
      * @return
      */
-    boolean deleteNettedComponentBackbone(int nettedComponent, int which) ;
+    boolean deleteNettedComponentBackbone(int nettedComponent, int which);
+
     /**
      * delets a backbone from a netted component
      *
      * @param nettedComponent which netted component
-     * @param label which backbone
+     * @param label           which backbone
      * @return
      */
-    boolean deleteNettedComponentBackbone(int nettedComponent, String label) ;
+    boolean deleteNettedComponentBackbone(int nettedComponent, String label);
 
     /***************
-    * INPUT OUTPUT *
-    ****************/
+     * INPUT OUTPUT *
+     ****************/
 
     /**
      * print the usage to the stream 'out'
@@ -190,7 +197,8 @@ public interface Reticulate {
      * @param taxa the nexus taxa object associated with this reticulate object
      * @throws java.io.IOException
      */
-    void write(Writer w, Taxa taxa) throws IOException ;
+    void write(Writer w, Taxa taxa) throws IOException;
+
     /**
      * write the reticulate block to the given writer
      *
@@ -198,7 +206,8 @@ public interface Reticulate {
      * @param nTax the number taxa object associated with this reticulate object
      * @throws IOException
      */
-    void write(Writer w, int nTax) throws IOException ;
+    void write(Writer w, int nTax) throws IOException;
+
     /**
      * read a reticulate nexus block from the given nexus stream parser
      *
@@ -207,7 +216,8 @@ public interface Reticulate {
      * @throws SplitsException
      * @throws IOException
      */
-    void read(NexusStreamParser np, Taxa taxa) throws SplitsException, IOException ;
+    void read(NexusStreamParser np, Taxa taxa) throws SplitsException, IOException;
+
     /**
      * read a reticulate nexus block from the given nexus stream parser
      *
@@ -216,40 +226,44 @@ public interface Reticulate {
      * @throws SplitsException
      * @throws IOException
      */
-    void read(NexusStreamParser np, int nTax) throws SplitsException, IOException ;
+    void read(NexusStreamParser np, int nTax) throws SplitsException, IOException;
 
     /****************
-    * GETTER SETTER *
+     * GETTER SETTER *
      ****************/
     /**
      * return the format subclass of this nexus class
      *
      * @return
      */
-    Format getFormat() ;
+    Format getFormat();
+
     /**
      * return the reticulate object with full taxa set
      *
      * @return
      */
-    Reticulate getOriginal() ;
+    Reticulate getOriginal();
+
     /**
      * set the original reticulate object
      *
      * @param originalReticulate
      */
-    void setOriginal(Reticulate originalReticulate) ;
+    void setOriginal(Reticulate originalReticulate);
+
     /**
      * @param name
      * @return
      */
-    boolean getFormatSwitchValue(String name) ;
+    boolean getFormatSwitchValue(String name);
+
     /**
      * get the number of taxa
      *
      * @return
      */
-    int getNtax() ;
+    int getNtax();
     /**
      * get the number of root components
      *
@@ -262,7 +276,7 @@ public interface Reticulate {
      * @return
      * @throws Exception
      */
-    Node getRoot() throws Exception ;
+    Node getRoot() throws Exception;
 
     /**
      * return the phlyograph that represents the reticulate network given its configuration
@@ -270,11 +284,11 @@ public interface Reticulate {
      * @return
      * @throws java.io.IOException
      */
-    PhyloGraph getReticulateNetwork() throws IOException ;
+    PhyloGraph getReticulateNetwork() throws IOException;
 
     /***************** ROOT COMPONENT ***********************/
 
-    int getNRootComponents() ;
+    int getNRootComponents();
     /**
      * get the number of TreeComponents
      *
@@ -286,14 +300,15 @@ public interface Reticulate {
      *
      * @return
      */
-    int getActiveRootComponent() ;
+    int getActiveRootComponent();
+
     /**
      * set the active root component
      *
      * @param active which root component
      * @return
      */
-    boolean setActiveRootComponent(int active) ;
+    boolean setActiveRootComponent(int active);
     /**
      * get the active backbone of the netted component
      *
@@ -307,7 +322,8 @@ public interface Reticulate {
      * @param which which root component
      * @return
      */
-    String getRootComponentLabel(int which) ;
+    String getRootComponentLabel(int which);
+
     /**
      * set the label of a root component
      *
@@ -315,21 +331,24 @@ public interface Reticulate {
      * @param label the label
      * @return
      */
-    boolean setRootComponentLabel(int which, String label) ;
+    boolean setRootComponentLabel(int which, String label);
+
     /**
      * return the index of the root component
      *
      * @param label which root component
      * @return
      */
-    int indexOfRootComponentLabel(String label) ;
+    int indexOfRootComponentLabel(String label);
+
     /**
      * return the eNewick representation of the root component
      *
      * @param which which root component
      * @return
      */
-    String getRootComponent(int which) ;
+    String getRootComponent(int which);
+
     /**
      * sets the eNewick representation of the root component
      *
@@ -337,26 +356,29 @@ public interface Reticulate {
      * @param eNewick the eNewick string
      * @return
      */
-    boolean setRootComponent(int which, String eNewick) ;
+    boolean setRootComponent(int which, String eNewick);
 
     /*********************** TREE COMPONENT ************************/
 
-    int getNTreeComponents() ;
+    int getNTreeComponents();
+
     /**
      * get the number of netted components
      *
      * @return
      */
-    int getNNettedComponents() ;
+    int getNNettedComponents();
 
     // everything for the treeComponents
+
     /**
      * get the label of the TreeComponent
      *
      * @param which which TreeComponent
      * @return
      */
-    String getTreeComponentLabel(int which) ;
+    String getTreeComponentLabel(int which);
+
     /**
      * set the label of the TreeComponent
      *
@@ -364,14 +386,15 @@ public interface Reticulate {
      * @param label the label
      * @return
      */
-    boolean setTreeComponentLabel(int which, String label) ;
+    boolean setTreeComponentLabel(int which, String label);
+
     /**
      * return the index of the TreeComponent label
      *
      * @param label
      * @return
      */
-    int indexOfTreeComponentLabel(String label) ;
+    int indexOfTreeComponentLabel(String label);
 
     /**
      * return a eNewick representation of the TreeComponent
@@ -379,7 +402,8 @@ public interface Reticulate {
      * @param which which TreeComponent
      * @return
      */
-    String getTreeComponent(int which) ;
+    String getTreeComponent(int which);
+
     /**
      * set the eNewick string of the TreeComponent
      *
@@ -387,7 +411,7 @@ public interface Reticulate {
      * @param eNewick the eNewick string
      * @return
      */
-    boolean setTreeComponent(int which, String eNewick) ;
+    boolean setTreeComponent(int which, String eNewick);
 
     /******************* NETTED COMPONENT ***********************/
 
@@ -397,7 +421,8 @@ public interface Reticulate {
      * @param which which netted component
      * @return
      */
-    String getNettedComponentLabel(int which) ;
+    String getNettedComponentLabel(int which);
+
     /**
      * sets the label of the netted component
      *
@@ -405,14 +430,15 @@ public interface Reticulate {
      * @param label the label
      * @return
      */
-    boolean setNettedComponentLabel(int which, String label) ;
+    boolean setNettedComponentLabel(int which, String label);
+
     /**
      * get the index of the netted component given the label
      *
      * @param label which netted component
      * @return
      */
-    int indexOfNettedComponentLabel(String label) ;
+    int indexOfNettedComponentLabel(String label);
 
     /**
      * return a array of integers containing the netted components contained in the selected root component (array values start at 1!)
@@ -422,23 +448,25 @@ public interface Reticulate {
      * @throws java.io.IOException
      */
     int[] getContainedNettedComponentsOfRootComponent(int which) throws IOException;
+
     /**
      * return a array of integers containing the netted components contained in the active root component  array values start at 1!)
      *
      * @return
      */
-    int[] getContainedNettedComponentsOfActiveRootComponent() ;
+    int[] getContainedNettedComponentsOfActiveRootComponent();
 
     /************************ NETTED COMPONENT BACKBONE **************************/
 
-    int getActiveNettedComponentBackbone(int nettedComponent) ;
+    int getActiveNettedComponentBackbone(int nettedComponent);
+
     /**
      * set the active backbone of the netted component
      *
      * @param nettedComponent which netted component
      * @return
      */
-    boolean setActiveNettedComponentBackbone(int nettedComponent, int active) ;
+    boolean setActiveNettedComponentBackbone(int nettedComponent, int active);
 
     /**
      * get the number of backbones within the netted component
@@ -446,48 +474,53 @@ public interface Reticulate {
      * @param nettedComponent which netted component
      * @return
      */
-    int getNumberOfNettedComponentBackbones(int nettedComponent) ;
+    int getNumberOfNettedComponentBackbones(int nettedComponent);
+
     /**
      * get the label of a backbone that is contained in a netted component
      *
      * @param nettedComponent which netted component
-     * @param which which backbone
+     * @param which           which backbone
      * @return
      */
-    String getNettedComponentBackboneLabel(int nettedComponent, int which) ;
+    String getNettedComponentBackboneLabel(int nettedComponent, int which);
+
     /**
      * set the label of a backbone that is contained in a netted component
      *
      * @param nettedComponent which netted component
-     * @param which which backbone
-     * @param label the label for the backbone
+     * @param which           which backbone
+     * @param label           the label for the backbone
      * @return
      */
-    boolean setNettedComponentBackboneLabel(int nettedComponent, int which, String label) ;
+    boolean setNettedComponentBackboneLabel(int nettedComponent, int which, String label);
+
     /**
      * get the index of a backbone in the list of backbones within the netted component
      *
      * @param nettedComponent which netted component
-     * @param label the label for the backbone
+     * @param label           the label for the backbone
      * @return
      */
-    int indexOfNettedComponentBackboneLabel(int nettedComponent, String label) ;
+    int indexOfNettedComponentBackboneLabel(int nettedComponent, String label);
+
     /**
      * get the eNewick representation of a backbone contained in a netted component
      *
      * @param nettedComponent which netted component
-     * @param which which backbone
+     * @param which           which backbone
      * @return
      */
-    String getNettedComponentBackbone(int nettedComponent, int which) ;
+    String getNettedComponentBackbone(int nettedComponent, int which);
+
     /**
      * set the eNewick representation of a backbone contained in a netted component
      *
      * @param nettedComponent which netted component
-     * @param which which backbone
-     * @param eNewick    the eNewick string
+     * @param which           which backbone
+     * @param eNewick         the eNewick string
      * @return
      */
-    boolean setNettedComponentBackbone(int nettedComponent, int which, String eNewick) ;
+    boolean setNettedComponentBackbone(int nettedComponent, int which, String eNewick);
 
 }

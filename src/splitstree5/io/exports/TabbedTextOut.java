@@ -5,8 +5,6 @@ import splitstree5.core.datablocks.*;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.BitSet;
 
 public class TabbedTextOut implements
@@ -16,7 +14,7 @@ public class TabbedTextOut implements
 
         w.write("Taxa\n");
         for (int i = 1; i <= taxa.getNtax(); i++) {
-            w.write(i+"\t" + taxa.getLabel(i) + "\n");
+            w.write(i + "\t" + taxa.getLabel(i) + "\n");
         }
         w.write("\n");
         w.flush();
@@ -26,13 +24,13 @@ public class TabbedTextOut implements
 
         w.write("Characters\n");
         for (int i = 1; i <= taxa.getNtax(); i++)
-            w.write( taxa.getLabel(i) + "\t");
+            w.write(taxa.getLabel(i) + "\t");
         w.write("\n");
 
-        for (int j = 1; j<=characters.getNchar(); j++){
-            w.write(j+"");
-            for (int i = 1; i <= taxa.getNtax(); i++){
-                w.write("\t"+characters.get(i, j));
+        for (int j = 1; j <= characters.getNchar(); j++) {
+            w.write(j + "");
+            for (int i = 1; i <= taxa.getNtax(); i++) {
+                w.write("\t" + characters.get(i, j));
             }
             w.write("\n");
         }
@@ -52,7 +50,7 @@ public class TabbedTextOut implements
         for (int i = 1; i <= ntax; i++) {
             for (int j = 1; j <= ntax; j++)
                 //w.write(dec.format(distances.get(i, j)) + "\t");
-                w.write( distances.get(i, j) + "\t");
+                w.write(distances.get(i, j) + "\t");
             w.write("\n");
         }
         w.write("\n");
@@ -84,8 +82,8 @@ public class TabbedTextOut implements
 
             //Split number
             w.write(Integer.toString(i));
-            w.write("\t" + splits.getWeight(i-1));
-            BitSet A = splits.get(i-1).getA();
+            w.write("\t" + splits.getWeight(i - 1));
+            BitSet A = splits.get(i - 1).getA();
             for (int j = 1; j <= ntax; j++) {
                 char ch = A.get(j) ? '1' : '0';
                 w.write("\t" + ch);

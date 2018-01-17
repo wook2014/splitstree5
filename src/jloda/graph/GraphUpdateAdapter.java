@@ -20,6 +20,9 @@
  * @version $Id: GraphUpdateAdapter.java,v 1.4 2005-01-07 14:23:05 huson Exp $
  * @author Daniel Huson
  * 11.02
+ * @version $Id: GraphUpdateAdapter.java,v 1.4 2005-01-07 14:23:05 huson Exp $
+ * @author Daniel Huson
+ * 11.02
  */
 /**
  *@version $Id: GraphUpdateAdapter.java,v 1.4 2005-01-07 14:23:05 huson Exp $

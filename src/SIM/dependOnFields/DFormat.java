@@ -8,7 +8,7 @@ import javafx.beans.value.ObservableValue;
 import splitstree4.core.SplitsException;
 
 
-public class DFormat extends ObjectProperty<DFormat>{
+public class DFormat extends ObjectProperty<DFormat> {
 
     private String triangle;
     private boolean labels;
@@ -31,6 +31,7 @@ public class DFormat extends ObjectProperty<DFormat>{
     public String getTriangle() {
         return triangle;
     }
+
     public void setTriangle(String triangle) throws SplitsException {
         if (!triangle.equals("both") && !triangle.equals("lower") && !triangle.equals("upper"))
             throw new SplitsException("Illegal triangle:" + triangle);
@@ -41,6 +42,7 @@ public class DFormat extends ObjectProperty<DFormat>{
     public boolean getLabels() {
         return labels;
     }
+
     public void setLabels(boolean labels) {
         this.labels = labels;
         markInvalid();
@@ -49,6 +51,7 @@ public class DFormat extends ObjectProperty<DFormat>{
     public boolean getDiagonal() {
         return diagonal;
     }
+
     public void setDiagonal(boolean diagonal) {
         this.diagonal = diagonal;
         markInvalid();
@@ -57,6 +60,7 @@ public class DFormat extends ObjectProperty<DFormat>{
     public String getVarType() {
         return varType;
     }
+
     public void setVarType(String val) {
         this.varType = val;
         markInvalid();
@@ -128,11 +132,12 @@ public class DFormat extends ObjectProperty<DFormat>{
             fireValueChangedEvent();
         }
     }
+
     /**
      * The method {@code invalidated()} can be overridden to receive
      * invalidation notifications. This is the preferred option in
      * {@code Objects} defining the property, because it requires less memory.
-     *
+     * <p>
      * The default implementation is empty.
      */
     protected void invalidated() {

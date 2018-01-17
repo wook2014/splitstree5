@@ -41,19 +41,19 @@ public interface Assumptions {
      *
      * @return true, if data doesn't need immediate updating
      */
-    boolean isUptodate() ;
+    boolean isUptodate();
 
     /**
      * clear the list of dirty blocks
      */
-    void clearFirstDirtyBlock() ;
+    void clearFirstDirtyBlock();
 
     /**
      * update the first dirty block with the given name
      *
      * @param name the name of the dirty block
      */
-    void updateFirstDirtyBlock(String name) ;
+    void updateFirstDirtyBlock(String name);
 
 
     /**
@@ -62,7 +62,7 @@ public interface Assumptions {
      * @param taxa
      * @return a clone
      */
-    Assumptions clone(Taxa taxa) ;
+    Assumptions clone(Taxa taxa);
 
     /**
      * determines whether this is a currently set transform
@@ -70,7 +70,7 @@ public interface Assumptions {
      * @param trans
      * @return true if currently set
      */
-    boolean isSetTransform(Transformation trans) ;
+    boolean isSetTransform(Transformation trans);
 
     /***************
      * INPUT OUTPUT *
@@ -81,7 +81,7 @@ public interface Assumptions {
      *
      * @param np the nexus parser
      */
-    void read(NexusStreamParser np, Taxa taxa) ;
+    void read(NexusStreamParser np, Taxa taxa);
 
     /**
      * Write the assumptions block.   Suppress assumptions for undefined blocks.
@@ -89,7 +89,7 @@ public interface Assumptions {
      * @param w   the writer
      * @param doc the document
      */
-    void write(Writer w, Document doc) ;
+    void write(Writer w, Document doc);
 
     /**
      * writeInfoFile the assumptions block in full.  Show all assumptions, whether blocks are defined or not
@@ -97,32 +97,32 @@ public interface Assumptions {
      * @param w
      * @param taxa
      */
-    void write(Writer w, Taxa taxa) ;
+    void write(Writer w, Taxa taxa);
 
     /**
      * Produces a string representation of a NexusBlock object
      *
      * @return object in nexus format
      */
-    String toString(Document doc) ;
+    String toString(Document doc);
 
     /**
      * Shows assumptions. Shows all assumptions, whether blocks are defined or not
      *
      * @return object in nexus format
      */
-    String toString(Taxa taxa) ;
+    String toString(Taxa taxa);
 
     /**
      * Show the usage of this block
      *
      * @param ps the PrintStream
      */
-    void showUsage(PrintStream ps) ;
+    void showUsage(PrintStream ps);
 
 
     /********************
-    * GETTER NAD SETTER *
+     * GETTER NAD SETTER *
      ********************/
 
     /**
@@ -130,56 +130,56 @@ public interface Assumptions {
      *
      * @param uptodate
      */
-    void setUptodate(boolean uptodate) ;
+    void setUptodate(boolean uptodate);
 
     /**
      * Gets the name of the unaligned transform
      *
      * @return the unaligned transform
      */
-    String getUnalignedTransformName() ;
+    String getUnalignedTransformName();
 
     /**
      * Sets the unaligned transform
      *
      * @param trans the transform
      */
-    void setUnalignedTransformName(String trans) ;
+    void setUnalignedTransformName(String trans);
 
     /**
      * Sets the unaligned transform parameters
      *
      * @param param the transform parameters
      */
-    void setUnalignedTransformParam(String param) ;
+    void setUnalignedTransformParam(String param);
 
     /**
      * Returns the current unaligned transform parameters
      *
      * @return current unaligned transform parameters
      */
-    String getUnalignedTransformParam() ;
+    String getUnalignedTransformParam();
 
     /**
      * Returns the current characters transform parameters
      *
      * @return current characters transform parameters
      */
-    String getCharactersTransformParam() ;
+    String getCharactersTransformParam();
 
     /**
      * Returns the current distances transform parameters
      *
      * @return current distances transform parameters
      */
-    String getDistancesTransformParam() ;
+    String getDistancesTransformParam();
 
     /**
      * Returns the current splits transform parameters
      *
      * @return current splits transform parameters
      */
-    String getSplitsTransformParam() ;
+    String getSplitsTransformParam();
 
 
     /**
@@ -187,147 +187,147 @@ public interface Assumptions {
      *
      * @return the charTransform
      */
-    String getCharactersTransformName() ;
+    String getCharactersTransformName();
 
     /**
      * Sets the charTransform
      *
      * @param transform is charTransform
      */
-    void setCharactersTransformName(String transform) ;
+    void setCharactersTransformName(String transform);
 
     /**
      * Sets the charTransformParameter
      *
      * @param param is charTransformParameter
      */
-    void setCharactersTransformParam(String param) ;
+    void setCharactersTransformParam(String param);
 
     /**
      * Gets distTransform
      *
      * @return the distTransform
      */
-    String getDistancesTransformName() ;
+    String getDistancesTransformName();
 
     /**
      * Sets the distTransform
      *
      * @param transform is distTransform
      */
-    void setDistancesTransformName(String transform) ;
+    void setDistancesTransformName(String transform);
 
     /**
      * Sets the distTransformParam
      *
      * @param param is distTransformParam
      */
-    void setDistancesTransformParam(String param) ;
+    void setDistancesTransformParam(String param);
 
     /**
      * Gets the quartets transform name
      *
      * @return the quartets transform
      */
-    String getQuartetsTransformName() ;
+    String getQuartetsTransformName();
 
     /**
      * Sets the quartests transform
      *
      * @param trans the quartets transform
      */
-    void setQuartetsTransformName(String trans) ;
+    void setQuartetsTransformName(String trans);
 
     /**
      * Gets the quarets transforma parameter
      *
      * @return the quartets trajsform parameter
      */
-    String getQuartetsTransformParam() ;
+    String getQuartetsTransformParam();
 
     /**
      * Sets the quartet transform parameters
      *
      * @param param the parameter
      */
-    void setQuartetsTransformParam(String param) ;
+    void setQuartetsTransformParam(String param);
 
     /**
      * gets trees transform parameter string
      *
      * @return the parameters
      */
-    String getTreesTransformParam() ;
+    String getTreesTransformParam();
 
     /**
      * sets the trees transform paramters
      *
      * @param param
      */
-    void setTreesTransformParam(String param) ;
+    void setTreesTransformParam(String param);
 
     /**
      * Gets the tree transform name
      *
      * @return the name
      */
-    String getTreesTransformName() ;
+    String getTreesTransformName();
 
     /**
      * Sets the trees transform name
      *
      * @param name
      */
-    void setTreesTransformName(String name) ;
+    void setTreesTransformName(String name);
 
     /**
      * Gets splitsTransform
      *
      * @return the splitsTransform
      */
-    String getSplitsTransformName() ;
+    String getSplitsTransformName();
 
     /**
      * Sets the splitsTransform
      *
      * @param trans is splitsTransform
      */
-    void setSplitsTransformName(String trans) ;
+    void setSplitsTransformName(String trans);
 
     /**
      * Sets the splitsTransformParam
      *
      * @param param is splitsTransformParam
      */
-    void setSplitsTransformParam(String param) ;
+    void setSplitsTransformParam(String param);
 
     /**
      * Gets the name of the reticulate transform
      *
      * @return the reticulate transform
      */
-    String getReticulateTransformName() ;
+    String getReticulateTransformName();
 
     /**
      * Sets the reticulateTransform
      *
      * @param trans is reticulateTransform
      */
-    void setReticulateTrasformName(String trans) ;
+    void setReticulateTrasformName(String trans);
 
     /**
      * Returns the current reticulate transform parameters
      *
      * @return current reticulate transform parameters
      */
-    String getReticulateTransformParam() ;
+    String getReticulateTransformParam();
 
     /**
      * Sets the reticulateTransformParam
      *
      * @param param is reticulateTransformParam
      */
-    void setReticulateTransformParam(String param) ;
+    void setReticulateTransformParam(String param);
 
 
     /**
@@ -335,79 +335,81 @@ public interface Assumptions {
      *
      * @return the excludeGaps
      */
-    boolean getExcludeGaps() ;
+    boolean getExcludeGaps();
 
     /**
      * Sets the excludeGaps
      *
      * @param excGaps is excludeGaps
      */
-    void setExcludeGaps(boolean excGaps) ;
+    void setExcludeGaps(boolean excGaps);
 
     /**
      * Gets the excludeMissing
      * Threshold for missing data in characters. Characters with more than this proportion of missing
      * data are excluded. Hence 1.0 means none are excluded.
+     *
      * @return the excludeMissing
      */
-    double getExcludeMissing() ;
+    double getExcludeMissing();
 
     /**
      * Sets the excludeMissing
      * Threshold for missing data in characters. Characters with more than this proportion of missing
      * data are excluded. Hence 1.0 means none are excluded.
+     *
      * @param excMissing is excludeMissing
      */
-    void setExcludeMissing(double excMissing) ;
+    void setExcludeMissing(double excMissing);
 
     /**
      * Gets the excludeNonParsimony
      *
      * @return the excludeNonParsimony
      */
-    boolean getExcludeNonParsimony() ;
+    boolean getExcludeNonParsimony();
 
     /**
      * Sets the excludeNonParsimony
      *
      * @param excNonParsi is excludeNonParsimony
      */
-    void setExcludeNonParsimony(boolean excNonParsi) ;
+    void setExcludeNonParsimony(boolean excNonParsi);
 
     /**
      * Gets the excludeCodon1
      *
      * @return the excludeCodon1
      */
-    boolean getExcludeCodon1() ;
+    boolean getExcludeCodon1();
 
     /**
      * Sets the excludeCodon1
      *
      * @param excCodon1 is excludeCodon1
      */
-    void setExcludeCodon1(boolean excCodon1) ;
+    void setExcludeCodon1(boolean excCodon1);
 
     /**
      * Gets the excludeCodon2
      *
      * @return the excludeCodon2
      */
-    boolean getExcludeCodon2() ;
+    boolean getExcludeCodon2();
 
     /**
      * Sets the excludeCodon2
      *
      * @param excCodon2 is excludeCodon2
      */
-    void setExcludeCodon2(boolean excCodon2) ;
+    void setExcludeCodon2(boolean excCodon2);
 
     /**
      * Gets the excludeCodon3
      *
      * @return the excludeCodon3
      */
-    boolean getExcludeCodon3() ;
+    boolean getExcludeCodon3();
 
     /**
      * Sets the excludeCodon3
@@ -428,14 +430,14 @@ public interface Assumptions {
      *
      * @param excConstant is excludeConstant
      */
-    void setExcludeConstant(int excConstant) ;
+    void setExcludeConstant(int excConstant);
 
     /**
      * Gets the set of taxa that are excluded from all computations
      *
      * @return the list of excluded taxa
      */
-    TaxaSet getExTaxa() ;
+    TaxaSet getExTaxa();
 
     /**
      * Gets the set of character positions that are excluded from all
@@ -443,18 +445,18 @@ public interface Assumptions {
      *
      * @return the list of excluded characters
      */
-    List<Integer> getExChar() ;
+    List<Integer> getExChar();
 
     /**
      * Sets the set of taxa that are excluded from all computations
      *
      * @param extaxa the set of excluded taxa
      */
-    void setExTaxa(TaxaSet extaxa) ;
+    void setExTaxa(TaxaSet extaxa);
 
-    List<String> getUseTaxaSets() ;
+    List<String> getUseTaxaSets();
 
-    void setUseTaxaSets(List<String> useTaxaSets) ;
+    void setUseTaxaSets(List<String> useTaxaSets);
 
     /**
      * Sets the list of character positions that are excluded from all
@@ -465,7 +467,7 @@ public interface Assumptions {
     void setExChar(List<Integer> exchar);
 
 
-    List<String> getUseCharSets() ;
+    List<String> getUseCharSets();
 
     void setUseCharSets(List<String> useCharSets);
 
@@ -482,7 +484,7 @@ public interface Assumptions {
      *
      * @return extrees
      */
-    List<String> getExTrees() ;
+    List<String> getExTrees();
 
     /**
      * sets the list of splits to be excluded.
@@ -490,14 +492,14 @@ public interface Assumptions {
      *
      * @param exSplits
      */
-    void setExSplits(List<Integer> exSplits) ;
+    void setExSplits(List<Integer> exSplits);
 
     /**
      * returns the list of excluded splits
      *
      * @return exsplits
      */
-    List<Integer> getExSplits() ;
+    List<Integer> getExSplits();
 
     /**
      * are we using a heuristic to stabilize the layout of trees?
@@ -505,7 +507,7 @@ public interface Assumptions {
      *
      * @return stabilize layout?
      */
-    int getLayoutStrategy() ;
+    int getLayoutStrategy();
 
     /**
      * are we using a heuristic to stabilize the layout of trees?
@@ -527,59 +529,61 @@ public interface Assumptions {
      *
      * @param autoLayoutNodeLabels
      */
-    void setAutoLayoutNodeLabels(boolean autoLayoutNodeLabels) ;
+    void setAutoLayoutNodeLabels(boolean autoLayoutNodeLabels);
 
 
-    boolean getRadiallyLayoutNodeLabels() ;
+    boolean getRadiallyLayoutNodeLabels();
 
-    void setRadiallyLayoutNodeLabels(boolean radiallyLayoutNodeLabels) ;
+    void setRadiallyLayoutNodeLabels(boolean radiallyLayoutNodeLabels);
 
     /**
      * Returns the current unaligned transformation
      *
      * @return an instance of the set unaligned transformation
      */
-    UnalignedTransform getUnalignedTransform() ;
+    UnalignedTransform getUnalignedTransform();
 
     /**
      * Returns the current characters transformation
      *
      * @return an instance of the set characters transformation
      */
-    CharactersTransform getCharactersTransform() ;
+    CharactersTransform getCharactersTransform();
+
     /**
      * Returns the current distances transformation
      *
      * @return an instance of the set distances transformation
      */
-    DistancesTransform getDistancesTransform() ;
+    DistancesTransform getDistancesTransform();
 
     /**
      * Returns the current quartets transformation
      *
      * @return an instance of the set quartets transformation
      */
-    QuartetsTransform getQuartetsTransform() ;
+    QuartetsTransform getQuartetsTransform();
 
     /**
      * Returns the current splits transformation
      *
      * @return an instance of the set splits transformation
      */
-    SplitsTransform getSplitsTransform() ;
+    SplitsTransform getSplitsTransform();
 
     /**
      * Returns the current trees transformation
      *
      * @return an instance of the set trees transformation
      */
-    TreesTransform getTreesTransform() ;
+    TreesTransform getTreesTransform();
+
     /**
      * Returns the current reticulate transformation
      *
      * @return an instance of the set reticulate transformation
      */
-    ReticulateTransform getReticulateTransform() ;
+    ReticulateTransform getReticulateTransform();
 
     /**
      * returns the first nexus blocks that were made dirty in the last call
@@ -587,14 +591,14 @@ public interface Assumptions {
      *
      * @return the list of dirty block names
      */
-    String getFirstDirtyBlock() ;
+    String getFirstDirtyBlock();
 
     /**
      * returns the splits post process subclass
      *
      * @return splits post process
      */
-    SplitsPostProcess getSplitsPostProcess() ;
+    SplitsPostProcess getSplitsPostProcess();
 
 
 }

@@ -6,7 +6,7 @@ import splitstree4.core.SplitsException;
 /**
  * Created by Daria on 04.10.2016.
  */
-public final class Format implements Cloneable{
+public final class Format implements Cloneable {
 
     //ToDo: methods that change the format should be protected
 
@@ -120,7 +120,7 @@ public final class Format implements Cloneable{
      * CHANGED TO ENUM *
      *******************/
     public void setDatatype(DataTypesChar datatype) {
-        this.datatype=datatype;
+        this.datatype = datatype;
 
         // not defined in interface, not static
         //computeColors();
@@ -333,7 +333,7 @@ public final class Format implements Cloneable{
      * CHANGED TO ENUM *
      *******************/
     public boolean isUnknownType() {
-        return (datatype==DataTypesChar.UNKNOWN);
+        return (datatype == DataTypesChar.UNKNOWN);
     }
 
     /**

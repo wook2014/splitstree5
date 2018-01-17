@@ -9,16 +9,16 @@ import javafx.collections.ObservableList;
 
 import java.util.Vector;
 
-public class Taxa{
+public class Taxa {
 
-    private SimpleIntegerProperty ntax ;
+    private SimpleIntegerProperty ntax;
     private ObservableList<String> taxLabels;
     private ObservableList<String> taxInfos;
 
     // Save changes as a list to implement REDO-button for many steps
     private StringProperty changes;
 
-    private boolean mustDetectLabels ;
+    private boolean mustDetectLabels;
 
     /*** Constructors ***/
     public Taxa() {
@@ -29,10 +29,10 @@ public class Taxa{
         this.taxLabels.addListener(new ListChangeListener<String>() {
             @Override
             public void onChanged(Change<? extends String> c) {
-                System.out.println("Detected a change in Taxa List! "+c);
+                System.out.println("Detected a change in Taxa List! " + c);
                 changes.setValue(c.toString());
                 ntax.set(taxLabels.size());
-                System.out.println("Taxa : new ntax = "+getNtax().getValue());
+                System.out.println("Taxa : new ntax = " + getNtax().getValue());
                 //printTaxa();
             }
         });
@@ -45,6 +45,7 @@ public class Taxa{
             }
         });
     }
+
     // CANNOT HAVE THE SAME NAME WITH ARGUMENT
     public Taxa(int nTax) {
         mustDetectLabels = false;
@@ -57,7 +58,7 @@ public class Taxa{
             public void onChanged(Change<? extends String> c) {
                 System.out.println("Detected a change in Taxa List! " + c);
                 ntax.set(taxLabels.size());
-                System.out.println("new ntax = "+getNtax().getValue());
+                System.out.println("new ntax = " + getNtax().getValue());
                 printTaxa();
             }
         });
@@ -69,13 +70,13 @@ public class Taxa{
         });
     }
 
-    void add(String taxonLabel){
+    void add(String taxonLabel) {
         System.out.println();
         System.out.println("Added a new Taxon");
         this.taxLabels.add(taxonLabel);
     }
 
-    void add(String taxonLabel, String info){
+    void add(String taxonLabel, String info) {
         System.out.println();
         System.out.println("Added a new Taxon with Info");
         this.taxLabels.add(taxonLabel);
@@ -84,13 +85,14 @@ public class Taxa{
     }
 
     //new
-    void delete(String taxonLabel){
+    void delete(String taxonLabel) {
         System.out.println();
         System.out.println("Deleted a Taxon");
         this.taxLabels.remove(taxonLabel);
 
     }
-    void delete(String taxonLabel, String info){
+
+    void delete(String taxonLabel, String info) {
         System.out.println();
         System.out.println("Deleted a Taxon with Info");
         this.taxLabels.remove(taxonLabel);
@@ -99,36 +101,37 @@ public class Taxa{
     }
 
     // printing
-    public void printTaxa(){
+    public void printTaxa() {
         System.out.println("LIST OF TAXA:");
-        for(String l : this.taxLabels){
+        for (String l : this.taxLabels) {
             System.out.println(l);
         }
     }
 
     //Setters
-    void setTaxLabels(Vector<String> labels){
-        for(String l : labels){
+    void setTaxLabels(Vector<String> labels) {
+        for (String l : labels) {
             this.taxLabels.add(l);
         }
     }
-    void setTaxInfos(Vector<String> infos){
-        for(String i : infos){
+
+    void setTaxInfos(Vector<String> infos) {
+        for (String i : infos) {
             this.taxLabels.add(i);
         }
     }
 
     // GETTER
 
-    public SimpleIntegerProperty getNtax(){
+    public SimpleIntegerProperty getNtax() {
         return this.ntax;
     }
 
-    public String getLabel( int i){
+    public String getLabel(int i) {
         return this.taxLabels.get(i);
     }
 
-    public StringProperty getChanges(){
+    public StringProperty getChanges() {
         return this.changes;
     }
 

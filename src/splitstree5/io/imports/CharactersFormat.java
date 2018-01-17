@@ -21,31 +21,31 @@ public abstract class CharactersFormat {
     private char missing = '?';
     private char matchChar = '.';
 
-    static void addTaxaName(String line, ArrayList<String> taxonNames, int linesCounter){
+    static void addTaxaName(String line, ArrayList<String> taxonNames, int linesCounter) {
 
         int sameNamesCounter = 0;
         if (taxonNames.contains(line.substring(1))) {
-            System.err.println("Repeating taxon name in line "+linesCounter);
+            System.err.println("Repeating taxon name in line " + linesCounter);
             sameNamesCounter++;
         }
-        while (taxonNames.contains(line.substring(1)+sameNamesCounter)){
+        while (taxonNames.contains(line.substring(1) + sameNamesCounter)) {
             sameNamesCounter++;
         }
 
         if (sameNamesCounter == 0)
             taxonNames.add(line.substring(1));
         else
-            taxonNames.add(line.substring(1)+sameNamesCounter);
+            taxonNames.add(line.substring(1) + sameNamesCounter);
     }
 
     static void checkIfCharactersValid(String line, int counter, String allowedChars) throws IOException {
 
-        String regex = "[^a-z0-9 \t"+allowedChars+"]";
+        String regex = "[^a-z0-9 \t" + allowedChars + "]";
         Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher(line);
         boolean found = m.find();
         if (found)
-            throw new IOException("Unexpected character in line "+counter);
+            throw new IOException("Unexpected character in line " + counter);
     }
 
     void estimateDataType(String foundSymbols, CharactersBlock characters, Map<Character, Integer> frequency) throws IOException {

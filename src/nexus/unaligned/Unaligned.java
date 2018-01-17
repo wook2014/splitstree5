@@ -1,9 +1,7 @@
 package nexus.unaligned;
 
 import jloda.util.parse.NexusStreamParser;
-import jloda.util.parse.NexusStreamTokenizer;
 import nexus.Taxa;
-import splitstree4.core.SplitsException;
 import splitstree4.core.TaxaSet;
 
 import java.io.PrintStream;
@@ -25,18 +23,21 @@ public interface Unaligned {
 
     // MAIN DATA
 
-    void hideTaxa(Taxa origTaxa, TaxaSet hiddenTaxa) ;
-    Unaligned clone(Taxa taxa) ;
+    void hideTaxa(Taxa origTaxa, TaxaSet hiddenTaxa);
+
+    Unaligned clone(Taxa taxa);
 
     /***************
-    * INPUT OUTPUT *
+     * INPUT OUTPUT *
      ***************/
 
-    String toString() ;
+    String toString();
+
     void read(NexusStreamParser np, Taxa taxa);
+
     void write(Writer w, Taxa taxa); //Write the characters block
 
-    static void showUsage(PrintStream ps){
+    static void showUsage(PrintStream ps) {
         ps.println("BEGIN UNALIGNED;");
         ps.println("\t[DIMENSIONS NTAX=number-of-taxa;]");
         ps.println("\t[FORMAT");
@@ -57,15 +58,21 @@ public interface Unaligned {
      * GETTER AND SETTER *
      *********************/
     Format getFormat();
+
     int getNtax();
+
     void setNtax(int ntax);
 
     char get(int t, int p); //Get the matrix value.
-    void set(int i, int j, char val) ; //Set the matrix value.
+
+    void set(int i, int j, char val); //Set the matrix value.
+
     char[] getRow(int i); //Get the row i of matrix (i.e. the sequence for tax i).
+
     String getRowAsString(int t);
 
     int getMaxLength(); //Returns the max number of characters in a row
-    boolean getFormatSwitchValue(String name) ;
+
+    boolean getFormatSwitchValue(String name);
 
 }

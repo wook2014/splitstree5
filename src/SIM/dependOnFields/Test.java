@@ -1,9 +1,7 @@
 package SIM.dependOnFields;
 
-import javafx.beans.binding.IntegerBinding;
-
 public class Test {
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
         System.out.println("Test on fields dependencies");
         System.out.println();

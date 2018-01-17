@@ -2,7 +2,7 @@ package SIM.dependOnAlgos;
 
 public class Test {
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
         System.out.println("Test on algorithms dependencies");
         System.out.println();

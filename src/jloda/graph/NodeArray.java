@@ -19,6 +19,8 @@
  *
  * @version $Id: NodeArray.java,v 1.11 2005-12-05 13:25:44 huson Exp $
  * @author Daniel Huson
+ * @version $Id: NodeArray.java,v 1.11 2005-12-05 13:25:44 huson Exp $
+ * @author Daniel Huson
  */
 /**
  * @version $Id: NodeArray.java,v 1.11 2005-12-05 13:25:44 huson Exp $

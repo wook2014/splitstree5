@@ -21,6 +21,8 @@
  * @author Daniel Huson
  * @version $Id: EdgeMap.java,e 1.2 2005-12-05 13:25:45 huson Exp $
  * @author Daniel Huson
+ * @version $Id: EdgeMap.java,e 1.2 2005-12-05 13:25:45 huson Exp $
+ * @author Daniel Huson
  */
 /**
  * @version $Id: EdgeMap.java,e 1.2 2005-12-05 13:25:45 huson Exp $

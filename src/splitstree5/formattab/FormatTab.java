@@ -17,10 +17,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.styletab;
+package splitstree5.formattab;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.Tab;
@@ -42,13 +40,11 @@ import java.io.IOException;
  * style tab for setting fonts etc
  * Daniel Huson, 1.2018
  */
-public class StyleTab extends ViewerTab {
+public class FormatTab extends ViewerTab {
     private GraphTab graphTab;
 
-    private final StyleTabController controller;
+    private final FormatTabController controller;
     private final UndoRedoManager undoManager;
-
-    private final BooleanProperty applicable = new SimpleBooleanProperty();
 
 
     /**
@@ -57,10 +53,10 @@ public class StyleTab extends ViewerTab {
      * @param mainWindow
      * @throws IOException
      */
-    public StyleTab(MainWindow mainWindow) throws IOException {
+    public FormatTab(MainWindow mainWindow) {
         setMainWindow(mainWindow);
         {
-            final ExtendedFXMLLoader<StyleTabController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
+            final ExtendedFXMLLoader<FormatTabController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
             controller = extendedFXMLLoader.getController();
             setContent(extendedFXMLLoader.getRoot());
         }
@@ -68,7 +64,7 @@ public class StyleTab extends ViewerTab {
         final Label label = new Label();
         setText("");
         setGraphic(label);
-        label.setText("Style");
+        label.setText("Format");
 
         undoManager = new UndoRedoManager();
 

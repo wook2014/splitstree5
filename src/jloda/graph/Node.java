@@ -21,6 +21,8 @@
  * @author Daniel Huson
  * @version $Id: Node.java,v 1.20 2009-04-27 07:20:20 huson Exp $
  * @author Daniel Huson
+ * @version $Id: Node.java,v 1.20 2009-04-27 07:20:20 huson Exp $
+ * @author Daniel Huson
  */
 /**
  * @version $Id: Node.java,v 1.20 2009-04-27 07:20:20 huson Exp $

@@ -125,7 +125,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
-import splitstree5.styletab.Styles;
+import splitstree5.formattab.Styles;
 
 /**
  * node view

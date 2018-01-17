@@ -19,6 +19,8 @@
  *
  * @version $Id: Edge.java,v 1.17 2010-06-10 12:07:57 scornava Exp $
  * @author Daniel Huson
+ * @version $Id: Edge.java,v 1.17 2010-06-10 12:07:57 scornava Exp $
+ * @author Daniel Huson
  */
 /**
  * @version $Id: Edge.java,v 1.17 2010-06-10 12:07:57 scornava Exp $

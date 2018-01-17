@@ -20,7 +20,6 @@
 package jloda.phylo;
 
 /**
- *
  * Phylogenetic graph
  *
  * @author Daniel Huson, 2005

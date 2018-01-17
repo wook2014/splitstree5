@@ -19,6 +19,8 @@
  *
  * @version $Id: Graph.java,v 1.51 2008-10-10 08:42:37 huson Exp $
  * @author Daniel Huson
+ * @version $Id: Graph.java,v 1.51 2008-10-10 08:42:37 huson Exp $
+ * @author Daniel Huson
  */
 /**
  * @version $Id: Graph.java,v 1.51 2008-10-10 08:42:37 huson Exp $
@@ -581,8 +583,8 @@ public class Graph extends GraphBase {
     }
 
     /* Fires the newNode event for all GraphUpdateListeners
-    *@param v the node
-    */
+     *@param v the node
+     */
 
     protected void fireNewNode(Node v) {
         checkOwner(v);
@@ -592,8 +594,8 @@ public class Graph extends GraphBase {
     }
 
     /* Fires the deleteNode event for all GraphUpdateListeners
-    *@param v the node
-    */
+     *@param v the node
+     */
 
     protected void fireDeleteNode(Node v) {
         checkOwner(v);
@@ -603,8 +605,8 @@ public class Graph extends GraphBase {
     }
 
     /* Fires the newEdge event for all GraphUpdateListeners
-    *@param e the edge
-    */
+     *@param e the edge
+     */
 
     protected void fireNewEdge(Edge e) {
         checkOwner(e);
@@ -614,8 +616,8 @@ public class Graph extends GraphBase {
     }
 
     /* Fires the deleteEdge event for all GraphUpdateListeners
-    *@param e the edge
-    */
+     *@param e the edge
+     */
 
     protected void fireDeleteEdge(Edge e) {
         checkOwner(e);
@@ -625,7 +627,7 @@ public class Graph extends GraphBase {
     }
 
     /* Fires the graphHasChanged event for all GraphUpdateListeners
-    */
+     */
 
     protected void fireGraphHasChanged() {
         if (!ignoreGraphHasChanged) {
@@ -637,7 +639,7 @@ public class Graph extends GraphBase {
 
     /*
      * Fires the graphWasRead event for all GraphUpdateListeners
-    */
+     */
 
     protected void fireGraphRead(NodeSet nodes, EdgeSet edges) {
         checkOwner(nodes);

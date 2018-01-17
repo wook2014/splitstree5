@@ -31,7 +31,7 @@ public interface Splits {
     /**
      * Clears the list of splits
      */
-    void clear() ;
+    void clear();
 
     /**
      * Adds a split
@@ -46,7 +46,7 @@ public interface Splits {
      * @param A      one side of the split
      * @param weight the weight
      */
-    void add(TaxaSet A, float weight) ;
+    void add(TaxaSet A, float weight);
 
     /**
      * Adds a split
@@ -55,7 +55,7 @@ public interface Splits {
      * @param weight     the weight
      * @param confidence
      */
-    void add(TaxaSet A, float weight, float confidence) ;
+    void add(TaxaSet A, float weight, float confidence);
 
     /**
      * Adds a split
@@ -74,7 +74,7 @@ public interface Splits {
      * @param confidence in split
      * @param lab        the label
      */
-    void add(TaxaSet A, float weight, float confidence, String lab) ;
+    void add(TaxaSet A, float weight, float confidence, String lab);
 
     /**
      * Adds a split
@@ -85,7 +85,7 @@ public interface Splits {
      * @param interval
      * @param lab
      */
-    void add(TaxaSet A, float weight, float confidence, Interval interval, String lab) ;
+    void add(TaxaSet A, float weight, float confidence, Interval interval, String lab);
 
     /**
      * Removes a split. This will change the indices of other splits in the block (after i)
@@ -100,13 +100,14 @@ public interface Splits {
      * @param i
      * @return split
      */
-     String toLogString(int i);
+    String toLogString(int i);
+
     /**
      * Returns a human-readable string describing this object
      *
      * @return object
      */
-     String toLogString() ;
+    String toLogString();
 
 
     /**
@@ -140,12 +141,13 @@ public interface Splits {
      * @param hiddenTaxa
      */
     void hideTaxa(Taxa origTaxa, TaxaSet hiddenTaxa);
+
     /**
      * restores the original splits
      *
      * @param originalTaxa
      */
-    void restoreOriginal(Taxa originalTaxa) ;
+    void restoreOriginal(Taxa originalTaxa);
 
     /**
      * hide the named splits
@@ -157,7 +159,7 @@ public interface Splits {
 
 
     /***************
-    * INPUT OUTPUT *
+     * INPUT OUTPUT *
      ***************/
 
     /**
@@ -194,7 +196,7 @@ public interface Splits {
      *
      * @return string representation
      */
-    String toString() ;
+    String toString();
 
 
     /**
@@ -205,9 +207,8 @@ public interface Splits {
     String toString(Taxa taxa);
 
 
-
     /********************
-    * GETTER AND SETTER *
+     * GETTER AND SETTER *
      ********************/
 
     /**
@@ -216,7 +217,7 @@ public interface Splits {
      * @param i   index of the split between 1..nsplits
      * @param wgt the weight
      */
-    void setWeight(int i, float wgt) ;
+    void setWeight(int i, float wgt);
 
     /**
      * Gets the splits set
@@ -230,7 +231,7 @@ public interface Splits {
      *
      * @return the format object
      */
-    Format getFormat() ;
+    Format getFormat();
 
     /**
      * Returns the properties object
@@ -251,14 +252,15 @@ public interface Splits {
      *
      * @param t the threshold
      */
-    void setThreshold(float t) ;
+    void setThreshold(float t);
 
     /**
      * Get the number of taxa.
      *
      * @return number of taxa
      */
-    int getNtax() ;
+    int getNtax();
+
     /**
      * Set the number of taxa
      *
@@ -271,7 +273,7 @@ public interface Splits {
      *
      * @return number of splits
      */
-    int getNsplits() ;
+    int getNsplits();
 
     /**
      * Set the number of splits.
@@ -325,7 +327,7 @@ public interface Splits {
      * @param i the index of the weight between 1..nsplits
      * @return the taxa set of the weight
      */
-    float getWeight(int i) ;
+    float getWeight(int i);
 
     /**
      * returns the confidence in splits i
@@ -333,7 +335,7 @@ public interface Splits {
      * @param i split
      * @return confidence
      */
-    float getConfidence(int i) ;
+    float getConfidence(int i);
 
     void setConfidence(int i, float confidence);
 

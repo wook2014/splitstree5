@@ -57,7 +57,7 @@ public interface Quartets {
      *
      * @return an iterator over the elements in this set.
      */
-    Iterator iterator() ;
+    Iterator iterator();
 
     /**
      * Returns an array containing all of the quartets in this set.
@@ -65,7 +65,7 @@ public interface Quartets {
      *
      * @return an array containing all of the elements in this set.
      */
-    Quartet[] toArray() ;
+    Quartet[] toArray();
 
 
     /**
@@ -84,7 +84,6 @@ public interface Quartets {
     String toLogString();
 
 
-
     /***************
      * IO Handling *
      ***************/
@@ -101,7 +100,7 @@ public interface Quartets {
      *
      * @return string representation
      */
-    String toString() ;
+    String toString();
 
     /**
      * Read a matrics of quartets
@@ -117,13 +116,13 @@ public interface Quartets {
      * @param w    the writer
      * @param taxa the taxa
      */
-    void write(Writer w, Taxa taxa) ;
+    void write(Writer w, Taxa taxa);
 
 
     /**
      * Write the characters block
      *
-     * @param w    the writer
+     * @param w     the writer
      * @param nTaxa the number of taxa in the object
      */
     void write(Writer w, int nTaxa);
@@ -153,14 +152,14 @@ public interface Quartets {
      *
      * @return the format object
      */
-    Format getFormat() ;
+    Format getFormat();
 
     /**
      * Get the number of quartets
      *
      * @return the number of quartets
      */
-    int getSize() ;
+    int getSize();
 
     /**
      * sets a aquartet
