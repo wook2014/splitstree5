@@ -56,7 +56,7 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreeViewBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.workflow.UpdateState;
-import splitstree5.formattab.Styles;
+import splitstree5.gui.formattab.Styles;
 import splitstree5.gui.graphtab.TreeViewTab;
 import splitstree5.gui.graphtab.base.*;
 

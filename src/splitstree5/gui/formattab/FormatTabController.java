@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.formattab;
+package splitstree5.gui.formattab;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ColorPicker;
@@ -26,7 +26,7 @@ import javafx.scene.control.ComboBoxBase;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
-import splitstree5.xtra.fontpicker.FontPicker;
+import splitstree5.gui.formattab.fontselector.FontSelector;
 
 public class FormatTabController {
 
@@ -57,16 +57,16 @@ public class FormatTabController {
     @FXML
     private TextField nodeWidthTextField;
 
-    private FontPicker fontPicker;
+    private FontSelector fontPicker;
 
     @FXML
     void initialize() {
         fontComboBoxPane.getChildren().remove(fontComboBox);
-        fontPicker = new FontPicker(Font.getDefault());
+        fontPicker = new FontSelector(Font.getDefault());
         fontComboBoxPane.getChildren().add(fontPicker);
     }
 
-    public FontPicker getFontComboBox() {
+    public FontSelector getFontComboBox() {
         return fontPicker;
     }
 

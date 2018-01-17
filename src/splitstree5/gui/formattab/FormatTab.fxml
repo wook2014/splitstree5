@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <Pane xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="splitstree5.formattab.FormatTabController">
+      fx:controller="splitstree5.gui.formattab.FormatTabController">
     <children>
         <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
                   prefHeight="252.0" prefWidth="257.0">

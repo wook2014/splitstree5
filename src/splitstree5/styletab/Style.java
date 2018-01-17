@@ -36,7 +36,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.formattab;
+package splitstree5.styletab;
 
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -44,7 +44,7 @@ import javafx.scene.text.Font;
 /**
  * contains all style attributes associated with a node or edge
  */
-public class Styles {
+public class Style {
     private static final Font defaultFont = Font.font("System");
     private Font font;
     private Color stroke = Color.BLACK;
@@ -52,9 +52,9 @@ public class Styles {
     private Color textFill = Color.BLACK;
     private double strokeWidth = 1;
 
-    private static Styles defaultStyles;
+    private static Style defaultStyle;
 
-    public Styles() {
+    public Style() {
     }
 
     public Font getFont() {
@@ -93,9 +93,9 @@ public class Styles {
         this.strokeWidth = strokeWidth;
     }
 
-    public static Styles getDefaultStyles() {
-        if (defaultStyles == null)
-            defaultStyles = new Styles();
-        return defaultStyles;
+    public static Style getDefaultStyle() {
+        if (defaultStyle == null)
+            defaultStyle = new Style();
+        return defaultStyle;
     }
 }

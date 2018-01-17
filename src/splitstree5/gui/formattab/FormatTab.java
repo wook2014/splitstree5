@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.formattab;
+package splitstree5.gui.formattab;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;

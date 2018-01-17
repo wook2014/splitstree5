@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.xtra.fontselector;
+package splitstree5.gui.formattab.fontselector;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -30,13 +30,13 @@ import javafx.scene.control.Slider;
 public class FontSelectorController {
 
     @FXML
-    private ComboBox<?> fontFamilyComboBox;
+    private ComboBox<String> fontFamilyComboBox;
 
     @FXML
-    private ComboBox<?> fontStyleComboBox;
+    private ComboBox<String> fontStyleComboBox;
 
     @FXML
-    private ComboBox<?> fontSizeComboBox;
+    private ComboBox<String> fontSizeComboBox;
 
     @FXML
     private Slider fontSizeSlider;
@@ -45,15 +45,15 @@ public class FontSelectorController {
     void initialize() {
     }
 
-    public ComboBox<?> getFontFamilyComboBox() {
+    public ComboBox<String> getFontFamilyComboBox() {
         return fontFamilyComboBox;
     }
 
-    public ComboBox<?> getFontStyleComboBox() {
+    public ComboBox<String> getFontStyleComboBox() {
         return fontStyleComboBox;
     }
 
-    public ComboBox<?> getFontSizeComboBox() {
+    public ComboBox<String> getFontSizeComboBox() {
         return fontSizeComboBox;
     }
 

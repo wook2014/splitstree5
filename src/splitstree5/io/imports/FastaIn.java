@@ -34,8 +34,7 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
      * @param characters
      * @throws IOException
      */
-    public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format)
-            throws IOException, CanceledException {
+    public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format) throws IOException, CanceledException {
         final ArrayList<String> taxonNamesFound = new ArrayList<>();
         final ArrayList<String> matrix = new ArrayList<>();
         int ntax = 0;

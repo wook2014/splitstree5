@@ -40,7 +40,7 @@ import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.SplitsNetworkViewBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.UpdateState;
-import splitstree5.formattab.Styles;
+import splitstree5.gui.formattab.Styles;
 import splitstree5.gui.graphtab.SplitsViewTab;
 import splitstree5.gui.graphtab.base.AEdgeView;
 import splitstree5.gui.graphtab.base.ANodeView;

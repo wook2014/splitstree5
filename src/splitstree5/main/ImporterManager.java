@@ -42,7 +42,8 @@ public class ImporterManager {
         extensionFilters = new ArrayList<>();
         for (IImporter importer : importers) {
             final List<String> list = completeExtensions(importer.getExtensions());
-            extensionFilters.add(new FileChooser.ExtensionFilter(getDataType(importer) + ": " + Basic.toString(list, " "), list));
+            if (list != null)
+                extensionFilters.add(new FileChooser.ExtensionFilter(getDataType(importer) + ": " + Basic.toString(list, " "), list));
         }
         extensionFilters.sort(Comparator.comparing(FileChooser.ExtensionFilter::getDescription));
         extensionFilters.add(new FileChooser.ExtensionFilter("All files: *.* *.gz", "*.*", "*.gz"));
@@ -55,12 +56,15 @@ public class ImporterManager {
      * @return completed extensions
      */
     private List<String> completeExtensions(List<String> extensions) {
+        if (extensions == null)
+            return null;
         final Set<String> set = new TreeSet<>();
         for (String ext : extensions) {
             if (!ext.startsWith("*."))
                 ext = "*." + ext;
             set.add(ext);
         }
+
         final ArrayList<String> list = new ArrayList<>(set);
         for (String ex : set) {
             if (!ex.endsWith(".gz") && !set.contains(ex + ".gz"))
