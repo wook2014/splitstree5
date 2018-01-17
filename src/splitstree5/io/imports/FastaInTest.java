@@ -22,7 +22,7 @@ public class FastaInTest {
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
         try (ProgressPercentage progress = new ProgressPercentage("Test")) {
-            fastaIn.parse(progress, "test/notNexusFiles/fasta/smallTest.fasta", taxaBlock, charactersBlock);
+            fastaIn.parse(progress, "test/notNexusFiles/fasta/smallTest.fasta", taxaBlock, charactersBlock, null);
         }
 
         // printing

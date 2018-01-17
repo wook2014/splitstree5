@@ -1,38 +1,47 @@
 package splitstree5.io.imports;
 
+import jloda.util.CanceledException;
+import jloda.util.FileInputIterator;
+import jloda.util.ProgressListener;
+import splitstree5.core.algorithms.interfaces.IToCharacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.io.imports.interfaces.IImportCharacters;
+import splitstree5.io.nexus.CharactersNexusFormat;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
-public class StockholmIn extends CharactersFormat {
+public class StockholmIn extends CharactersFormat implements IToCharacters, IImportCharacters {
 
-    public void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters) throws IOException {
+    public static final List<String> extensions = new ArrayList<>(Arrays.asList("stk", "sto", "stockholm"));
 
-        ArrayList<String> taxonNamesFound = new ArrayList<>();
-        ArrayList<String> matrix = new ArrayList<>();
+    @Override
+    public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format) throws CanceledException, IOException {
+        final ArrayList<String> taxonNamesFound = new ArrayList<>();
+        final ArrayList<String> matrix = new ArrayList<>();
         int ntax = 0;
         int nchar = 0;
 
         int counter = 0;
-        try (BufferedReader in = new BufferedReader(new FileReader(inputFile))) {
+        try (FileInputIterator it = new FileInputIterator(fileName)) {
+            progressListener.setMaximum(it.getMaximumProgress());
+            progressListener.setProgress(0);
+
             counter++;
-            String line;
             int sequenceLength = 0;
             String sequence = "";
             boolean startedNewSequence = false;
 
-            if (!in.readLine().equals("# STOCKHOLM 1.0"))
+            if (!it.next().equals("# STOCKHOLM 1.0"))
                 throw new IOException("STOCKHOLM header expected");
 
-            while ((line = in.readLine()) != null) {
-                counter++;
+            while (it.hasNext()) {
 
+                final String line = it.next();
+                counter++;
                 if (line.startsWith("#"))
                     continue;
                 if (line.equals("//"))
@@ -73,10 +82,19 @@ public class StockholmIn extends CharactersFormat {
         readMatrix(matrix, characters);
     }
 
+    @Override
+    public List<String> getExtensions() {
+        return null;
+    }
+
+    @Override
+    public boolean isApplicable(String fileName) throws IOException {
+        return false;
+    }
+
     private void readMatrix(ArrayList<String> matrix, CharactersBlock characters) throws IOException {
         // todo check if valid and set parameters here
 
-        System.err.println("ddddddddddddddddd");
         Map<Character, Integer> frequency = new LinkedHashMap<>();
         StringBuilder foundSymbols = new StringBuilder("");
         for (int i = 1; i <= characters.getNtax(); i++) {

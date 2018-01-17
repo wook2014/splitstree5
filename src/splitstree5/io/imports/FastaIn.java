@@ -7,6 +7,8 @@ import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IToCharacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.io.imports.interfaces.IImportCharacters;
+import splitstree5.io.nexus.CharactersNexusFormat;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +34,8 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
      * @param characters
      * @throws IOException
      */
-    public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, CharactersBlock characters) throws IOException, CanceledException {
+    public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format)
+            throws IOException, CanceledException {
         final ArrayList<String> taxonNamesFound = new ArrayList<>();
         final ArrayList<String> matrix = new ArrayList<>();
         int ntax = 0;

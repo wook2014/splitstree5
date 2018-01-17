@@ -28,17 +28,17 @@
 
     IMPORTS :
     GenAlEX
-    Matlab
+    --Matlab
     MrBayesPartitions
     OldNexus ?
     ReticulateNetworkImport
 
     EXPORTS:
-    CGViz
+    --CGViz
     GML
-    FastA (splits, unaligned)
+    --FastA (splits, unaligned)
     LentoPlotData
     ReticulateNetwork
     Snap
-    TabbedText
-    TreeDistances
+    --TabbedText
+    --TreeDistances

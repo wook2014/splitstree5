@@ -28,7 +28,7 @@ import javafx.stage.Stage;
 import jloda.fx.ExtendedFXMLLoader;
 import jloda.util.Basic;
 import splitstree5.gui.utils.Alert;
-import splitstree5.io.imports.IImporter;
+import splitstree5.io.imports.interfaces.IImporter;
 import splitstree5.main.ImporterManager;
 import splitstree5.main.MainWindow;
 

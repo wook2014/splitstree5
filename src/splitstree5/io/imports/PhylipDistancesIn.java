@@ -1,31 +1,120 @@
 package splitstree5.io.imports;
 
 import com.sun.istack.internal.Nullable;
+import jloda.util.CanceledException;
+import jloda.util.FileInputIterator;
+import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
+import splitstree5.io.imports.interfaces.IImportDistances;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StreamTokenizer;
+import java.util.*;
 
 /**
  * Daria Evseeva,02.10.2017.
  */
-public class PhylipDistancesIn implements IToDistances {
+public class PhylipDistancesIn implements IToDistances, IImportDistances {
 
+    public static final List<String> extensions = new ArrayList<>(Arrays.asList("dist", "dst"));
 
-    public void parse(String inputFile, TaxaBlock taxa, DistancesBlock distances) throws IOException {
+    /*
+    todo :
+    -----------------------------------------
+    final ArrayList<String> taxonNamesFound = new ArrayList<>();
+    final ArrayList<String> matrix = new ArrayList<>();
+    -----------------------------------------
+    try (FileInputIterator it = new FileInputIterator(inputFile))
+    -----------------------------------------
+    progressListener.setMaximum(it.getMaximumProgress());
+    progressListener.setProgress(0);
+            ...
+    progressListener.setProgress(it.getProgress());
+    -----------------------------------------
+    while (it.hasNext()) {
+                final String line = it.next();
+    -----------------------------------------
+     */
 
+    @Override
+    public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, DistancesBlock distances) throws CanceledException, IOException {
         taxa.clear();
         distances.clear();
         int ntax;
 
-        try (BufferedReader in = new BufferedReader(new FileReader(inputFile))) {
+        final Map<String, Vector<Double>> matrix = new LinkedHashMap<>();
+        boolean square = true;
+        //final double[][] matrix = new double[ntax][ntax];
 
-            StreamTokenizer st = new StreamTokenizer(in);
+        try (FileInputIterator it = new FileInputIterator(inputFile)) {
+
+            //progressListener.setMaximum(it.getMaximumProgress());
+            //progressListener.setProgress(0);
+            int counter = 0;
+
+            final String firstLine = it.next();
+            counter++;
+            //StringTokenizer st = new StringTokenizer(line);
+            ntax = Integer.parseInt(firstLine.replaceAll(" ", ""));
+            System.err.println(ntax);
+            distances.setNtax(ntax);
+
+            int tokensInPreviousRow = 0;
+            int tokensInCurrentRow = 0;
+            boolean newRow = false;
+            Vector<Double> row;
+            String currentLabel = "";
+            boolean foundFirstLabel = false;
+
+            while (it.hasNext()) {
+                counter++;
+                final String line = it.next();
+                StringTokenizer st = new StringTokenizer(line);
+                while (st.hasMoreTokens()) {
+
+                    String token = st.nextToken();
+                    if (!isNumeric(token)) {
+
+                        if (tokensInCurrentRow > ntax || tokensInCurrentRow < tokensInPreviousRow)
+                            throw  new IOException("line "+counter+": Wrong number of entries for Taxa "+currentLabel);
+                        if (tokensInCurrentRow != tokensInPreviousRow && matrix.keySet().size() >= 2)
+                            square = false;
+
+                        foundFirstLabel = true;
+                        System.err.println("curr " +tokensInCurrentRow + " pref "+tokensInPreviousRow);
+                        tokensInPreviousRow = tokensInCurrentRow;
+                        tokensInCurrentRow = 0;
+
+                        row = new Vector<>();
+                        matrix.put(token, row);
+                        currentLabel = token;
+                    } else {
+
+                        if (!foundFirstLabel)
+                            throw new IOException("line "+counter+": Taxa label expected");
+
+                        tokensInCurrentRow++;
+                        matrix.get(currentLabel).add(Double.parseDouble(token));
+                    }
+                }
+            }
+        }
+        System.err.println(square);
+        for (String s : matrix.keySet()){
+            System.err.println("Row " +s+" "+matrix.get(s));
+        }
+
+        taxa.addTaxaByNames(matrix.keySet());
+        if (square)
+            readSquareMatrix(matrix, distances);
+        else
+            readTriangularMatrix(matrix, distances);
+            /*StreamTokenizer st = new StreamTokenizer(in);
             st.resetSyntax();
             st.eolIsSignificant(true);
             st.whitespaceChars(0, 32);
@@ -71,10 +160,42 @@ public class PhylipDistancesIn implements IToDistances {
 
         // todo make both or set triangular format?
         if (distances.get(1, ntax) != distances.get(ntax, 1))
-            makeTriangularBoth(distances);
-
+            makeTriangularBoth(distances);*/
     }
 
+    @Override
+    public List<String> getExtensions() {
+        return extensions;
+    }
+
+    @Override
+    public boolean isApplicable(String fileName) throws IOException {
+        return false;
+    }
+
+    private static void readSquareMatrix(Map<String, Vector<Double>> matrix, DistancesBlock distancesBlock){
+        int ntax = distancesBlock.getNtax();
+        int taxaCounter = 0;
+        for (String taxa : matrix.keySet()) {
+            taxaCounter++;
+            for (int j = 1; j <= ntax; j++) {
+                distancesBlock.set(taxaCounter, j, matrix.get(taxa).get(j-1));
+            }
+        }
+    }
+
+    private static void readTriangularMatrix(Map<String, Vector<Double>> matrix, DistancesBlock distancesBlock){
+        int ntax = distancesBlock.getNtax();
+        int taxaCounter = 0;
+        for (String taxa : matrix.keySet()) {
+            taxaCounter++;
+            for (int j = 1; j < taxaCounter; j++) {
+                distancesBlock.set(taxaCounter, j, matrix.get(taxa).get(j-1));
+                distancesBlock.set(j, taxaCounter, matrix.get(taxa).get(j-1));
+            }
+            distancesBlock.set(taxaCounter, taxaCounter, 0.0);
+        }
+    }
 
     private static void makeTriangularBoth(DistancesBlock distances) {
         int ntax = distances.getNtax();
@@ -94,5 +215,4 @@ public class PhylipDistancesIn implements IToDistances {
         }
         return true;
     }
-
 }

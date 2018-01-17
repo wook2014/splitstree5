@@ -1,5 +1,7 @@
 package splitstree5.io.imports;
 
+import jloda.util.ProgressListener;
+import jloda.util.ProgressPercentage;
 import org.junit.Test;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -18,7 +20,8 @@ public class FastaSplitsInTest {
 
         TaxaBlock taxaBlock = new TaxaBlock();
         SplitsBlock splitsBlock = new SplitsBlock();
-        fastaSplitsIn.parse("test/notNexusFiles/fasta/algae_splits.fasta", taxaBlock, splitsBlock);
+        ProgressListener pl = new ProgressPercentage();
+        fastaSplitsIn.parse(pl, "test/notNexusFiles/fasta/algae_splits.fasta", taxaBlock, splitsBlock);
 
         // printing
         final StringWriter w = new StringWriter();

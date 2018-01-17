@@ -22,7 +22,7 @@ package splitstree5.main;
 import javafx.stage.FileChooser;
 import jloda.util.Basic;
 import jloda.util.PluginClassLoader;
-import splitstree5.io.imports.*;
+import splitstree5.io.imports.interfaces.*;
 
 import java.io.IOException;
 import java.util.*;

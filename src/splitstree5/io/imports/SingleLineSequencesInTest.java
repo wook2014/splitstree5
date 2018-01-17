@@ -1,8 +1,11 @@
 package splitstree5.io.imports;
 
+import jloda.util.ProgressListener;
+import jloda.util.ProgressPercentage;
 import org.junit.Test;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.io.nexus.CharactersNexusFormat;
 import splitstree5.io.nexus.CharactersNexusIO;
 import splitstree5.io.nexus.TaxaNexusIO;
 
@@ -17,7 +20,10 @@ public class SingleLineSequencesInTest {
 
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
-        singleLineSequencesIn.parse("test/notNexusFiles/singleLineDNA.txt", taxaBlock, charactersBlock);
+        ProgressListener pl = new ProgressPercentage();
+        CharactersNexusFormat format = new CharactersNexusFormat();
+
+        singleLineSequencesIn.parse(pl, "test/notNexusFiles/singleLineDNA.txt", taxaBlock, charactersBlock, format);
 
         // printing
         final StringWriter w = new StringWriter();

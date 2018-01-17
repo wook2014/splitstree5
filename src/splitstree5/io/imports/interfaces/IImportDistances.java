@@ -16,16 +16,17 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package splitstree5.io.imports;
+package splitstree5.io.imports.interfaces;
 
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
-import splitstree5.core.datablocks.SplitsBlock;
+import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
 import java.io.IOException;
 
-public interface IImportSplits extends IImporter {
+public interface IImportDistances extends IImporter {
+
     /**
      * parse a file
      *
@@ -33,7 +34,5 @@ public interface IImportSplits extends IImporter {
      * @param taxaBlock
      * @param dataBlock
      */
-    void parse(ProgressListener progressListener, String fileName, TaxaBlock taxaBlock, SplitsBlock dataBlock) throws CanceledException, IOException;
-
-
+    void parse(ProgressListener progressListener, String fileName, TaxaBlock taxaBlock, DistancesBlock dataBlock) throws CanceledException, IOException;
 }

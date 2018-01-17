@@ -68,6 +68,8 @@ public class TabbedTextOut implements
 
     public void export(Writer w, TaxaBlock taxa, SplitsBlock splits) throws IOException {
 
+
+        // todo try without trivial splits
         w.write("Splits\n");
         w.write("\tWeights");
 

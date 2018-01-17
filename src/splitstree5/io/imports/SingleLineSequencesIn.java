@@ -1,31 +1,40 @@
 package splitstree5.io.imports;
 
+import jloda.util.CanceledException;
+import jloda.util.FileInputIterator;
+import jloda.util.ProgressListener;
+import splitstree5.core.algorithms.interfaces.IToCharacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.io.imports.interfaces.IImportCharacters;
+import splitstree5.io.nexus.CharactersNexusFormat;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
-public class SingleLineSequencesIn extends CharactersFormat {
+public class SingleLineSequencesIn extends CharactersFormat implements IToCharacters, IImportCharacters {
 
-    public void parse(String inputFile, TaxaBlock taxa, CharactersBlock characters) throws IOException {
+    //public static final List<String> extensions = null;
 
-        ArrayList<String> taxonNames = new ArrayList<>();
-        ArrayList<String> matrix = new ArrayList<>();
+    @Override
+    public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format)
+            throws CanceledException, IOException {
+        final ArrayList<String> taxonNames = new ArrayList<>();
+        final ArrayList<String> matrix = new ArrayList<>();
         int ntax = 0;
         int nchar = 0;
         int counter = 0;
 
-        try (BufferedReader in = new BufferedReader(new FileReader(inputFile))) {
+        try (FileInputIterator it = new FileInputIterator(inputFile)) {
 
-            String line;
+            progressListener.setMaximum(it.getMaximumProgress());
+            progressListener.setProgress(0);
 
-            while ((line = in.readLine()) != null) {
+            while (it.hasNext()) {
+                final String line = it.next();
                 counter++;
                 if (line.length() > 0 && !line.startsWith("#")) {
                     if (nchar == 0)
@@ -36,6 +45,7 @@ public class SingleLineSequencesIn extends CharactersFormat {
                     taxonNames.add("Sequence " + ntax);
                     matrix.add(line);
                 }
+                progressListener.setProgress(it.getProgress());
             }
         }
 
@@ -51,6 +61,17 @@ public class SingleLineSequencesIn extends CharactersFormat {
         characters.clear();
         characters.setDimension(ntax, nchar);
         readMatrix(matrix, characters);
+
+    }
+
+    @Override
+    public List<String> getExtensions() {
+        return null;
+    }
+
+    @Override
+    public boolean isApplicable(String fileName) throws IOException {
+        return false;
     }
 
     private void readMatrix(ArrayList<String> matrix, CharactersBlock characters) throws IOException {
