@@ -246,6 +246,12 @@
                     </accelerator>
                 </MenuItem>
                 <CheckMenuItem fx:id="sparseLabelsCheckMenuItem" mnemonicParsing="false" text="Sparse Labels"/>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="fullScreenMenuItem" text="Enter FullScreen">
+                    <accelerator>
+                        <KeyCodeCombination alt="UP" code="F" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
+                    </accelerator>
+                </MenuItem>
             </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Distances"/>

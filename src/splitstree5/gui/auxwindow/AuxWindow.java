@@ -62,6 +62,7 @@ public class AuxWindow implements IStageSupplier {
         }
 
         final Stage stage = new Stage();
+        menuController.setupFullScreenMenuSupport(stage);
 
         if (tab.getGraphic() == null || !(tab.getGraphic() instanceof Labeled))
             tab.setGraphic(new Label(tab.getText()));

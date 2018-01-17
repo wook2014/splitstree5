@@ -21,8 +21,10 @@ package splitstree5.gui.formattab.fontselector;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.event.Event;
 import javafx.geometry.Point2D;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ComboBoxBase;
 import javafx.scene.control.ListCell;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.KeyCode;
@@ -47,6 +49,7 @@ public class FontSelector extends ComboBox<String> {
     private final ObjectProperty<Font> fontValue = new SimpleObjectProperty<>();
 
     private boolean sizeChanging = false;
+    private boolean fontChanging = false;
 
     public FontSelector() {
         this(Font.getDefault());
@@ -59,8 +62,6 @@ public class FontSelector extends ComboBox<String> {
             getButtonCell().setFont(new Font(n.getName(), 12));
             setValue(n.getFamily() + String.format(" %.0fpx", n.getSize()));
         });
-
-        setFontValue(font);
 
         final ExtendedFXMLLoader<FontSelectorController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         controller = extendedFXMLLoader.getController();
@@ -126,9 +127,7 @@ public class FontSelector extends ComboBox<String> {
             }
         });
 
-        controller.getFontFamilyComboBox().getSelectionModel().select(font.getFamily());
-        controller.getFontSizeComboBox().getSelectionModel().select(String.format("%.0f", font.getSize()));
-        controller.getFontStyleComboBox().getSelectionModel().select(font.getStyle());
+        setDefaultFont(font);
 
         controller.getFontFamilyComboBox().getSelectionModel().selectedItemProperty().addListener((c, o, n) -> updateFontValue());
         controller.getFontStyleComboBox().getSelectionModel().selectedItemProperty().addListener((c, o, n) -> updateFontValue());
@@ -145,24 +144,47 @@ public class FontSelector extends ComboBox<String> {
 
     @Override
     public void show() {
+        Event.fireEvent(this, new Event(ComboBoxBase.ON_SHOWING));
         final Point2D location = localToScreen(getLayoutX(), getLayoutY());
         popup.show(getScene().getWindow(), location.getX(), location.getY());
     }
 
-    private void updateFontValue() {
-        final String family = controller.getFontFamilyComboBox().getSelectionModel().getSelectedItem();
-        if (controller.getFontFamilyComboBox().getItems().contains(family) && Basic.isDouble(controller.getFontSizeComboBox().getSelectionModel().getSelectedItem())) {
-            final Double size = Math.max(1, Basic.parseDouble(controller.getFontSizeComboBox().getSelectionModel().getSelectedItem()));
-            final FontPosture fontPosture = controller.getFontStyleComboBox().getSelectionModel().getSelectedItem().contains("Italic") ? FontPosture.ITALIC : FontPosture.REGULAR;
-            final FontWeight fontWeight = controller.getFontStyleComboBox().getSelectionModel().getSelectedItem().contains("Bold") ? FontWeight.BOLD : FontWeight.NORMAL;
-            final Font font = Font.font(family, fontWeight, fontPosture, size);
+    public void setDefaultFont(Font font) {
+        if (!fontChanging) {
+            try {
+                fontChanging = true;
+                setFontValue(font);
+                controller.getFontFamilyComboBox().getSelectionModel().select(font.getFamily());
+                controller.getFontSizeComboBox().getSelectionModel().select(String.format("%.0f", font.getSize()));
+                controller.getFontStyleComboBox().getSelectionModel().select(font.getStyle());
+            } finally {
+                fontChanging = false;
+            }
+        }
+    }
 
-            setFontValue(font);
+    private void updateFontValue() {
+        if (!fontChanging) {
+            try {
+                fontChanging = true;
+
+                final String family = controller.getFontFamilyComboBox().getSelectionModel().getSelectedItem();
+                if (controller.getFontFamilyComboBox().getItems().contains(family) && Basic.isDouble(controller.getFontSizeComboBox().getSelectionModel().getSelectedItem())) {
+                    final Double size = Math.max(1, Basic.parseDouble(controller.getFontSizeComboBox().getSelectionModel().getSelectedItem()));
+                    final FontPosture fontPosture = controller.getFontStyleComboBox().getSelectionModel().getSelectedItem().contains("Italic") ? FontPosture.ITALIC : FontPosture.REGULAR;
+                    final FontWeight fontWeight = FontWeight.findByName(controller.getFontStyleComboBox().getSelectionModel().getSelectedItem());
+                    final Font font = Font.font(family, fontWeight, fontPosture, size);
+                    setFontValue(font);
+                }
+            } finally {
+                fontChanging = false;
+            }
         }
     }
 
     @Override
     public void hide() {
+        Event.fireEvent(this, new Event(ComboBoxBase.ON_HIDING));
         popup.hide();
     }
 

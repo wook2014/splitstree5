@@ -25,6 +25,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import jloda.fx.ExtendedFXMLLoader;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.graphtab.base.AEdgeView;
@@ -141,6 +142,11 @@ public class FormatTab extends ViewerTab {
                 }
             });
             controller.getNodeShapeComboBox().disableProperty().bind(graphTab.getNodeSelectionModel().emptyProperty());
+
+            // todo: here we  need to listen to selection and preset font, colors etc
+            controller.getFontComboBox().setDefaultFont(Font.font("Helvetica", FontWeight.NORMAL, 12));
+
+
         } else {
             graphTab = null;
             controller.getFontComboBox().disableProperty().unbind();

@@ -191,6 +191,9 @@ public class MenuController {
     private CheckMenuItem sparseLabelsCheckMenuItem;
 
     @FXML
+    private MenuItem fullScreenMenuItem;
+
+    @FXML
     private Menu windowMenu;
 
     @FXML
@@ -376,6 +379,10 @@ public class MenuController {
         return sparseLabelsCheckMenuItem;
     }
 
+    public MenuItem getFullScreenMenuItem() {
+        return fullScreenMenuItem;
+    }
+
     public Menu getWindowMenu() {
         return windowMenu;
     }
@@ -383,7 +390,6 @@ public class MenuController {
     public MenuItem getAboutMenuItem() {
         return aboutMenuItem;
     }
-
 
     @FXML
     void initialize() {
@@ -480,5 +486,20 @@ public class MenuController {
             }
         }
         getQuitMenuItem().setDisable(false);
+    }
+
+    /**
+     * adds full screen support
+     *
+     * @param stage
+     */
+    public void setupFullScreenMenuSupport(Stage stage) {
+        stage.fullScreenProperty().addListener((c, o, n) -> {
+            fullScreenMenuItem.setText(n ? "Exit Full Screen" : "Enter Full Screen");
+        });
+        fullScreenMenuItem.setOnAction((e) -> {
+            stage.setFullScreen(!stage.isFullScreen());
+        });
+        fullScreenMenuItem.setDisable(false);
     }
 }

@@ -163,6 +163,7 @@ public class MainWindow {
                 final FormatTab formatTab = new FormatTab(this);
                 getMainWindowController().getAlgorithmTabPane().getTabs().add(formatTab);
 
+                getMenuController().setupFullScreenMenuSupport(stage);
             });
         }
 
