@@ -19,7 +19,6 @@
 
 package splitstree5.gui.formattab.fontselector;
 
-import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
@@ -84,7 +83,6 @@ public class FontSelector extends ComboBox<String> {
                 if (Basic.isDouble(n)) {
                     sizeChanging = true;
                     controller.getFontSizeSlider().setValue(Double.parseDouble(n));
-                    Platform.runLater(this::updateFontValue);
                     sizeChanging = false;
                 }
             }
@@ -94,7 +92,6 @@ public class FontSelector extends ComboBox<String> {
             if (!sizeChanging) {
                 sizeChanging = true;
                 controller.getFontSizeComboBox().getSelectionModel().select(String.valueOf(n.intValue()));
-                updateFontValue();
                 sizeChanging = false;
             }
         });
@@ -113,7 +110,6 @@ public class FontSelector extends ComboBox<String> {
                 }
             }
         });
-        controller.getFontFamilyComboBox().getSelectionModel().selectedItemProperty().addListener((c, o, n) -> updateFontValue());
 
         controller.getFontStyleComboBox().getEditor().setOnKeyReleased((e) -> {
             if (e.getCode().isLetterKey() || e.getCode() == KeyCode.SPACE) {
@@ -129,7 +125,14 @@ public class FontSelector extends ComboBox<String> {
                 }
             }
         });
+
+        controller.getFontFamilyComboBox().getSelectionModel().select(font.getFamily());
+        controller.getFontSizeComboBox().getSelectionModel().select(String.format("%.0f", font.getSize()));
+        controller.getFontStyleComboBox().getSelectionModel().select(font.getStyle());
+
+        controller.getFontFamilyComboBox().getSelectionModel().selectedItemProperty().addListener((c, o, n) -> updateFontValue());
         controller.getFontStyleComboBox().getSelectionModel().selectedItemProperty().addListener((c, o, n) -> updateFontValue());
+        controller.getFontSizeComboBox().getSelectionModel().selectedItemProperty().addListener((c, o, n) -> updateFontValue());
 
         popup = new Popup();
         popup.getContent().add(extendedFXMLLoader.getRoot());
@@ -142,11 +145,6 @@ public class FontSelector extends ComboBox<String> {
 
     @Override
     public void show() {
-        final Font font = getFontValue();
-        controller.getFontFamilyComboBox().getSelectionModel().select(font.getFamily());
-        controller.getFontSizeComboBox().getSelectionModel().select(String.format("%.0f", font.getSize()));
-        controller.getFontStyleComboBox().getSelectionModel().select(font.getStyle());
-
         final Point2D location = localToScreen(getLayoutX(), getLayoutY());
         popup.show(getScene().getWindow(), location.getX(), location.getY());
     }
@@ -158,6 +156,7 @@ public class FontSelector extends ComboBox<String> {
             final FontPosture fontPosture = controller.getFontStyleComboBox().getSelectionModel().getSelectedItem().contains("Italic") ? FontPosture.ITALIC : FontPosture.REGULAR;
             final FontWeight fontWeight = controller.getFontStyleComboBox().getSelectionModel().getSelectedItem().contains("Bold") ? FontWeight.BOLD : FontWeight.NORMAL;
             final Font font = Font.font(family, fontWeight, fontPosture, size);
+
             setFontValue(font);
         }
     }
