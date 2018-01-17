@@ -80,8 +80,8 @@ public class FormatTab extends ViewerTab {
             graphTab = (GraphTab) tab;
 
             controller.getFontComboBox().disableProperty().bind(graphTab.getNodeSelectionModel().emptyProperty().and(graphTab.getEdgeSelectionModel().emptyProperty()));
-            controller.getFontComboBox().valueProperty().addListener((x) -> {
-                final Font font = controller.getFontComboBox().getValue();
+            controller.getFontComboBox().fontValueProperty().addListener((x) -> {
+                final Font font = controller.getFontComboBox().getFontValue();
                 for (jloda.graph.Node v : graphTab.getNodeSelectionModel().getSelectedItems()) {
                     final ANodeView nv = graphTab.getNode2view().get(v);
                     if (nv.getLabel() != null && nv.getLabel() instanceof Labeled) {

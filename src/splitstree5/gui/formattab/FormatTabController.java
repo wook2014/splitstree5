@@ -34,7 +34,7 @@ public class FormatTabController {
     private Pane fontComboBoxPane;
 
     @FXML
-    private ComboBoxBase<Font> fontComboBox;
+    private ComboBoxBase<?> fontComboBox;
 
     @FXML
     private ColorPicker textColorChooser;
