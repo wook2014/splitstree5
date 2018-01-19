@@ -41,7 +41,7 @@ public abstract class NucleotideModel implements SubstitutionModel {
     private final static double EPSILON = 1e-6; //Threshold for round-off error when checking matrices
 
     private double[] freqs; /* base frequencies */
-    private double[] sqrtf; /* Square roots of frequencies */
+    private double[] sqrtf; /* SquareShape roots of frequencies */
     private double[] evals; /* evalues of Pi^(1/2) Q Pi^(-1/2) */
     private double[][] evecs; /* evectors of Pi^(1/2) Q Pi^(-1/2) */
 

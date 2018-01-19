@@ -56,7 +56,7 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreeViewBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.workflow.UpdateState;
-import splitstree5.gui.formattab.Styles;
+import splitstree5.gui.formattab.FormatItem;
 import splitstree5.gui.graphtab.TreeViewTab;
 import splitstree5.gui.graphtab.base.*;
 
@@ -88,7 +88,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
 
     private final BooleanProperty optionShowInternalNodeLabels = new SimpleBooleanProperty();
 
-    private final Map<String, Styles> nodeLabel2Style = new HashMap<>();
+    private final Map<String, FormatItem> nodeLabel2Style = new HashMap<>();
 
     private ChangeListener<UpdateState> changeListener;
 
@@ -203,10 +203,8 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                     }
 
                     view.getNode2view().put(v, nodeView);
-                    if (nodeView.getShape() != null)
-                        view.getNodesGroup().getChildren().addAll(nodeView.getShape());
-                    if (nodeView.getLabel() != null)
-                        view.getNodeLabelsGroup().getChildren().addAll(nodeView.getLabel());
+                    view.getNodesGroup().getChildren().addAll(nodeView.getShapeGroup());
+                    view.getNodeLabelsGroup().getChildren().addAll(nodeView.getLabelGroup());
                 }
                 for (Edge e : tree.edges()) {
                     final EdgeControlPoints controlPoints = edge2controlPoints.getValue(e);

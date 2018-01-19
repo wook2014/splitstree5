@@ -49,17 +49,20 @@ public class MemoryUsage {
         memoryUsageString = new SimpleStringProperty();
         currentMemoryUsage = new SimpleLongProperty(0);
         peakMemoryUsage = new SimpleLongProperty(0);
-        availableMemory = new SimpleLongProperty(Runtime.getRuntime().maxMemory() / 1048576);
+        availableMemory = new SimpleLongProperty(Runtime.getRuntime().maxMemory() / 1000000);
 
         scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(() -> {
-            long usage = ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576);
+            long usage = ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1000000);
             if (usage != currentMemoryUsage.get()) {
                 Platform.runLater(() -> {
                     currentMemoryUsage.set(usage);
                     if (currentMemoryUsage.get() > peakMemoryUsage.get())
                         peakMemoryUsage.set(currentMemoryUsage.get());
-                    memoryUsageString.set(String.format("%.1f of %.1fG", currentMemoryUsage.get() / 1024.0, availableMemory.get() / 1024.0));
+                    if (availableMemory.get() < 1000)
+                        memoryUsageString.set(String.format("%d of %dM", currentMemoryUsage.get(), availableMemory.get()));
+                    else
+                        memoryUsageString.set(String.format("%.1f of %.1fG", currentMemoryUsage.get() / 1000.0, availableMemory.get() / 1000.0));
                 });
             }
         }, 0, 5, SECONDS);

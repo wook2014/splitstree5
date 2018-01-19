@@ -25,7 +25,6 @@ import javafx.event.Event;
 import javafx.geometry.Point2D;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ComboBoxBase;
-import javafx.scene.control.ListCell;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -56,10 +55,7 @@ public class FontSelector extends ComboBox<String> {
     }
 
     public FontSelector(Font font) {
-        setButtonCell(new ListCell<>());
-
         fontValueProperty().addListener((c, o, n) -> {
-            getButtonCell().setFont(new Font(n.getName(), 12));
             setValue(n.getFamily() + String.format(" %.0fpx", n.getSize()));
         });
 

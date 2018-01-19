@@ -50,6 +50,8 @@ import splitstree5.main.MainWindowManager;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MenuController {
     @FXML
@@ -119,6 +121,19 @@ public class MenuController {
     @FXML
     private MenuItem deleteMenuItem;
 
+
+    @FXML
+    private MenuItem findMenuItem;
+
+    @FXML
+    private MenuItem findAgainMenuItem;
+
+    @FXML
+    private MenuItem gotoLineMenuItem;
+
+    @FXML
+    private MenuItem preferencesMenuItem;
+
     @FXML
     private MenuItem selectAllMenuItem;
 
@@ -132,7 +147,7 @@ public class MenuController {
     private MenuItem selectAllLabeledNodesMenuItem;
 
     @FXML
-    private MenuItem selectAllEdgeMenuItem;
+    private MenuItem selectAllEdgesMenuItem;
 
     @FXML
     private MenuItem selectAllBelowMenuItem;
@@ -141,18 +156,23 @@ public class MenuController {
     @FXML
     private MenuItem selectFromPreviousMenuItem;
 
+    @FXML
+    private MenuItem invertNodeSelectionMenuItem;
 
     @FXML
-    private MenuItem findMenuItem;
+    private MenuItem deselectAllNodesMenuItem;
 
     @FXML
-    private MenuItem findAgainMenuItem;
+    private MenuItem selectAllLabeledEdgesMenuItem;
 
     @FXML
-    private MenuItem gotoLineMenuItem;
+    private MenuItem selectAllEdgesBelowMenuItem;
 
     @FXML
-    private MenuItem preferencesMenuItem;
+    private MenuItem invertEdgeSelectionMenuItem;
+
+    @FXML
+    private MenuItem deselectEdgesMenuItem;
 
     @FXML
     private MenuItem increaseFontSizeMenuItem;
@@ -287,6 +307,23 @@ public class MenuController {
         return deleteMenuItem;
     }
 
+
+    public MenuItem getFindMenuItem() {
+        return findMenuItem;
+    }
+
+    public MenuItem getFindAgainMenuItem() {
+        return findAgainMenuItem;
+    }
+
+    public MenuItem getGotoLineMenuItem() {
+        return gotoLineMenuItem;
+    }
+
+    public MenuItem getPreferencesMenuItem() {
+        return preferencesMenuItem;
+    }
+
     public MenuItem getSelectAllMenuItem() {
         return selectAllMenuItem;
     }
@@ -303,8 +340,8 @@ public class MenuController {
         return selectAllLabeledNodesMenuItem;
     }
 
-    public MenuItem getSelectAllEdgeMenuItem() {
-        return selectAllEdgeMenuItem;
+    public MenuItem getSelectAllEdgesMenuItem() {
+        return selectAllEdgesMenuItem;
     }
 
     public MenuItem getSelectAllBelowMenuItem() {
@@ -315,20 +352,28 @@ public class MenuController {
         return selectFromPreviousMenuItem;
     }
 
-    public MenuItem getFindMenuItem() {
-        return findMenuItem;
+    public MenuItem getInvertNodeSelectionMenuItem() {
+        return invertNodeSelectionMenuItem;
     }
 
-    public MenuItem getFindAgainMenuItem() {
-        return findAgainMenuItem;
+    public MenuItem getDeselectAllNodesMenuItem() {
+        return deselectAllNodesMenuItem;
     }
 
-    public MenuItem getGotoLineMenuItem() {
-        return gotoLineMenuItem;
+    public MenuItem getSelectAllLabeledEdgesMenuItem() {
+        return selectAllLabeledEdgesMenuItem;
     }
 
-    public MenuItem getPreferencesMenuItem() {
-        return preferencesMenuItem;
+    public MenuItem getSelectAllEdgesBelowMenuItem() {
+        return selectAllEdgesBelowMenuItem;
+    }
+
+    public MenuItem getInvertEdgeSelectionMenuItem() {
+        return invertEdgeSelectionMenuItem;
+    }
+
+    public MenuItem getDeselectEdgesMenuItem() {
+        return deselectEdgesMenuItem;
     }
 
     public MenuItem getIncreaseFontSizeMenuItem() {
@@ -391,6 +436,8 @@ public class MenuController {
         return aboutMenuItem;
     }
 
+    private final Set<MenuItem> alwaysOnMenuItems = new HashSet<>();
+
     @FXML
     void initialize() {
         // if we are running on MacOS, put the specific menu items in the right places
@@ -450,6 +497,9 @@ public class MenuController {
         };
         MainWindowManager.getInstance().changedProperty().addListener(invalidationListener);
         invalidationListener.invalidated(null);
+
+        alwaysOnMenuItems.add(fullScreenMenuItem);
+        alwaysOnMenuItems.add(quitMenuItem);
     }
 
     /**
@@ -459,9 +509,11 @@ public class MenuController {
         for (Menu menu : menuBar.getMenus()) {
             if (menu != windowMenu) { // don't disable window menu
                 for (MenuItem menuItem : menu.getItems()) {
-                    menuItem.setOnAction(null);
-                    menuItem.disableProperty().unbind();
-                    menuItem.setDisable(true);
+                    if (!alwaysOnMenuItems.contains(menuItem)) {
+                        menuItem.setOnAction(null);
+                        menuItem.disableProperty().unbind();
+                        menuItem.setDisable(true);
+                    }
                 }
             }
         }
@@ -481,11 +533,12 @@ public class MenuController {
     public void enableAllUnboundActionMenuItems() {
         for (Menu menu : getMenuBar().getMenus()) {
             for (MenuItem menuItem : menu.getItems()) {
-                if (!menuItem.disableProperty().isBound() && menuItem.getOnAction() != null)
-                    menuItem.setDisable(false);
+                if (!alwaysOnMenuItems.contains(menuItem)) {
+                    if (!menuItem.disableProperty().isBound() && menuItem.getOnAction() != null)
+                        menuItem.setDisable(false);
+                }
             }
         }
-        getQuitMenuItem().setDisable(false);
     }
 
     /**

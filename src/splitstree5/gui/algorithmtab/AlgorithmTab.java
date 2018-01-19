@@ -77,7 +77,7 @@ public class AlgorithmTab<P extends ADataBlock, C extends ADataBlock> extends Vi
             setContent(extendedFXMLLoader.getRoot());
         }
 
-        undoManager = new UndoRedoManager();
+        undoManager = new UndoRedoManager(); // has own undo manager, however, this is currently not accessible to the user
 
         undoManager.undoStackSizeProperty().addListener((c, o, n) -> applicableChangeHasBeenMade.set(n.intValue() > 0));
 
@@ -160,6 +160,9 @@ public class AlgorithmTab<P extends ADataBlock, C extends ADataBlock> extends Vi
                 connector.setAlgorithm(currentAlgorithm);
             algorithmPane.syncController2Model();
             undoManager.addUndoableApply(algorithmPane::syncController2Model);
+
+            getMainWindow().getUndoRedoManager().clear(); // clear undo
+
             applicableChangeHasBeenMade.set(false);
             label.setText(connector.getName());
         });

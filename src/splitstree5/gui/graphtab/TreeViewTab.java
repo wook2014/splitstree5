@@ -175,7 +175,6 @@ public class TreeViewTab extends GraphTab {
         controller.getSelectAllBelowMenuItem().setOnAction((e) -> {
             final Stack<Node> stack = new Stack<>();
             final Set<Node> nodesToSelect = new HashSet<>();
-            final Set<Edge> edgesToSelect = new HashSet<>();
             stack.addAll(nodeSelectionModel.getSelectedItems());
             while (stack.size() > 0) {
                 final Node v = stack.pop();
@@ -183,13 +182,27 @@ public class TreeViewTab extends GraphTab {
                     final Node w = edge.getTarget();
                     stack.push(w);
                     nodesToSelect.add(w);
-                    edgesToSelect.add(edge);
                 }
             }
             nodeSelectionModel.selectItems(nodesToSelect);
-            edgeSelectionModel.selectItems(edgesToSelect);
         });
         controller.getSelectAllBelowMenuItem().disableProperty().bind(nodeSelectionModel.emptyProperty());
+
+        controller.getSelectAllEdgesBelowMenuItem().setOnAction((e) -> {
+            final Stack<Node> stack = new Stack<>();
+            final Set<Edge> edgesToSelect = new HashSet<>();
+            stack.addAll(nodeSelectionModel.getSelectedItems());
+            while (stack.size() > 0) {
+                final Node v = stack.pop();
+                for (Edge edge : v.outEdges()) {
+                    final Node w = edge.getTarget();
+                    stack.push(w);
+                    edgesToSelect.add(edge);
+                }
+            }
+            edgeSelectionModel.selectItems(edgesToSelect);
+        });
+        controller.getSelectAllEdgesBelowMenuItem().disableProperty().bind(nodeSelectionModel.emptyProperty());
 
     }
 }

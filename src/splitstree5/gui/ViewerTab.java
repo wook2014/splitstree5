@@ -54,7 +54,6 @@ public abstract class ViewerTab extends Tab {
     private MainWindow mainWindow;
     private final BorderPane borderPane = new BorderPane();
     protected ToolBar toolBar;
-    protected final UndoRedoManager undoRedoManager = new UndoRedoManager();
 
     /**
      * constructor
@@ -102,7 +101,10 @@ public abstract class ViewerTab extends Tab {
     }
 
     public UndoRedoManager getUndoRedoManager() {
-        return undoRedoManager;
+        if (mainWindow != null)
+            return mainWindow.getUndoRedoManager();
+        else
+            return null;
     }
 
     public MainWindow getMainWindow() {

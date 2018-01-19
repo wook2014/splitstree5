@@ -315,9 +315,18 @@ public class WorkflowViewTab extends ViewerTab {
         controller.getRedoMenuItem().textProperty().bind(undoManager.redoNameProperty());
 
         controller.getSelectAllMenuItem().setOnAction((e) -> selectionModel.selectAll());
+        controller.getSelectAllMenuItem().disableProperty().bind(Bindings.size(selectionModel.getSelectedItems()).isEqualTo(getWorkflow().getNumberOfNodes()));
+
         controller.getSelectNoneMenuItem().setOnAction((e) -> selectionModel.clearSelection());
         controller.getSelectNoneMenuItem().disableProperty().bind(selectionModel.emptyProperty());
 
+        controller.getSelectAllNodesMenuItem().setOnAction((e) -> selectionModel.selectAll());
+        controller.getSelectAllNodesMenuItem().disableProperty().bind(Bindings.size(selectionModel.getSelectedItems()).isEqualTo(getWorkflow().getNumberOfNodes()));
+
+        controller.getDeselectAllNodesMenuItem().setOnAction((e) -> selectionModel.clearSelection());
+        controller.getDeselectAllNodesMenuItem().disableProperty().bind(selectionModel.emptyProperty());
+
+        controller.getInvertNodeSelectionMenuItem().setOnAction((e) -> selectionModel.invertSelection());
 
         controller.getSelectAllBelowMenuItem().setOnAction((e) -> {
             final Stack<ANode> stack = new Stack<>();

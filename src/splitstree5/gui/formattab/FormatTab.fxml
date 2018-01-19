@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -8,55 +7,55 @@
       fx:controller="splitstree5.gui.formattab.FormatTabController">
     <children>
         <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-                  prefHeight="252.0" prefWidth="257.0">
+                  prefHeight="286.0" prefWidth="257.0" vgap="5.0">
             <columnConstraints>
                 <ColumnConstraints fillWidth="false" hgrow="NEVER" maxWidth="295.0" minWidth="10.0" prefWidth="98.0"/>
                 <ColumnConstraints hgrow="ALWAYS" maxWidth="471.0" minWidth="10.0" prefWidth="171.0"/>
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints maxHeight="130.0" minHeight="0.0" prefHeight="30.0" vgrow="NEVER"/>
-                <RowConstraints maxHeight="267.0" minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
-                <RowConstraints maxHeight="267.0" minHeight="10.0" prefHeight="5.0" vgrow="NEVER"/>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
-                <RowConstraints minHeight="10.0" prefHeight="5.0" vgrow="NEVER"/>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
-                <RowConstraints minHeight="3.0" prefHeight="3.0" vgrow="SOMETIMES"/>
+                <RowConstraints fillHeight="false" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+                <RowConstraints fillHeight="false" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+                <RowConstraints maxHeight="10.0" minHeight="10.0" prefHeight="10.0" vgrow="NEVER"/>
+                <RowConstraints fillHeight="false" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+                <RowConstraints fillHeight="false" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+                <RowConstraints fillHeight="false" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+                <RowConstraints maxHeight="15.0" minHeight="10.0" prefHeight="10.0" vgrow="NEVER"/>
+                <RowConstraints fillHeight="false" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+                <RowConstraints fillHeight="false" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+                <RowConstraints maxHeight="10.0" minHeight="0.0" prefHeight="10.0" vgrow="ALWAYS"/>
             </rowConstraints>
             <children>
-                <Label text="Font">
+                <Label text="Label Font">
                     <GridPane.margin>
                         <Insets left="5.0"/>
                     </GridPane.margin>
                 </Label>
-                <Label text="Text Color" GridPane.rowIndex="1">
+                <Label text="Label Color" GridPane.rowIndex="1">
                     <GridPane.margin>
                         <Insets left="5.0"/>
                     </GridPane.margin>
                 </Label>
-                <Label text="Line Color" GridPane.rowIndex="4">
+                <Label text="Edge Color" GridPane.rowIndex="8">
                     <GridPane.margin>
                         <Insets left="5.0"/>
                     </GridPane.margin>
                 </Label>
-                <Label text="Node Color" GridPane.rowIndex="8">
+                <Label text="Node Color" GridPane.rowIndex="5">
                     <GridPane.margin>
                         <Insets left="5.0"/>
                     </GridPane.margin>
                 </Label>
-                <Label text="Line Width" GridPane.rowIndex="3">
+                <Label text="Edge Width" GridPane.rowIndex="7">
                     <GridPane.margin>
                         <Insets left="5.0"/>
                     </GridPane.margin>
                 </Label>
-                <Label text="Node Shape" GridPane.rowIndex="6">
+                <Label text="Node Shape" GridPane.rowIndex="3">
                     <GridPane.margin>
                         <Insets left="5.0"/>
                     </GridPane.margin>
                 </Label>
-                <Label text="Node Size" GridPane.rowIndex="7">
+                <Label text="Node Size" GridPane.rowIndex="4">
                     <GridPane.margin>
                         <Insets left="5.0"/>
                     </GridPane.margin>
@@ -66,36 +65,29 @@
                         <ComboBox fx:id="fontComboBox" prefWidth="150.0"/>
                     </children>
                 </Pane>
-                <ColorPicker fx:id="textColorChooser" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                <ColorPicker fx:id="lineColorChooser" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-                <ColorPicker fx:id="nodeColorPicker" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
-                <ComboBox fx:id="nodeShapeComboBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
-                <HBox GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.hgrow="NEVER" GridPane.rowIndex="3"
+                <ColorPicker fx:id="labelColorPicker" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <ColorPicker fx:id="edgeColorPicker" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+                <ColorPicker fx:id="nodeColorPicker" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                <ComboBox fx:id="nodeShapeComboBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                <HBox GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.hgrow="NEVER" GridPane.rowIndex="7"
                       GridPane.vgrow="NEVER">
                     <GridPane.margin>
                         <Insets left="5.0" right="5.0"/>
                     </GridPane.margin>
                     <children>
-                        <TextField fx:id="lineWidthField" prefHeight="27.0" prefWidth="55.0" promptText="width"/>
+                        <ComboBox fx:id="edgeWidthComboBox" editable="true" maxWidth="60.0" prefWidth="60.0"/>
                     </children>
                 </HBox>
-                <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="7">
+                <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                     <children>
-                        <TextField fx:id="nodeHeightTextField" prefWidth="55.0" promptText="height" HBox.hgrow="NEVER">
-                            <HBox.margin>
-                                <Insets left="5.0"/>
-                            </HBox.margin>
-                        </TextField>
+                        <ComboBox fx:id="nodeWidthComboBox" editable="true" maxWidth="60.0" prefWidth="60.0"/>
                         <Label alignment="CENTER" contentDisplay="CENTER" text=" x " HBox.hgrow="ALWAYS">
                             <HBox.margin>
                                 <Insets top="5.0"/>
                             </HBox.margin>
                         </Label>
-                        <TextField fx:id="nodeWidthTextField" prefWidth="55.0" promptText="width" HBox.hgrow="NEVER">
-                            <HBox.margin>
-                                <Insets right="5.0"/>
-                            </HBox.margin>
-                        </TextField>
+                        <ComboBox fx:id="nodeHeightComboBox" editable="true" layoutX="10.0" layoutY="10.0"
+                                  prefHeight="60.0" prefWidth="60.0"/>
                     </children>
                 </HBox>
             </children>

@@ -23,7 +23,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ComboBoxBase;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import splitstree5.gui.formattab.fontselector.FontSelector;
@@ -37,25 +36,25 @@ public class FormatTabController {
     private ComboBoxBase<?> fontComboBox;
 
     @FXML
-    private ColorPicker textColorChooser;
+    private ColorPicker labelColorPicker;
 
     @FXML
-    private ColorPicker lineColorChooser;
+    private ColorPicker edgeColorPicker;
 
     @FXML
     private ColorPicker nodeColorPicker;
 
     @FXML
-    private ComboBox<?> nodeShapeComboBox;
+    private ComboBox<NodeShape> nodeShapeComboBox;
 
     @FXML
-    private TextField lineWidthField;
+    private ComboBox<Integer> edgeWidthComboBox;
 
     @FXML
-    private TextField nodeHeightTextField;
+    private ComboBox<Integer> nodeWidthComboBox;
 
     @FXML
-    private TextField nodeWidthTextField;
+    private ComboBox<Integer> nodeHeightComboBox;
 
     private FontSelector fontPicker;
 
@@ -70,31 +69,31 @@ public class FormatTabController {
         return fontPicker;
     }
 
-    public ColorPicker getTextColorChooser() {
-        return textColorChooser;
+    public ColorPicker getLabelColorPicker() {
+        return labelColorPicker;
     }
 
-    public ColorPicker getLineColorChooser() {
-        return lineColorChooser;
+    public ColorPicker getEdgeColorPicker() {
+        return edgeColorPicker;
     }
 
     public ColorPicker getNodeColorPicker() {
         return nodeColorPicker;
     }
 
-    public ComboBox<?> getNodeShapeComboBox() {
+    public ComboBox<NodeShape> getNodeShapeComboBox() {
         return nodeShapeComboBox;
     }
 
-    public TextField getLineWidthField() {
-        return lineWidthField;
+    public ComboBox<Integer> getEdgeWidthComboBox() {
+        return edgeWidthComboBox;
     }
 
-    public TextField getNodeWidthTextField() {
-        return nodeWidthTextField;
+    public ComboBox<Integer> getNodeWidthComboBox() {
+        return nodeWidthComboBox;
     }
 
-    public TextField getNodeHeightTextField() {
-        return nodeHeightTextField;
+    public ComboBox<Integer> getNodeHeightComboBox() {
+        return nodeHeightComboBox;
     }
 }

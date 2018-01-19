@@ -115,34 +115,27 @@ package splitstree5.gui.graphtab.base;
 
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
+import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
-import splitstree5.gui.formattab.Styles;
+import jloda.fx.shapes.CircleShape;
+import splitstree5.gui.formattab.FormatItem;
 
 /**
  * node view
  * Daniel Huson, 10.2107
  */
 public class ANodeView {
-    private static final EventHandler<MouseEvent> mouseEnteredHandler = (x) -> {
-        ((Shape) x.getSource()).setScaleX(4 * ((Shape) x.getSource()).getScaleX());
-        ((Shape) x.getSource()).setScaleY(4 * ((Shape) x.getSource()).getScaleY());
-    };
-
-    private static final EventHandler<MouseEvent> mouseExitedHandler = (x) -> {
-        ((Shape) x.getSource()).setScaleX(0.25 * ((Shape) x.getSource()).getScaleX());
-        ((Shape) x.getSource()).setScaleY(0.25 * ((Shape) x.getSource()).getScaleY());
-    };
-    private Node shape;
-    private Node label;
+    private final Group shapeGroup = new Group();
+    private Shape shape;
+    private final Group labelGroup = new Group();
+    private Labeled label;
     private Point2D location;
 
     private final jloda.graph.Node v;
@@ -157,67 +150,125 @@ public class ANodeView {
     public ANodeView(jloda.graph.Node v, Point2D location, String text) {
         this.v = v;
         setLocation(location);
-        final Circle circle = new Circle();
+        CircleShape circle = new CircleShape(2);
+        shape = circle;
+        shapeGroup.getChildren().add(shape);
         circle.setLayoutX(location.getX());
         circle.setLayoutY(location.getY());
-        setShape(circle);
+
         if (text != null && text.length() > 0) {
             circle.setStroke(Color.BLACK);
             circle.setFill(Color.WHITE);
-            circle.setRadius(2);
 
             label = new Label(text);
-            label.setLayoutX(location.getX() + circle.getRadius());
+            label.setLayoutX(location.getX() + circle.getRadius() + 2);
             label.setLayoutY(location.getY());
-
-            final Tooltip tooltip = new Tooltip();
-            tooltip.textProperty().bind(((Labeled) label).textProperty());
-            Tooltip.install(circle, tooltip);
-            Tooltip.install(label, tooltip);
-            setLabel(label);
-
-            circle.setOnMouseEntered((x) -> {
-                circle.setScaleX(2 * circle.getScaleX());
-                circle.setScaleY(2 * circle.getScaleY());
-                label.setScaleX(1.2 * label.getScaleX());
-                label.setScaleY(1.2 * label.getScaleY());
-            });
-            label.setOnMouseEntered(circle.getOnMouseEntered());
-
-            circle.setOnMouseExited((x) -> {
-                circle.setScaleX(0.5 * circle.getScaleX());
-                circle.setScaleY(0.5 * circle.getScaleY());
-                label.setScaleX(1.0 / 1.2 * label.getScaleX());
-                label.setScaleY(1.0 / 1.2 * label.getScaleY());
-            });
-            label.setOnMouseExited(circle.getOnMouseExited());
-
+            labelGroup.getChildren().add(label);
         } else {
-            circle.setFill(Color.BLACK);
-            circle.setRadius(1);
-
-            circle.setOnMouseEntered(mouseEnteredHandler);
-            circle.setOnMouseExited(mouseExitedHandler);
-
+            circle.setStroke(Color.BLACK);
+            circle.setFill(Color.WHITE);
+            circle.setRadius(0.75);
             label = null;
+        }
+        updateStuff();
+    }
+
+    public void setShape(Shape shape) {
+        final Point2D location;
+        final Color color;
+        if (this.shape != null) {
+            location = new Point2D(this.shape.getLayoutX(), this.shape.getLayoutY());
+            color = (Color) this.shape.getFill();
+            shapeGroup.getChildren().remove(this.shape);
+        } else {
+            location = getLocation();
+            color = Color.WHITE;
+        }
+        this.shape = shape;
+        updateStuff();
+        if (this.shape != null) {
+            shape.setLayoutX(location.getX());
+            shape.setLayoutY(location.getY());
+            shape.setFill(color);
+            shape.setStroke(Color.BLACK);
+            shapeGroup.getChildren().add(this.shape);
         }
     }
 
-    public void setShape(Node shape) {
-        this.shape = shape;
+    private void updateStuff() {
+        if (label != null || shape != null) {
+            EventHandler<MouseEvent> mouseEnteredEventHandler = event -> {
+                if (shape != null) {
+                    shape.setScaleX(2 * shape.getScaleX());
+                    shape.setScaleY(2 * shape.getScaleY());
+                }
+                if (label != null) {
+                    label.setScaleX(1.2 * label.getScaleX());
+                    label.setScaleY(1.2 * label.getScaleY());
+                }
+
+            };
+            EventHandler<MouseEvent> mouseExitedEventHandler = event -> {
+                if (shape != null) {
+                    shape.setScaleX(0.5 * shape.getScaleX());
+                    shape.setScaleY(0.5 * shape.getScaleY());
+                }
+                if (label != null) {
+                    label.setScaleX(1.0 / 1.2 * label.getScaleX());
+                    label.setScaleY(1.0 / 1.2 * label.getScaleY());
+                }
+            };
+            if (shape != null) {
+                shape.setOnMouseEntered(mouseEnteredEventHandler);
+                shape.setOnMouseExited(mouseExitedEventHandler);
+            }
+            if (label != null) {
+                label.setOnMouseEntered(mouseEnteredEventHandler);
+                label.setOnMouseExited(mouseExitedEventHandler);
+            }
+            if (shape != null && label != null)
+                Tooltip.install(shape, new Tooltip(label.getText()));
+        }
     }
 
-    public Node getShape() {
+    public Group getShapeGroup() {
+        return shapeGroup;
+    }
+
+    public Shape getShape() {
         return shape;
     }
 
-    public void setLabel(Node label) {
-        this.label = label;
+    public Group getLabelGroup() {
+        return labelGroup;
     }
 
-    public Node getLabel() {
+    public Labeled getLabel() {
         return label;
     }
+
+    public void setLabel(Labeled label) {
+        final Point2D location;
+        final Color color;
+
+        if (this.label != null) {
+            location = new Point2D(this.label.getLayoutX(), this.label.getLayoutY());
+            labelGroup.getChildren().remove(this.label);
+            color = (Color) this.label.getTextFill();
+        } else {
+            location = getLocation();
+            color = Color.BLACK;
+        }
+        this.label = label;
+        updateStuff();
+        if (this.label != null) {
+            labelGroup.getChildren().add(this.label);
+            label.setLayoutX(location.getX());
+            label.setLayoutY(location.getY());
+            label.setTextFill(color);
+        }
+    }
+
 
     public Point2D getLocation() {
         return location;
@@ -297,76 +348,74 @@ public class ANodeView {
     }
 
     public void setFont(Font font) {
-        if (label != null && label instanceof Labeled) {
-            ((Labeled) label).setFont(font);
+        if (label != null) {
+            label.setFont(font);
         }
     }
 
     public Font getFont() {
-        if (label != null && label instanceof Labeled) {
-            return ((Labeled) label).getFont();
+        if (label != null) {
+            return label.getFont();
         }
         return null;
     }
 
     public void setStroke(Paint paint) {
-        if (shape != null && shape instanceof Shape) {
-            ((Shape) shape).setStroke(paint);
+        if (shape != null) {
+            shape.setStroke(paint);
         }
     }
 
     public Paint getStroke() {
-        if (shape != null && shape instanceof Shape) {
-            return ((Shape) shape).getStroke();
+        if (shape != null) {
+            return shape.getStroke();
         }
         return null;
     }
 
     public void setFill(Paint paint) {
-        if (shape != null && shape instanceof Shape) {
-            ((Shape) shape).setFill(paint);
+        if (shape != null) {
+            shape.setFill(paint);
         }
     }
 
     public Paint getFill() {
-        if (shape != null && shape instanceof Shape) {
-            return ((Shape) shape).getFill();
+        if (shape != null) {
+            return shape.getFill();
         }
         return null;
     }
 
     public void setStrokeWidth(double width) {
-        if (shape != null && shape instanceof Shape) {
-            ((Shape) shape).setStrokeWidth(width);
+        if (shape != null) {
+            shape.setStrokeWidth(width);
         }
     }
 
     public double getStrokeWidth() {
-        if (shape != null && shape instanceof Shape) {
-            return ((Shape) shape).getStrokeWidth();
+        if (shape != null) {
+            return shape.getStrokeWidth();
         }
         return 1;
     }
 
     public void setTextFill(Paint paint) {
-        if (label != null && label instanceof Labeled) {
-            ((Labeled) label).setTextFill(paint);
+        if (label != null) {
+            label.setTextFill(paint);
         }
     }
 
     public Paint getTextFill() {
-        if (label != null && label instanceof Labeled) {
-            return ((Labeled) label).getTextFill();
+        if (label != null) {
+            return label.getTextFill();
         }
         return null;
     }
 
-    public void setStyling(Styles styling) {
+    public void setStyling(FormatItem styling) {
         setFont(styling.getFont());
-        setStroke(styling.getStroke());
-        setFill(styling.getFill());
-        setTextFill(styling.getTextFill());
-        setStrokeWidth(styling.getStrokeWidth());
+        setFill(styling.getNodeColor());
+        setTextFill(styling.getLabelColor());
     }
 
 

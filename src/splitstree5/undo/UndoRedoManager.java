@@ -65,6 +65,19 @@ public class UndoRedoManager {
     public void clear() {
         undoStack.clear();
         redoStack.clear();
+
+    }
+
+    /**
+     * if command is redo-able, calls redo and then adds
+     *
+     * @param command
+     */
+    public void doAndAdd(UndoableRedoableCommand command) {
+        if (command.isRedoable()) {
+            command.redo();
+            add(command);
+        }
     }
 
     /**

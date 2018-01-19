@@ -19,17 +19,13 @@
 
 package splitstree5.gui.formattab;
 
+import javafx.beans.InvalidationListener;
 import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
 import javafx.scene.control.Tab;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Shape;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import jloda.fx.ExtendedFXMLLoader;
+import jloda.util.Basic;
 import splitstree5.gui.ViewerTab;
-import splitstree5.gui.graphtab.base.AEdgeView;
-import splitstree5.gui.graphtab.base.ANodeView;
 import splitstree5.gui.graphtab.base.GraphTab;
 import splitstree5.main.MainWindow;
 import splitstree5.menu.MenuController;
@@ -47,6 +43,8 @@ public class FormatTab extends ViewerTab {
     private final FormatTabController controller;
     private final UndoRedoManager undoManager;
 
+    private boolean isUpdating = false; // used during updating of comboboxes
+    private InvalidationListener labelFontListener;
 
     /**
      * constructor
@@ -56,6 +54,8 @@ public class FormatTab extends ViewerTab {
      */
     public FormatTab(MainWindow mainWindow) {
         setMainWindow(mainWindow);
+        undoManager = mainWindow.getUndoRedoManager();
+
         {
             final ExtendedFXMLLoader<FormatTabController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
             controller = extendedFXMLLoader.getController();
@@ -67,111 +67,288 @@ public class FormatTab extends ViewerTab {
         setGraphic(label);
         label.setText("Format");
 
-        undoManager = new UndoRedoManager();
-
         mainWindow.getMainWindowController().getMainTabPane().getSelectionModel().selectedItemProperty().addListener((c, o, n) -> {
             updateControls(n);
         });
 
         updateControls(mainWindow.getMainWindowController().getMainTabPane().getSelectionModel().getSelectedItem());
+
+        controller.getNodeShapeComboBox().getItems().addAll(NodeShape.values());
+        controller.getNodeWidthComboBox().getItems().addAll(1, 3, 5, 10, 20, 40, 80);
+        controller.getNodeHeightComboBox().getItems().addAll(1, 3, 5, 10, 20, 40, 80);
+        controller.getEdgeWidthComboBox().getItems().addAll(1, 2, 3, 4, 5, 6, 8, 10, 20);
+
+        controller.getLabelColorPicker().setValue(Color.BLACK);
+        controller.getNodeWidthComboBox().setValue(1);
+        controller.getNodeHeightComboBox().setValue(1);
+        controller.getNodeColorPicker().setValue(Color.BLACK);
+
+        controller.getEdgeWidthComboBox().setValue(1);
+        controller.getEdgeColorPicker().setValue(Color.BLACK);
     }
 
     private void updateControls(Tab tab) {
         if (tab instanceof GraphTab) {
             graphTab = (GraphTab) tab;
 
+            // label font:
             controller.getFontComboBox().disableProperty().bind(graphTab.getNodeSelectionModel().emptyProperty().and(graphTab.getEdgeSelectionModel().emptyProperty()));
-            controller.getFontComboBox().fontValueProperty().addListener((x) -> {
-                final Font font = controller.getFontComboBox().getFontValue();
-                for (jloda.graph.Node v : graphTab.getNodeSelectionModel().getSelectedItems()) {
-                    final ANodeView nv = graphTab.getNode2view().get(v);
-                    if (nv.getLabel() != null && nv.getLabel() instanceof Labeled) {
-                        ((Labeled) nv.getLabel()).setFont(font);
+            if (labelFontListener != null)
+                controller.getFontComboBox().fontValueProperty().removeListener(labelFontListener);
+            labelFontListener = (x -> {
+                if (!isUpdating) {
+                    try {
+                        isUpdating = true;
+                        FormatItem formatItem = new FormatItem();
+                        formatItem.addFont(controller.getFontComboBox().getFontValue());
+                        undoManager.doAndAdd(new UndoableFormatChange(formatItem, graphTab.getNodeSelectionModel().getSelectedItems(), graphTab.getNode2view(),
+                                graphTab.getEdgeSelectionModel().getSelectedItems(), graphTab.getEdge2view()));
+                    } finally {
+                        isUpdating = false;
                     }
                 }
-                for (jloda.graph.Edge e : graphTab.getEdgeSelectionModel().getSelectedItems()) {
-                    final AEdgeView ev = graphTab.getEdge2view().get(e);
-                    if (ev.getLabel() != null && ev.getLabel() instanceof Labeled) {
-                        ((Labeled) ev.getLabel()).setFont(font);
+            });
+            controller.getFontComboBox().fontValueProperty().addListener(labelFontListener);
+            controller.getFontComboBox().setOnShowing((x) -> {
+                if (!isUpdating) {
+                    try {
+                        isUpdating = true;
+                        final FormatItem formatItem = FormatItem.createFromSelection(graphTab.getNodeSelectionModel().getSelectedItems(), graphTab.getNode2view(),
+                                graphTab.getEdgeSelectionModel().getSelectedItems(), graphTab.getEdge2view());
+                        if (formatItem.getFont() != null)
+                            controller.getFontComboBox().setDefaultFont(formatItem.getFont());
+                        else
+                            controller.getFontComboBox().getSelectionModel().clearSelection();
+                    } finally {
+                        isUpdating = false;
                     }
                 }
             });
 
-            controller.getTextColorChooser().disableProperty().bind(controller.getFontComboBox().disableProperty());
-            controller.getTextColorChooser().setOnAction((x) -> {
-                final Color color = controller.getTextColorChooser().getValue();
-                for (jloda.graph.Node v : graphTab.getNodeSelectionModel().getSelectedItems()) {
-                    final ANodeView nv = graphTab.getNode2view().get(v);
-                    if (nv.getLabel() != null && nv.getLabel() instanceof Labeled) {
-                        ((Labeled) nv.getLabel()).setTextFill(color);
-                    }
-                }
-                for (jloda.graph.Edge v : graphTab.getEdgeSelectionModel().getSelectedItems()) {
-                    final AEdgeView nv = graphTab.getEdge2view().get(v);
-                    if (nv.getLabel() != null && nv.getLabel() instanceof Labeled) {
-                        ((Labeled) nv.getLabel()).setTextFill(color);
-                    }
-                }
-            });
-            controller.getLineColorChooser().disableProperty().bind(controller.getFontComboBox().disableProperty());
-            controller.getLineColorChooser().setOnAction((e) -> {
-                final Color color = controller.getLineColorChooser().getValue();
-                for (jloda.graph.Node v : graphTab.getNodeSelectionModel().getSelectedItems()) {
-                    final ANodeView nv = graphTab.getNode2view().get(v);
-                    if (nv.getShape() != null && nv.getShape() instanceof Shape) {
-                        ((Shape) nv.getShape()).setStroke(color);
-                    }
-                }
-                for (jloda.graph.Edge v : graphTab.getEdgeSelectionModel().getSelectedItems()) {
-                    final AEdgeView nv = graphTab.getEdge2view().get(v);
-                    if (nv.getShape() != null && nv.getShape() instanceof Shape) {
-                        ((Shape) nv.getShape()).setStroke(color);
+            // label color:
+            controller.getLabelColorPicker().disableProperty().bind(controller.getFontComboBox().disableProperty());
+            controller.getLabelColorPicker().setOnAction((x) -> {
+                if (!isUpdating) {
+                    try {
+                        isUpdating = true;
+                        FormatItem formatItem = new FormatItem();
+                        formatItem.addLabelColor(controller.getLabelColorPicker().getValue());
+                        undoManager.doAndAdd(new UndoableFormatChange(formatItem, graphTab.getNodeSelectionModel().getSelectedItems(), graphTab.getNode2view(),
+                                graphTab.getEdgeSelectionModel().getSelectedItems(), graphTab.getEdge2view()));
+                    } finally {
+                        isUpdating = false;
                     }
                 }
             });
-            controller.getLineWidthField().disableProperty().bind(controller.getFontComboBox().disableProperty());
+            controller.getLabelColorPicker().setOnShowing((x) -> {
+                if (!isUpdating) {
+                    try {
+                        isUpdating = true;
+                        final FormatItem formatItem = FormatItem.createFromSelection(graphTab.getNodeSelectionModel().getSelectedItems(), graphTab.getNode2view(),
+                                graphTab.getEdgeSelectionModel().getSelectedItems(), graphTab.getEdge2view());
+                        if (formatItem.getLabelColor() != null)
+                            controller.getLabelColorPicker().setValue(formatItem.getLabelColor());
+                    } finally {
+                        isUpdating = false;
+                    }
+                }
+            });
+
+            controller.getNodeShapeComboBox().disableProperty().bind(graphTab.getNodeSelectionModel().emptyProperty());
+            controller.getNodeShapeComboBox().setOnAction((e) -> {
+                if (!isUpdating) {
+                    try {
+                        isUpdating = true;
+                        FormatItem formatItem = new FormatItem();
+                        formatItem.addNodeShape(controller.getNodeShapeComboBox().getValue());
+                        undoManager.doAndAdd(new UndoableFormatChange(formatItem, graphTab.getNodeSelectionModel().getSelectedItems(), graphTab.getNode2view(), null, null));
+                    } finally {
+                        isUpdating = false;
+                    }
+                }
+            });
+            controller.getNodeShapeComboBox().setOnShowing((x) -> {
+                if (!isUpdating) {
+                    try {
+                        isUpdating = true;
+                        final FormatItem formatItem = FormatItem.createFromSelection(graphTab.getNodeSelectionModel().getSelectedItems(), graphTab.getNode2view(), null, null);
+                        if (formatItem.getNodeShape() != null)
+                            controller.getNodeShapeComboBox().getSelectionModel().select(formatItem.getNodeShape());
+                    } finally {
+                        isUpdating = false;
+                    }
+                }
+            });
+
+            controller.getNodeWidthComboBox().disableProperty().bind(graphTab.getNodeSelectionModel().emptyProperty());
+            controller.getNodeWidthComboBox().setOnAction((e) -> {
+                if (!isUpdating) {
+                    try {
+                        isUpdating = true;
+
+                        FormatItem formatItem = new FormatItem();
+                        final int size = Basic.parseInt("" + controller.getNodeWidthComboBox().getValue());
+                        formatItem.addNodeSize(size, size);
+                        controller.getNodeHeightComboBox().setValue(size);
+                        undoManager.doAndAdd(new UndoableFormatChange(formatItem, graphTab.getNodeSelectionModel().getSelectedItems(), graphTab.getNode2view(), null, null));
+                    } finally {
+                        isUpdating = false;
+                    }
+                }
+            });
+            controller.getNodeWidthComboBox().setOnShowing((x) -> {
+                if (!isUpdating) {
+                    try {
+                        isUpdating = true;
+                        final FormatItem formatItem = FormatItem.createFromSelection(graphTab.getNodeSelectionModel().getSelectedItems(), graphTab.getNode2view(), null, null);
+                        if (formatItem.getNodeWidth() != null) {
+                            controller.getNodeWidthComboBox().getSelectionModel().select(formatItem.getNodeWidth());
+                        }
+                    } finally {
+                        isUpdating = false;
+                    }
+                }
+            });
+
+            controller.getNodeHeightComboBox().disableProperty().bind(graphTab.getNodeSelectionModel().emptyProperty());
+            controller.getNodeHeightComboBox().setOnAction((e) -> {
+                if (!isUpdating) {
+                    try {
+                        isUpdating = true;
+                        FormatItem formatItem = new FormatItem();
+                        formatItem.addNodeSize(null, Basic.parseInt("" + controller.getNodeHeightComboBox().getSelectionModel().getSelectedItem()));
+                        undoManager.doAndAdd(new UndoableFormatChange(formatItem, graphTab.getNodeSelectionModel().getSelectedItems(), graphTab.getNode2view(), null, null));
+                    } finally {
+                        isUpdating = false;
+                    }
+                }
+            });
+            controller.getNodeHeightComboBox().setOnShowing((x) -> {
+                if (!isUpdating) {
+                    try {
+                        isUpdating = true;
+                        final FormatItem formatItem = FormatItem.createFromSelection(graphTab.getNodeSelectionModel().getSelectedItems(), graphTab.getNode2view(), null, null);
+                        if (formatItem.getNodeHeight() != null)
+                            controller.getNodeHeightComboBox().getSelectionModel().select(formatItem.getNodeHeight());
+                    } finally {
+                        isUpdating = false;
+                    }
+                }
+            });
 
             controller.getNodeColorPicker().disableProperty().bind(graphTab.getNodeSelectionModel().emptyProperty());
             controller.getNodeColorPicker().setOnAction((e) -> {
-                final Color color = controller.getNodeColorPicker().getValue();
-                for (jloda.graph.Node v : graphTab.getNodeSelectionModel().getSelectedItems()) {
-                    final ANodeView nv = graphTab.getNode2view().get(v);
-                    if (nv.getShape() != null && nv.getShape() instanceof Shape) {
-                        ((Shape) nv.getShape()).setFill(color);
+                if (!isUpdating) {
+                    try {
+                        isUpdating = true;
+                        FormatItem formatItem = new FormatItem();
+                        formatItem.addNodeColor(controller.getNodeColorPicker().getValue());
+                        undoManager.doAndAdd(new UndoableFormatChange(formatItem, graphTab.getNodeSelectionModel().getSelectedItems(), graphTab.getNode2view(), null, null));
+                    } finally {
+                        isUpdating = false;
                     }
                 }
             });
-            controller.getNodeShapeComboBox().disableProperty().bind(graphTab.getNodeSelectionModel().emptyProperty());
+            controller.getNodeColorPicker().setOnShowing((x) -> {
+                if (!isUpdating) {
+                    try {
+                        isUpdating = true;
+                        final FormatItem formatItem = FormatItem.createFromSelection(graphTab.getNodeSelectionModel().getSelectedItems(), graphTab.getNode2view(),
+                                null, null);
+                        if (formatItem.getNodeColor() != null)
+                            controller.getNodeColorPicker().setValue(formatItem.getNodeColor());
+                    } finally {
+                        isUpdating = false;
+                    }
+                }
+            });
 
-            // todo: here we  need to listen to selection and preset font, colors etc
-            controller.getFontComboBox().setDefaultFont(Font.font("Helvetica", FontWeight.NORMAL, 12));
+            controller.getEdgeWidthComboBox().disableProperty().bind(graphTab.getEdgeSelectionModel().emptyProperty());
+            controller.getEdgeWidthComboBox().setOnAction((e) -> {
+                if (!isUpdating) {
+                    try {
+                        isUpdating = true;
+                        FormatItem formatItem = new FormatItem();
+                        formatItem.addEdgeWidth(Basic.parseInt("" + controller.getEdgeWidthComboBox().getSelectionModel().getSelectedItem()));
+                        undoManager.doAndAdd(new UndoableFormatChange(formatItem, null, null, graphTab.getEdgeSelectionModel().getSelectedItems(), graphTab.getEdge2view()));
+                    } finally {
+                        isUpdating = false;
+                    }
+                }
+            });
+            controller.getEdgeWidthComboBox().setOnShowing((x) -> {
+                if (!isUpdating) {
+                    try {
+                        isUpdating = true;
+                        final FormatItem formatItem = FormatItem.createFromSelection(null, null, graphTab.getEdgeSelectionModel().getSelectedItems(), graphTab.getEdge2view());
+                        if (formatItem.getEdgeWidth() != null)
+                            controller.getEdgeWidthComboBox().getSelectionModel().select(formatItem.getEdgeWidth());
+                    } finally {
+                        isUpdating = false;
+                    }
+                }
+            });
 
-
+            controller.getEdgeColorPicker().disableProperty().bind(graphTab.getEdgeSelectionModel().emptyProperty());
+            controller.getEdgeColorPicker().setOnAction((e) -> {
+                if (!isUpdating) {
+                    try {
+                        isUpdating = true;
+                        FormatItem formatItem = new FormatItem();
+                        formatItem.addEdgeColor(controller.getEdgeColorPicker().getValue());
+                        undoManager.doAndAdd(new UndoableFormatChange(formatItem, null, null, graphTab.getEdgeSelectionModel().getSelectedItems(), graphTab.getEdge2view()));
+                    } finally {
+                        isUpdating = false;
+                    }
+                }
+            });
+            controller.getEdgeColorPicker().setOnShowing((x) -> {
+                if (!isUpdating) {
+                    try {
+                        isUpdating = true;
+                        final FormatItem formatItem = FormatItem.createFromSelection(null, null, graphTab.getEdgeSelectionModel().getSelectedItems(), graphTab.getEdge2view());
+                        if (formatItem.getEdgeColor() != null)
+                            controller.getEdgeColorPicker().setValue(formatItem.getEdgeColor());
+                    } finally {
+                        isUpdating = false;
+                    }
+                }
+            });
         } else {
             graphTab = null;
+
+            if (labelFontListener != null) {
+                controller.getFontComboBox().fontValueProperty().removeListener(labelFontListener);
+                labelFontListener = null;
+            }
+
             controller.getFontComboBox().disableProperty().unbind();
             controller.getFontComboBox().setDisable(true);
-            controller.getTextColorChooser().disableProperty().unbind();
-            controller.getTextColorChooser().setDisable(true);
-            controller.getLineColorChooser().disableProperty().unbind();
-            controller.getLineColorChooser().setDisable(true);
-            controller.getLineWidthField().disableProperty().unbind();
-            controller.getLineWidthField().setDisable(true);
+            controller.getLabelColorPicker().disableProperty().unbind();
+            controller.getLabelColorPicker().setDisable(true);
 
-            controller.getNodeColorPicker().disableProperty().unbind();
-            controller.getNodeColorPicker().setDisable(true);
             controller.getNodeShapeComboBox().disableProperty().unbind();
             controller.getNodeShapeComboBox().setDisable(true);
 
-            controller.getNodeWidthTextField().disableProperty().unbind();
-            controller.getNodeWidthTextField().setDisable(true);
+            controller.getNodeWidthComboBox().disableProperty().unbind();
+            controller.getNodeWidthComboBox().setDisable(true);
 
-            controller.getNodeWidthTextField().disableProperty().unbind();
-            controller.getNodeWidthTextField().setDisable(true);
+            controller.getNodeHeightComboBox().disableProperty().unbind();
+            controller.getNodeHeightComboBox().setDisable(true);
 
-            controller.getNodeHeightTextField().disableProperty().unbind();
-            controller.getNodeHeightTextField().setDisable(true);
+            controller.getNodeColorPicker().disableProperty().unbind();
+            controller.getNodeColorPicker().setDisable(true);
+
+            controller.getEdgeWidthComboBox().disableProperty().unbind();
+            controller.getEdgeWidthComboBox().setDisable(true);
+
+            controller.getEdgeColorPicker().disableProperty().unbind();
+            controller.getEdgeColorPicker().setDisable(true);
         }
+    }
+
+    public FormatTabController getController() {
+        return controller;
     }
 
     @Override

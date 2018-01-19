@@ -133,36 +133,6 @@
                     </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
-                <MenuItem fx:id="selectAllMenuItem" text="Select All">
-                    <accelerator>
-                        <KeyCodeCombination alt="UP" code="A" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
-                    </accelerator>
-                </MenuItem>
-                <MenuItem fx:id="selectNoneMenuItem" text="Select None">
-                    <accelerator>
-                        <KeyCodeCombination alt="UP" code="A" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
-                    </accelerator>
-                </MenuItem>
-                <SeparatorMenuItem mnemonicParsing="false"/>
-                <MenuItem fx:id="selectAllNodesMenuItem" text="Select All Nodes"/>
-                <MenuItem fx:id="selectAllLabeledNodesMenuItem" text="Select All Labeled Nodes">
-                    <accelerator>
-                        <KeyCodeCombination alt="UP" code="L" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
-                    </accelerator>
-                </MenuItem>
-                <MenuItem fx:id="selectAllEdgeMenuItem" text="Select All Edges"/>
-                <SeparatorMenuItem mnemonicParsing="false"/>
-                <MenuItem fx:id="selectAllBelowMenuItem" text="Select All Below">
-                    <accelerator>
-                        <KeyCodeCombination alt="UP" code="B" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
-                    </accelerator>
-                </MenuItem>
-                <MenuItem fx:id="selectFromPreviousMenuItem" text="Select From Previous">
-                    <accelerator>
-                        <KeyCodeCombination alt="UP" code="P" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
-                    </accelerator>
-                </MenuItem>
-                <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="findMenuItem" text="Find / Replace...">
                     <accelerator>
                         <KeyCodeCombination alt="UP" code="F" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
@@ -183,6 +153,48 @@
                 <MenuItem fx:id="preferencesMenuItem" text="Preferences...">
                     <accelerator>
                         <KeyCodeCombination alt="UP" code="P" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
+                    </accelerator>
+                </MenuItem>
+            </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Select">
+            <items>
+                <MenuItem fx:id="selectAllMenuItem" text="Select All">
+                    <accelerator>
+                        <KeyCodeCombination alt="UP" code="A" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
+                    </accelerator>
+                </MenuItem>
+                <MenuItem fx:id="selectNoneMenuItem" text="Select None">
+                    <accelerator>
+                        <KeyCodeCombination alt="UP" code="A" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
+                    </accelerator>
+                </MenuItem>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="selectAllNodesMenuItem" text="All Nodes"/>
+                <MenuItem fx:id="selectAllLabeledNodesMenuItem" text="All Labeled Nodes">
+                    <accelerator>
+                        <KeyCodeCombination alt="UP" code="L" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
+                    </accelerator>
+                </MenuItem>
+                <MenuItem fx:id="selectAllBelowMenuItem" text="All Nodes Below">
+                    <accelerator>
+                        <KeyCodeCombination alt="UP" code="B" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
+                    </accelerator>
+                </MenuItem>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="invertNodeSelectionMenuItem" mnemonicParsing="false" text="Invert Node Selection"/>
+                <MenuItem fx:id="deselectAllNodesMenuItem" mnemonicParsing="false" text="Deselect Nodes"/>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="selectAllEdgesMenuItem" text="All Edges"/>
+                <MenuItem fx:id="selectAllLabeledEdgesMenuItem" mnemonicParsing="false" text="All Labeled Edges"/>
+                <MenuItem fx:id="selectAllEdgesBelowMenuItem" mnemonicParsing="false" text="All Edges Below"/>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="invertEdgeSelectionMenuItem" mnemonicParsing="false" text="Invert Edge Selection"/>
+                <MenuItem fx:id="deselectEdgesMenuItem" mnemonicParsing="false" text="Deselect Edges"/>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="selectFromPreviousMenuItem" text="From Previous">
+                    <accelerator>
+                        <KeyCodeCombination alt="UP" code="P" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
             </items>

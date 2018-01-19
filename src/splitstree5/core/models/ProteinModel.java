@@ -37,7 +37,7 @@ import java.util.Random;
 public abstract class ProteinModel implements SubstitutionModel {
 
     double[] freqs; /* base frequencies */
-    double[] sqrtf; /* Square roots of frequencies */
+    double[] sqrtf; /* SquareShape roots of frequencies */
     double[] evals; /* evalues of Pi^(1/2) Q Pi^(-1/2) */
     double[][] evecs; /* evectors of Pi^(1/2) Q Pi^(-1/2) */
 

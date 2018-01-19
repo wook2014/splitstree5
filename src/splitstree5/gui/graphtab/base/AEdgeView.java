@@ -115,8 +115,8 @@ package splitstree5.gui.graphtab.base;
 
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
@@ -135,8 +135,8 @@ public class AEdgeView {
 
     public enum EdgeShape {Straight, Angular, QuadCurve, CubicCurve}
 
-    private Node shape;
-    private Node label;
+    private Shape shape;
+    private Labeled label;
     private Point2D referencePoint;
 
     private final Edge e;
@@ -271,19 +271,19 @@ public class AEdgeView {
         }
     }
 
-    public void setShape(Node shape) {
+    public void setShape(Shape shape) {
         this.shape = shape;
     }
 
-    public Node getShape() {
+    public Shape getShape() {
         return shape;
     }
 
-    public void setLabel(Node label) {
+    public void setLabel(Labeled label) {
         this.label = label;
     }
 
-    public Node getLabel() {
+    public Labeled getLabel() {
         return label;
     }
 

@@ -40,7 +40,7 @@ import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.SplitsNetworkViewBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.UpdateState;
-import splitstree5.gui.formattab.Styles;
+import splitstree5.gui.formattab.FormatItem;
 import splitstree5.gui.graphtab.SplitsViewTab;
 import splitstree5.gui.graphtab.base.AEdgeView;
 import splitstree5.gui.graphtab.base.ANodeView;
@@ -54,7 +54,7 @@ import java.util.*;
  */
 public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, SplitsNetworkViewBlock> implements IFromSplits, IToSplitsNetworkView {
     private final PhyloGraph graph = new PhyloGraph();
-    private final Map<String, Styles> nodeLabel2Style = new HashMap<>();
+    private final Map<String, FormatItem> nodeLabel2Style = new HashMap<>();
 
     private ChangeListener<UpdateState> changeListener;
 
@@ -136,10 +136,8 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, SplitsNetwork
             //String text = (graph.getLabel(v) != null ? graph.getLabel(v) : "Node " + v.getId());
             final ANodeView nodeView = view.createNodeView(v, node2point.getValue(v), text);
             view.getNode2view().put(v, nodeView);
-            if (nodeView.getShape() != null)
-                view.getNodesGroup().getChildren().addAll(nodeView.getShape());
-            if (nodeView.getLabel() != null)
-                view.getNodeLabelsGroup().getChildren().addAll(nodeView.getLabel());
+            view.getNodesGroup().getChildren().addAll(nodeView.getShapeGroup());
+            view.getNodeLabelsGroup().getChildren().addAll(nodeView.getLabelGroup());
         }
         for (Edge e : graph.edges()) {
             final AEdgeView edgeView = view.createEdgeView(graph, e, graph.getWeight(e), node2point.get(e.getSource()), node2point.get(e.getTarget()));

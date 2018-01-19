@@ -72,17 +72,19 @@ public class TextViewTab extends ViewerTab {
 
     @Override
     public void updateMenus(MenuController controller) {
-        controller.getUndoMenuItem().setOnAction((e) -> {
-            undoRedoManager.undo();
-        });
-        controller.getUndoMenuItem().disableProperty().bind(undoRedoManager.canUndoProperty().not());
-        controller.getUndoMenuItem().textProperty().bind(undoRedoManager.undoNameProperty());
+        if (getUndoRedoManager() != null) {
+            controller.getUndoMenuItem().setOnAction((e) -> {
+                getUndoRedoManager().undo();
+            });
+            controller.getUndoMenuItem().disableProperty().bind(getUndoRedoManager().canUndoProperty().not());
+            controller.getUndoMenuItem().textProperty().bind(getUndoRedoManager().undoNameProperty());
 
-        controller.getRedoMenuItem().setOnAction((e) -> {
-            undoRedoManager.redo();
-        });
-        controller.getRedoMenuItem().disableProperty().bind(undoRedoManager.canRedoProperty().not());
-        controller.getRedoMenuItem().textProperty().bind(undoRedoManager.redoNameProperty());
+            controller.getRedoMenuItem().setOnAction((e) -> {
+                getUndoRedoManager().redo();
+            });
+            controller.getRedoMenuItem().disableProperty().bind(getUndoRedoManager().canRedoProperty().not());
+            controller.getRedoMenuItem().textProperty().bind(getUndoRedoManager().redoNameProperty());
+        }
 
         controller.getCopyMenuItem().setOnAction((e) -> textArea.copy());
         controller.getCopyMenuItem().disableProperty().bind(textArea.selectedTextProperty().length().isEqualTo(0));

@@ -47,10 +47,12 @@ import splitstree5.gui.auxwindow.AuxWindow;
 import splitstree5.gui.auxwindow.TabPaneDragAndDropSupport;
 import splitstree5.gui.datatab.DataViewTab;
 import splitstree5.gui.formattab.FormatTab;
+import splitstree5.gui.graphtab.base.GraphTab;
 import splitstree5.gui.methodstab.MethodsViewTab;
 import splitstree5.gui.workflowtab.WorkflowViewTab;
 import splitstree5.gui.workflowtree.WorkflowTreeSupport;
 import splitstree5.menu.MenuController;
+import splitstree5.undo.UndoRedoManager;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -62,10 +64,14 @@ public class MainWindow {
     private final MainWindowController mainWindowController;
     private final MenuController menuController;
 
+    private final UndoRedoManager undoRedoManager = new UndoRedoManager();
+
     private final WorkflowTreeSupport workflowTreeSupport;
 
     private final TabPane mainTabPane;
     private final TabPane algorithmsTabPane;
+
+    private FormatTab formatTab;
 
     private Stage stage;
 
@@ -77,6 +83,7 @@ public class MainWindow {
 
     private final StringProperty dirtyStar = new SimpleStringProperty("");
 
+    private Tab previousTab;
 
     /**
      * constructor
@@ -108,6 +115,12 @@ public class MainWindow {
             if (o instanceof ISavesPreviousSelection) {
                 ((ISavesPreviousSelection) o).saveAsPreviousSelection();
             }
+            if (n instanceof GraphTab && n != previousTab) // moving to another graph tab loses edits
+            {
+                undoRedoManager.clear();
+                previousTab = n;
+            }
+
             updateMenus(n, menuController);
         });
 
@@ -128,7 +141,6 @@ public class MainWindow {
             mainWindowController.getTreeView().setRoot(rootItem);
             workflowTreeSupport = new WorkflowTreeSupport(mainWindowController.getTreeView(), document);
         }
-
     }
 
     /**
@@ -160,8 +172,7 @@ public class MainWindow {
                         ResourceManager.getIcon("SplitsTree5-64.png"), ResourceManager.getIcon("SplitsTree5-128.png"));
 
 
-                final FormatTab formatTab = new FormatTab(this);
-                getMainWindowController().getAlgorithmTabPane().getTabs().add(formatTab);
+                formatTab = new FormatTab(this);
 
                 getMenuController().setupFullScreenMenuSupport(stage);
             });
@@ -332,4 +343,17 @@ public class MainWindow {
         return !SaveBeforeClose.apply(this) || MainWindowManager.getInstance().closeMainWindow(this);
     }
 
+    public void showFormatTab() {
+        if (formatTab != null) {
+            if (!getMainWindowController().getAlgorithmTabPane().getTabs().contains(formatTab))
+                getMainWindowController().getAlgorithmTabPane().getTabs().add(formatTab);
+            getMainWindowController().ensureAlgorithmsTabPaneIsOpen();
+            getMainWindowController().getAlgorithmTabPane().getSelectionModel().select(formatTab);
+        }
+
+    }
+
+    public UndoRedoManager getUndoRedoManager() {
+        return undoRedoManager;
+    }
 }

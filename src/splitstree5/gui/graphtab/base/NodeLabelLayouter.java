@@ -99,6 +99,7 @@ import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import jloda.graph.Edge;
 import jloda.graph.EdgeArray;
 import jloda.graph.Node;
@@ -170,7 +171,7 @@ public class NodeLabelLayouter {
                     angle = 0.5 * (array.get(best) + array.get(best + 1));
                 }
 
-                final javafx.scene.Node label = nv.getLabel();
+                final Labeled label = nv.getLabel();
                 if (label != null) {
                     nv.getLabel().setVisible(true);
 
@@ -211,10 +212,13 @@ public class NodeLabelLayouter {
      * @param node2view
      * @param edge2view
      */
-    public static void leftToRightLayout(PhyloGraph tree, Node root, NodeArray<ANodeView> node2view, EdgeArray<AEdgeView> edge2view) {
+    public static void leftToRightLayout(boolean sparseLabels, PhyloGraph tree, Node root, NodeArray<ANodeView> node2view, EdgeArray<AEdgeView> edge2view) {
+        final ArrayList<BoundingBox> labelBoundsList = new ArrayList<>();
+
         for (Node v : tree.nodes()) {
             final ANodeView nv = node2view.getValue(v);
-            if (nv.getLabel() != null && nv.getLabel() instanceof Label) {
+            if (nv.getLabel() != null) {
+                nv.getLabel().setVisible(true);
                 final Label label = (Label) nv.getLabel();
                 final Point2D reference;
                 if (nv.getShape() != null) {
@@ -240,6 +244,16 @@ public class NodeLabelLayouter {
                     {
                         label.setLayoutX(reference.getX() - label.getWidth() - 5);
                         label.setLayoutY(reference.getY() + 4);
+                    }
+                }
+
+                if (sparseLabels) {
+                    BoundingBox bbox = new BoundingBox(label.getLayoutX(), label.getLayoutY(), label.getLayoutBounds().getWidth(), label.getLayoutBounds().getHeight());
+                    for (BoundingBox other : labelBoundsList) {
+                        if (bbox.intersects(other)) {
+                            label.setVisible(false);
+                            break;
+                        }
                     }
                 }
             }

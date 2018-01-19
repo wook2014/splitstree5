@@ -447,6 +447,15 @@ public class Workflow {
         return dataNodes.size();
     }
 
+    public int getNumberOfConnectorNodes() {
+        return connectorNodes.size();
+    }
+
+    public long getNumberOfNodes() {
+        return dataNodes.size() + connectorNodes.size();
+    }
+
+
     public ReadOnlyIntegerProperty size() {
         return ReadOnlyIntegerProperty.readOnlyIntegerProperty(size);
     }
@@ -497,4 +506,5 @@ public class Workflow {
     public void updateSelectionModel() {
         getNodeSelectionModel().setItems(dataNodes, connectorNodes);
     }
+
 }

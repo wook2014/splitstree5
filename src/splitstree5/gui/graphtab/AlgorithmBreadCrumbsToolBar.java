@@ -25,6 +25,9 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import splitstree5.core.Document;
 import splitstree5.core.connectors.AConnector;
+import splitstree5.core.datablocks.ADataNode;
+import splitstree5.core.datablocks.SplitsNetworkViewBlock;
+import splitstree5.core.datablocks.TreeViewBlock;
 import splitstree5.core.workflow.ANode;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.core.workflow.Workflow;
@@ -67,6 +70,9 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
                 getItems().add(makeBreadCrumb(document, connector));
             }
         }
+        if (aNode instanceof ADataNode && (((ADataNode) aNode).getDataBlock() instanceof SplitsNetworkViewBlock
+                || ((ADataNode) aNode).getDataBlock() instanceof TreeViewBlock))
+            getItems().add(makeFormatBreadCrumb((ADataNode) aNode, document));
     }
 
     /**
@@ -117,6 +123,33 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
         );
         button.setOnAction((e) -> {
             document.getMainWindow().showAlgorithmView(aConnector);
+        });
+        return button;
+    }
+
+    private Node makeFormatBreadCrumb(ADataNode dataNode, Document document) {
+        final Button button = new Button();
+        final String shape = "-fx-shape: \"M 0 0 L 5 9 L 0 18 L 100 18 L 105 9 L 100 0 z\";"; // arrow shape
+        button.setStyle(shape);
+        button.setText("Format");
+        button.disableProperty().bind(dataNode.stateProperty().isEqualTo(UpdateState.VALID).not());
+        final Tooltip tooltip = new Tooltip("Format nodes and edges");
+        button.setTooltip(tooltip);
+        dataNode.stateProperty().addListener((c, o, n) -> {
+                    switch (n) {
+                        case COMPUTING:
+                            button.setStyle(shape + "-fx-background-color: LIGHTBLUE;");
+                            break;
+                        case FAILED:
+                            button.setStyle(shape + "-fx-background-color: PINK;");
+                            break;
+                        default:
+                            button.setStyle(shape);
+                    }
+                }
+        );
+        button.setOnAction((e) -> {
+            document.getMainWindow().showFormatTab();
         });
         return button;
     }
