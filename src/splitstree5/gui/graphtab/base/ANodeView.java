@@ -161,6 +161,7 @@ public class ANodeView {
             circle.setFill(Color.WHITE);
 
             label = new Label(text);
+            label.setFont(Font.font("Helvetica"));
             label.setLayoutX(location.getX() + circle.getRadius() + 2);
             label.setLayoutY(location.getY());
             labelGroup.getChildren().add(label);

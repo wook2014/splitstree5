@@ -75,6 +75,7 @@ import splitstree5.gui.utils.SelectionEffect;
 import splitstree5.main.MainWindowManager;
 import splitstree5.menu.MenuController;
 import splitstree5.undo.UndoableRedoableCommand;
+import splitstree5.utils.Print;
 
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
@@ -647,6 +648,9 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
 
     @Override
     public void updateMenus(MenuController controller) {
+        controller.getPageSetupMenuItem().setOnAction((e) -> Print.showPageLayout(getMainWindow().getStage()));
+        controller.getPrintMenuitem().setOnAction((e) -> Print.print(getMainWindow().getStage(), pane));
+
         if (getUndoRedoManager() != null) {
             controller.getUndoMenuItem().setOnAction((e) -> {
                 getUndoRedoManager().undo();

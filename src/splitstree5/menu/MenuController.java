@@ -88,6 +88,9 @@ public class MenuController {
     private MenuItem exportImageMenuItem;
 
     @FXML
+    private MenuItem pageSetupMenuItem;
+
+    @FXML
     private MenuItem printMenuitem;
 
     @FXML
@@ -261,6 +264,10 @@ public class MenuController {
 
     public MenuItem getExportImageMenuItem() {
         return exportImageMenuItem;
+    }
+
+    public MenuItem getPageSetupMenuItem() {
+        return pageSetupMenuItem;
     }
 
     public MenuItem getPrintMenuitem() {

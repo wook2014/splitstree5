@@ -80,6 +80,7 @@ import splitstree5.menu.MenuController;
 import splitstree5.undo.UndoRedoManager;
 import splitstree5.undo.UndoableChangeList;
 import splitstree5.undo.UndoableRedoableCommand;
+import splitstree5.utils.Print;
 
 import java.util.*;
 
@@ -93,7 +94,6 @@ public class WorkflowViewTab extends ViewerTab {
 
     private final Group nodeViews = new Group();
     private final Group edgeViews = new Group();
-    private final Group all = new Group();
 
     private final Map<ANode, WorkflowNodeView> node2NodeView = new HashMap<>();
     private final Map<ANode, List<WorkflowEdgeView>> node2EdgeViews = new HashMap<>();
@@ -304,6 +304,9 @@ public class WorkflowViewTab extends ViewerTab {
      */
     @Override
     public void updateMenus(MenuController controller) {
+        controller.getPageSetupMenuItem().setOnAction((e) -> Print.showPageLayout(getMainWindow().getStage()));
+        controller.getPrintMenuitem().setOnAction((e) -> Print.print(getMainWindow().getStage(), centerPane));
+
         final ASelectionModel<ANode> selectionModel = getWorkflow().getNodeSelectionModel();
 
         controller.getUndoMenuItem().setOnAction((e) -> undoManager.undo());

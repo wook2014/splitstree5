@@ -120,6 +120,7 @@ import javafx.scene.control.Labeled;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
+import javafx.scene.text.Font;
 import jloda.graph.Edge;
 import jloda.util.Basic;
 
@@ -169,6 +170,7 @@ public class AEdgeView {
 
         if (false && weight != null && start != null && end != null) {
             Label label = new Label("" + weight);
+            label.setFont(Font.font("Helvetica"));
             final Point2D m = start.add(end).multiply(0.5);
             label.setLayoutX(m.getX());
             label.setLayoutY(m.getY());

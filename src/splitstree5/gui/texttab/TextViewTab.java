@@ -26,6 +26,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.text.Font;
 import splitstree5.gui.ViewerTab;
 import splitstree5.menu.MenuController;
+import splitstree5.utils.Print;
 
 /**
  * text view tab for displaying ummutable text
@@ -72,6 +73,9 @@ public class TextViewTab extends ViewerTab {
 
     @Override
     public void updateMenus(MenuController controller) {
+        controller.getPageSetupMenuItem().setOnAction((e) -> Print.showPageLayout(getMainWindow().getStage()));
+        controller.getPrintMenuitem().setOnAction((e) -> Print.print(getMainWindow().getStage(), textArea));
+
         if (getUndoRedoManager() != null) {
             controller.getUndoMenuItem().setOnAction((e) -> {
                 getUndoRedoManager().undo();

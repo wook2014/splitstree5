@@ -67,6 +67,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.scene.transform.Shear;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
@@ -117,14 +118,14 @@ public class WorkflowNodeView extends Group {
 
         final Label label = new Label();
         label.textProperty().bind(aNode.nameProperty());
-        label.setStyle("-fx-font-size: 12");
+        label.setFont(Font.font("Helvetica", 12));
         label.setLayoutX(10);
         label.setLayoutY(4);
         getChildren().add(label);
 
         if (aNode instanceof AConnector) {
             final Label descriptionLabel = new Label();
-            descriptionLabel.setStyle("-fx-font-size: 11");
+            descriptionLabel.setFont(Font.font("Helvetica", 11));
             aNode.stateProperty().addListener(observable -> descriptionLabel.setText(aNode.getShortDescription()));
             descriptionLabel.setText(aNode.getShortDescription());
             descriptionLabel.setLayoutX(10);
@@ -132,7 +133,7 @@ public class WorkflowNodeView extends Group {
             getChildren().add(descriptionLabel);
 
             final Button openButton = new Button("Open...");
-            openButton.setStyle("-fx-font-size: 10");
+            openButton.setFont(Font.font("Helvetica", 10));
             openButton.setOnAction((e) -> {
                 if (!((AConnector) aNode).getAlgorithm().getName().endsWith("TopFilter"))
                     workflowView.getDocument().getMainWindow().showAlgorithmView((AConnector) aNode);
@@ -158,15 +159,15 @@ public class WorkflowNodeView extends Group {
                 rectangle.getTransforms().add(sh);
             }
             final Label sizeLabel = new Label();
+            sizeLabel.setFont(Font.font("Helvetica", 11));
             aNode.stateProperty().addListener(observable -> sizeLabel.setText("Size=" + ((ADataNode) aNode).getDataBlock().size()));
             sizeLabel.setText("Size=" + ((ADataNode) aNode).getDataBlock().size());
-            sizeLabel.setStyle("-fx-font-size: 11");
             sizeLabel.setLayoutX(10);
             sizeLabel.setLayoutY(24);
             getChildren().add(sizeLabel);
 
             final Button openButton = new Button("Open...");
-            openButton.setStyle("-fx-font-size: 10");
+            openButton.setFont(Font.font("Helvetica", 10));
             openButton.setOnAction((e) -> workflowView.getDocument().getMainWindow().showDataView((ADataNode) aNode));
             openButton.disableProperty().bind(Bindings.equal(UpdateState.VALID, aNode.stateProperty()).not());
 
