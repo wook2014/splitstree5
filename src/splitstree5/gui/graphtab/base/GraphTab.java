@@ -55,6 +55,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import jloda.fx.ASelectionModel;
+import jloda.fx.ZoomableScrollPane;
 import jloda.graph.Edge;
 import jloda.graph.EdgeArray;
 import jloda.graph.Node;
@@ -78,13 +79,15 @@ import splitstree5.undo.UndoableRedoableCommand;
 import splitstree5.utils.Print;
 
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
 
 /**
  * tree and split network tab base class
  * Daniel Huson,. 12.2017
  */
 public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelection {
+    protected ZoomableScrollPane scrollPane;
+
     protected final Group group = new Group();
     protected final Group edgesGroup = new Group();
     protected final Group nodesGroup = new Group();
@@ -114,6 +117,9 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
     private final RubberBandSelection rubberBandSelection;
 
     private Map<String, FormatItem> nodeLabel2Style;
+
+    ListChangeListener<javafx.scene.Node> listChangeListener;
+
 
     private ListChangeListener<Node> nodeSelectionChangeListener;
     private ListChangeListener<Taxon> documentTaxonSelectionChangeListener;
@@ -336,8 +342,6 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
      * show the viewer
      */
     public void show() {
-        final CountDownLatch countDownLatch = new CountDownLatch(1);
-
         Platform.runLater(() -> {
             try {
                 if (pane.getChildren().size() == 0) {
@@ -364,54 +368,38 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
                 nodesGroup.getChildren().clear();
                 edgeLabelsGroup.getChildren().clear();
                 nodeLabelsGroup.getChildren().clear();
-                //nodeSelectionModel.clearSelection();
-                //edgeSelectionModel.clearSelection();
+
+                nodeSelectionModel.clearSelection();
+                edgeSelectionModel.clearSelection();
             } finally {
-                countDownLatch.countDown();
-                (new Thread(() -> {
+                Executors.newSingleThreadExecutor().submit(() -> {
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
                     }
                     Platform.runLater(() -> layoutLabels(sparseLabels.get()));
-
-                })).start();
+                });
             }
             if (!(rootNode.getCenter() instanceof ScrollPane)) {
-                ScrollPane scrollPane = new ScrollPane(pane);
                 setContent(rootNode);
-                rootNode.setCenter(scrollPane);
-
-                pane.minWidthProperty().bind(Bindings.createDoubleBinding(() ->
-                        scrollPane.getViewportBounds().getWidth(), scrollPane.viewportBoundsProperty()));
-
-                pane.minHeightProperty().bind(Bindings.createDoubleBinding(() ->
-                        scrollPane.getViewportBounds().getHeight(), scrollPane.viewportBoundsProperty()));
-
-
-                pane.setOnScroll(event -> {
-                    event.consume();
-                    final double SCALE_DELTA = 1.1;
-
-                    if (getLayout() == GraphLayout.Radial) {
-                        final double scaleFactor = (event.getDeltaY() > 0) ? SCALE_DELTA : 1 / SCALE_DELTA;
-                        scale(scaleFactor, scaleFactor);
-                    } else {
-                        if (Math.abs(event.getDeltaY()) > Math.abs(event.getDeltaX())) {
-                            final double scaleFactor = (event.getDeltaY() > 0) ? SCALE_DELTA : 1 / SCALE_DELTA;
-                            scale(1, scaleFactor);
-
+                scrollPane = new ZoomableScrollPane(pane) {
+                    @Override // override node scaling to use coordinate scaling
+                    public void updateScale() {
+                        if (layout.get() == GraphLayout.Radial) {
+                            scale(getZoomFactorY(), getZoomFactorY());
                         } else {
-                            final double scaleFactor = (event.getDeltaX() > 0) ? SCALE_DELTA : 1 / SCALE_DELTA;
-                            scale(scaleFactor, 1);
+                            scale(getZoomFactorX(), getZoomFactorY());
                         }
                     }
-                });
+                };
+                scrollPane.lockAspectRatioProperty().bind(layout.isEqualTo(GraphLayout.Radial));
+
                 pane.minWidthProperty().bind(Bindings.createDoubleBinding(() ->
                         scrollPane.getViewportBounds().getWidth(), scrollPane.viewportBoundsProperty()).subtract(20));
                 pane.minHeightProperty().bind(Bindings.createDoubleBinding(() ->
                         scrollPane.getViewportBounds().getHeight(), scrollPane.viewportBoundsProperty()).subtract(20));
 
+                rootNode.setCenter(scrollPane);
 
             }
             //selectTab();
@@ -706,8 +694,8 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
         });
         controller.getSelectFromPreviousMenuItem().disableProperty().bind(Bindings.isEmpty(MainWindowManager.getInstance().getPreviousSelection()));
 
-        controller.getZoomInMenuItem().setOnAction((e) -> scale(1.1, 1.1));
-        controller.getZoomOutMenuItem().setOnAction((e) -> scale(1 / 1.1, 1 / 1.1));
+        controller.getZoomInMenuItem().setOnAction((e) -> scrollPane.zoomBy(1.1, 1.1));
+        controller.getZoomOutMenuItem().setOnAction((e) -> scrollPane.zoomBy(1 / 1.1, 1 / 1.1));
 
         controller.getRotateLeftMenuItem().setOnAction((e) -> rotate(-10));
         controller.getRotateLeftMenuItem().disableProperty().bind(layout.isNotEqualTo(GraphLayout.Radial));
@@ -719,6 +707,7 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
             scale(1 / scaleChangeX.get(), 1 / scaleChangeY.get());
             rotate(-angleChange.get());
             layoutLabels(sparseLabels.get());
+            scrollPane.resetZoom();
         });
         controller.getResetMenuItem().disableProperty().bind(scaleChangeX.isEqualTo(1).and(scaleChangeY.isEqualTo(1)).and(angleChange.isEqualTo(0)));
 

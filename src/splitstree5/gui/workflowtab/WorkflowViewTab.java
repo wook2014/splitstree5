@@ -70,6 +70,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import jloda.fx.ASelectionModel;
+import jloda.fx.ZoomableScrollPane;
 import splitstree5.core.Document;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.workflow.ANode;
@@ -111,10 +112,11 @@ public class WorkflowViewTab extends ViewerTab {
         undoManager = new UndoRedoManager();
         setText("Workflow");
 
-        centerPane = new StackPane(edgeViews, nodeViews);
+        centerPane = new Pane(new StackPane(edgeViews, nodeViews));
         centerPane.setPadding(new Insets(5, 5, 5, 5));
         //centerPane.setStyle("-fx-border-color: red");
         scrollPane = new ZoomableScrollPane(centerPane);
+        scrollPane.setLockAspectRatio(true);
         scrollPane.setPadding(new Insets(2, 2, 2, 2));
         setContent(scrollPane);
 
