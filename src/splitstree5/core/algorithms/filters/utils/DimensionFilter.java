@@ -30,9 +30,7 @@ import jloda.util.ProgressListener;
 import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * dimension filter
@@ -215,15 +213,15 @@ public class DimensionFilter {
         System.err.print("Relax graph: ");
 
         int maxDegreeHeuristicThreshold = 6; // use heuristic for max degrees above this threshold
-        NodeSet active = new NodeSet(graph);
-        for (Node v = graph.getFirstNode(); v != null; v = graph.getNextNode(v)) {
+        Set<Node> active = new HashSet<>();
+        for (Node v : graph.nodes()) {
             if (v.getDegree() < maxDegree
                     || (maxDegree <= maxDegreeHeuristicThreshold && hasDegreeDButNotInClique(maxDegree + 1, graph, v)))
                 active.add(v);
         }
 
         while (!active.isEmpty()) {
-            Node v = active.getFirstElement();
+            Node v = active.iterator().next();
             if (v.getDegree() < maxDegree || (maxDegree <= maxDegreeHeuristicThreshold && hasDegreeDButNotInClique(maxDegree + 1, graph, v))) {
                 for (Node w : v.adjacentNodes()) {
                     active.add(w);
@@ -247,7 +245,7 @@ public class DimensionFilter {
     private static Node getWorstNode(Graph graph) {
         float worstCompatibility = 0;
         Node worstNode = null;
-        for (Node v = graph.getFirstNode(); v != null; v = graph.getNextNode(v)) {
+        for (Node v : graph.nodes()) {
             float compatibility = getCompatibilityScore(v);
             if (worstNode == null || compatibility < worstCompatibility) {
                 worstNode = v;

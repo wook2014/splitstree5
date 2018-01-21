@@ -23,9 +23,13 @@ import javafx.application.Platform;
 import javafx.print.PageLayout;
 import javafx.print.PrinterJob;
 import javafx.scene.Node;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 import splitstree5.gui.utils.Alert;
+
+import java.util.Optional;
 
 /**
  * print a  node
@@ -50,10 +54,36 @@ public class Print {
 
                 final Scale scale;
                 if (node.getBoundsInParent().getWidth() > pageLayout.getPrintableWidth() || node.getBoundsInParent().getHeight() > pageLayout.getPrintableHeight()) {
-                    System.err.println("Temporarily scaling node to fit page layout");
-                    double factor = Math.min(pageLayout.getPrintableWidth() / node.getBoundsInParent().getWidth(), pageLayout.getPrintableHeight() / node.getBoundsInParent().getHeight());
-                    scale = new Scale(factor, factor);
-                    node.getTransforms().add(scale);
+                    if (true) {
+                        System.err.println(String.format("Scene size (%.0f x %.0f) exceeds printable area (%.0f x %.0f), scaled to fit", node.getBoundsInParent().getWidth(),
+                                node.getBoundsInParent().getHeight(), pageLayout.getPrintableWidth(), pageLayout.getPrintableHeight()));
+                        double factor = Math.min(pageLayout.getPrintableWidth() / node.getBoundsInParent().getWidth(), pageLayout.getPrintableHeight() / node.getBoundsInParent().getHeight());
+                        scale = new Scale(factor, factor);
+                    } else {
+                        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
+                        alert.initOwner(owner);
+                        alert.setTitle("Scale Before Printing - SplitsTree5");
+                        alert.setHeaderText(String.format("Scene size (%.0f x %.0f) exceeds printable area (%.0f x %.0f)", node.getBoundsInParent().getWidth(),
+                                node.getBoundsInParent().getHeight(), pageLayout.getPrintableWidth(), pageLayout.getPrintableHeight()));
+                        alert.setContentText("Scale to fit printable area?");
+                        ButtonType buttonTypeYes = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+                        ButtonType buttonTypeNo = new ButtonType("No", ButtonBar.ButtonData.NO);
+                        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+                        alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeCancel);
+
+                        Optional<ButtonType> result = alert.showAndWait();
+                        if (result.isPresent()) {
+                            if (result.get() == buttonTypeYes) {
+                                final double factor = Math.min(pageLayout.getPrintableWidth() / node.getBoundsInParent().getWidth(), pageLayout.getPrintableHeight() / node.getBoundsInParent().getHeight());
+                                scale = new Scale(factor, factor);
+                                node.getTransforms().add(scale);
+                            } else if (result.get() == buttonTypeCancel)
+                                return;
+                            else
+                                scale = null;
+                        } else
+                            scale = null;
+                    }
                 } else
                     scale = null;
 
@@ -62,7 +92,6 @@ public class Print {
                     if (scale != null && n != PrinterJob.JobStatus.NOT_STARTED && n != PrinterJob.JobStatus.PRINTING) {
                         Platform.runLater(() -> node.getTransforms().remove(scale));
                     }
-
                 });
                 if (job.printPage(pageLayout, node))
                     job.endJob();

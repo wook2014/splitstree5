@@ -62,10 +62,4 @@ public interface GraphUpdateListener {
      * called
      */
     void graphHasChanged();
-
-    /** (Partial) graph was read from Reader
-     *@param nodes the new nodes
-     *@param edges the new edges
-     */
-    void graphWasRead(NodeSet nodes, EdgeSet edges);
 }

@@ -21,6 +21,7 @@ package jloda.phylo;
 
 import jloda.graph.*;
 import jloda.util.Basic;
+import jloda.util.Pair;
 import jloda.util.ProgramProperties;
 
 import java.io.*;
@@ -37,6 +38,9 @@ public class PhyloTree extends PhyloGraph {
     public static final boolean ALLOW_READ_RETICULATE = true;
 
     public boolean allowMultiLabeledNodes = true;
+
+    protected final BitSet specialEdges = new BitSet();
+
 
     Node root = null; // can be a node or edge
     boolean inputHasMultiLabels = false;
@@ -65,6 +69,7 @@ public class PhyloTree extends PhyloGraph {
     public void clear() {
         super.clear();
         setRoot((Node) null);
+        specialEdges.clear();
     }
 
     /**
@@ -394,7 +399,6 @@ public class PhyloTree extends PhyloGraph {
                         } else {
                             f = newEdge(u, w);
                         }
-                        setSplit(f, getSplit(e));
                         setWeight(f, getWeight(e));
                         setLabel(f, getLabel(e));
                     }
@@ -927,6 +931,15 @@ public class PhyloTree extends PhyloGraph {
         setRoot(u);
     }
 
+
+    public void setSpecial(Edge e, boolean special) {
+        specialEdges.set(e.getId(), special);
+    }
+
+    public boolean isSpecial(Edge e) {
+        return specialEdges.get(e.getId());
+    }
+
     /**
      * erase the current root. If it has out-degree two and is not node-labeled, then two out edges will be replaced by single edge
      *
@@ -939,7 +952,7 @@ public class PhyloTree extends PhyloGraph {
             if (oldRoot.getOutDegree() == 2 && getLabel(oldRoot) == null) {
                 if (edgeLabels != null) {
                     String label = null;
-                    for (Edge e = oldRoot.getFirstOutEdge(); e != null; e = oldRoot.getNextOutEdge(e)) {
+                    for (Edge e : oldRoot.outEdges()) {
                         if (label == null && edgeLabels.getValue(e) != null)
                             label = edgeLabels.getValue(e);
                         edgeLabels.put(e, null);
@@ -1018,10 +1031,16 @@ public class PhyloTree extends PhyloGraph {
      *
      * @return cycle for this tree
      */
-    public int[] getCycle(Node v) {
-        computeCycleRec(v, null, 0);
+    public int[] getCycle(Node root) {
+        final ArrayList<Pair<Integer, Integer>> taxon2CyclePos = new ArrayList<>();
+        computeCycleRec(root, null, 0, taxon2CyclePos);
 
-        return super.getCycle();
+        taxon2CyclePos.sort(Comparator.comparing(Pair::getSecond));
+        int[] result = new int[taxon2CyclePos.size() + 1];
+        for (Pair<Integer, Integer> pair : taxon2CyclePos) {
+            result[pair.getFirst()] = pair.getSecond();
+        }
+        return result;
     }
 
     /**
@@ -1031,16 +1050,16 @@ public class PhyloTree extends PhyloGraph {
      * @param e
      * @param pos
      */
-    private int computeCycleRec(Node v, Edge e, int pos) {
+    private int computeCycleRec(Node v, Edge e, int pos, ArrayList<Pair<Integer, Integer>> taxon2cyclePos) {
         final List<Integer> taxa = node2taxa.getValue(v);
         if (taxa != null) {
             for (Integer t : taxa) {
-                setTaxon2Cycle(t, ++pos);
+                taxon2cyclePos.add(new Pair<>(t, ++pos));
             }
         }
         for (Edge f = v.getFirstAdjacentEdge(); f != null; f = v.getNextAdjacentEdge(f)) {
             if (f != e && PhyloTreeUtils.okToDescendDownThisEdge(this, f, v))
-                pos = computeCycleRec(f.getOpposite(v), f, pos);
+                pos = computeCycleRec(f.getOpposite(v), f, pos, taxon2cyclePos);
         }
         return pos;
     }
@@ -1179,7 +1198,7 @@ public class PhyloTree extends PhyloGraph {
 
             {
                 while (v != null && v.getOutDegree() > 0) {
-                    v = getNextNode(v);
+                    v = v.getNext();
                 }
             }
 
@@ -1193,7 +1212,7 @@ public class PhyloTree extends PhyloGraph {
                 final Node result = v;
                 {
                     while (v != null && v.getOutDegree() > 0) {
-                        v = getNextNode(v);
+                        v = v.getNext();
                     }
                 }
                 return result;

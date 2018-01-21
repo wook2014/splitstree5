@@ -94,10 +94,10 @@ public class TreeViewBlock extends ADataBlock implements IHasTab {
 
     @Override
     public String getInfo() {
-        if (treeViewTab != null && treeViewTab.getPhyloGraph() != null)
+        if (treeViewTab != null && treeViewTab.getGraph() != null)
             return "a " + (treeViewTab.getLayout() == GraphLayout.Radial ? "unrooted" : "rooted") + " tree drawing with "
-                    + treeViewTab.getPhyloGraph().getNumberOfNodes() + " nodes and "
-                    + treeViewTab.getPhyloGraph().getNumberOfEdges() + " edge";
+                    + treeViewTab.getGraph().getNumberOfNodes() + " nodes and "
+                    + treeViewTab.getGraph().getNumberOfEdges() + " edge";
         else
             return "";
     }

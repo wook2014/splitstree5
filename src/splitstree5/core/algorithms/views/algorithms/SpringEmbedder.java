@@ -27,6 +27,7 @@ import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import jloda.graph.NodeDoubleArray;
 import jloda.phylo.PhyloGraph;
+import jloda.phylo.SplitsGraph;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.gui.graphtab.base.GeometryUtils;
@@ -119,7 +120,7 @@ public class SpringEmbedder {
 
                 // attractive forces
 
-                for (Edge e = graph.getFirstEdge(); e != null; e = graph.getNextEdge(e)) {
+                for (Edge e : graph.edges()) {
                     Node u = e.getSource();
                     Node v = e.getTarget();
 
@@ -140,7 +141,7 @@ public class SpringEmbedder {
 
                 // preventions
 
-                for (Node v = graph.getFirstNode(); v != null; v = graph.getNextNode(v)) {
+                for (Node v : graph.nodes()) {
                     double xd = xDispl.getValue(v);
                     double yd = yDispl.getValue(v);
 
@@ -161,7 +162,7 @@ public class SpringEmbedder {
             progress.setUserCancelled(false);
         } finally {
             // set node positions
-            for (Node v = graph.getFirstNode(); v != null; v = graph.getNextNode(v)) {
+            for (Node v : graph.nodes()) {
                 node2location.put(v, new Point2D(xPos.getValue(v), yPos.getValue(v)));
             }
         }
@@ -193,7 +194,7 @@ public class SpringEmbedder {
      * @param graph
      * @param node2point
      */
-    public void computeAverageSplitAngles(PhyloGraph graph, NodeArray<Point2D> node2point) {
+    public void computeAverageSplitAngles(SplitsGraph graph, NodeArray<Point2D> node2point) {
         final Map<Integer, ArrayList<Double>> split2angles = new HashMap<>();
         visitAnglesRec(graph, graph.getFirstNode(), null, node2point, split2angles, new BitSet());
 
@@ -214,7 +215,7 @@ public class SpringEmbedder {
      * @param split2angles
      * @param splitsInPath
      */
-    private void visitAnglesRec(PhyloGraph graph, Node v, Edge e, NodeArray<Point2D> node2point, Map<Integer, ArrayList<Double>> split2angles, BitSet splitsInPath) {
+    private void visitAnglesRec(SplitsGraph graph, Node v, Edge e, NodeArray<Point2D> node2point, Map<Integer, ArrayList<Double>> split2angles, BitSet splitsInPath) {
         for (Edge f : v.adjacentEdges()) {
             if (f != e) {
                 Node w = f.getOpposite(v);

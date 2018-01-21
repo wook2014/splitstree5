@@ -21,7 +21,7 @@ package splitstree5.core.algorithms.views.algorithms;
 
 import javafx.geometry.Point2D;
 import jloda.graph.*;
-import jloda.phylo.PhyloGraph;
+import jloda.phylo.SplitsGraph;
 import jloda.util.CanceledException;
 import jloda.util.Pair;
 import jloda.util.ProgressListener;
@@ -48,7 +48,7 @@ public class EqualAngle {
      * @param graph
      * @param node2point
      */
-    public static void apply(ProgressListener progress, boolean useWeights, TaxaBlock taxa, SplitsBlock splits, PhyloGraph graph, NodeArray<Point2D> node2point, BitSet forbiddenSplits, BitSet usedSplits) throws CanceledException {
+    public static void apply(ProgressListener progress, boolean useWeights, TaxaBlock taxa, SplitsBlock splits, SplitsGraph graph, NodeArray<Point2D> node2point, BitSet forbiddenSplits, BitSet usedSplits) throws CanceledException {
         System.err.println("Running equal angle algorithm");
         graph.clear();
         usedSplits.clear();
@@ -59,12 +59,8 @@ public class EqualAngle {
 
 
         final int[] cycle = normalizeCycle(splits.getCycle());
-        progress.setProgress(3);
 
-        for (int i = 1; i <= taxa.getNtax(); i++)
-            graph.setTaxon2Cycle(cycle[i], i);
-
-        progress.setProgress(5);
+        progress.setProgress(2);
 
         initGraph(taxa, splits, cycle, graph);
 
@@ -111,10 +107,10 @@ public class EqualAngle {
      *
      * @param taxa
      * @param splits
-     * @param cycle
+     * @param posOfTaxonInCycle
      * @param graph
      */
-    private static void initGraph(TaxaBlock taxa, SplitsBlock splits, int[] cycle, PhyloGraph graph) {
+    private static void initGraph(TaxaBlock taxa, SplitsBlock splits, int[] posOfTaxonInCycle, SplitsGraph graph) {
         graph.clear();
 
         // map from each taxon to it's trivial split in splits
@@ -130,7 +126,7 @@ public class EqualAngle {
 
         final Node center = graph.newNode();
         for (int i = 1; i <= taxa.getNtax(); i++) {
-            int t = cycle[i];
+            int t = posOfTaxonInCycle[i];
 
             Node v = graph.newNode();
 
@@ -208,7 +204,7 @@ public class EqualAngle {
      * @param s
      * @param graph
      */
-    private static void wrapSplit(TaxaBlock taxa, SplitsBlock splits, int s, int[] cycle, PhyloGraph graph) throws IllegalStateException {
+    private static void wrapSplit(TaxaBlock taxa, SplitsBlock splits, int s, int[] cycle, SplitsGraph graph) throws IllegalStateException {
         final BitSet part = splits.get(s - 1).getPartNotContaining(1);
 
         int xp = 0; // first member of split part not containing taxon 1
@@ -303,7 +299,7 @@ public class EqualAngle {
      *
      * @param graph
      */
-    private static void removeTemporaryTrivialEdges(PhyloGraph graph) {
+    private static void removeTemporaryTrivialEdges(SplitsGraph graph) {
         final EdgeSet tempEdges = new EdgeSet(graph);
         for (Edge e : graph.edges()) {
             if (graph.getSplit(e) == -1) // temporary leaf edge
@@ -342,7 +338,7 @@ public class EqualAngle {
      * @param graph
      * @param forbiddenSplits : set of all the splits such as their edges won't have their angles changed
      */
-    private static void assignAnglesToEdges(int ntaxa, SplitsBlock splits, int[] cycle, PhyloGraph graph, BitSet forbiddenSplits) {
+    private static void assignAnglesToEdges(int ntaxa, SplitsBlock splits, int[] cycle, SplitsGraph graph, BitSet forbiddenSplits) {
         //We create the list of angles representing the taxas on a circle.
         double[] TaxaAngles = new double[ntaxa + 1];
         for (int t = 1; t < ntaxa + 1; t++) {
@@ -408,7 +404,7 @@ public class EqualAngle {
      * @param useWeights
      * @param graph
      */
-    public static void assignCoordinatesToNodes(boolean useWeights, PhyloGraph graph, NodeArray<Point2D> node2point) {
+    public static void assignCoordinatesToNodes(boolean useWeights, SplitsGraph graph, NodeArray<Point2D> node2point) {
         if (graph.getNumberOfNodes() == 0)
             return;
         final Node v = graph.getTaxon2Node(1);
@@ -430,7 +426,7 @@ public class EqualAngle {
      * @param nodesVisited
      * @param graph
      */
-    private static void assignCoordinatesToNodesRec(boolean useWeights, Node v, BitSet splitsInPath, NodeSet nodesVisited, PhyloGraph graph, NodeArray<Point2D> node2point) {
+    private static void assignCoordinatesToNodesRec(boolean useWeights, Node v, BitSet splitsInPath, NodeSet nodesVisited, SplitsGraph graph, NodeArray<Point2D> node2point) {
         if (!nodesVisited.contains(v)) {
             nodesVisited.add(v);
             for (Edge e : v.adjacentEdges()) {

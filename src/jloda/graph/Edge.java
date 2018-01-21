@@ -62,7 +62,7 @@ public class Edge extends NodeEdge implements Comparable {
      * @param v
      * @param w
      */
-    public Edge(Graph G, Node v, Node w) throws IllegalSelfEdgeException {
+    Edge(Graph G, Node v, Node w) throws IllegalSelfEdgeException {
         this(G, v, null, w, null, Edge.AFTER, Edge.AFTER, null);
     }
 
@@ -75,7 +75,7 @@ public class Edge extends NodeEdge implements Comparable {
      * @param w
      * @param obj
      */
-    public Edge(Graph G, Node v, Node w, Object obj) throws IllegalSelfEdgeException {
+    Edge(Graph G, Node v, Node w, Object obj) throws IllegalSelfEdgeException {
         this(G, v, null, w, null, Edge.AFTER, Edge.AFTER, obj);
     }
 
@@ -91,7 +91,7 @@ public class Edge extends NodeEdge implements Comparable {
      * @param dir_w place before or after target reference edge
      * @param obj   the info object
      */
-    public Edge(final Graph graph, final Node v, final Edge e_v, final Node w, final Edge e_w, final int dir_v, final int dir_w, final Object obj) throws IllegalSelfEdgeException {
+    Edge(final Graph graph, final Node v, final Edge e_v, final Node w, final Edge e_w, final int dir_v, final int dir_w, final Object obj) throws IllegalSelfEdgeException {
         if (v == w)
             throw new IllegalSelfEdgeException();
         graph.registerNewEdge(v, e_v, w, e_w, dir_v, dir_w, obj, this);

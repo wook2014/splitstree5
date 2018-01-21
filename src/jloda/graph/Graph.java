@@ -70,6 +70,7 @@ public class Graph extends GraphBase {
     private final List<WeakReference<EdgeAssociation>> edgeAssociations = new LinkedList<>();
     // keep track of edge sets
     private final List<WeakReference<EdgeSet>> edgeSets = new LinkedList<>();
+    private String name = null;
 
     /**
      * Constructs a new empty graph.
@@ -303,7 +304,7 @@ public class Graph extends GraphBase {
     }
 
     /**
-     * move the node to the bacl of the list of nodes
+     * move the node to the back of the list of nodes
      *
      * @param v
      */
@@ -408,28 +409,6 @@ public class Graph extends GraphBase {
     }
 
     /**
-     * Get the successor of edge e.
-     *
-     * @param e edge
-     * @return the successor edge
-     */
-    public Edge getNextEdge(Edge e) {
-        checkOwner(e);
-        return e.getNext();
-    }
-
-    /**
-     * Get the predecessor of edge e.
-     *
-     * @param e edge
-     * @return the predecessor edge
-     */
-    public Edge getPrevEdge(Edge e) {
-        checkOwner(e);
-        return e.getPrev();
-    }
-
-    /**
      * Get the first node in the graph.
      *
      * @return the first node
@@ -445,28 +424,6 @@ public class Graph extends GraphBase {
      */
     public Node getLastNode() {
         return lastNode;
-    }
-
-    /**
-     * Get the successor node of v
-     *
-     * @param v the node
-     * @return the successor node
-     */
-    public Node getNextNode(Node v) {
-        checkOwner(v);
-        return v.getNext();
-    }
-
-    /**
-     * Get the predecessor of v.
-     *
-     * @param v the node
-     * @return the predecessor node
-     */
-    public Node getPrevNode(Node v) {
-        checkOwner(v);
-        return v.getPrev();
     }
 
     /**
@@ -486,7 +443,7 @@ public class Graph extends GraphBase {
             @Override
             public Node next() {
                 Node result = v;
-                v = getNextNode(v);
+                v = v.getNext();
                 return result;
             }
         };
@@ -537,8 +494,8 @@ public class Graph extends GraphBase {
 
             @Override
             public Edge next() {
-                Edge result = e;
-                e = getNextEdge(e);
+                final Edge result = e;
+                e = e.getNext();
                 return result;
             }
         };
@@ -553,10 +510,10 @@ public class Graph extends GraphBase {
         StringBuilder buf = new StringBuilder("Graph:\n");
         buf.append("Nodes: ").append(String.valueOf(getNumberOfNodes())).append("\n");
 
-        for (Node v = getFirstNode(); v != null; v = getNextNode(v))
+        for (Node v : nodes())
             buf.append(v.toString()).append("\n");
         buf.append("Edges: ").append(String.valueOf(getNumberOfEdges())).append("\n");
-        for (Edge e = getFirstEdge(); e != null; e = getNextEdge(e))
+        for (Edge e : edges())
             buf.append(e.toString()).append("\n");
 
         return buf.toString();
@@ -637,19 +594,6 @@ public class Graph extends GraphBase {
         }
     }
 
-    /*
-     * Fires the graphWasRead event for all GraphUpdateListeners
-     */
-
-    protected void fireGraphRead(NodeSet nodes, EdgeSet edges) {
-        checkOwner(nodes);
-        checkOwner(edges);
-        GraphUpdateListener[] a = graphUpdateListeners.toArray(new GraphUpdateListener[graphUpdateListeners.size()]);
-        for (GraphUpdateListener gul : a) {
-            gul.graphWasRead(nodes, edges);
-        }
-    }
-
     /**
      * copies one graph onto another
      *
@@ -674,7 +618,7 @@ public class Graph extends GraphBase {
         if (oldEdge2newEdge == null)
             oldEdge2newEdge = new EdgeArray<>(src);
 
-        for (Node v = src.getFirstNode(); v != null; v = src.getNextNode(v)) {
+        for (Node v : src.nodes()) {
             Node w = newNode();
             w.setId(v.getId());
             w.setInfo(v.getInfo());
@@ -855,7 +799,7 @@ public class Graph extends GraphBase {
      * erase all data components
      */
     public void clearData() {
-        for (Node v = getFirstNode(); v != null; v = v.getNext()) {
+        for (Node v : nodes()) {
             v.setData(null);
         }
     }
@@ -900,6 +844,27 @@ public class Graph extends GraphBase {
         }
     }
 
+    /**
+     * compute the max id of any node
+     *
+     * @return max id
+     */
+    public int computeMaxId() {
+        int max = 0;
+        for (Node v : nodes()) {
+            if (max < v.getId())
+                max = v.getId();
+        }
+        return max;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 }
 
 // EOF

@@ -25,7 +25,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Point2D;
 import jloda.graph.*;
-import jloda.phylo.PhyloGraph;
+import jloda.phylo.SplitsGraph;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.Pair;
@@ -58,7 +58,7 @@ public class DaylightOptimizer {
      * @param phyloGraph
      * @param node2point
      */
-    public void apply(ProgressListener progress, TaxaBlock taxa, PhyloGraph phyloGraph, NodeArray<javafx.geometry.Point2D> node2point) throws CanceledException {
+    public void apply(ProgressListener progress, TaxaBlock taxa, SplitsGraph phyloGraph, NodeArray<javafx.geometry.Point2D> node2point) throws CanceledException {
         this.progress = progress;
         System.err.println("Running daylight optimizer");
         runOptimizeDayLight(taxa, phyloGraph, node2point);
@@ -69,7 +69,7 @@ public class DaylightOptimizer {
      *
      * @param taxa
      */
-    private void runOptimizeDayLight(TaxaBlock taxa, PhyloGraph graph, NodeArray<javafx.geometry.Point2D> node2point) throws CanceledException {
+    private void runOptimizeDayLight(TaxaBlock taxa, SplitsGraph graph, NodeArray<javafx.geometry.Point2D> node2point) throws CanceledException {
         NodeSet ignore = new NodeSet(graph);
 
         progress.setTasks("Optimize daylight", "iterating");
@@ -103,7 +103,7 @@ public class DaylightOptimizer {
      *
      * @param v
      */
-    private boolean optimizeDaylightNode(int ntax, PhyloGraph graph, Node v, NodeArray<javafx.geometry.Point2D> node2point) throws NotOwnerException, CanceledException {
+    private boolean optimizeDaylightNode(int ntax, SplitsGraph graph, Node v, NodeArray<javafx.geometry.Point2D> node2point) throws NotOwnerException, CanceledException {
         int numComp = 0;
         EdgeIntegerArray edge2comp = new EdgeIntegerArray(graph);
         double[] comp2MinAngle = new double[ntax + 1];
@@ -171,7 +171,7 @@ public class DaylightOptimizer {
      * @param visited
      * @param minMaxAngle
      */
-    private void visitComponentRec(Node root, Node v, Edge e, EdgeIntegerArray edge2comp, int numComp, PhyloGraph graph, NodeArray<javafx.geometry.Point2D> node2point, NodeSet visited,
+    private void visitComponentRec(Node root, Node v, Edge e, EdgeIntegerArray edge2comp, int numComp, SplitsGraph graph, NodeArray<javafx.geometry.Point2D> node2point, NodeSet visited,
                                    double angle, Pair<Double, Double> minMaxAngle) throws CanceledException {
 
         if (v != root && !visited.contains(v)) {

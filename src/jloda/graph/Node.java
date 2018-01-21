@@ -390,7 +390,7 @@ public class Node extends NodeEdge implements Comparable {
      */
     public Edge getEdgeTo(Node w) {
         checkOwner(w);
-        for (Edge e = getFirstOutEdge(); e != null; e = getNextOutEdge(e)) {
+        for (Edge e : outEdges()) {
             if (getOpposite(e) == w)
                 return e;
         }
@@ -405,7 +405,7 @@ public class Node extends NodeEdge implements Comparable {
      */
     public Edge getEdgeFrom(Node w) {
         checkOwner(w);
-        for (Edge e = getFirstInEdge(); e != null; e = getNextInEdge(e)) {
+        for (Edge e : inEdges()) {
             if (getOpposite(e) == w)
                 return e;
         }

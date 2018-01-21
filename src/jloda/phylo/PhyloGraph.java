@@ -26,26 +26,19 @@ package jloda.phylo;
  */
 
 import jloda.graph.*;
-import jloda.util.Basic;
-import jloda.util.Pair;
 
 import java.util.*;
 
 public class PhyloGraph extends Graph {
-    final NodeArray<String> nodeLabels;
-    final EdgeDoubleArray edgeWeights;
-    final EdgeDoubleArray edgeAngles;
-    final EdgeArray<String> edgeLabels;
-    final EdgeDoubleArray edgeConfidences;
-    final EdgeIntegerArray splits;
-    final Vector<Node> taxon2node;
-    final Vector<Integer> taxon2cycle;
-    final NodeArray<List<Integer>> node2taxa;
+    protected final NodeArray<String> nodeLabels;
+    protected final EdgeDoubleArray edgeWeights;
+    protected final EdgeArray<String> edgeLabels;
+    protected final EdgeDoubleArray edgeConfidences;
+    protected final Vector<Node> taxon2node;
+    protected final NodeArray<List<Integer>> node2taxa;
 
-    final BitSet specialEdges = new BitSet();
 
     public boolean edgeConfidencesSet = false; // use this to decide whether to output edge confidences
-    private String name = null;
 
     // if you add anything here, make sure it gets added to copy, too!
 
@@ -60,10 +53,7 @@ public class PhyloGraph extends Graph {
         edgeLabels = new EdgeArray<>(this);
         edgeConfidences = new EdgeDoubleArray(this);
 
-        edgeAngles = new EdgeDoubleArray(this);
-        splits = new EdgeIntegerArray(this);
         taxon2node = new Vector<>();
-        taxon2cycle = new Vector<>();
         node2taxa = new NodeArray<>(this);
 
         addGraphUpdateListener(new GraphUpdateAdapter() {
@@ -87,11 +77,8 @@ public class PhyloGraph extends Graph {
         edgeWeights.clear();
         edgeLabels.clear();
         edgeConfidences.clear();
-        splits.clear();
         taxon2node.clear();
-        taxon2cycle.clear();
         node2taxa.clear();
-        specialEdges.clear();
     }
 
     /**
@@ -124,28 +111,21 @@ public class PhyloGraph extends Graph {
         super.copy(src, oldNode2NewNode, oldEdge2NewEdge);
         edgeConfidencesSet = src.edgeConfidencesSet;
 
-        for (Node v = src.getFirstNode(); v != null; v = src.getNextNode(v)) {
+        for (Node v : nodes()) {
             Node w = (oldNode2NewNode.getValue(v));
             nodeLabels.setValue(w, src.nodeLabels.getValue(v));
             node2taxa.setValue(w, src.node2taxa.getValue(v));
         }
-        for (Edge e = src.getFirstEdge(); e != null; e = src.getNextEdge(e)) {
+        for (Edge e : edges()) {
             Edge f = (oldEdge2NewEdge.getValue(e));
             edgeWeights.put(f, src.edgeWeights.getValue(e));
             edgeLabels.put(f, src.edgeLabels.getValue(e));
             edgeConfidences.put(f, src.edgeConfidences.getValue(e));
-            edgeAngles.put(f, src.edgeAngles.getValue(e));
-            splits.put(f, src.splits.getValue(e));
         }
         for (int i = 0; i < src.taxon2node.size(); i++) {
             Node v = src.getTaxon2Node(i + 1);
             if (v != null)
                 setTaxon2Node(i + 1, oldNode2NewNode.getValue(v));
-        }
-        for (int i = 0; i < src.taxon2cycle.size(); i++) {
-
-            int c = src.getTaxon2Cycle(i + 1);
-            setTaxon2Cycle(i + 1, c);
         }
         return oldNode2NewNode;
     }
@@ -172,7 +152,7 @@ public class PhyloGraph extends Graph {
 
             {
                 while (v != null && getLabel(v) == null) {
-                    v = getNextNode(v);
+                    v = v.getNext();
                 }
             }
 
@@ -186,56 +166,12 @@ public class PhyloGraph extends Graph {
                 final String result = getLabel(v);
                 {
                     while (v != null && getLabel(v) == null) {
-                        v = getNextNode(v);
+                        v = v.getNext();
                     }
                 }
                 return result;
             }
         };
-    }
-
-    public void setSpecial(Edge e, boolean special) {
-        specialEdges.set(e.getId(), special);
-    }
-
-    public boolean isSpecial(Edge e) {
-        return specialEdges.get(e.getId());
-    }
-
-    /**
-     * gets the set of split ids in the graph as a sorted array
-     *
-     * @return number of splits
-     */
-    public Integer[] getSplitIds() {
-        final Set<Integer> ids = new TreeSet<>();
-        for (Edge e = getFirstEdge(); e != null; e = getNextEdge(e)) {
-            ids.add(splits.getValue(e));
-        }
-        return ids.toArray(new Integer[ids.size()]);
-    }
-
-    /**
-     * Sets the angle of an edge.
-     *
-     * @param e Edge
-     * @param d angle
-     */
-    public void setAngle(Edge e, double d) {
-        edgeAngles.put(e, d);
-    }
-
-    /**
-     * Gets the angle of an edge.
-     *
-     * @param e Edge
-     * @return angle
-     */
-    public double getAngle(Edge e) {
-        if (edgeAngles.getValue(e) == null)
-            return 0;
-        else
-            return edgeAngles.getValue(e);
     }
 
     /**
@@ -349,27 +285,6 @@ public class PhyloGraph extends Graph {
         return nodeLabels.getValue(v);
     }
 
-    /**
-     * sets the split-id of an edge
-     *
-     * @param e  the edge
-     * @param id the id
-     */
-    public void setSplit(Edge e, int id) {
-        splits.put(e, id);
-    }
-
-    /**
-     * gets the split-id of an edge
-     *
-     * @param e the edge
-     * @return the split-id of the given edge
-     */
-    public int getSplit(Edge e) {
-        if (splits.getValue(e) == null)
-            return 0;
-        return splits.getValue(e);
-    }
 
     /**
      * find the corresponding node for a given taxon-id.
@@ -387,54 +302,12 @@ public class PhyloGraph extends Graph {
     }
 
     /**
-     * find the position of a taxon in the cyclic ordering.
-     *
-     * @param taxId the taxon-id.
-     * @return the index of taxon with id <code>taxId</code> in the cyclic ordering.
-     */
-    public int getTaxon2Cycle(int taxId) {
-        if (taxId <= taxon2cycle.size())
-            return taxon2cycle.get(taxId - 1);
-        else {
-            System.err.println("getTaxon2Cycle: no cycle-index set for taxId " + taxId + " (taxon2cycle.size(): " + taxon2cycle.size() + ")");
-            return -1;
-        }
-    }
-
-    /**
      * returns the number of taxa
      *
      * @return number of taxa
      */
     public int getNumberOfTaxa() {
         return taxon2node.size();
-    }
-
-    /**
-     * gets the cycle of taxa
-     *
-     * @return cyclic ordering of taxa
-     */
-    public int[] getCycle() {
-        int[] cycle = new int[taxon2node.size() + 1];
-        for (int t = 1; t <= taxon2node.size(); t++)
-            cycle[getTaxon2Cycle(t)] = t;
-        return cycle;
-    }
-
-    /**
-     * set the position of a taxon in the cyclic ordering.
-     *
-     * @param taxId      the taxon-id.
-     * @param cycleIndex the index of taxon with id <code>taxId</code> in the cyclic ordering.
-     */
-    public void setTaxon2Cycle(int taxId, int cycleIndex) {
-        if (taxId <= taxon2cycle.size()) {
-            taxon2cycle.setElementAt(cycleIndex, taxId - 1);
-        } else {
-            taxon2cycle.setSize(taxId);
-            taxon2cycle.setElementAt(cycleIndex, taxId - 1);
-        }
     }
 
     /**
@@ -518,8 +391,7 @@ public class PhyloGraph extends Graph {
      */
     public void removeTaxon(int id) {
         taxon2node.set(id - 1, null);
-        taxon2cycle.remove(id - 1);
-        for (Node v = getFirstNode(); v != null; v = getNextNode(v)) {
+        for (Node v : nodes()) {
             List list = getNode2Taxa(v);
             int which = list.indexOf(id);
             if (which != -1) {
@@ -529,181 +401,6 @@ public class PhyloGraph extends Graph {
         }
     }
 
-    /**
-     * removes a split from the graph by contracting all edges associated with the split
-     *
-     * @param splitId
-     */
-    public void removeSplit(int splitId) {
-        Node one = getTaxon2Node(1);
-
-        if (one != null) {
-            // determine all nodes and edges that separate S(1) from X-S(1)
-            List<Pair<Node, Edge>> separators = new ArrayList<>(); // each is a pair consisting of a node and edge
-            NodeSet seen = new NodeSet(this);
-
-            getAllSeparators(splitId, one, null, seen, separators);
-
-            // determine all nodes on opposite end of separating edges
-            NodeSet opposites = new NodeSet(this);
-            Iterator it = separators.iterator();
-            while (it.hasNext()) {
-                Pair pair = (Pair) it.next();
-                opposites.add(getOpposite((Node) pair.getFirst(), (Edge) pair.getSecond()));
-            }
-
-            // reconnect edges that are adjacent to opposite ends of separators:
-
-            it = separators.iterator();
-            while (it.hasNext()) {
-                Pair pair = (Pair) it.next();
-                Node v = (Node) pair.getFirst();
-                Edge e = (Edge) pair.getSecond();
-                Node w = getOpposite(v, e);
-
-                for (Edge f : w.adjacentEdges()) {
-                    if (f != e) {
-                        Node u = getOpposite(w, f);
-                        if (u != v && !opposites.contains(u)) {
-                            Edge g = null;
-                            try {
-                                g = newEdge(u, v);
-                            } catch (IllegalSelfEdgeException e1) {
-                                Basic.caught(e1);
-                            }
-                            setSplit(g, getSplit(f));
-                            setWeight(g, getWeight(f));
-                            setAngle(g, getAngle(f));
-                        }
-                    }
-                }
-
-                if (getLabel(w) != null && getLabel(w).length() > 0) {
-                    if (getLabel(v) == null)
-                        setLabel(v, getLabel(w));
-                    else
-                        setLabel(v, getLabel(v) + ", " + getLabel(w));
-                }
-
-                if (getNode2Taxa(w) != null) // node is labeled by taxa, move labels to v
-                {
-                    for (Integer t : getNode2Taxa(w)) {
-                        setTaxon2Node(t, v);
-                        setNode2Taxa(v, t);
-                    }
-                    getNode2Taxa(w).clear();
-                }
-                // delete old node w.
-                deleteNode(w);
-            }
-        }
-    }
-
-
-    /**
-     * recursively finds all edges representing the named split.
-     *
-     * @param splitId
-     * @param v
-     * @param e
-     * @param seen
-     * @param separators adds the resulting pair of (node,edge) into this list
-     * @throws NotOwnerException
-     */
-    public void getAllSeparators(int splitId, Node v, Edge e, NodeSet seen, List<Pair<Node, Edge>> separators) {
-        if (!seen.contains(v)) {
-            seen.add(v);
-            for (Edge f : v.adjacentEdges()) {
-                if (f != e) {
-                    if (getSplit(f) == splitId) {
-                        separators.add(new Pair<>(v, f));
-                    } else
-                        getAllSeparators(splitId, getOpposite(v, f), f, seen, separators);
-                }
-            }
-        }
-    }
-
-    /**
-     * finds an edge with the given split id that separates 1 from rest of graph
-     *
-     * @param splitId
-     * @param v
-     * @param e
-     * @param seen
-     * @return Pair consisting of node and edge
-     * @throws NotOwnerException
-     */
-    public Pair<Node, Edge> getSeparator(int splitId, Node v, Edge e, NodeSet seen) {
-        if (!seen.contains(v)) {
-            seen.add(v);
-            for (Edge f : v.adjacentEdges()) {
-                if (f != e) {
-                    if (getSplit(f) == splitId)
-                        return new Pair<>(v, f);
-                    else {
-                        Pair<Node, Edge> pair = getSeparator(splitId, getOpposite(v, f), f, seen);
-                        if (pair != null)
-                            return pair;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * returns a labeling of all nodes by the sets of characters in state 1
-     *
-     * @param split2chars
-     * @param firstChars
-     * @return labeling of all nodes by 01 strings
-     */
-    public NodeArray labelNodesBySequences(Map split2chars, char[] firstChars) {
-        final NodeArray labels = new NodeArray(this);
-        System.err.println("base-line= " + (new String(firstChars)));
-        Node v = getTaxon2Node(1);
-        BitSet used = new BitSet(); // set of splits used in current path
-
-        labelNodesBySequencesRec(v, used, split2chars, firstChars, labels);
-        return labels;
-    }
-
-    /**
-     * recursively do the work
-     *
-     * @param v
-     * @param used
-     * @param split2chars
-     * @param firstChars
-     * @param labels
-     */
-    private void labelNodesBySequencesRec(Node v, BitSet used, Map split2chars, char[] firstChars, NodeArray<String> labels) {
-        if (labels.getValue(v) == null) {
-            BitSet flips = new BitSet();
-            for (int s = used.nextSetBit(1); s >= 0; s = used.nextSetBit(s + 1)) {
-                if (s > 0)
-                    flips.or((BitSet) split2chars.get(s));
-                // s=0 happens in rooted graph
-            }
-            StringBuilder label = new StringBuilder();
-            for (int c = 1; c < firstChars.length; c++) {
-                if (flips.get(c) == (firstChars[c] == '1'))
-                    label.append("0");
-                else
-                    label.append("1");
-            }
-            labels.setValue(v, label.toString());
-            for (Edge e : v.adjacentEdges()) {
-                int s = getSplit(e);
-                if (!used.get(s)) {
-                    used.set(s);
-                    labelNodesBySequencesRec(v.getOpposite(e), used, split2chars, firstChars, labels);
-                    used.set(s, false);
-                }
-            }
-        }
-    }
 
     /**
      * changes the node labels of the network using the mapping old-to-new
@@ -711,7 +408,7 @@ public class PhyloGraph extends Graph {
      * @param old2new
      */
     public void changeLabels(Map<String, String> old2new) {
-        for (Node v = getFirstNode(); v != null; v = getNextNode(v)) {
+        for (Node v : nodes()) {
             String label = getLabel(v);
             if (label != null && old2new.containsKey(label))
                 setLabel(v, old2new.get(label));
@@ -725,23 +422,22 @@ public class PhyloGraph extends Graph {
      */
     public void add(PhyloGraph graph) {
         NodeArray<Node> old2new = new NodeArray<>(graph);
-        for (Node v = graph.getFirstNode(); v != null; v = graph.getNextNode(v)) {
+        for (Node v : graph.nodes()) {
             Node w = newNode();
             old2new.setValue(v, w);
             setLabel(w, graph.getLabel(v));
 
         }
-        for (Edge e = graph.getFirstEdge(); e != null; e = graph.getNextEdge(e)) {
-            Edge f = null;
-            try {
-                f = newEdge(old2new.getValue(e.getSource()), old2new.getValue(e.getTarget()));
-            } catch (IllegalSelfEdgeException e1) {
-                Basic.caught(e1);
+        try {
+            for (Edge e : edges()) {
+                Edge f = newEdge(old2new.getValue(e.getSource()), old2new.getValue(e.getTarget()));
+                setLabel(f, graph.getLabel(e));
+                setWeight(f, graph.getWeight(e));
+                if (graph.edgeConfidences.getValue(e) != null)
+                    setConfidence(f, graph.getConfidence(e));
             }
-            setLabel(f, graph.getLabel(e));
-            setWeight(f, graph.getWeight(e));
-            if (graph.edgeConfidences.getValue(e) != null)
-                setConfidence(f, graph.getConfidence(e));
+        } catch (IllegalSelfEdgeException e1) {
+            throw new RuntimeException(e1);
         }
     }
 
@@ -751,7 +447,7 @@ public class PhyloGraph extends Graph {
      * @param factor
      */
     public void scaleEdgeWeights(float factor) {
-        for (Edge e = getFirstEdge(); e != null; e = getNextEdge(e)) {
+        for (Edge e : edges()) {
             setWeight(e, factor * getWeight(e));
         }
     }
@@ -762,31 +458,9 @@ public class PhyloGraph extends Graph {
      */
     public NodeSet computeSetOfLeaves() {
         NodeSet nodes = new NodeSet(this);
-        for (Node v = getFirstNode(); v != null; v = getNextNode(v))
+        for (Node v : nodes())
             if (v.getOutDegree() == 0)
                 nodes.add(v);
         return nodes;
-    }
-
-    /**
-     * compute the max id of any node
-     *
-     * @return max id
-     */
-    public int computeMaxId() {
-        int max = 0;
-        for (Node v = getFirstNode(); v != null; v = getNextNode(v)) {
-            if (max < v.getId())
-                max = v.getId();
-        }
-        return max;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
     }
 }

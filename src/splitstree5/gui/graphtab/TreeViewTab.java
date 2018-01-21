@@ -24,6 +24,7 @@ import javafx.scene.image.ImageView;
 import jloda.fx.ASelectionModel;
 import jloda.graph.Edge;
 import jloda.graph.Node;
+import jloda.phylo.PhyloTree;
 import jloda.util.ResourceManager;
 import splitstree5.gui.graphtab.base.AEdgeView;
 import splitstree5.gui.graphtab.base.ANodeView;
@@ -39,7 +40,7 @@ import java.util.Stack;
  * The tree viewer tab
  * Daniel Huson, 11.2017
  */
-public class TreeViewTab extends GraphTab {
+public class TreeViewTab extends GraphTab<PhyloTree> {
     /**
      * constructor
      */

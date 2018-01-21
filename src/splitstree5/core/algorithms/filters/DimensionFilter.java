@@ -57,6 +57,8 @@ import splitstree5.core.misc.Compatibility;
 import splitstree5.core.misc.SplitsUtilities;
 
 import java.util.BitSet;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * heuristic dimension filter
@@ -238,15 +240,15 @@ public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> impleme
         System.err.print("Relax graph: ");
 
         int maxDegreeHeuristicThreshold = 6; // use heuristic for max degrees above this threshold
-        NodeSet active = new NodeSet(graph);
-        for (Node v = graph.getFirstNode(); v != null; v = graph.getNextNode(v)) {
+        Set<Node> active = new HashSet<>();
+        for (Node v : graph.nodes()) {
             if (v.getDegree() < maxDegree
                     || (maxDegree <= maxDegreeHeuristicThreshold && hasDegreeDButNotInClique(maxDegree + 1, graph, v)))
                 active.add(v);
         }
 
         while (!active.isEmpty()) {
-            Node v = active.getFirstElement();
+            Node v = active.iterator().next();
             if (v.getDegree() < maxDegree || (maxDegree <= maxDegreeHeuristicThreshold && hasDegreeDButNotInClique(maxDegree + 1, graph, v))) {
                 for (Node w : v.adjacentNodes()) {
                     active.add(w);

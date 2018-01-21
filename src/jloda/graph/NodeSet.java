@@ -30,8 +30,6 @@
  */
 package jloda.graph;
 
-import jloda.util.Basic;
-
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Iterator;
@@ -216,7 +214,15 @@ public class NodeSet extends GraphBase implements Set<Node>, Iterable<Node> {
 
     public Iterator<Node> iterator() {
         return new Iterator<Node>() {
-            Node v = getFirstElement();
+            Node v = getOwner().getFirstNode();
+
+            {
+                while (v != null) {
+                    if (contains(v))
+                        break;
+                    v = v.getNext();
+                }
+            }
 
             @Override
             public boolean hasNext() {
@@ -227,7 +233,14 @@ public class NodeSet extends GraphBase implements Set<Node>, Iterable<Node> {
             @Override
             public Node next() {
                 Node result = v;
-                v = getNextElement(v);
+                {
+                    v = v.getNext();
+                    while (v != null) {
+                        if (contains(v))
+                            break;
+                        v = v.getNext();
+                    }
+                }
                 return result;
             }
         };
@@ -278,70 +291,13 @@ public class NodeSet extends GraphBase implements Set<Node>, Iterable<Node> {
     }
 
     /**
-     * Returns the first element in the set.
-     *
-     * @return v Node
-     */
-    public Node getFirstElement() {
-        Node v;
-        for (v = getOwner().getFirstNode(); v != null; v = getOwner().getNextNode(v))
-            if (contains(v))
-                break;
-        return v;
-    }
-
-    /**
-     * Gets the successor element in the set.
-     *
-     * @param v Node
-     * @return a Node the successor of node v
-     */
-    public Node getNextElement(Node v) {
-        for (v = getOwner().getNextNode(v); v != null; v = getOwner().getNextNode(v))
-            if (contains(v))
-                break;
-        return v;
-    }
-
-    /**
-     * Gets the predecessor element in the set.
-     *
-     * @param v Node
-     * @return a Node the predecessor of node v
-     */
-    public Node getPrevElement(Node v) {
-        for (v = getOwner().getPrevNode(v); v != null; v = getOwner().getPrevNode(v))
-            if (contains(v))
-                break;
-        return v;
-    }
-
-
-    /**
-     * Returns the last element in the set.
-     *
-     * @return the Node the last element in the set
-     */
-    public Node getLastElement() {
-        Node v = null;
-        try {
-            for (v = getOwner().getLastNode(); v != null; v = getOwner().getPrevNode(v))
-                if (contains(v))
-                    break;
-        } catch (NotOwnerException ex) {
-            Basic.caught(ex);
-        }
-        return v;
-    }
-
-    /**
      * returns a clone of this set
      *
      * @return a clone
      */
     public Object clone() {
         NodeSet result = new NodeSet(getOwner());
-        for (Node v : this) result.add(v);
+        result.addAll(this);
         return result;
     }
 

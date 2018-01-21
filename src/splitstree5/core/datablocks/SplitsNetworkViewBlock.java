@@ -23,7 +23,7 @@ import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import jloda.fx.ASelectionModel;
 import jloda.graph.Edge;
-import jloda.phylo.PhyloGraph;
+import jloda.phylo.SplitsGraph;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.interfaces.IFromSplitsNetworkView;
 import splitstree5.core.algorithms.interfaces.IToSplitsNetworkView;
@@ -60,7 +60,7 @@ public class SplitsNetworkViewBlock extends ADataBlock implements IHasTab {
                 addedSplits.addAll(c.getAddedSubList());
                 removedSplits.addAll(c.getRemoved());
             }
-            final PhyloGraph graph = splitsViewTab.getPhyloGraph();
+            final SplitsGraph graph = splitsViewTab.getGraph();
             for (Edge e : graph.edges()) {
                 if (addedSplits.contains(graph.getSplit(e)))
                     splitsViewTab.getEdgeSelectionModel().select(e);
@@ -103,7 +103,7 @@ public class SplitsNetworkViewBlock extends ADataBlock implements IHasTab {
         Platform.runLater(() -> setShortDescription(getInfo()));
     }
 
-    public void updateSelectionModels(PhyloGraph graph, TaxaBlock taxa, Document document) {
+    public void updateSelectionModels(SplitsGraph graph, TaxaBlock taxa, Document document) {
         splitsViewTab.updateSelectionModels(graph, taxa, document);
     }
 
@@ -124,8 +124,8 @@ public class SplitsNetworkViewBlock extends ADataBlock implements IHasTab {
 
     @Override
     public String getInfo() {
-        if (splitsViewTab != null && splitsViewTab.getPhyloGraph() != null) {
-            return "a split network with " + splitsViewTab.getPhyloGraph().getNumberOfNodes() + " nodes and " + splitsViewTab.getPhyloGraph().getNumberOfEdges() + " edges";
+        if (splitsViewTab != null && splitsViewTab.getGraph() != null) {
+            return "a split network with " + splitsViewTab.getGraph().getNumberOfNodes() + " nodes and " + splitsViewTab.getGraph().getNumberOfEdges() + " edges";
         } else
             return "a split network";
     }

@@ -85,7 +85,7 @@ import java.util.concurrent.Executors;
  * tree and split network tab base class
  * Daniel Huson,. 12.2017
  */
-public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelection {
+public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implements ISavesPreviousSelection {
     protected ZoomableScrollPane scrollPane;
 
     protected final Group group = new Group();
@@ -98,7 +98,7 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
 
     protected final BorderPane rootNode = new BorderPane();
     protected final Label label = new Label("GraphTab");
-    private PhyloGraph phyloGraph;
+    private G graph;
 
     protected NodeArray<ANodeView> node2view;
     protected EdgeArray<AEdgeView> edge2view;
@@ -134,7 +134,7 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
         nodeSelectionModel.getSelectedItems().addListener((ListChangeListener<Node>) c -> {
             while (c.next()) {
                 for (Node v : c.getAddedSubList()) {
-                    if (v.getOwner() == getPhyloGraph()) {
+                    if (v.getOwner() == getGraph()) {
                         final ANodeView nv = getNode2view().get(v);
                         if (nv != null) {
                             if (nv.getLabel() != null) {
@@ -146,7 +146,7 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
                     }
                 }
                 for (Node v : c.getRemoved()) {
-                    if (v.getOwner() == getPhyloGraph()) {
+                    if (v.getOwner() == getGraph()) {
                         final ANodeView nv = getNode2view().get(v);
                         if (nv != null) {
                             if (nv.getLabel() != null) {
@@ -162,7 +162,7 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
         edgeSelectionModel.getSelectedItems().addListener((ListChangeListener<Edge>) c -> {
             while (c.next()) {
                 for (Edge e : c.getAddedSubList()) {
-                    if (e.getOwner() == getPhyloGraph()) {
+                    if (e.getOwner() == getGraph()) {
                         final AEdgeView ev = getEdge2view().getValue(e);
                         if (ev != null) {
                             if (ev.getLabel() != null) {
@@ -174,7 +174,7 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
                     }
                 }
                 for (Edge e : c.getRemoved()) {
-                    if (e.getOwner() == getPhyloGraph()) {
+                    if (e.getOwner() == getGraph()) {
                         final AEdgeView ev = getEdge2view().getValue(e);
                         if (ev != null) {
                             if (ev.getLabel() != null) {
@@ -224,7 +224,7 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
         return edgeSelectionModel;
     }
 
-    public void updateSelectionModels(PhyloGraph graph, TaxaBlock taxaBlock, Document document) {
+    public void updateSelectionModels(G graph, TaxaBlock taxaBlock, Document document) {
         try {
             nodeSelectionModel.setSuspendListeners(true);
             edgeSelectionModel.setSuspendListeners(true);
@@ -265,16 +265,16 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
             while (c.next()) {
                 for (Taxon taxon : c.getAddedSubList()) {
                     String label = taxon.getName();
-                    for (Node v : phyloGraph.nodes()) {
-                        if (phyloGraph.getLabel(v) != null && label.equals(phyloGraph.getLabel(v))) {
+                    for (Node v : this.graph.nodes()) {
+                        if (this.graph.getLabel(v) != null && label.equals(this.graph.getLabel(v))) {
                             nodeSelectionModel.select(v);
                         }
                     }
                 }
                 for (Taxon taxon : c.getRemoved()) {
                     String label = taxon.getName();
-                    for (Node v : phyloGraph.nodes()) {
-                        if (phyloGraph.getLabel(v) != null && label.equals(phyloGraph.getLabel(v)) && nodeSelectionModel.getSelectedItems().contains(v)) {
+                    for (Node v : this.graph.nodes()) {
+                        if (this.graph.getLabel(v) != null && label.equals(this.graph.getLabel(v)) && nodeSelectionModel.getSelectedItems().contains(v)) {
                             nodeSelectionModel.clearSelection(v);
                         }
                     }
@@ -308,8 +308,8 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
         return new Dimension2D(0.6 * pane.getWidth(), 0.9 * pane.getHeight());
     }
 
-    public PhyloGraph getPhyloGraph() {
-        return phyloGraph;
+    public G getGraph() {
+        return graph;
     }
 
     /**
@@ -317,8 +317,8 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
      *
      * @param phyloGraph
      */
-    public void init(PhyloGraph phyloGraph) {
-        this.phyloGraph = phyloGraph;
+    public void init(G phyloGraph) {
+        this.graph = phyloGraph;
         node2view = new NodeArray<>(phyloGraph);
         edge2view = new EdgeArray<>(phyloGraph);
         Platform.runLater(() -> {
@@ -415,12 +415,12 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
     }
 
     public void layoutLabels(boolean sparseLabels) {
-        if (getPhyloGraph() != null) {
+        if (getGraph() != null) {
             if (getLayout() == GraphLayout.Radial)
-                NodeLabelLayouter.radialLayout(sparseLabels, getPhyloGraph(), getNode2view(), getEdge2view());
+                NodeLabelLayouter.radialLayout(sparseLabels, getGraph(), getNode2view(), getEdge2view());
             else {
-                if (getPhyloGraph() instanceof PhyloTree) {
-                    NodeLabelLayouter.leftToRightLayout(sparseLabels, getPhyloGraph(), ((PhyloTree) getPhyloGraph()).getRoot(), getNode2view(), getEdge2view());
+                if (getGraph() instanceof PhyloTree) {
+                    NodeLabelLayouter.leftToRightLayout(sparseLabels, getGraph(), ((PhyloTree) getGraph()).getRoot(), getNode2view(), getEdge2view());
                 }
             }
         }
@@ -465,8 +465,8 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
      * @param set
      */
     public void selectNodesByLabel(Collection<String> set, boolean select) {
-        for (Node node : getPhyloGraph().nodes()) {
-            String label = getPhyloGraph().getLabel(node);
+        for (Node node : getGraph().nodes()) {
+            String label = getGraph().getLabel(node);
             if (label != null && set.contains(label))
                 if (select)
                     nodeSelectionModel.select(node);
@@ -481,13 +481,13 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
      * @param set
      */
     public void selectByLabel(Collection<String> set) {
-        for (Node node : getPhyloGraph().nodes()) {
-            String label = getPhyloGraph().getLabel(node);
+        for (Node node : getGraph().nodes()) {
+            String label = getGraph().getLabel(node);
             if (label != null && set.contains(label))
                 nodeSelectionModel.select(node);
         }
-        for (Edge edge : getPhyloGraph().edges()) {
-            String label = getPhyloGraph().getLabel(edge);
+        for (Edge edge : getGraph().edges()) {
+            String label = getGraph().getLabel(edge);
             if (label != null && set.contains(label))
                 edgeSelectionModel.select(edge);
         }
@@ -497,8 +497,8 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
         MainWindowManager.getInstance().getPreviousSelection().clear();
         if (nodeSelectionModel.getSelectedItems().size() > 0) {
             for (Node node : nodeSelectionModel.getSelectedItems()) {
-                if (node.getOwner() == getPhyloGraph()) {
-                    final String label = getPhyloGraph().getLabel(node);
+                if (node.getOwner() == getGraph()) {
+                    final String label = getGraph().getLabel(node);
                     if (label != null)
                         MainWindowManager.getInstance().getPreviousSelection().add(label);
                 }
@@ -506,8 +506,8 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
         }
         if (edgeSelectionModel.getSelectedItems().size() > 0) {
             for (Edge edge : edgeSelectionModel.getSelectedItems()) {
-                if (edge.getOwner() == getPhyloGraph()) {
-                    final String label = getPhyloGraph().getLabel(edge);
+                if (edge.getOwner() == getGraph()) {
+                    final String label = getGraph().getLabel(edge);
                     if (label != null)
                         MainWindowManager.getInstance().getPreviousSelection().add(label);
                 }
@@ -589,7 +589,7 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
             final Set<Node> previouslySelectedNodes = new HashSet<>(nodeSelectionModel.getSelectedItems());
             final Set<Edge> previouslySelectedEdges = new HashSet<>(edgeSelectionModel.getSelectedItems());
 
-            for (Node node : phyloGraph.nodes()) {
+            for (Node node : graph.nodes()) {
                 final ANodeView nodeView = node2view.get(node);
                 if (nodeView.getShape() != null) {
                     final Bounds bounds = nodeView.getShape().localToScene(nodeView.getShape().getBoundsInLocal());
@@ -609,7 +609,7 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
                             nodeSelectionModel.select(node);
                     }
                 }
-                for (Edge edge : phyloGraph.edges()) {
+                for (Edge edge : graph.edges()) {
                     final AEdgeView edgeView = edge2view.get(edge);
                     if (edgeView.getShape() != null) {
                         final Bounds bounds = edgeView.getShape().localToScene(edgeView.getShape().getBoundsInLocal());
@@ -657,25 +657,25 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
             nodeSelectionModel.selectAll();
             edgeSelectionModel.selectAll();
         });
-        // controller.getSelectAllMenuItem().disableProperty().bind(Bindings.size(nodeSelectionModel.getSelectedItems()).isEqualTo(phyloGraph.getNumberOfNodes())
-        // .and(Bindings.size(edgeSelectionModel.getSelectedItems()).isEqualTo(phyloGraph.getNumberOfEdges()))); // todo: breaks if number of nodes or edges changes...
+        // controller.getSelectAllMenuItem().disableProperty().bind(Bindings.size(nodeSelectionModel.getSelectedItems()).isEqualTo(graph.getNumberOfNodes())
+        // .and(Bindings.size(edgeSelectionModel.getSelectedItems()).isEqualTo(graph.getNumberOfEdges()))); // todo: breaks if number of nodes or edges changes...
 
         controller.getSelectNoneMenuItem().setOnAction((e) -> {
             nodeSelectionModel.clearSelection();
             edgeSelectionModel.clearSelection();
         });
 
-        if (phyloGraph != null) {
+        if (graph != null) {
             controller.getSelectAllNodesMenuItem().setOnAction((e) -> nodeSelectionModel.selectAll());
-            controller.getSelectAllNodesMenuItem().disableProperty().bind(Bindings.size(nodeSelectionModel.getSelectedItems()).isEqualTo(phyloGraph.getNumberOfNodes()));
+            controller.getSelectAllNodesMenuItem().disableProperty().bind(Bindings.size(nodeSelectionModel.getSelectedItems()).isEqualTo(graph.getNumberOfNodes()));
 
             controller.getSelectAllEdgesMenuItem().setOnAction((e) -> edgeSelectionModel.selectAll());
-            controller.getSelectAllEdgesMenuItem().disableProperty().bind(Bindings.size(edgeSelectionModel.getSelectedItems()).isEqualTo(phyloGraph.getNumberOfEdges()));
+            controller.getSelectAllEdgesMenuItem().disableProperty().bind(Bindings.size(edgeSelectionModel.getSelectedItems()).isEqualTo(graph.getNumberOfEdges()));
         }
 
         controller.getSelectAllLabeledNodesMenuItem().setOnAction((e) -> {
-            for (Node v : getPhyloGraph().nodes()) {
-                if (getPhyloGraph().getLabel(v) != null && getPhyloGraph().getLabel(v).length() > 0)
+            for (Node v : getGraph().nodes()) {
+                if (getGraph().getLabel(v) != null && getGraph().getLabel(v).length() > 0)
                     nodeSelectionModel.select(v);
             }
         });
@@ -732,8 +732,8 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
         });
 
         controller.getLayoutLabelsMenuItem().setOnAction((e) -> {
-            Node root = (phyloGraph instanceof PhyloTree ? ((PhyloTree) phyloGraph).getRoot() : null);
-            getUndoRedoManager().doAndAdd(new UndoableLayoutLabels(layout.get(), sparseLabels.get(), phyloGraph, root, node2view, edge2view));
+            Node root = (graph instanceof PhyloTree ? ((PhyloTree) graph).getRoot() : null);
+            getUndoRedoManager().doAndAdd(new UndoableLayoutLabels(layout.get(), sparseLabels.get(), graph, root, node2view, edge2view));
         });
         controller.getSparseLabelsCheckMenuItem().selectedProperty().bindBidirectional(sparseLabels);
         controller.getSparseLabelsCheckMenuItem().setOnAction(controller.getLayoutLabelsMenuItem().getOnAction());
@@ -766,8 +766,8 @@ public abstract class GraphTab extends ViewerTab implements ISavesPreviousSelect
                         node2view.get(node).setStroke(colorPicker.getValue());
                         node2view.get(node).setTextFill(colorPicker.getValue());
 
-                        if (phyloGraph.getLabel(node) != null) {
-                            FormatItem formatItem = nodeLabel2Style.get(phyloGraph.getLabel(node));
+                        if (graph.getLabel(node) != null) {
+                            FormatItem formatItem = nodeLabel2Style.get(graph.getLabel(node));
                             if (formatItem == null)
                                 formatItem = new FormatItem();
                             formatItem.addEdgeColor(colorPicker.getValue());

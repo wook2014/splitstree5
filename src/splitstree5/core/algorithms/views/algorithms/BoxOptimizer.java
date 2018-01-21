@@ -25,7 +25,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Point2D;
 import jloda.graph.*;
-import jloda.phylo.PhyloGraph;
+import jloda.phylo.SplitsGraph;
 import jloda.util.CanceledException;
 import jloda.util.Pair;
 import jloda.util.ProgressListener;
@@ -56,7 +56,7 @@ public class BoxOptimizer {
      * @param graph
      * @param node2point
      */
-    public void apply(ProgressListener progress, TaxaBlock taxaBlock, int numberOfSplits, PhyloGraph graph, NodeArray<Point2D> node2point) throws CanceledException {
+    public void apply(ProgressListener progress, TaxaBlock taxaBlock, int numberOfSplits, SplitsGraph graph, NodeArray<Point2D> node2point) throws CanceledException {
         this.progress = progress;
         System.err.println("Running box optimizer");
         Node start = null;
@@ -88,7 +88,7 @@ public class BoxOptimizer {
      *
      * @param graph
      */
-    private void runOptimizeBoxes(Node start, PhyloGraph graph, int numberOfSplits, NodeArray<Point2D> node2point, HashSet forbiddenSplits) throws CanceledException {
+    private void runOptimizeBoxes(Node start, SplitsGraph graph, int numberOfSplits, NodeArray<Point2D> node2point, HashSet forbiddenSplits) throws CanceledException {
         //We first build EdgeSplits, where each split is linked with the set containing all its edges
         final HashMap<Integer, List<Edge>> edgeSplits = getEdgeSplits(graph);
         Edge currentEdge;
@@ -197,7 +197,7 @@ public class BoxOptimizer {
      * @param minAngle
      * @param maxAngle
      */
-    public Pair<Double, Double> maximizeArea(List SplitEdges, PhyloGraph graph, double minAngle, double maxAngle) {
+    public Pair<Double, Double> maximizeArea(List SplitEdges, SplitsGraph graph, double minAngle, double maxAngle) {
         //We will first express the area of the split as A cos x + B sin x, x being the split angle
         double alpha = 0;
         double beta = 0;
@@ -271,7 +271,7 @@ public class BoxOptimizer {
      * @param SplitEdges sorted list of the split edges
      * @param graph
      */
-    public Pair<Double, Double> trigClockAngles(List<Edge> SplitEdges, PhyloGraph graph, NodeArray<Point2D> node2point) {
+    public Pair<Double, Double> trigClockAngles(List<Edge> SplitEdges, SplitsGraph graph, NodeArray<Point2D> node2point) {
         Iterator edgeIt = SplitEdges.iterator();
         Edge currentEdge = (Edge) edgeIt.next();
         double splitAngle = GeometryUtils.moduloTwoPI(graph.getAngle(currentEdge));
@@ -325,7 +325,7 @@ public class BoxOptimizer {
      *
      * @param graph
      */
-    public HashMap<Integer, List<Edge>> getEdgeSplits(PhyloGraph graph) {
+    public HashMap<Integer, List<Edge>> getEdgeSplits(SplitsGraph graph) {
         final HashMap<Integer, List<Edge>> edgeSplits = new HashMap<>();
         Edge CurrentEdge = graph.getFirstEdge();
         List<Edge> currentEdges;
@@ -448,7 +448,7 @@ public class BoxOptimizer {
      * @param SplitEdges sorted list of the split edges
      * @param Angle      we want to affect to the split
      */
-    public Pair<Double, Double> createsCollisions(Node start, PhyloGraph graph, double trigAngle, double clockAngle, double oldAngle, List SplitEdges, double Angle, NodeArray<Point2D> node2point) {
+    public Pair<Double, Double> createsCollisions(Node start, SplitsGraph graph, double trigAngle, double clockAngle, double oldAngle, List SplitEdges, double Angle, NodeArray<Point2D> node2point) {
         double newTrigAngle = trigAngle;
         double newClockAngle = clockAngle;
         boolean clockBlocked = false;
@@ -594,7 +594,7 @@ public class BoxOptimizer {
      * @param visited
      * @param foundParameters angle1 angle2
      */
-    private void visitComponentRec2(Node v, Edge e, int specialNode, double previousAngle1, double previousAngle2, Node angle1in, Node angle1out, Node angle2in, Node angle2out, PhyloGraph graph, NodeArray<Point2D> node2point, NodeSet visited, double[] foundParameters, boolean dontCompute) {// throws CanceledException {
+    private void visitComponentRec2(Node v, Edge e, int specialNode, double previousAngle1, double previousAngle2, Node angle1in, Node angle1out, Node angle2in, Node angle2out, SplitsGraph graph, NodeArray<Point2D> node2point, NodeSet visited, double[] foundParameters, boolean dontCompute) {// throws CanceledException {
         double newAngle1 = 2 * Math.PI;
         double newAngle2 = 2 * Math.PI;
         boolean localDontCompute;
@@ -678,7 +678,7 @@ public class BoxOptimizer {
      * @param visited
      * @param foundParameters xmin ymin xmax ymax angle1 angle2
      */
-    private void visitComponentRec1(Node v, Edge e, double previousAngle1, double previousAngle2, Node angle1in, Node angle1out, Node angle2in, Node angle2out, PhyloGraph graph, NodeArray<Point2D> node2point, NodeSet visited, double[] foundParameters) {
+    private void visitComponentRec1(Node v, Edge e, double previousAngle1, double previousAngle2, Node angle1in, Node angle1out, Node angle2in, Node angle2out, SplitsGraph graph, NodeArray<Point2D> node2point, NodeSet visited, double[] foundParameters) {
         if (!visited.contains(v)) {
             visited.add(v);
 
@@ -707,7 +707,7 @@ public class BoxOptimizer {
      * @param useWeights
      * @param graph
      */
-    private void assignCoordinatesToNodes(Node start, boolean useWeights, PhyloGraph graph, NodeArray<Point2D> node2point) {
+    private void assignCoordinatesToNodes(Node start, boolean useWeights, SplitsGraph graph, NodeArray<Point2D> node2point) {
         node2point.set(start, new Point2D(0, 0));
         final BitSet splitsInPath = new BitSet();
         final NodeSet nodesVisited = new NodeSet(graph);
@@ -724,7 +724,7 @@ public class BoxOptimizer {
      * @param nodesVisited
      * @param useWeights
      */
-    private void assignCoordinatesToNodesRec(Node v, BitSet splitsInPath, NodeSet nodesVisited, boolean useWeights, PhyloGraph graph, NodeArray<Point2D> node2point) {
+    private void assignCoordinatesToNodesRec(Node v, BitSet splitsInPath, NodeSet nodesVisited, boolean useWeights, SplitsGraph graph, NodeArray<Point2D> node2point) {
         if (!nodesVisited.contains(v)) {
             //Deleted so that the user can cancel and it doesn't destroy everything: doc.getProgressListener().checkForCancel();
             nodesVisited.add(v);

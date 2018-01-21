@@ -27,7 +27,7 @@ import javafx.geometry.Point2D;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;
-import jloda.phylo.PhyloGraph;
+import jloda.phylo.SplitsGraph;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromSplits;
@@ -53,7 +53,7 @@ import java.util.*;
  * Daniel Huson, 11.2017
  */
 public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, SplitsNetworkViewBlock> implements IFromSplits, IToSplitsNetworkView {
-    private final PhyloGraph graph = new PhyloGraph();
+    private final SplitsGraph graph = new SplitsGraph();
     private final Map<String, FormatItem> nodeLabel2Style = new HashMap<>();
 
     private ChangeListener<UpdateState> changeListener;

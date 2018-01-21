@@ -172,7 +172,7 @@ public class TreesUtilities {
                 /*if (tree.getConfidence(f) != 1)
                     splits.getFormat().setConfidences(true);*/
 
-                if (!skipNegativeSplitIds || tree.getSplit(f) >= 0) {
+                if (!skipNegativeSplitIds) {
                     //splits.getSplitsSet().add(f_taxa, (float) tree.getWeight(f), (float) tree.getConfidence(f));
                     ASplit split = new ASplit(f_taxa, taxa.getNtax(), tree.getWeight(f), tree.getConfidence(f));
                     splits.getSplits().add(split);

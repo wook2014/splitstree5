@@ -24,7 +24,7 @@ import jloda.graph.Edge;
 import jloda.graph.EdgeIntegerArray;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;
-import jloda.phylo.PhyloGraph;
+import jloda.phylo.SplitsGraph;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.SplitsBlock;
@@ -45,12 +45,12 @@ public class ConvexHull {
      * @param useWeights
      * @param taxa
      * @param splits
-     * @param phyloGraph
+     * @param splitsGraph
      * @param node2point
      */
-    public static void apply(ProgressListener progress, boolean useWeights, TaxaBlock taxa, SplitsBlock splits, PhyloGraph phyloGraph, NodeArray<Point2D> node2point) throws CanceledException {
-        phyloGraph.clear();
-        apply(progress, useWeights, taxa, splits, phyloGraph, node2point, new BitSet());
+    public static void apply(ProgressListener progress, boolean useWeights, TaxaBlock taxa, SplitsBlock splits, SplitsGraph splitsGraph, NodeArray<Point2D> node2point) throws CanceledException {
+        splitsGraph.clear();
+        apply(progress, useWeights, taxa, splits, splitsGraph, node2point, new BitSet());
     }
 
     /**
@@ -64,7 +64,7 @@ public class ConvexHull {
      * @param node2point
      * @param usedSplits
      */
-    public static void apply(ProgressListener progress, boolean useWeights, TaxaBlock taxa, SplitsBlock splits, PhyloGraph graph, NodeArray<Point2D> node2point, BitSet usedSplits) throws CanceledException {
+    public static void apply(ProgressListener progress, boolean useWeights, TaxaBlock taxa, SplitsBlock splits, SplitsGraph graph, NodeArray<Point2D> node2point, BitSet usedSplits) throws CanceledException {
 
         if (usedSplits.cardinality() == splits.getNsplits())
             return; // all nodes have been processed
@@ -266,14 +266,10 @@ public class ConvexHull {
 
         int[] cyclicOrdering = splits.getCycle();
 
-        for (int i = 1; i < cyclicOrdering.length; i++) {
-            graph.setTaxon2Cycle(cyclicOrdering[i], i);
-        }
-
         final NodeArray coords = embed(graph, cyclicOrdering, useWeights, true);
 
         int maxNumberOfTaxaOnNode = 0;
-        for (Node v = graph.getFirstNode(); v != null; v = graph.getNextNode(v)) {
+        for (Node v : graph.nodes()) {
             node2point.put(v, (Point2D) coords.get(v));
             if (graph.getNode2Taxa(v) != null && graph.getNode2Taxa(v).size() > maxNumberOfTaxaOnNode)
                 maxNumberOfTaxaOnNode = graph.getNode2Taxa(v).size();
@@ -301,7 +297,7 @@ public class ConvexHull {
      * @param intersectionNodes
      * @param side
      */
-    private static void convexHullPath(PhyloGraph g, Node start, EdgeIntegerArray visited, NodeArray<Integer> hulls, BitSet allowedSplits, ArrayList<Node> intersectionNodes, int side) {
+    private static void convexHullPath(SplitsGraph g, Node start, EdgeIntegerArray visited, NodeArray<Integer> hulls, BitSet allowedSplits, ArrayList<Node> intersectionNodes, int side) {
         final Stack<Node> todo = new Stack<>();
         todo.push(start);
 
@@ -365,24 +361,24 @@ public class ConvexHull {
      * @param noise      alter split-angles randomly by a small amount to prevent occlusion of edges.
      * @return node array of coordinates
      */
-    public static NodeArray embed(PhyloGraph graph, int[] ordering, boolean useWeights, boolean noise) {
-        int ntax = ordering.length - 1;
+    public static NodeArray embed(SplitsGraph graph, int[] ordering, boolean useWeights, boolean noise) {
+        final int ntax = ordering.length - 1;
 
-        Node[] ordering_n = new Node[ntax];
+        final Node[] orderedNodes = new Node[ntax];
 
         for (int i = 1; i <= ntax; i++) {
-            ordering_n[graph.getTaxon2Cycle(i) - 1] = graph.getTaxon2Node(i);
+            orderedNodes[ordering[i] - 1] = graph.getTaxon2Node(i);
         }
 
         // get splits
-        HashMap<Integer, ArrayList<Node>> splits = getSplits(graph, ordering_n);
-        for (Integer key : splits.keySet()) sortSplit(ordering_n, splits.get(key));
+        HashMap<Integer, ArrayList<Node>> splits = getSplits(graph, orderedNodes);
+        for (Integer key : splits.keySet()) sortSplit(orderedNodes, splits.get(key));
 
         /* get unit-vectors in split-direction */
-        HashMap<Integer, Double> dirs = getDirectionVectors(graph, splits, ordering_n, noise);
+        HashMap<Integer, Double> dirs = getDirectionVectors(graph, splits, orderedNodes, noise);
 
         /* compute coords */
-        return computeCoords(graph, dirs, ordering_n, useWeights);
+        return computeCoords(graph, dirs, orderedNodes, useWeights);
     }
 
     /**
@@ -392,7 +388,7 @@ public class ConvexHull {
      *
      * @param ordering the cyclic ordering
      */
-    private static HashMap<Integer, ArrayList<Node>> getSplits(PhyloGraph graph, Node[] ordering) {
+    private static HashMap<Integer, ArrayList<Node>> getSplits(SplitsGraph graph, Node[] ordering) {
 
         /* the splits */
         HashMap<Integer, ArrayList<Node>> splits = new HashMap<>();
@@ -523,7 +519,7 @@ public class ConvexHull {
      * @param noise    alter split-angles randomly by a small amount to prevent occlusion of edges
      * @return direction vectors for each split
      */
-    private static HashMap<Integer, Double> getDirectionVectors(PhyloGraph graph, HashMap<Integer, ArrayList<Node>> splits, Node[] ordering, boolean noise) {
+    private static HashMap<Integer, Double> getDirectionVectors(SplitsGraph graph, HashMap<Integer, ArrayList<Node>> splits, Node[] ordering, boolean noise) {
         final Random rand = new Random(666);    // add noise, if necessary
         final HashMap<Integer, Double> dirs = new HashMap<>(splits.size());
         final List<Node> orderingList = Arrays.asList(ordering);
@@ -564,7 +560,7 @@ public class ConvexHull {
             }
 
             graph.setAngle(currentEdge, angle);
-            currentEdge = graph.getNextEdge(currentEdge);
+            currentEdge = currentEdge.getNext();
         }
         return dirs;
     }
@@ -578,7 +574,7 @@ public class ConvexHull {
      * @param useWeights scale edges by edge weights?
      * @return node array of coordinates
      */
-    public static NodeArray computeCoords(PhyloGraph graph, HashMap<Integer, Double> dirs, Node[] ordering, boolean useWeights) {
+    public static NodeArray computeCoords(SplitsGraph graph, HashMap<Integer, Double> dirs, Node[] ordering, boolean useWeights) {
         NodeArray<Point2D> coords = new NodeArray<>(graph);
 
         /* stack for nodes which still have to be visited */

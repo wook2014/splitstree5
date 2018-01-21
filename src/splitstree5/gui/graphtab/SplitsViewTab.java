@@ -27,7 +27,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import jloda.fx.ASelectionModel;
 import jloda.graph.*;
-import jloda.phylo.PhyloGraph;
+import jloda.phylo.SplitsGraph;
 import jloda.util.Pair;
 import jloda.util.ResourceManager;
 import splitstree5.core.Document;
@@ -41,7 +41,7 @@ import java.util.*;
  * The split network view tab
  * Daniel Huson, 11.2017
  */
-public class SplitsViewTab extends GraphTab {
+public class SplitsViewTab extends GraphTab<SplitsGraph> {
     private final ASelectionModel<Integer> splitsSelectionModel = new ASelectionModel<>();
 
     /**
@@ -63,7 +63,7 @@ public class SplitsViewTab extends GraphTab {
                 addedSplits.addAll(c.getAddedSubList());
                 removedSplits.addAll(c.getRemoved());
             }
-            final PhyloGraph graph = getPhyloGraph();
+            final SplitsGraph graph = getGraph();
             for (Edge e : graph.edges()) {
                 if (addedSplits.contains(graph.getSplit(e)))
                     edgeSelectionModel.select(e);
@@ -81,7 +81,7 @@ public class SplitsViewTab extends GraphTab {
     }
 
     @Override
-    public void updateSelectionModels(PhyloGraph graph, TaxaBlock taxa, Document document) {
+    public void updateSelectionModels(SplitsGraph graph, TaxaBlock taxa, Document document) {
         super.updateSelectionModels(graph, taxa, document);
         splitsSelectionModel.setItems(graph.getSplitIds());
     }
@@ -158,7 +158,7 @@ public class SplitsViewTab extends GraphTab {
         final Pair<Double, Edge>[] list = new Pair[v.getDegree()];
         int i = 0;
         for (Edge e : v.adjacentEdges()) {
-            list[i++] = new Pair<>(getPhyloGraph().getWeight(e), e);
+            list[i++] = new Pair<>(getGraph().getWeight(e), e);
         }
 
         Arrays.sort(list, (o1, o2) -> -o1.getFirst().compareTo(o2.getFirst()));
@@ -172,7 +172,7 @@ public class SplitsViewTab extends GraphTab {
     /**
      * create an edge view
      */
-    public AEdgeView createEdgeView(final PhyloGraph graph, final Edge e, final Double weight, final Point2D start, final Point2D end) {
+    public AEdgeView createEdgeView(final SplitsGraph graph, final Edge e, final Double weight, final Point2D start, final Point2D end) {
         final AEdgeView edgeView = new AEdgeView(e, weight, start, end);
         final int splitId = graph.getSplit(e);
 
@@ -200,11 +200,11 @@ public class SplitsViewTab extends GraphTab {
      * select by split associated with given edge
      */
     public void selectBySplit(Edge e) {
-        final int splitId = getPhyloGraph().getSplit(e);
+        final int splitId = getGraph().getSplit(e);
         if (!splitsSelectionModel.getSelectedItems().contains(splitId)) {
             splitsSelectionModel.clearSelection();
             splitsSelectionModel.select((Integer) splitId);
-            selectAllNodesOnSmallerSide(getPhyloGraph(), e, nodeSelectionModel);
+            selectAllNodesOnSmallerSide(getGraph(), e, nodeSelectionModel);
         }
     }
 
@@ -216,7 +216,7 @@ public class SplitsViewTab extends GraphTab {
         double y = 0;
         if (edges.size() > 0) {
             for (Edge edge : edges) {
-                if (edge.getOwner() == getPhyloGraph()) {
+                if (edge.getOwner() == getGraph()) {
                     final ANodeView nodeView;
                     if (selectedNodes.contains(edge.getSource()))
                         nodeView = node2view.get(edge.getTarget());
@@ -238,7 +238,7 @@ public class SplitsViewTab extends GraphTab {
      */
     private void applySplitRotation(double angle, ObservableList<Edge> selectedEdges, HashSet<Node> selectedNodes, NodeArray<ANodeView> node2view, EdgeArray<AEdgeView> edge2view) {
         final Edge e = selectedEdges.get(0);
-        if (e.getOwner() == getPhyloGraph()) {
+        if (e.getOwner() == getGraph()) {
             final Node anchorNode;
             final Node selectedNode;
             if (selectedNodes.contains(e.getSource())) {
@@ -255,11 +255,11 @@ public class SplitsViewTab extends GraphTab {
             Point2D translate = newSelectedPoint.subtract(selectedPoint);
 
             for (Node v : selectedNodes) {
-                if (v.getOwner() == getPhyloGraph())
+                if (v.getOwner() == getGraph())
                     node2view.get(v).translateCoordinates(translate.getX(), translate.getY());
             }
             for (Node v : selectedNodes) {
-                if (v.getOwner() == getPhyloGraph()) {
+                if (v.getOwner() == getGraph()) {
                     for (Edge edge : v.adjacentEdges()) {
                         if (v == edge.getTarget() || !selectedNodes.contains(edge.getTarget())) {
                             edge2view.get(edge).setCoordinates(node2view.get(edge.getSource()).getLocation(), node2view.get(edge.getTarget()).getLocation());
@@ -273,7 +273,7 @@ public class SplitsViewTab extends GraphTab {
     /**
      * select all nodes on smaller side of graph separated by e
      */
-    private static void selectAllNodesOnSmallerSide(PhyloGraph graph, Edge e, ASelectionModel<Node> nodeSelectionModel) {
+    private static void selectAllNodesOnSmallerSide(SplitsGraph graph, Edge e, ASelectionModel<Node> nodeSelectionModel) {
         nodeSelectionModel.clearSelection();
         final NodeSet visited = new NodeSet(graph);
         visitRec(graph, e.getSource(), null, graph.getSplit(e), visited);
@@ -291,7 +291,7 @@ public class SplitsViewTab extends GraphTab {
     /**
      * recursively visit all nodes on one side of a given split
      */
-    private static void visitRec(PhyloGraph graph, Node v, Edge e, int splitId, NodeSet visited) {
+    private static void visitRec(SplitsGraph graph, Node v, Edge e, int splitId, NodeSet visited) {
         if (!visited.contains(v)) {
             visited.add(v);
             for (Edge f : v.adjacentEdges()) {

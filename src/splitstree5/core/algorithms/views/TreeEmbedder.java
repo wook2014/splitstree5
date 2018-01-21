@@ -93,7 +93,6 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
     private ChangeListener<UpdateState> changeListener;
 
     public TreeEmbedder() {
-        System.err.println("CONSTRUCT");
     }
 
     @Override
@@ -353,7 +352,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
     private void computeNodeLocationsForCircular(Node root, EdgeFloatArray edgeLengths, EdgeFloatArray edgeAngles, NodeArray<Point2D> node2point) {
         Point2D rootLocation = new Point2D(0.2, 0);
         node2point.setValue(root, rootLocation);
-        for (Edge e = root.getFirstOutEdge(); e != null; e = root.getNextOutEdge(e)) {
+        for (Edge e : root.outEdges()) {
             final Node w = e.getTarget();
             final Point2D wLocation = GeometryUtils.translateByAngle(rootLocation, edgeAngles.getValue(e), 1000 * edgeLengths.getValue(e));
             node2point.setValue(w, wLocation);
@@ -371,7 +370,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
      */
     private void computeNodeLocationAndViewForCicularRec(Point2D origin, Node v, Point2D vLocation, Edge e, EdgeFloatArray edgeLengths,
                                                          EdgeFloatArray edgeAngles, NodeArray<Point2D> node2point) {
-        for (Edge f = v.getFirstOutEdge(); f != null; f = v.getNextOutEdge(f)) {
+        for (Edge f : v.outEdges()) {
             final Node w = f.getTarget();
             final Point2D b = GeometryUtils.rotateAbout(vLocation, edgeAngles.getValue(f) - edgeAngles.getValue(e), origin);
             final Point2D c = GeometryUtils.translateByAngle(b, edgeAngles.getValue(f), 1000 * edgeLengths.getValue(f));
