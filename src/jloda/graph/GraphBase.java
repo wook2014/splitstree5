@@ -16,22 +16,6 @@
  * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @version $Id: GraphBase.java,v 1.6 2005-01-30 13:00:39 huson Exp $
- * <p>
- * Base class for all graph related stuff.
- * @author Daniel Huson
- * @version $Id: GraphBase.java,v 1.6 2005-01-30 13:00:39 huson Exp $
- * <p>
- * Base class for all graph related stuff.
- * @author Daniel Huson
- */
-/**
- * @version $Id: GraphBase.java,v 1.6 2005-01-30 13:00:39 huson Exp $
- *
- * Base class for all graph related stuff.
- *
- * @author Daniel Huson
  */
 package jloda.graph;
 

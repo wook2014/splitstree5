@@ -71,7 +71,7 @@ import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.algorithmtab.AlgorithmPane;
 import splitstree5.gui.utils.DragAndDropSupportListView2;
-import splitstree5.undo.UndoRedoManager;
+import splitstree5.undo.UndoManager;
 import splitstree5.undo.UndoableChangeListViews2;
 
 import java.io.IOException;
@@ -85,7 +85,7 @@ public class TreeSelectorPane extends AlgorithmPane {
     private final TreesFilter treesFilter;
     private final TreeSelectorPaneController controller;
     private Document document;
-    private UndoRedoManager undoManager;
+    private UndoManager undoManager;
 
     private ArrayList<String> prevActiveTrees = new ArrayList<>(); // used to facilitate undo/redo, do not modify
     private ArrayList<String> prevInactiveTrees = new ArrayList<>(); // used to facilitate undo/redo, do not modify
@@ -104,11 +104,11 @@ public class TreeSelectorPane extends AlgorithmPane {
         final ExtendedFXMLLoader extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         controller = (TreeSelectorPaneController) extendedFXMLLoader.getController();
         this.getChildren().setAll(extendedFXMLLoader.getRoot());
-        undoManager = new UndoRedoManager();
+        undoManager = new UndoManager();
     }
 
     @Override
-    public void setUndoManager(UndoRedoManager undoManager) {
+    public void setUndoManager(UndoManager undoManager) {
         this.undoManager = undoManager;
     }
 

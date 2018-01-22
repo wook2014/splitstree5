@@ -100,6 +100,8 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import jloda.graph.Edge;
 import jloda.graph.EdgeArray;
 import jloda.graph.Node;
@@ -129,7 +131,8 @@ public class NodeLabelLayouter {
             final ANodeView nv = node2view.getValue(v);
             if (phyloGraph.getLabel(v) != null) {
                 final javafx.scene.Node shape = nv.getShape();
-                shapeBoundsList.add(new BoundingBox(shape.getLayoutX(), shape.getLayoutY(), shape.getLayoutBounds().getWidth(), shape.getLayoutBounds().getHeight()));
+                if (shape != null)
+                    shapeBoundsList.add(new BoundingBox(shape.getLayoutX() - 0.5 * shape.getBoundsInLocal().getWidth(), shape.getLayoutY() - 0.5 * shape.getBoundsInLocal().getHeight(), shape.getLayoutBounds().getWidth(), shape.getLayoutBounds().getHeight()));
             }
         }
 
@@ -141,9 +144,9 @@ public class NodeLabelLayouter {
                 final javafx.scene.Node shape = nv.getShape();
                 final Bounds shapeBounds;
                 if (shape != null)
-                    shapeBounds = new BoundingBox(shape.getLayoutX(), shape.getLayoutY(), shape.getBoundsInLocal().getWidth(), shape.getBoundsInLocal().getHeight());
+                    shapeBounds = new BoundingBox(shape.getLayoutX() - 0.5 * shape.getBoundsInLocal().getWidth(), shape.getLayoutY() - 0.5 * shape.getBoundsInLocal().getHeight(), shape.getBoundsInLocal().getWidth(), shape.getBoundsInLocal().getHeight());
                 else
-                    shapeBounds = new BoundingBox(nv.getLocation().getX(), nv.getLocation().getY(), 2, 2);
+                    shapeBounds = new BoundingBox(nv.getLocation().getX() - 1, nv.getLocation().getY() - 1, 2, 2);
 
                 final double angle;
                 if (v.getDegree() == 1) {
@@ -179,18 +182,48 @@ public class NodeLabelLayouter {
                             0.5 * (shapeBounds.getMaxY() + shapeBounds.getMinY() - label.getLayoutBounds().getHeight()));
                     BoundingBox bbox = new BoundingBox(location.getX(), location.getY(), label.getLayoutBounds().getWidth(), label.getLayoutBounds().getHeight());
 
+
+                    if (false) // debugging
+                    {
+                        ArrayList<javafx.scene.Node> rectangles = new ArrayList<>();
+                        for (javafx.scene.Node node : nv.getShapeGroup().getChildren()) {
+                            if (node instanceof Rectangle)
+                                rectangles.add(node);
+                        }
+                        nv.getShapeGroup().getChildren().removeAll(rectangles);
+                    }
+
+                    if (false)// debugging
+                    {
+                        Rectangle rect = new Rectangle(shapeBounds.getMinX(), shapeBounds.getMinY(), shapeBounds.getWidth(), shapeBounds.getHeight());
+                        rect.setFill(Color.TRANSPARENT);
+                        rect.setStroke(Color.PINK);
+                        nv.getShapeGroup().getChildren().add(rect);
+                    }
+
+
                     boolean ok = false;
                     while (!ok) {
                         ok = true;
                         int count = 0;
                         for (BoundingBox other : iterator(shapeBoundsList.iterator(), labelBoundsList.iterator())) {
                             if (other.intersects(bbox)) {
-                                if (count >= shapeBoundsList.size() && sparseLabels)
+                                if (count >= shapeBoundsList.size() && sparseLabels) {
                                     nv.getLabel().setVisible(false);
+                                    ok = true; // done with this, it will be invisible
+                                    break;
+                                }
 
                                 location = GeometryUtils.translateByAngle(location, angle, 0.2 * bbox.getHeight());
                                 bbox = new BoundingBox(location.getX(), location.getY(), Math.max(1, label.getLayoutBounds().getWidth()), Math.max(1, label.getLayoutBounds().getHeight()));
                                 ok = false;
+                                if (false)// debugging
+                                {
+                                    Rectangle rect = new Rectangle(bbox.getMinX(), bbox.getMinY(), label.getLayoutBounds().getWidth(), label.getLayoutBounds().getHeight());
+                                    rect.setFill(Color.TRANSPARENT);
+                                    rect.setStroke(Color.LIGHTGREEN);
+                                    nv.getShapeGroup().getChildren().add(rect);
+                                }
                                 break;
                             }
                             count++;
@@ -248,13 +281,15 @@ public class NodeLabelLayouter {
                 }
 
                 if (sparseLabels) {
-                    BoundingBox bbox = new BoundingBox(label.getLayoutX(), label.getLayoutY(), label.getLayoutBounds().getWidth(), label.getLayoutBounds().getHeight());
+                    final BoundingBox bbox = new BoundingBox(label.getLayoutX(), label.getLayoutY(), label.getLayoutBounds().getWidth(), label.getLayoutBounds().getHeight());
                     for (BoundingBox other : labelBoundsList) {
                         if (bbox.intersects(other)) {
                             label.setVisible(false);
                             break;
                         }
                     }
+                    if (label.isVisible())
+                        labelBoundsList.add(bbox);
                 }
             }
         }

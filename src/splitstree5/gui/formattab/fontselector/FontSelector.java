@@ -32,6 +32,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Popup;
+import javafx.util.converter.IntegerStringConverter;
 import jloda.fx.ExtendedFXMLLoader;
 import jloda.util.Basic;
 
@@ -63,23 +64,21 @@ public class FontSelector extends ComboBox<String> {
         controller = extendedFXMLLoader.getController();
 
         controller.getFontFamilyComboBox().getItems().addAll(new TreeSet<>(Font.getFamilies()));
-        controller.getFontFamilyComboBox().getSelectionModel().select(Font.getDefault().getFamily());
 
         controller.getFontStyleComboBox().getItems().addAll("Bold", "Italic", "Bold Italic", "Regular");
-        controller.getFontStyleComboBox().getSelectionModel().select("Regular");
 
-        controller.getFontSizeComboBox().getItems().addAll("4", "6", "8", "10", "12", "14", "16", "20", "24", "32", "38", "48", "60");
-        controller.getFontSizeComboBox().getSelectionModel().select("12");
+        controller.getFontSizeComboBox().getItems().addAll(4, 6, 8, 10, 12, 14, 16, 20, 24, 32, 38, 48, 60);
 
         controller.getFontSizeSlider().setMin(4);
         controller.getFontSizeSlider().setMax(60);
-        controller.getFontSizeSlider().setValue(12);
 
-        controller.getFontSizeComboBox().getSelectionModel().selectedItemProperty().addListener((c, o, n) -> {
+        controller.getFontSizeComboBox().setConverter(new IntegerStringConverter());
+        controller.getFontSizeComboBox().valueProperty().addListener((c, o, n) -> {
             if (!sizeChanging) {
-                if (Basic.isDouble(n)) {
+                try {
                     sizeChanging = true;
-                    controller.getFontSizeSlider().setValue(Double.parseDouble(n));
+                    controller.getFontSizeSlider().setValue(n);
+                } finally {
                     sizeChanging = false;
                 }
             }
@@ -87,9 +86,12 @@ public class FontSelector extends ComboBox<String> {
 
         controller.getFontSizeSlider().valueProperty().addListener((c, o, n) -> {
             if (!sizeChanging) {
-                sizeChanging = true;
-                controller.getFontSizeComboBox().getSelectionModel().select(String.valueOf(n.intValue()));
-                sizeChanging = false;
+                try {
+                    sizeChanging = true;
+                    controller.getFontSizeComboBox().setValue(Math.round(n.floatValue()));
+                } finally {
+                    sizeChanging = false;
+                }
             }
         });
 
@@ -150,9 +152,9 @@ public class FontSelector extends ComboBox<String> {
             try {
                 fontChanging = true;
                 setFontValue(font);
-                controller.getFontFamilyComboBox().getSelectionModel().select(font.getFamily());
-                controller.getFontSizeComboBox().getSelectionModel().select(String.format("%.0f", font.getSize()));
-                controller.getFontStyleComboBox().getSelectionModel().select(font.getStyle());
+                controller.getFontFamilyComboBox().setValue(font.getFamily());
+                controller.getFontSizeComboBox().setValue((int) Math.round(font.getSize()));
+                controller.getFontStyleComboBox().setValue(font.getStyle());
             } finally {
                 fontChanging = false;
             }
@@ -165,10 +167,17 @@ public class FontSelector extends ComboBox<String> {
                 fontChanging = true;
 
                 final String family = controller.getFontFamilyComboBox().getSelectionModel().getSelectedItem();
-                if (controller.getFontFamilyComboBox().getItems().contains(family) && Basic.isDouble(controller.getFontSizeComboBox().getSelectionModel().getSelectedItem())) {
-                    final Double size = Math.max(1, Basic.parseDouble(controller.getFontSizeComboBox().getSelectionModel().getSelectedItem()));
-                    final FontPosture fontPosture = controller.getFontStyleComboBox().getSelectionModel().getSelectedItem().contains("Italic") ? FontPosture.ITALIC : FontPosture.REGULAR;
-                    final FontWeight fontWeight = FontWeight.findByName(controller.getFontStyleComboBox().getSelectionModel().getSelectedItem());
+                if (controller.getFontFamilyComboBox().getItems().contains(family)) {
+                    final int size = Math.max(1, controller.getFontSizeComboBox().getValue());
+                    final String style = controller.getFontStyleComboBox().getSelectionModel().getSelectedItem();
+                    final FontPosture fontPosture = style.toLowerCase().contains("italic") || style.toLowerCase().contains("oblique") ? FontPosture.ITALIC : FontPosture.REGULAR;
+
+                    FontWeight fontWeight = null; // one of the words should define the weight, find it
+                    for (String word : style.split("\\s+")) {
+                        fontWeight = FontWeight.findByName(Basic.capitalize(word, true));
+                        if (fontWeight != null)
+                            break;
+                    }
                     final Font font = Font.font(family, fontWeight, fontPosture, size);
                     setFontValue(font);
                 }

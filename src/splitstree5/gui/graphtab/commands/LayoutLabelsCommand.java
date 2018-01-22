@@ -17,7 +17,26 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.gui.graphtab;
+/*
+ *  Copyright (C) 2016 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package splitstree5.gui.graphtab.commands;
 
 import javafx.geometry.Point2D;
 import javafx.scene.control.Labeled;
@@ -35,7 +54,11 @@ import splitstree5.undo.UndoableRedoableCommand;
 
 import java.util.ArrayList;
 
-public class UndoableLayoutLabels extends UndoableRedoableCommand {
+/**
+ * layout labels
+ * Daniel Huson, 1.2018
+ */
+public class LayoutLabelsCommand extends UndoableRedoableCommand {
     private final GraphLayout graphLayout;
     private final boolean sparseLabels;
     private final PhyloGraph phyloGraph;
@@ -46,7 +69,7 @@ public class UndoableLayoutLabels extends UndoableRedoableCommand {
     private final ArrayList<Triplet<Node, Point2D, Boolean>> oldNodeLabels = new ArrayList<>();
     private final ArrayList<Triplet<Edge, Point2D, Boolean>> oldEdgeLabels = new ArrayList<>();
 
-    public UndoableLayoutLabels(GraphLayout graphLayout, boolean sparseLabels, PhyloGraph phyloGraph, Node root, NodeArray<ANodeView> node2view, EdgeArray<AEdgeView> edge2view) {
+    public LayoutLabelsCommand(GraphLayout graphLayout, boolean sparseLabels, PhyloGraph phyloGraph, Node root, NodeArray<ANodeView> node2view, EdgeArray<AEdgeView> edge2view) {
         super("Label Layout");
         this.graphLayout = graphLayout;
         this.sparseLabels = sparseLabels;

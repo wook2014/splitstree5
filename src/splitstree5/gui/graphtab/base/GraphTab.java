@@ -49,6 +49,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
@@ -68,14 +69,17 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
 import splitstree5.gui.ISavesPreviousSelection;
 import splitstree5.gui.ViewerTab;
+import splitstree5.gui.formattab.FontSizeIncrementCommand;
 import splitstree5.gui.formattab.FormatItem;
-import splitstree5.gui.formattab.UndoableFontSizeIncrement;
-import splitstree5.gui.graphtab.UndoableLayoutLabels;
+import splitstree5.gui.graphtab.commands.LayoutLabelsCommand;
+import splitstree5.gui.graphtab.commands.MoveLabelCommand;
+import splitstree5.gui.graphtab.commands.RotateCommand;
+import splitstree5.gui.graphtab.commands.ZoomCommand;
 import splitstree5.gui.utils.RubberBandSelection;
 import splitstree5.gui.utils.SelectionEffect;
 import splitstree5.main.MainWindowManager;
 import splitstree5.menu.MenuController;
-import splitstree5.undo.UndoableRedoableCommand;
+import splitstree5.undo.CompositeCommand;
 import splitstree5.utils.Print;
 
 import java.util.*;
@@ -111,15 +115,11 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
     private DoubleProperty scaleChangeY = new SimpleDoubleProperty(1);
     private DoubleProperty angleChange = new SimpleDoubleProperty(0);
 
-    private final StringProperty title = new SimpleStringProperty("");
     private ObjectProperty<GraphLayout> layout = new SimpleObjectProperty<>(GraphLayout.LeftToRight);
 
     private final RubberBandSelection rubberBandSelection;
 
     private Map<String, FormatItem> nodeLabel2Style;
-
-    ListChangeListener<javafx.scene.Node> listChangeListener;
-
 
     private ListChangeListener<Node> nodeSelectionChangeListener;
     private ListChangeListener<Taxon> documentTaxonSelectionChangeListener;
@@ -140,8 +140,7 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
                             if (nv.getLabel() != null) {
                                 nv.getLabel().setEffect(SelectionEffect.getInstance());
                             }
-                            if (nv.getShape() != null)
-                                nv.getShape().setEffect(SelectionEffect.getInstance());
+                            nv.getShapeGroup().setEffect(SelectionEffect.getInstance());
                         }
                     }
                 }
@@ -152,8 +151,7 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
                             if (nv.getLabel() != null) {
                                 nv.getLabel().setEffect(null);
                             }
-                            if (nv.getShape() != null)
-                                nv.getShape().setEffect(null);
+                            nv.getShapeGroup().setEffect(null);
                         }
                     }
                 }
@@ -328,6 +326,7 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
             scaleChangeY.set(1);
             angleChange.set(0);
         });
+        Platform.runLater(() -> getUndoManager().clear());
     }
 
     public void setName(String name) {
@@ -386,9 +385,9 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
                     @Override // override node scaling to use coordinate scaling
                     public void updateScale() {
                         if (layout.get() == GraphLayout.Radial) {
-                            scale(getZoomFactorY(), getZoomFactorY());
+                            getUndoManager().doAndAdd(new ZoomCommand(getZoomFactorY(), getZoomFactorY(), GraphTab.this));
                         } else {
-                            scale(getZoomFactorX(), getZoomFactorY());
+                            getUndoManager().doAndAdd(new ZoomCommand(getZoomFactorX(), getZoomFactorY(), GraphTab.this));
                         }
                     }
                 };
@@ -516,7 +515,7 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
     }
 
     public void addNodeLabelMovementSupport(ANodeView nodeView) {
-        final javafx.scene.Node label = nodeView.getLabel();
+        final Labeled label = nodeView.getLabel();
         if (label != null) {
             final Single<Point2D> oldLocation = new Single<>();
             final Single<Point2D> point = new Single<>();
@@ -543,35 +542,7 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
                 if (oldLocation.get() != null) {
                     final Point2D newLocation = new Point2D(label.getLayoutX(), label.getLayoutY());
                     if (!newLocation.equals(oldLocation.get())) {
-                        getUndoRedoManager().add(new UndoableRedoableCommand("Move Label") {
-                            private Node v = nodeView.getNode();
-                            double oldX = oldLocation.get().getX();
-                            double oldY = oldLocation.get().getY();
-                            double newX = newLocation.getX();
-                            double newY = newLocation.getY();
-
-                            @Override
-                            public void undo() {
-                                label.setLayoutX(oldX);
-                                label.setLayoutY(oldY);
-                            }
-
-                            @Override
-                            public void redo() {
-                                label.setLayoutX(newX);
-                                label.setLayoutY(newY);
-                            }
-
-                            @Override
-                            public boolean isUndoable() {
-                                return getNode2view().get(v) == nodeView; // still contained in graph
-                            }
-
-                            @Override
-                            public boolean isRedoable() {
-                                return getNode2view().get(v) == nodeView; // still contained in graph
-                            }
-                        });
+                        getUndoManager().doAndAdd(new MoveLabelCommand(label, oldLocation.get(), newLocation, nodeView));
                     }
                 }
                 point.set(null);
@@ -591,8 +562,8 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
 
             for (Node node : graph.nodes()) {
                 final ANodeView nodeView = node2view.get(node);
-                if (nodeView.getShape() != null) {
-                    final Bounds bounds = nodeView.getShape().localToScene(nodeView.getShape().getBoundsInLocal());
+                {
+                    final Bounds bounds = nodeView.getShapeGroup().localToScene(nodeView.getShapeGroup().getBoundsInLocal());
                     if (rectangle.contains(bounds.getMinX(), bounds.getMinY()) && rectangle.contains(bounds.getMaxX(), bounds.getMaxY())) {
                         if (previouslySelectedNodes.contains(node))
                             nodeSelectionModel.clearSelection(node);
@@ -600,6 +571,7 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
                             nodeSelectionModel.select(node);
                     }
                 }
+
                 if (nodeView.getLabel() != null) {
                     final Bounds bounds = nodeView.getLabel().localToScene(nodeView.getLabel().getBoundsInLocal());
                     if (rectangle.contains(bounds.getMinX(), bounds.getMinY()) && rectangle.contains(bounds.getMaxX(), bounds.getMaxY())) {
@@ -639,18 +611,18 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
         controller.getPageSetupMenuItem().setOnAction((e) -> Print.showPageLayout(getMainWindow().getStage()));
         controller.getPrintMenuitem().setOnAction((e) -> Print.print(getMainWindow().getStage(), pane));
 
-        if (getUndoRedoManager() != null) {
+        if (getUndoManager() != null) {
             controller.getUndoMenuItem().setOnAction((e) -> {
-                getUndoRedoManager().undo();
+                getUndoManager().undo();
             });
-            controller.getUndoMenuItem().disableProperty().bind(getUndoRedoManager().canUndoProperty().not());
-            controller.getUndoMenuItem().textProperty().bind(getUndoRedoManager().undoNameProperty());
+            controller.getUndoMenuItem().disableProperty().bind(getUndoManager().canUndoProperty().not());
+            controller.getUndoMenuItem().textProperty().bind(getUndoManager().undoNameProperty());
 
             controller.getRedoMenuItem().setOnAction((e) -> {
-                getUndoRedoManager().redo();
+                getUndoManager().redo();
             });
-            controller.getRedoMenuItem().disableProperty().bind(getUndoRedoManager().canRedoProperty().not());
-            controller.getRedoMenuItem().textProperty().bind(getUndoRedoManager().redoNameProperty());
+            controller.getRedoMenuItem().disableProperty().bind(getUndoManager().canRedoProperty().not());
+            controller.getRedoMenuItem().textProperty().bind(getUndoManager().redoNameProperty());
         }
 
         controller.getSelectAllMenuItem().setOnAction((e) -> {
@@ -697,43 +669,44 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
         controller.getZoomInMenuItem().setOnAction((e) -> scrollPane.zoomBy(1.1, 1.1));
         controller.getZoomOutMenuItem().setOnAction((e) -> scrollPane.zoomBy(1 / 1.1, 1 / 1.1));
 
-        controller.getRotateLeftMenuItem().setOnAction((e) -> rotate(-10));
+        controller.getRotateLeftMenuItem().setOnAction((e) -> getUndoManager().doAndAdd(new RotateCommand(-10, GraphTab.this)));
         controller.getRotateLeftMenuItem().disableProperty().bind(layout.isNotEqualTo(GraphLayout.Radial));
-        controller.getRotateRightMenuItem().setOnAction((e) -> rotate(10));
+        controller.getRotateRightMenuItem().setOnAction((e) -> getUndoManager().doAndAdd(new RotateCommand(10, GraphTab.this)));
         controller.getRotateRightMenuItem().disableProperty().bind(layout.isNotEqualTo(GraphLayout.Radial));
 
 
         controller.getResetMenuItem().setOnAction((e) -> {
-            scale(1 / scaleChangeX.get(), 1 / scaleChangeY.get());
-            rotate(-angleChange.get());
-            layoutLabels(sparseLabels.get());
-            scrollPane.resetZoom();
+            getUndoManager().doAndAdd(new CompositeCommand("Reset",
+                    new ZoomCommand(1 / scaleChangeX.get(), 1 / scaleChangeY.get(), GraphTab.this),
+                    new RotateCommand(-angleChange.get(), GraphTab.this),
+                    new LayoutLabelsCommand(layout.get(), sparseLabels.get(), graph, (graph instanceof PhyloTree ? ((PhyloTree) graph).getRoot() : null), node2view, edge2view)));
+            //scrollPane.resetZoom();
         });
         controller.getResetMenuItem().disableProperty().bind(scaleChangeX.isEqualTo(1).and(scaleChangeY.isEqualTo(1)).and(angleChange.isEqualTo(0)));
 
         controller.getIncreaseFontSizeMenuItem().setOnAction((x) -> {
             if (nodeSelectionModel.getSelectedItems().size() > 0 || edgeSelectionModel.getSelectedItems().size() > 0) {
-                getUndoRedoManager().doAndAdd(new UndoableFontSizeIncrement(2, nodeSelectionModel.getSelectedItems(),
+                getUndoManager().doAndAdd(new FontSizeIncrementCommand(2, nodeSelectionModel.getSelectedItems(),
                         node2view, edgeSelectionModel.getSelectedItems(), edge2view));
             } else {
-                getUndoRedoManager().doAndAdd(new UndoableFontSizeIncrement(2, Arrays.asList(nodeSelectionModel.getItems()),
+                getUndoManager().doAndAdd(new FontSizeIncrementCommand(2, Arrays.asList(nodeSelectionModel.getItems()),
                         node2view, Arrays.asList(edgeSelectionModel.getItems()), edge2view));
             }
         });
 
         controller.getDecreaseFontSizeMenuItem().setOnAction((x) -> {
             if (nodeSelectionModel.getSelectedItems().size() > 0 || edgeSelectionModel.getSelectedItems().size() > 0) {
-                getUndoRedoManager().doAndAdd(new UndoableFontSizeIncrement(-2, nodeSelectionModel.getSelectedItems(),
+                getUndoManager().doAndAdd(new FontSizeIncrementCommand(-2, nodeSelectionModel.getSelectedItems(),
                         node2view, edgeSelectionModel.getSelectedItems(), edge2view));
             } else {
-                getUndoRedoManager().doAndAdd(new UndoableFontSizeIncrement(-2, Arrays.asList(nodeSelectionModel.getItems()),
+                getUndoManager().doAndAdd(new FontSizeIncrementCommand(-2, Arrays.asList(nodeSelectionModel.getItems()),
                         node2view, Arrays.asList(edgeSelectionModel.getItems()), edge2view));
             }
         });
 
         controller.getLayoutLabelsMenuItem().setOnAction((e) -> {
             Node root = (graph instanceof PhyloTree ? ((PhyloTree) graph).getRoot() : null);
-            getUndoRedoManager().doAndAdd(new UndoableLayoutLabels(layout.get(), sparseLabels.get(), graph, root, node2view, edge2view));
+            getUndoManager().doAndAdd(new LayoutLabelsCommand(layout.get(), sparseLabels.get(), graph, root, node2view, edge2view));
         });
         controller.getSparseLabelsCheckMenuItem().selectedProperty().bindBidirectional(sparseLabels);
         controller.getSparseLabelsCheckMenuItem().setOnAction(controller.getLayoutLabelsMenuItem().getOnAction());

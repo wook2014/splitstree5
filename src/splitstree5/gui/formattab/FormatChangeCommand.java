@@ -35,7 +35,7 @@ import java.util.Collections;
 /**
  * an undoable-redoable format change
  */
-public class UndoableFormatChange extends UndoableRedoableCommand {
+public class FormatChangeCommand extends UndoableRedoableCommand {
     private final FormatItem formatItem;
     private final ArrayList<Node> nodes;
     private final NodeArray<ANodeView> node2view;
@@ -54,7 +54,7 @@ public class UndoableFormatChange extends UndoableRedoableCommand {
      * @param edges
      * @param edge2view
      */
-    public UndoableFormatChange(final FormatItem formatItem, Collection<Node> nodes, NodeArray<ANodeView> node2view, Collection<Edge> edges, EdgeArray<AEdgeView> edge2view) {
+    public FormatChangeCommand(final FormatItem formatItem, Collection<Node> nodes, NodeArray<ANodeView> node2view, Collection<Edge> edges, EdgeArray<AEdgeView> edge2view) {
         super(formatItem.getName());
 
         this.formatItem = formatItem.clone();

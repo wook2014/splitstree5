@@ -42,7 +42,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.scene.layout.StackPane;
 import splitstree5.core.Document;
 import splitstree5.core.connectors.AConnector;
-import splitstree5.undo.UndoRedoManager;
+import splitstree5.undo.UndoManager;
 
 /**
  * An algorithm controller pane
@@ -62,7 +62,7 @@ public abstract class AlgorithmPane extends StackPane {
      *
      * @param undoManager
      */
-    public void setUndoManager(UndoRedoManager undoManager) {
+    public void setUndoManager(UndoManager undoManager) {
     }
 
     /**

@@ -36,7 +36,7 @@ public class FontSelectorController {
     private ComboBox<String> fontStyleComboBox;
 
     @FXML
-    private ComboBox<String> fontSizeComboBox;
+    private ComboBox<Integer> fontSizeComboBox;
 
     @FXML
     private Slider fontSizeSlider;
@@ -53,7 +53,7 @@ public class FontSelectorController {
         return fontStyleComboBox;
     }
 
-    public ComboBox<String> getFontSizeComboBox() {
+    public ComboBox<Integer> getFontSizeComboBox() {
         return fontSizeComboBox;
     }
 

@@ -69,8 +69,8 @@ public class TreeViewTab extends GraphTab<PhyloTree> {
      */
     public ANodeView createNodeView(Node v, Point2D location, String text) {
         final ANodeView nodeView = new ANodeView(v, location, text);
-        if (nodeView.getShape() != null) {
-            nodeView.getShape().setOnMouseClicked((x) -> {
+        if (nodeView.getShapeGroup() != null) {
+            nodeView.getShapeGroup().setOnMouseClicked((x) -> {
                 edgeSelectionModel.clearSelection();
                 if (!x.isShiftDown())
                     nodeSelectionModel.clearSelection();

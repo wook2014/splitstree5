@@ -16,17 +16,6 @@
  * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @version $Id: NodeDoubleArray.java,v 1.7 2007-10-23 13:10:53 huson Exp $
- * @author Daniel Huson
- * @version $Id: NodeDoubleArray.java,v 1.7 2007-10-23 13:10:53 huson Exp $
- * @author Daniel Huson
- */
-/**
- * @version $Id: NodeDoubleArray.java,v 1.7 2007-10-23 13:10:53 huson Exp $
- *
- * @author Daniel Huson
- *
  */
 package jloda.graph;
 

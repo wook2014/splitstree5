@@ -16,17 +16,6 @@
  * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @version $Id: Graph.java,v 1.51 2008-10-10 08:42:37 huson Exp $
- * @author Daniel Huson
- * @version $Id: Graph.java,v 1.51 2008-10-10 08:42:37 huson Exp $
- * @author Daniel Huson
- */
-/**
- * @version $Id: Graph.java,v 1.51 2008-10-10 08:42:37 huson Exp $
- *
- * @author Daniel Huson
- *
  */
 package jloda.graph;
 

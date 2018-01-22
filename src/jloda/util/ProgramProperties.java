@@ -19,9 +19,10 @@
  */
 package jloda.util;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.print.PageFormat;
+import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -37,18 +38,16 @@ import java.util.LinkedList;
  */
 public class ProgramProperties {
     static public final java.util.Properties props = new java.util.Properties();
-    public static Color SELECTION_COLOR = new Color(252, 208, 102);
-    public static Color SELECTION_COLOR_DARKER = new Color(210, 190, 95);
-    public static Color SELECTION_COLOR_ADDITIONAL_TEXT = new Color(93, 155, 206);
+
+    static private Font defaultFont = Font.font("Arial", 12);
 
     static private String defaultFileName = null;
     static private String programName = "";
     static private String programVersion = "";
     static private String programTitle = "";
-    private static ImageIcon programIcon = null;
+    private static Image programIcon = null;
     private static final boolean macOS = (System.getProperty("os.name") != null && System.getProperty("os.name").toLowerCase().startsWith("mac"));
     private static boolean useGUI = false;
-    public static PageFormat pageFormat = null;
 
     /**
      * load properties from default file
@@ -88,6 +87,19 @@ public class ProgramProperties {
     public static void store(String fileName) {
         setPropertiesFileName(fileName);
         store();
+    }
+
+    /**
+     * default font for graphics
+     *
+     * @return default font
+     */
+    public static Font getDefaultFont() {
+        return defaultFont;
+    }
+
+    public static void setDefaultFont(Font defaultFont) {
+        ProgramProperties.defaultFont = defaultFont;
     }
 
     /**
@@ -135,7 +147,7 @@ public class ProgramProperties {
         if (value == null || value.equalsIgnoreCase("null"))
             return def;
         else
-            return Color.decode(value);
+            return Color.valueOf(value);
     }
 
 
@@ -173,21 +185,6 @@ public class ProgramProperties {
      */
     public static String get(String name, String def) {
         return props.getProperty(name, def);
-    }
-
-    /**
-     * gets a font property
-     *
-     * @return font or default
-     */
-    public static Font get(String name, Font def) {
-        String value = (String) props.get(name);
-        if (value == null)
-            return def;
-        else {
-            value = value.replaceAll(" ", "\\ ");
-            return Font.decode(value);
-        }
     }
 
     /**
@@ -304,56 +301,9 @@ public class ProgramProperties {
         if (value == null)
             props.setProperty(key, "null");
         else
-            props.setProperty(key, "" + value.getRGB());
+            props.setProperty(key, "" + value.toString());
     }
 
-
-    /**
-     * put a property
-     */
-    public static void put(String key, Font value) {
-        put(key, value.getFamily(), value.getStyle(), value.getSize());
-    }
-
-    /**
-     * put a property
-     */
-    public static void put(String key, String family, Integer style0, Integer size0) {
-        Font def = get(key, (Font) null);
-        String name;
-        if (family == null)
-            name = def.getFamily();
-        else
-            name = family;
-        int style;
-        if (style0 == null)
-            style = def.getStyle();
-        else
-            style = style0;
-        int size;
-        if (size0 == null)
-            size = def.getSize();
-        else
-            size = size0;
-
-        switch (style) {
-            case Font.BOLD + Font.ITALIC:
-                name += "-BOLDITALIC";
-                break;
-            case Font.BOLD:
-                name += "-BOLD";
-                break;
-            case Font.ITALIC:
-                name += "-ITALIC";
-                break;
-            default:
-            case Font.PLAIN:
-                name += "-PLAIN";
-                break;
-        }
-        name += "-" + size;
-        props.setProperty(key, name);
-    }
 
     /**
      * put a property
@@ -458,23 +408,15 @@ public class ProgramProperties {
      *
      * @return program icon
      */
-    public static ImageIcon getProgramIcon() {
+    public static Image getProgramIcon() {
         return programIcon;
     }
 
     /**
      * sets the program icon
      */
-    public static void setProgramIcon(ImageIcon icon) {
+    public static void setProgramIcon(Image icon) {
         ProgramProperties.programIcon = icon;
-    }
-
-    public static PageFormat getPageFormat() {
-        return pageFormat;
-    }
-
-    public static void setPageFormat(PageFormat pageFormat) {
-        ProgramProperties.pageFormat = pageFormat;
     }
 
     /**

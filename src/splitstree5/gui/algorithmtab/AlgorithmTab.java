@@ -35,7 +35,6 @@ import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.ViewerTab;
 import splitstree5.menu.MenuController;
-import splitstree5.undo.UndoRedoManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,7 +50,6 @@ import java.util.Map;
 public class AlgorithmTab<P extends ADataBlock, C extends ADataBlock> extends ViewerTab {
     private final Document document;
     private final AlgorithmTabController controller;
-    private final UndoRedoManager undoManager;
     private AlgorithmPane algorithmPane;
     private Algorithm<P, C> currentAlgorithm;
     private final BooleanProperty algorithmIsApplicable = new SimpleBooleanProperty(); // is the algorithm generally applicable to the given type of input data?
@@ -77,9 +75,7 @@ public class AlgorithmTab<P extends ADataBlock, C extends ADataBlock> extends Vi
             setContent(extendedFXMLLoader.getRoot());
         }
 
-        undoManager = new UndoRedoManager(); // has own undo manager, however, this is currently not accessible to the user
-
-        undoManager.undoStackSizeProperty().addListener((c, o, n) -> applicableChangeHasBeenMade.set(n.intValue() > 0));
+        getUndoManager().undoStackSizeProperty().addListener((c, o, n) -> applicableChangeHasBeenMade.set(n.intValue() > 0));
 
         connector.stateProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == UpdateState.VALID) {
@@ -89,7 +85,7 @@ public class AlgorithmTab<P extends ADataBlock, C extends ADataBlock> extends Vi
         });
 
         connector.getParent().stateProperty().addListener((observable, oldValue, newValue) -> {
-            undoManager.clear(); // if parent changes, have to forget history...
+            getUndoManager().clear(); // if parent changes, have to forget history...
         });
 
         controller.getBorderPane().setCenter(updateAlgorithmPane());
@@ -141,7 +137,7 @@ public class AlgorithmTab<P extends ADataBlock, C extends ADataBlock> extends Vi
         algorithmComboBox.getItems().addAll(algorithms);
         algorithmComboBox.setValue(currentAlgorithm);
         algorithmComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            undoManager.add("Set Algorithm", algorithmComboBox.valueProperty(), oldValue, newValue);
+            getUndoManager().add("Set Algorithm", algorithmComboBox.valueProperty(), oldValue, newValue);
             currentAlgorithm = ((Algorithm) newValue);
             controller.getBorderPane().setCenter(updateAlgorithmPane());
             algorithmIsApplicable.setValue(currentAlgorithm.isApplicable(connector.getTaxaBlock(), connector.getParentDataBlock(), connector.getChildDataBlock()));
@@ -159,9 +155,9 @@ public class AlgorithmTab<P extends ADataBlock, C extends ADataBlock> extends Vi
             if (connector.getAlgorithm() != currentAlgorithm)
                 connector.setAlgorithm(currentAlgorithm);
             algorithmPane.syncController2Model();
-            undoManager.addUndoableApply(algorithmPane::syncController2Model);
+            getUndoManager().addUndoableApply(algorithmPane::syncController2Model);
 
-            getMainWindow().getUndoRedoManager().clear(); // clear undo
+            getUndoManager().clear(); // clear undo
 
             applicableChangeHasBeenMade.set(false);
             label.setText(connector.getName());
@@ -182,7 +178,7 @@ public class AlgorithmTab<P extends ADataBlock, C extends ADataBlock> extends Vi
                 algorithmPane = new GenericAlgorithmPane<>(connector, currentAlgorithm);
             algorithm2pane.put(currentAlgorithm, algorithmPane);
             algorithmPane.setDocument(document);
-            algorithmPane.setUndoManager(undoManager);
+            algorithmPane.setUndoManager(getUndoManager());
             algorithmPane.setConnector(connector);
             algorithmSettingsIsApplicable.bind(algorithmPane.applicableProperty());
             /*

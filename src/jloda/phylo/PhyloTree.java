@@ -28,10 +28,8 @@ import java.io.*;
 import java.util.*;
 
 /**
- * @author Daniel Huson
- * @version $Id: PhyloTree.java,v 1.87 2010-05-01 09:37:58 huson Exp $
- * <p>
  * Phylogenetic tree
+ * @author Daniel Huson, 2003
  */
 public class PhyloTree extends PhyloGraph {
     public static final boolean ALLOW_WRITE_RETICULATE = true;

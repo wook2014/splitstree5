@@ -7,7 +7,7 @@
       fx:controller="splitstree5.gui.formattab.FormatTabController">
     <children>
         <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-                  prefHeight="286.0" prefWidth="257.0" vgap="5.0">
+                  prefHeight="286.0" prefWidth="257.0" vgap="3.0">
             <columnConstraints>
                 <ColumnConstraints fillWidth="false" hgrow="NEVER" maxWidth="295.0" minWidth="10.0" prefWidth="98.0"/>
                 <ColumnConstraints hgrow="ALWAYS" maxWidth="471.0" minWidth="10.0" prefWidth="171.0"/>
@@ -15,14 +15,14 @@
             <rowConstraints>
                 <RowConstraints fillHeight="false" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
                 <RowConstraints fillHeight="false" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
-                <RowConstraints maxHeight="10.0" minHeight="10.0" prefHeight="10.0" vgrow="NEVER"/>
+                <RowConstraints maxHeight="5.0" minHeight="5.0" prefHeight="5.0" vgrow="NEVER"/>
                 <RowConstraints fillHeight="false" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
                 <RowConstraints fillHeight="false" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
                 <RowConstraints fillHeight="false" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
-                <RowConstraints maxHeight="15.0" minHeight="10.0" prefHeight="10.0" vgrow="NEVER"/>
+                <RowConstraints maxHeight="5.0" minHeight="5.0" prefHeight="5.0" vgrow="NEVER"/>
                 <RowConstraints fillHeight="false" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
                 <RowConstraints fillHeight="false" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
-                <RowConstraints maxHeight="10.0" minHeight="0.0" prefHeight="10.0" vgrow="ALWAYS"/>
+                <RowConstraints maxHeight="5.0" minHeight="0.0" prefHeight="5.0" vgrow="ALWAYS"/>
             </rowConstraints>
             <children>
                 <Label text="Label Font">

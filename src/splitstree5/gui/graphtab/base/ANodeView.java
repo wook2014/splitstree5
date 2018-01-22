@@ -125,6 +125,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import jloda.fx.shapes.CircleShape;
+import jloda.util.ProgramProperties;
 import splitstree5.gui.formattab.FormatItem;
 
 /**
@@ -161,7 +162,7 @@ public class ANodeView {
             circle.setFill(Color.WHITE);
 
             label = new Label(text);
-            label.setFont(Font.font("Helvetica"));
+            label.setFont(ProgramProperties.getDefaultFont());
             label.setLayoutX(location.getX() + circle.getRadius() + 2);
             label.setLayoutY(location.getY());
             labelGroup.getChildren().add(label);

@@ -670,6 +670,24 @@ public class Basic {
     }
 
     /**
+     * capitalizes leading character.
+     *
+     * @param string
+     * @param allOtherLowerCase
+     * @return capitalized string
+     */
+    public static String capitalize(String string, boolean allOtherLowerCase) {
+        switch (string.length()) {
+            case 0:
+                return string;
+            case 1:
+                return string.toUpperCase();
+            default:
+                return Character.toUpperCase(string.charAt(0)) + (allOtherLowerCase ? string.substring(1).toLowerCase() : string.substring(1));
+        }
+    }
+
+    /**
      * removes all text between any pair of left- and right-delimiters.
      * No nesting
      *

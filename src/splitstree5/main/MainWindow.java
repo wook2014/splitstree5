@@ -21,16 +21,15 @@ package splitstree5.main;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TreeItem;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import jloda.fx.ExtendedFXMLLoader;
@@ -52,7 +51,7 @@ import splitstree5.gui.methodstab.MethodsViewTab;
 import splitstree5.gui.workflowtab.WorkflowViewTab;
 import splitstree5.gui.workflowtree.WorkflowTreeSupport;
 import splitstree5.menu.MenuController;
-import splitstree5.undo.UndoRedoManager;
+import splitstree5.undo.UndoManager;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -63,8 +62,6 @@ public class MainWindow {
     private final Parent root;
     private final MainWindowController mainWindowController;
     private final MenuController menuController;
-
-    private final UndoRedoManager undoRedoManager = new UndoRedoManager();
 
     private final WorkflowTreeSupport workflowTreeSupport;
 
@@ -82,6 +79,8 @@ public class MainWindow {
     private final ObservableMap<ANode, ViewerTab> aNode2ViewerTab;
 
     private final StringProperty dirtyStar = new SimpleStringProperty("");
+
+    private final ObjectProperty<UndoManager> undoRedoManager = new SimpleObjectProperty<>();
 
     private Tab previousTab;
 
@@ -117,9 +116,9 @@ public class MainWindow {
             }
             if (n instanceof GraphTab && n != previousTab) // moving to another graph tab loses edits
             {
-                undoRedoManager.clear();
                 previousTab = n;
             }
+            setUndoRedoManager(((ViewerTab) n).getUndoManager());
 
             updateMenus(n, menuController);
         });
@@ -138,6 +137,18 @@ public class MainWindow {
             label.textProperty().bind(document.nameProperty());
             label.setGraphic(new ImageView(ResourceManager.getIcon("Document16.gif")));
             rootItem.setGraphic(label);
+            final ContextMenu contextMenu = new ContextMenu();
+            MenuItem openItem = new MenuItem("Open...");
+            openItem.setOnAction((e) -> menuController.getOpenMenuItem().fire());
+            openItem.disableProperty().bind(Bindings.isNotNull(document.getWorkflow().topTaxaNodeProperty()));
+            MenuItem importItem = new MenuItem("Import...");
+            importItem.setOnAction((e) -> menuController.getImportMenuItem().fire());
+            importItem.disableProperty().bind(Bindings.isNotNull(document.getWorkflow().topTaxaNodeProperty()));
+            MenuItem closeItem = new MenuItem("Close");
+            closeItem.setOnAction((e) -> menuController.getCloseMenuItem().fire());
+
+            contextMenu.getItems().addAll(openItem, importItem, new SeparatorMenuItem(), closeItem);
+            label.setContextMenu(contextMenu);
             mainWindowController.getTreeView().setRoot(rootItem);
             workflowTreeSupport = new WorkflowTreeSupport(mainWindowController.getTreeView(), document);
         }
@@ -214,6 +225,8 @@ public class MainWindow {
         });
 
         MainWindowManager.getInstance().addMainWindow(this);
+        getMainWindowController().openCloseLeft(false);
+
     }
 
     /**
@@ -350,10 +363,17 @@ public class MainWindow {
             getMainWindowController().ensureAlgorithmsTabPaneIsOpen();
             getMainWindowController().getAlgorithmTabPane().getSelectionModel().select(formatTab);
         }
-
     }
 
-    public UndoRedoManager getUndoRedoManager() {
+    public UndoManager getUndoRedoManager() {
+        return undoRedoManager.get();
+    }
+
+    public ObjectProperty<UndoManager> undoRedoManagerProperty() {
         return undoRedoManager;
+    }
+
+    public void setUndoRedoManager(UndoManager undoManager) {
+        this.undoRedoManager.set(undoManager);
     }
 }

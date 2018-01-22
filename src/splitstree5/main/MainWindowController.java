@@ -96,6 +96,9 @@ public class MainWindowController {
         return topVBox;
     }
 
+    public Button getOpenCloseLeft() {
+        return openCloseLeft;
+    }
 
     public TabPane getMainTabPane() {
         return mainTabPane;
@@ -153,40 +156,47 @@ public class MainWindowController {
 
         openCloseLeft.setOnAction((e) -> {
             if (splitPane.getDividerPositions()[0] <= 0.01)
-                animateSplitPane(splitPane, 300 / splitPane.getWidth(), () -> openCloseLeft.setText(("<")));
+                animateSplitPane(splitPane, 300 / splitPane.getWidth(), () -> openCloseLeft.setText(("<")), true);
             else
-                animateSplitPane(splitPane, 0, () -> openCloseLeft.setText((">")));
+                animateSplitPane(splitPane, 0, () -> openCloseLeft.setText((">")), true);
         });
 
         openCloseRight.setOnAction((e) -> {
             ensureTreeViewIsOpen();
             if (algorithmSplitPane.getDividerPositions()[0] >= 0.99)
-                animateSplitPane(algorithmSplitPane, (algorithmSplitPane.getHeight() - 300) / algorithmSplitPane.getHeight(), () -> openCloseRight.setText(("<")));
+                animateSplitPane(algorithmSplitPane, (algorithmSplitPane.getHeight() - 300) / algorithmSplitPane.getHeight(), () -> openCloseRight.setText(("<")), true);
             else
-                animateSplitPane(algorithmSplitPane, 1.0, () -> openCloseRight.setText((">")));
+                animateSplitPane(algorithmSplitPane, 1.0, () -> openCloseRight.setText((">")), true);
         });
 
         final MemoryUsage memoryUsage = MemoryUsage.getInstance();
         memoryUsageLabel.textProperty().bind(memoryUsage.memoryUsageStringProperty());
     }
 
-    private void animateSplitPane(SplitPane splitPane, double target, Runnable runnable) {
+
+    public void openCloseLeft(boolean animate) {
+        if (splitPane.getDividerPositions()[0] <= 0.01)
+            animateSplitPane(splitPane, 300 / splitPane.getWidth(), () -> openCloseLeft.setText(("<")), animate);
+        else
+            animateSplitPane(splitPane, 0, () -> openCloseLeft.setText((">")), animate);
+    }
+
+    private void animateSplitPane(SplitPane splitPane, double target, Runnable runnable, boolean animate) {
         KeyValue keyValue = new KeyValue(splitPane.getDividers().get(0).positionProperty(), target);
-        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500), keyValue));
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(animate ? 500 : 1), keyValue));
         timeline.play();
         timeline.setOnFinished((x) -> runnable.run());
-
     }
 
     public void ensureTreeViewIsOpen() {
         if (splitPane.getDividerPositions()[0] <= 0.01)
-            animateSplitPane(splitPane, 300 / splitPane.getWidth(), () -> openCloseLeft.setText(("<")));
+            animateSplitPane(splitPane, 300 / splitPane.getWidth(), () -> openCloseLeft.setText(("<")), true);
 
     }
 
     public void ensureAlgorithmsTabPaneIsOpen() {
         ensureTreeViewIsOpen();
         if (algorithmSplitPane.getDividerPositions()[0] >= 0.99)
-            animateSplitPane(algorithmSplitPane, (algorithmSplitPane.getHeight() - 300) / algorithmSplitPane.getHeight(), () -> openCloseRight.setText(("<")));
+            animateSplitPane(algorithmSplitPane, (algorithmSplitPane.getHeight() - 300) / algorithmSplitPane.getHeight(), () -> openCloseRight.setText(("<")), true);
     }
 }

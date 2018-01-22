@@ -78,7 +78,6 @@ import splitstree5.core.workflow.Workflow;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.utils.SelectionEffect;
 import splitstree5.menu.MenuController;
-import splitstree5.undo.UndoRedoManager;
 import splitstree5.undo.UndoableChangeList;
 import splitstree5.undo.UndoableRedoableCommand;
 import splitstree5.utils.Print;
@@ -86,12 +85,11 @@ import splitstree5.utils.Print;
 import java.util.*;
 
 /**
- * create a connector view
+ * The workflow tab
  * Daniel Huson, 12/31/16.
  */
 public class WorkflowViewTab extends ViewerTab {
     private final Document document;
-    private final UndoRedoManager undoManager;
 
     private final Group nodeViews = new Group();
     private final Group edgeViews = new Group();
@@ -109,7 +107,6 @@ public class WorkflowViewTab extends ViewerTab {
      */
     public WorkflowViewTab(Document document) {
         this.document = document;
-        undoManager = new UndoRedoManager();
         setText("Workflow");
 
         centerPane = new Pane(new StackPane(edgeViews, nodeViews));
@@ -161,7 +158,7 @@ public class WorkflowViewTab extends ViewerTab {
      * clear and then recompute the view
      */
     public void recompute() {
-        undoManager.clear();
+        getUndoManager().clear();
 
         getEdgeViews().getChildren().clear();
         getNodeViews().getChildren().clear();
@@ -282,11 +279,6 @@ public class WorkflowViewTab extends ViewerTab {
         return edgeViews;
     }
 
-    public UndoRedoManager getUndoManager() {
-        return undoManager;
-    }
-
-
     public WorkflowNodeView getNodeView(ANode node) {
         return node2NodeView.get(node);
     }
@@ -311,13 +303,13 @@ public class WorkflowViewTab extends ViewerTab {
 
         final ASelectionModel<ANode> selectionModel = getWorkflow().getNodeSelectionModel();
 
-        controller.getUndoMenuItem().setOnAction((e) -> undoManager.undo());
-        controller.getUndoMenuItem().disableProperty().bind(new SimpleBooleanProperty(false).isEqualTo(undoManager.canUndoProperty()));
-        controller.getUndoMenuItem().textProperty().bind(undoManager.undoNameProperty());
-        controller.getRedoMenuItem().setOnAction((e) -> undoManager.redo());
+        controller.getUndoMenuItem().setOnAction((e) -> getUndoManager().undo());
+        controller.getUndoMenuItem().disableProperty().bind(new SimpleBooleanProperty(false).isEqualTo(getUndoManager().canUndoProperty()));
+        controller.getUndoMenuItem().textProperty().bind(getUndoManager().undoNameProperty());
+        controller.getRedoMenuItem().setOnAction((e) -> getUndoManager().redo());
 
-        controller.getRedoMenuItem().disableProperty().bind(new SimpleBooleanProperty(false).isEqualTo(undoManager.canRedoProperty()));
-        controller.getRedoMenuItem().textProperty().bind(undoManager.redoNameProperty());
+        controller.getRedoMenuItem().disableProperty().bind(new SimpleBooleanProperty(false).isEqualTo(getUndoManager().canRedoProperty()));
+        controller.getRedoMenuItem().textProperty().bind(getUndoManager().redoNameProperty());
 
         controller.getSelectAllMenuItem().setOnAction((e) -> selectionModel.selectAll());
         controller.getSelectAllMenuItem().disableProperty().bind(Bindings.size(selectionModel.getSelectedItems()).isEqualTo(getWorkflow().getNumberOfNodes()));

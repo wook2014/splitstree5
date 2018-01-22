@@ -16,17 +16,6 @@
  * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @version $Id: EdgeArray.java,v 1.11 2005-12-05 13:25:44 huson Exp $
- * @author Daniel Huson
- * @version $Id: EdgeArray.java,v 1.11 2005-12-05 13:25:44 huson Exp $
- * @author Daniel Huson
- */
-/**
- * @version $Id: EdgeArray.java,v 1.11 2005-12-05 13:25:44 huson Exp $
- *
- * @author Daniel Huson
- *
  */
 package jloda.graph;
 

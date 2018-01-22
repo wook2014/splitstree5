@@ -16,17 +16,6 @@
  * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @version $Id: NodeMap.java,v 1.2 2005-12-05 13:25:45 huson Exp $
- * @author Daniel Huson
- * @version $Id: NodeMap.java,v 1.2 2005-12-05 13:25:45 huson Exp $
- * @author Daniel Huson
- */
-/**
- * @version $Id: NodeMap.java,v 1.2 2005-12-05 13:25:45 huson Exp $
- *
- * @author Daniel Huson
- *
  */
 package jloda.graph;
 

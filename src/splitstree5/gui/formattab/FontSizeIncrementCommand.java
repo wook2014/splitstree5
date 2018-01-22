@@ -34,7 +34,7 @@ import java.util.Collection;
 /**
  * undoable font size increment
  */
-public class UndoableFontSizeIncrement extends UndoableRedoableCommand {
+public class FontSizeIncrementCommand extends UndoableRedoableCommand {
     private final double increment;
 
     private final ArrayList<Node> nodes;
@@ -51,7 +51,7 @@ public class UndoableFontSizeIncrement extends UndoableRedoableCommand {
      * @param edges
      * @param edge2view
      */
-    public UndoableFontSizeIncrement(double increment, Collection<Node> nodes, NodeArray<ANodeView> node2view, Collection<Edge> edges, EdgeArray<AEdgeView> edge2view) {
+    public FontSizeIncrementCommand(double increment, Collection<Node> nodes, NodeArray<ANodeView> node2view, Collection<Edge> edges, EdgeArray<AEdgeView> edge2view) {
         super(increment > 0 ? "Font Increase" : "Font Decrease");
         this.increment = increment;
 

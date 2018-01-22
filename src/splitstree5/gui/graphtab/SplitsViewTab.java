@@ -95,13 +95,12 @@ public class SplitsViewTab extends GraphTab<SplitsGraph> {
     public ANodeView createNodeView(final Node v, Point2D location, String label) {
         final ANodeView nodeView = new ANodeView(v, location, label);
 
-        if (nodeView.getShape() != null) {
-            nodeView.getShape().setOnMousePressed((e) -> {
+        nodeView.getShapeGroup().setOnMousePressed((e) -> {
                 mouseX = e.getScreenX();
                 mouseY = e.getScreenY();
                 e.consume();
             });
-            nodeView.getShape().setOnMouseDragged((e) -> {
+        nodeView.getShapeGroup().setOnMouseDragged((e) -> {
                 if (!splitsSelectionModel.isEmpty() && nodeSelectionModel.getSelectedItems().contains(nodeView.getNode())) {
                     final HashSet<Node> selectedNodesSet = new HashSet<>(nodeSelectionModel.getSelectedItems());
                     final Point2D center = computeAnchorCenter(edgeSelectionModel.getSelectedItems(), selectedNodesSet, getNode2view());
@@ -114,7 +113,7 @@ public class SplitsViewTab extends GraphTab<SplitsGraph> {
                 mouseY = e.getScreenY();
                 e.consume();
             });
-            nodeView.getShape().setOnMouseClicked((x) -> {
+        nodeView.getShapeGroup().setOnMouseClicked((x) -> {
                 splitsSelectionModel.clearSelection();
                 edgeSelectionModel.clearSelection();
                 if (!x.isShiftDown())
@@ -130,9 +129,9 @@ public class SplitsViewTab extends GraphTab<SplitsGraph> {
                 }
                 x.consume();
             });
-        }
-        if (nodeView.getLabel() != null) {
-            nodeView.getLabel().setOnMouseClicked((x) -> {
+
+        if (nodeView.getLabelGroup() != null) {
+            nodeView.getLabelGroup().setOnMouseClicked((x) -> {
                 splitsSelectionModel.clearSelection();
                 edgeSelectionModel.clearSelection();
                 if (!x.isShiftDown())

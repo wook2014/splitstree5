@@ -17,18 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @version $Id: Node.java,v 1.20 2009-04-27 07:20:20 huson Exp $
- * @author Daniel Huson
- * @version $Id: Node.java,v 1.20 2009-04-27 07:20:20 huson Exp $
- * @author Daniel Huson
- * @version $Id: Node.java,v 1.20 2009-04-27 07:20:20 huson Exp $
- * @author Daniel Huson
- */
-/**
- * @version $Id: Node.java,v 1.20 2009-04-27 07:20:20 huson Exp $
- *
- * @author Daniel Huson
- *
  */
 package jloda.graph;
 

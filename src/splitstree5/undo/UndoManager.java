@@ -30,7 +30,7 @@ import javafx.collections.ObservableList;
  * Command manager
  * Daniel Huson, 12.2017
  */
-public class UndoRedoManager {
+public class UndoManager {
     private final ObservableList<UndoableRedoableCommand> undoStack = FXCollections.observableArrayList();
     private final ObservableList<UndoableRedoableCommand> redoStack = FXCollections.observableArrayList();
 
@@ -48,7 +48,7 @@ public class UndoRedoManager {
     /**
      * default constructor
      */
-    public UndoRedoManager() {
+    public UndoManager() {
         undoStack.addListener((InvalidationListener) (e) -> {
             undoName.set(undoStack.size() > 0 ? "Undo " + peek(undoStack).getName() : "Undo");
             undoStackSize.set(undoStack.size());
@@ -244,7 +244,7 @@ public class UndoRedoManager {
         public void undo() {
             // this command has already been moved to the redo stack
             while (undoStack.size() > 0 && !(peek(undoStack) instanceof UndoableApply)) {
-                UndoRedoManager.this.undo();
+                UndoManager.this.undo();
             }
             runnable.run(); // re-run apply
         }

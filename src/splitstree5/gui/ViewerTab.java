@@ -44,7 +44,7 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import splitstree5.main.MainWindow;
 import splitstree5.menu.MenuController;
-import splitstree5.undo.UndoRedoManager;
+import splitstree5.undo.UndoManager;
 
 /**
  * a viewer contained in a tab
@@ -54,6 +54,8 @@ public abstract class ViewerTab extends Tab {
     private MainWindow mainWindow;
     private final BorderPane borderPane = new BorderPane();
     protected ToolBar toolBar;
+
+    private final UndoManager undoManager = new UndoManager();
 
     /**
      * constructor
@@ -100,11 +102,8 @@ public abstract class ViewerTab extends Tab {
             getTabPane().getSelectionModel().select(this);
     }
 
-    public UndoRedoManager getUndoRedoManager() {
-        if (mainWindow != null)
-            return mainWindow.getUndoRedoManager();
-        else
-            return null;
+    public UndoManager getUndoManager() {
+        return undoManager;
     }
 
     public MainWindow getMainWindow() {
@@ -114,4 +113,5 @@ public abstract class ViewerTab extends Tab {
     public void setMainWindow(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
     }
+
 }

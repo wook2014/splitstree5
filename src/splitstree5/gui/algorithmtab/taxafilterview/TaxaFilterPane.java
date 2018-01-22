@@ -37,7 +37,7 @@ import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.algorithmtab.AlgorithmPane;
 import splitstree5.gui.graphtab.base.GraphTab;
 import splitstree5.gui.utils.DragAndDropSupportListView2;
-import splitstree5.undo.UndoRedoManager;
+import splitstree5.undo.UndoManager;
 import splitstree5.undo.UndoableChangeListViews2;
 
 import java.util.*;
@@ -50,7 +50,7 @@ public class TaxaFilterPane extends AlgorithmPane {
     private final TaxaFilter taxaFilter;
     private final TaxaFilterPaneController controller;
     private Document document;
-    private UndoRedoManager undoManager;
+    private UndoManager undoManager;
 
     private ArrayList<Taxon> prevActiveTaxa = new ArrayList<>(); // used to facilitate undo/redo, do not modify
     private ArrayList<Taxon> prevInactiveTaxa = new ArrayList<>(); // used to facilitate undo/redo, do not modify
@@ -77,11 +77,11 @@ public class TaxaFilterPane extends AlgorithmPane {
         final ExtendedFXMLLoader extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         controller = (TaxaFilterPaneController) extendedFXMLLoader.getController();
         this.getChildren().add(extendedFXMLLoader.getRoot());
-        undoManager = new UndoRedoManager();
+        undoManager = new UndoManager();
     }
 
     @Override
-    public void setUndoManager(UndoRedoManager undoManager) {
+    public void setUndoManager(UndoManager undoManager) {
         this.undoManager = undoManager;
     }
 

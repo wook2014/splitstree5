@@ -53,7 +53,7 @@ import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.workflow.UpdateState;
-import splitstree5.undo.UndoRedoManager;
+import splitstree5.undo.UndoManager;
 import splitstree5.utils.Option;
 import splitstree5.utils.OptionsAccessor;
 
@@ -65,7 +65,7 @@ import java.util.ArrayList;
  * Daniel Huson, 1/8/17.
  */
 public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> extends AlgorithmPane {
-    private UndoRedoManager undoManager;
+    private UndoManager undoManager;
 
     private final AConnector<P, C> connector;
     private final ArrayList<Option> options = new ArrayList<>();
@@ -93,7 +93,7 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
     }
 
     @Override
-    public void setUndoManager(UndoRedoManager undoManager) {
+    public void setUndoManager(UndoManager undoManager) {
         this.undoManager = undoManager;
     }
 

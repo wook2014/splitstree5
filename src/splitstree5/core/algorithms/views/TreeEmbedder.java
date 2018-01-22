@@ -249,10 +249,12 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
             float minY = Float.MAX_VALUE;
             for (Node v : phyloGraph.nodes()) {
                 final Point2D point = node2point.getValue(v);
-                minX = Math.min(minX, (float) point.getX());
-                maxX = Math.max(maxX, (float) point.getX());
-                minY = Math.min(minY, (float) point.getY());
-                maxY = Math.max(maxY, (float) point.getY());
+                if (point != null) {
+                    minX = Math.min(minX, (float) point.getX());
+                    maxX = Math.max(maxX, (float) point.getX());
+                    minY = Math.min(minY, (float) point.getY());
+                    maxY = Math.max(maxY, (float) point.getY());
+                }
             }
 
             if (optionLayout == GraphLayout.LeftToRight) {
@@ -266,7 +268,8 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
         if (factorX != 1 || factorY != 1) {
             for (Node v : phyloGraph.nodes()) {
                 final Point2D point = node2point.getValue(v);
-                node2point.setValue(v, new Point2D(factorX * point.getX(), factorY * point.getY()));
+                if (point != null)
+                    node2point.setValue(v, new Point2D(factorX * point.getX(), factorY * point.getY()));
             }
         }
     }

@@ -16,17 +16,6 @@
  * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @version $Id: NodeSet.java,v 1.13 2007-07-10 13:21:52 huson Exp $
- * @author Daniel Huson
- * @version $Id: NodeSet.java,v 1.13 2007-07-10 13:21:52 huson Exp $
- * @author Daniel Huson
- */
-/**
- * @version $Id: NodeSet.java,v 1.13 2007-07-10 13:21:52 huson Exp $
- *
- * @author Daniel Huson
- *
  */
 package jloda.graph;
 

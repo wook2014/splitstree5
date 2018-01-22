@@ -16,19 +16,6 @@
  * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @version $Id: GraphUpdateListener.java,v 1.4 2005-01-07 14:23:05 huson Exp $
- * @author Daniel Huson
- * 11.02
- * @version $Id: GraphUpdateListener.java,v 1.4 2005-01-07 14:23:05 huson Exp $
- * @author Daniel Huson
- * 11.02
- */
-/**
- *@version $Id: GraphUpdateListener.java,v 1.4 2005-01-07 14:23:05 huson Exp $
- *
- *@author Daniel Huson
- * 11.02
  */
 package jloda.graph;
 
