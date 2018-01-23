@@ -59,6 +59,7 @@ public class Print {
                                 node.getBoundsInParent().getHeight(), pageLayout.getPrintableWidth(), pageLayout.getPrintableHeight()));
                         double factor = Math.min(pageLayout.getPrintableWidth() / node.getBoundsInParent().getWidth(), pageLayout.getPrintableHeight() / node.getBoundsInParent().getHeight());
                         scale = new Scale(factor, factor);
+                        node.getTransforms().add(scale);
                     } else {
                         javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
                         alert.initOwner(owner);
@@ -88,7 +89,7 @@ public class Print {
                     scale = null;
 
                 job.jobStatusProperty().addListener((c, o, n) -> {
-                    System.err.println("Status: " + o + " -> " + n);
+                    //System.err.println("Status: " + o + " -> " + n);
                     if (scale != null && n != PrinterJob.JobStatus.NOT_STARTED && n != PrinterJob.JobStatus.PRINTING) {
                         Platform.runLater(() -> node.getTransforms().remove(scale));
                     }
