@@ -40,7 +40,7 @@ import java.util.Map;
  * Trees filter
  * Daniel Huson, 12/31/16.
  */
-public class TreesFilter extends Algorithm<TreesBlock, TreesBlock> implements IFromTrees, IToTrees {
+public class TreesFilter extends Algorithm<TreesBlock, TreesBlock> implements IFromTrees, IToTrees, IFilter {
     private final ArrayList<String> enabledTrees = new ArrayList<>();
     private final ArrayList<String> disabledTrees = new ArrayList<>();
 
@@ -64,6 +64,11 @@ public class TreesFilter extends Algorithm<TreesBlock, TreesBlock> implements IF
                 }
             }
         }
+        if (disabledTrees.size() == 0)
+            setShortDescription("using all " + parent.size() + " trees");
+        else
+            setShortDescription("using " + enabledTrees.size() + " of " + parent.size() + " trees");
+
         child.setPartial(parent.isPartial()); // if trees subselected, recompute this!
         child.setRooted(parent.isRooted());
     }
@@ -99,5 +104,10 @@ public class TreesFilter extends Algorithm<TreesBlock, TreesBlock> implements IF
             Basic.caught(e);
             return null;
         }
+    }
+
+    @Override
+    public boolean isActive() {
+        return disabledTrees.size() > 0;
     }
 }

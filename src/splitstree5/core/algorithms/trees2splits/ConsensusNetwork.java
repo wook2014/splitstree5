@@ -33,9 +33,9 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
-import splitstree5.core.misc.SplitsUtilities;
-import splitstree5.core.misc.TreeUtilities;
 import splitstree5.utils.SplitsException;
+import splitstree5.utils.SplitsUtilities;
+import splitstree5.utils.TreesUtilities;
 
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
@@ -59,7 +59,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
 
     @Override
     public String getCitation() {
-        return "ConsensusNetwork; Holland and Moulton 2003; " +
+        return "Holland and Moulton 2003; " +
                 "B. Holland and V. Moulton. Consensus networks:  A method for visualizing incompatibilities in  collections  of  trees.   " +
                 "In  G.  Benson  and  R.  Page,  editors, Proceedings  of  “Workshop  on Algorithms in Bioinformatics”, " +
                 "volume 2812 of LNBI, pages 165–176. Springer, 2003.";
@@ -98,7 +98,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
                             for (int which = threadNumber; which < trees.size(); which += numberOfThreads) {
                                 final PhyloTree tree = trees.get(which);
                                 final List<ASplit> splits = new ArrayList<>();
-                                TreeUtilities.computeSplits(taxaBlock, taxaInTree, tree, splits);
+                                TreesUtilities.computeSplits(taxaBlock, taxaInTree, tree, splits);
                                 for (ASplit split : splits) {
                                     synchronized (sync) {
                                         final Pair<BitSet, WeightStats> pair = splitsAndWeights.computeIfAbsent(split.getPartContaining(1), k -> new Pair<>(k, new WeightStats()));
@@ -206,7 +206,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
             }
         }
 
-        splitstree5.utils.SplitsUtilities.verifySplits(splitsBlock.getSplits(), taxaBlock);
+        SplitsUtilities.verifySplits(splitsBlock.getSplits(), taxaBlock);
 
         splitsBlock.setCycle(SplitsUtilities.computeCycle(taxaBlock.getNtax(), splitsBlock.getSplits()));
         splitsBlock.setFit(-1);

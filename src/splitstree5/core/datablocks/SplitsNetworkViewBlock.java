@@ -85,10 +85,6 @@ public class SplitsNetworkViewBlock extends ADataBlock implements IHasTab {
     @Override
     public void setDataNode(ADataNode dataNode) {
         super.setDataNode(dataNode);
-        Platform.runLater(() -> { // setup tab
-            splitsViewTab.setToolBar(new AlgorithmBreadCrumbsToolBar(getDocument(), getDataNode()));
-            ((AlgorithmBreadCrumbsToolBar) splitsViewTab.getToolBar()).update();
-        });
     }
 
     public SplitsViewTab getTab() {
@@ -100,7 +96,14 @@ public class SplitsNetworkViewBlock extends ADataBlock implements IHasTab {
      */
     public void show() {
         splitsViewTab.show();
-        Platform.runLater(() -> setShortDescription(getInfo()));
+        Platform.runLater(() -> {
+            setShortDescription(getInfo());
+            if (splitsViewTab.getToolBar() == null) {
+                splitsViewTab.setToolBar(new AlgorithmBreadCrumbsToolBar(getDocument(), getDataNode()));
+                ((AlgorithmBreadCrumbsToolBar) splitsViewTab.getToolBar()).update();
+            }
+
+        });
     }
 
     public void updateSelectionModels(SplitsGraph graph, TaxaBlock taxa, Document document) {

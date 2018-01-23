@@ -78,8 +78,7 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
     @Override
     public String getCitation() {
         return "Steel 1994; " +
-                "M.A. Steel.  Recovering a tree from the leaf colorations it generates under a Markov model. " +
-                "Appl. Math. Lett., 7(2):19–24, 1994.";
+                "M.A. Steel.  Recovering a tree from the leaf colorations it generates under a Markov model. Appl. Math. Lett., 7(2):19–24, 1994.";
     }
 
     @Override
@@ -260,7 +259,7 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
      *
      * @return boolean
      */
-    public boolean getOptionImpute_Gaps() {
+    public boolean getOptionImputeGaps() {
         return fudgeFactor;
     }
 
@@ -269,7 +268,7 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
      *
      * @param val
      */
-    public void setOptionImpute_Gaps(boolean val) {
+    public void setOptionImputeGaps(boolean val) {
         fudgeFactor = val;
     }
 

@@ -33,6 +33,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import jloda.fx.ExtendedFXMLLoader;
+import jloda.util.ProgramProperties;
 import jloda.util.ResourceManager;
 import splitstree5.core.Document;
 import splitstree5.core.connectors.AConnector;
@@ -46,7 +47,6 @@ import splitstree5.gui.auxwindow.AuxWindow;
 import splitstree5.gui.auxwindow.TabPaneDragAndDropSupport;
 import splitstree5.gui.datatab.DataViewTab;
 import splitstree5.gui.formattab.FormatTab;
-import splitstree5.gui.graphtab.base.GraphTab;
 import splitstree5.gui.methodstab.MethodsViewTab;
 import splitstree5.gui.workflowtab.WorkflowViewTab;
 import splitstree5.gui.workflowtree.WorkflowTreeSupport;
@@ -82,8 +82,6 @@ public class MainWindow {
 
     private final ObjectProperty<UndoManager> undoRedoManager = new SimpleObjectProperty<>();
 
-    private Tab previousTab;
-
     /**
      * constructor
      *
@@ -109,19 +107,6 @@ public class MainWindow {
         mainWindowController.getTopVBox().getChildren().add(0, menuController.getMenuBar());
 
         mainTabPane = mainWindowController.getMainTabPane();
-
-        mainTabPane.getSelectionModel().selectedItemProperty().addListener((c, o, n) -> {
-            if (o instanceof ISavesPreviousSelection) {
-                ((ISavesPreviousSelection) o).saveAsPreviousSelection();
-            }
-            if (n instanceof GraphTab && n != previousTab) // moving to another graph tab loses edits
-            {
-                previousTab = n;
-            }
-            setUndoRedoManager(((ViewerTab) n).getUndoManager());
-
-            updateMenus(n, menuController);
-        });
 
         algorithmsTabPane = mainWindowController.getAlgorithmTabPane();
 
@@ -152,6 +137,15 @@ public class MainWindow {
             mainWindowController.getTreeView().setRoot(rootItem);
             workflowTreeSupport = new WorkflowTreeSupport(mainWindowController.getTreeView(), document);
         }
+
+        mainTabPane.getSelectionModel().selectedItemProperty().addListener((c, o, n) -> {
+            if (o instanceof ISavesPreviousSelection) {
+                ((ISavesPreviousSelection) o).saveAsPreviousSelection();
+            }
+            setUndoRedoManager(((ViewerTab) n).getUndoManager());
+            if (getStage() != null)
+                updateMenus(n, menuController);
+        });
     }
 
     /**
@@ -162,6 +156,8 @@ public class MainWindow {
             this.stage = stage0;
         else {
             this.stage = new Stage();
+            stage.getIcons().setAll(ProgramProperties.getProgramIcons());
+
             stage.focusedProperty().addListener((c, o, n) -> {
                 if (!n && mainTabPane.getSelectionModel().getSelectedItem() instanceof ISavesPreviousSelection)
                     ((ISavesPreviousSelection) mainTabPane.getSelectionModel().getSelectedItem()).saveAsPreviousSelection();
@@ -170,18 +166,15 @@ public class MainWindow {
             Platform.runLater(() ->
             {
                 stage.getScene().setOnKeyTyped((e) -> {
-                    if (e.getCharacter().equals("+") && e.isShortcutDown())
+                    if (e.getCharacter().equals("+") && e.isShortcutDown() && !menuController.getIncreaseFontSizeMenuItem().isDisable())
                         menuController.getIncreaseFontSizeMenuItem().fire();
                     e.consume();
                 });
                 stage.getScene().setOnKeyTyped((e) -> {
-                    if (e.getCharacter().equals("-") && e.isShortcutDown())
+                    if (e.getCharacter().equals("-") && e.isShortcutDown() && !menuController.getDecreaseFontSizeMenuItem().isDisable())
                         menuController.getDecreaseFontSizeMenuItem().fire();
                     e.consume();
                 });
-                stage.getIcons().setAll(ResourceManager.getIcon("SplitsTree5-16.png"), ResourceManager.getIcon("SplitsTree5-32.png"),
-                        ResourceManager.getIcon("SplitsTree5-64.png"), ResourceManager.getIcon("SplitsTree5-128.png"));
-
 
                 formatTab = new FormatTab(this);
 
@@ -199,7 +192,6 @@ public class MainWindow {
 
         new TabPaneDragAndDropSupport(mainWindowController.getAlgorithmTabPane(), new AuxWindow());
 
-
         stage.show();
         stage.sizeToScene();
         stage.toFront();
@@ -216,17 +208,22 @@ public class MainWindow {
                     double oldWidth = dividerPositions[0] * o.doubleValue();
                     dividerPositions[0] = oldWidth / n.doubleValue();
                 }
-                if (false) {
-                    double oldWidth = (1.0 - dividerPositions[1]) * o.doubleValue();
-                    dividerPositions[1] = 1.0 - oldWidth / n.doubleValue();
-                }
                 mainWindowController.getSplitPane().setDividerPositions(dividerPositions);
+            }
+        });
+        mainWindowController.getSplitPane().heightProperty().addListener((c, o, n) -> {
+            if (n.doubleValue() > 0) {
+                double[] dividerPositions = mainWindowController.getAlgorithmSplitPane().getDividerPositions();
+                {
+                    double oldHeight = (1 - dividerPositions[0]) * o.doubleValue();
+                    dividerPositions[0] = 1 - oldHeight / n.doubleValue();
+                }
+                mainWindowController.getAlgorithmSplitPane().setDividerPositions(dividerPositions);
             }
         });
 
         MainWindowManager.getInstance().addMainWindow(this);
         getMainWindowController().openCloseLeft(false);
-
     }
 
     /**

@@ -38,19 +38,28 @@
 
 package splitstree5.gui.utils;
 
+import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
  * Shows a rubber band and calls a handler
  * Daniel Huson, 1.2018
  */
 public class RubberBandSelection {
+    private static ExecutorService service;
+
     @FunctionalInterface
     public interface Handler {
         /**
@@ -67,6 +76,9 @@ public class RubberBandSelection {
     private Point2D end;
     private Handler handler;
 
+    private boolean stillDownWithoutMoving;
+    private boolean inWait;
+    private final BooleanProperty inRubberBand = new SimpleBooleanProperty();
 
     /**
      * constructor
@@ -76,13 +88,27 @@ public class RubberBandSelection {
      * @param handler this is called when rubber band is released
      */
     public RubberBandSelection(final Pane pane, final Group group, final Handler handler) {
+        if (service == null)
+            service = Executors.newFixedThreadPool(1);
+
         this.handler = handler;
         rectangle = new Rectangle();
 
         rectangle.setFill(Color.TRANSPARENT);
         rectangle.setStroke(Color.GOLDENROD);
 
+        inRubberBand.addListener((c, o, n) -> {
+            pane.setCursor(n ? Cursor.CROSSHAIR : Cursor.DEFAULT);
+            if (n)
+                group.getChildren().add(rectangle);
+            else
+                group.getChildren().remove(rectangle);
+        });
+
         pane.addEventHandler(MouseEvent.MOUSE_PRESSED, (e) -> {
+            stillDownWithoutMoving = true;
+            inRubberBand.set(false);
+
             start = group.screenToLocal(e.getScreenX(), e.getScreenY());
             if (start != null) {
                 end = null;
@@ -90,49 +116,60 @@ public class RubberBandSelection {
                 rectangle.setY(start.getY());
                 rectangle.setWidth(0);
                 rectangle.setHeight(0);
+
+                if (e.isShiftDown()) {
+                    inRubberBand.set(true);
+                } else if (!inWait) {
+                    service.execute(() -> {
+                        try {
+                            inWait = true;
+                            synchronized (this) {
+                                Thread.sleep(500);
+                            }
+                        } catch (InterruptedException ex) {
+                        }
+                        if (stillDownWithoutMoving) {
+                            Platform.runLater(() -> inRubberBand.set(true));
+                        }
+                        inWait = false;
+                    });
+                }
             }
             e.consume();
         });
 
         pane.addEventHandler(MouseEvent.MOUSE_DRAGGED, (e) -> {
-            if (start != null) {
-                if (end == null) {
-                    group.getChildren().add(rectangle);
+            stillDownWithoutMoving = false;
+            if (inRubberBand.get()) {
+                if (start != null) {
+                    end = group.screenToLocal(e.getScreenX(), e.getScreenY());
+                    rectangle.setX(Math.min(start.getX(), end.getX()));
+                    rectangle.setY(Math.min(start.getY(), end.getY()));
+                    rectangle.setWidth(Math.abs(end.getX() - start.getX()));
+                    rectangle.setHeight(Math.abs(end.getY() - start.getY()));
+                    e.consume();
                 }
-
-                end = group.screenToLocal(e.getScreenX(), e.getScreenY());
-                rectangle.setX(Math.min(start.getX(), end.getX()));
-                rectangle.setY(Math.min(start.getY(), end.getY()));
-                rectangle.setWidth(Math.abs(end.getX() - start.getX()));
-                rectangle.setHeight(Math.abs(end.getY() - start.getY()));
-                e.consume();
             }
         });
 
         pane.addEventHandler(MouseEvent.MOUSE_RELEASED, (e) -> {
-            if (start != null) {
-                group.getChildren().remove(rectangle);
-                start = null;
-                e.consume();
-                if (this.handler != null && rectangle.getWidth() > 0 && rectangle.getHeight() > 0) {
-                    Point2D min = group.localToScene(rectangle.getX(), rectangle.getY());
-                    Point2D max = group.localToScene(rectangle.getX() + rectangle.getWidth(), rectangle.getY() + rectangle.getHeight());
-                    this.handler.handle(new Rectangle2D(min.getX(), min.getY(), max.getX() - min.getX(), max.getY() - min.getY()), e.isShiftDown());
+            stillDownWithoutMoving = false;
+            if (inRubberBand.get()) {
+                if (start != null) {
+                    start = null;
+                    e.consume();
+                    if (this.handler != null && rectangle.getWidth() > 0 && rectangle.getHeight() > 0) {
+                        Point2D min = group.localToScene(rectangle.getX(), rectangle.getY());
+                        Point2D max = group.localToScene(rectangle.getX() + rectangle.getWidth(), rectangle.getY() + rectangle.getHeight());
+                        this.handler.handle(new Rectangle2D(min.getX(), min.getY(), max.getX() - min.getX(), max.getY() - min.getY()), e.isShiftDown());
+                    }
                 }
+                inRubberBand.set(false);
             }
         });
     }
 
-    public Handler getHandler() {
-        return handler;
-    }
-
-    /**
-     * set the handler
-     *
-     * @param handler handles selections
-     */
-    public void setHandler(Handler handler) {
-        this.handler = handler;
+    public BooleanProperty inRubberBandProperty() {
+        return inRubberBand;
     }
 }

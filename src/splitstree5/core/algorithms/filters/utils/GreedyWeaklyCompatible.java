@@ -23,7 +23,7 @@ import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
-import splitstree5.core.misc.SplitsUtilities;
+import splitstree5.utils.SplitsUtilities;
 
 import java.util.ArrayList;
 import java.util.List;

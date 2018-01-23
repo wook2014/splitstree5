@@ -24,11 +24,10 @@ public class Dice extends Algorithm<CharactersBlock, DistancesBlock> implements 
     private PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates = PairwiseCompare.HandleAmbiguous.Ignore;
 
     public final static String DESCRIPTION = "Calculates distances using the Dice coefficient distance.";
-    private String TASK = "Dice Coefficient Distance";
 
     @Override
-    public String getCitation() {
-        return "Dice; Hamming 1950; " +
+    public String getCitation() { // is this the correct citation?
+        return "Hamming 1950; " +
                 "Hamming, Richard W. \"Error detecting and error correcting codes\". " +
                 "Bell System Technical Journal. 29 (2): 147–160. MR 0035935, 1950.";
     }
@@ -108,10 +107,6 @@ public class Dice extends Algorithm<CharactersBlock, DistancesBlock> implements 
 
     public void setOptionHandleAmbiguousStates(PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates) {
         this.optionHandleAmbiguousStates = optionHandleAmbiguousStates;
-    }
-
-    public String getTASK() {
-        return TASK;
     }
 }
 

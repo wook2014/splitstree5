@@ -31,7 +31,7 @@ import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
-import splitstree5.core.misc.SplitsUtilities;
+import splitstree5.utils.SplitsUtilities;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,7 +53,7 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
 
     @Override
     public String getCitation() {
-        return "NeighborNet; Bryant and Moulton 2004; " +
+        return "Bryant and Moulton 2004; " +
                 "D. Bryant and V. Moulton. Neighbor-net: An agglomerative method for the construction of phylogenetic networks. " +
                 "Molecular Biology and Evolution, 21(2):255– 265, 2004.";
     }
@@ -90,10 +90,8 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
 
         if (Compatibility.isCompatible(splits))
             splitsBlock.setCompatibility(Compatibility.compatible);
-        else {
-
+        else
             splitsBlock.setCompatibility(Compatibility.cyclic);
-        }
         splitsBlock.setCycle(cycle);
         splitsBlock.setFit(SplitsUtilities.computeLeastSquaresFit(distancesBlock, splits));
 
@@ -144,19 +142,11 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
      * @param dist Distance matrix
      */
     static public int[] computeNeighborNetOrdering(int ntax, double[][] dist) {
-        int[] ordering;
-        if (ntax < 4) {
-            ordering = new int[ntax + 1];
-            for (int i = 1; i <= ntax; i++)
-                ordering[i] = i;
-        } else {
             try {
-                ordering = runNeighborNet(new ProgressSilent(), ntax, dist);
+                return runNeighborNet(new ProgressSilent(), ntax, dist);
             } catch (CanceledException e) {
-                ordering = null;
+                return null;
             }
-        }
-        return ordering;
     }
 
     /**

@@ -33,8 +33,9 @@ import splitstree5.core.datablocks.TreesBlock;
  * Tree selector
  * Daniel Huson, 1/2018
  */
-public class TreeSelector extends Algorithm<TreesBlock, TreesBlock> implements IFromTrees, IToTrees {
+public class TreeSelector extends Algorithm<TreesBlock, TreesBlock> implements IFromTrees, IToTrees, IFilter {
     private final IntegerProperty optionSelected = new SimpleIntegerProperty(1);
+    private boolean active;
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock ignored, TreesBlock parent, TreesBlock child) throws CanceledException {
@@ -42,6 +43,8 @@ public class TreeSelector extends Algorithm<TreesBlock, TreesBlock> implements I
         child.getTrees().add(parent.getTrees().get(which));
         child.setRooted(parent.isRooted());
         child.setPartial(parent.isPartial());
+        active = parent.getNTrees() > 1;
+        setShortDescription("using one of " + parent.size() + " trees");
     }
 
     @Override
@@ -75,4 +78,9 @@ public class TreeSelector extends Algorithm<TreesBlock, TreesBlock> implements I
         }
     }
     */
+
+    @Override
+    public boolean isActive() {
+        return active;
+    }
 }

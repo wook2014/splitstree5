@@ -48,7 +48,7 @@ public class ProgressPane extends StackPane {
         progressBar = new ProgressBar();
         progressBar.progressProperty().bind(progressProperty);
         progressBar.setPrefHeight(label.getPrefHeight());
-        stopButton = new Button("Stop");
+        stopButton = new Button("Cancel");
         stopButton.setMaxHeight(label.getPrefHeight());
         stopButton.disableProperty().bind(isRunning.not());
         stopButton.setOnAction((e) -> cancelRunnable.run());

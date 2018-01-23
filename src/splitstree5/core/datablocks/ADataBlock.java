@@ -19,6 +19,8 @@
 
 package splitstree5.core.datablocks;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WeakChangeListener;
 import jloda.util.Basic;
 import jloda.util.PluginClassLoader;
 import splitstree5.core.Document;
@@ -35,12 +37,20 @@ import java.util.ArrayList;
 abstract public class ADataBlock extends OptionableBase {
     private Document document; // the document associated with this datablock
     private ADataNode dataNode; // the node associated with this datablock
+    private final ChangeListener<UpdateState> stateChangeListener;
+
 
     /**
      * default constructor
      */
     public ADataBlock() {
         setName(Basic.getShortName(this.getClass()).replaceAll("Block$", ""));
+        stateChangeListener = (c, o, n) -> {
+            if (n == UpdateState.VALID) {
+                setShortDescription(getInfo());
+            } else
+                setShortDescription(getName());
+        };
     }
 
     /**
@@ -106,12 +116,7 @@ abstract public class ADataBlock extends OptionableBase {
     public void setDataNode(ADataNode dataNode) {
         this.dataNode = dataNode;
         if (dataNode != null) {
-            dataNode.stateProperty().addListener((c, o, n) -> {
-                if (n == UpdateState.VALID) {
-                    setShortDescription(getInfo());
-                } else
-                    setShortDescription(getName());
-            });
+            dataNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
         }
     }
 

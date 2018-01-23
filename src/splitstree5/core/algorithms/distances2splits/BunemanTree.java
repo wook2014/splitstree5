@@ -8,7 +8,8 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ASplit;
-import splitstree5.core.misc.SplitsUtilities;
+import splitstree5.core.misc.Compatibility;
+import splitstree5.utils.SplitsUtilities;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -27,17 +28,13 @@ public class BunemanTree extends Algorithm<DistancesBlock, SplitsBlock> implemen
 
     @Override
     public String getCitation() {
-        return "BunemanTree; Bandelt and Dress 1992; " +
+        return "Bandelt and Dress 1992; " +
                 "H.-J. Bandelt and A.W.M.Dress. A canonical decomposition theory for metrics on a finite set. " +
                 "Advances in Mathematics, 92:47–105, 1992.";
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distancesBlock, SplitsBlock splitsBlock)
-            throws Exception {
-
-        splitsBlock.getSplits().clear();
-
+    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distancesBlock, SplitsBlock splitsBlock) throws Exception {
         ArrayList<ASplit> previousSplits = new ArrayList<>(); // list of previously computed splits
         ArrayList<ASplit> nextSplits; // current list of splits
 
@@ -93,17 +90,14 @@ public class BunemanTree extends Algorithm<DistancesBlock, SplitsBlock> implemen
 
             previousTaxa.set(t);
 
-            progressListener.setProgress(t);
+            progressListener.incrementProgress();
         }
-
 
         // copy splits to splits
         //splitsBlock.setFit(computeFit(distancesBlock, previousSplits));
         splitsBlock.getSplits().addAll(previousSplits);
+        splitsBlock.setCompatibility(Compatibility.compute(taxaBlock.getNtax(), splitsBlock.getSplits()));
         splitsBlock.setCycle(SplitsUtilities.computeCycle(taxaBlock.getNtax(), previousSplits));
-
-        progressListener.setProgress(ntax);   //set progress to 100%
-        progressListener.close();
     }
 
 

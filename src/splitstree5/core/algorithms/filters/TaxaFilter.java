@@ -36,7 +36,7 @@ import java.util.ArrayList;
  * taxa filter
  * Daniel Huson, 12/31/16.
  */
-public class TaxaFilter extends Algorithm<TaxaBlock, TaxaBlock> implements IFromTaxa, IToTaxa {
+public class TaxaFilter extends Algorithm<TaxaBlock, TaxaBlock> implements IFromTaxa, IToTaxa, IFilter {
 
     private final ArrayList<Taxon> enabledTaxa = new ArrayList<>();
     private final ArrayList<Taxon> disabledTaxa = new ArrayList<>();
@@ -57,9 +57,9 @@ public class TaxaFilter extends Algorithm<TaxaBlock, TaxaBlock> implements IFrom
         if (enabledTaxa.size() == 0 && disabledTaxa.size() == 0)
             setShortDescription(Basic.fromCamelCase(Basic.getShortName(this.getClass())));
         else if (disabledTaxa.size() == 0)
-            setShortDescription("Enabled: " + enabledTaxa.size());
+            setShortDescription("using all " + enabledTaxa.size() + " taxa");
         else
-            setShortDescription("Enabled: " + enabledTaxa.size() + " (of " + (enabledTaxa.size() + disabledTaxa.size() + ")"));
+            setShortDescription("using " + enabledTaxa.size() + " of " + (parent.getNtax() + " taxa"));
     }
 
     @Override
@@ -81,5 +81,8 @@ public class TaxaFilter extends Algorithm<TaxaBlock, TaxaBlock> implements IFrom
         return new TaxaFilterPane(this);
     }
 
-
+    @Override
+    public boolean isActive() {
+        return disabledTaxa.size() > 0;
+    }
 }

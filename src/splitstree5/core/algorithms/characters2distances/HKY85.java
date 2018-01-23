@@ -19,12 +19,12 @@ import splitstree5.core.models.HKY85model;
 
 public class HKY85 extends DNAdistance implements IFromChararacters, IToDistances {
 
-    private double tratio = 2.0;
+    private double optionTsTvRatio = 2.0;
     public final static String DESCRIPTION = "Calculates distances using the Hasegawa, Kishino and Yano model";
 
     @Override
     public String getCitation() {
-        return "HKY85; Hasegawa, Kishino, Yano 1985; " +
+        return "Hasegawa, Kishino, Yano 1985; " +
                 "Hasegawa M, Kishino H, Yano T. \"Dating of human-ape splitting by a molecular clock of mitochondrial DNA\". " +
                 "Journal of Molecular Evolution. 22 (2): 160–174. PMID 3934395. doi:10.1007/BF02101694, 1985.";
     }
@@ -40,7 +40,7 @@ public class HKY85 extends DNAdistance implements IFromChararacters, IToDistance
 
         progressListener.setTasks("HKY85 Distance", "Init.");
 
-        HKY85model model = new HKY85model(getNormedBaseFreq(), this.tratio);
+        HKY85model model = new HKY85model(getNormedBaseFreq(), this.optionTsTvRatio);
         model.setPinv(getOptionPInvar());
         model.setGamma(getOptionGamma());
 
@@ -60,5 +60,13 @@ public class HKY85 extends DNAdistance implements IFromChararacters, IToDistance
      */
     public String getDescription() {
         return DESCRIPTION;
+    }
+
+    public double getOptionTsTvRatio() {
+        return optionTsTvRatio;
+    }
+
+    public void setOptionTsTvRatio(double optionTsTvRatio) {
+        this.optionTsTvRatio = optionTsTvRatio;
     }
 }

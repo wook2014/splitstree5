@@ -53,6 +53,7 @@ public class TreesTopFilter extends ATopFilter<TreesBlock> {
             public void compute(ProgressListener progressListener, TaxaBlock modifiedTaxaBlock, TreesBlock parent, TreesBlock child) {
                 if (originalTaxaNode.getDataBlock().getTaxa().equals(modifiedTaxaBlock.getTaxa())) {
                     child.copy(parent);
+                    setShortDescription("using all " + modifiedTaxaBlock.size() + " taxa");
                 } else {
                     for (PhyloTree tree : parent.getTrees()) {
                         PhyloTree induced = computeInducedTree(tree, modifiedTaxaBlock.getLabels());
@@ -60,6 +61,7 @@ public class TreesTopFilter extends ATopFilter<TreesBlock> {
                             child.getTrees().add(induced);
                         }
                     }
+                    setShortDescription("using " + modifiedTaxaBlock.size() + " of " + getOriginalTaxaBlock().size() + " taxa");
                 }
                 child.setPartial(parent.isPartial());
                 child.setRooted(parent.isRooted());

@@ -30,7 +30,7 @@ import javafx.scene.control.Tab;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import jloda.fx.ExtendedFXMLLoader;
-import jloda.util.ResourceManager;
+import jloda.util.ProgramProperties;
 import splitstree5.core.Document;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.graphtab.SplitsViewTab;
@@ -62,6 +62,8 @@ public class AuxWindow implements IStageSupplier {
         }
 
         final Stage stage = new Stage();
+        stage.getIcons().setAll(ProgramProperties.getProgramIcons());
+
         menuController.setupFullScreenMenuSupport(stage);
 
         if (tab.getGraphic() == null || !(tab.getGraphic() instanceof Labeled))
@@ -126,7 +128,6 @@ public class AuxWindow implements IStageSupplier {
 
     @Override
     public void openedStage(Stage stage, Tab tab) {
-        stage.getIcons().setAll(ResourceManager.getIcon("SplitsTree5-16.png"));
         if (tab instanceof ViewerTab) {
             MainWindow mainWindow = ((ViewerTab) tab).getMainWindow();
             MainWindowManager.getInstance().addAuxiliaryWindow(mainWindow, stage);

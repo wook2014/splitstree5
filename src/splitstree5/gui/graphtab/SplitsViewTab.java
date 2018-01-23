@@ -43,7 +43,7 @@ import java.util.*;
  */
 public class SplitsViewTab extends GraphTab<SplitsGraph> {
     private final ASelectionModel<Integer> splitsSelectionModel = new ASelectionModel<>();
-
+    private boolean inSelection;
     /**
      * constructor
      */
@@ -57,18 +57,45 @@ public class SplitsViewTab extends GraphTab<SplitsGraph> {
         setLayout(GraphLayout.Radial);
 
         splitsSelectionModel.getSelectedItems().addListener((ListChangeListener<Integer>) c -> {
-            final Set<Integer> addedSplits = new HashSet<>();
-            final Set<Integer> removedSplits = new HashSet<>();
-            while (c.next()) {
-                addedSplits.addAll(c.getAddedSubList());
-                removedSplits.addAll(c.getRemoved());
+            if (!inSelection) {
+                try {
+                    inSelection = true;
+                    final Set<Integer> addedSplits = new HashSet<>();
+                    final Set<Integer> removedSplits = new HashSet<>();
+                    while (c.next()) {
+                        addedSplits.addAll(c.getAddedSubList());
+                        removedSplits.addAll(c.getRemoved());
+                    }
+                    final SplitsGraph graph = getGraph();
+                    for (Edge e : graph.edges()) {
+                        if (addedSplits.contains(graph.getSplit(e)))
+                            edgeSelectionModel.select(e);
+                        if (removedSplits.contains(graph.getSplit(e)))
+                            edgeSelectionModel.clearSelection(e);
+                    }
+                } finally {
+                    inSelection = false;
+                }
             }
-            final SplitsGraph graph = getGraph();
-            for (Edge e : graph.edges()) {
-                if (addedSplits.contains(graph.getSplit(e)))
-                    edgeSelectionModel.select(e);
-                if (removedSplits.contains(graph.getSplit(e)))
-                    edgeSelectionModel.clearSelection(e);
+        });
+
+        edgeSelectionModel.getSelectedItems().addListener((ListChangeListener<Edge>) c -> {
+            if (!inSelection) {
+                inSelection = true;
+                try {
+                    while (c.next()) {
+                        for (Edge e : c.getAddedSubList()) {
+                            final Integer splitId = getGraph().getSplit(e); // must be Integer, not int!
+                            splitsSelectionModel.select(splitId);
+                        }
+                        for (Edge e : c.getRemoved()) {
+                            final Integer splitId = getGraph().getSplit(e); // must be Integer, not int!
+                            splitsSelectionModel.clearSelection(splitId);
+                        }
+                    }
+                } finally {
+                    inSelection = false;
+                }
             }
         });
     }

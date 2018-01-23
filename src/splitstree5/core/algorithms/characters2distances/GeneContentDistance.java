@@ -12,7 +12,8 @@ import splitstree5.core.datablocks.characters.CharactersType;
 import java.util.BitSet;
 
 /**
- * todo : no auhtor and date
+ * Gene content distance
+ * Daniel Huson, 2004
  */
 
 public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
@@ -22,7 +23,7 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
 
     @Override
     public String getCitation() {
-        return "GeneContentDistance; Huson and Steel 2004; " +
+        return "Huson and Steel 2004; " +
                 "D.H. Huson  and  M. Steel. Phylogenetic  trees  based  on  gene  content. Bioinformatics, 20(13):2044–9, 2004.";
     }
 

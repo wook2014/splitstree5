@@ -53,6 +53,7 @@ public class SplitsTopFilter extends ATopFilter<SplitsBlock> {
                     child.copy(parent);
                     child.setCycle(parent.getCycle());
                     child.setCompatibility(parent.getCompatibility());
+                    setShortDescription("using all " + modifiedTaxaBlock.size() + " taxa");
                 } else {
                     final Map<Integer, Integer> originalIndex2ModifiedIndex = getOriginalTaxaBlock().computeIndexMap(modifiedTaxaBlock);
                     for (ASplit split : parent.getSplits()) {
@@ -62,6 +63,7 @@ public class SplitsTopFilter extends ATopFilter<SplitsBlock> {
                     }
                     child.setCycle(computeInducedCycle(parent.getCycle(), originalIndex2ModifiedIndex, modifiedTaxaBlock.getNtax()));
                     child.setCompatibility(Compatibility.compute(modifiedTaxaBlock.getNtax(), child.getSplits(), child.getCycle()));
+                    setShortDescription("using " + modifiedTaxaBlock.size() + " of " + getOriginalTaxaBlock().size() + " taxa");
                 }
                 child.setFit(parent.getFit());
                 child.setThreshold(parent.getThreshold());

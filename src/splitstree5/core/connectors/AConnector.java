@@ -197,6 +197,7 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
                 case COMPUTING:
                     throw new RuntimeException("Should never happen");
                 case FAILED:
+                    super.setState(UpdateState.FAILED);
                     System.err.println(getName() + ": " + state);
                     break;
             }

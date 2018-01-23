@@ -28,8 +28,8 @@ import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ASplit;
-import splitstree5.core.misc.SplitsUtilities;
 import splitstree5.gui.graphtab.base.GeometryUtils;
+import splitstree5.utils.SplitsUtilities;
 
 import java.util.*;
 

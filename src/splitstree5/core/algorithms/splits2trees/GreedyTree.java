@@ -44,7 +44,7 @@ public class GreedyTree extends Algorithm<SplitsBlock, TreesBlock> implements IF
 
     @Override
     public String getCitation() {
-        return "GreedyTree; greedy selection of compatible splits;";
+        return "Huson et al 2012;D.H. Huson, R. Rupp and C. Scornavacca, Phylogenetic Networks, Cambridge, 2012.";
     }
 
     @Override

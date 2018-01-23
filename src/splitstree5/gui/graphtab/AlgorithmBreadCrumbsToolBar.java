@@ -19,10 +19,13 @@
 
 package splitstree5.gui.graphtab;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WeakChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
+import javafx.scene.paint.Color;
 import splitstree5.core.Document;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
@@ -41,6 +44,7 @@ import java.util.ArrayList;
 public class AlgorithmBreadCrumbsToolBar extends ToolBar {
     private final Document document;
     private final ANode aNode;
+    private final ArrayList<ChangeListener<UpdateState>> stateChangeListeners = new ArrayList<>();
 
     /**
      * constructor
@@ -108,19 +112,25 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
         final Tooltip tooltip = new Tooltip();
         tooltip.textProperty().bind(aConnector.shortDescriptionProperty());
         button.setTooltip(tooltip);
-        aConnector.stateProperty().addListener((c, o, n) -> {
+
+        final ChangeListener<UpdateState> stateChangeListener = (c, o, n) -> {
                     switch (n) {
                         case COMPUTING:
+                            button.setTextFill(Color.BLACK);
                             button.setStyle(shape + "-fx-background-color: LIGHTBLUE;");
                             break;
                         case FAILED:
-                            button.setStyle(shape + "-fx-background-color: PINK;");
+                            button.setTextFill(Color.DARKRED);
+                            button.setStyle(shape);
                             break;
                         default:
+                            button.setTextFill(Color.BLACK);
                             button.setStyle(shape);
                     }
-                }
-        );
+        };
+        aConnector.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
+        stateChangeListeners.add(stateChangeListener);
+
         button.setOnAction((e) -> {
             document.getMainWindow().showAlgorithmView(aConnector);
         });
@@ -135,19 +145,20 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
         button.disableProperty().bind(dataNode.stateProperty().isEqualTo(UpdateState.VALID).not());
         final Tooltip tooltip = new Tooltip("Format nodes and edges");
         button.setTooltip(tooltip);
-        dataNode.stateProperty().addListener((c, o, n) -> {
+        final ChangeListener<UpdateState> stateChangeListener = (c, o, n) -> {
                     switch (n) {
                         case COMPUTING:
                             button.setStyle(shape + "-fx-background-color: LIGHTBLUE;");
                             break;
                         case FAILED:
-                            button.setStyle(shape + "-fx-background-color: PINK;");
+                            button.setStyle(shape); // can't fail
                             break;
                         default:
                             button.setStyle(shape);
                     }
-                }
-        );
+        };
+        dataNode.stateProperty().addListener(stateChangeListener);
+        stateChangeListeners.add(stateChangeListener);
         button.setOnAction((e) -> {
             document.getMainWindow().showFormatTab();
         });

@@ -21,15 +21,21 @@ package splitstree5.main;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import jloda.util.ProgramProperties;
+import jloda.util.ResourceManager;
 
 public class SplitsTree5 extends Application {
     @Override
-    public void init() throws Exception {
+    public void init() {
+        ProgramProperties.getProgramIcons().setAll(ResourceManager.getIcon("SplitsTree5-16.png"), ResourceManager.getIcon("SplitsTree5-32.png"),
+                ResourceManager.getIcon("SplitsTree5-64.png"), ResourceManager.getIcon("SplitsTree5-128.png"));
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        MainWindow mainWindow = new MainWindow();
+    public void start(Stage primaryStage) {
+        ProgramProperties.getProgramIcons().setAll(ResourceManager.getIcon("SplitsTree5-16.png"), ResourceManager.getIcon("SplitsTree5-32.png"),
+                ResourceManager.getIcon("SplitsTree5-64.png"), ResourceManager.getIcon("SplitsTree5-128.png"));
+        final MainWindow mainWindow = new MainWindow();
         mainWindow.show(primaryStage, 100, 100);
     }
 }

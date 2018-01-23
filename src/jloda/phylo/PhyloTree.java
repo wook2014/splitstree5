@@ -21,7 +21,6 @@ package jloda.phylo;
 
 import jloda.graph.*;
 import jloda.util.Basic;
-import jloda.util.Pair;
 import jloda.util.ProgramProperties;
 
 import java.io.*;
@@ -228,7 +227,6 @@ public class PhyloTree extends PhyloGraph {
     public void write(final Writer writer, final boolean showWeights, final Map<String, String> translate) throws IOException {
         if (translate == null || translate.size() == 0) {
             this.write(writer, showWeights);
-
         } else {
             PhyloTree tmpTree = new PhyloTree();
             tmpTree.copy(this);
@@ -1022,56 +1020,6 @@ public class PhyloTree extends PhyloGraph {
      */
     public void setAllowMultiLabeledNodes(boolean allowMultiLabeledNodes) {
         this.allowMultiLabeledNodes = allowMultiLabeledNodes;
-    }
-
-    /**
-     * compute the cycle for this tree and then return it
-     *
-     * @return cycle for this tree
-     */
-    public int[] getCycle(Node root) {
-        final ArrayList<Pair<Integer, Integer>> taxon2CyclePos = new ArrayList<>();
-        computeCycleRec(root, null, 0, taxon2CyclePos);
-
-        taxon2CyclePos.sort(Comparator.comparing(Pair::getSecond));
-        int[] result = new int[taxon2CyclePos.size() + 1];
-        for (Pair<Integer, Integer> pair : taxon2CyclePos) {
-            result[pair.getFirst()] = pair.getSecond();
-        }
-        return result;
-    }
-
-    /**
-     * recursively compute a cycle
-     *
-     * @param v
-     * @param e
-     * @param pos
-     */
-    private int computeCycleRec(Node v, Edge e, int pos, ArrayList<Pair<Integer, Integer>> taxon2cyclePos) {
-        final List<Integer> taxa = node2taxa.getValue(v);
-        if (taxa != null) {
-            for (Integer t : taxa) {
-                taxon2cyclePos.add(new Pair<>(t, ++pos));
-            }
-        }
-        for (Edge f = v.getFirstAdjacentEdge(); f != null; f = v.getNextAdjacentEdge(f)) {
-            if (f != e && PhyloTreeUtils.okToDescendDownThisEdge(this, f, v))
-                pos = computeCycleRec(f.getOpposite(v), f, pos, taxon2cyclePos);
-        }
-        return pos;
-    }
-
-    /**
-     * returns tree, if all nodes have degree <=3
-     *
-     * @return true, if binary
-     */
-    public boolean isBifurcating() {
-        for (Node v = getFirstNode(); v != null; v = v.getNext())
-            if (v.getDegree() > 3)
-                return false;
-        return true;
     }
 
     /**

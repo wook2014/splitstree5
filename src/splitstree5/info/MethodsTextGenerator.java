@@ -58,17 +58,15 @@
 package splitstree5.info;
 
 import jloda.util.Basic;
-import jloda.util.ResourceManager;
+import jloda.util.Pair;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
+import splitstree5.core.algorithms.filters.IFilter;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.workflow.Workflow;
 import splitstree5.main.Version;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
 
 /**
@@ -78,38 +76,18 @@ import java.util.*;
 public class MethodsTextGenerator {
     private static MethodsTextGenerator instance;
 
-    public static String preambleTemplate = "Analysis was performed using SplitsTree5 %s (%s).\n";
+    public static String preambleTemplate = "Analysis was performed using SplitsTree5 %s%s.\n";
     public static String inputDataTemplate = "The original input consisted of %s and %s.\n";
-    public static String filteredInputTemplate = "After removal of %d taxa, the input consisted of %s and %s.\n";
-    public static String methodWithOutputTemplate = "The %s method (%s) was used%s so as to obtain %s.\n";
-    public static String methodTemplate = "The %s method %s was used%s.\n";
+    public static String taxonFilterTemplate = "After removal of %d taxa, the input consisted of %s and %s.\n";
+    public static String methodWithOutputTemplate = "The %s method%s was used%s so as to obtain %s.\n";
+    public static String methodTemplate = "The %s method%s was used%s.\n";
 
-    private final Map<String, String> method2citation;
-    private final Map<String, String> method2paperTitle;
-
+    public static String filterTemplate = "A %s%s was applied so as to be %s.\n";
 
     /**
      * constructor
      */
     private MethodsTextGenerator() {
-        method2citation = new HashMap<>();
-        method2paperTitle = new HashMap<>();
-
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(ResourceManager.getFileAsStream("splitstree5.info", "citations.txt")))) {
-            String aLine;
-            while ((aLine = reader.readLine()) != null) {
-                final String[] tokens = Basic.split(aLine, ';');
-                if (tokens.length >= 2) {
-                    method2citation.put(tokens[0], tokens[1]);
-                    if (tokens.length >= 3) {
-                        method2paperTitle.put(tokens[0], tokens[2]);
-                    }
-                }
-            }
-
-        } catch (IOException e) {
-            Basic.caught(e);
-        }
     }
 
     /**
@@ -132,19 +110,19 @@ public class MethodsTextGenerator {
     public String apply(Document document) {
         final Workflow dag = document.getWorkflow();
 
-        final StringBuilder buf = new StringBuilder();
 
+        final StringBuilder buf = new StringBuilder();
         buf.append("Methods:\n");
 
-        buf.append(String.format(preambleTemplate, Version.VERSION, method2citation.get("SplitsTree4")));
+        buf.append(String.format(preambleTemplate, Version.VERSION, getSplitsTreeKeysString()));
+
+        final Set<Pair<String, String>> allKeysAndPapers = new TreeSet<>(getSplitsTreeKeysAndPapers());
 
         if (dag.getTopTaxaNode().getDataBlock() != null && dag.getTopDataNode() != null) {
-            final ArrayList<String> papers = new ArrayList<>();
-
             buf.append(String.format(inputDataTemplate, dag.getTopTaxaNode().getDataBlock().getInfo(), dag.getTopDataNode().getDataBlock().getInfo()));
             if (dag.getWorkingTaxaBlock() != null && dag.getWorkingTaxaBlock().getNtax() < dag.getTopTaxaNode().getDataBlock().getNtax()) {
                 int removed = (dag.getTopTaxaNode().getDataBlock().getNtax() - dag.getWorkingTaxaBlock().getNtax());
-                buf.append(String.format(filteredInputTemplate, removed, dag.getWorkingTaxaBlock().getInfo(), dag.getWorkingDataNode().getDataBlock().getInfo()));
+                buf.append(String.format(taxonFilterTemplate, removed, dag.getWorkingTaxaBlock().getInfo(), dag.getWorkingDataNode().getDataBlock().getInfo()));
             }
             final ADataNode root = dag.getWorkingDataNode();
             final Set<ADataNode> visited = new HashSet<>();
@@ -159,20 +137,27 @@ public class MethodsTextGenerator {
                             final AConnector connector = (AConnector) obj;
                             final Algorithm algorithm = connector.getAlgorithm();
                             final ADataNode w = connector.getChild();
-                            if (algorithm != null) {
-                                final String name = Basic.fromCamelCase(algorithm.getName());
-                                String citation = method2citation.get(Basic.getShortName(algorithm.getClass()));
-                                if (citation == null)
-                                    citation = "citation???";
-                                final String paper = method2paperTitle.get(Basic.getShortName(algorithm.getClass()));
-                                if (paper != null && !papers.contains(paper))
-                                    papers.add(paper);
 
-                                final String parameters = (algorithm.getParameters().length() > 0 ? " (parameters: " + algorithm.getParameters() + ")" : "");
-                                if (w != null) {
-                                    buf.append(String.format(methodWithOutputTemplate, name, citation, parameters, w.getDataBlock().getInfo()));
-                                } else {
-                                    buf.append(String.format(methodTemplate, name, citation, parameters));
+                            if (algorithm instanceof IFilter) {
+                                if (((IFilter) algorithm).isActive()) {
+                                    final String name = Basic.fromCamelCase(algorithm.getName());
+                                    final String parameters = (algorithm.getParameters().length() > 0 ? " (parameters: " + algorithm.getParameters() + ")" : "");
+                                    buf.append(String.format(filterTemplate, name, parameters, algorithm.getShortDescription()));
+                                }
+                            } else {
+                                if (algorithm != null) {
+                                    final String keys = getKeysString(algorithm);
+                                    final Collection<Pair<String, String>> keysAndPapers = getKeysAndPapers(algorithm);
+                                    if (keysAndPapers != null)
+                                        allKeysAndPapers.addAll(keysAndPapers);
+                                    final String name = Basic.fromCamelCase(algorithm.getName());
+
+                                    final String parameters = (algorithm.getParameters().length() > 0 ? " (parameters: " + algorithm.getParameters() + ")" : "");
+                                    if (w != null) {
+                                        buf.append(String.format(methodWithOutputTemplate, name, keys, parameters, w.getDataBlock().getInfo()));
+                                    } else {
+                                        buf.append(String.format(methodTemplate, name, keys, parameters));
+                                    }
                                 }
                             }
                             stack.push(w);
@@ -181,40 +166,70 @@ public class MethodsTextGenerator {
                 }
             }
             buf.append("\n");
-            buf.append("References:\n");
+            if (allKeysAndPapers.size() > 0) {
+                buf.append("References:\n");
 
-            if (method2paperTitle.containsKey("SplitsTree4"))
-                buf.append(method2paperTitle.get("SplitsTree4")).append("\n");
-//            if(method2paperTitle.containsKey("SplitsTree5"))
-//                buf.append(method2paperTitle.get("SplitsTree5")).append("\n");
-
-            if (papers.size() > 0) {
-                buf.append(Basic.toString(papers, "\n"));
+                for (Pair<String, String> pair : allKeysAndPapers) {
+                    buf.append(String.format("%s: %s\n", pair.get1(), pair.get2()));
+                }
             }
         }
         return buf.toString();
     }
 
     /**
-     * gets the citation for a method
+     * gets the citation keys for an algorithm
      *
      * @param algorithm
      * @return citation
      */
-    public static String getCitation(Algorithm algorithm) {
-        final String result = getInstance().method2citation.get(Basic.getShortName(algorithm.getClass()));
-        return result != null ? result : "";
+    public static String getKeysString(Algorithm algorithm) {
+        if (algorithm.getCitation() == null || algorithm.getCitation().length() < 2)
+            return "";
+        else {
+            final String[] tokens = Basic.split(algorithm.getCitation(), ';');
+            final StringBuilder buf = new StringBuilder();
+            buf.append(" (");
+            for (int i = 0; i < tokens.length; i += 2) {
+                if (i > 0)
+                    buf.append(", ");
+                else
+                    buf.append(tokens[i]);
+            }
+            buf.append(")");
+            return buf.toString();
+        }
     }
 
     /**
-     * gets the paper title for a method
-     *
+     * get all the key - paper pairs for an algorithm
      * @param algorithm
-     * @return paper
+     * @return pairs
      */
-    public static String getPaperTitle(Algorithm algorithm) {
-        final String result = getInstance().method2paperTitle.get(Basic.getShortName(algorithm.getClass()));
-        return result != null ? result : "";
+    public static Collection<Pair<String, String>> getKeysAndPapers(Algorithm algorithm) {
+        if (algorithm.getCitation() == null || algorithm.getCitation().length() < 2)
+            return null;
+        else {
+            Set<Pair<String, String>> set = new TreeSet<>();
+            final String[] tokens = Basic.split(algorithm.getCitation(), ';');
+            if (tokens.length % 2 == 1)
+                System.err.println("Internal error: Citation string has odd number of tokens: " + algorithm.getCitation());
+            for (int i = 0; i < tokens.length - 1; i += 2) {
+                set.add(new Pair<>(tokens[i], tokens[i + 1]));
+            }
+            return set;
+        }
+    }
+
+    public static String getSplitsTreeKeysString() {
+        return " (Huson 1998, Huson and Bryant 2006)";
+    }
+
+    public static Collection<Pair<String, String>> getSplitsTreeKeysAndPapers() {
+        return Arrays.asList(new Pair<>("Huson 1998",
+                        "D.H.Huson. SplitsTree: analyzing an visualizing evolutionary data.Bioinformatics, 14(10):68–73, 1998."),
+                new Pair<>("Huson and Bryant 2006",
+                        "D.H. Huson and D. Bryant. Application of phylogenetic networks in evolutionary studies. Molecular Biology and Evolution, 23:254–267, 2006."));
     }
 
 

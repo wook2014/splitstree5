@@ -27,6 +27,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import jloda.fx.ExtendedFXMLLoader;
 import jloda.util.Basic;
+import jloda.util.ProgramProperties;
 import splitstree5.gui.utils.Alert;
 import splitstree5.io.imports.interfaces.IImporter;
 import splitstree5.main.ImporterManager;
@@ -51,6 +52,8 @@ public class ImportDialog {
         importerService = new ImporterService();
 
         stage = new Stage();
+        stage.getIcons().setAll(ProgramProperties.getProgramIcons());
+
         stage.setScene(new Scene(extendedFXMLLoader.getRoot()));
         stage.sizeToScene();
         if (parentMainWindow != null) {

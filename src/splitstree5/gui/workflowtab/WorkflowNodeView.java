@@ -60,6 +60,8 @@ package splitstree5.gui.workflowtab;
 import com.sun.istack.internal.NotNull;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WeakChangeListener;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -74,6 +76,8 @@ import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.workflow.ANode;
 import splitstree5.core.workflow.UpdateState;
 
+import java.util.ArrayList;
+
 /**
  * a workflow node view
  * Daniel Huson, 1/27/17.
@@ -81,6 +85,7 @@ import splitstree5.core.workflow.UpdateState;
 public class WorkflowNodeView extends Group {
     private final Rectangle rectangle;
     private final ANode aNode;
+    private final ArrayList<ChangeListener<UpdateState>> stateChangeListeners = new ArrayList<>();
 
     /**
      * constructor
@@ -92,22 +97,27 @@ public class WorkflowNodeView extends Group {
         rectangle = new Rectangle(160, 60);
         this.aNode = aNode;
 
-        aNode.stateProperty().addListener((c, o, n) -> {
-                    switch (n) {
-                        case COMPUTING:
-                            rectangle.setStyle("-fx-fill: LIGHTBLUE;");
-                            break;
-                        case FAILED:
-                            rectangle.setStyle("-fx-fill: PINK;");
-                            break;
-                        case VALID:
-                            rectangle.setStyle("-fx-fill: LIGHTGRAY;");
-                            break;
-                        default:
-                            rectangle.setStyle("-fx-fill: DARKGRAY;");
-                    }
+        {
+            final ChangeListener<UpdateState> stateChangeListener = (c, o, n) -> {
+                switch (n) {
+                    case COMPUTING:
+                        rectangle.setStyle("-fx-fill: LIGHTBLUE;");
+                        break;
+                    case FAILED:
+                        rectangle.setStyle("-fx-fill: DARKRED;");
+                        break;
+                    case VALID:
+                        rectangle.setStyle("-fx-fill: LIGHTGRAY;");
+                        break;
+                    default:
+                        rectangle.setStyle("-fx-fill: DARKGRAY;");
                 }
-        );
+            };
+
+            aNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
+            stateChangeListeners.add(stateChangeListener);
+        }
+
         rectangle.setStyle("-fx-fill: LIGHTGRAY;");
         rectangle.setStroke(Color.DARKGRAY);
         getChildren().add(rectangle);
@@ -126,7 +136,13 @@ public class WorkflowNodeView extends Group {
         if (aNode instanceof AConnector) {
             final Label descriptionLabel = new Label();
             descriptionLabel.setFont(Font.font("Helvetica", 11));
-            aNode.stateProperty().addListener(observable -> descriptionLabel.setText(aNode.getShortDescription()));
+
+            {
+                final ChangeListener<UpdateState> stateChangeListener = (c, o, n) -> descriptionLabel.setText(aNode.getShortDescription());
+                aNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
+                stateChangeListeners.add(stateChangeListener);
+            }
+
             descriptionLabel.setText(aNode.getShortDescription());
             descriptionLabel.setLayoutX(10);
             descriptionLabel.setLayoutY(24);
@@ -160,7 +176,11 @@ public class WorkflowNodeView extends Group {
             }
             final Label sizeLabel = new Label();
             sizeLabel.setFont(Font.font("Helvetica", 11));
-            aNode.stateProperty().addListener(observable -> sizeLabel.setText("Size=" + ((ADataNode) aNode).getDataBlock().size()));
+            {
+                final ChangeListener<UpdateState> stateChangeListener = (c, o, n) -> sizeLabel.setText("Size=" + ((ADataNode) aNode).getDataBlock().size());
+                aNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
+                stateChangeListeners.add(stateChangeListener);
+            }
             sizeLabel.setText("Size=" + ((ADataNode) aNode).getDataBlock().size());
             sizeLabel.setLayoutX(10);
             sizeLabel.setLayoutY(24);

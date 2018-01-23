@@ -32,7 +32,7 @@ import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
-import splitstree5.core.misc.SplitsUtilities;
+import splitstree5.utils.SplitsUtilities;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,7 +42,7 @@ import java.util.List;
  * splits filter
  * Daniel Huson 12/2016
  */
-public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements IFromSplits, IToSplits {
+public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements IFromSplits, IToSplits, IFilter {
     public enum FilterAlgorithm {None, GreedyCompatible, ClosestTree, GreedyWeaklyCompatible}
 
     private final ArrayList<ASplit> enabledSplits = new ArrayList<>();
@@ -162,9 +162,9 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
         if (enabledSplits.size() == 0 && disabledSplits.size() == 0)
             setShortDescription(null);
         else if (disabledSplits.size() == 0)
-            setShortDescription("Enabled: " + enabledSplits.size());
+            setShortDescription("using all " + enabledSplits.size() + " splits");
         else
-            setShortDescription("Enabled: " + enabledSplits.size() + " (of " + (enabledSplits.size() + disabledSplits.size() + ")"));
+            setShortDescription("using " + enabledSplits.size() + " of " + parent.getNsplits() + "splits ");
     }
 
     @Override
@@ -235,5 +235,10 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
 
     public void setOptionMaximumDimension(int optionMaximumDimension) {
         this.optionMaximumDimension = optionMaximumDimension;
+    }
+
+    @Override
+    public boolean isActive() {
+        return disabledSplits.size() > 0;
     }
 }

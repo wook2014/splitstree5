@@ -19,12 +19,12 @@ import splitstree5.core.models.K2Pmodel;
 
 public class K2P extends DNAdistance implements IFromChararacters, IToDistances {
 
-    private double tratio = 2.0;
+    private double optionTsTvRatio = 2.0;
     public final static String DESCRIPTION = "Calculates distances using the Kimura2P model";
 
     @Override
     public String getCitation() {
-        return "K2P; Swofford et al 1996; " +
+        return "Swofford et al 1996; " +
                 "D.L. Swofford, G.J. Olsen, P.J. Waddell, and  D.M. Hillis. Chapter  11:  Phylogenetic inference. " +
                 "In D. M. Hillis, C. Moritz, and B. K. Mable, editors, Molecular Systematics, pages 407–514. " +
                 "Sinauer Associates, Inc., 2nd edition, 1996.";
@@ -36,7 +36,7 @@ public class K2P extends DNAdistance implements IFromChararacters, IToDistances 
         progressListener.setTasks("K2P Distance", "Init.");
         progressListener.setMaximum(taxaBlock.getNtax());
 
-        K2Pmodel model = new K2Pmodel(this.tratio);
+        K2Pmodel model = new K2Pmodel(this.optionTsTvRatio);
         model.setPinv(getOptionPInvar());
         model.setGamma(getOptionGamma());
 
@@ -55,5 +55,13 @@ public class K2P extends DNAdistance implements IFromChararacters, IToDistances 
 
     public String getDescription() {
         return DESCRIPTION;
+    }
+
+    public double getOptionTsTvRatio() {
+        return optionTsTvRatio;
+    }
+
+    public void setOptionTsTvRatio(double optionTsTvRatio) {
+        this.optionTsTvRatio = optionTsTvRatio;
     }
 }

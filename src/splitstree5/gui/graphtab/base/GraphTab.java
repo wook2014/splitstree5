@@ -63,6 +63,7 @@ import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import jloda.phylo.PhyloGraph;
 import jloda.phylo.PhyloTree;
+import jloda.util.ProgramProperties;
 import jloda.util.Single;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -392,7 +393,6 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
                     }
                 };
                 scrollPane.lockAspectRatioProperty().bind(layout.isEqualTo(GraphLayout.Radial));
-
                 pane.minWidthProperty().bind(Bindings.createDoubleBinding(() ->
                         scrollPane.getViewportBounds().getWidth(), scrollPane.viewportBoundsProperty()).subtract(20));
                 pane.minHeightProperty().bind(Bindings.createDoubleBinding(() ->
@@ -400,8 +400,17 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
 
                 rootNode.setCenter(scrollPane);
 
+                /* this works once window is open, but first time around...
+                scrollPane.layout();
+                System.err.print("Center: "+scrollPane.getVvalue());
+                scrollPane.setVvalue(0.5);
+                System.err.println(" -> "+scrollPane.getVvalue());
+
+                scrollPane.setHvalue(0.5);
+                */
+
+
             }
-            //selectTab();
         });
     }
 
@@ -731,6 +740,8 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
                 StackPane pane = new StackPane(colorPicker);
                 Scene scene = new Scene(pane, 400, 400);
                 Stage stage = new Stage();
+                stage.getIcons().setAll(ProgramProperties.getProgramIcons());
+
                 stage.setScene(scene);
                 stage.sizeToScene();
                 stage.show();

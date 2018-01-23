@@ -432,8 +432,8 @@ public class Workflow {
         } else {
             connectorNodes.add((AConnector) node);
         }
-        node.stateProperty().addListener((ObservableValue<? extends UpdateState> observable, UpdateState oldValue, UpdateState newValue) -> {
-            if (newValue != UpdateState.VALID && newValue != UpdateState.FAILED) {
+        node.stateProperty().addListener((ObservableValue<? extends UpdateState> c, UpdateState o, UpdateState n) -> {
+            if (n != UpdateState.VALID && n != UpdateState.FAILED) {
                 if (!invalidNodes.contains(node))
                     invalidNodes.add(node);
             } else {

@@ -47,6 +47,8 @@ public class DistancesTopFilter extends ATopFilter<DistancesBlock> {
             public void compute(ProgressListener progressListener, TaxaBlock modifiedTaxaBlock, DistancesBlock original, DistancesBlock modified) {
                 if (originalTaxaNode.getDataBlock().getTaxa().equals(modifiedTaxaBlock.getTaxa())) {
                     child.getDataBlock().copy(parent.getDataBlock());
+                    setShortDescription("using all " + modifiedTaxaBlock.size() + " taxa");
+
                 } else {
                     modified.setNtax(modifiedTaxaBlock.getNtax());
 
@@ -61,6 +63,7 @@ public class DistancesTopFilter extends ATopFilter<DistancesBlock> {
                                 modified.setVariance(modifiedI, modifiedJ, original.getVariance(originalI, originalJ));
                         }
                     }
+                    setShortDescription("using " + modifiedTaxaBlock.size() + " of " + getOriginalTaxaBlock().size() + " taxa");
                 }
             }
         });

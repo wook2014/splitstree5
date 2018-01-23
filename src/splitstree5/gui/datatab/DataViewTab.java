@@ -21,6 +21,8 @@ package splitstree5.gui.datatab;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WeakChangeListener;
 import javafx.scene.control.Labeled;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -35,6 +37,7 @@ import splitstree5.gui.texttab.TextViewTab;
  * Daniel Huson, 1.2018
  */
 public class DataViewTab extends TextViewTab {
+    private final ChangeListener<UpdateState> stateChangeListener;
     /**
      * constructor
      *
@@ -44,11 +47,12 @@ public class DataViewTab extends TextViewTab {
     public DataViewTab(Document document, ADataNode aNode) {
         super(aNode.nameProperty());
         final StringProperty textProperty = new SimpleStringProperty(aNode.getDataBlock().getDisplayText());
-        aNode.stateProperty().addListener((c, o, n) -> {
+        stateChangeListener = (c, o, n) -> {
             if (n == UpdateState.VALID) {
                 textProperty.set(aNode.getDataBlock().getDisplayText());
             }
-        });
+        };
+        aNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
         getTextArea().textProperty().bind(textProperty);
         setMainWindow(document.getMainWindow());
         if (getGraphic() instanceof Labeled) {

@@ -1,6 +1,5 @@
 package splitstree5.core.algorithms.trees2splits;
 
-import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
@@ -10,8 +9,8 @@ import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.Compatibility;
-import splitstree5.core.misc.TreeUtilities;
 import splitstree5.utils.SplitsUtilities;
+import splitstree5.utils.TreesUtilities;
 
 import java.util.BitSet;
 
@@ -49,22 +48,11 @@ public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> implements 
         progressListener.setTasks("TreeSelector", "Extracting splits");
         progressListener.incrementProgress();
 
-        final BitSet taxaInTree = TreeUtilities.computeSplits(taxaBlock, null, tree, splits.getSplits());
-
-        // normalize cycle:
-        if (taxaBlock.getNtax() > 0) {
-            Node vFirstTaxon;
-            for (vFirstTaxon = tree.getFirstNode(); vFirstTaxon != null; vFirstTaxon = vFirstTaxon.getNext()) {
-                String label = tree.getLabel(vFirstTaxon);
-                if (label != null && label.equals(taxaBlock.getLabel(1)))
-                    break;
-            }
-            if (vFirstTaxon != null)
-                splits.setCycle(tree.getCycle(vFirstTaxon));
-        }
+        final BitSet taxaInTree = TreesUtilities.computeSplits(taxaBlock, null, tree, splits.getSplits());
 
         splits.setPartial(taxaInTree.cardinality() < taxaBlock.getNtax());
         splits.setCompatibility(Compatibility.compatible);
+        splits.setCycle(SplitsUtilities.computeCycle(taxaBlock.size(), splits.getSplits()));
 
         SplitsUtilities.verifySplits(splits.getSplits(), taxaBlock);
         progressListener.close();

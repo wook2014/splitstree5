@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Daniel H. Huson
+ *  Copyright (C) 2016 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -17,26 +17,17 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.gui.methodstab;
-
-import javafx.beans.property.ReadOnlyStringWrapper;
-import jloda.util.ProgramProperties;
-import splitstree5.core.Document;
-import splitstree5.gui.texttab.TextViewTab;
+package splitstree5.core.algorithms.filters;
 
 /**
- * the methods view tab
+ * algorithm that filters data
+ * Daniel Huson, 1.2018
  */
-public class MethodsViewTab extends TextViewTab {
+public interface IFilter {
     /**
-     * constructor
+     * is the filter active?
      *
-     * @param document
+     * @return true if output smaller than input
      */
-    public MethodsViewTab(Document document) {
-        super(new ReadOnlyStringWrapper("Methods"), document.methodsTextProperty());
-        getTextArea().setWrapText(true);
-        getTextArea().setFont(ProgramProperties.getDefaultFont());
-        setClosable(false);
-    }
+    boolean isActive();
 }

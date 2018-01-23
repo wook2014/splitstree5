@@ -176,6 +176,6 @@ abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> exte
      * e.g. Huson et al 2012; D.H. Huson, R. Rupp and C. Scornavacca, Phylogenetic Networks, Cambridge University Press, 2012
      */
     public String getCitation() {
-        return "???";
+        return null;
     }
 }

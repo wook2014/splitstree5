@@ -20,6 +20,7 @@
 package splitstree5.core.topfilters;
 
 
+import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import jloda.util.parse.NexusStreamParser;
@@ -52,9 +53,10 @@ public class CharactersTopFilter extends ATopFilter<CharactersBlock> {
         super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parentNode, childNode);
 
         setAlgorithm(new Algorithm<CharactersBlock, CharactersBlock>("TopFilter") {
-            public void compute(ProgressListener progressListener, TaxaBlock modifiedTaxaBlock, CharactersBlock parent, CharactersBlock child) throws CanceledException {
+            public void compute(ProgressListener progress, TaxaBlock modifiedTaxaBlock, CharactersBlock parent, CharactersBlock child) throws CanceledException {
+                // todo: implement copy command
                 {
-                    progressListener.setMaximum(modifiedTaxaBlock.size());
+                    progress.setMaximum(modifiedTaxaBlock.size());
                     final StringWriter w = new StringWriter();
                     try {
                         CharactersNexusFormat charactersNexusFormat = new CharactersNexusFormat();
@@ -62,7 +64,7 @@ public class CharactersTopFilter extends ATopFilter<CharactersBlock> {
                         CharactersNexusIO.write(w, originalTaxaNode.getDataBlock(), parent, charactersNexusFormat);
                         CharactersNexusIO.parse(new NexusStreamParser(new StringReader(w.toString())), originalTaxaNode.getDataBlock(), child, charactersNexusFormat);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        Basic.caught(e);
                     }
                 }
                 child.setDimension(modifiedTaxaBlock.getNtax(), 0);
@@ -71,8 +73,12 @@ public class CharactersTopFilter extends ATopFilter<CharactersBlock> {
                     final int originalI = getOriginalTaxaBlock().indexOf(a);
                     final int modifiedI = modifiedTaxaBlock.indexOf(a);
                     child.copyRow(parent, originalI, modifiedI);
-                    progressListener.incrementProgress();
+                    progress.incrementProgress();
                 }
+                if (modifiedTaxaBlock.size() == getOriginalTaxaBlock().size())
+                    setShortDescription("using all " + modifiedTaxaBlock.size() + " sequences");
+                else
+                    setShortDescription("using " + modifiedTaxaBlock.size() + " of " + getOriginalTaxaBlock().size() + " sequences");
             }
         });
     }

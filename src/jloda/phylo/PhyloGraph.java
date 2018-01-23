@@ -37,7 +37,6 @@ public class PhyloGraph extends Graph {
     protected final Vector<Node> taxon2node;
     protected final NodeArray<List<Integer>> node2taxa;
 
-
     public boolean edgeConfidencesSet = false; // use this to decide whether to output edge confidences
 
     // if you add anything here, make sure it gets added to copy, too!
@@ -90,7 +89,7 @@ public class PhyloGraph extends Graph {
     public NodeArray<Node> copy(PhyloGraph src) {
         clear();
         NodeArray<Node> oldNode2NewNode = new NodeArray<>(src);
-        copy(src, oldNode2NewNode, new EdgeArray<Edge>(src));
+        copy(src, oldNode2NewNode, new EdgeArray<>(src));
         return oldNode2NewNode;
     }
 
@@ -111,12 +110,12 @@ public class PhyloGraph extends Graph {
         super.copy(src, oldNode2NewNode, oldEdge2NewEdge);
         edgeConfidencesSet = src.edgeConfidencesSet;
 
-        for (Node v : nodes()) {
+        for (Node v : src.nodes()) {
             Node w = (oldNode2NewNode.getValue(v));
             nodeLabels.setValue(w, src.nodeLabels.getValue(v));
             node2taxa.setValue(w, src.node2taxa.getValue(v));
         }
-        for (Edge e : edges()) {
+        for (Edge e : src.edges()) {
             Edge f = (oldEdge2NewEdge.getValue(e));
             edgeWeights.put(f, src.edgeWeights.getValue(e));
             edgeLabels.put(f, src.edgeLabels.getValue(e));
@@ -128,17 +127,6 @@ public class PhyloGraph extends Graph {
                 setTaxon2Node(i + 1, oldNode2NewNode.getValue(v));
         }
         return oldNode2NewNode;
-    }
-
-    /**
-     * Gets an enumeration of all node labels.
-     */
-    public Set<String> getNodeLabels() {
-        Set<String> set = new HashSet<>();
-        for (Node v : nodes())
-            if (getLabel(v) != null && getLabel(v).length() > 0)
-                set.add(getLabel(v));
-        return set;
     }
 
     /**
@@ -251,28 +239,6 @@ public class PhyloGraph extends Graph {
      */
     public void setLabel(Node v, String str) {
         nodeLabels.setValue(v, str);
-    }
-
-
-    /**
-     * Sets the label of a node to a list of taxon names
-     *
-     * @param v      node
-     * @param labels list of labels
-     */
-    public void setLabels(Node v, List labels) {
-        if (labels != null) {
-            StringBuilder buf = new StringBuilder();
-            boolean first = true;
-            for (Object label : labels) {
-                if (first)
-                    first = false;
-                else
-                    buf.append(", ");
-                buf.append(label);
-            }
-            setLabel(v, buf.toString());
-        }
     }
 
     /**
@@ -450,17 +416,5 @@ public class PhyloGraph extends Graph {
         for (Edge e : edges()) {
             setWeight(e, factor * getWeight(e));
         }
-    }
-
-    /**
-     * compute the current set of all leaves
-     * @return all leaves
-     */
-    public NodeSet computeSetOfLeaves() {
-        NodeSet nodes = new NodeSet(this);
-        for (Node v : nodes())
-            if (v.getOutDegree() == 0)
-                nodes.add(v);
-        return nodes;
     }
 }

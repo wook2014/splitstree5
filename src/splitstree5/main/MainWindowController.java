@@ -148,7 +148,7 @@ public class MainWindowController {
             for (TreeItem item : treeView.getSelectionModel().getSelectedItems()) {
                 if (item instanceof WorkflowTreeItem) {
                     final Point2D point2D = item.getGraphic().localToScreen(item.getGraphic().getLayoutX(), item.getGraphic().getLayoutY());
-                    ((WorkflowTreeItem) item).showView(point2D.getX(), point2D.getY());
+                    ((WorkflowTreeItem) item).showView();
                 }
             }
         });
@@ -196,7 +196,7 @@ public class MainWindowController {
 
     public void ensureAlgorithmsTabPaneIsOpen() {
         ensureTreeViewIsOpen();
-        if (algorithmSplitPane.getDividerPositions()[0] >= 0.99)
+        if (algorithmSplitPane.getDividerPositions()[0] >= (algorithmSplitPane.getHeight() - 300) / algorithmSplitPane.getHeight())
             animateSplitPane(algorithmSplitPane, (algorithmSplitPane.getHeight() - 300) / algorithmSplitPane.getHeight(), () -> openCloseRight.setText(("<")), true);
     }
 }

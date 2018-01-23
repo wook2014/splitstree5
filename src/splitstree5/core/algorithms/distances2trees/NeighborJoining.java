@@ -45,7 +45,7 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> imple
 
     @Override
     public String getCitation() {
-        return "NeighborJoining; Saitou and Nei 1987; " +
+        return "Saitou and Nei 1987; " +
                 "N. Saitou and M. Nei. The Neighbor-Joining method: a new method for reconstructing phylogenetic trees. " +
                 "Molecular Biology and Evolution, 4:406-425, 1987.";
     }

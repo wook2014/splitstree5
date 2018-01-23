@@ -4,15 +4,12 @@ import jloda.util.CanceledException;
 import jloda.util.FileInputIterator;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IToSplits;
-import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ASplit;
-import splitstree5.core.misc.SplitsUtilities;
 import splitstree5.io.imports.interfaces.IImportSplits;
+import splitstree5.utils.SplitsUtilities;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;

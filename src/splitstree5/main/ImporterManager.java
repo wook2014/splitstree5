@@ -40,22 +40,33 @@ public class ImporterManager {
     private ImporterManager() {
         importers = new ArrayList<>(PluginClassLoader.getInstances(IImporter.class, "splitstree5.io.imports"));
         extensionFilters = new ArrayList<>();
+        final Map<String, Set<String>> dataType2Extensions = new TreeMap<>();
         for (IImporter importer : importers) {
-            final List<String> list = completeExtensions(importer.getExtensions());
-            if (list != null)
-                extensionFilters.add(new FileChooser.ExtensionFilter(getDataType(importer) + ": " + Basic.toString(list, " "), list));
+            String dataType = getDataType(importer);
+            Collection<String> add = importer.getExtensions();
+            if (add != null) {
+                if (dataType2Extensions.containsKey(dataType))
+                    dataType2Extensions.get(dataType).addAll(add);
+                else
+                    dataType2Extensions.put(dataType, new TreeSet<>(add));
+            }
+        }
+        for (String dataType : dataType2Extensions.keySet()) {
+            extensionFilters.add(new FileChooser.ExtensionFilter(dataType + ": "
+                    + Basic.toString(completeExtensions(dataType2Extensions.get(dataType), false), " "),
+                    completeExtensions(dataType2Extensions.get(dataType), true)));
         }
         extensionFilters.sort(Comparator.comparing(FileChooser.ExtensionFilter::getDescription));
         extensionFilters.add(new FileChooser.ExtensionFilter("All files: *.* *.gz", "*.*", "*.gz"));
     }
 
     /**
-     * complete extensions bey adding prefix *. and also adding an extension with suffix .gz
+     * complete extensions by adding prefix *. and also adding an extension with suffix .gz
      *
      * @param extensions
      * @return completed extensions
      */
-    private List<String> completeExtensions(List<String> extensions) {
+    private List<String> completeExtensions(Collection<String> extensions, boolean includeGZ) {
         if (extensions == null)
             return null;
         final Set<String> set = new TreeSet<>();
@@ -66,9 +77,11 @@ public class ImporterManager {
         }
 
         final ArrayList<String> list = new ArrayList<>(set);
-        for (String ex : set) {
-            if (!ex.endsWith(".gz") && !set.contains(ex + ".gz"))
-                list.add(ex + ".gz");
+        if (includeGZ) {
+            for (String ex : set) {
+                if (!ex.endsWith(".gz") && !set.contains(ex + ".gz"))
+                    list.add(ex + ".gz");
+            }
         }
         return list;
     }

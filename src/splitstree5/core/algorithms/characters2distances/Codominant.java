@@ -30,9 +30,7 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
 
     @Override
     public String getCitation() {
-        return "Codominant; Smouse and Peakall 1999; " +
-                "Smouse PE, Peakall R Spatial autocorrelation analysis of individual multiallele and multilocus genetic structure. " +
-                "Heredity, 82, 561-573, 1999.";
+        return "Smouse and Peakall 1999; Smouse PE, Peakall R. Spatial autocorrelation analysis of individual multiallele and multilocus genetic structure. Heredity, 82, 561-573, 1999.";
     }
 
     @Override

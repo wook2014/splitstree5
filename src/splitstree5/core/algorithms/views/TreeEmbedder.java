@@ -97,7 +97,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
 
     @Override
     public String getCitation() {
-        return "TreeEmbedder; Huson et al 2012;D.H. Huson, R. Rupp and C. Scornavacca, Phylogenetic Networks, Cambridge, 2012.";
+        return "Huson et al 2012;D.H. Huson, R. Rupp and C. Scornavacca, Phylogenetic Networks, Cambridge, 2012.";
     }
 
     @Override

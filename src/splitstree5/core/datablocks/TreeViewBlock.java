@@ -60,8 +60,6 @@ public class TreeViewBlock extends ADataBlock implements IHasTab {
     public void setDataNode(ADataNode dataNode) {
         super.setDataNode(dataNode);
         Platform.runLater(() -> { // setup tab
-            treeViewTab.setToolBar(new AlgorithmBreadCrumbsToolBar(getDocument(), getDataNode()));
-            ((AlgorithmBreadCrumbsToolBar) treeViewTab.getToolBar()).update();
         });
     }
 
@@ -70,7 +68,13 @@ public class TreeViewBlock extends ADataBlock implements IHasTab {
      */
     public void show() {
         treeViewTab.show();
-        Platform.runLater(() -> setShortDescription(getInfo()));
+        Platform.runLater(() -> {
+            setShortDescription(getInfo());
+            if (treeViewTab.getToolBar() == null) {
+                treeViewTab.setToolBar(new AlgorithmBreadCrumbsToolBar(getDocument(), getDataNode()));
+                ((AlgorithmBreadCrumbsToolBar) treeViewTab.getToolBar()).update();
+            }
+        });
     }
 
     public TreeViewTab getTab() {

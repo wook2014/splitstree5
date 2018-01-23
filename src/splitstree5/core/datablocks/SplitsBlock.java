@@ -27,7 +27,7 @@ import splitstree5.core.algorithms.interfaces.IFromSplits;
 import splitstree5.core.algorithms.interfaces.IToSplits;
 import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
-import splitstree5.core.misc.SplitsUtilities;
+import splitstree5.utils.SplitsUtilities;
 
 import java.util.BitSet;
 import java.util.Iterator;

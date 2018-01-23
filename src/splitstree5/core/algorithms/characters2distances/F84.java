@@ -26,7 +26,7 @@ public class F84 extends DNAdistance implements IFromChararacters, IToDistances 
 
     @Override
     public String getCitation() {
-        return "F84; Swofford et al 1996; " +
+        return "Swofford et al 1996; " +
                 "D.L. Swofford, G.J. Olsen, P.J. Waddell, and  D.M. Hillis. Chapter 11: Phylogenetic inference. " +
                 "In D. M. Hillis, C. Moritz, and B. K. Mable, editors, Molecular Systematics, pages 407–514. " +
                 "Sinauer Associates, Inc., 2nd edition, 1996.";

@@ -95,7 +95,7 @@ public class WorkflowViewTab extends ViewerTab {
     private final Group edgeViews = new Group();
 
     private final Map<ANode, WorkflowNodeView> node2NodeView = new HashMap<>();
-    private final Map<ANode, List<WorkflowEdgeView>> node2EdgeViews = new HashMap<>();
+    private final Map<ANode, ArrayList<WorkflowEdgeView>> node2EdgeViews = new HashMap<>();
 
     private final Label noDataLabel = new Label("No data - open or import data from a file");
 
@@ -287,7 +287,7 @@ public class WorkflowViewTab extends ViewerTab {
         return node2NodeView;
     }
 
-    Map<ANode, List<WorkflowEdgeView>> getNode2EdgeViews() {
+    Map<ANode, ArrayList<WorkflowEdgeView>> getNode2EdgeViews() {
         return node2EdgeViews;
     }
 

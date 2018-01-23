@@ -19,6 +19,7 @@
 
 package splitstree5.utils;
 
+import com.sun.istack.internal.Nullable;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.graph.NotOwnerException;
@@ -30,6 +31,7 @@ import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
 
 import java.util.BitSet;
+import java.util.Collection;
 
 /**
  * some computations on trees
@@ -258,5 +260,99 @@ public class TreesUtilities {
                 }
             }
         }
+    }
+
+    /**
+     * compute all the splits in a tree
+     *
+     * @param taxaBlock
+     * @param tree
+     * @param taxaInTree the taxa in the tree, if null, is computed
+     * @param splits     the resulting splits are added here
+     * @return bit set of taxa found in tree
+     */
+    public static BitSet computeSplits(final TaxaBlock taxaBlock, @Nullable BitSet taxaInTree, final PhyloTree tree, final Collection<ASplit> splits) {
+        setNode2taxa(tree, taxaBlock);
+        if (taxaInTree == null)
+            taxaInTree = getTaxa(tree);
+
+        Node root = null;
+        if (tree.getRoot() != null)
+            root = tree.getRoot();
+        else {
+            // choose an arbitrary leaf
+            for (Node v : tree.nodes()) {
+                if (tree.getNode2Taxa(v).size() > 0 && v.getDegree() == 1) {
+                    root = v;
+                    break;
+                }
+            }
+        }
+        if (root != null) // empty tree?
+            tree2splitsRec(root, null, tree, taxaInTree, splits);
+        return taxaInTree;
+    }
+
+    /**
+     * recursively extract all splits
+     *
+     * @param v
+     * @param e
+     * @param tree
+     * @param taxaInTree
+     * @param splits
+     * @return
+     */
+    private static BitSet tree2splitsRec(final Node v, final Edge e, final PhyloTree tree, final BitSet taxaInTree, final Collection<ASplit> splits) {
+        final BitSet vAndBelowTaxa = asBitSet(tree.getNode2Taxa(v));
+
+        for (Edge f = v.getFirstAdjacentEdge(); f != null; f = v.getNextAdjacentEdge(f)) {
+            if (f != e) {
+                final Node w = tree.getOpposite(v, f);
+                final BitSet wAndBelowTaxa = tree2splitsRec(w, f, tree, taxaInTree, splits);
+
+                // take care at root of tree,
+                // if root has degree 2, then root will give rise to only
+                //  one split, with weight that equals
+                // the sum of the two weights.. make sure we only produce
+                // one split by using the edge that has lower id
+                boolean ok = true;
+                double weight = tree.getWeight(f);
+                double confidence = tree.getConfidence(f);
+                Node root = tree.getRoot();
+                if (root != null && (f.getSource() == root || f.getTarget() == root) && root.getDegree() == 2 && tree.getNode2Taxa(v).size() == 0) {
+                    // get the other  edge adjacent to root:
+                    final Edge g;
+                    if (root.getFirstAdjacentEdge() != f)
+                        g = root.getFirstAdjacentEdge();
+                    else
+                        g = root.getLastAdjacentEdge();
+                    if (f.getId() < g.getId()) {
+                        weight = tree.getWeight(f) + tree.getWeight(g);
+                        confidence = 0.5 * (tree.getConfidence(f) + tree.getConfidence(g));
+                    } else
+                        ok = false;
+                }
+
+                if (ok) {
+                    final BitSet B = new BitSet();
+                    B.or(taxaInTree);
+                    B.andNot(wAndBelowTaxa);
+                    final ASplit newSplit = new ASplit(wAndBelowTaxa, B, weight, confidence);
+                    newSplit.setConfidence((float) confidence);
+                    splits.add(newSplit);
+                }
+                vAndBelowTaxa.or(wAndBelowTaxa);
+            }
+        }
+        return vAndBelowTaxa;
+    }
+
+    public static BitSet asBitSet(Collection<Integer> integers) {
+        final BitSet bitSet = new BitSet();
+        for (Integer i : integers) {
+            bitSet.set(i);
+        }
+        return bitSet;
     }
 }

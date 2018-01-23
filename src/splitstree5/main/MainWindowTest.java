@@ -21,6 +21,8 @@ package splitstree5.main;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import jloda.util.ProgramProperties;
+import jloda.util.ResourceManager;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.characters2distances.HammingDistances;
 import splitstree5.core.algorithms.distances2splits.NeighborNet;
@@ -32,6 +34,12 @@ import splitstree5.core.workflow.Workflow;
 import splitstree5.io.nexus.NexusFileParser;
 
 public class MainWindowTest extends Application {
+    @Override
+    public void init() {
+        ProgramProperties.getProgramIcons().setAll(ResourceManager.getIcon("SplitsTree5-16.png"), ResourceManager.getIcon("SplitsTree5-32.png"),
+                ResourceManager.getIcon("SplitsTree5-64.png"), ResourceManager.getIcon("SplitsTree5-128.png"));
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         final MainWindow mainWindow = new MainWindow();

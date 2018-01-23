@@ -447,7 +447,7 @@ public class CharactersBlock extends ADataBlock {
      * @return row, 1-based
      */
     public char[] getRow1(int t) {
-        if (t == 0 || t == matrix.length)
+        if (t == 0)
             throw new IllegalArgumentException("" + t);
         final char[] src = matrix[t - 1];
         final char[] dest = new char[src.length + 1];

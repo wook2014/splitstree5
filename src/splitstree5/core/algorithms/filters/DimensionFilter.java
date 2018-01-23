@@ -54,7 +54,7 @@ import splitstree5.core.algorithms.interfaces.IToSplits;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Compatibility;
-import splitstree5.core.misc.SplitsUtilities;
+import splitstree5.utils.SplitsUtilities;
 
 import java.util.BitSet;
 import java.util.HashSet;
@@ -64,8 +64,9 @@ import java.util.Set;
  * heuristic dimension filter
  * Daniel Huson, 5.2004
  */
-public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> implements IFromSplits, IToSplits {
+public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> implements IFromSplits, IToSplits, IFilter {
     private final IntegerProperty optionMaxDimension = new SimpleIntegerProperty(4);
+    private boolean active;
 
     /**
      * heuristically remove high-dimension configurations in split graph
@@ -76,9 +77,11 @@ public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> impleme
      * @throws CanceledException
      */
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, SplitsBlock parent, SplitsBlock child) throws CanceledException {
+        active = false;
+
         final int COMPUTE_DSUBGRAPH_MAXDIMENSION = 5;
         progress.setTasks("Dimension filter", "optionMaxDimension=" + optionMaxDimension.get());
-        System.err.println("\nRunning Dimension-Filter for d=" + optionMaxDimension.get());
+        System.err.println("Running Dimension-Filter for d=" + optionMaxDimension.get());
         BitSet toDelete = new BitSet(); // set of splits to be removed from split set
 
         try {
@@ -118,10 +121,14 @@ public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> impleme
         }
 
         copySplits(parent, child, toDelete);
-        if (toDelete.cardinality() == 0)
+        if (toDelete.cardinality() == 0) {
             child.copy(parent);
-        else
+            setShortDescription("using all " + parent.getNsplits() + " splits");
+        } else {
             child.setCycle(SplitsUtilities.computeCycle(taxaBlock.getNtax(), child.getSplits()));
+            setShortDescription("using " + child.getNsplits() + " of " + parent.getNsplits() + " splits");
+            active = true;
+        }
         System.err.println("Splits removed: " + toDelete.cardinality());
     }
 
@@ -342,6 +349,11 @@ public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> impleme
 
     public void setOptionMaxDimension(int optionMaxDimension) {
         this.optionMaxDimension.set(optionMaxDimension);
+    }
+
+    @Override
+    public boolean isActive() {
+        return active;
     }
 }
 

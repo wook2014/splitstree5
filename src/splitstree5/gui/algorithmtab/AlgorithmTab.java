@@ -21,6 +21,8 @@ package splitstree5.gui.algorithmtab;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WeakChangeListener;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -60,6 +62,10 @@ public class AlgorithmTab<P extends ADataBlock, C extends ADataBlock> extends Vi
 
     private final AConnector<P, C> connector;
 
+    private final ChangeListener<UpdateState> connectorStateChangeListener;
+    private final ChangeListener<UpdateState> parentStateChangeListener;
+
+
     /**
      * constructor
      */
@@ -77,16 +83,18 @@ public class AlgorithmTab<P extends ADataBlock, C extends ADataBlock> extends Vi
 
         getUndoManager().undoStackSizeProperty().addListener((c, o, n) -> applicableChangeHasBeenMade.set(n.intValue() > 0));
 
-        connector.stateProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == UpdateState.VALID) {
+        connectorStateChangeListener = (c, o, n) -> {
+            if (n == UpdateState.VALID) {
                 algorithmPane.syncModel2Controller();
-            }
+            } else if (n == UpdateState.FAILED)
+                applicableChangeHasBeenMade.set(true);
             // undoManager.clear();
-        });
+        };
+        connector.stateProperty().addListener(new WeakChangeListener<>(connectorStateChangeListener));
 
-        connector.getParent().stateProperty().addListener((observable, oldValue, newValue) -> {
-            getUndoManager().clear(); // if parent changes, have to forget history...
-        });
+        parentStateChangeListener = (c, o, n) -> getUndoManager().clear();
+
+        connector.getParent().stateProperty().addListener(new WeakChangeListener<>(parentStateChangeListener));
 
         controller.getBorderPane().setCenter(updateAlgorithmPane());
 

@@ -19,13 +19,19 @@
 
 package splitstree5.gui.workflowtree;
 
+import javafx.animation.Animation;
+import javafx.animation.Interpolator;
+import javafx.animation.RotateTransition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WeakChangeListener;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
 import jloda.util.ResourceManager;
 import splitstree5.core.Document;
 import splitstree5.core.connectors.AConnector;
@@ -42,6 +48,7 @@ public class WorkflowTreeItem extends TreeItem<String> {
     private final Document document;
     private final ANode aNode;
     private BooleanProperty disable = new SimpleBooleanProperty();
+    private final ChangeListener<UpdateState> stateChangeListener;
 
     /**
      * constructor
@@ -59,41 +66,63 @@ public class WorkflowTreeItem extends TreeItem<String> {
         if (aNode != null) {
             label.textProperty().bind(aNode.nameProperty());
             final Tooltip tooltip = new Tooltip();
+            final RotateTransition rotateTransition;
 
             if (aNode instanceof AConnector) {
                 disable.bind(((AConnector) aNode).applicableProperty().not().and(aNode.stateProperty().isEqualTo(UpdateState.VALID).not()).or(new ReadOnlyBooleanWrapper(aNode.getName().endsWith("TopFilter"))));
                 final Image icon = ResourceManager.getIcon(aNode.getName().endsWith("Filter") ? "Filter16.gif" : "Algorithm16.gif");
                 if (icon != null) {
-                    label.setGraphic(new ImageView(icon));
-                }
+                    final ImageView imageView = new ImageView(icon);
+                    rotateTransition = new RotateTransition(Duration.millis(1000), imageView);
+                    rotateTransition.setByAngle(360);
+                    rotateTransition.setCycleCount(Animation.INDEFINITE);
+                    rotateTransition.setInterpolator(Interpolator.LINEAR);
+                    label.setGraphic(imageView);
+                } else
+                    rotateTransition = null;
             } else {
                 disable.bind(aNode.stateProperty().isEqualTo(UpdateState.VALID).not());
                 Image icon = ResourceManager.getIcon(aNode.getName().replaceAll("^Orig", "").replaceAll(".*]", "") + "16.gif");
                 if (icon != null) {
                     label.setGraphic(new ImageView(icon));
                 }
+                rotateTransition = null;
             }
             tooltip.textProperty().bind(aNode.shortDescriptionProperty());
             Tooltip.install(getGraphic(), tooltip);
 
-            aNode.stateProperty().addListener((c, o, n) -> {
-                        switch (n) {
-                            case COMPUTING:
-                                label.setStyle("-fx-background-color: LIGHTBLUE;");
-                                break;
-                            case FAILED:
-                                label.setStyle("-fx-background-color: PINK;");
-                                break;
-                            default:
-                                label.setStyle("");
+            stateChangeListener = (c, o, n) -> {
+                // System.err.println("State change: " + aNode.getName() + ": " + n);
+                switch (n) {
+                    case COMPUTING:
+                        label.setTextFill(Color.BLACK);
+                        label.setStyle("-fx-background-color: LIGHTBLUE;");
+                        if (rotateTransition != null)
+                            rotateTransition.play();
+                        break;
+                    case FAILED:
+                        label.setStyle("");
+                        label.setTextFill(Color.DARKRED);
+                        if (rotateTransition != null) {
+                            rotateTransition.stop();
+                            rotateTransition.getNode().setRotate(0);
                         }
-                    }
-            );
+                        break;
+                    default:
+                        label.setTextFill(Color.BLACK);
+                        label.setStyle("");
+                        if (rotateTransition != null) {
+                            rotateTransition.stop();
+                            rotateTransition.getNode().setRotate(0);
+                        }
+                }
+            };
+            aNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
 
             label.setOnContextMenuRequested((e) -> {
                 final MenuItem show = new MenuItem("Open...");
                 show.setOnAction((x) -> {
-                    showView(e.getScreenX(), e.getScreenY());
+                    showView();
                 });
                 show.disableProperty().bind(disable);
                 final ContextMenu contextMenu = new ContextMenu(show);
@@ -102,11 +131,12 @@ public class WorkflowTreeItem extends TreeItem<String> {
             getGraphic().setOnMouseClicked((e) -> {
                 if (e.getClickCount() == 2) {
                     if (!disable.get())
-                        showView(e.getScreenX(), e.getScreenY());
+                        showView();
                     e.consume();
                 }
             });
-        }
+        } else
+            stateChangeListener = null;
 
         disable.addListener((c, o, n) -> {
             if (n)
@@ -119,10 +149,8 @@ public class WorkflowTreeItem extends TreeItem<String> {
     /**
      * show the view for this node
      *
-     * @param screenX
-     * @param screenY
      */
-    public void showView(double screenX, double screenY) {
+    public void showView() {
         if (aNode instanceof ADataNode)
             document.getMainWindow().showDataView((ADataNode) aNode);
         else {

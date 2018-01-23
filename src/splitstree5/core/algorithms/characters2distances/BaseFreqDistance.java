@@ -24,8 +24,8 @@ public class BaseFreqDistance extends Algorithm<CharactersBlock, DistancesBlock>
     private String TASK = "Base Frequency Distance";
 
     @Override
-    public String getCitation() {
-        return "BaseFreqDistance; Hamming 1950; " +
+    public String getCitation() { // todo: is this the correct citation?
+        return "Hamming 1950; " +
                 "Hamming, Richard W. \"Error detecting and error correcting codes\". " +
                 "Bell System Technical Journal. 29 (2): 147–160. MR 0035935, 1950.";
     }

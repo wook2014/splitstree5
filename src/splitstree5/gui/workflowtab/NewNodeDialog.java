@@ -71,7 +71,7 @@ import splitstree5.core.workflow.Workflow;
 import splitstree5.undo.UndoableRedoableCommand;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 
 /**
  * displays the new node dialog and creates a new node, if desired
@@ -177,7 +177,10 @@ public class NewNodeDialog {
             public void redo() {
                 workflowView.getNode2NodeView().put(targetNode, targetNodeView);
                 workflowView.getNode2NodeView().put(connectorNode, connectorNodeView);
-                workflowView.getNode2EdgeViews().put(connectorNode, Arrays.asList(edgeView1, edgeView2));
+                ArrayList<WorkflowEdgeView> list = new ArrayList<>();
+                list.add(edgeView1);
+                list.add(edgeView2);
+                workflowView.getNode2EdgeViews().put(connectorNode, list);
 
                 workflowView.getWorkflow().addConnector(connectorNode);
                 workflowView.getWorkflow().addDataNode(targetNode);

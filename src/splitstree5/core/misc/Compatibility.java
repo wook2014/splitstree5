@@ -20,6 +20,7 @@
 package splitstree5.core.misc;
 
 import com.sun.istack.internal.Nullable;
+import splitstree5.utils.SplitsUtilities;
 
 import java.util.BitSet;
 import java.util.List;

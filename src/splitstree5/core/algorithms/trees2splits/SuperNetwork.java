@@ -20,8 +20,8 @@ import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
-import splitstree5.core.misc.SplitsUtilities;
 import splitstree5.gui.utils.Alert;
+import splitstree5.utils.SplitsUtilities;
 import splitstree5.utils.TreesUtilities;
 
 import java.util.*;
@@ -53,7 +53,7 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
 
     @Override
     public String getCitation() {
-        return "SuperNetwork; Huson et al 2004; " +
+        return "Huson et al 2004; " +
                 "D.H. Huson, T. Dezulian, T. Kloepper, and M. A. Steel. Phylogenetic super-networks from partial trees. " +
                 "IEEE/ACM Transactions in Computational Biology and Bioinformatics, 1(4):151–158, 2004.";
     }

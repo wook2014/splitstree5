@@ -34,7 +34,7 @@ import java.util.*;
  * removes columns from a character alignment
  * Daniel Huson, 1.2018
  */
-public class CharactersFilter extends Algorithm<CharactersBlock, CharactersBlock> implements IFromChararacters, IToCharacters {
+public class CharactersFilter extends Algorithm<CharactersBlock, CharactersBlock> implements IFromChararacters, IToCharacters, IFilter {
     private final BitSet columnMask = new BitSet(); // positions set here are ignored
 
     private boolean optionExcludeGapSites = false;
@@ -44,6 +44,8 @@ public class CharactersFilter extends Algorithm<CharactersBlock, CharactersBlock
     private boolean optionExcludeFirstCodonPosition = false;
     private boolean optionExcludeSecondCodonPosition = false;
     private boolean optionExcludeThirdCodonPosition = false;
+
+    private String methodsString;
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxa, CharactersBlock parent, CharactersBlock child) throws InterruptedException, CanceledException {
@@ -121,10 +123,11 @@ public class CharactersFilter extends Algorithm<CharactersBlock, CharactersBlock
 
         if (totalColumns == 0)
             setShortDescription(null);
-        else if (columnMask.cardinality() > 0)
-            setShortDescription("Enabled: " + (totalColumns - columnMask.cardinality()) + " (of " + totalColumns + ") chars");
+        else if (columnMask.cardinality() > 0) {
+            setShortDescription("using " + (totalColumns - columnMask.cardinality()) + " (of " + totalColumns + ") chars");
+        }
         else
-            setShortDescription("Enabled: all " + totalColumns + " chars");
+            setShortDescription("using all " + totalColumns + " chars");
     }
 
     @Override
@@ -186,5 +189,10 @@ public class CharactersFilter extends Algorithm<CharactersBlock, CharactersBlock
 
     public List<String> listOptions() {
         return Arrays.asList("optionExcludeGapSites", "optionExcludeConstantSites", "optionExcludeParsimonyUninformativeSites", "optionExcludeFirstCodonPosition", "optionExcludeSecondCodonPosition", "optionExcludeThirdCodonPosition");
+    }
+
+    @Override
+    public boolean isActive() {
+        return columnMask.cardinality() > 0;
     }
 }

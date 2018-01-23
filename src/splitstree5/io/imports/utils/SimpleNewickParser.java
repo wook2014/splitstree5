@@ -108,8 +108,12 @@ public class SimpleNewickParser {
                             throw new IOException("Expected label at position " + i0);
 
                         tree.setLabel(w, label);
-                        if (w.getOutDegree() == 0)
-                            leafLabels.add(label);
+                        if (w.getOutDegree() == 0) {
+                            if (leafLabels.contains(label))
+                                System.err.println("Leaf label occurs multiple times: " + label);
+                            else
+                                leafLabels.add(label);
+                        }
                         else
                             internalLabels.add(label);
                     }
@@ -136,8 +140,12 @@ public class SimpleNewickParser {
                         throw new IOException("Expected label at position " + i0);
 
                     tree.setLabel(w, label);
-                    if (w.getOutDegree() == 0)
-                        leafLabels.add(label);
+                    if (w.getOutDegree() == 0) {
+                        if (leafLabels.contains(label))
+                            System.err.println("Leaf label occurs multiple times: " + label);
+                        else
+                            leafLabels.add(label);
+                    }
                     else
                         internalLabels.add(label);
                 }

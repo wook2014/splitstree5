@@ -58,9 +58,9 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, SplitsNetwork
 
     private ChangeListener<UpdateState> changeListener;
 
-    public enum Algorithm {Both, EqualAngleOnly, ConvexHullOnly}
+    public enum Algorithm {EqualAngleConvexHull, EqualAngleOnly, ConvexHullOnly}
 
-    private final ObjectProperty<Algorithm> optionAlgorithm = new SimpleObjectProperty<>(Algorithm.Both);
+    private final ObjectProperty<Algorithm> optionAlgorithm = new SimpleObjectProperty<>(Algorithm.EqualAngleConvexHull);
     private final BooleanProperty optionUseWeights = new SimpleBooleanProperty(true);
 
     private final IntegerProperty optionDaylightIterations = new SimpleIntegerProperty(0);
@@ -73,7 +73,7 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, SplitsNetwork
 
     @Override
     public String getCitation() {
-        return "SplitsNetworkAlgorithm; Dress and Huson 2004; " +
+        return "Dress and Huson 2004; " +
                 "A.W.M. Dress and D.H. Huson, \"Constructing splits graphs,\" " +
                 "in IEEE/ACM Transactions on Computational Biology and Bioinformatics, vol. 1, no. 3, pp. 109-115, July-Sept. 2004.";
     }
@@ -122,9 +122,7 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, SplitsNetwork
             EqualAngle.assignCoordinatesToNodes(isOptionUseWeights(), graph, node2point);
         }
 
-
         progress.setProgress(90);
-
 
         progress.setProgress(100);   //set progress to 100%
 
@@ -195,7 +193,6 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, SplitsNetwork
     public void setOptionDaylightIterations(int optionDaylightIterations) {
         this.optionDaylightIterations.set(optionDaylightIterations);
     }
-
 
     public int getOptionBoxOpenIterations() {
         return optionBoxOpenIterations.get();

@@ -19,6 +19,8 @@
  */
 package jloda.util;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -33,11 +35,12 @@ import java.util.LinkedList;
 /**
  * track program properties
  *
- * @author huson
- * Date: 08-Nov-2004
+ * Daniel Huson,  2004, 2018
  */
 public class ProgramProperties {
     static public final java.util.Properties props = new java.util.Properties();
+
+    static private final ObservableList<Image> programIcons = FXCollections.observableArrayList();
 
     static private Font defaultFont = Font.font("Arial", 12);
 
@@ -45,9 +48,7 @@ public class ProgramProperties {
     static private String programName = "";
     static private String programVersion = "";
     static private String programTitle = "";
-    private static Image programIcon = null;
     private static final boolean macOS = (System.getProperty("os.name") != null && System.getProperty("os.name").toLowerCase().startsWith("mac"));
-    private static boolean useGUI = false;
 
     /**
      * load properties from default file
@@ -403,21 +404,6 @@ public class ProgramProperties {
         return macOS;
     }
 
-    /**
-     * gets the program icon
-     *
-     * @return program icon
-     */
-    public static Image getProgramIcon() {
-        return programIcon;
-    }
-
-    /**
-     * sets the program icon
-     */
-    public static void setProgramIcon(Image icon) {
-        ProgramProperties.programIcon = icon;
-    }
 
     /**
      * returns the given text, if the key has been set, otherwise returns ""
@@ -431,11 +417,7 @@ public class ProgramProperties {
             return "";
     }
 
-    public static boolean isUseGUI() {
-        return useGUI;
-    }
-
-    public static void setUseGUI(boolean useGUI) {
-        ProgramProperties.useGUI = useGUI;
+    public static ObservableList<Image> getProgramIcons() {
+        return programIcons;
     }
 }
