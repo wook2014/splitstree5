@@ -23,6 +23,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
+import jloda.util.ProgramProperties;
 
 import java.util.Optional;
 
@@ -37,7 +38,7 @@ public class ClosingLastDocument {
     public static boolean apply(Stage stage) {
         final Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.initOwner(stage);
-        alert.setTitle("SplitsTree5 - Confirm Quit");
+        alert.setTitle("Confirm Quit - " + ProgramProperties.getProgramName());
         alert.setHeaderText("Closing the last open document");
         alert.setContentText("Do you really want to quit?");
         final ButtonType buttonTypeCancel = new ButtonType("No", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -45,9 +46,6 @@ public class ClosingLastDocument {
         alert.getButtonTypes().setAll(buttonTypeCancel, buttonTypeYes);
 
         final Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == buttonTypeCancel)
-            return false;
-        else
-            return true;
+        return !result.isPresent() || result.get() != buttonTypeCancel;
     }
 }

@@ -47,8 +47,8 @@ public class ProgramProperties {
     static private String defaultFileName = null;
     static private String programName = "";
     static private String programVersion = "";
-    static private String programTitle = "";
     private static final boolean macOS = (System.getProperty("os.name") != null && System.getProperty("os.name").toLowerCase().startsWith("mac"));
+    private static boolean useGUI;
 
     /**
      * load properties from default file
@@ -382,20 +382,6 @@ public class ProgramProperties {
     }
 
     /**
-     * sets the program title string
-     */
-    public static void setProgramTitle(String title) {
-        ProgramProperties.programTitle = title;
-    }
-
-    /**
-     * gets the program titles string
-     */
-    public static String getProgramTitle() {
-        return programTitle;
-    }
-
-    /**
      * are we running on a mac?
      *
      * @return true, if os is mac
@@ -419,5 +405,13 @@ public class ProgramProperties {
 
     public static ObservableList<Image> getProgramIcons() {
         return programIcons;
+    }
+
+    public static void setUseGUI(boolean useGUI) {
+        ProgramProperties.useGUI = useGUI;
+    }
+
+    public static boolean isUseGUI() {
+        return useGUI;
     }
 }

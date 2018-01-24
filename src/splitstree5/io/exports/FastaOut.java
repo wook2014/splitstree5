@@ -4,14 +4,16 @@ import splitstree5.core.algorithms.interfaces.IFromChararacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.io.exports.interfaces.IExportCharacters;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
+import java.util.List;
 
-public class FastaOut implements IFromChararacters {
+public class FastaOut implements IFromChararacters, IExportCharacters {
 
-    public void export(Writer w, TaxaBlock taxa, CharactersBlock characters)
-            throws IOException {
+    public void export(Writer w, TaxaBlock taxa, CharactersBlock characters) throws IOException {
 
         jloda.util.FastA fasta = new jloda.util.FastA();
 
@@ -25,7 +27,6 @@ public class FastaOut implements IFromChararacters {
             }
             fasta.add(taxa.getLabel(i), sequence.toString().toUpperCase());
         }
-
         fasta.write(w);
     }
 
@@ -44,5 +45,10 @@ public class FastaOut implements IFromChararacters {
             fasta.add(taxa.getLabel(t), String.valueOf(seq));
         }
         fasta.write(w);
+    }
+
+    @Override
+    public List<String> getExtensions() {
+        return Arrays.asList("fasta", "fas", "fa", "seq", "fsa", "fna");
     }
 }

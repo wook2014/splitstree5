@@ -19,6 +19,7 @@
 
 package splitstree5.core;
 
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.ListChangeListener;
 import jloda.fx.ASelectionModel;
@@ -58,7 +59,7 @@ public class Document {
         workflow.incrementTopologyChanged();
 
         fileName.addListener((c, o, n) -> {
-            name.set(Basic.getFileNameWithoutPath(fileName.get()));
+            Platform.runLater(() -> name.set(Basic.getFileNameWithoutPath(fileName.get())));
         });
     }
 

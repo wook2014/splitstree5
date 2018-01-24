@@ -27,6 +27,7 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
+import jloda.util.ProgramProperties;
 import splitstree5.gui.utils.Alert;
 
 import java.util.Optional;
@@ -63,7 +64,7 @@ public class Print {
                     } else {
                         javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
                         alert.initOwner(owner);
-                        alert.setTitle("Scale Before Printing - SplitsTree5");
+                        alert.setTitle("Scale Before Printing - " + ProgramProperties.getProgramName());
                         alert.setHeaderText(String.format("Scene size (%.0f x %.0f) exceeds printable area (%.0f x %.0f)", node.getBoundsInParent().getWidth(),
                                 node.getBoundsInParent().getHeight(), pageLayout.getPrintableWidth(), pageLayout.getPrintableHeight()));
                         alert.setContentText("Scale to fit printable area?");

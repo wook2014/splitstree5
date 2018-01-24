@@ -19,12 +19,7 @@ import java.util.*;
  * Daria Evseeva, 07.2017
  */
 public class FastaIn extends CharactersFormat implements IToCharacters, IImportCharacters {
-
-    private static final String[] possibleIDs =
-            {"gb", "emb", "ena", "dbj", "pir", "prf", "sp", "pdb", "pat", "bbs", "gnl", "ref", "lcl"};
-
-    public static final List<String> extensions = new ArrayList<>(Arrays.asList("fasta", "fas", "fa", "seq", "fsa", "fna"));
-
+    private static final String[] possibleIDs = {"gb", "emb", "ena", "dbj", "pir", "prf", "sp", "pdb", "pat", "bbs", "gnl", "ref", "lcl"};
     /**
      * parse a file
      *
@@ -176,7 +171,7 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
 
     @Override
     public List<String> getExtensions() {
-        return extensions;
+        return Arrays.asList("fasta", "fas", "fa", "seq", "fsa", "fna");
     }
 
     @Override

@@ -88,12 +88,12 @@ public class AuxWindow implements IStageSupplier {
                             buf.append(" ").append(aTab.getText());
                     }
                     buf.append(" - ");
-                    stage.titleProperty().bind(Bindings.concat(buf.toString()).concat(document.nameProperty()).concat(" - SplitsTree5"));
+                    stage.titleProperty().bind(Bindings.concat(buf.toString()).concat(document.nameProperty()).concat(" - " + ProgramProperties.getProgramName()));
                 }
             });
             stage.titleProperty().bind(Bindings.concat("Aux Window - ").concat(document.nameProperty()).concat(" SplitsTree5"));
         } else {
-            stage.setTitle("Aux Window - " + ((Labeled) tab.getGraphic()).getText() + " - SplitsTree5");
+            stage.setTitle("Aux Window - " + ((Labeled) tab.getGraphic()).getText() + " - " + ProgramProperties.getProgramName());
         }
 
         controller.getTabPane().getTabs().add(tab);

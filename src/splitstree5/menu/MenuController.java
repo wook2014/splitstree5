@@ -488,14 +488,14 @@ public class MenuController {
                 if (count == 0)
                     windowMenu.getItems().add(new SeparatorMenuItem());
                 if (mainWindow.getStage() != null) {
-                    final MenuItem menuItem = new MenuItem(mainWindow.getStage().getTitle().replaceAll("- SplitsTree5", ""));
+                    final MenuItem menuItem = new MenuItem(mainWindow.getStage().getTitle().replaceAll("- " + ProgramProperties.getProgramName(), ""));
                     menuItem.setOnAction((e) -> mainWindow.getStage().toFront());
                     menuItem.setAccelerator(new KeyCharacterCombination("" + (++count), KeyCombination.SHORTCUT_DOWN));
                     windowMenu.getItems().add(menuItem);
                 }
                 if (MainWindowManager.getInstance().getAuxiliaryWindows(mainWindow) != null) {
                     for (Stage auxStage : MainWindowManager.getInstance().getAuxiliaryWindows(mainWindow)) {
-                        final MenuItem menuItem = new MenuItem(auxStage.getTitle().replaceAll("- SplitsTree5", ""));
+                        final MenuItem menuItem = new MenuItem(auxStage.getTitle().replaceAll("- " + ProgramProperties.getProgramName(), ""));
                         menuItem.setOnAction((e) -> auxStage.toFront());
                         windowMenu.getItems().add(menuItem);
                     }

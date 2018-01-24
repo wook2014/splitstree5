@@ -114,7 +114,7 @@ public class MainWindow {
             dirtyStar.set(n ? "*" : "");
         });
 
-        titleProperty.bind(Bindings.concat("Main Window - ").concat(document.nameProperty()).concat(dirtyStar).concat(" - SplitsTree5"));
+        titleProperty.bind(Bindings.concat("Main Window - ").concat(document.nameProperty()).concat(dirtyStar).concat(" - " + ProgramProperties.getProgramName()));
 
         {
             final TreeItem<String> rootItem = new TreeItem<>("");

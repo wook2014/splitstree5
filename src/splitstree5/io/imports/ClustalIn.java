@@ -13,10 +13,11 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.imports.interfaces.IImportCharacters;
 import splitstree5.io.nexus.CharactersNexusFormat;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The sequence alignment outputs from CLUSTAL software often are given the default extension .aln.
@@ -27,9 +28,6 @@ import java.util.*;
  */
 
 public class ClustalIn extends CharactersFormat implements IToCharacters, IImportCharacters {
-
-    public static final List<String> extensions = new ArrayList<>(Arrays.asList("aln", "clustal"));
-
     @Override
     public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format)
             throws CanceledException, IOException
@@ -108,7 +106,7 @@ public class ClustalIn extends CharactersFormat implements IToCharacters, IImpor
 
     @Override
     public List<String> getExtensions() {
-        return extensions;
+        return Arrays.asList("aln", "clustal");
     }
 
     @Override

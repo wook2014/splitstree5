@@ -63,6 +63,7 @@ import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import jloda.fx.ExtendedFXMLLoader;
+import jloda.util.ProgramProperties;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataBlock;
@@ -123,7 +124,7 @@ public class NewNodeDialog {
         controller.getApplyButton().disableProperty().bind(controller.getTargetDataComboBox().valueProperty().isNull().or(controller.getAlgorithmChoiceBox().valueProperty().isNull()));
 
         stage = new Stage();
-        stage.setTitle("New Node - SplitsTree5");
+        stage.setTitle("New Node - " + ProgramProperties.getProgramName());
         stage.setScene(new Scene(root));
 
         stage.setX(me.getScreenX());

@@ -60,7 +60,7 @@ public class ImportDialog {
             stage.setX(parentMainWindow.getStage().getX() + 50);
             stage.setY(parentMainWindow.getStage().getY() + 50);
         }
-        stage.setTitle("Import - SplitsTree5");
+        stage.setTitle("Import - " + ProgramProperties.getProgramName());
 
         controller.getProgressBar().setVisible(false);
 
