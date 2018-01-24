@@ -21,6 +21,7 @@ package splitstree5.io.exports.interfaces;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
+import java.io.IOException;
 import java.io.Writer;
 
 /**
@@ -35,5 +36,5 @@ public interface IExportDistances extends IExporter {
      * @param taxa
      * @param distances
      */
-    void export(Writer w, TaxaBlock taxa, DistancesBlock distances) throws Exception;
+    void export(Writer w, TaxaBlock taxa, DistancesBlock distances) throws IOException;
 }

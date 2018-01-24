@@ -1,4 +1,23 @@
 /*
+ *  Copyright (C) 2018 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
  *  Copyright (C) 2016 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
@@ -17,7 +36,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.main;
+package splitstree5.io;
 
 import javafx.stage.FileChooser;
 import jloda.util.Basic;
@@ -61,9 +80,10 @@ public class ImporterManager {
     }
 
     /**
-     * complete extensions by adding prefix *. and also adding an extension with suffix .gz
+     * complete extensions by adding prefix *. and also adding an extension with suffix .gz, if requested
      *
      * @param extensions
+     * @param includeGZ
      * @return completed extensions
      */
     private List<String> completeExtensions(Collection<String> extensions, boolean includeGZ) {
@@ -101,6 +121,11 @@ public class ImporterManager {
         return importers;
     }
 
+    /**
+     * get all extension filters
+     *
+     * @return extension filters
+     */
     public Collection<FileChooser.ExtensionFilter> getAllExtensionFilters() {
         return extensionFilters;
     }

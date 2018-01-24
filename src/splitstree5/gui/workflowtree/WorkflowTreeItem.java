@@ -38,6 +38,7 @@ import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.workflow.ANode;
 import splitstree5.core.workflow.UpdateState;
+import splitstree5.dialogs.exports.ExportDialog;
 
 
 /**
@@ -119,22 +120,22 @@ public class WorkflowTreeItem extends TreeItem<String> {
             };
             aNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
 
-            label.setOnContextMenuRequested((e) -> {
+            {
                 final MenuItem show = new MenuItem("Open...");
                 show.setOnAction((x) -> {
                     showView();
                 });
                 show.disableProperty().bind(disable);
-                final ContextMenu contextMenu = new ContextMenu(show);
-                contextMenu.show(label, e.getScreenX(), e.getScreenY());
-            });
-            getGraphic().setOnMouseClicked((e) -> {
-                if (e.getClickCount() == 2) {
-                    if (!disable.get())
-                        showView();
-                    e.consume();
-                }
-            });
+                MenuItem export = new MenuItem("Export...");
+                export.setOnAction((x) -> {
+                    if (aNode instanceof ADataNode)
+                        ExportDialog.show(document.getMainWindow(), document.getWorkflow().getWorkingTaxaBlock(), ((ADataNode) aNode).getDataBlock());
+                });
+                export.setDisable(!(aNode instanceof ADataNode));
+                label.setContextMenu(new ContextMenu(show, export));
+            }
+
+
         } else
             stateChangeListener = null;
 

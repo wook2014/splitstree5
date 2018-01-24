@@ -1,4 +1,23 @@
 /*
+ *  Copyright (C) 2018 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
  *  Copyright (C) 2016 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
@@ -17,17 +36,17 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.dialogs.imports;
+package splitstree5.dialogs.exports;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Scene;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import jloda.fx.ExtendedFXMLLoader;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
+import splitstree5.core.datablocks.ADataBlock;
+import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.gui.utils.Alert;
 import splitstree5.io.ImporterManager;
 import splitstree5.io.imports.interfaces.IImporter;
@@ -37,19 +56,25 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * shows the import dialog
+ * shows the export dialog
  * Daniel Huson, 1.2018
  */
-public class ImportDialog {
-    private final ImporterService importerService;
-    private final ImportDialogController controller;
+public class ExportDialog {
+    private final ExporterService exporterService;
+    private final ExportDialogController controller;
     private final Stage stage;
 
-    public ImportDialog(MainWindow parentMainWindow) throws IOException {
-        final ExtendedFXMLLoader<ImportDialogController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
+    /**
+     * constructor
+     *
+     * @param parentMainWindow
+     * @throws IOException
+     */
+    public ExportDialog(MainWindow parentMainWindow, TaxaBlock workingTaxa, ADataBlock dataBlock) {
+        final ExtendedFXMLLoader<ExportDialogController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         controller = extendedFXMLLoader.getController();
 
-        importerService = new ImporterService();
+        exporterService = new ExporterService();
 
         stage = new Stage();
         stage.getIcons().setAll(ProgramProperties.getProgramIcons());
@@ -60,29 +85,23 @@ public class ImportDialog {
             stage.setX(parentMainWindow.getStage().getX() + 50);
             stage.setY(parentMainWindow.getStage().getY() + 50);
         }
-        stage.setTitle("Import - " + ProgramProperties.getProgramName());
+        stage.setTitle("Export - " + ProgramProperties.getProgramName());
 
         controller.getProgressBar().setVisible(false);
 
-        controller.getDataTypeComboBox().getItems().addAll(ImporterManager.getInstance().getAllDataTypes());
-        controller.getDataTypeComboBox().disableProperty().bind(controller.getProgressBar().visibleProperty());
+        controller.getDataTypeComboBox().getItems().addAll(Basic.getShortName(dataBlock.getClass()));
+        controller.getDataTypeComboBox().setDisable(true); // users can't change the type
 
-        controller.getFileFormatComboBox().getItems().addAll(ImporterManager.getInstance().getAllFileFormats());
+        controller.getFileFormatComboBox().getItems().addAll(ExportManager.getInstance().getExporterNames(dataBlock));
         controller.getFileFormatComboBox().disableProperty().bind(controller.getProgressBar().visibleProperty());
 
-        final ObjectProperty<FileChooser.ExtensionFilter> selectedExtensionFilter = new SimpleObjectProperty<>();
         controller.getBrowseButton().setOnAction((e) -> {
             final FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Open Import File");
-            fileChooser.getExtensionFilters().addAll(ImporterManager.getInstance().getAllExtensionFilters());
-            if (selectedExtensionFilter.get() != null)
-                fileChooser.setSelectedExtensionFilter(selectedExtensionFilter.get());
-            // show file browser
-            final File selectedFile = fileChooser.showOpenDialog(stage);
+            fileChooser.setTitle("Export File");
+            File selectedFile = fileChooser.showSaveDialog(stage);
             if (selectedFile != null) {
+                selectedFile = ExportManager.getInstance().ensureFileSuffix(selectedFile, controller.getFileFormatComboBox().getValue());
                 controller.getFileTextField().setText(selectedFile.getPath());
-                selectedExtensionFilter.set(fileChooser.getSelectedExtensionFilter());
-
             }
         });
         controller.getBrowseButton().disableProperty().bind(controller.getProgressBar().visibleProperty());
@@ -99,15 +118,15 @@ public class ImportDialog {
 
         controller.getCancelButton().setOnAction((e) -> close());
 
-        controller.getImportButton().setOnAction((e) -> {
+        controller.getExportButton().setOnAction((e) -> {
             final IImporter importer = ImporterManager.getInstance().getImporterByDataTypeAndFileFormat(controller.getDataTypeComboBox().getSelectionModel().getSelectedItem(),
                     controller.getFileFormatComboBox().getSelectionModel().getSelectedItem());
             if (importer == null)
-                new Alert("Can't import selected data type and file format");
-            importerService.setup(parentMainWindow, importer, controller.getFileTextField().getText(), ImportDialog.this);
-            importerService.restart();
+                new Alert("Can't export selected data type and file format");
+            exporterService.setup(controller.getFileTextField().getText(), workingTaxa, dataBlock, controller.getFileFormatComboBox().getValue(), this);
+            exporterService.restart();
         });
-        controller.getImportButton().disableProperty().bind(controller.getProgressBar().visibleProperty().or(
+        controller.getExportButton().disableProperty().bind(controller.getProgressBar().visibleProperty().or(
                 Bindings.isNull(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty()).or(Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), "Unknown"))
                         .or(Bindings.isNull(controller.getFileFormatComboBox().getSelectionModel().selectedItemProperty())).or(Bindings.equal(controller.getFileFormatComboBox().getSelectionModel().selectedItemProperty(), "Unknown"))));
     }
@@ -121,16 +140,12 @@ public class ImportDialog {
      *
      * @param other
      */
-    public static void show(MainWindow other) {
-        try {
-            ImportDialog importDialog = new ImportDialog(other);
-            importDialog.show();
-        } catch (IOException e) {
-            Basic.caught(e);
-        }
+    public static void show(MainWindow other, TaxaBlock taxonBlock, ADataBlock dataBlock) {
+        ExportDialog exportDialog = new ExportDialog(other, taxonBlock, dataBlock);
+        exportDialog.show();
     }
 
-    public ImportDialogController getController() {
+    public ExportDialogController getController() {
         return controller;
     }
 
