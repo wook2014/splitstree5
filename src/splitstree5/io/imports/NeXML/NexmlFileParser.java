@@ -7,6 +7,9 @@ import splitstree5.core.algorithms.interfaces.IToTrees;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
+import splitstree5.io.imports.NeXML.handlers.NexmlCharactersHandler;
+import splitstree5.io.imports.NeXML.handlers.NexmlTaxaHandler;
+import splitstree5.io.imports.NeXML.handlers.NexmlTreesHandler;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;

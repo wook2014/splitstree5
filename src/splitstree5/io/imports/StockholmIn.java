@@ -59,6 +59,8 @@ public class StockholmIn extends CharactersFormat implements IToCharacters, IImp
                     nchar = seq.length();
                 else if (nchar != seq.length())
                     throw new IOException("Sequences must be the same length. line: " + counter);
+
+                progressListener.setProgress(it.getProgress());
             }
 
             /*if (sequence.length() == 0)

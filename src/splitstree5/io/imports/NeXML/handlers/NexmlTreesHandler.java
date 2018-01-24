@@ -1,4 +1,4 @@
-package splitstree5.io.imports.NeXML;
+package splitstree5.io.imports.NeXML.handlers;
 
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;

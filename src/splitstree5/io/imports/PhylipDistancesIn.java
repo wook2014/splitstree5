@@ -53,8 +53,8 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
 
         try (FileInputIterator it = new FileInputIterator(inputFile)) {
 
-            //progressListener.setMaximum(it.getMaximumProgress());
-            //progressListener.setProgress(0);
+            progressListener.setMaximum(it.getMaximumProgress());
+            progressListener.setProgress(0);
             int counter = 0;
 
             final String firstLine = it.next();
@@ -102,6 +102,7 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
                         matrix.get(currentLabel).add(Double.parseDouble(token));
                     }
                 }
+                progressListener.setProgress(it.getProgress());
             }
         }
         System.err.println(square);
@@ -114,6 +115,7 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
             readSquareMatrix(matrix, distances);
         else
             readTriangularMatrix(matrix, distances);
+
             /*StreamTokenizer st = new StreamTokenizer(in);
             st.resetSyntax();
             st.eolIsSignificant(true);
