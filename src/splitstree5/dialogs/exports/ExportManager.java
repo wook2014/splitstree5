@@ -73,7 +73,7 @@ public class ExportManager {
      */
     public File ensureFileSuffix(File selectedFile, String exporterName) {
         String suffix = Basic.getSuffix(selectedFile.getName());
-        if (suffix.length() == 0) {
+        if (suffix == null) {
             IExporter exporter = getExporterByName(exporterName);
             if (exporter != null && exporter.getExtensions().size() > 0) {
                 return Basic.replaceFileSuffix(selectedFile, "." + exporter.getExtensions().get(0));

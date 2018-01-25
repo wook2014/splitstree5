@@ -50,7 +50,7 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
                 if (line.startsWith(";"))
                     continue;
                 if (line.equals(">"))
-                    throw new IOException("No taxa label given in line: " + counter);
+                    throw new IOExceptionWithLineNumber("No taxa label given", counter);
 
                 if (line.startsWith(">")) {
                     startedNewSequence = true;
@@ -65,8 +65,7 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
                     if (startedNewSequence) {
                         if (!sequence.toString().equals("")) matrix.add(sequence.toString());
                         if (nchar != 0 && nchar != sequenceLength) {
-                            throw new IOException("Sequences must be the same length. Wrong number of chars at the sequence "
-                                    + (ntax - 1) + " in line: " + counter);
+                            throw new IOExceptionWithLineNumber("Sequences must be the same length. Wrong number of chars at the sequence " + (ntax - 1), counter);
                         }
                         nchar = sequenceLength;
                         sequenceLength = 0;
@@ -81,10 +80,10 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
             }
 
             if (sequence.length() == 0)
-                throw new IOException("Sequence " + ntax + " is zero");
+                throw new IOExceptionWithLineNumber("Sequence " + ntax + " is zero", counter);
             matrix.add(sequence.toString());
             if (nchar != sequenceLength)
-                throw new IOException("Sequences must be the same length. Wrong number of chars at the sequence " + ntax);
+                throw new IOExceptionWithLineNumber("Sequences must be the same length. Wrong number of chars at the sequence " + ntax, counter);
 
         }
         System.err.println("ntax: " + ntax + " nchar: " + nchar);

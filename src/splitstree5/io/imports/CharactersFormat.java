@@ -45,7 +45,7 @@ public abstract class CharactersFormat {
         Matcher m = p.matcher(line);
         boolean found = m.find();
         if (found)
-            throw new IOException("Unexpected character in line " + counter);
+            throw new IOExceptionWithLineNumber("Unexpected character in line ", counter);
     }
 
     void estimateDataType(String foundSymbols, CharactersBlock characters, Map<Character, Integer> frequency) throws IOException {

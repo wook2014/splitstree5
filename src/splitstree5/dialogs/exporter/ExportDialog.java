@@ -17,26 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- *  Copyright (C) 2016 Daniel H. Huson
- *
- *  (Some files contain contributions from other authors, who are then mentioned separately.)
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-package splitstree5.dialogs.exports;
+package splitstree5.dialogs.exporter;
 
 import javafx.beans.binding.Bindings;
 import javafx.scene.Scene;
@@ -47,6 +28,7 @@ import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.dialogs.exports.ExportManager;
 import splitstree5.main.MainWindow;
 
 import java.io.File;
@@ -95,27 +77,17 @@ public class ExportDialog {
 
         controller.getFileFormatComboBox().disableProperty().bind(controller.getProgressBar().visibleProperty());
 
-        controller.getBrowseButton().setOnAction((e) -> {
+        controller.getCancelButton().setOnAction((e) -> close());
+
+        controller.getExportButton().setOnAction((e) -> {
             final FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Export File");
             File selectedFile = fileChooser.showSaveDialog(stage);
             if (selectedFile != null) {
                 selectedFile = ExportManager.getInstance().ensureFileSuffix(selectedFile, controller.getFileFormatComboBox().getValue());
-                controller.getFileTextField().setText(selectedFile.getPath());
+                exporterService.setup(selectedFile.getPath(), workingTaxa, dataBlock, controller.getFileFormatComboBox().getValue(), this);
+                exporterService.restart();
             }
-        });
-        controller.getBrowseButton().disableProperty().bind(controller.getProgressBar().visibleProperty());
-
-
-        controller.getFileTextField().textProperty().addListener((c, o, n) -> {
-        });
-        controller.getFileTextField().disableProperty().bind(controller.getProgressBar().visibleProperty());
-
-        controller.getCancelButton().setOnAction((e) -> close());
-
-        controller.getExportButton().setOnAction((e) -> {
-            exporterService.setup(controller.getFileTextField().getText(), workingTaxa, dataBlock, controller.getFileFormatComboBox().getValue(), this);
-            exporterService.restart();
         });
         controller.getExportButton().disableProperty().bind(controller.getProgressBar().visibleProperty().or(
                 Bindings.isNull(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty()).or(Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), "Unknown"))
