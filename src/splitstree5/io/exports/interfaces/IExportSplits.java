@@ -31,10 +31,9 @@ import java.io.Writer;
 public interface IExportSplits extends IExporter {
     /**
      * export splits
-     *
      * @param w
      * @param taxa
-     * @param splits
+     * @param splitsBlock
      */
-    void export(Writer w, TaxaBlock taxa, SplitsBlock splits) throws IOException;
+    void export(Writer w, TaxaBlock taxa, SplitsBlock splitsBlock) throws IOException;
 }

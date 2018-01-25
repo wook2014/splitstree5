@@ -25,7 +25,6 @@ import jloda.util.CanceledException;
 import splitstree5.core.connectors.TaskWithProgressListener;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.dialogs.exports.ExportManager;
 
 import java.io.IOException;
 
@@ -33,7 +32,7 @@ import java.io.IOException;
  * performs import as service in separate thread
  * Daniel Huson, 1.2018
  */
-public class ExporterService extends Service<Boolean> {
+public class ExportService extends Service<Boolean> {
     private String fileName;
     private TaxaBlock taxaBlock;
     private ADataBlock aDataBlock;

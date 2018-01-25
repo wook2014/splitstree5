@@ -31,7 +31,6 @@ import java.io.Writer;
 public interface IExportDistances extends IExporter {
     /**
      * export distances
-     *
      * @param w
      * @param taxa
      * @param distances

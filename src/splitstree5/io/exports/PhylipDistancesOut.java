@@ -14,8 +14,7 @@ public class PhylipDistancesOut implements IFromDistances, IExportDistances {
 
     private boolean optionTriangular = false;
 
-    public void export(Writer w, TaxaBlock taxa, DistancesBlock distances)
-            throws IOException {
+    public void export(Writer w, TaxaBlock taxa, DistancesBlock distances) throws IOException {
 
         int ntax = taxa.getNtax();
 

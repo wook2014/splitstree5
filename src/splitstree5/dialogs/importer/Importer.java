@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.dialogs.imports;
+package splitstree5.dialogs.importer;
 
 import javafx.application.Platform;
 import javafx.stage.Stage;

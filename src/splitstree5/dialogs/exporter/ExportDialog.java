@@ -20,6 +20,8 @@
 package splitstree5.dialogs.exporter;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Scene;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -28,7 +30,6 @@ import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.dialogs.exports.ExportManager;
 import splitstree5.main.MainWindow;
 
 import java.io.File;
@@ -39,9 +40,10 @@ import java.io.IOException;
  * Daniel Huson, 1.2018
  */
 public class ExportDialog {
-    private final ExporterService exporterService;
+    private final ExportService exportService;
     private final ExportDialogController controller;
     private final Stage stage;
+    private final BooleanProperty fileDialogShowing = new SimpleBooleanProperty();
 
     /**
      * constructor
@@ -53,7 +55,7 @@ public class ExportDialog {
         final ExtendedFXMLLoader<ExportDialogController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         controller = extendedFXMLLoader.getController();
 
-        exporterService = new ExporterService();
+        exportService = new ExportService();
 
         stage = new Stage();
         stage.getIcons().setAll(ProgramProperties.getProgramIcons());
@@ -80,18 +82,35 @@ public class ExportDialog {
         controller.getCancelButton().setOnAction((e) -> close());
 
         controller.getExportButton().setOnAction((e) -> {
-            final FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Export File");
-            File selectedFile = fileChooser.showSaveDialog(stage);
-            if (selectedFile != null) {
-                selectedFile = ExportManager.getInstance().ensureFileSuffix(selectedFile, controller.getFileFormatComboBox().getValue());
-                exporterService.setup(selectedFile.getPath(), workingTaxa, dataBlock, controller.getFileFormatComboBox().getValue(), this);
-                exporterService.restart();
+            fileDialogShowing.set(true);
+            try {
+                final FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Export File");
+                File selectedFile = fileChooser.showSaveDialog(stage);
+                if (selectedFile != null) {
+                    selectedFile = ExportManager.getInstance().ensureFileSuffix(selectedFile, controller.getFileFormatComboBox().getValue());
+                    exportService.setup(selectedFile.getPath(), workingTaxa, dataBlock, controller.getFileFormatComboBox().getValue(), this);
+                    exportService.restart();
+                    exportService.runningProperty().addListener((c, o, n) -> {
+                        if (o && !n)
+                            stage.close();
+                    });
+                }
+            } finally {
+                fileDialogShowing.set(false);
             }
         });
         controller.getExportButton().disableProperty().bind(controller.getProgressBar().visibleProperty().or(
                 Bindings.isNull(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty()).or(Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), "Unknown"))
                         .or(Bindings.isNull(controller.getFileFormatComboBox().getSelectionModel().selectedItemProperty())).or(Bindings.equal(controller.getFileFormatComboBox().getSelectionModel().selectedItemProperty(), "Unknown"))));
+
+
+        stage.focusedProperty().addListener((c, o, n) -> {
+            if (!n && !exportService.isRunning() && !fileDialogShowing.get())
+                stage.close();
+        });
+
+
     }
 
     public void show() {

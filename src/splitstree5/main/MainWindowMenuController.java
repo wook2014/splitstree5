@@ -22,7 +22,7 @@ package splitstree5.main;
 import javafx.stage.FileChooser;
 import jloda.util.Basic;
 import splitstree5.core.Document;
-import splitstree5.dialogs.imports.ImportDialog;
+import splitstree5.dialogs.importer.ImportDialog;
 import splitstree5.io.nexus.NexusFileParser;
 import splitstree5.io.nexus.NexusFileWriter;
 import splitstree5.menu.MenuController;

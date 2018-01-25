@@ -1,24 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  ~  Copyright (C) 2018 Daniel H. Huson
-  ~
-  ~  (Some files contain contributions from other authors, who are then mentioned separately.)
-  ~
-  ~  This program is free software: you can redistribute it and/or modify
-  ~  it under the terms of the GNU General Public License as published by
-  ~  the Free Software Foundation, either version 3 of the License, or
-  ~  (at your option) any later version.
-  ~
-  ~  This program is distributed in the hope that it will be useful,
-  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~  GNU General Public License for more details.
-  ~
-  ~  You should have received a copy of the GNU General Public License
-  ~  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  -->
-<!--
   ~  Copyright (C) 2016 Daniel H. Huson
   ~
   ~  (Some files contain contributions from other authors, who are then mentioned separately.)
@@ -41,8 +23,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="300.0" prefWidth="400.0"
-            xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="splitstree5.dialogs.exports.ExportDialogController">
+            xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="splitstree5.dialogs.importer.ImportDialogController">
     <bottom>
         <HBox minHeight="40.0" style="-fx-border-color: lightgray;" BorderPane.alignment="CENTER">
             <children>
@@ -58,7 +40,7 @@
                         <Insets left="3.0" right="3.0"/>
                     </HBox.margin>
                 </Button>
-                <Button fx:id="exportButton" defaultButton="true" mnemonicParsing="false" text="Export"
+                <Button fx:id="importButton" defaultButton="true" mnemonicParsing="false" text="Import"
                         HBox.hgrow="NEVER">
                     <HBox.margin>
                         <Insets left="3.0" right="3.0"/>
@@ -115,7 +97,7 @@
         </VBox>
     </center>
     <top>
-        <Label text="Export Data from SplitsTree5" BorderPane.alignment="CENTER">
+        <Label text="Import data into SplitsTree5" BorderPane.alignment="CENTER">
             <BorderPane.margin>
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
             </BorderPane.margin>

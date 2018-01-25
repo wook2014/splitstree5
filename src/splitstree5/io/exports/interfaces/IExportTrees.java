@@ -30,11 +30,12 @@ import java.io.Writer;
  */
 public interface IExportTrees extends IExporter {
     /**
-     * export trees
-     *
+     * export characters
      * @param w
      * @param taxa
      * @param trees
      */
     void export(Writer w, TaxaBlock taxa, TreesBlock trees) throws IOException;
+
+    ;
 }

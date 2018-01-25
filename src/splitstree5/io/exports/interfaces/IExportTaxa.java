@@ -1,5 +1,4 @@
-/*
- *  Copyright (C) 2018 Daniel H. Huson
+/*  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -16,6 +15,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package splitstree5.io.exports.interfaces;
 
 import splitstree5.core.datablocks.TaxaBlock;
@@ -24,13 +24,12 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * export trees
+ * export taxa
  * Daniel Huson, 1.2018
  */
 public interface IExportTaxa extends IExporter {
     /**
      * export taxa
-     *
      * @param w
      * @param taxa
      */

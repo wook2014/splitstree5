@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.dialogs.imports;
+package splitstree5.dialogs.importer;
 
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
@@ -30,7 +30,7 @@ import splitstree5.main.MainWindow;
  * performs import as service in separate thread
  * Daniel Huson, 1.2018
  */
-public class ImporterService extends Service<Boolean> {
+public class ImportService extends Service<Boolean> {
     private MainWindow parentMainWindow;
     private IImporter importer;
     private String fileName;

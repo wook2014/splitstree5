@@ -38,7 +38,7 @@ import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.workflow.ANode;
 import splitstree5.core.workflow.UpdateState;
-import splitstree5.dialogs.exports.ExportDialog;
+import splitstree5.dialogs.exporter.ExportDialog;
 
 
 /**
@@ -81,7 +81,7 @@ public class WorkflowTreeItem extends TreeItem<String> {
                     label.setGraphic(imageView);
                 } else
                     rotateTransition = null;
-            } else {
+            } else { // a data node
                 disable.bind(aNode.stateProperty().isEqualTo(UpdateState.VALID).not());
                 Image icon = ResourceManager.getIcon(aNode.getName().replaceAll("^Orig", "").replaceAll(".*]", "") + "16.gif");
                 if (icon != null) {
@@ -119,7 +119,6 @@ public class WorkflowTreeItem extends TreeItem<String> {
                 }
             };
             aNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
-
             {
                 final MenuItem show = new MenuItem("Open...");
                 show.setOnAction((x) -> {
@@ -132,10 +131,20 @@ public class WorkflowTreeItem extends TreeItem<String> {
                         ExportDialog.show(document.getMainWindow(), document.getWorkflow().getWorkingTaxaBlock(), ((ADataNode) aNode).getDataBlock());
                 });
                 export.setDisable(!(aNode instanceof ADataNode));
-                label.setContextMenu(new ContextMenu(show, export));
+                label.setContextMenu(new ContextMenu(show, new SeparatorMenuItem(), export));
             }
-
-
+            label.setOnMouseClicked((e) -> {
+                if (e.getClickCount() == 2) {
+                    showView();
+                    e.consume();
+                }
+            });
+            label.setOnMouseClicked((e) -> {
+                if (e.getClickCount() == 2) {
+                    showView();
+                    e.consume();
+                }
+            });
         } else
             stateChangeListener = null;
 
