@@ -3,11 +3,14 @@ package splitstree5.io.exports;
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.io.exports.interfaces.IExportCharacters;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
+import java.util.List;
 
-public class PhylipCharactersOut implements IFromChararacters {
+public class PhylipCharactersOut implements IFromChararacters, IExportCharacters {
 
     private boolean optionInterleaved = true;
     private boolean optionInterleavedMultiLabels = true;
@@ -87,4 +90,8 @@ public class PhylipCharactersOut implements IFromChararacters {
     }
 
 
+    @Override
+    public List<String> getExtensions() {
+        return Arrays.asList("phy", "phylip");
+    }
 }

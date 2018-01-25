@@ -3,11 +3,14 @@ package splitstree5.io.exports;
 import splitstree5.core.algorithms.interfaces.IFromDistances;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.io.exports.interfaces.IExportDistances;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
+import java.util.List;
 
-public class PhylipDistancesOut implements IFromDistances {
+public class PhylipDistancesOut implements IFromDistances, IExportDistances {
 
     private boolean optionTriangular = false;
 
@@ -70,5 +73,10 @@ public class PhylipDistancesOut implements IFromDistances {
 
     public boolean getOptionTriangular() {
         return this.optionTriangular;
+    }
+
+    @Override
+    public List<String> getExtensions() {
+        return Arrays.asList("dist", "dst");
     }
 }

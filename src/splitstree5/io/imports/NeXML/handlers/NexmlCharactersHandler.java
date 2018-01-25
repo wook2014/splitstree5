@@ -1,4 +1,4 @@
-package splitstree5.io.imports.NeXML;
+package splitstree5.io.imports.NeXML.handlers;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
