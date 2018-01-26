@@ -61,7 +61,6 @@ import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import jloda.phylo.PhyloGraph;
 import jloda.phylo.PhyloTree;
-import jloda.util.ProgramProperties;
 import jloda.util.Single;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -70,10 +69,7 @@ import splitstree5.gui.ISavesPreviousSelection;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.formattab.FontSizeIncrementCommand;
 import splitstree5.gui.formattab.FormatItem;
-import splitstree5.gui.graphtab.commands.LayoutLabelsCommand;
-import splitstree5.gui.graphtab.commands.MoveLabelCommand;
-import splitstree5.gui.graphtab.commands.RotateCommand;
-import splitstree5.gui.graphtab.commands.ZoomCommand;
+import splitstree5.gui.graphtab.commands.*;
 import splitstree5.gui.utils.RubberBandSelection;
 import splitstree5.gui.utils.SelectionEffect;
 import splitstree5.main.MainWindowManager;
@@ -134,16 +130,7 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
         // setup find / replace tool bar:
         {
             nodeLabelSearcher = new NodeLabelSearcher(graph, nodeSelectionModel);
-            nodeLabelSearcher.addLabelChangedListener(v -> Platform.runLater(() -> {
-                ANodeView nv = node2view.get(v);
-                if (nv.getLabel() != null)
-                    nv.getLabel().setText(graph.getLabel(v));
-                else {
-                    Label label = new Label(graph.getLabel(v));
-                    label.setFont(ProgramProperties.getDefaultFont());
-                    nv.setLabel(label);
-                }
-            }));
+            nodeLabelSearcher.addLabelChangedListener(v -> Platform.runLater(() -> getUndoManager().doAndAdd(new ChangeLabelCommand(node2view.get(v), graph.getLabel(v)))));
             findToolBar = new FindToolBar(nodeLabelSearcher);
             //findToolBar.setShowReplaceToolBar(true);
             rootNode.setTop(findToolBar);
