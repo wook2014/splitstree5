@@ -345,12 +345,20 @@ public class MainWindow {
     }
 
     /**
-     * closes the current window. If it is the last to close, will ask for confirmation and then quit
+     * closes the current window.
      *
      * @return true if closed, false if canceled
      */
     public boolean close() {
-        return !SaveBeforeClose.apply(this) || MainWindowManager.getInstance().closeMainWindow(this);
+        boolean result = !SaveBeforeClose.apply(this) || MainWindowManager.getInstance().closeMainWindow(this);
+        if (result) {
+            getDocument().getWorkflow().cancelAll();
+            for (Tab tab : mainTabPane.getTabs()) {
+                if (tab instanceof ViewerTab && ((ViewerTab) tab).getFindToolBar() != null)
+                    ((ViewerTab) tab).getFindToolBar().cancel(); // cancel all find jobs
+            }
+        }
+        return result;
     }
 
     public void showFormatTab() {

@@ -42,6 +42,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
+import jloda.find.FindToolBar;
 import splitstree5.main.MainWindow;
 import splitstree5.menu.MenuController;
 import splitstree5.undo.UndoManager;
@@ -54,6 +55,7 @@ public abstract class ViewerTab extends Tab {
     private MainWindow mainWindow;
     private final BorderPane borderPane = new BorderPane();
     protected ToolBar toolBar;
+    protected FindToolBar findToolBar;
 
     private final UndoManager undoManager = new UndoManager();
 
@@ -112,6 +114,10 @@ public abstract class ViewerTab extends Tab {
 
     public void setMainWindow(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
+    }
+
+    public FindToolBar getFindToolBar() {
+        return findToolBar;
     }
 
 }

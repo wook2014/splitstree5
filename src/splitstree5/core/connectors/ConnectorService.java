@@ -57,7 +57,7 @@ public class ConnectorService<P extends ADataBlock, C extends ADataBlock> extend
         private ProgressPane progressPane;
 
         @Override
-        protected Boolean call() throws Exception {
+        public Boolean call() throws Exception {
             synchronized (connector.getChild().getDataBlock()) { // make sure that we only ever have one task working on a given datablock
                 try {
                     System.err.println("--- Compute " + getMethodName() + " called");

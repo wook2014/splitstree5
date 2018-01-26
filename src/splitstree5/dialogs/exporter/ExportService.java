@@ -53,7 +53,7 @@ public class ExportService extends Service<Boolean> {
     protected Task<Boolean> createTask() {
         return new TaskWithProgressListener<Boolean>() {
             @Override
-            protected Boolean call() {
+            public Boolean call() {
                 try {
                     getProgressListener().setMaximum(0);
                     getProgressListener().setProgress(0);

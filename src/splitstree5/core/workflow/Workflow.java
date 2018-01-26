@@ -507,4 +507,9 @@ public class Workflow {
         getNodeSelectionModel().setItems(dataNodes, connectorNodes);
     }
 
+    public void cancelAll() {
+        for (AConnector aConnector : connectorNodes) {
+            aConnector.getService().cancel();
+        }
+    }
 }

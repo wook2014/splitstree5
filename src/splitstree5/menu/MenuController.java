@@ -102,7 +102,6 @@ public class MenuController {
     @FXML
     private Menu editMenu;
 
-
     @FXML
     private MenuItem undoMenuItem;
 
@@ -130,6 +129,9 @@ public class MenuController {
 
     @FXML
     private MenuItem findAgainMenuItem;
+
+    @FXML
+    private MenuItem replaceMenuItem;
 
     @FXML
     private MenuItem gotoLineMenuItem;
@@ -203,9 +205,6 @@ public class MenuController {
 
     @FXML
     private MenuItem formatNodesMenuItem;
-
-    @FXML
-    private MenuItem formatEdgesMenuItem;
 
     @FXML
     private MenuItem layoutLabelsMenuItem;
@@ -319,6 +318,10 @@ public class MenuController {
         return findMenuItem;
     }
 
+    public MenuItem getReplaceMenuItem() {
+        return replaceMenuItem;
+    }
+
     public MenuItem getFindAgainMenuItem() {
         return findAgainMenuItem;
     }
@@ -417,10 +420,6 @@ public class MenuController {
 
     public MenuItem getFormatNodesMenuItem() {
         return formatNodesMenuItem;
-    }
-
-    public MenuItem getFormatEdgesMenuItem() {
-        return formatEdgesMenuItem;
     }
 
     public MenuItem getLayoutLabelsMenuItem() {

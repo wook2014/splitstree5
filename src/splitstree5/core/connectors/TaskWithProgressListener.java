@@ -23,13 +23,15 @@ import javafx.concurrent.Task;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 
+import java.util.concurrent.Callable;
+
 /**
  * A JavaFX task with an old style progress listener
  * Daniel Huson, 1.2019
  *
  * @param <T>
  */
-abstract public class TaskWithProgressListener<T> extends Task<T> {
+abstract public class TaskWithProgressListener<T> extends Task<T> implements Callable<T> {
     private long currentProgress = 0;
     private long maxProgress = 0;
     private boolean cancelable = true;

@@ -76,7 +76,7 @@ public class ImporterManager {
                     completeExtensions(dataType2Extensions.get(dataType), true)));
         }
         extensionFilters.sort(Comparator.comparing(FileChooser.ExtensionFilter::getDescription));
-        extensionFilters.add(new FileChooser.ExtensionFilter("All files: *.* *.gz", "*.*", "*.gz"));
+        extensionFilters.add(0, new FileChooser.ExtensionFilter("All files: *.* *.gz", "*.*", "*.gz"));
     }
 
     /**

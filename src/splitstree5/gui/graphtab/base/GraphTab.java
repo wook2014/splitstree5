@@ -46,15 +46,13 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
+import jloda.find.FindToolBar;
+import jloda.find.NodeLabelSearcher;
 import jloda.fx.ASelectionModel;
 import jloda.fx.ZoomableScrollPane;
 import jloda.graph.Edge;
@@ -105,10 +103,12 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
     protected final Label label = new Label("GraphTab");
     private G graph;
 
+    private final NodeLabelSearcher nodeLabelSearcher;
+
     protected NodeArray<ANodeView> node2view;
     protected EdgeArray<AEdgeView> edge2view;
 
-    private final StackPane pane = new StackPane();
+    private final StackPane centerPane = new StackPane();
 
     private final BooleanProperty sparseLabels = new SimpleBooleanProperty(false);
 
@@ -129,8 +129,27 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
      * constructor
      */
     public GraphTab() {
-        setContent(pane);
-        // pane.setStyle("-fx-border-color: red");
+        setContent(centerPane); // first need to set this here and then later set to center of root node...
+
+        // setup find / replace tool bar:
+        {
+            nodeLabelSearcher = new NodeLabelSearcher(graph, nodeSelectionModel);
+            nodeLabelSearcher.addLabelChangedListener(v -> Platform.runLater(() -> {
+                ANodeView nv = node2view.get(v);
+                if (nv.getLabel() != null)
+                    nv.getLabel().setText(graph.getLabel(v));
+                else {
+                    Label label = new Label(graph.getLabel(v));
+                    label.setFont(ProgramProperties.getDefaultFont());
+                    nv.setLabel(label);
+                }
+            }));
+            findToolBar = new FindToolBar(nodeLabelSearcher);
+            //findToolBar.setShowReplaceToolBar(true);
+            rootNode.setTop(findToolBar);
+        }
+
+        // centerPane.setStyle("-fx-border-color: red");
 
         nodeSelectionModel.getSelectedItems().addListener((ListChangeListener<Node>) c -> {
             while (c.next()) {
@@ -187,7 +206,7 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
             }
         });
 
-        rubberBandSelection = new RubberBandSelection(pane, group, createRubberBandSelectionHandler());
+        rubberBandSelection = new RubberBandSelection(centerPane, group, createRubberBandSelectionHandler());
         setClosable(false);
     }
 
@@ -304,7 +323,7 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
     }
 
     public Dimension2D getTargetDimensions() {
-        return new Dimension2D(0.6 * pane.getWidth(), 0.9 * pane.getHeight());
+        return new Dimension2D(0.6 * centerPane.getWidth(), 0.9 * centerPane.getHeight());
     }
 
     public G getGraph() {
@@ -320,6 +339,7 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
         this.graph = phyloGraph;
         node2view = new NodeArray<>(phyloGraph);
         edge2view = new EdgeArray<>(phyloGraph);
+        nodeLabelSearcher.setGraph(graph);
         Platform.runLater(() -> {
             group.setScaleX(1);
             group.setScaleY(1);
@@ -344,12 +364,12 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
     public void show() {
         Platform.runLater(() -> {
             try {
-                if (pane.getChildren().size() == 0) {
+                if (centerPane.getChildren().size() == 0) {
                     final Group world = new Group();
                     world.getChildren().add(group);
-                    pane.getChildren().add(world);
+                    centerPane.getChildren().add(world);
 
-                    pane.setOnMouseClicked((e) -> {
+                    centerPane.setOnMouseClicked((e) -> {
                         if (!e.isShiftDown()) {
                             nodeSelectionModel.clearSelection();
                             edgeSelectionModel.clearSelection();
@@ -382,7 +402,7 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
             }
             if (!(rootNode.getCenter() instanceof ScrollPane)) {
                 setContent(rootNode);
-                scrollPane = new ZoomableScrollPane(pane) {
+                scrollPane = new ZoomableScrollPane(centerPane) {
                     @Override // override node scaling to use coordinate scaling
                     public void updateScale() {
                         if (layout.get() == GraphLayout.Radial) {
@@ -393,9 +413,9 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
                     }
                 };
                 scrollPane.lockAspectRatioProperty().bind(layout.isEqualTo(GraphLayout.Radial));
-                pane.minWidthProperty().bind(Bindings.createDoubleBinding(() ->
+                centerPane.minWidthProperty().bind(Bindings.createDoubleBinding(() ->
                         scrollPane.getViewportBounds().getWidth(), scrollPane.viewportBoundsProperty()).subtract(20));
-                pane.minHeightProperty().bind(Bindings.createDoubleBinding(() ->
+                centerPane.minHeightProperty().bind(Bindings.createDoubleBinding(() ->
                         scrollPane.getViewportBounds().getHeight(), scrollPane.viewportBoundsProperty()).subtract(20));
 
                 rootNode.setCenter(scrollPane);
@@ -618,7 +638,7 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
     @Override
     public void updateMenus(MenuController controller) {
         controller.getPageSetupMenuItem().setOnAction((e) -> Print.showPageLayout(getMainWindow().getStage()));
-        controller.getPrintMenuitem().setOnAction((e) -> Print.print(getMainWindow().getStage(), pane));
+        controller.getPrintMenuitem().setOnAction((e) -> Print.print(getMainWindow().getStage(), centerPane));
 
         if (getUndoManager() != null) {
             controller.getUndoMenuItem().setOnAction((e) -> {
@@ -653,6 +673,12 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
             controller.getSelectAllEdgesMenuItem().setOnAction((e) -> edgeSelectionModel.selectAll());
             controller.getSelectAllEdgesMenuItem().disableProperty().bind(Bindings.size(edgeSelectionModel.getSelectedItems()).isEqualTo(graph.getNumberOfEdges()));
         }
+
+        controller.getFindMenuItem().setOnAction((e) -> findToolBar.setShowFindToolBar(true));
+        controller.getFindAgainMenuItem().setOnAction((e) -> findToolBar.findAgain());
+        controller.getFindAgainMenuItem().disableProperty().bind(findToolBar.canFindAgainProperty().not());
+
+        controller.getReplaceMenuItem().setOnAction((e) -> findToolBar.setShowReplaceToolBar(true));
 
         controller.getSelectAllLabeledNodesMenuItem().setOnAction((e) -> {
             for (Node v : getGraph().nodes()) {
@@ -713,55 +739,16 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
             }
         });
 
+
+        controller.getFormatNodesMenuItem().setOnAction((e) -> getMainWindow().showFormatTab());
+        controller.getFormatNodesMenuItem().setDisable(false);
+
         controller.getLayoutLabelsMenuItem().setOnAction((e) -> {
             Node root = (graph instanceof PhyloTree ? ((PhyloTree) graph).getRoot() : null);
             getUndoManager().doAndAdd(new LayoutLabelsCommand(layout.get(), sparseLabels.get(), graph, root, node2view, edge2view));
         });
         controller.getSparseLabelsCheckMenuItem().selectedProperty().bindBidirectional(sparseLabels);
         controller.getSparseLabelsCheckMenuItem().setOnAction(controller.getLayoutLabelsMenuItem().getOnAction());
-
-
-        controller.getFormatNodesMenuItem().setOnAction((e) -> {
-            Color defaultColor = null;
-            for (Node node : getNodeSelectionModel().getSelectedItems()) {
-                Color color = (Color) node2view.get(node).getStroke();
-                if (defaultColor == null) {
-                    if (color != null)
-                        defaultColor = color;
-                } else if (color != null && !defaultColor.equals(color)) {
-                    defaultColor = null;
-                    break;
-                }
-            }
-            ColorPicker colorPicker = new ColorPicker();
-            if (defaultColor != null)
-                colorPicker.setValue(defaultColor);
-            {
-                StackPane pane = new StackPane(colorPicker);
-                Scene scene = new Scene(pane, 400, 400);
-                Stage stage = new Stage();
-                stage.getIcons().setAll(ProgramProperties.getProgramIcons());
-
-                stage.setScene(scene);
-                stage.sizeToScene();
-                stage.show();
-                colorPicker.setOnAction((x) -> {
-                    for (Node node : getNodeSelectionModel().getSelectedItems()) {
-                        node2view.get(node).setStroke(colorPicker.getValue());
-                        node2view.get(node).setTextFill(colorPicker.getValue());
-
-                        if (graph.getLabel(node) != null) {
-                            FormatItem formatItem = nodeLabel2Style.get(graph.getLabel(node));
-                            if (formatItem == null)
-                                formatItem = new FormatItem();
-                            formatItem.addEdgeColor(colorPicker.getValue());
-                        }
-                    }
-                    stage.close();
-                });
-            }
-        });
-        controller.getFormatNodesMenuItem().disableProperty().bind(nodeSelectionModel.emptyProperty());
     }
 
     public void setNodeLabel2Style(Map<String, FormatItem> nodeLabel2Style) {
@@ -783,4 +770,9 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
     public void setSparseLabels(boolean sparseLabels) {
         this.sparseLabels.set(sparseLabels);
     }
+
+    public FindToolBar getFindToolBar() {
+        return findToolBar;
+    }
+
 }

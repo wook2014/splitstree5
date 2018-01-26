@@ -24,7 +24,10 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import jloda.phylo.PhyloTree;
-import jloda.util.*;
+import jloda.util.CanceledException;
+import jloda.util.Pair;
+import jloda.util.ProgressListener;
+import jloda.util.Single;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToSplits;
@@ -115,6 +118,8 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
                                         return;
                                     }
                                 }
+                                if (executor.isShutdown())
+                                    break;
                             }
                         } finally {
                             countDownLatch.countDown();
@@ -125,7 +130,8 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
                 try {
                     countDownLatch.await();
                 } catch (InterruptedException e) {
-                    Basic.caught(e);
+                    if (exception.get() == null) // must have been canceled
+                        exception.set(new CanceledException());
                 }
                 if (exception.get() != null) {
                     throw exception.get();
@@ -187,7 +193,10 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
                                         return;
                                     }
                                 }
+                                if (executor.isShutdown())
+                                    break;
                             }
+
                         } finally {
                             countDownLatch.countDown();
                         }
@@ -196,7 +205,9 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
                 try {
                     countDownLatch.await();
                 } catch (InterruptedException e) {
-                    Basic.caught(e);
+                    // Basic.caught(e);
+                    if (exception.get() == null) // must have been canceled
+                        exception.set(new CanceledException());
                 }
                 if (exception.get() != null) {
                     throw exception.get();

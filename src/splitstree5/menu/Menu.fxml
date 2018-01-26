@@ -134,7 +134,7 @@
                     </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
-                <MenuItem fx:id="findMenuItem" text="Find / Replace...">
+                <MenuItem fx:id="findMenuItem" text="Find...">
                     <accelerator>
                         <KeyCodeCombination alt="UP" code="F" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
@@ -143,6 +143,8 @@
                     <accelerator>
                         <KeyCodeCombination alt="UP" code="G" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
+                </MenuItem>
+                <MenuItem fx:id="replaceMenuItem" text="Replace...">
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="gotoLineMenuItem" text="Goto Line">
@@ -241,17 +243,13 @@
                     </accelerator>
                 </MenuItem>
                 <MenuItem fx:id="flipMenuItem" text="Flip">
-                    <accelerator>
-                        <KeyCodeCombination alt="UP" code="F" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
-                    </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
-                <MenuItem fx:id="formatNodesMenuItem" text="Format Nodes...">
+                <MenuItem fx:id="formatNodesMenuItem" text="Format...">
                     <accelerator>
                         <KeyCodeCombination alt="UP" code="F" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
-                <MenuItem fx:id="formatEdgesMenuItem" text="Format Edges..."/>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="layoutLabelsMenuItem" text="Layout Labels">
                     <accelerator>
