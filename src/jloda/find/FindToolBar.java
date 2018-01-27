@@ -22,13 +22,19 @@ package jloda.find;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.geometry.Insets;
+import javafx.scene.control.ListCell;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import jloda.fx.ExtendedFXMLLoader;
 
 import java.util.ArrayList;
 
 /**
- * find tool bar
+ * find (and replace) tool bar
  * Daniel Huson, 1.2018
  */
 public class FindToolBar extends VBox {
@@ -50,12 +56,14 @@ public class FindToolBar extends VBox {
 
         setStyle("-fx-border-color: lightgray;");
 
-
         showFindToolBarProperty().addListener((c, o, n) -> {
-            showReplaceToolBar.set(false);
+            if (getChildren().contains(controller.getReplaceToolBar()))
+                setShowReplaceToolBar(false);
             if (n) {
                 if (!getChildren().contains(controller.getAnchorPane()))
                     getChildren().add(controller.getAnchorPane());
+                controller.getSearchComboBox().requestFocus();
+                controller.getSearchComboBox().getEditor().selectAll();
             } else {
                 getChildren().remove(controller.getAnchorPane());
                 cancel();
@@ -64,7 +72,7 @@ public class FindToolBar extends VBox {
 
         showReplaceToolBarProperty().addListener((c, o, n) -> {
             if (n) {
-                showFindToolBar.set(true);
+                setShowFindToolBar(true);
                 if (!getChildren().contains(controller.getReplaceToolBar()))
                     getChildren().add(controller.getReplaceToolBar());
             } else
@@ -78,6 +86,19 @@ public class FindToolBar extends VBox {
         canFindAgain.bind(searchManager.searchTextProperty().isNotEmpty().and(showFindToolBar));
 
         controller.getLabel().textProperty().bind(searchManager.messageProperty());
+
+        controller.getSearchComboBox().setButtonCell(new ListCell<>());
+
+        searchManager.messageProperty().addListener((c, o, n) -> {
+            final Color color;
+            if (n.startsWith("No"))
+                color = Color.LIGHTPINK.deriveColor(1, 0.5, 1, 1);
+            else if (n.startsWith("Found"))
+                color = Color.PALEGREEN.deriveColor(1, 0.5, 1, 1);
+            else
+                color = Color.WHITE;
+            controller.getSearchComboBox().getEditor().setBackground(new Background(new BackgroundFill(color, CornerRadii.EMPTY, Insets.EMPTY)));
+        });
 
         // add entered stuff to list
         controller.getSearchComboBox().valueProperty().addListener((c, o, n) -> {
@@ -116,7 +137,6 @@ public class FindToolBar extends VBox {
                 controller.getReplaceComboBox().getSelectionModel().select(0);
             }
         });
-
 
         searchManager.caseSensitiveOptionProperty().bind(controller.getCaseSensitiveCheckBox().selectedProperty());
         searchManager.wholeWordsOnlyOptionProperty().bind(controller.getWholeWordsOnlyCheckBox().selectedProperty());

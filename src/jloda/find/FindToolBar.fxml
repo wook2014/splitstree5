@@ -19,12 +19,11 @@
   ~  along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<VBox xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
+<VBox prefHeight="62.0" prefWidth="638.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="jloda.find.FindToolBarController">
     <children>
         <AnchorPane fx:id="anchorPane" maxHeight="31.0" minHeight="31.0" prefHeight="31.0">
@@ -74,7 +73,7 @@
                                 <Font size="10.0"/>
                             </font>
                         </CheckBox>
-                        <Label fx:id="label" text="()">
+                        <Label fx:id="label" style="-fx-text-fill: darkgray;" text="label">
                             <font>
                                 <Font size="10.0"/>
                             </font>

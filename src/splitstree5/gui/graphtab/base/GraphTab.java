@@ -134,6 +134,13 @@ public abstract class GraphTab<G extends PhyloGraph> extends ViewerTab implement
             findToolBar = new FindToolBar(nodeLabelSearcher);
             //findToolBar.setShowReplaceToolBar(true);
             rootNode.setTop(findToolBar);
+            nodeLabelSearcher.foundProperty().addListener((c, o, n) -> {
+                if (n != null) {
+                    ANodeView nv = getNode2view().get(n);
+                    if (nv.getLabel() != null)
+                        scrollPane.ensureVisible(nv.getLabel());
+                }
+            });
         }
 
         // centerPane.setStyle("-fx-border-color: red");

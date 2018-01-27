@@ -186,38 +186,38 @@ public class SearchManager {
         boolean changed = false;
         getSearcher().selectAll(false);
         if (getSearcher() instanceof IObjectSearcher) {
-            IObjectSearcher oSearcher = (IObjectSearcher) getSearcher();
-            boolean ok = isForwardDirection() ? oSearcher.gotoFirst() : oSearcher.gotoLast();
+            IObjectSearcher searcher = (IObjectSearcher) getSearcher();
+            boolean ok = isForwardDirection() ? searcher.gotoFirst() : searcher.gotoLast();
 
 
             final String regexp = prepareRegularExpression(isEquateUnderscoreWithSpace() ? getSearchText().replaceAll("_", " ") : getSearchText());
             final Pattern pattern = Pattern.compile(regexp);
 
-            progress.setMaximum(oSearcher.numberOfObjects());
+            progress.setMaximum(searcher.numberOfObjects());
             progress.setProgress(0);
 
             while (ok) {
-                if (isGlobalScope() || oSearcher.isCurrentSelected()) {
-                    String label = oSearcher.getCurrentLabel();
+                if (isGlobalScope() || searcher.isCurrentSelected()) {
+                    String label = searcher.getCurrentLabel();
                     if (label == null)
                         label = "";
                     if (isEquateUnderscoreWithSpace())
                         label = label.replaceAll("_", " ");
                     if (matches(pattern, label)) {
-                        oSearcher.setCurrentSelected(true);
+                        searcher.setCurrentSelected(true);
                         changed = true;
                         break;
                     }
                 }
-                ok = isForwardDirection() ? oSearcher.gotoNext() : oSearcher.gotoPrevious();
+                ok = isForwardDirection() ? searcher.gotoNext() : searcher.gotoPrevious();
                 progress.incrementProgress();
             }
         } else if (getSearcher() instanceof ITextSearcher) {
-            ITextSearcher tSearcher = (ITextSearcher) getSearcher();
-            tSearcher.setGlobalScope(isGlobalScope());
+            ITextSearcher searcher = (ITextSearcher) getSearcher();
+            searcher.setGlobalScope(isGlobalScope());
 
             final String regexp = prepareRegularExpression(isEquateUnderscoreWithSpace() ? getSearchText().replaceAll("_", " ") : getSearchText());
-            changed = tSearcher.findFirst(regexp);
+            changed = searcher.findFirst(regexp);
         }
         return changed;
     }
@@ -231,38 +231,38 @@ public class SearchManager {
 
         boolean changed = false;
         if (getSearcher() instanceof IObjectSearcher) {
-            IObjectSearcher oSearcher = (IObjectSearcher) getSearcher();
-            boolean ok = isForwardDirection() ? oSearcher.gotoNext() : oSearcher.gotoPrevious();
+            IObjectSearcher searcher = (IObjectSearcher) getSearcher();
+            boolean ok = isForwardDirection() ? searcher.gotoNext() : searcher.gotoPrevious();
 
             progressListener.setMaximum(-1);
 
             final String regexp = prepareRegularExpression(isEquateUnderscoreWithSpace() ? getSearchText().replaceAll("_", " ") : getSearchText());
             final Pattern pattern = Pattern.compile(regexp);
             while (ok) {
-                if (isGlobalScope() || oSearcher.isCurrentSelected()) {
-                    String label = oSearcher.getCurrentLabel();
+                if (isGlobalScope() || searcher.isCurrentSelected()) {
+                    String label = searcher.getCurrentLabel();
                     if (label == null)
                         label = "";
                     if (isEquateUnderscoreWithSpace())
                         label = label.replaceAll("_", " ");
                     if (matches(pattern, label)) {
-                        oSearcher.setCurrentSelected(true);
+                        searcher.setCurrentSelected(true);
                         changed = true;
                         break;
                     }
                 }
-                ok = isForwardDirection() ? oSearcher.gotoNext() : oSearcher.gotoPrevious();
+                ok = isForwardDirection() ? searcher.gotoNext() : searcher.gotoPrevious();
                 progressListener.checkForCancel();
             }
         } else if (getSearcher() instanceof ITextSearcher) {
-            ITextSearcher tSearcher = (ITextSearcher) searcher;
-            tSearcher.setGlobalScope(isGlobalScope());
+            ITextSearcher searcher = (ITextSearcher) getSearcher();
+            searcher.setGlobalScope(isGlobalScope());
 
             final String regexp = prepareRegularExpression(isEquateUnderscoreWithSpace() ? getSearchText().replaceAll("_", " ") : getSearchText());
             if (isForwardDirection()) {
-                changed = tSearcher.findNext(regexp);
+                changed = searcher.findNext(regexp);
             } else
-                changed = tSearcher.findPrevious(regexp);
+                changed = searcher.findPrevious(regexp);
         }
         return changed;
     }
@@ -276,34 +276,34 @@ public class SearchManager {
 
         int count = 0;
         if (getSearcher() instanceof IObjectSearcher) {
-            IObjectSearcher oSearcher = (IObjectSearcher) getSearcher();
-            boolean ok = oSearcher.gotoFirst();
+            IObjectSearcher searcher = (IObjectSearcher) getSearcher();
+            boolean ok = searcher.gotoFirst();
 
-            progressListener.setMaximum(oSearcher.numberOfObjects());
+            progressListener.setMaximum(searcher.numberOfObjects());
 
             final String regexp = prepareRegularExpression(isEquateUnderscoreWithSpace() ? getSearchText().replaceAll("_", " ") : getSearchText());
             final Pattern pattern = Pattern.compile(regexp);
             while (ok) {
-                if (isGlobalScope() || oSearcher.isCurrentSelected()) {
-                    String label = oSearcher.getCurrentLabel();
+                if (isGlobalScope() || searcher.isCurrentSelected()) {
+                    String label = searcher.getCurrentLabel();
                     if (label == null)
                         label = "";
                     if (isEquateUnderscoreWithSpace())
                         label = label.replaceAll("_", " ");
                     boolean select = matches(pattern, label);
                     if (select) {
-                        oSearcher.setCurrentSelected(true);
+                        searcher.setCurrentSelected(true);
                         count++;
                     }
                 }
-                ok = oSearcher.gotoNext();
+                ok = searcher.gotoNext();
                 progressListener.incrementProgress();
             }
         } else if (getSearcher() instanceof ITextSearcher) {
-            ITextSearcher tSearcher = (ITextSearcher) getSearcher();
-            tSearcher.setGlobalScope(isGlobalScope());
+            ITextSearcher searcher = (ITextSearcher) getSearcher();
+            searcher.setGlobalScope(isGlobalScope());
             final String regexp = prepareRegularExpression(isEquateUnderscoreWithSpace() ? getSearchText().replaceAll("_", " ") : getSearchText());
-            count = tSearcher.findAll(regexp);
+            count = searcher.findAll(regexp);
         }
         return count;
     }
@@ -317,42 +317,42 @@ public class SearchManager {
 
         boolean changed = false;
         if (getSearcher() instanceof IObjectSearcher) {
-            IObjectSearcher oSearcher = (IObjectSearcher) getSearcher();
+            IObjectSearcher searcher = (IObjectSearcher) getSearcher();
 
             progressListener.setMaximum(-1);
 
-            boolean ok = oSearcher.isCurrentSet();
+            boolean ok = searcher.isCurrentSet();
             if (!ok)
-                ok = isForwardDirection() ? oSearcher.gotoFirst() : oSearcher.gotoLast();
+                ok = isForwardDirection() ? searcher.gotoFirst() : searcher.gotoLast();
 
             final String regexp = prepareRegularExpression(isEquateUnderscoreWithSpace() ? getSearchText().replaceAll("_", " ") : getSearchText());
             final Pattern pattern = Pattern.compile(regexp);
 
             while (ok) {
-                if (isGlobalScope() || oSearcher.isCurrentSelected()) {
-                    String label = oSearcher.getCurrentLabel();
+                if (isGlobalScope() || searcher.isCurrentSelected()) {
+                    String label = searcher.getCurrentLabel();
                     if (isEquateUnderscoreWithSpace())
                         label = label.replaceAll("_", " ");
                     if (label == null)
                         label = "";
                     String replace = getReplacement(pattern, getReplaceText(), label);
                     if (replace != null && !label.equals(replace)) {
-                        oSearcher.setCurrentSelected(true);
-                        oSearcher.setCurrentLabel(replace);
+                        searcher.setCurrentSelected(true);
+                        searcher.setCurrentLabel(replace);
                         changed = true;
                         break;
                     }
                 }
 
-                ok = isForwardDirection() ? oSearcher.gotoNext() : oSearcher.gotoPrevious();
+                ok = isForwardDirection() ? searcher.gotoNext() : searcher.gotoPrevious();
                 progressListener.checkForCancel();
             }
         } else if (getSearcher() instanceof ITextSearcher) {
-            ITextSearcher tSearcher = (ITextSearcher) getSearcher();
-            tSearcher.setGlobalScope(isGlobalScope());
+            ITextSearcher searcher = (ITextSearcher) getSearcher();
+            searcher.setGlobalScope(isGlobalScope());
 
             final String regexp = prepareRegularExpression(isEquateUnderscoreWithSpace() ? getSearchText().replaceAll("_", " ") : getSearchText());
-            changed = tSearcher.replaceNext(regexp, getReplaceText());
+            changed = searcher.replaceNext(regexp, getReplaceText());
         }
         return changed;
     }
@@ -368,37 +368,37 @@ public class SearchManager {
         boolean changed = false;
 
         if (getSearcher() instanceof IObjectSearcher) {
-            IObjectSearcher oSearcher = (IObjectSearcher) getSearcher();
-            boolean ok = isForwardDirection() ? oSearcher.gotoFirst() : oSearcher.gotoLast();
-            progressListener.setMaximum(oSearcher.numberOfObjects());
+            IObjectSearcher searcher = (IObjectSearcher) getSearcher();
+            boolean ok = isForwardDirection() ? searcher.gotoFirst() : searcher.gotoLast();
+            progressListener.setMaximum(searcher.numberOfObjects());
 
             final String regexp = prepareRegularExpression(isEquateUnderscoreWithSpace() ? getSearchText().replaceAll("_", " ") : getSearchText());
             final Pattern pattern = Pattern.compile(regexp);
 
             while (ok) {
-                if (isGlobalScope() || oSearcher.isCurrentSelected()) {
-                    String label = oSearcher.getCurrentLabel();
+                if (isGlobalScope() || searcher.isCurrentSelected()) {
+                    String label = searcher.getCurrentLabel();
                     if (label == null)
                         label = "";
                     if (isEquateUnderscoreWithSpace())
                         label = label.replaceAll("_", " ");
                     String replace = getReplacement(pattern, getReplaceText(), label);
                     if (replace != null && !replace.equals(label)) {
-                        oSearcher.setCurrentSelected(true);
-                        oSearcher.setCurrentLabel(replace);
+                        searcher.setCurrentSelected(true);
+                        searcher.setCurrentLabel(replace);
                         changed = true;
                         count++;
                     }
                 }
-                ok = isForwardDirection() ? oSearcher.gotoNext() : oSearcher.gotoPrevious();
+                ok = isForwardDirection() ? searcher.gotoNext() : searcher.gotoPrevious();
                 progressListener.incrementProgress();
             }
         } else if (getSearcher() instanceof ITextSearcher) {
-            ITextSearcher tSearcher = (ITextSearcher) getSearcher();
-            tSearcher.setGlobalScope(isGlobalScope());
+            ITextSearcher searcher = (ITextSearcher) getSearcher();
+            searcher.setGlobalScope(isGlobalScope());
 
             final String regexp = prepareRegularExpression(isEquateUnderscoreWithSpace() ? getSearchText().replaceAll("_", " ") : getSearchText());
-            count = tSearcher.replaceAll(regexp, getReplaceText(), !isGlobalScope());
+            count = searcher.replaceAll(regexp, getReplaceText(), !isGlobalScope());
             if (count > 0)
                 changed = true;
         }
