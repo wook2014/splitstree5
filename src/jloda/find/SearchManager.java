@@ -19,12 +19,14 @@
 
 package jloda.find;
 
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import jloda.fx.CallableService;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.connectors.TaskWithProgressListener;
 
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -53,6 +55,8 @@ public class SearchManager {
 
     private final StringProperty message = new SimpleStringProperty();
 
+    private final BooleanProperty canFindAll = new SimpleBooleanProperty(false);
+
     /**
      * constructor
      */
@@ -72,6 +76,14 @@ public class SearchManager {
         equateUnderscoreWithSpace.addListener(c -> message.set(""));
         searchText.addListener(c -> message.set(""));
         replaceText.addListener(c -> message.set(""));
+
+        searcherProperty().addListener((c, o, n) -> {
+            if (n instanceof ITextSearcher)
+                service.setExecutor(Platform::runLater); // must run text searchers in JavaFX application thread
+            else if (n instanceof IObjectSearcher) // run other searchers in external thread
+                service.setExecutor(Executors.newSingleThreadExecutor());
+            canFindAll.set(n.canFindAll());
+        });
     }
 
     /**
@@ -600,6 +612,14 @@ public class SearchManager {
 
     public void setMessage(String message) {
         this.message.set(message);
+    }
+
+    public boolean isCanFindAll() {
+        return canFindAll.get();
+    }
+
+    public ReadOnlyBooleanProperty canFindAllProperty() {
+        return canFindAll;
     }
 
     public void cancel() {

@@ -24,8 +24,11 @@ import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.stage.StageStyle;
+import jloda.find.FindToolBar;
+import jloda.find.TextAreaSearcher;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 import splitstree5.gui.ViewerTab;
@@ -40,6 +43,7 @@ import java.util.Optional;
  */
 public class TextViewTab extends ViewerTab {
     private final TextArea textArea;
+    private final TextAreaSearcher textAreaSearcher;
 
     /**
      * constructor
@@ -47,15 +51,7 @@ public class TextViewTab extends ViewerTab {
      * @param nameProperty
      */
     public TextViewTab(ReadOnlyStringProperty nameProperty) {
-        final Label label = new Label();
-        label.textProperty().bind(nameProperty);
-        setGraphic(label);
-        setText("");
-        textArea = new TextArea();
-        textArea.setFont(Font.font("Courier New"));
-        textArea.setEditable(false);
-        setContent(textArea);
-        setClosable(true);
+        this(nameProperty, null);
     }
 
     /**
@@ -72,9 +68,20 @@ public class TextViewTab extends ViewerTab {
         textArea = new TextArea();
         textArea.setFont(Font.font("Courier New"));
         textArea.setEditable(false);
-        textArea.textProperty().bind(textProperty);
+        if (textProperty != null)
+            textArea.textProperty().bind(textProperty);
         textArea.textProperty().addListener((InvalidationListener) -> getUndoManager().clear());
-        setContent(textArea);
+
+        // setup find / replace tool bar:
+        {
+            textAreaSearcher = new TextAreaSearcher("Text", textArea);
+            findToolBar = new FindToolBar(textAreaSearcher);
+            //findToolBar.setShowReplaceToolBar(true);
+        }
+
+        final BorderPane borderPane = new BorderPane(textArea);
+        borderPane.setTop(findToolBar);
+        setContent(borderPane);
         setClosable(true);
     }
 
@@ -123,6 +130,17 @@ public class TextViewTab extends ViewerTab {
         controller.getSelectAllMenuItem().setOnAction((e) -> textArea.selectAll());
         controller.getSelectNoneMenuItem().setOnAction((e) -> textArea.selectHome());
         controller.getSelectNoneMenuItem().disableProperty().bind(textArea.selectedTextProperty().length().isEqualTo(0));
+
+        controller.getFindMenuItem().setOnAction((e) -> findToolBar.setShowFindToolBar(true));
+        controller.getFindAgainMenuItem().setOnAction((e) -> findToolBar.findAgain());
+        controller.getFindAgainMenuItem().disableProperty().bind(findToolBar.canFindAgainProperty().not());
+        if (false) {
+            controller.getReplaceMenuItem().setOnAction((e) ->
+            {
+                textArea.textProperty().unbind();
+                findToolBar.setShowReplaceToolBar(true);
+            });
+        }
 
         controller.getGotoLineMenuItem().setOnAction((e) -> {
             final TextInputDialog dialog = new TextInputDialog("");

@@ -65,7 +65,7 @@ public class TaxaFilterPane extends AlgorithmPane {
 
     private ListChangeListener<Taxon> paneTaxonSelectionChangeListener;
     private ListChangeListener<Taxon> documentTaxonSelectionChangeListener;
-    private boolean inSelection;
+    private boolean inSelection = false;
 
     /**
      * constructor
@@ -91,33 +91,31 @@ public class TaxaFilterPane extends AlgorithmPane {
 
         // setup listeners that use document:
         paneTaxonSelectionChangeListener = c -> {
-            if (!inSelection) {
+            try {
                 inSelection = true;
-                try {
-                    while (c.next()) {
-                        if (c.getAddedSize() > 0)
+                while (c.next()) {
+                    if (c.getAddedSize() > 0) {
                             document.getTaxaSelectionModel().selectItems(c.getAddedSubList());
-                        if (c.getRemovedSize() > 0)
-                            document.getTaxaSelectionModel().clearSelection(c.getRemoved());
+                    }
+                    if (c.getRemovedSize() > 0) {
+                        document.getTaxaSelectionModel().clearSelection(c.getRemoved());
+                    }
                     }
                 } finally {
-                    inSelection = false;
+                inSelection = false;
                 }
-            }
         };
         documentTaxonSelectionChangeListener = c -> {
             if (!inSelection) {
-                inSelection = true;
-                try {
-                    while (c.next()) {
-                        if (c.getAddedSize() > 0)
+                while (c.next()) {
+                    if (c.getAddedSize() > 0) {
                             select(c.getAddedSubList(), true);
-                        if (c.getRemovedSize() > 0)
-                            select(c.getRemoved(), false);
+
                     }
-                } finally {
-                    inSelection = false;
-                }
+                    if (c.getRemovedSize() > 0) {
+                        select(c.getRemoved(), false);
+                    }
+                    }
             }
         };
     }

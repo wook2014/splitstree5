@@ -51,6 +51,7 @@ import splitstree5.gui.methodstab.MethodsViewTab;
 import splitstree5.gui.workflowtab.WorkflowViewTab;
 import splitstree5.gui.workflowtree.WorkflowTreeSupport;
 import splitstree5.menu.MenuController;
+import splitstree5.toolbar.MainToolBarController;
 import splitstree5.undo.UndoManager;
 
 import java.io.IOException;
@@ -62,6 +63,7 @@ public class MainWindow {
     private final Parent root;
     private final MainWindowController mainWindowController;
     private final MenuController menuController;
+    private final MainToolBarController toolBarController;
 
     private final WorkflowTreeSupport workflowTreeSupport;
 
@@ -104,7 +106,31 @@ public class MainWindow {
             final ExtendedFXMLLoader<MenuController> extendedFXMLLoader = new ExtendedFXMLLoader<>(MenuController.class);
             menuController = extendedFXMLLoader.getController();
         }
-        mainWindowController.getTopVBox().getChildren().add(0, menuController.getMenuBar());
+        {
+            final ExtendedFXMLLoader<MainToolBarController> extendedFXMLLoader = new ExtendedFXMLLoader<>(MainToolBarController.class);
+            toolBarController = extendedFXMLLoader.getController();
+            mainWindowController.setupOpenCloseLeft(toolBarController.getOpenCloseLeft());
+            toolBarController.getFindButton().setOnAction((e) -> menuController.getFindMenuItem().fire());
+            toolBarController.getFindButton().disableProperty().bind(menuController.getFindMenuItem().disableProperty());
+            toolBarController.getPrintButton().setOnAction((e) -> menuController.getPrintMenuitem().fire());
+            toolBarController.getPrintButton().disableProperty().bind(menuController.getPrintMenuitem().disableProperty());
+            toolBarController.getSaveButton().setOnAction((e) -> menuController.getSaveMenuItem().fire());
+            toolBarController.getSaveButton().disableProperty().bind(menuController.getSaveMenuItem().disableProperty());
+
+            toolBarController.getZoomInButton().setOnAction((e) -> menuController.getZoomInMenuItem().fire());
+            toolBarController.getZoomInButton().disableProperty().bind(menuController.getZoomInMenuItem().disableProperty());
+
+            toolBarController.getZoomOutButton().setOnAction((e) -> menuController.getZoomOutMenuItem().fire());
+            toolBarController.getZoomOutButton().disableProperty().bind(menuController.getZoomOutMenuItem().disableProperty());
+
+            toolBarController.getRotateLeftButton().setOnAction((e) -> menuController.getRotateLeftMenuItem().fire());
+            toolBarController.getRotateLeftButton().disableProperty().bind(menuController.getRotateLeftMenuItem().disableProperty());
+            toolBarController.getRotateRightButton().setOnAction((e) -> menuController.getRotateRightMenuItem().fire());
+            toolBarController.getRotateRightButton().disableProperty().bind(menuController.getRotateRightMenuItem().disableProperty());
+
+        }
+        mainWindowController.getTopVBox().getChildren().setAll(menuController.getMenuBar());
+        mainWindowController.getTopVBox().getChildren().add(toolBarController.getToolBar());
 
         mainTabPane = mainWindowController.getMainTabPane();
 

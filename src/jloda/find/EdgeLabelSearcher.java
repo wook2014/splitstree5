@@ -16,7 +16,6 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package jloda.find;
 
 import javafx.application.Platform;
@@ -25,26 +24,25 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.MultipleSelectionModel;
 import jloda.fx.ASelectionModel;
-import jloda.graph.Node;
+import jloda.graph.Edge;
 import jloda.phylo.PhyloGraph;
 
 import java.util.LinkedList;
 import java.util.Objects;
 
 /**
- * Class for finding and replacing node labels in a labeled graph
+ * Class for finding and replacing edge labels in a labeled graph
  * Daniel Huson, 7.2008, 1.2018
  */
-public class NodeLabelSearcher implements IObjectSearcher<Node> {
+public class EdgeLabelSearcher implements IObjectSearcher<Edge> {
     private final String name;
     private PhyloGraph graph;
-    private final ASelectionModel<Node> nodeSelectionModel;
-    private Node current = null;
+    private final ASelectionModel<Edge> edgeSelectionModel;
+    private Edge current = null;
 
-    private final ObjectProperty<Node> found = new SimpleObjectProperty<>();
+    private final ObjectProperty<Edge> found = new SimpleObjectProperty<>();
 
-    public static final String SEARCHER_NAME = "Nodes";
-
+    public static final String SEARCHER_NAME = "Edges";
 
 
     /**
@@ -53,8 +51,8 @@ public class NodeLabelSearcher implements IObjectSearcher<Node> {
      * @param
      * @param graph
      */
-    public NodeLabelSearcher(PhyloGraph graph, ASelectionModel<Node> nodeSelectionModel) {
-        this(SEARCHER_NAME, graph, nodeSelectionModel);
+    public EdgeLabelSearcher(PhyloGraph graph, ASelectionModel<Edge> edgeSelectionModel) {
+        this(SEARCHER_NAME, graph, edgeSelectionModel);
     }
 
     /**
@@ -63,10 +61,10 @@ public class NodeLabelSearcher implements IObjectSearcher<Node> {
      * @param
      * @param graph
      */
-    public NodeLabelSearcher(String name, PhyloGraph graph, ASelectionModel<Node> nodeSelectionModel) {
+    public EdgeLabelSearcher(String name, PhyloGraph graph, ASelectionModel<Edge> edgeSelectionModel) {
         this.graph = graph;
         this.name = name;
-        this.nodeSelectionModel = nodeSelectionModel;
+        this.edgeSelectionModel = edgeSelectionModel;
     }
 
     /**
@@ -82,7 +80,7 @@ public class NodeLabelSearcher implements IObjectSearcher<Node> {
      * goto the first object
      */
     public boolean gotoFirst() {
-        current = graph.getFirstNode();
+        current = graph.getFirstEdge();
         return isCurrentSet();
     }
 
@@ -101,7 +99,7 @@ public class NodeLabelSearcher implements IObjectSearcher<Node> {
      * goto the last object
      */
     public boolean gotoLast() {
-        current = graph.getLastNode();
+        current = graph.getLastEdge();
         return isCurrentSet();
     }
 
@@ -122,7 +120,7 @@ public class NodeLabelSearcher implements IObjectSearcher<Node> {
      * @return true, if selected
      */
     public boolean isCurrentSelected() {
-        return isCurrentSet() && nodeSelectionModel.getSelectedItems().contains(current);
+        return isCurrentSet() && edgeSelectionModel.getSelectedItems().contains(current);
     }
 
     /**
@@ -132,13 +130,13 @@ public class NodeLabelSearcher implements IObjectSearcher<Node> {
      */
     public void setCurrentSelected(boolean select) {
         if (current != null) {
-            final Node toSelect = current;
+            final Edge toSelect = current;
             Platform.runLater(() -> {
                 if (select) {
-                    nodeSelectionModel.select(toSelect);
+                    edgeSelectionModel.select(toSelect);
                     found.set(toSelect);
                 } else {
-                    nodeSelectionModel.clearSelection(toSelect);
+                    edgeSelectionModel.clearSelection(toSelect);
                     found.set(null);
                 }
             });
@@ -153,9 +151,9 @@ public class NodeLabelSearcher implements IObjectSearcher<Node> {
     public void selectAll(boolean select) {
         Platform.runLater(() -> {
             if (select)
-                nodeSelectionModel.selectAll();
+                edgeSelectionModel.selectAll();
             else
-                nodeSelectionModel.clearSelection();
+                edgeSelectionModel.clearSelection();
         });
     }
 
@@ -193,7 +191,7 @@ public class NodeLabelSearcher implements IObjectSearcher<Node> {
      * @return true, if there is at least one object
      */
     public boolean isGlobalFindable() {
-        return graph.getNumberOfNodes() > 0;
+        return graph.getNumberOfEdges() > 0;
     }
 
     /**
@@ -202,7 +200,7 @@ public class NodeLabelSearcher implements IObjectSearcher<Node> {
      * @return true, if at least one object is selected
      */
     public boolean isSelectionFindable() {
-        return nodeSelectionModel.getSelectedItems().size() > 0;
+        return edgeSelectionModel.getSelectedItems().size() > 0;
     }
 
     /**
@@ -236,7 +234,7 @@ public class NodeLabelSearcher implements IObjectSearcher<Node> {
      *
      * @param v
      */
-    private void fireLabelChangedListeners(Node v) {
+    private void fireLabelChangedListeners(Edge v) {
         for (LabelChangedListener listener : labelChangedListeners) {
             listener.doLabelHasChanged(v);
         }
@@ -264,7 +262,7 @@ public class NodeLabelSearcher implements IObjectSearcher<Node> {
      * label changed listener
      */
     public interface LabelChangedListener {
-        void doLabelHasChanged(Node v);
+        void doLabelHasChanged(Edge v);
     }
 
     /**
@@ -273,7 +271,7 @@ public class NodeLabelSearcher implements IObjectSearcher<Node> {
      * @return number of objects or -1
      */
     public int numberOfObjects() {
-        return graph.getNumberOfNodes();
+        return graph.getNumberOfEdges();
     }
 
     /**
@@ -282,20 +280,20 @@ public class NodeLabelSearcher implements IObjectSearcher<Node> {
      * @return number of objects or -1
      */
     public int numberOfSelectedObjects() {
-        return nodeSelectionModel.getSelectedItems().size();
+        return edgeSelectionModel.getSelectedItems().size();
     }
 
-    public Node getFound() {
+    public Edge getFound() {
         return found.get();
     }
 
-    public ReadOnlyObjectProperty<Node> foundProperty() {
+    public ReadOnlyObjectProperty<Edge> foundProperty() {
         return found;
     }
 
     @Override
-    public MultipleSelectionModel<Node> getSelectionModel() {
-        return nodeSelectionModel;
+    public MultipleSelectionModel<Edge> getSelectionModel() {
+        return edgeSelectionModel;
     }
 
     public PhyloGraph getGraph() {

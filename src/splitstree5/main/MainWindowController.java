@@ -51,9 +51,6 @@ public class MainWindowController {
     private ToolBar leftToolBar;
 
     @FXML
-    private Button openCloseLeft;
-
-    @FXML
     private Button openCloseRight;
 
     @FXML
@@ -88,16 +85,14 @@ public class MainWindowController {
     @FXML
     private Label memoryUsageLabel;
 
+    private Button openCloseLeft;
+
     public BorderPane getBorderPane() {
         return borderPane;
     }
 
     public VBox getTopVBox() {
         return topVBox;
-    }
-
-    public Button getOpenCloseLeft() {
-        return openCloseLeft;
     }
 
     public TabPane getMainTabPane() {
@@ -154,13 +149,6 @@ public class MainWindowController {
         });
         showButton.disableProperty().bind(Bindings.isEmpty(treeView.getSelectionModel().getSelectedItems()));
 
-        openCloseLeft.setOnAction((e) -> {
-            if (splitPane.getDividerPositions()[0] <= 0.01)
-                animateSplitPane(splitPane, 300 / splitPane.getWidth(), () -> openCloseLeft.setText(("<")), true);
-            else
-                animateSplitPane(splitPane, 0, () -> openCloseLeft.setText((">")), true);
-        });
-
         openCloseRight.setOnAction((e) -> {
             ensureTreeViewIsOpen();
             if (algorithmSplitPane.getDividerPositions()[0] >= 0.99)
@@ -198,5 +186,16 @@ public class MainWindowController {
         ensureTreeViewIsOpen();
         if (algorithmSplitPane.getDividerPositions()[0] >= (algorithmSplitPane.getHeight() - 300) / algorithmSplitPane.getHeight())
             animateSplitPane(algorithmSplitPane, (algorithmSplitPane.getHeight() - 300) / algorithmSplitPane.getHeight(), () -> openCloseRight.setText(("<")), true);
+    }
+
+    public void setupOpenCloseLeft(Button openCloseLeft) {
+        this.openCloseLeft = openCloseLeft;
+
+        openCloseLeft.setOnAction((e) -> {
+            if (splitPane.getDividerPositions()[0] <= 0.01)
+                animateSplitPane(splitPane, 300 / splitPane.getWidth(), () -> openCloseLeft.setText(("<")), true);
+            else
+                animateSplitPane(splitPane, 0, () -> openCloseLeft.setText((">")), true);
+        });
     }
 }

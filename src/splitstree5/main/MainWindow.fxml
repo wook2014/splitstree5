@@ -11,25 +11,11 @@
         <VBox fx:id="topVBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
               BorderPane.alignment="CENTER">
             <children>
-                <AnchorPane>
-                    <children>
-                        <ToolBar fx:id="topToolBar" minHeight="40.0" prefHeight="40.0" prefWidth="200.0"
-                                 AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                                 AnchorPane.topAnchor="0.0">
-                            <padding>
-                                <Insets left="20.0" right="20.0"/>
-                            </padding>
-                        </ToolBar>
-                        <Button fx:id="openCloseLeft" maxHeight="10.0" maxWidth="10.0" mnemonicParsing="false"
-                                prefHeight="10.0" prefWidth="10.0"
-                                style="-fx-border-style: none; -fx-background-color: transparent;" text="&gt;"
-                                AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="10.0">
-                            <font>
-                                <Font size="10.0"/>
-                            </font>
-                        </Button>
-                    </children>
-                </AnchorPane>
+                <ToolBar fx:id="topToolBar" minHeight="40.0" prefHeight="40.0" prefWidth="200.0">
+                    <padding>
+                        <Insets left="20.0" right="20.0"/>
+                    </padding>
+                </ToolBar>
             </children>
         </VBox>
     </top>

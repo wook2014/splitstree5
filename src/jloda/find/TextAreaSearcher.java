@@ -79,7 +79,7 @@ public class TextAreaSearcher implements ITextSearcher {
      * @return - returns boolean: true if text found, false otherwise
      */
     public boolean findPrevious(String regularExpression) {
-        return singleSearch(regularExpression, false);
+        return textArea != null && singleSearch(regularExpression, false);
     }
 
     /**
@@ -89,6 +89,7 @@ public class TextAreaSearcher implements ITextSearcher {
      * @param replaceText
      */
     public boolean replaceNext(String regularExpression, String replaceText) {
+        if (textArea == null) return false;
         if (findNext(regularExpression)) {
             textArea.replaceSelection(replaceText);
             return true;
@@ -104,6 +105,10 @@ public class TextAreaSearcher implements ITextSearcher {
      * @return number of instances replaced
      */
     public int replaceAll(String regularExpression, String replaceText, boolean selectionOnly) {
+        if (textArea == null) return 0;
+
+
+
         final String source;
         if (selectionOnly)
             source = textArea.getSelectedText();
@@ -139,7 +144,7 @@ public class TextAreaSearcher implements ITextSearcher {
      * @return true, if there is at least one object
      */
     public boolean isGlobalFindable() {
-        return textArea.getText().length() > 0;
+        return textArea != null && textArea.getText().length() > 0;
     }
 
     /**
@@ -148,7 +153,7 @@ public class TextAreaSearcher implements ITextSearcher {
      * @return true, if at least one object is selected
      */
     public boolean isSelectionFindable() {
-        return textArea.getSelectedText() != null && textArea.getSelectedText().length() > 0;
+        return textArea != null && textArea.getSelectedText() != null && textArea.getSelectedText().length() > 0;
     }
 
     /**
@@ -193,6 +198,7 @@ public class TextAreaSearcher implements ITextSearcher {
     //We start the search at the end of the selection, which could be the dot or the mark.
 
     private int getSearchStart() {
+        if (textArea == null) return 0;
         return Math.max(textArea.getAnchor(), textArea.getCaretPosition());
     }
 
@@ -202,6 +208,8 @@ public class TextAreaSearcher implements ITextSearcher {
     }
 
     private boolean singleSearch(String regularExpression, boolean forward) throws PatternSyntaxException {
+        if (textArea == null) return false;
+
         //Do nothing if there is no text.
         if (regularExpression.length() == 0)
             return false;
@@ -266,6 +274,6 @@ public class TextAreaSearcher implements ITextSearcher {
      * @return true, if search scope is global
      */
     public boolean isGlobalScope() {
-        return true;
+        return textArea != null;
     }
 }

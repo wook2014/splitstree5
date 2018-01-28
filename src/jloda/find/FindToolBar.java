@@ -22,8 +22,14 @@ package jloda.find;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.scene.control.ListCell;
+import javafx.scene.control.Separator;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -45,12 +51,15 @@ public class FindToolBar extends VBox {
     private final BooleanProperty showReplaceToolBar = new SimpleBooleanProperty(false);
     private final BooleanProperty canFindAgain = new SimpleBooleanProperty(false);
 
+    private final ObservableList<ISearcher> searchers = FXCollections.observableArrayList();
+    private final ToggleGroup searcherButtonsToggleGroup = new ToggleGroup();
+
     /**
      * constructor
      *
      * @param searcher
      */
-    public FindToolBar(ISearcher searcher) {
+    public FindToolBar(ISearcher searcher, ISearcher... additional) {
         final ExtendedFXMLLoader<FindToolBarController> extendedFXMLLoader = new ExtendedFXMLLoader<>(FindToolBarController.class);
         controller = extendedFXMLLoader.getController();
 
@@ -83,6 +92,8 @@ public class FindToolBar extends VBox {
         searchManager = new SearchManager();
         searchManager.searchTextProperty().bind(controller.getSearchComboBox().getEditor().textProperty());
         searchManager.replaceTextProperty().bind(controller.getReplaceComboBox().getEditor().textProperty());
+        searchManager.setSearcher(searcher);
+
         canFindAgain.bind(searchManager.searchTextProperty().isNotEmpty().and(showFindToolBar));
 
         controller.getLabel().textProperty().bind(searchManager.messageProperty());
@@ -142,17 +153,10 @@ public class FindToolBar extends VBox {
         searchManager.wholeWordsOnlyOptionProperty().bind(controller.getWholeWordsOnlyCheckBox().selectedProperty());
         searchManager.regularExpressionsOptionProperty().bind(controller.getRegExCheckBox().selectedProperty());
 
-        controller.getFindButton().disableProperty().bind(searchManager.disabledProperty().or(searchManager.searchTextProperty().isEmpty()));
-        controller.getNextButton().disableProperty().bind(searchManager.disabledProperty().or(searchManager.searchTextProperty().isEmpty()));
-        controller.getAllButton().disableProperty().bind(searchManager.disabledProperty().or(searchManager.searchTextProperty().isEmpty()));
         controller.getRegExCheckBox().disableProperty().bind(searchManager.disabledProperty());
         controller.getWholeWordsOnlyCheckBox().disableProperty().bind(searchManager.disabledProperty());
         controller.getCaseSensitiveCheckBox().disableProperty().bind(searchManager.disabledProperty());
 
-        controller.getReplaceButton().disableProperty().bind(searchManager.disabledProperty().or(searchManager.searchTextProperty().isEmpty()).or(searchManager.replaceTextProperty().isEmpty()));
-        controller.getReplaceAllButton().disableProperty().bind(searchManager.disabledProperty().or(searchManager.searchTextProperty().isEmpty()).or(searchManager.replaceTextProperty().isEmpty()));
-
-        controller.getCloseButton().setOnAction((e) -> setShowFindToolBar(false));
 
         BooleanProperty inSearch = new SimpleBooleanProperty(false);
 
@@ -170,6 +174,7 @@ public class FindToolBar extends VBox {
             }
         });
 
+        controller.getFindButton().disableProperty().bind(searchManager.disabledProperty().or(searchManager.searchTextProperty().isEmpty()));
         controller.getFindButton().setOnAction((e) -> {
             if (!inSearch.get()) {
                 try {
@@ -181,6 +186,8 @@ public class FindToolBar extends VBox {
                 }
             }
         });
+
+        controller.getNextButton().disableProperty().bind(searchManager.disabledProperty().or(searchManager.searchTextProperty().isEmpty()));
         controller.getNextButton().setOnAction((e) -> {
             if (!inSearch.get()) {
                 try {
@@ -192,6 +199,8 @@ public class FindToolBar extends VBox {
                 }
             }
         });
+
+        controller.getAllButton().disableProperty().bind(searchManager.disabledProperty().or(searchManager.searchTextProperty().isEmpty()).or(searchManager.canFindAllProperty().not()));
         controller.getAllButton().setOnAction((e) -> {
             if (!inSearch.get()) {
                 try {
@@ -204,6 +213,7 @@ public class FindToolBar extends VBox {
             }
         });
 
+        controller.getReplaceButton().disableProperty().bind(searchManager.disabledProperty().or(searchManager.searchTextProperty().isEmpty()).or(searchManager.replaceTextProperty().isEmpty()));
         controller.getReplaceButton().setOnAction((e) -> {
             if (!inSearch.get()) {
                 try {
@@ -216,6 +226,7 @@ public class FindToolBar extends VBox {
             }
         });
 
+        controller.getReplaceAllButton().disableProperty().bind(searchManager.disabledProperty().or(searchManager.searchTextProperty().isEmpty()).or(searchManager.replaceTextProperty().isEmpty()));
         controller.getReplaceAllButton().setOnAction((e) -> {
             if (!inSearch.get()) {
                 try {
@@ -228,16 +239,11 @@ public class FindToolBar extends VBox {
             }
         });
 
-        setSearcher(searcher);
-    }
+        controller.getCloseButton().setOnAction((e) -> setShowFindToolBar(false));
 
-    /**
-     * set the searcher to use
-     *
-     * @param searcher
-     */
-    public void setSearcher(ISearcher searcher) {
-        searchManager.setSearcher(searcher);
+        for (ISearcher another : additional) {
+            addSearcher(another);
+        }
     }
 
     public boolean isShowFindToolBar() {
@@ -286,5 +292,44 @@ public class FindToolBar extends VBox {
 
     public void cancel() {
         searchManager.cancel();
+    }
+
+    /**
+     * add the searcher to the list of available searchers. It will be represented by a toggle button
+     *
+     * @param other
+     */
+    public void addSearcher(ISearcher other) {
+        if (searchers.size() == 0) {
+            final ISearcher searcher = searchManager.getSearcher();
+            // make sure the current searcher is present:
+            final ToggleButton searcherButton = new ToggleButton(searcher.getName());
+            searcherButton.setStyle("-fx-font-size: 10");
+            searcherButton.setToggleGroup(searcherButtonsToggleGroup);
+            searcherButton.setOnAction((e) -> searchManager.setSearcher(searcher));
+            searcherButton.setSelected(true);
+            controller.getToolBar().getItems().add(controller.getToolBar().getItems().size() - 2, new Separator(Orientation.VERTICAL));
+            controller.getToolBar().getItems().add(controller.getToolBar().getItems().size() - 2, searcherButton);
+            searchers.add(searcher);
+        }
+
+        if (!searchers.contains(other)) {
+            final ToggleButton searcherButton = new ToggleButton(other.getName());
+            searcherButton.setStyle("-fx-font-size: 10");
+            searcherButton.setToggleGroup(searcherButtonsToggleGroup);
+            searcherButton.setOnAction((e) -> searchManager.setSearcher(other));
+            controller.getToolBar().getItems().add(controller.getToolBar().getItems().size() - 2, searcherButton);
+            searchers.add(other);
+        }
+    }
+
+    /**
+     * set the searcher to use, first adding it, if necessary
+     *
+     * @param searcher
+     */
+    public void setSearcher(ISearcher searcher) {
+        addSearcher(searcher);
+        searchManager.setSearcher(searcher);
     }
 }

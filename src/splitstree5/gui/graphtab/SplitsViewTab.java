@@ -85,12 +85,16 @@ public class SplitsViewTab extends GraphTab<SplitsGraph> {
                 try {
                     while (c.next()) {
                         for (Edge e : c.getAddedSubList()) {
-                            final Integer splitId = getGraph().getSplit(e); // must be Integer, not int!
-                            splitsSelectionModel.select(splitId);
+                            if (e.getOwner() == getGraph()) {
+                                final Integer splitId = getGraph().getSplit(e); // must be Integer, not int!
+                                splitsSelectionModel.select(splitId);
+                            }
                         }
                         for (Edge e : c.getRemoved()) {
-                            final Integer splitId = getGraph().getSplit(e); // must be Integer, not int!
-                            splitsSelectionModel.clearSelection(splitId);
+                            if (e.getOwner() == getGraph()) {
+                                final Integer splitId = getGraph().getSplit(e); // must be Integer, not int!
+                                splitsSelectionModel.clearSelection(splitId);
+                            }
                         }
                     }
                 } finally {

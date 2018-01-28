@@ -16,35 +16,36 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package splitstree5.gui.graphtab.commands;
 
 import javafx.scene.control.Label;
 import jloda.util.ProgramProperties;
-import splitstree5.gui.graphtab.base.ANodeView;
+import splitstree5.gui.graphtab.base.AEdgeView;
 import splitstree5.undo.UndoableRedoableCommand;
 
 /**
- * Change node label
+ * Change edge label
  * Daniel Huson, 1.2018
  */
-public class ChangeLabelCommand extends UndoableRedoableCommand {
+public class ChangeEdgeLabelCommand extends UndoableRedoableCommand {
     private final String oldText;
     private final String newText;
-    private final ANodeView nv;
+    private final AEdgeView ev;
 
-    public ChangeLabelCommand(ANodeView nv, String newText) {
+    public ChangeEdgeLabelCommand(AEdgeView ev, String newText) {
         super("Change Label");
-        this.nv = nv;
-        this.oldText = (nv.getLabel() != null ? nv.getLabel().getText() : null);
+        this.ev = ev;
+        this.oldText = (ev.getLabel() != null ? ev.getLabel().getText() : null);
         this.newText = newText;
     }
 
     @Override
     public void undo() {
         if (oldText == null)
-            nv.setLabel(null);
+            ev.setLabel(null);
         else
-            nv.getLabel().setText(oldText);
+            ev.getLabel().setText(oldText);
     }
 
     @Override
@@ -52,19 +53,19 @@ public class ChangeLabelCommand extends UndoableRedoableCommand {
         if (oldText == null) {
             Label label = new Label(newText);
             label.setFont(ProgramProperties.getDefaultFont());
-            nv.setLabel(label);
+            ev.setLabel(label);
         } else
-            nv.getLabel().setText(newText);
+            ev.getLabel().setText(newText);
     }
 
     @Override
     public boolean isUndoable() {
-        return nv.getNode().getOwner() != null; // still contained in graph
+        return ev.getEdge().getOwner() != null; // still contained in graph
     }
 
     @Override
     public boolean isRedoable() {
-        return nv.getNode().getOwner() != null; // still contained in graph
+        return ev.getEdge().getOwner() != null; // still contained in graph
     }
 
 }

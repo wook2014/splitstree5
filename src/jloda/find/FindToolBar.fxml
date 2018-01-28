@@ -68,11 +68,13 @@
                             </font>
                         </CheckBox>
                         <CheckBox fx:id="regExCheckBox" alignment="CENTER" layoutX="402.0" layoutY="15.0"
-                                  mnemonicParsing="false" text="RegEx   ">
+                                  mnemonicParsing="false" text="RegEx">
                             <font>
                                 <Font size="10.0"/>
                             </font>
                         </CheckBox>
+                        <Separator layoutX="284.0" layoutY="10.0" maxHeight="20.0" minHeight="20.0"
+                                   orientation="VERTICAL" prefHeight="20.0"/>
                         <Label fx:id="label" style="-fx-text-fill: darkgray;" text="label">
                             <font>
                                 <Font size="10.0"/>

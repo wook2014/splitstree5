@@ -307,11 +307,11 @@ public class PhyloGraph extends Graph {
      * Gets a list of all taxa represented by this node
      *
      * @param v the node
-     * @return list containing ids of taxa associated with that node
+     * @return list containing ids of taxa associated with that node, or null
      */
     public List<Integer> getNode2Taxa(Node v) {
         if (node2taxa.getValue(v) == null)
-            node2taxa.setValue(v, new ArrayList<Integer>()); // lazy initialization
+            node2taxa.setValue(v, new ArrayList<Integer>()); // lazy initialization // todo: remove this
         return node2taxa.getValue(v);
     }
 
