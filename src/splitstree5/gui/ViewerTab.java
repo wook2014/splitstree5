@@ -119,5 +119,4 @@ public abstract class ViewerTab extends Tab {
     public FindToolBar getFindToolBar() {
         return findToolBar;
     }
-
 }

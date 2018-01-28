@@ -66,6 +66,9 @@ import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.image.WritableImage;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -310,6 +313,16 @@ public class WorkflowViewTab extends ViewerTab {
 
         controller.getRedoMenuItem().disableProperty().bind(new SimpleBooleanProperty(false).isEqualTo(getUndoManager().canRedoProperty()));
         controller.getRedoMenuItem().textProperty().bind(getUndoManager().redoNameProperty());
+
+        controller.getCopyImageMenuItem().setOnAction((x) -> {
+            final Clipboard clipboard = Clipboard.getSystemClipboard();
+            final ClipboardContent content = new ClipboardContent();
+            WritableImage writableImage = new WritableImage((int) centerPane.getWidth() + 1,
+                    (int) centerPane.getHeight() + 1);
+            centerPane.snapshot(null, writableImage);
+            content.putImage(writableImage);
+            clipboard.setContent(content);
+        });
 
         controller.getSelectAllMenuItem().setOnAction((e) -> selectionModel.selectAll());
         controller.getSelectAllMenuItem().disableProperty().bind(Bindings.size(selectionModel.getSelectedItems()).isEqualTo(getWorkflow().getNumberOfNodes()));

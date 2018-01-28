@@ -41,10 +41,10 @@ import splitstree5.core.datablocks.SplitsNetworkViewBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.formattab.FormatItem;
-import splitstree5.gui.graphtab.SplitsViewTab;
-import splitstree5.gui.graphtab.base.AEdgeView;
-import splitstree5.gui.graphtab.base.ANodeView;
+import splitstree5.gui.graphtab.ISplitsViewTab;
+import splitstree5.gui.graphtab.base.EdgeViewBase;
 import splitstree5.gui.graphtab.base.GraphLayout;
+import splitstree5.gui.graphtab.base.NodeViewBase;
 
 import java.util.*;
 
@@ -81,15 +81,15 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, SplitsNetwork
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxa, SplitsBlock parent, SplitsNetworkViewBlock child) throws Exception {
         progress.setTasks("Split network construction", "Init.");
-        final SplitsViewTab view = child.getTab();
-        view.setNodeLabel2Style(nodeLabel2Style);
+        final ISplitsViewTab splitsViewTab = child.getSplitsView();
+        //splitsViewTab.setNodeLabel2Style(nodeLabel2Style);
 
         Platform.runLater(() -> {
-            child.getTab().setName(child.getName());
+            child.getSplitsView().setName(child.getName());
         });
 
         graph.clear();
-        view.init(graph);
+        splitsViewTab.init(graph);
 
         final BitSet forbiddenSplits = new BitSet();
         final NodeArray<Point2D> node2point = new NodeArray<>(graph);
@@ -126,24 +126,23 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, SplitsNetwork
 
         progress.setProgress(100);   //set progress to 100%
 
-        TreeEmbedder.scaleToFitTarget(GraphLayout.Radial, view.getTargetDimensions(), graph, node2point);
+        TreeEmbedder.scaleToFitTarget(GraphLayout.Radial, splitsViewTab.getTargetDimensions(), graph, node2point);
 
         // compute all views and put their parts into the appropriate groups
         for (Node v : graph.nodes()) {
             String text = graph.getLabel(v);
             //String text = (graph.getLabel(v) != null ? graph.getLabel(v) : "Node " + v.getId());
-            final ANodeView nodeView = view.createNodeView(v, node2point.getValue(v), text);
-            view.getNode2view().put(v, nodeView);
-            view.getNodesGroup().getChildren().addAll(nodeView.getShapeGroup());
-            view.getNodeLabelsGroup().getChildren().addAll(nodeView.getLabelGroup());
+            final NodeViewBase nodeView = splitsViewTab.createNodeView(v, node2point.getValue(v), text);
+            splitsViewTab.getNode2view().put(v, nodeView);
+            splitsViewTab.getNodesGroup().getChildren().addAll(nodeView.getShapeGroup());
+            splitsViewTab.getNodeLabelsGroup().getChildren().addAll(nodeView.getLabelGroup());
         }
         for (Edge e : graph.edges()) {
-            final AEdgeView edgeView = view.createEdgeView(graph, e, graph.getWeight(e), node2point.get(e.getSource()), node2point.get(e.getTarget()));
-            view.getEdge2view().put(e, edgeView);
-            if (edgeView.getShape() != null)
-                view.getEdgesGroup().getChildren().add(edgeView.getShape());
+            final EdgeViewBase edgeView = splitsViewTab.createEdgeView(graph, e, graph.getWeight(e), node2point.get(e.getSource()), node2point.get(e.getTarget()));
+            splitsViewTab.getEdge2view().put(e, edgeView);
+            splitsViewTab.getEdgesGroup().getChildren().addAll(edgeView.getShapeGroup().getChildren());
             if (edgeView.getLabel() != null)
-                view.getEdgeLabelsGroup().getChildren().addAll(edgeView.getLabel());
+                splitsViewTab.getEdgeLabelsGroup().getChildren().addAll(edgeView.getLabel());
         }
         Platform.runLater(() -> child.updateSelectionModels(graph, taxa, child.getDocument()));
         child.show();

@@ -26,7 +26,7 @@ import javafx.scene.paint.Color;
 import javafx.util.converter.IntegerStringConverter;
 import jloda.fx.ExtendedFXMLLoader;
 import splitstree5.gui.ViewerTab;
-import splitstree5.gui.graphtab.base.GraphTab;
+import splitstree5.gui.graphtab.base.GraphTabBase;
 import splitstree5.main.MainWindow;
 import splitstree5.menu.MenuController;
 
@@ -37,7 +37,7 @@ import java.io.IOException;
  * Daniel Huson, 1.2018
  */
 public class FormatTab extends ViewerTab {
-    private GraphTab graphTab;
+    private GraphTabBase graphTab2D;
 
     private final FormatTabController controller;
 
@@ -84,11 +84,11 @@ public class FormatTab extends ViewerTab {
     }
 
     private void updateControls(Tab tab) {
-        if (tab instanceof GraphTab) {
-            graphTab = (GraphTab) tab;
+        if (tab instanceof GraphTabBase) {
+            graphTab2D = (GraphTabBase) tab;
 
             // label font:
-            controller.getFontComboBox().disableProperty().bind(graphTab.getNodeSelectionModel().emptyProperty().and(graphTab.getEdgeSelectionModel().emptyProperty()));
+            controller.getFontComboBox().disableProperty().bind(graphTab2D.getNodeSelectionModel().emptyProperty().and(graphTab2D.getEdgeSelectionModel().emptyProperty()));
             if (labelFontListener != null)
                 controller.getFontComboBox().fontValueProperty().removeListener(labelFontListener);
             labelFontListener = (x -> {
@@ -97,8 +97,8 @@ public class FormatTab extends ViewerTab {
                         isUpdating = true;
                         FormatItem formatItem = new FormatItem();
                         formatItem.addFont(controller.getFontComboBox().getFontValue());
-                        getMainWindow().getUndoRedoManager().doAndAdd(new FormatChangeCommand(formatItem, graphTab.getNodeSelectionModel().getSelectedItems(), graphTab.getNode2view(),
-                                graphTab.getEdgeSelectionModel().getSelectedItems(), graphTab.getEdge2view()));
+                        getMainWindow().getUndoRedoManager().doAndAdd(new FormatChangeCommand(formatItem, graphTab2D.getNodeSelectionModel().getSelectedItems(), graphTab2D.getNode2view(),
+                                graphTab2D.getEdgeSelectionModel().getSelectedItems(), graphTab2D.getEdge2view()));
                     } finally {
                         isUpdating = false;
                     }
@@ -109,8 +109,8 @@ public class FormatTab extends ViewerTab {
                 if (!isUpdating) {
                     try {
                         isUpdating = true;
-                        final FormatItem formatItem = FormatItem.createFromSelection(graphTab.getNodeSelectionModel().getSelectedItems(), graphTab.getNode2view(),
-                                graphTab.getEdgeSelectionModel().getSelectedItems(), graphTab.getEdge2view());
+                        final FormatItem formatItem = FormatItem.createFromSelection(graphTab2D.getNodeSelectionModel().getSelectedItems(), graphTab2D.getNode2view(),
+                                graphTab2D.getEdgeSelectionModel().getSelectedItems(), graphTab2D.getEdge2view());
                         if (formatItem.getFont() != null)
                             controller.getFontComboBox().setDefaultFont(formatItem.getFont());
                         else
@@ -129,8 +129,8 @@ public class FormatTab extends ViewerTab {
                         isUpdating = true;
                         FormatItem formatItem = new FormatItem();
                         formatItem.addLabelColor(controller.getLabelColorPicker().getValue());
-                        getMainWindow().getUndoRedoManager().doAndAdd(new FormatChangeCommand(formatItem, graphTab.getNodeSelectionModel().getSelectedItems(), graphTab.getNode2view(),
-                                graphTab.getEdgeSelectionModel().getSelectedItems(), graphTab.getEdge2view()));
+                        getMainWindow().getUndoRedoManager().doAndAdd(new FormatChangeCommand(formatItem, graphTab2D.getNodeSelectionModel().getSelectedItems(), graphTab2D.getNode2view(),
+                                graphTab2D.getEdgeSelectionModel().getSelectedItems(), graphTab2D.getEdge2view()));
                     } finally {
                         isUpdating = false;
                     }
@@ -140,8 +140,8 @@ public class FormatTab extends ViewerTab {
                 if (!isUpdating) {
                     try {
                         isUpdating = true;
-                        final FormatItem formatItem = FormatItem.createFromSelection(graphTab.getNodeSelectionModel().getSelectedItems(), graphTab.getNode2view(),
-                                graphTab.getEdgeSelectionModel().getSelectedItems(), graphTab.getEdge2view());
+                        final FormatItem formatItem = FormatItem.createFromSelection(graphTab2D.getNodeSelectionModel().getSelectedItems(), graphTab2D.getNode2view(),
+                                graphTab2D.getEdgeSelectionModel().getSelectedItems(), graphTab2D.getEdge2view());
                         if (formatItem.getLabelColor() != null)
                             controller.getLabelColorPicker().setValue(formatItem.getLabelColor());
                     } finally {
@@ -150,14 +150,14 @@ public class FormatTab extends ViewerTab {
                 }
             });
 
-            controller.getNodeShapeComboBox().disableProperty().bind(graphTab.getNodeSelectionModel().emptyProperty());
+            controller.getNodeShapeComboBox().disableProperty().bind(graphTab2D.getNodeSelectionModel().emptyProperty());
             controller.getNodeShapeComboBox().setOnAction((e) -> {
                 if (!isUpdating) {
                     try {
                         isUpdating = true;
                         FormatItem formatItem = new FormatItem();
                         formatItem.addNodeShape(controller.getNodeShapeComboBox().getValue());
-                        getMainWindow().getUndoRedoManager().doAndAdd(new FormatChangeCommand(formatItem, graphTab.getNodeSelectionModel().getSelectedItems(), graphTab.getNode2view(), null, null));
+                        getMainWindow().getUndoRedoManager().doAndAdd(new FormatChangeCommand(formatItem, graphTab2D.getNodeSelectionModel().getSelectedItems(), graphTab2D.getNode2view(), null, null));
                     } finally {
                         isUpdating = false;
                     }
@@ -167,7 +167,7 @@ public class FormatTab extends ViewerTab {
                 if (!isUpdating) {
                     try {
                         isUpdating = true;
-                        final FormatItem formatItem = FormatItem.createFromSelection(graphTab.getNodeSelectionModel().getSelectedItems(), graphTab.getNode2view(), null, null);
+                        final FormatItem formatItem = FormatItem.createFromSelection(graphTab2D.getNodeSelectionModel().getSelectedItems(), graphTab2D.getNode2view(), null, null);
                         if (formatItem.getNodeShape() != null)
                             controller.getNodeShapeComboBox().setValue(formatItem.getNodeShape());
                     } finally {
@@ -177,7 +177,7 @@ public class FormatTab extends ViewerTab {
             });
 
             controller.getNodeWidthComboBox().setConverter(new IntegerStringConverter());
-            controller.getNodeWidthComboBox().disableProperty().bind(graphTab.getNodeSelectionModel().emptyProperty());
+            controller.getNodeWidthComboBox().disableProperty().bind(graphTab2D.getNodeSelectionModel().emptyProperty());
             controller.getNodeWidthComboBox().valueProperty().addListener((c, o, n) -> {
                 if (!isUpdating) {
                     try {
@@ -186,7 +186,7 @@ public class FormatTab extends ViewerTab {
                         FormatItem formatItem = new FormatItem();
                         formatItem.addNodeSize(n, n);
                         controller.getNodeHeightComboBox().setValue(n);
-                        getMainWindow().getUndoRedoManager().doAndAdd(new FormatChangeCommand(formatItem, graphTab.getNodeSelectionModel().getSelectedItems(), graphTab.getNode2view(), null, null));
+                        getMainWindow().getUndoRedoManager().doAndAdd(new FormatChangeCommand(formatItem, graphTab2D.getNodeSelectionModel().getSelectedItems(), graphTab2D.getNode2view(), null, null));
                     } finally {
                         isUpdating = false;
                     }
@@ -196,7 +196,7 @@ public class FormatTab extends ViewerTab {
                 if (!isUpdating) {
                     try {
                         isUpdating = true;
-                        final FormatItem formatItem = FormatItem.createFromSelection(graphTab.getNodeSelectionModel().getSelectedItems(), graphTab.getNode2view(), null, null);
+                        final FormatItem formatItem = FormatItem.createFromSelection(graphTab2D.getNodeSelectionModel().getSelectedItems(), graphTab2D.getNode2view(), null, null);
                         if (formatItem.getNodeWidth() != null) {
                             controller.getNodeWidthComboBox().setValue(formatItem.getNodeWidth());
                         }
@@ -207,14 +207,14 @@ public class FormatTab extends ViewerTab {
             });
 
             controller.getNodeHeightComboBox().setConverter(new IntegerStringConverter());
-            controller.getNodeHeightComboBox().disableProperty().bind(graphTab.getNodeSelectionModel().emptyProperty());
+            controller.getNodeHeightComboBox().disableProperty().bind(graphTab2D.getNodeSelectionModel().emptyProperty());
             controller.getNodeHeightComboBox().valueProperty().addListener((c, o, n) -> {
                 if (!isUpdating) {
                     try {
                         isUpdating = true;
                         FormatItem formatItem = new FormatItem();
                         formatItem.addNodeSize(null, n);
-                        getMainWindow().getUndoRedoManager().doAndAdd(new FormatChangeCommand(formatItem, graphTab.getNodeSelectionModel().getSelectedItems(), graphTab.getNode2view(), null, null));
+                        getMainWindow().getUndoRedoManager().doAndAdd(new FormatChangeCommand(formatItem, graphTab2D.getNodeSelectionModel().getSelectedItems(), graphTab2D.getNode2view(), null, null));
                     } finally {
                         isUpdating = false;
                     }
@@ -224,7 +224,7 @@ public class FormatTab extends ViewerTab {
                 if (!isUpdating) {
                     try {
                         isUpdating = true;
-                        final FormatItem formatItem = FormatItem.createFromSelection(graphTab.getNodeSelectionModel().getSelectedItems(), graphTab.getNode2view(), null, null);
+                        final FormatItem formatItem = FormatItem.createFromSelection(graphTab2D.getNodeSelectionModel().getSelectedItems(), graphTab2D.getNode2view(), null, null);
                         if (formatItem.getNodeHeight() != null)
                             controller.getNodeHeightComboBox().setValue(formatItem.getNodeHeight());
                     } finally {
@@ -233,14 +233,14 @@ public class FormatTab extends ViewerTab {
                 }
             });
 
-            controller.getNodeColorPicker().disableProperty().bind(graphTab.getNodeSelectionModel().emptyProperty());
+            controller.getNodeColorPicker().disableProperty().bind(graphTab2D.getNodeSelectionModel().emptyProperty());
             controller.getNodeColorPicker().setOnAction((e) -> {
                 if (!isUpdating) {
                     try {
                         isUpdating = true;
                         FormatItem formatItem = new FormatItem();
                         formatItem.addNodeColor(controller.getNodeColorPicker().getValue());
-                        getMainWindow().getUndoRedoManager().doAndAdd(new FormatChangeCommand(formatItem, graphTab.getNodeSelectionModel().getSelectedItems(), graphTab.getNode2view(), null, null));
+                        getMainWindow().getUndoRedoManager().doAndAdd(new FormatChangeCommand(formatItem, graphTab2D.getNodeSelectionModel().getSelectedItems(), graphTab2D.getNode2view(), null, null));
                     } finally {
                         isUpdating = false;
                     }
@@ -250,7 +250,7 @@ public class FormatTab extends ViewerTab {
                 if (!isUpdating) {
                     try {
                         isUpdating = true;
-                        final FormatItem formatItem = FormatItem.createFromSelection(graphTab.getNodeSelectionModel().getSelectedItems(), graphTab.getNode2view(),
+                        final FormatItem formatItem = FormatItem.createFromSelection(graphTab2D.getNodeSelectionModel().getSelectedItems(), graphTab2D.getNode2view(),
                                 null, null);
                         if (formatItem.getNodeColor() != null)
                             controller.getNodeColorPicker().setValue(formatItem.getNodeColor());
@@ -261,14 +261,14 @@ public class FormatTab extends ViewerTab {
             });
 
             controller.getEdgeWidthComboBox().setConverter(new IntegerStringConverter());
-            controller.getEdgeWidthComboBox().disableProperty().bind(graphTab.getEdgeSelectionModel().emptyProperty());
+            controller.getEdgeWidthComboBox().disableProperty().bind(graphTab2D.getEdgeSelectionModel().emptyProperty());
             controller.getEdgeWidthComboBox().valueProperty().addListener((c, o, n) -> {
                 if (!isUpdating) {
                     try {
                         isUpdating = true;
                         FormatItem formatItem = new FormatItem();
                         formatItem.addEdgeWidth(n);
-                        getMainWindow().getUndoRedoManager().doAndAdd(new FormatChangeCommand(formatItem, null, null, graphTab.getEdgeSelectionModel().getSelectedItems(), graphTab.getEdge2view()));
+                        getMainWindow().getUndoRedoManager().doAndAdd(new FormatChangeCommand(formatItem, null, null, graphTab2D.getEdgeSelectionModel().getSelectedItems(), graphTab2D.getEdge2view()));
                     } finally {
                         isUpdating = false;
                     }
@@ -278,7 +278,7 @@ public class FormatTab extends ViewerTab {
                 if (!isUpdating) {
                     try {
                         isUpdating = true;
-                        final FormatItem formatItem = FormatItem.createFromSelection(null, null, graphTab.getEdgeSelectionModel().getSelectedItems(), graphTab.getEdge2view());
+                        final FormatItem formatItem = FormatItem.createFromSelection(null, null, graphTab2D.getEdgeSelectionModel().getSelectedItems(), graphTab2D.getEdge2view());
                         if (formatItem.getEdgeWidth() != null)
                             controller.getEdgeWidthComboBox().setValue(formatItem.getEdgeWidth());
                     } finally {
@@ -287,14 +287,14 @@ public class FormatTab extends ViewerTab {
                 }
             });
 
-            controller.getEdgeColorPicker().disableProperty().bind(graphTab.getEdgeSelectionModel().emptyProperty());
+            controller.getEdgeColorPicker().disableProperty().bind(graphTab2D.getEdgeSelectionModel().emptyProperty());
             controller.getEdgeColorPicker().setOnAction((e) -> {
                 if (!isUpdating) {
                     try {
                         isUpdating = true;
                         FormatItem formatItem = new FormatItem();
                         formatItem.addEdgeColor(controller.getEdgeColorPicker().getValue());
-                        getMainWindow().getUndoRedoManager().doAndAdd(new FormatChangeCommand(formatItem, null, null, graphTab.getEdgeSelectionModel().getSelectedItems(), graphTab.getEdge2view()));
+                        getMainWindow().getUndoRedoManager().doAndAdd(new FormatChangeCommand(formatItem, null, null, graphTab2D.getEdgeSelectionModel().getSelectedItems(), graphTab2D.getEdge2view()));
                     } finally {
                         isUpdating = false;
                     }
@@ -304,7 +304,7 @@ public class FormatTab extends ViewerTab {
                 if (!isUpdating) {
                     try {
                         isUpdating = true;
-                        final FormatItem formatItem = FormatItem.createFromSelection(null, null, graphTab.getEdgeSelectionModel().getSelectedItems(), graphTab.getEdge2view());
+                        final FormatItem formatItem = FormatItem.createFromSelection(null, null, graphTab2D.getEdgeSelectionModel().getSelectedItems(), graphTab2D.getEdge2view());
                         if (formatItem.getEdgeColor() != null)
                             controller.getEdgeColorPicker().setValue(formatItem.getEdgeColor());
                     } finally {
@@ -313,7 +313,7 @@ public class FormatTab extends ViewerTab {
                 }
             });
         } else {
-            graphTab = null;
+            graphTab2D = null;
 
             if (labelFontListener != null) {
                 controller.getFontComboBox().fontValueProperty().removeListener(labelFontListener);

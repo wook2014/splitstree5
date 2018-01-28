@@ -124,15 +124,15 @@ public class NodeLabelLayouter {
      * @param node2view
      * @param edge2view
      */
-    public static void radialLayout(boolean sparseLabels, PhyloGraph phyloGraph, NodeArray<ANodeView> node2view, EdgeArray<AEdgeView> edge2view) {
+    public static void radialLayout(boolean sparseLabels, PhyloGraph phyloGraph, NodeArray<NodeViewBase> node2view, EdgeArray<EdgeViewBase> edge2view) {
         final ArrayList<BoundingBox> shapeBoundsList = new ArrayList<>();
 
         for (Node v : phyloGraph.nodes()) {
-            final ANodeView nv = node2view.getValue(v);
+            final NodeView2D nv = (NodeView2D) node2view.getValue(v);
             if (phyloGraph.getLabel(v) != null) {
                 final javafx.scene.Node shape = nv.getShape();
                 if (shape != null)
-                    shapeBoundsList.add(new BoundingBox(shape.getLayoutX() - 0.5 * shape.getBoundsInLocal().getWidth(), shape.getLayoutY() - 0.5 * shape.getBoundsInLocal().getHeight(), shape.getLayoutBounds().getWidth(), shape.getLayoutBounds().getHeight()));
+                    shapeBoundsList.add(new BoundingBox(shape.getTranslateX() - 0.5 * shape.getBoundsInLocal().getWidth(), shape.getTranslateY() - 0.5 * shape.getBoundsInLocal().getHeight(), shape.getLayoutBounds().getWidth(), shape.getLayoutBounds().getHeight()));
             }
         }
 
@@ -140,23 +140,23 @@ public class NodeLabelLayouter {
 
         for (Node v : phyloGraph.nodes()) {
             if (v.getDegree() > 0) {
-                final ANodeView nv = node2view.getValue(v);
+                final NodeView2D nv = (NodeView2D) node2view.getValue(v);
                 final javafx.scene.Node shape = nv.getShape();
                 final Bounds shapeBounds;
                 if (shape != null)
-                    shapeBounds = new BoundingBox(shape.getLayoutX() - 0.5 * shape.getBoundsInLocal().getWidth(), shape.getLayoutY() - 0.5 * shape.getBoundsInLocal().getHeight(), shape.getBoundsInLocal().getWidth(), shape.getBoundsInLocal().getHeight());
+                    shapeBounds = new BoundingBox(shape.getTranslateX() - 0.5 * shape.getBoundsInLocal().getWidth(), shape.getTranslateY() - 0.5 * shape.getBoundsInLocal().getHeight(), shape.getBoundsInLocal().getWidth(), shape.getBoundsInLocal().getHeight());
                 else
                     shapeBounds = new BoundingBox(nv.getLocation().getX() - 1, nv.getLocation().getY() - 1, 2, 2);
 
                 final double angle;
                 if (v.getDegree() == 1) {
                     Edge e = v.getFirstAdjacentEdge();
-                    AEdgeView ev = edge2view.getValue(e);
+                    EdgeView2D ev = (EdgeView2D) edge2view.getValue(e);
                     angle = GeometryUtils.computeAngle(nv.getLocation().subtract(ev.getReferencePoint()));
                 } else {
                     final ArrayList<Integer> array = new ArrayList<>(v.getDegree());
                     for (Edge e : v.adjacentEdges()) {
-                        final AEdgeView ev = edge2view.getValue(e);
+                        EdgeView2D ev = (EdgeView2D) edge2view.getValue(e);
                         final double alpha = GeometryUtils.modulo360(GeometryUtils.computeAngle(ev.getReferencePoint().subtract(nv.getLocation())));
                         array.add((int) Math.round(alpha));
                     }
@@ -231,8 +231,8 @@ public class NodeLabelLayouter {
                     }
                     if (nv.getLabel().isVisible())
                         labelBoundsList.add(bbox);
-                    label.setLayoutX(bbox.getMinX());
-                    label.setLayoutY(bbox.getMinY());
+                    label.setTranslateX(bbox.getMinX());
+                    label.setTranslateY(bbox.getMinY());
                 }
             }
         }
@@ -245,43 +245,43 @@ public class NodeLabelLayouter {
      * @param node2view
      * @param edge2view
      */
-    public static void leftToRightLayout(boolean sparseLabels, PhyloGraph tree, Node root, NodeArray<ANodeView> node2view, EdgeArray<AEdgeView> edge2view) {
+    public static void leftToRightLayout(boolean sparseLabels, PhyloGraph tree, Node root, NodeArray<NodeViewBase> node2view, EdgeArray<EdgeViewBase> edge2view) {
         final ArrayList<BoundingBox> labelBoundsList = new ArrayList<>();
 
         for (Node v : tree.nodes()) {
-            final ANodeView nv = node2view.getValue(v);
+            final NodeView2D nv = (NodeView2D) node2view.getValue(v);
             if (nv.getLabel() != null) {
                 nv.getLabel().setVisible(true);
                 final Label label = (Label) nv.getLabel();
                 final Point2D reference;
                 if (nv.getShape() != null) {
                     final javafx.scene.Node shape = nv.getShape();
-                    reference = new Point2D(shape.getLayoutX() + shape.getLayoutBounds().getWidth(),
-                            shape.getLayoutY() - 0.5 * shape.getLayoutBounds().getHeight());
+                    reference = new Point2D(shape.getTranslateX() + shape.getLayoutBounds().getWidth(),
+                            shape.getTranslateY() - 0.5 * shape.getLayoutBounds().getHeight());
                 } else
                     reference = nv.getLocation();
 
                 if (v.isLeaf()) {
-                    label.setLayoutX(reference.getX() + 5);
-                    label.setLayoutY(reference.getY() - 0.5 * label.getHeight());
+                    label.setTranslateX(reference.getX() + 5);
+                    label.setTranslateY(reference.getY() - 0.5 * label.getHeight());
                 } else if (v == root) {
-                    label.setLayoutX(reference.getX() - label.getWidth() - 5);
-                    label.setLayoutY(reference.getY() - 0.5 * label.getHeight());
+                    label.setTranslateX(reference.getX() - label.getWidth() - 5);
+                    label.setTranslateY(reference.getY() - 0.5 * label.getHeight());
                 } else // internal node
                 {
-                    if (node2view.getValue(v.getFirstInEdge().getSource()).getLocation().getY() > nv.getLocation().getY()) {
+                    if (((NodeView2D) node2view.getValue(v.getFirstInEdge().getSource())).getLocation().getY() > nv.getLocation().getY()) {
                         // parent lies above
-                        label.setLayoutX(reference.getX() - label.getWidth() - 5);
-                        label.setLayoutY(reference.getY() - 0.5 * label.getHeight() - 4);
+                        label.setTranslateX(reference.getX() - label.getWidth() - 5);
+                        label.setTranslateY(reference.getY() - 0.5 * label.getHeight() - 4);
                     } else // below
                     {
-                        label.setLayoutX(reference.getX() - label.getWidth() - 5);
-                        label.setLayoutY(reference.getY() + 4);
+                        label.setTranslateX(reference.getX() - label.getWidth() - 5);
+                        label.setTranslateY(reference.getY() + 4);
                     }
                 }
 
                 if (sparseLabels) {
-                    final BoundingBox bbox = new BoundingBox(label.getLayoutX(), label.getLayoutY(), label.getLayoutBounds().getWidth(), label.getLayoutBounds().getHeight());
+                    final BoundingBox bbox = new BoundingBox(label.getTranslateX(), label.getTranslateY(), label.getLayoutBounds().getWidth(), label.getLayoutBounds().getHeight());
                     for (BoundingBox other : labelBoundsList) {
                         if (bbox.intersects(other)) {
                             label.setVisible(false);

@@ -114,6 +114,11 @@
                         <KeyCodeCombination alt="UP" code="C" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
+                <MenuItem fx:id="copyImageMenuItem" text="Copy Image">
+                    <accelerator>
+                        <KeyCodeCombination alt="UP" code="C" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
+                    </accelerator>
+                </MenuItem>
                 <MenuItem fx:id="pasteMenuItem" text="Paste">
                     <accelerator>
                         <KeyCodeCombination alt="UP" code="V" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>

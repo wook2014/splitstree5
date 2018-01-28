@@ -17,34 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.gui.graphtab.commands;
+package splitstree5.gui.graphtab.base;
 
-import splitstree5.gui.graphtab.base.GraphTab2D;
-import splitstree5.undo.UndoableRedoableCommand;
-
-/**
- * rotate graph command
- */
-public class ZoomCommand extends UndoableRedoableCommand {
-    private final double zoomFactorX;
-    private final double zoomFactorY;
-
-    private final GraphTab2D graphTab;
-
-    public ZoomCommand(double zoomFactorX, double zoomFactorY, GraphTab2D graphTab) {
-        super("Zoom");
-        this.zoomFactorX = zoomFactorX;
-        this.zoomFactorY = zoomFactorY;
-        this.graphTab = graphTab;
-    }
-
-    @Override
-    public void undo() {
-        graphTab.scale(1 / zoomFactorX, 1 / zoomFactorY);
-    }
-
-    @Override
-    public void redo() {
-        graphTab.scale(zoomFactorX, zoomFactorY);
-    }
+public class Graph2DTab extends GraphTab2D {
 }

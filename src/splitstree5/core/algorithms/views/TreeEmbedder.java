@@ -79,7 +79,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
     private final Property<GraphLayout> optionLayout = new SimpleObjectProperty<>(GraphLayout.LeftToRight);
     private final Property<EdgeLengths> optionEdgeLengths = new SimpleObjectProperty<>(EdgeLengths.Weights);
     private final Property<ParentPlacement> optionParentPlacement = new SimpleObjectProperty<>(ParentPlacement.ChildrenAverage);
-    private final Property<AEdgeView.EdgeShape> optionEdgeShape = new SimpleObjectProperty<>(AEdgeView.EdgeShape.Angular);
+    private final Property<EdgeView2D.EdgeShape> optionEdgeShape = new SimpleObjectProperty<>(EdgeView2D.EdgeShape.Angular);
 
     private final IntegerProperty optionCubicCurveParentControl = new SimpleIntegerProperty(20);
     private final IntegerProperty optionCubicCurveChildControl = new SimpleIntegerProperty(50);
@@ -144,7 +144,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                         final EdgeFloatArray edge2Angle = new EdgeFloatArray(tree); // angle of edge
                         setAnglesForCircularLayoutRec(root, null, 0, tree.getNumberOfLeaves(), edge2Angle);
 
-                        if (getOptionEdgeShape() == AEdgeView.EdgeShape.Straight)
+                        if (getOptionEdgeShape() == EdgeView2D.EdgeShape.Straight)
                             computeNodeLocationsForRadialRec(root, new Point2D(0, 0), edgeLengths, edge2Angle, node2point);
                         else
                             computeNodeLocationsForCircular(root, edgeLengths, edge2Angle, node2point);
@@ -155,7 +155,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                     }
                     default:
                     case LeftToRight: {
-                        if (getOptionEdgeShape() == AEdgeView.EdgeShape.Straight) {
+                        if (getOptionEdgeShape() == EdgeView2D.EdgeShape.Straight) {
                             setOptionEdgeLengths(EdgeLengths.Cladogram);
                             computeEmbeddingForTriangularLayoutRec(root, null, 0, 0, edgeLengths, node2point);
                             scaleToFitTarget(getOptionLayout(), view.getTargetDimensions(), tree, node2point);
@@ -196,7 +196,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                     } else
                         text = null;
 
-                    final ANodeView nodeView = view.createNodeView(v, node2point.getValue(v), text);
+                    final NodeView2D nodeView = view.createNodeView(v, node2point.getValue(v), text);
                     if (text != null && text.length() > 0 && view.getNodeLabel2Style().containsKey(text)) {
                         nodeView.setStyling(view.getNodeLabel2Style().get(text));
                     }
@@ -207,7 +207,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                 }
                 for (Edge e : tree.edges()) {
                     final EdgeControlPoints controlPoints = edge2controlPoints.getValue(e);
-                    final AEdgeView edgeView = view.createEdgeView(e, getOptionLayout(), getOptionEdgeShape(), tree.getWeight(e),
+                    final EdgeView2D edgeView = view.createEdgeView(e, getOptionLayout(), getOptionEdgeShape(), tree.getWeight(e),
                             node2point.getValue(e.getSource()), controlPoints.getControl1(), controlPoints.getMid(),
                             controlPoints.getControl2(), controlPoints.getSupport(), node2point.getValue(e.getTarget()));
                     view.getEdge2view().put(e, edgeView);
@@ -570,15 +570,15 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
         this.optionParentPlacement.setValue(parentPlacementProperty);
     }
 
-    public AEdgeView.EdgeShape getOptionEdgeShape() {
+    public EdgeView2D.EdgeShape getOptionEdgeShape() {
         return optionEdgeShape.getValue();
     }
 
-    public Property<AEdgeView.EdgeShape> optionEdgeShapeProperty() {
+    public Property<EdgeView2D.EdgeShape> optionEdgeShapeProperty() {
         return optionEdgeShape;
     }
 
-    public void setOptionEdgeShape(AEdgeView.EdgeShape edgeShapeProperty) {
+    public void setOptionEdgeShape(EdgeView2D.EdgeShape edgeShapeProperty) {
         this.optionEdgeShape.setValue(edgeShapeProperty);
     }
 

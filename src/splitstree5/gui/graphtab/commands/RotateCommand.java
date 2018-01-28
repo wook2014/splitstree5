@@ -19,7 +19,7 @@
 
 package splitstree5.gui.graphtab.commands;
 
-import splitstree5.gui.graphtab.base.GraphTab;
+import splitstree5.gui.graphtab.base.GraphTab2D;
 import splitstree5.undo.UndoableRedoableCommand;
 
 /**
@@ -29,21 +29,21 @@ import splitstree5.undo.UndoableRedoableCommand;
 public class RotateCommand extends UndoableRedoableCommand {
     private final double angle;
 
-    private final GraphTab graphTab;
+    private final GraphTab2D graphTab2D;
 
-    public RotateCommand(double angle, GraphTab graphTab) {
+    public RotateCommand(double angle, GraphTab2D graphTab2D) {
         super("Rotate");
         this.angle = angle;
-        this.graphTab = graphTab;
+        this.graphTab2D = graphTab2D;
     }
 
     @Override
     public void undo() {
-        graphTab.rotate(-angle);
+        graphTab2D.rotate(-angle);
     }
 
     @Override
     public void redo() {
-        graphTab.rotate(angle);
+        graphTab2D.rotate(angle);
     }
 }

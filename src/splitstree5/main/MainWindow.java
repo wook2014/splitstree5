@@ -106,10 +106,15 @@ public class MainWindow {
             final ExtendedFXMLLoader<MenuController> extendedFXMLLoader = new ExtendedFXMLLoader<>(MenuController.class);
             menuController = extendedFXMLLoader.getController();
         }
+
         {
             final ExtendedFXMLLoader<MainToolBarController> extendedFXMLLoader = new ExtendedFXMLLoader<>(MainToolBarController.class);
             toolBarController = extendedFXMLLoader.getController();
             mainWindowController.setupOpenCloseLeft(toolBarController.getOpenCloseLeft());
+
+            toolBarController.getOpenButton().setOnAction((e) -> menuController.getOpenMenuItem().fire());
+            toolBarController.getOpenButton().disableProperty().bind(menuController.getOpenMenuItem().disableProperty());
+
             toolBarController.getFindButton().setOnAction((e) -> menuController.getFindMenuItem().fire());
             toolBarController.getFindButton().disableProperty().bind(menuController.getFindMenuItem().disableProperty());
             toolBarController.getPrintButton().setOnAction((e) -> menuController.getPrintMenuitem().fire());

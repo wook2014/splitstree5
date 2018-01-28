@@ -49,7 +49,7 @@ public class Print {
         final PrinterJob job = PrinterJob.createPrinterJob();
         if (job != null) {
             if (job.showPrintDialog(owner)) {
-                System.err.println(job.getJobSettings());
+                //System.err.println(job.getJobSettings());
 
                 final PageLayout pageLayout = (pageLayoutSelected != null ? pageLayoutSelected : job.getJobSettings().getPageLayout());
 

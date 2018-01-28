@@ -17,112 +17,19 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- *  Copyright (C) 2018 Daniel H. Huson
- *
- *  (Some files contain contributions from other authors, who are then mentioned separately.)
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/*
- *  Copyright (C) 2018 Daniel H. Huson
- *
- *  (Some files contain contributions from other authors, who are then mentioned separately.)
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/*
- *  Copyright (C) 2018 Daniel H. Huson
- *
- *  (Some files contain contributions from other authors, who are then mentioned separately.)
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/*
- *  Copyright (C) 2018 Daniel H. Huson
- *
- *  (Some files contain contributions from other authors, who are then mentioned separately.)
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/*
- *  Copyright (C) 2018 Daniel H. Huson
- *
- *  (Some files contain contributions from other authors, who are then mentioned separately.)
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package splitstree5.gui.graphtab.base;
 
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import jloda.graph.Edge;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
+import splitstree5.gui.utils.SelectionEffect;
 
 import java.util.ArrayList;
 
@@ -130,17 +37,14 @@ import java.util.ArrayList;
  * Edge view
  * Daniel Huson, 10.2017
  */
-public class AEdgeView {
+public class EdgeView2D extends EdgeViewBase {
     private static final EventHandler<MouseEvent> mouseEnteredHandler = (x) -> ((Shape) x.getSource()).setStrokeWidth(4 * ((Shape) x.getSource()).getStrokeWidth());
     private static final EventHandler<MouseEvent> mouseExitedHandler = (x) -> ((Shape) x.getSource()).setStrokeWidth(0.25 * ((Shape) x.getSource()).getStrokeWidth());
 
     public enum EdgeShape {Straight, Angular, QuadCurve, CubicCurve}
 
     private Shape shape;
-    private Labeled label;
     private Point2D referencePoint;
-
-    private final Edge e;
 
     /**
      * create an edge view
@@ -151,8 +55,8 @@ public class AEdgeView {
      * @param end
      * @return edge view
      */
-    public AEdgeView(Edge e, Double weight, final Point2D start, final Point2D end) {
-        this.e = e;
+    public EdgeView2D(Edge e, Double weight, final Point2D start, final Point2D end) {
+        super(e);
 
         Shape edgeShape = null;
         if (start != null && end != null) {
@@ -172,8 +76,8 @@ public class AEdgeView {
             Label label = new Label("" + weight);
             label.setFont(ProgramProperties.getDefaultFont());
             final Point2D m = start.add(end).multiply(0.5);
-            label.setLayoutX(m.getX());
-            label.setLayoutY(m.getY());
+            label.setTranslateX(m.getX());
+            label.setTranslateY(m.getY());
             setLabel(label);
         }
         getShape().setOnMouseEntered(mouseEnteredHandler);
@@ -183,8 +87,8 @@ public class AEdgeView {
     /**
      * create a simple edge view
      */
-    public AEdgeView(Edge e, GraphLayout layout, AEdgeView.EdgeShape shape, Double weight, final Point2D start, final Point2D control1, final Point2D mid, final Point2D control2, final Point2D support, final Point2D end) {
-        this.e = e;
+    public EdgeView2D(Edge e, GraphLayout layout, EdgeView2D.EdgeShape shape, Double weight, final Point2D start, final Point2D control1, final Point2D mid, final Point2D control2, final Point2D support, final Point2D end) {
+        super(e);
 
         Shape edgeShape = null;
 
@@ -255,7 +159,7 @@ public class AEdgeView {
             edgeShape.setStrokeLineCap(StrokeLineCap.ROUND);
             edgeShape.setStrokeWidth(1);
             setShape(edgeShape);
-            if (shape == AEdgeView.EdgeShape.Straight)
+            if (shape == EdgeView2D.EdgeShape.Straight)
                 setReferencePoint(start.add(end).multiply(0.5));
             else
                 setReferencePoint(mid);
@@ -267,27 +171,24 @@ public class AEdgeView {
         if (false && weight != null && start != null && end != null) {
             Label label = new Label("" + weight);
             final Point2D m = (mid != null ? mid : start.add(end).multiply(0.5));
-            label.setLayoutX(m.getX());
-            label.setLayoutY(m.getY());
+            label.setTranslateX(m.getX());
+            label.setTranslateY(m.getY());
             setLabel(label);
         }
     }
 
     public void setShape(Shape shape) {
+        if (this.shape != null)
+            shapeGroup.getChildren().remove(this.shape);
         this.shape = shape;
+        if (this.shape != null)
+            shapeGroup.getChildren().add(this.shape);
     }
 
     public Shape getShape() {
         return shape;
     }
 
-    public void setLabel(Labeled label) {
-        this.label = label;
-    }
-
-    public Labeled getLabel() {
-        return label;
-    }
 
     public Point2D getReferencePoint() {
         return referencePoint;
@@ -295,10 +196,6 @@ public class AEdgeView {
 
     public void setReferencePoint(Point2D referencePoint) {
         this.referencePoint = referencePoint;
-    }
-
-    public Edge getEdge() {
-        return e;
     }
 
     /**
@@ -370,9 +267,9 @@ public class AEdgeView {
             }
         }
         if (label != null) {
-            Point2D p = GeometryUtils.rotate(label.getLayoutX(), label.getLayoutY(), angle);
-            label.setLayoutX(p.getX());
-            label.setLayoutY(p.getY());
+            Point2D p = GeometryUtils.rotate(label.getTranslateX(), label.getTranslateY(), angle);
+            label.setTranslateX(p.getX());
+            label.setTranslateY(p.getY());
         }
         referencePoint = GeometryUtils.rotate(referencePoint, angle);
     }
@@ -414,9 +311,66 @@ public class AEdgeView {
                 throw new RuntimeException("scaleCoordinates(): Unsupported edge shape: " + Basic.getShortName(shape.getClass()));
         }
         if (label != null) {
-            label.setLayoutX(label.getLayoutX() * factorX);
-            label.setLayoutY(label.getLayoutY() * factorY);
+            label.setTranslateX(label.getTranslateX() * factorX);
+            label.setTranslateY(label.getTranslateY() * factorY);
         }
         referencePoint = new Point2D(referencePoint.getX() * factorX, referencePoint.getY() * factorY);
+    }
+
+    @Override
+    public void showAsSelected(boolean selected) {
+        if (selected) {
+            if (label != null)
+                label.setEffect(SelectionEffect.getInstance());
+            if (shape != null)
+                shape.setEffect(SelectionEffect.getInstance());
+        } else {
+            if (label != null)
+                label.setEffect(null);
+            if (shape != null)
+                shape.setEffect(null);
+        }
+    }
+
+    @Override
+    public boolean isShownAsSelected() {
+        if (label != null)
+            return label.getEffect() != null;
+        else
+            return shape != null && shape.getEffect() != null;
+    }
+
+    @Override
+    public Color getStroke() {
+        if (shape != null)
+            return (Color) shape.getStroke();
+        else
+            return null;
+    }
+
+    @Override
+    public double getStrokeWidth() {
+        if (shape != null)
+            return shape.getStrokeWidth();
+        else
+            return 1;
+    }
+
+    @Override
+    public void setStroke(Color stroke) {
+        if (shape != null)
+            shape.setStroke(stroke);
+    }
+
+    @Override
+    public void setStrokeWidth(double width) {
+        if (shape != null)
+            shape.setStrokeWidth(width);
+
+    }
+
+    @Override
+    public Node getEdgeShape() {
+        return shape;
     }
 }

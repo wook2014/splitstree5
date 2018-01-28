@@ -24,8 +24,8 @@ import jloda.graph.Edge;
 import jloda.graph.EdgeArray;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;
-import splitstree5.gui.graphtab.base.AEdgeView;
-import splitstree5.gui.graphtab.base.ANodeView;
+import splitstree5.gui.graphtab.base.EdgeViewBase;
+import splitstree5.gui.graphtab.base.NodeViewBase;
 import splitstree5.undo.UndoableRedoableCommand;
 
 import java.util.ArrayList;
@@ -38,9 +38,9 @@ public class FontSizeIncrementCommand extends UndoableRedoableCommand {
     private final double increment;
 
     private final ArrayList<Node> nodes;
-    private final NodeArray<ANodeView> node2view;
+    private final NodeArray<NodeViewBase> node2view;
     private final ArrayList<Edge> edges;
-    private final EdgeArray<AEdgeView> edge2view;
+    private final EdgeArray<EdgeViewBase> edge2view;
 
     /**
      * constructor
@@ -51,7 +51,7 @@ public class FontSizeIncrementCommand extends UndoableRedoableCommand {
      * @param edges
      * @param edge2view
      */
-    public FontSizeIncrementCommand(double increment, Collection<Node> nodes, NodeArray<ANodeView> node2view, Collection<Edge> edges, EdgeArray<AEdgeView> edge2view) {
+    public FontSizeIncrementCommand(double increment, Collection<Node> nodes, NodeArray<NodeViewBase> node2view, Collection<Edge> edges, EdgeArray<EdgeViewBase> edge2view) {
         super(increment > 0 ? "Font Increase" : "Font Decrease");
         this.increment = increment;
 

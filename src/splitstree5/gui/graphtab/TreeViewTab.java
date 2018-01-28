@@ -26,10 +26,10 @@ import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
 import jloda.util.ResourceManager;
-import splitstree5.gui.graphtab.base.AEdgeView;
-import splitstree5.gui.graphtab.base.ANodeView;
+import splitstree5.gui.graphtab.base.EdgeView2D;
 import splitstree5.gui.graphtab.base.GraphLayout;
-import splitstree5.gui.graphtab.base.GraphTab;
+import splitstree5.gui.graphtab.base.GraphTab2D;
+import splitstree5.gui.graphtab.base.NodeView2D;
 import splitstree5.menu.MenuController;
 
 import java.util.HashSet;
@@ -40,7 +40,7 @@ import java.util.Stack;
  * The tree viewer tab
  * Daniel Huson, 11.2017
  */
-public class TreeViewTab extends GraphTab<PhyloTree> {
+public class TreeViewTab extends GraphTab2D<PhyloTree> {
     /**
      * constructor
      */
@@ -67,8 +67,8 @@ public class TreeViewTab extends GraphTab<PhyloTree> {
      * @param text
      * @return
      */
-    public ANodeView createNodeView(Node v, Point2D location, String text) {
-        final ANodeView nodeView = new ANodeView(v, location, text);
+    public NodeView2D createNodeView(Node v, Point2D location, String text) {
+        final NodeView2D nodeView = new NodeView2D(v, location, text);
         if (nodeView.getShapeGroup() != null) {
             nodeView.getShapeGroup().setOnMouseClicked((x) -> {
                 edgeSelectionModel.clearSelection();
@@ -117,10 +117,10 @@ public class TreeViewTab extends GraphTab<PhyloTree> {
      * @param end
      * @return edge view
      */
-    public AEdgeView createEdgeView(Edge e, GraphLayout layout, AEdgeView.EdgeShape shape, Double weight,
-                                    final Point2D start, final Point2D control1, final Point2D mid, final Point2D control2, final Point2D support, final Point2D end) {
+    public EdgeView2D createEdgeView(Edge e, GraphLayout layout, EdgeView2D.EdgeShape shape, Double weight,
+                                     final Point2D start, final Point2D control1, final Point2D mid, final Point2D control2, final Point2D support, final Point2D end) {
 
-        final AEdgeView edgeView = new AEdgeView(e, layout, shape, weight, start, control1, mid, control2, support, end);
+        final EdgeView2D edgeView = new EdgeView2D(e, layout, shape, weight, start, control1, mid, control2, support, end);
 
         if (edgeView.getShape() != null) {
             edgeView.getShape().setOnMouseClicked((x) -> {

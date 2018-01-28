@@ -20,7 +20,7 @@ package splitstree5.gui.graphtab.commands;
 
 import javafx.scene.control.Label;
 import jloda.util.ProgramProperties;
-import splitstree5.gui.graphtab.base.ANodeView;
+import splitstree5.gui.graphtab.base.NodeViewBase;
 import splitstree5.undo.UndoableRedoableCommand;
 
 /**
@@ -30,9 +30,9 @@ import splitstree5.undo.UndoableRedoableCommand;
 public class ChangeNodeLabelCommand extends UndoableRedoableCommand {
     private final String oldText;
     private final String newText;
-    private final ANodeView nv;
+    private final NodeViewBase nv;
 
-    public ChangeNodeLabelCommand(ANodeView nv, String newText) {
+    public ChangeNodeLabelCommand(NodeViewBase nv, String newText) {
         super("Change Label");
         this.nv = nv;
         this.oldText = (nv.getLabel() != null ? nv.getLabel().getText() : null);

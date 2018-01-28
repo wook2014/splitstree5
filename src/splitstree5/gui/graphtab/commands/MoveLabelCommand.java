@@ -21,7 +21,7 @@ package splitstree5.gui.graphtab.commands;
 
 import javafx.geometry.Point2D;
 import javafx.scene.control.Labeled;
-import splitstree5.gui.graphtab.base.ANodeView;
+import splitstree5.gui.graphtab.base.NodeView2D;
 import splitstree5.undo.UndoableRedoableCommand;
 
 /**
@@ -31,9 +31,9 @@ public class MoveLabelCommand extends UndoableRedoableCommand {
     private final Labeled label;
     private final Point2D oldLocation;
     private final Point2D newLocation;
-    private final ANodeView nv;
+    private final NodeView2D nv;
 
-    public MoveLabelCommand(Labeled label, Point2D oldLocation, Point2D newLocation, ANodeView nv) {
+    public MoveLabelCommand(Labeled label, Point2D oldLocation, Point2D newLocation, NodeView2D nv) {
         super("Move Label");
         this.label = label;
         this.oldLocation = oldLocation;

@@ -28,8 +28,10 @@ import splitstree5.core.Document;
 import splitstree5.core.algorithms.interfaces.IFromSplitsNetworkView;
 import splitstree5.core.algorithms.interfaces.IToSplitsNetworkView;
 import splitstree5.gui.IHasTab;
+import splitstree5.gui.ViewerTab;
 import splitstree5.gui.graphtab.AlgorithmBreadCrumbsToolBar;
-import splitstree5.gui.graphtab.SplitsViewTab;
+import splitstree5.gui.graphtab.ISplitsViewTab;
+import splitstree5.gui.graphtab.SplitsView3DTab;
 import splitstree5.gui.graphtab.base.GraphLayout;
 
 import java.util.HashSet;
@@ -41,7 +43,7 @@ import java.util.Set;
  */
 public class SplitsNetworkViewBlock extends ADataBlock implements IHasTab {
     private final ASelectionModel<Integer> splitsSelectionModel = new ASelectionModel<>();
-    private final SplitsViewTab splitsViewTab;
+    private final ISplitsViewTab splitsViewTab;
 
     /**
      * constructor
@@ -49,7 +51,9 @@ public class SplitsNetworkViewBlock extends ADataBlock implements IHasTab {
     public SplitsNetworkViewBlock() {
         super();
         setTitle("Split Network Viewer");
-        splitsViewTab = new SplitsViewTab();
+        //splitsViewTab = new SplitsViewTab();
+
+        splitsViewTab = new SplitsView3DTab();
 
         splitsViewTab.setLayout(GraphLayout.Radial);
 
@@ -76,7 +80,7 @@ public class SplitsNetworkViewBlock extends ADataBlock implements IHasTab {
             super.setDocument(document);
             if (document.getMainWindow() != null) {
                 Platform.runLater(() -> { // setup tab
-                    document.getMainWindow().add(splitsViewTab);
+                    document.getMainWindow().add(splitsViewTab.getTab());
                 });
             }
         }
@@ -87,9 +91,14 @@ public class SplitsNetworkViewBlock extends ADataBlock implements IHasTab {
         super.setDataNode(dataNode);
     }
 
-    public SplitsViewTab getTab() {
+    public ViewerTab getTab() {
+        return splitsViewTab.getTab();
+    }
+
+    public ISplitsViewTab getSplitsView() {
         return splitsViewTab;
     }
+
 
     /**
      * show the splits network

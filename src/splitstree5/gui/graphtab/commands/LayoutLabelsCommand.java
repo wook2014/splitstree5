@@ -46,10 +46,10 @@ import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import jloda.phylo.PhyloGraph;
 import jloda.util.Triplet;
-import splitstree5.gui.graphtab.base.AEdgeView;
-import splitstree5.gui.graphtab.base.ANodeView;
+import splitstree5.gui.graphtab.base.EdgeViewBase;
 import splitstree5.gui.graphtab.base.GraphLayout;
 import splitstree5.gui.graphtab.base.NodeLabelLayouter;
+import splitstree5.gui.graphtab.base.NodeViewBase;
 import splitstree5.undo.UndoableRedoableCommand;
 
 import java.util.ArrayList;
@@ -63,13 +63,13 @@ public class LayoutLabelsCommand extends UndoableRedoableCommand {
     private final boolean sparseLabels;
     private final PhyloGraph phyloGraph;
     private final Node root;
-    private final NodeArray<ANodeView> node2view;
-    private final EdgeArray<AEdgeView> edge2view;
+    private final NodeArray<NodeViewBase> node2view;
+    private final EdgeArray<EdgeViewBase> edge2view;
 
     private final ArrayList<Triplet<Node, Point2D, Boolean>> oldNodeLabels = new ArrayList<>();
     private final ArrayList<Triplet<Edge, Point2D, Boolean>> oldEdgeLabels = new ArrayList<>();
 
-    public LayoutLabelsCommand(GraphLayout graphLayout, boolean sparseLabels, PhyloGraph phyloGraph, Node root, NodeArray<ANodeView> node2view, EdgeArray<AEdgeView> edge2view) {
+    public LayoutLabelsCommand(GraphLayout graphLayout, boolean sparseLabels, PhyloGraph phyloGraph, Node root, NodeArray<NodeViewBase> node2view, EdgeArray<EdgeViewBase> edge2view) {
         super("Label Layout");
         this.graphLayout = graphLayout;
         this.sparseLabels = sparseLabels;
@@ -79,14 +79,14 @@ public class LayoutLabelsCommand extends UndoableRedoableCommand {
         this.edge2view = edge2view;
 
         for (Node v : phyloGraph.nodes()) {
-            final ANodeView nv = node2view.get(v);
+            final NodeViewBase nv = node2view.get(v);
             if (nv.getLabel() != null) {
                 oldNodeLabels.add(new Triplet<>(v, new Point2D(nv.getLabel().getLayoutX(), nv.getLabel().getLayoutY()), nv.getLabel().isVisible()));
             }
         }
 
         for (Edge e : phyloGraph.edges()) {
-            final AEdgeView ev = edge2view.get(e);
+            final EdgeViewBase ev = edge2view.get(e);
             if (ev.getLabel() != null) {
                 oldEdgeLabels.add(new Triplet<>(e, new Point2D(ev.getLabel().getLayoutX(), ev.getLabel().getLayoutY()), ev.getLabel().isVisible()));
             }

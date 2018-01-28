@@ -115,6 +115,9 @@ public class MenuController {
     private MenuItem copyMenuItem;
 
     @FXML
+    private MenuItem copyImageMenuItem;
+
+    @FXML
     private MenuItem pasteMenuItem;
 
     @FXML
@@ -300,6 +303,11 @@ public class MenuController {
     public MenuItem getCopyMenuItem() {
         return copyMenuItem;
     }
+
+    public MenuItem getCopyImageMenuItem() {
+        return copyImageMenuItem;
+    }
+
 
     public MenuItem getDuplicateMenuItem() {
         return duplicateMenuItem;

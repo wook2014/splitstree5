@@ -24,8 +24,8 @@ import jloda.graph.EdgeArray;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import jloda.util.Pair;
-import splitstree5.gui.graphtab.base.AEdgeView;
-import splitstree5.gui.graphtab.base.ANodeView;
+import splitstree5.gui.graphtab.base.EdgeViewBase;
+import splitstree5.gui.graphtab.base.NodeViewBase;
 import splitstree5.undo.UndoableRedoableCommand;
 
 import java.util.ArrayList;
@@ -38,11 +38,11 @@ import java.util.Collections;
 public class FormatChangeCommand extends UndoableRedoableCommand {
     private final FormatItem formatItem;
     private final ArrayList<Node> nodes;
-    private final NodeArray<ANodeView> node2view;
+    private final NodeArray<NodeViewBase> node2view;
     private final ArrayList<Pair<Node, FormatItem>> oldNodeFormats;
 
     private final ArrayList<Edge> edges;
-    private final EdgeArray<AEdgeView> edge2view;
+    private final EdgeArray<EdgeViewBase> edge2view;
     private final ArrayList<Pair<Edge, FormatItem>> oldEdgeFormats;
 
     /**
@@ -54,7 +54,7 @@ public class FormatChangeCommand extends UndoableRedoableCommand {
      * @param edges
      * @param edge2view
      */
-    public FormatChangeCommand(final FormatItem formatItem, Collection<Node> nodes, NodeArray<ANodeView> node2view, Collection<Edge> edges, EdgeArray<AEdgeView> edge2view) {
+    public FormatChangeCommand(final FormatItem formatItem, Collection<Node> nodes, NodeArray<NodeViewBase> node2view, Collection<Edge> edges, EdgeArray<EdgeViewBase> edge2view) {
         super(formatItem.getName());
 
         this.formatItem = formatItem.clone();

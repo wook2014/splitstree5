@@ -24,6 +24,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
+import javafx.geometry.Point3D;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import jloda.fx.ASelectionModel;
@@ -34,29 +35,34 @@ import jloda.util.ResourceManager;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.gui.ViewerTab;
-import splitstree5.gui.graphtab.base.*;
+import splitstree5.gui.graph3dtab.EdgeView3D;
+import splitstree5.gui.graph3dtab.Graph3DTab;
+import splitstree5.gui.graph3dtab.NodeView3D;
+import splitstree5.gui.graphtab.base.EdgeViewBase;
+import splitstree5.gui.graphtab.base.GeometryUtils;
+import splitstree5.gui.graphtab.base.GraphLayout;
+import splitstree5.gui.graphtab.base.NodeViewBase;
 import splitstree5.menu.MenuController;
 
 import java.util.*;
 
 /**
- * The split network view tab
+ * The split network view tab for 3D viewer
  * Daniel Huson, 11.2017
  */
-public class SplitsViewTab extends GraphTab2D<SplitsGraph> implements ISplitsViewTab {
+public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsViewTab {
     private final ASelectionModel<Integer> splitsSelectionModel = new ASelectionModel<>();
     private boolean inSelection;
+
     /**
      * constructor
      */
-    public SplitsViewTab() {
+    public SplitsView3DTab() {
         super();
         label.setText("Splits Network");
         label.setGraphic(new ImageView(ResourceManager.getIcon("SplitsNetworkView16.gif")));
         setText("");
         setGraphic(label);
-
-        setLayout(GraphLayout.Radial);
 
         splitsSelectionModel.getSelectedItems().addListener((ListChangeListener<Integer>) c -> {
             if (!inSelection) {
@@ -130,43 +136,43 @@ public class SplitsViewTab extends GraphTab2D<SplitsGraph> implements ISplitsVie
     /**
      * create a node view
      */
-    public NodeView2D createNodeView(final Node v, Point2D location, String label) {
-        final NodeView2D nodeView = new NodeView2D(v, location, label);
+    public NodeView3D createNodeView(final Node v, Point2D location, String label) {
+        final NodeView3D nodeView = new NodeView3D(v, new Point3D(location.getX(), location.getY(), 0), label);
 
         nodeView.getShapeGroup().setOnMousePressed((e) -> {
-                mouseX = e.getScreenX();
-                mouseY = e.getScreenY();
-                e.consume();
-            });
+            mouseX = e.getScreenX();
+            mouseY = e.getScreenY();
+            e.consume();
+        });
         nodeView.getShapeGroup().setOnMouseDragged((e) -> {
-                if (!splitsSelectionModel.isEmpty() && nodeSelectionModel.getSelectedItems().contains(nodeView.getNode())) {
-                    final HashSet<Node> selectedNodesSet = new HashSet<>(nodeSelectionModel.getSelectedItems());
-                    final Point2D center = computeAnchorCenter(edgeSelectionModel.getSelectedItems(), selectedNodesSet, (NodeArray) getNode2view());
-                    final Point2D prevPoint = group.localToParent(group.screenToLocal(mouseX, mouseY));
-                    final Point2D newPoint = group.localToParent(group.screenToLocal(e.getScreenX(), e.getScreenY()));
-                    final double angle = GeometryUtils.computeObservedAngle(center, prevPoint, newPoint);
-                    applySplitRotation(angle, edgeSelectionModel.getSelectedItems(), selectedNodesSet, (NodeArray) getNode2view(), (EdgeArray) getEdge2view());
-                }
-                mouseX = e.getScreenX();
-                mouseY = e.getScreenY();
-                e.consume();
-            });
+            if (!splitsSelectionModel.isEmpty() && nodeSelectionModel.getSelectedItems().contains(nodeView.getNode())) {
+                final HashSet<Node> selectedNodesSet = new HashSet<>(nodeSelectionModel.getSelectedItems());
+                final Point3D center = computeAnchorCenter(edgeSelectionModel.getSelectedItems(), selectedNodesSet, getNode2view());
+                final Point2D prevPoint = group.localToParent(group.screenToLocal(mouseX, mouseY));
+                final Point2D newPoint = group.localToParent(group.screenToLocal(e.getScreenX(), e.getScreenY()));
+                final double angle = GeometryUtils.computeObservedAngle(from3to2D(center), prevPoint, newPoint);
+                applySplitRotation(angle, edgeSelectionModel.getSelectedItems(), selectedNodesSet, getNode2view(), getEdge2view());
+            }
+            mouseX = e.getScreenX();
+            mouseY = e.getScreenY();
+            e.consume();
+        });
         nodeView.getShapeGroup().setOnMouseClicked((x) -> {
-                splitsSelectionModel.clearSelection();
-                edgeSelectionModel.clearSelection();
-                if (!x.isShiftDown())
-                    nodeSelectionModel.clearSelection();
-                if (nodeSelectionModel.getSelectedItems().contains(v))
-                    nodeSelectionModel.clearSelection(v);
-                else
-                    nodeSelectionModel.select(v);
-                if (x.getClickCount() >= 2) {
-                    ArrayList<Edge> edges = getAdjacentEdgesSortedByDecreasingWeight(v);
-                    int index = Math.min(edges.size() - 1, x.getClickCount() - 2);
-                    selectBySplit(edges.get(index));
-                }
-                x.consume();
-            });
+            splitsSelectionModel.clearSelection();
+            edgeSelectionModel.clearSelection();
+            if (!x.isShiftDown())
+                nodeSelectionModel.clearSelection();
+            if (nodeSelectionModel.getSelectedItems().contains(v))
+                nodeSelectionModel.clearSelection(v);
+            else
+                nodeSelectionModel.select(v);
+            if (x.getClickCount() >= 2) {
+                ArrayList<Edge> edges = getAdjacentEdgesSortedByDecreasingWeight(v);
+                int index = Math.min(edges.size() - 1, x.getClickCount() - 2);
+                selectBySplit(edges.get(index));
+            }
+            x.consume();
+        });
 
         if (nodeView.getLabelGroup() != null) {
             nodeView.getLabelGroup().setOnMouseClicked((x) -> {
@@ -183,6 +189,9 @@ public class SplitsViewTab extends GraphTab2D<SplitsGraph> implements ISplitsVie
         }
         addNodeLabelMovementSupport(nodeView);
         return nodeView;
+    }
+
+    public void addNodeLabelMovementSupport(NodeView3D nodeView) {
     }
 
     /**
@@ -209,8 +218,8 @@ public class SplitsViewTab extends GraphTab2D<SplitsGraph> implements ISplitsVie
     /**
      * create an edge view
      */
-    public EdgeView2D createEdgeView(final SplitsGraph graph, final Edge e, final Double weight, final Point2D start, final Point2D end) {
-        final EdgeView2D edgeView = new EdgeView2D(e, weight, start, end);
+    public EdgeView3D createEdgeView(final SplitsGraph graph, final Edge e, final Double weight, final Point2D start, final Point2D end) {
+        final EdgeView3D edgeView = new EdgeView3D(e, weight, from2to3D(start), from2to3D(end));
         final int splitId = graph.getSplit(e);
 
         final EventHandler<? super MouseEvent> handler = (EventHandler<MouseEvent>) x -> {
@@ -248,17 +257,17 @@ public class SplitsViewTab extends GraphTab2D<SplitsGraph> implements ISplitsVie
     /**
      * compute the anchor center for rotating splits
      */
-    private Point2D computeAnchorCenter(Collection<Edge> edges, HashSet<Node> selectedNodes, NodeArray<NodeView2D> node2view) {
+    private Point3D computeAnchorCenter(Collection<Edge> edges, HashSet<Node> selectedNodes, NodeArray<NodeViewBase> node2view) {
         double x = 0;
         double y = 0;
         if (edges.size() > 0) {
             for (Edge edge : edges) {
                 if (edge.getOwner() == getGraph()) {
-                    final NodeView2D nodeView;
+                    final NodeView3D nodeView;
                     if (selectedNodes.contains(edge.getSource()))
-                        nodeView = node2view.get(edge.getTarget());
+                        nodeView = (NodeView3D) node2view.get(edge.getTarget());
                     else
-                        nodeView = node2view.get(edge.getSource());
+                        nodeView = (NodeView3D) node2view.get(edge.getSource());
                     x += nodeView.getLocation().getX();
                     y += nodeView.getLocation().getY();
 
@@ -267,44 +276,13 @@ public class SplitsViewTab extends GraphTab2D<SplitsGraph> implements ISplitsVie
             x /= edges.size();
             y /= edges.size();
         }
-        return new Point2D(x, y);
+        return new Point3D(x, y, 0);
     }
 
     /**
      * rotate split by given angle
      */
-    private void applySplitRotation(double angle, ObservableList<Edge> selectedEdges, HashSet<Node> selectedNodes, NodeArray<NodeView2D> node2view, EdgeArray<EdgeView2D> edge2view) {
-        final Edge e = selectedEdges.get(0);
-        if (e.getOwner() == getGraph()) {
-            final Node anchorNode;
-            final Node selectedNode;
-            if (selectedNodes.contains(e.getSource())) {
-                anchorNode = e.getTarget();
-                selectedNode = e.getSource();
-
-            } else {
-                anchorNode = e.getSource();
-                selectedNode = e.getTarget();
-            }
-            final Point2D anchorPoint = node2view.get(anchorNode).getLocation();
-            final Point2D selectedPoint = node2view.get(selectedNode).getLocation();
-            Point2D newSelectedPoint = GeometryUtils.rotateAbout(selectedPoint, angle, anchorPoint);
-            Point2D translate = newSelectedPoint.subtract(selectedPoint);
-
-            for (Node v : selectedNodes) {
-                if (v.getOwner() == getGraph())
-                    node2view.get(v).translateCoordinates(translate.getX(), translate.getY());
-            }
-            for (Node v : selectedNodes) {
-                if (v.getOwner() == getGraph()) {
-                    for (Edge edge : v.adjacentEdges()) {
-                        if (v == edge.getTarget() || !selectedNodes.contains(edge.getTarget())) {
-                            edge2view.get(edge).setCoordinates(node2view.get(edge.getSource()).getLocation(), node2view.get(edge.getTarget()).getLocation());
-                        }
-                    }
-                }
-            }
-        }
+    private void applySplitRotation(double angle, ObservableList<Edge> selectedEdges, HashSet<Node> selectedNodes, NodeArray<NodeViewBase> node2view, EdgeArray<EdgeViewBase> edge2view) {
     }
 
     /**
@@ -341,6 +319,19 @@ public class SplitsViewTab extends GraphTab2D<SplitsGraph> implements ISplitsVie
     @Override
     public void updateMenus(MenuController controller) {
         super.updateMenus(controller);
+    }
+
+    private static Point3D from2to3D(Point2D point) {
+        return new Point3D(point.getX(), point.getY(), 0);
+    }
+
+    private static Point2D from3to2D(Point3D point) {
+        return new Point2D(point.getX(), point.getY());
+    }
+
+    @Override
+    public void setLayout(GraphLayout graphLayout) {
+
     }
 
     @Override

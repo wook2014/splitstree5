@@ -19,8 +19,11 @@
 
 package splitstree5.gui.formattab;
 
+import javafx.scene.Node;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape;
+import javafx.scene.shape.Shape3D;
+import javafx.scene.shape.Sphere;
 import jloda.fx.shapes.*;
 import jloda.util.Basic;
 
@@ -33,7 +36,7 @@ public enum NodeShape {
      * @param shape
      * @return node shape
      */
-    public static NodeShape valueOf(Shape shape) {
+    public static NodeShape valueOf(Node shape) {
         if (shape instanceof Circle)
             return Circle;
         else if (shape instanceof SquareShape)
@@ -121,6 +124,12 @@ public enum NodeShape {
             case Hexagon:
                 return new HexagonShape(width, height);
         }
+    }
+
+    // todo: implement different shapes here
+    public static Shape3D create3D(Node shape, int width) {
+        ((Sphere) shape).setRadius(0.5 * width);
+        return (Sphere) shape;
     }
 
     public static int[] getSize(Shape shape) {
