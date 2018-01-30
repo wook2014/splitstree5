@@ -85,6 +85,10 @@ public class ASelectionModel<T> extends MultipleSelectionModel<T> {
                                     }
                                 }
                             }
+                            if (selectedItems.size() > 0)
+                                setSelectedItem(selectedItems.get(0));
+                            else
+                                setSelectedItem(null);
                         }
                     } finally {
                         inUpdate = false;

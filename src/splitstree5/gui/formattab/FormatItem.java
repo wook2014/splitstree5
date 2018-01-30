@@ -77,7 +77,7 @@ public class FormatItem implements Cloneable {
 
     private Color nodeColor = null;
 
-    private Integer edgeWidth = null;
+    private Double edgeWidth = null;
     private Color edgeColor = null;
 
     public FormatItem() {
@@ -111,7 +111,7 @@ public class FormatItem implements Cloneable {
         return labelColor;
     }
 
-    public Integer getEdgeWidth() {
+    public Double getEdgeWidth() {
         return edgeWidth;
     }
 
@@ -195,7 +195,7 @@ public class FormatItem implements Cloneable {
      *
      * @param edgeWidth
      */
-    public void addEdgeWidth(Integer edgeWidth) {
+    public void addEdgeWidth(Double edgeWidth) {
         if (this.edgeWidth == null) {
             this.edgeWidth = edgeWidth;
             edgeWidthSet = true;
@@ -285,7 +285,7 @@ public class FormatItem implements Cloneable {
                     formatItem.addLabelColor((Color) ev.getLabel().getTextFill());
                 }
                 if (ev.getEdge() != null) {
-                    formatItem.addEdgeWidth((int) Math.round(ev.getStrokeWidth()));
+                    formatItem.addEdgeWidth(ev.getStrokeWidth());
                     formatItem.addEdgeColor(ev.getStroke());
                 }
             }

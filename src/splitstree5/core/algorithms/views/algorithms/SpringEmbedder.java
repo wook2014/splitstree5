@@ -179,7 +179,7 @@ public class SpringEmbedder {
         double maxX = Double.MIN_VALUE;
         double minY = Double.MAX_VALUE;
         double maxY = Double.MIN_VALUE;
-        for (Point2D point : node2location) {
+        for (Point2D point : node2location.values()) {
             minX = Math.min(minX, point.getX());
             maxX = Math.max(maxX, point.getX());
             minY = Math.min(minY, point.getY());

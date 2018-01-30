@@ -36,15 +36,22 @@ public class Line3D extends Cylinder {
     /**
      * constructor
      *
-     * @param color
      */
-    public Line3D(Point3D start, Point3D end, Color color) {
-        super(1, 100, 8);
+    public Line3D(Point3D start, Point3D end) {
+        super(0.5, 100, 8);
 
         final PhongMaterial material = new PhongMaterial();
-        material.setDiffuseColor(color);
-        material.setSpecularColor(color.brighter());
         setMaterial(material);
+        setCoordinates(start, end);
+    }
+
+    /**
+     * change the coordinates
+     *
+     * @param start
+     * @param end
+     */
+    public void setCoordinates(Point3D start, Point3D end) {
         final Point3D midpoint = start.midpoint(end);
         final Point3D direction = end.subtract(start);
 
@@ -58,6 +65,26 @@ public class Line3D extends Cylinder {
         setTranslateZ(midpoint.getZ());
 
         setScaleY(start.distance(end) / getHeight());
+    }
+
+    public void setColor(Color color) {
+        final PhongMaterial material = (PhongMaterial) getMaterial();
+        material.setDiffuseColor(color);
+        material.setSpecularColor(color.brighter());
+    }
+
+    public Color getColor() {
+        final PhongMaterial material = (PhongMaterial) getMaterial();
+        return material.getDiffuseColor();
+    }
+
+
+    public void setLineWidth(double width) {
+        setRadius(0.5 * width);
+    }
+
+    public double getLineWidth() {
+        return 2 * getRadius();
     }
 
     /**

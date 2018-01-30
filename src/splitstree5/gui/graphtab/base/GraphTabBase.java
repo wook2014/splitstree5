@@ -80,7 +80,7 @@ public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISa
     protected final ASelectionModel<Edge> edgeSelectionModel = new ASelectionModel<>();
 
     protected final BorderPane rootNode = new BorderPane();
-    protected final Label label = new Label("GraphTab2D");
+    protected final Label label = new Label("Graph2DTab");
     protected G graph;
 
     protected final NodeLabelSearcher nodeLabelSearcher;

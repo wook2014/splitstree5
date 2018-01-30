@@ -38,52 +38,55 @@
 package splitstree5.gui.graph3dtab;
 
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
+import javafx.beans.binding.LongBinding;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
-import javafx.scene.*;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.Camera;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
 import javafx.scene.layout.Pane;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
-import jloda.fx.ZoomableScrollPane;
 import jloda.graph.EdgeArray;
 import jloda.graph.NodeArray;
 import jloda.phylo.PhyloGraph;
 import splitstree5.gui.graphtab.base.GraphTabBase;
+import splitstree5.gui.graphtab.base.NodeViewBase;
 import splitstree5.menu.MenuController;
-
-import java.util.concurrent.Executors;
 
 /**
  * tree and split network two-dimensional graph
  * Daniel Huson,. 12.2017
  */
 public abstract class Graph3DTab<G extends PhyloGraph> extends GraphTabBase<G> {
+    private boolean sceneIsSetup = false;
     private final Camera camera;
-    private final Group topGroup = new Group();
-    private final Pane topPane = new Pane(topGroup);
+    private final Pane topPane = new Pane();
     private final Pane bottomPane = new Pane();
 
+    private LongBinding viewChanged;
+
     final Property<Transform> worldTransformProperty;
+    final LongProperty transformChangesProperty;
 
     public Graph3DTab() {
         super();
         camera = new PerspectiveCamera(true);
         camera.setFarClip(10000);
         camera.setNearClip(0.1);
-        camera.setTranslateZ(-900);
+        camera.setTranslateZ(-1000);
 
         topPane.setPickOnBounds(false);
-
+        bottomPane.setPickOnBounds(false);
 
         worldTransformProperty = new SimpleObjectProperty<>(new Rotate());
-        final LongProperty transformChangesProperty = new SimpleLongProperty(); // need this property so that selection rectangles update correctly
+        transformChangesProperty = new SimpleLongProperty(); // need this property so that selection rectangles update correctly
         worldTransformProperty.addListener((observable, oldValue, newValue) -> {
             group.getTransforms().setAll(newValue);
             transformChangesProperty.set(transformChangesProperty.get() + 1);
@@ -103,7 +106,10 @@ public abstract class Graph3DTab<G extends PhyloGraph> extends GraphTabBase<G> {
         edge2view = new EdgeArray<>(phyloGraph);
         nodeLabelSearcher.setGraph(graph);
         edgeLabelSearcher.setGraph(graph);
-        Platform.runLater(() -> getUndoManager().clear());
+        Platform.runLater(() -> {
+            worldTransformProperty.setValue(new Rotate());
+            getUndoManager().clear();
+        });
     }
 
     /**
@@ -111,7 +117,7 @@ public abstract class Graph3DTab<G extends PhyloGraph> extends GraphTabBase<G> {
      */
     public void show() {
         Platform.runLater(() -> {
-            try {
+
                 if (centerPane.getChildren().size() == 0) {
                     centerPane.setOnMouseClicked((e) -> {
                         if (!e.isShiftDown()) {
@@ -125,55 +131,51 @@ public abstract class Graph3DTab<G extends PhyloGraph> extends GraphTabBase<G> {
                 group.getChildren().addAll(edgesGroup.getChildren());
                 group.getChildren().addAll(nodesGroup.getChildren());
 
-                topPane.getChildren().addAll(edgeLabelsGroup.getChildren());
-                topPane.getChildren().addAll(nodeLabelsGroup.getChildren());
+            // topPane.getChildren().addAll(edgeLabelsGroup.getChildren());
+            topPane.getChildren().addAll(nodeLabelsGroup.getChildren());
 
                 // empty all of these for the next computation
                 edgesGroup.getChildren().clear();
                 nodesGroup.getChildren().clear();
+
                 edgeLabelsGroup.getChildren().clear();
                 nodeLabelsGroup.getChildren().clear();
 
                 nodeSelectionModel.clearSelection();
                 edgeSelectionModel.clearSelection();
-            } finally {
-                Executors.newSingleThreadExecutor().submit(() -> {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                    }
-                    Platform.runLater(this::layoutLabels);
-                });
-            }
-            if (!(rootNode.getCenter() instanceof ScrollPane)) {
-                setContent(rootNode);
-                scrollPane = new ZoomableScrollPane(centerPane);
 
+
+            if (!sceneIsSetup) {
+                sceneIsSetup = true;
+
+                setContent(rootNode);
                 SubScene subScene = new SubScene(group, centerPane.getWidth(), centerPane.getHeight(), true, SceneAntialiasing.BALANCED);
                 subScene.setCamera(camera);
 
-                centerPane.getChildren().addAll(subScene, topPane);
+                viewChanged = new LongBinding() {
+                    long value = 0;
 
-                centerPane.minWidthProperty().bind(Bindings.createDoubleBinding(() ->
-                        scrollPane.getViewportBounds().getWidth(), scrollPane.viewportBoundsProperty()).subtract(20));
-                centerPane.minHeightProperty().bind(Bindings.createDoubleBinding(() ->
-                        scrollPane.getViewportBounds().getHeight(), scrollPane.viewportBoundsProperty()).subtract(20));
+                    {
+                        super.bind(transformChangesProperty, subScene.widthProperty(), subScene.heightProperty(), camera.translateXProperty(), camera.translateYProperty());
+                    }
+
+                    @Override
+                    protected long computeValue() {
+                        return value++;
+                    }
+                };
+
+                bottomPane.getChildren().setAll(subScene);
+
+                centerPane.getChildren().addAll(bottomPane, topPane);
+
                 subScene.widthProperty().bind(centerPane.widthProperty());
                 subScene.heightProperty().bind(centerPane.heightProperty());
+                rootNode.setCenter(centerPane);
+            }
 
-                rootNode.setCenter(scrollPane);
-                scrollPane.setLockAspectRatio(true);
-
-                /* this works once window is open, but first time around...
-                scrollPane.layout();
-                System.err.print("Center: "+scrollPane.getVvalue());
-                scrollPane.setVvalue(0.5);
-                System.err.println(" -> "+scrollPane.getVvalue());
-
-                scrollPane.setHvalue(0.5);
-                */
-
-
+            for (NodeViewBase nv : node2view.values()) {
+                ((NodeView3D) nv).setupSelectionRectangle(bottomPane, viewChanged);
             }
         });
     }
@@ -197,7 +199,7 @@ public abstract class Graph3DTab<G extends PhyloGraph> extends GraphTabBase<G> {
         });
 
         bottomPane.setOnMouseDragged((e) -> {
-
+            e.consume();
             if (!e.isShiftDown()) {
                 final Point2D delta = new Point2D(e.getSceneX() - mousePosX, e.getSceneY() - mousePosY);
 
@@ -206,10 +208,17 @@ public abstract class Graph3DTab<G extends PhyloGraph> extends GraphTabBase<G> {
                 final Rotate rotate = new Rotate(0.25 * delta.magnitude(), dragOrthogonalAxis);
                 worldTransformProperty.setValue(rotate.createConcatenation(worldTransformProperty.getValue()));
 
-                mousePosX = e.getSceneX();
-                mousePosY = e.getSceneY();
+            } else {
+                double deltaX = e.getSceneX() - mousePosX;
+                double deltaY = e.getSceneY() - mousePosY;
+                if (deltaX != 0)
+                    camera.setTranslateX(camera.getTranslateX() - deltaX);
+                if (deltaY != 0)
+                    camera.setTranslateY(camera.getTranslateY() - deltaY);
+
             }
-            e.consume();
+            mousePosX = e.getSceneX();
+            mousePosY = e.getSceneY();
         });
 
         bottomPane.setOnScroll((e) -> {
@@ -225,5 +234,18 @@ public abstract class Graph3DTab<G extends PhyloGraph> extends GraphTabBase<G> {
     @Override
     public void updateMenus(MenuController controller) {
         super.updateMenus(controller);
+        controller.getResetMenuItem().setOnAction((e -> worldTransformProperty.setValue(new Rotate())));
+
+        controller.getZoomInMenuItem().setOnAction((e) -> camera.setTranslateY(camera.getTranslateY() + 10));
+        controller.getZoomInMenuItem().setText("Move Up");
+
+        controller.getZoomOutMenuItem().setOnAction((e) -> camera.setTranslateY(camera.getTranslateY() - 10));
+        controller.getZoomInMenuItem().setText("Move Down");
+
+        controller.getRotateRightMenuItem().setOnAction((e) -> camera.setTranslateX(camera.getTranslateX() - 10));
+        controller.getRotateRightMenuItem().setText("Move Right");
+
+        controller.getRotateLeftMenuItem().setOnAction((e) -> camera.setTranslateX(camera.getTranslateX() + 10));
+        controller.getRotateLeftMenuItem().setText("Move Left");
     }
 }

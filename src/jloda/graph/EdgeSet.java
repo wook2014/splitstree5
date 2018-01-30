@@ -98,16 +98,15 @@ public class EdgeSet extends GraphBase implements Set<Edge>, Iterable<Edge> {
      * @param collection
      * @return true, if some element is new
      */
-    public boolean addAll(Collection collection) {
-        Iterator it = collection.iterator();
-
+    public boolean addAll(Collection<? extends Edge> collection) {
         boolean result = false;
-        while (it.hasNext()) {
-            if (add((Edge) it.next()))
+        for (Edge edge : collection) {
+            if (add(edge))
                 result = true;
         }
         return result;
     }
+
 
     /**
      * returns true if all elements of collection are contained in this set

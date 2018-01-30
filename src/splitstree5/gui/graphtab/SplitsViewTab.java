@@ -43,7 +43,7 @@ import java.util.*;
  * The split network view tab
  * Daniel Huson, 11.2017
  */
-public class SplitsViewTab extends GraphTab2D<SplitsGraph> implements ISplitsViewTab {
+public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsViewTab {
     private final ASelectionModel<Integer> splitsSelectionModel = new ASelectionModel<>();
     private boolean inSelection;
     /**

@@ -27,8 +27,8 @@ import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
 import jloda.util.ResourceManager;
 import splitstree5.gui.graphtab.base.EdgeView2D;
+import splitstree5.gui.graphtab.base.Graph2DTab;
 import splitstree5.gui.graphtab.base.GraphLayout;
-import splitstree5.gui.graphtab.base.GraphTab2D;
 import splitstree5.gui.graphtab.base.NodeView2D;
 import splitstree5.menu.MenuController;
 
@@ -40,7 +40,7 @@ import java.util.Stack;
  * The tree viewer tab
  * Daniel Huson, 11.2017
  */
-public class TreeViewTab extends GraphTab2D<PhyloTree> {
+public class TreeViewTab extends Graph2DTab<PhyloTree> {
     /**
      * constructor
      */

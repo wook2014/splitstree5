@@ -27,7 +27,7 @@ import java.util.NoSuchElementException;
  * Daniel Huson, 2003
  */
 
-public class NodeArray<T> extends GraphBase implements NodeAssociation<T>, Iterable<T> {
+public class NodeArray<T> extends GraphBase implements NodeAssociation<T> {
     private T[] data;
     private boolean isClear = true;
 
@@ -182,8 +182,8 @@ public class NodeArray<T> extends GraphBase implements NodeAssociation<T>, Itera
      *
      * @return iterator
      */
-    public Iterator<T> iterator() {
-        return new Iterator<T>() {
+    public Iterable<T> values() {
+        return () -> new Iterator<T>() {
             private Node v = getOwner().getFirstNode();
 
             {

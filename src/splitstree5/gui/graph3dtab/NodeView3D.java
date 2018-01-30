@@ -19,15 +19,22 @@
 
 package splitstree5.gui.graph3dtab;
 
+import javafx.beans.binding.Binding;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WeakChangeListener;
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point3D;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape3D;
 import javafx.scene.shape.Sphere;
 import jloda.graph.Node;
-import jloda.util.ProgramProperties;
 import splitstree5.gui.formattab.FormatItem;
 import splitstree5.gui.graphtab.base.NodeViewBase;
 import splitstree5.gui.utils.SelectionEffect;
@@ -38,49 +45,46 @@ import splitstree5.gui.utils.SelectionEffect;
  */
 public class NodeView3D extends NodeViewBase {
     private Shape3D shape;
-    private Point3D location;
     private Color color;
+    private Rectangle selectionRectangle;
 
-
+    /**
+     * constructor
+     *
+     * @param v
+     * @param location
+     * @param text
+     */
     public NodeView3D(Node v, Point3D location, String text) {
         super(v);
 
         setLocation(location);
         Sphere sphere = new Sphere(2);
-        shape = sphere;
-        shapeGroup.getChildren().add(shape);
-        sphere.setTranslateX(location.getX());
-        sphere.setTranslateY(location.getY());
-        sphere.setTranslateZ(location.getZ());
+        setShape(sphere);
+        setLocation(location);
 
         if (text != null && text.length() > 0) {
-            color = Color.GOLDENROD;
-            label = new Label(text);
-            label.setFont(ProgramProperties.getDefaultFont());
-            label.setLayoutX(location.getX() + +2);
-            label.setLayoutY(location.getY());
-            labelGroup.getChildren().add(label);
+            color = Color.GOLD;
+            setLabel(new Label(text));
         } else {
-            color = Color.BLACK;
+            color = Color.SILVER;
             sphere.setRadius(0.75);
-            label = null;
         }
         final PhongMaterial material = new PhongMaterial(color);
-        material.setSpecularColor(Color.WHITE);
+        material.setSpecularColor(color.brighter());
         sphere.setMaterial(material);
-        updateStuff();
-
-    }
-
-    private void updateStuff() {
-    }
+   }
 
     public Point3D getLocation() {
-        return location;
+        return new Point3D(shapeGroup.getTranslateX(), shapeGroup.getTranslateY(), shapeGroup.getTranslateZ());
     }
 
     public void setLocation(Point3D location) {
-        this.location = location;
+        shapeGroup.setTranslateX(location.getX());
+        shapeGroup.setTranslateY(location.getY());
+        shapeGroup.setTranslateZ(location.getZ());
+        if (selectionRectangle != null && selectionRectangle.getUserData() instanceof ChangeListener)
+            ((ChangeListener) selectionRectangle.getUserData()).changed(null, null,null);
     }
 
     public Shape3D getShape() {
@@ -101,15 +105,17 @@ public class NodeView3D extends NodeViewBase {
         this.label = label;
         if (this.label != null)
             labelGroup.getChildren().add(this.label);
+        bindLabel();
     }
-
 
     public void setFill(Color color) {
         this.color = color;
         if (shape != null) {
-            PhongMaterial material = (PhongMaterial) shape.getMaterial();
-            if (material != null && material.getDiffuseColor() != null && !material.getDiffuseColor().equals(SelectionEffect.getInstance().getColor()))
+            final PhongMaterial material = (PhongMaterial) shape.getMaterial();
+            if (material != null) {
                 material.setDiffuseColor(color);
+                material.setSpecularColor(color.brighter());
+            }
         }
     }
 
@@ -129,59 +135,116 @@ public class NodeView3D extends NodeViewBase {
 
     }
 
+
     @Override
     public void showAsSelected(boolean selected) {
-        if (selected) {
-            if (label != null)
-                label.setEffect(SelectionEffect.getInstance());
-            if (shape != null)
-                ((PhongMaterial) shape.getMaterial()).setDiffuseColor(SelectionEffect.getInstance().getColor());
-        } else {
-            if (label != null)
-                label.setEffect(null);
-            if (shape != null)
-                ((PhongMaterial) shape.getMaterial()).setDiffuseColor(color);
-
+        if (selectionRectangle != null) {
+            if (selected) {
+                if (!labelGroup.getChildren().contains(selectionRectangle))
+                    labelGroup.getChildren().add(selectionRectangle);
+                if (label != null)
+                    label.setTextFill(SelectionEffect.getInstance().getColor());
+            } else {
+                if (labelGroup.getChildren().contains(selectionRectangle))
+                    labelGroup.getChildren().remove(selectionRectangle);
+                if (label != null)
+                    label.setTextFill(Color.BLACK);
+            }
         }
     }
 
-
     @Override
     public boolean isShownAsSelected() {
-        if (label != null)
-            return label.getEffect() != null;
-        else
-            return shape != null && shape.getEffect() != null;
-    }
+        return selectionRectangle != null && labelGroup.getChildren().contains(selectionRectangle);
+     }
 
     @Override
     public double getWidth() {
-        return shape.getScaleX() * shape.getBoundsInLocal().getWidth();
+        return shapeGroup.getScaleX() * shapeGroup.getBoundsInLocal().getWidth();
     }
 
     @Override
     public double getHeight() {
-        return shape.getScaleY() * shape.getBoundsInLocal().getHeight();
+        return shapeGroup.getScaleY() * shapeGroup.getBoundsInLocal().getHeight();
     }
 
     @Override
     public void setWidth(double width) {
-        shape.setScaleX(width / shape.getBoundsInLocal().getWidth());
-        shape.setScaleY(width / shape.getBoundsInLocal().getWidth());
-        shape.setScaleZ(width / shape.getBoundsInLocal().getWidth());
+        shapeGroup.setScaleX(width / shapeGroup.getBoundsInLocal().getWidth());
+        shapeGroup.setScaleY(width / shapeGroup.getBoundsInLocal().getWidth());
+        shapeGroup.setScaleZ(width / shapeGroup.getBoundsInLocal().getWidth());
 
     }
 
     @Override
     public void setHeight(double height) {
-        shape.setScaleY(height / shape.getBoundsInLocal().getHeight());
-        shape.setScaleY(height / shape.getBoundsInLocal().getWidth());
-        shape.setScaleZ(height / shape.getBoundsInLocal().getWidth());
+        shapeGroup.setScaleY(height / shapeGroup.getBoundsInLocal().getHeight());
+        shapeGroup.setScaleY(height / shapeGroup.getBoundsInLocal().getWidth());
+        shapeGroup.setScaleZ(height / shapeGroup.getBoundsInLocal().getWidth());
 
     }
 
     @Override
     public javafx.scene.Node getNodeShape() {
         return shape;
+    }
+
+    private void bindLabel() {
+        if (this.label != null && selectionRectangle != null) {
+            label.layoutXProperty().bind(selectionRectangle.xProperty().add(selectionRectangle.widthProperty()).add(4));
+            label.layoutYProperty().bind(selectionRectangle.yProperty().add(selectionRectangle.heightProperty().multiply(0.5)));
+        }
+    }
+
+    /**
+     * setup the selection rectangle
+     *
+     * @param pane        that contains 3D shapes
+     * @param viewChanged
+     */
+    public void setupSelectionRectangle(Pane pane, Binding viewChanged) {
+        selectionRectangle = createBoundingRectangleWithBinding(pane, shapeGroup, viewChanged);
+        bindLabel();
+    }
+
+    /**
+     * create a bounding box that is bound to user determined transformations
+     */
+    private Rectangle createBoundingRectangleWithBinding(Pane pane, javafx.scene.Node shape, final Binding viewChanged) {
+        final Rectangle rectangle = new Rectangle();
+        rectangle.setStroke(SelectionEffect.getInstance().getColor());
+        rectangle.setEffect(new DropShadow(1, 1, 1, Color.DARKGRAY));
+        rectangle.setStrokeWidth(2);
+        rectangle.setFill(Color.TRANSPARENT);
+        rectangle.setMouseTransparent(true);
+        rectangle.setVisible(true);
+
+        final ChangeListener changeListener = (c, o, n) -> {
+            BoundingBox boundingBox = computeBoundingBox(pane, shape);
+            rectangle.setX(boundingBox.getMinX());
+            rectangle.setY(boundingBox.getMinY());
+            rectangle.setWidth(boundingBox.getWidth());
+            rectangle.setHeight(boundingBox.getHeight());
+        };
+        rectangle.setUserData(changeListener);
+        viewChanged.addListener(new WeakChangeListener(changeListener));
+
+        return rectangle;
+    }
+
+    private static BoundingBox computeBoundingBox(Pane pane, javafx.scene.Node node) {
+        try {
+            final Bounds boundsOnScreen = node.localToScreen(node.getBoundsInLocal());
+            final Bounds paneBoundsOnScreen = pane.localToScreen(pane.getBoundsInLocal());
+            final double xInScene = boundsOnScreen.getMinX() - paneBoundsOnScreen.getMinX();
+            final double yInScene = boundsOnScreen.getMinY() - paneBoundsOnScreen.getMinY();
+            return new BoundingBox(xInScene - 2, yInScene - 2, boundsOnScreen.getWidth() + 4, boundsOnScreen.getHeight() + 4);
+        } catch (NullPointerException e) {
+            return new BoundingBox(0, 0, 0, 0);
+        }
+    }
+
+    public void translate(Point3D translateVector) {
+        setLocation(getLocation().add(translateVector));
     }
 }

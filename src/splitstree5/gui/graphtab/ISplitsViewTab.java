@@ -35,6 +35,7 @@ import splitstree5.gui.ViewerTab;
 import splitstree5.gui.graphtab.base.EdgeViewBase;
 import splitstree5.gui.graphtab.base.GraphLayout;
 import splitstree5.gui.graphtab.base.NodeViewBase;
+import splitstree5.menu.MenuController;
 
 public interface ISplitsViewTab {
     void init(SplitsGraph graph);
@@ -78,4 +79,6 @@ public interface ISplitsViewTab {
     ViewerTab getTab();
 
     void setName(String name);
+
+    void updateMenus(MenuController controller);
 }

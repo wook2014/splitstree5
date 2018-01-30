@@ -17,34 +17,16 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.gui.graphtab.commands;
+package splitstree5.core.datablocks;
 
-import splitstree5.gui.graphtab.base.Graph2DTab;
-import splitstree5.undo.UndoableRedoableCommand;
+import splitstree5.gui.graphtab.SplitsView3DTab;
 
 /**
- * rotate graph command
+ * This block represents the 3D view of a split network
+ * Daniel Huson, 1.2018
  */
-public class ZoomCommand extends UndoableRedoableCommand {
-    private final double zoomFactorX;
-    private final double zoomFactorY;
-
-    private final Graph2DTab graphTab;
-
-    public ZoomCommand(double zoomFactorX, double zoomFactorY, Graph2DTab graphTab) {
-        super("Zoom");
-        this.zoomFactorX = zoomFactorX;
-        this.zoomFactorY = zoomFactorY;
-        this.graphTab = graphTab;
-    }
-
-    @Override
-    public void undo() {
-        graphTab.scale(1 / zoomFactorX, 1 / zoomFactorY);
-    }
-
-    @Override
-    public void redo() {
-        graphTab.scale(zoomFactorX, zoomFactorY);
+public class SplitsNetwork3DViewBlock extends SplitsNetworkViewBlock {
+    public SplitsNetwork3DViewBlock() {
+        super(new SplitsView3DTab());
     }
 }

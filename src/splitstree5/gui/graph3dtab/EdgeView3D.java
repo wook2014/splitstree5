@@ -33,29 +33,23 @@ import splitstree5.gui.utils.SelectionEffect;
  * Daniel Huson, 1.2018
  */
 public class EdgeView3D extends EdgeViewBase {
-    private Line3D shape;
+    private final Line3D line;
     private Color color;
 
-    public EdgeView3D(Edge e) {
-        super(e);
-    }
-
     public EdgeView3D(Edge e, double weight, Point3D start, Point3D end) {
-        this(e);
-        color = Color.DARKGRAY;
-        setShape(new Line3D(start, end, color));
+        super(e);
+        color = Color.SILVER;
+        line = new Line3D(start, end);
+        line.setColor(color);
+        shapeGroup.getChildren().add(line);
     }
 
     public Line3D getShape() {
-        return shape;
+        return line;
     }
 
     public void setShape(Line3D shape) {
-        if (this.shape != null)
-            shapeGroup.getChildren().remove(this.shape);
-        this.shape = shape;
-        if (this.shape != null)
-            shapeGroup.getChildren().add(this.shape);
+        System.err.println("EdgeView3D.setShape(): Not supported");
     }
 
     @Override
@@ -63,20 +57,24 @@ public class EdgeView3D extends EdgeViewBase {
         if (selected) {
             if (label != null)
                 label.setEffect(SelectionEffect.getInstance());
-            if (shape != null)
-                ((PhongMaterial) shape.getMaterial()).setDiffuseColor(SelectionEffect.getInstance().getColor());
+            if (line != null)
+                ((PhongMaterial) line.getMaterial()).setDiffuseColor(SelectionEffect.getInstance().getColor());
         } else {
             if (label != null)
                 label.setEffect(null);
-            if (shape != null)
-                ((PhongMaterial) shape.getMaterial()).setDiffuseColor(color);
+            if (line != null)
+                ((PhongMaterial) line.getMaterial()).setDiffuseColor(color);
 
         }
     }
 
     @Override
     public void setLabel(Labeled label) {
+        if (this.label != null)
+            getLabelGroup().getChildren().remove(this.label);
         super.setLabel(label);
+        if (this.label != null && !getLabelGroup().getChildren().contains(this.label))
+            getLabelGroup().getChildren().add(this.label);
     }
 
 
@@ -85,7 +83,7 @@ public class EdgeView3D extends EdgeViewBase {
         if (label != null)
             return label.getEffect() != null;
         else
-            return shape != null && shape.getEffect() != null;
+            return line != null && line.getEffect() != null;
     }
 
     @Override
@@ -95,27 +93,28 @@ public class EdgeView3D extends EdgeViewBase {
 
     @Override
     public double getStrokeWidth() {
-        return shape.getRadius();
+        return line.getLineWidth();
     }
 
     @Override
     public void setStroke(Color color) {
         this.color = color;
-        if (shape != null) {
-            PhongMaterial material = (PhongMaterial) shape.getMaterial();
-            if (material != null && material.getDiffuseColor() != null && !material.getDiffuseColor().equals(SelectionEffect.getInstance().getColor()))
-                material.setDiffuseColor(this.color);
-        }
+        if (!line.getColor().equals(SelectionEffect.getInstance().getColor()))
+            line.setColor(this.color);
     }
 
     @Override
     public void setStrokeWidth(double width) {
-        shape.setRadius(0.5 * width);
+        line.setLineWidth(width);
 
     }
 
     @Override
     public Node getEdgeShape() {
         return getShape();
+    }
+
+    public void updateCoordinates(Point3D sourceLocation, Point3D targetLocation) {
+        line.setCoordinates(sourceLocation, targetLocation);
     }
 }

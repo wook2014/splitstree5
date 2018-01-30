@@ -28,7 +28,7 @@ import java.util.Set;
  * NodeSet implements a set of nodes contained in a given graph
  * Daniel Huson, 2003
  */
-public class NodeSet extends GraphBase implements Set<Node>, Iterable<Node> {
+public class NodeSet extends GraphBase implements Set<Node> {
     final BitSet bits;
 
     /**

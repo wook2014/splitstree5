@@ -20,8 +20,9 @@
 package splitstree5.gui.graph3dtab;
 
 import javafx.beans.binding.ObjectBinding;
-import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.collections.ListChangeListener;
+import javafx.collections.WeakListChangeListener;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -30,6 +31,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import jloda.fx.ASelectionModel;
 import jloda.graph.NodeArray;
+import splitstree5.gui.graphtab.base.NodeViewBase;
+import splitstree5.gui.utils.SelectionEffect;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,6 +44,7 @@ import java.util.Map;
 public class BoundingBoxes2D {
     private final Group rectangles = new Group();
     private final Map<jloda.graph.Node, Rectangle> node2rectangle = new HashMap<>();
+    private final ListChangeListener<jloda.graph.Node> changeListener; // keep reference
 
     /**
      * constructor
@@ -48,21 +52,22 @@ public class BoundingBoxes2D {
      * @param node2view
      * @param properties
      */
-    public BoundingBoxes2D(Pane bottomPane, NodeArray<NodeView3D> node2view, ASelectionModel<jloda.graph.Node> nodeSelectionModel, Property... properties) {
-        nodeSelectionModel.getSelectedItems().addListener((ListChangeListener<jloda.graph.Node>) c -> {
+    public BoundingBoxes2D(Pane bottomPane, NodeArray<NodeViewBase> node2view, ASelectionModel<jloda.graph.Node> nodeSelectionModel, ReadOnlyProperty... properties) {
+        changeListener = c -> {
             while (c.next()) {
                 for (jloda.graph.Node node : c.getRemoved()) {
                     rectangles.getChildren().remove(node2rectangle.get(node));
                     node2rectangle.remove(node);
                 }
                 for (jloda.graph.Node node : c.getAddedSubList()) {
-                    final NodeView3D nodeView = node2view.get(node);
+                    final NodeView3D nodeView = (NodeView3D) node2view.get(node);
                     final Rectangle rect = createBoundingBoxWithBinding(bottomPane, nodeView.getShape(), properties);
                     node2rectangle.put(node, rect);
                     rectangles.getChildren().add(rect);
                 }
             }
-        });
+        };
+        nodeSelectionModel.getSelectedItems().addListener(new WeakListChangeListener<>(changeListener));
     }
 
     public Group getRectangles() {
@@ -72,9 +77,9 @@ public class BoundingBoxes2D {
     /**
      * create a bounding box that is bound to user determined transformations
      */
-    private static Rectangle createBoundingBoxWithBinding(Pane pane, Node node, final Property... properties) {
+    private static Rectangle createBoundingBoxWithBinding(Pane pane, Node shape, final ReadOnlyProperty... properties) {
         final Rectangle boundingBox = new Rectangle();
-        boundingBox.setStroke(Color.GOLDENROD);
+        boundingBox.setStroke(SelectionEffect.getInstance().getColor());
         boundingBox.setStrokeWidth(2);
         boundingBox.setFill(Color.TRANSPARENT);
         boundingBox.setMouseTransparent(true);
@@ -83,15 +88,15 @@ public class BoundingBoxes2D {
         final ObjectBinding<Rectangle> binding = new ObjectBinding<Rectangle>() {
             {
                 bind(properties);
-                bind(node.translateXProperty());
-                bind(node.translateYProperty());
-                bind(node.translateZProperty());
-                bind(node.scaleXProperty());
+                bind(shape.translateXProperty());
+                bind(shape.translateYProperty());
+                bind(shape.translateZProperty());
+                bind(shape.scaleXProperty());
             }
 
             @Override
             protected Rectangle computeValue() {
-                return computeRectangle(pane, node);
+                return computeRectangle(pane, shape);
             }
         };
 

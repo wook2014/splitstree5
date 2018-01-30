@@ -23,6 +23,7 @@ import javafx.beans.InvalidationListener;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.paint.Color;
+import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import jloda.fx.ExtendedFXMLLoader;
 import splitstree5.gui.ViewerTab;
@@ -72,14 +73,14 @@ public class FormatTab extends ViewerTab {
         controller.getNodeShapeComboBox().getItems().addAll(NodeShape.values());
         controller.getNodeWidthComboBox().getItems().addAll(1, 3, 5, 10, 20, 40, 80);
         controller.getNodeHeightComboBox().getItems().addAll(1, 3, 5, 10, 20, 40, 80);
-        controller.getEdgeWidthComboBox().getItems().addAll(1, 2, 3, 4, 5, 6, 8, 10, 20);
+        controller.getEdgeWidthComboBox().getItems().addAll(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 20.0);
 
         controller.getLabelColorPicker().setValue(Color.BLACK);
         controller.getNodeWidthComboBox().setValue(1);
         controller.getNodeHeightComboBox().setValue(1);
         controller.getNodeColorPicker().setValue(Color.BLACK);
 
-        controller.getEdgeWidthComboBox().setValue(1);
+        controller.getEdgeWidthComboBox().setValue(1.0);
         controller.getEdgeColorPicker().setValue(Color.BLACK);
     }
 
@@ -260,7 +261,7 @@ public class FormatTab extends ViewerTab {
                 }
             });
 
-            controller.getEdgeWidthComboBox().setConverter(new IntegerStringConverter());
+            controller.getEdgeWidthComboBox().setConverter(new DoubleStringConverter());
             controller.getEdgeWidthComboBox().disableProperty().bind(graphTab2D.getEdgeSelectionModel().emptyProperty());
             controller.getEdgeWidthComboBox().valueProperty().addListener((c, o, n) -> {
                 if (!isUpdating) {

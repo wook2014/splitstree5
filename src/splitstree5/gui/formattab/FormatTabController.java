@@ -48,7 +48,7 @@ public class FormatTabController {
     private ComboBox<NodeShape> nodeShapeComboBox;
 
     @FXML
-    private ComboBox<Integer> edgeWidthComboBox;
+    private ComboBox<Double> edgeWidthComboBox;
 
     @FXML
     private ComboBox<Integer> nodeWidthComboBox;
@@ -85,7 +85,7 @@ public class FormatTabController {
         return nodeShapeComboBox;
     }
 
-    public ComboBox<Integer> getEdgeWidthComboBox() {
+    public ComboBox<Double> getEdgeWidthComboBox() {
         return edgeWidthComboBox;
     }
 

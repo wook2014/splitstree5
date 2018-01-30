@@ -31,29 +31,33 @@ import splitstree5.gui.IHasTab;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.graphtab.AlgorithmBreadCrumbsToolBar;
 import splitstree5.gui.graphtab.ISplitsViewTab;
-import splitstree5.gui.graphtab.SplitsView3DTab;
+import splitstree5.gui.graphtab.SplitsViewTab;
 import splitstree5.gui.graphtab.base.GraphLayout;
 
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * This block represents the view of a split network
- * Daniel Huson, 11.2017
+ * This block represents the 3D view of a split network
+ * Daniel Huson, 1.2018
  */
 public class SplitsNetworkViewBlock extends ADataBlock implements IHasTab {
     private final ASelectionModel<Integer> splitsSelectionModel = new ASelectionModel<>();
     private final ISplitsViewTab splitsViewTab;
 
+    public SplitsNetworkViewBlock() {
+        this(new SplitsViewTab());
+    }
+
     /**
      * constructor
      */
-    public SplitsNetworkViewBlock() {
+    public SplitsNetworkViewBlock(ISplitsViewTab splitsViewTab) {
         super();
         setTitle("Split Network Viewer");
         //splitsViewTab = new SplitsViewTab();
 
-        splitsViewTab = new SplitsView3DTab();
+        this.splitsViewTab = splitsViewTab;
 
         splitsViewTab.setLayout(GraphLayout.Radial);
 

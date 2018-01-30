@@ -35,7 +35,7 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.algorithmtab.AlgorithmPane;
-import splitstree5.gui.graphtab.base.GraphTab2D;
+import splitstree5.gui.graphtab.base.Graph2DTab;
 import splitstree5.gui.utils.DragAndDropSupportListView2;
 import splitstree5.undo.UndoManager;
 import splitstree5.undo.UndoableChangeListViews2;
@@ -57,7 +57,7 @@ public class TaxaFilterPane extends AlgorithmPane {
 
     final SimpleBooleanProperty applicableProperty = new SimpleBooleanProperty();
 
-    private final Map<GraphTab2D, Triplet<ListChangeListener<Taxon>, InvalidationListener, Boolean>> graphTab2SelectionListeners = new HashMap<>();
+    private final Map<Graph2DTab, Triplet<ListChangeListener<Taxon>, InvalidationListener, Boolean>> graphTab2SelectionListeners = new HashMap<>();
 
     private AConnector connector;
 

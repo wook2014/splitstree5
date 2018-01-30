@@ -28,7 +28,7 @@ import java.util.NoSuchElementException;
  * Daniel Huson 2004
  */
 
-public class EdgeArray<T> extends GraphBase implements EdgeAssociation<T>, Iterable<T> {
+public class EdgeArray<T> extends GraphBase implements EdgeAssociation<T> {
     private T data[];
     private boolean isClear = true;
 
@@ -170,12 +170,12 @@ public class EdgeArray<T> extends GraphBase implements EdgeAssociation<T>, Itera
     }
 
     /**
-     * get an iterable over all defined values
+     * get an iterator over all non-null values
      *
-     * @return iterable over avalues
+     * @return iterator
      */
-    public Iterator<T> iterator() {
-        return new Iterator<T>() {
+    public Iterable<T> values() {
+        return () -> new Iterator<T>() {
             private Edge e = getOwner().getFirstEdge();
 
             {

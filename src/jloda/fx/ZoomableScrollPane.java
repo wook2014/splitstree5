@@ -38,6 +38,7 @@ public class ZoomableScrollPane extends ScrollPane {
     public static final double ZOOM_FACTOR = 1.02; // 2%
 
     private final BooleanProperty lockAspectRatio = new SimpleBooleanProperty(false);
+    private final BooleanProperty allowZoom = new SimpleBooleanProperty(true);
 
     private final Node target;
     private final Group zoomNode;
@@ -78,17 +79,19 @@ public class ZoomableScrollPane extends ScrollPane {
     private Node outerNode(Node node) {
         final StackPane outerNode = new StackPane(node);
         outerNode.setOnScroll(e -> {
-            e.consume();
-            final double factorX;
-            final double factorY;
-            if ((Math.abs(e.getDeltaX()) > Math.abs(e.getDeltaY()))) {
-                factorX = (e.getDeltaX() > 0 ? ZOOM_FACTOR : 1 / ZOOM_FACTOR);
-                factorY = 1;
-            } else {
-                factorX = 1;
-                factorY = (e.getDeltaY() > 0 ? ZOOM_FACTOR : 1 / ZOOM_FACTOR);
+            if (isAllowZoom()) {
+                e.consume();
+                final double factorX;
+                final double factorY;
+                if ((Math.abs(e.getDeltaX()) > Math.abs(e.getDeltaY()))) {
+                    factorX = (e.getDeltaX() > 0 ? ZOOM_FACTOR : 1 / ZOOM_FACTOR);
+                    factorY = 1;
+                } else {
+                    factorX = 1;
+                    factorY = (e.getDeltaY() > 0 ? ZOOM_FACTOR : 1 / ZOOM_FACTOR);
+                }
+                doZoom(factorX, factorY, new Point2D(e.getX(), e.getY()));
             }
-            doZoom(factorX, factorY, new Point2D(e.getX(), e.getY()));
         });
         return outerNode;
     }
@@ -148,9 +151,24 @@ public class ZoomableScrollPane extends ScrollPane {
         this.lockAspectRatio.set(lockAspectRatio);
     }
 
+    public boolean isAllowZoom() {
+        return allowZoom.get();
+    }
+
+    public BooleanProperty allowZoomProperty() {
+        return allowZoom;
+    }
+
+    public void setAllowZoom(boolean allowZoom) {
+        if (isAllowZoom())
+            this.allowZoom.set(allowZoom);
+    }
+
     public void zoomBy(double zoomFactorX, double zoomFactorY) {
-        doZoom(zoomFactorX, zoomFactorY, new Point2D(0.5 * getWidth(), 0.5 * getHeight())); // zoom to center
-        updateScale();
+        if (isAllowZoom()) {
+            doZoom(zoomFactorX, zoomFactorY, new Point2D(0.5 * getWidth(), 0.5 * getHeight())); // zoom to center
+            updateScale();
+        }
     }
 
     public void resetZoom() {
@@ -195,7 +213,5 @@ public class ZoomableScrollPane extends ScrollPane {
             final double vValueDelta = (nodeBounds.getMinY() + viewportBounds.getHeight()) / contentBounds.getHeight();
             setVvalue(getVvalue() + vValueDelta);
         }
-
-
     }
 }
