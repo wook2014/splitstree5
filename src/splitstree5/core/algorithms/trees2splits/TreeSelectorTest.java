@@ -70,8 +70,8 @@ public class TreeSelectorTest {
                     ASplit aSplitST4 = splitsFromST4.getSplits().get(index);
                     assertEquals(aSplit.getA(), aSplitST4.getA());
                     assertEquals(aSplit.getB(), aSplitST4.getB());
-                    assertEquals(aSplit.getWeight(), aSplitST4.getWeight());
-                    assertEquals(aSplit.getConfidence(), aSplitST4.getConfidence());
+                    assertEquals(aSplit.getWeight(), aSplitST4.getWeight(), 0.0);
+                    assertEquals(aSplit.getConfidence(), aSplitST4.getConfidence(), 0.0);
                     assertEquals(aSplit.getLabel(), aSplitST4.getLabel());
                 }
                 splitsFromST4.getSplits().remove(aSplit);

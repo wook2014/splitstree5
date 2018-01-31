@@ -28,6 +28,7 @@ public class ParsimonySplitsTest {
         ProgressListener pl = new ProgressPercentage();
 
         NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/algae_char.nex"));
+        //NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/small_test.nex"));
         np.matchIgnoreCase("#nexus");
         TaxaNexusIO.parse(np, taxa);
         CharactersNexusIO.parse(np, taxa, characters, null);

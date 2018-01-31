@@ -32,7 +32,7 @@ public class NewickTreeOutTest {
         TaxaNexusIO.parse(np, taxa);
         TreesNexusIO.parse(np, taxa, treesBlock, null);
 
-        newickTreeOut.export(writer, treesBlock, null);
+        newickTreeOut.export(writer, taxa, treesBlock);
         writer.close();
 
         byte[] encoded1 = Files.readAllBytes(Paths.get("test/notNexusFiles/trees49.tre"));

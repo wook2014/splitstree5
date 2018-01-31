@@ -12,6 +12,7 @@ import splitstree5.core.misc.Compatibility;
 import splitstree5.utils.SplitsUtilities;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 
 /**
@@ -19,7 +20,7 @@ import java.util.BitSet;
  * Daniel Huson, 2003
  */
 public class ParsimonySplits extends Algorithm<CharactersBlock, SplitsBlock> implements IFromChararacters, IToSplits {
-    private boolean optionGapsAsMissing = true;
+    private boolean optionGapsAsMissing = false;
 
     @Override
     public String getCitation() {
@@ -46,7 +47,9 @@ public class ParsimonySplits extends Algorithm<CharactersBlock, SplitsBlock> imp
             BitSet At = new BitSet();
             At.set(t);
 
+            System.err.println("wgt1 stuff: t="+t+" AT="+At);
             int wgt = pIndex(optionGapsAsMissing, t, At, chars);
+            System.err.println("wgt1: "+wgt);
             if (wgt > 0) {
                 currentSplits.add(new ASplit(At, t, wgt));
             }
@@ -58,6 +61,7 @@ public class ParsimonySplits extends Algorithm<CharactersBlock, SplitsBlock> imp
                 // is Au{t} vs B a split?
                 A.set(t);
                 wgt = Math.min((int) prevSplit.getWeight(), pIndex(optionGapsAsMissing, t, A, chars));
+                //System.err.println("wgt2: "+wgt);
                 if (wgt > 0) {
                     currentSplits.add(new ASplit(A, t, wgt));
                 }
@@ -66,6 +70,7 @@ public class ParsimonySplits extends Algorithm<CharactersBlock, SplitsBlock> imp
                 // is A vs Bu{t} a split?
                 B.set(t);
                 wgt = Math.min((int) prevSplit.getWeight(), pIndex(optionGapsAsMissing, t, B, chars));
+                //System.err.println("wgt3: "+wgt);
                 if (wgt > 0)
                     currentSplits.add(new ASplit(B, t, wgt));
                 B.set(t, false);
@@ -114,6 +119,7 @@ public class ParsimonySplits extends Algorithm<CharactersBlock, SplitsBlock> imp
                             if (!A.get(b2)) {
                                 int val_a1a2b1b2 =
                                         pScore(gapmissingmode, a1, a2, b1, b2, characters);
+                                //System.err.println(" a1, a2, b1, b2 = "+ a1+"; "+ a2+"; " +b1+"; "+ b2);
                                 if (val_a1a2b1b2 != 0)
                                     value = Math.min(value, val_a1a2b1b2);
                                 else
@@ -145,6 +151,23 @@ public class ParsimonySplits extends Algorithm<CharactersBlock, SplitsBlock> imp
         final char[] row_b1 = characters.getRow1(b1);
         final char[] row_b2 = characters.getRow1(b2);
 
+        /*System.err.println("ROW_A1"+ Arrays.toString(row_a1));
+        System.err.println("ROW_A2"+ Arrays.toString(row_a2));
+        System.err.println("ROW_B1"+ Arrays.toString(row_b1));
+        System.err.println("ROW_B2"+ Arrays.toString(row_b2));
+        /*char c_a1x = row_a1[1];
+        char c_a2x = row_a2[1];
+        char c_b1x = row_b1[1];
+        char c_b2x = row_b2[1];
+        System.err.println("chars first "+ c_a1x+c_a2x+c_b1x+c_b2x);
+        char c_a1y = row_a1[nchar];
+        char c_a2y = row_a2[nchar];
+        char c_b1y = row_b1[nchar];
+        char c_b2y = row_b2[nchar];
+        System.err.println("chars last "+ c_a1y+c_a2y+c_b1y+c_b2y);*/
+        //System.err.println("LLLL "+ row_a1.length);
+
+
         int a1a2_b1b2 = 0, a1b1_a2b2 = 0, a1b2_a2b1 = 0;
         for (int i = 1; i <= nchar; i++) {
             char c_a1 = row_a1[i];
@@ -156,14 +179,18 @@ public class ParsimonySplits extends Algorithm<CharactersBlock, SplitsBlock> imp
                 continue;
             if (gapMissingMode && (c_a1 == gapChar || c_a2 == gapChar || c_b1 == gapChar || c_b2 == gapChar))
                 continue;
-            if (c_a1 == c_a2 && c_b1 == c_b2)
+            if (c_a1 == c_a2 && c_b1 == c_b2){
                 a1a2_b1b2++;
+                //System.err.println("CHARS: "+c_a1+c_a2+c_b1+c_b2);
+            }
             if (c_a1 == c_b1 && c_a2 == c_b2)
                 a1b1_a2b2++;
             if (c_a1 == c_b2 && c_a2 == c_b1)
                 a1b2_a2b1++;
         }
         int min_val = Math.min(a1b1_a2b2, a1b2_a2b1);
+        System.err.println("min_val: "+ min_val);
+        System.err.println("a1a2_b1b2 "+ a1a2_b1b2); // todo problem here!
         if (a1a2_b1b2 > min_val)
             return a1a2_b1b2 - min_val;
         else

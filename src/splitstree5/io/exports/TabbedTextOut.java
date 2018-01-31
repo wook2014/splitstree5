@@ -2,13 +2,17 @@ package splitstree5.io.exports;
 
 import splitstree5.core.algorithms.interfaces.*;
 import splitstree5.core.datablocks.*;
+import splitstree5.io.exports.interfaces.*;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.BitSet;
+import java.util.List;
 
 public class TabbedTextOut implements
-        IFromTaxa, IFromChararacters, IFromDistances, IFromTrees, IFromSplits {
+        IFromTaxa, IFromChararacters, IFromDistances, IFromSplits,
+        IExportTaxa, IExportCharacters, IExportDistances, IExportSplits{
 
     public void export(Writer w, TaxaBlock taxa) throws IOException {
 
@@ -50,7 +54,7 @@ public class TabbedTextOut implements
         for (int i = 1; i <= ntax; i++) {
             for (int j = 1; j <= ntax; j++)
                 //w.write(dec.format(distances.get(i, j)) + "\t");
-                w.write(distances.get(i, j) + "\t");
+                w.write((float) distances.get(i, j) + "\t");
             w.write("\n");
         }
         w.write("\n");
@@ -60,14 +64,13 @@ public class TabbedTextOut implements
         for (int i = 1; i <= ntax; i++) {
             for (int j = i + 1; j <= ntax; j++)
                 //w.write(dec.format(distances.get(i, j)) + "\n");
-                w.write(distances.get(i, j) + "\n");
+                w.write((float) distances.get(i, j) + "\n");
         }
         w.write("\n");
         w.flush();
     }
 
     public void export(Writer w, TaxaBlock taxa, SplitsBlock splits) throws IOException {
-
 
         // todo try without trivial splits
         w.write("Splits\n");
@@ -96,8 +99,8 @@ public class TabbedTextOut implements
         w.write("\n");
     }
 
-    public void export(Writer w, TaxaBlock taxa, TreesBlock trees) throws IOException {
-        //todo
+    @Override
+    public List<String> getExtensions() {
+        return Arrays.asList("txt");
     }
-
 }

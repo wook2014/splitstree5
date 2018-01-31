@@ -4,29 +4,29 @@ import com.sun.istack.internal.Nullable;
 import splitstree5.core.algorithms.interfaces.IFromSplits;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.datablocks.SplitsBlock;
+import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.Compatibility;
+import splitstree5.io.exports.interfaces.IExportTrees;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
+import java.util.List;
 
-public class NewickTreeOut implements IFromTrees, IFromSplits {
+public class NewickTreeOut implements IFromTrees, IExportTrees {
 
-    // todo function for for every block + taxa block, not static
-
-    public void export(Writer w, @Nullable TreesBlock trees, @Nullable SplitsBlock splits) throws IOException {
-
-        // todo network
+    public void export(Writer w, TaxaBlock taxa, TreesBlock trees) throws IOException {
 
         if (trees != null) {
             for (int i = 0; i < trees.getNTrees(); i++) {
                 w.write(trees.getTrees().get(i).toString() + ";\n");
             }
-        } else if (splits != null
-                && splits.getCompatibility().equals(Compatibility.compatible)) {
-            // todo move to algorithms ?
-            //PhyloTree tree = TreesUtilities.treeFromSplits(taxa, splits, null);
-            //w.write(tree.toString() + "\n");
         }
+    }
+
+    @Override
+    public List<String> getExtensions() {
+        return Arrays.asList("new", "nwk", "tree", "tre", "treefile");
     }
 }

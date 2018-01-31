@@ -12,14 +12,12 @@ import java.util.List;
 
 public class ClustalOut implements IFromChararacters, IExportCharacters {
 
-    private final String description = "CLUSTAL W (1.82) multiple sequence alignment";
-
     private int optionLineLength = 40;
-    private boolean showConservation = false; // todo
 
     public void export(Writer w, TaxaBlock taxa, CharactersBlock characters)
             throws IOException {
 
+        final String description = "CLUSTAL W (1.82) multiple sequence alignment";
         w.write(description + "\n" + "\n" + "\n");
         int ntax = taxa.getNtax();
         int nchar = characters.getNchar();
