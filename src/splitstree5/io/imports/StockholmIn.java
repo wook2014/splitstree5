@@ -1,5 +1,6 @@
 package splitstree5.io.imports;
 
+import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.FileInputIterator;
 import jloda.util.ProgressListener;
@@ -10,6 +11,7 @@ import splitstree5.io.imports.interfaces.IImportCharacters;
 import splitstree5.io.nexus.CharactersNexusFormat;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -91,7 +93,8 @@ public class StockholmIn extends CharactersFormat implements IToCharacters, IImp
 
     @Override
     public boolean isApplicable(String fileName) throws IOException {
-        return false;
+        String line = Basic.getFirstLineFromFile(new File(fileName));
+        return line != null && line.replaceAll("\\s+", "").toUpperCase().startsWith("#STOCKHOLM");
     }
 
     private void readMatrix(ArrayList<String> matrix, CharactersBlock characters) throws IOException {

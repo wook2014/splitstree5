@@ -1,5 +1,6 @@
 package splitstree5.io.imports;
 
+import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.FileInputIterator;
 import jloda.util.ProgressListener;
@@ -10,6 +11,7 @@ import splitstree5.core.misc.ASplit;
 import splitstree5.io.imports.interfaces.IImportSplits;
 import splitstree5.utils.SplitsUtilities;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -100,7 +102,8 @@ public class FastaSplitsIn implements IToSplits, IImportSplits{
 
     @Override
     public boolean isApplicable(String fileName) throws IOException {
-        return false;
+        String line = Basic.getFirstLineFromFileIgnoreEmptyLines(new File(fileName), ";", 1000);
+        return line != null && line.startsWith(">");
     }
 
     private static void readSplits( int ntax, int nsplits, ArrayList<String> binarySplits, SplitsBlock splitsBlock){

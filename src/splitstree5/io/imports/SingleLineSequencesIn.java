@@ -1,5 +1,6 @@
 package splitstree5.io.imports;
 
+import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.FileInputIterator;
 import jloda.util.ProgressListener;
@@ -9,10 +10,7 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.imports.interfaces.IImportCharacters;
 import splitstree5.io.nexus.CharactersNexusFormat;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.util.*;
 
 public class SingleLineSequencesIn extends CharactersFormat implements IToCharacters, IImportCharacters {
@@ -64,18 +62,7 @@ public class SingleLineSequencesIn extends CharactersFormat implements IToCharac
 
     }
 
-    @Override
-    public List<String> getExtensions() {
-        return null;
-    }
-
-    @Override
-    public boolean isApplicable(String fileName) throws IOException {
-        return false;
-    }
-
     private void readMatrix(ArrayList<String> matrix, CharactersBlock characters) throws IOException {
-        // todo check if valid and set parameters here
 
         Map<Character, Integer> frequency = new LinkedHashMap<>();
         StringBuilder foundSymbols = new StringBuilder("");
@@ -92,6 +79,24 @@ public class SingleLineSequencesIn extends CharactersFormat implements IToCharac
         }
 
         estimateDataType(foundSymbols.toString(), characters, frequency);
+    }
+
+    @Override
+    public List<String> getExtensions() {
+        return null;
+    }
+
+    @Override
+    public boolean isApplicable(String fileName) throws IOException {
+        String line = Basic.getFirstLineFromFile(new File(fileName));
+        String allowedChars = "" + getMissing() + getMatchChar() + getGap();
+        if (line == null) return false;
+        try {
+            checkIfCharactersValid(line, 1, allowedChars);
+        } catch (IOExceptionWithLineNumber exception){
+            return false;
+        }
+        return true;
     }
 
     /**

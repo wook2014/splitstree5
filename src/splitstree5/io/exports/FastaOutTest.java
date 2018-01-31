@@ -60,7 +60,7 @@ public class FastaOutTest {
         fastaOut.export(writer, taxa, splits);
         writer.close();
 
-        byte[] encoded1 = Files.readAllBytes(Paths.get("test/notNexusFiles/fasta/algae_splits.fasta"));
+        byte[] encoded1 = Files.readAllBytes(Paths.get("test/notNexusFiles/algae_splits.fasta"));
         String fromST4 = new String(encoded1, StandardCharsets.UTF_8);
         byte[] encoded2 = Files.readAllBytes(Paths.get("test/exports/TEST_FASTA_splits.fasta"));
         String export = new String(encoded2, StandardCharsets.UTF_8);
@@ -88,7 +88,7 @@ public class FastaOutTest {
         fastaOut.export(writer, taxa, splits);
         writer.close();
 
-        byte[] encoded1 = Files.readAllBytes(Paths.get("test/notNexusFiles/fasta/trees49_splits.fasta"));
+        byte[] encoded1 = Files.readAllBytes(Paths.get("test/notNexusFiles/trees49_splits.fasta"));
         String fromST4 = new String(encoded1, StandardCharsets.UTF_8);
         byte[] encoded2 = Files.readAllBytes(Paths.get("test/exports/TEST_FASTA_splits_trees49.fasta"));
         String export = new String(encoded2, StandardCharsets.UTF_8);
