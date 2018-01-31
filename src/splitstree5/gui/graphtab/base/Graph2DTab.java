@@ -125,8 +125,8 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
                     Platform.runLater(() -> layoutLabels(sparseLabels.get()));
                 });
             }
-            if (!(rootNode.getCenter() instanceof ScrollPane)) {
-                setContent(rootNode);
+            if (!(borderPane.getCenter() instanceof ScrollPane)) {
+                setContent(borderPane);
                 scrollPane = new ZoomableScrollPane(centerPane) {
                     @Override // override node scaling to use coordinate scaling
                     public void updateScale() {
@@ -143,7 +143,9 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
                 centerPane.minHeightProperty().bind(Bindings.createDoubleBinding(() ->
                         scrollPane.getViewportBounds().getHeight(), scrollPane.viewportBoundsProperty()).subtract(20));
 
-                rootNode.setCenter(scrollPane);
+                borderPane.setCenter(scrollPane);
+                // need to put this here after putting the center pane in:
+                borderPane.setTop(findToolBar);
 
                 /* this works once window is open, but first time around...
                 scrollPane.layout();

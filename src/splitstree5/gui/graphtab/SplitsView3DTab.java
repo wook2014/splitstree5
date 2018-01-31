@@ -21,10 +21,10 @@ package splitstree5.gui.graphtab;
 
 import javafx.beans.InvalidationListener;
 import javafx.collections.ListChangeListener;
+import javafx.concurrent.Worker;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
-import javafx.scene.control.MenuItem;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Rotate;
@@ -156,7 +156,7 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
                 final Pair<Point3D, Point3D> pair = getAnchorAndMover(nodeSelectionModel, edgeSelectionModel, node2view);
                 final Point3D anchor = pair.getFirst();
                 final Point3D mover = pair.getSecond();
-                final Point2D delta = new Point2D(e.getScreenX() - mouseX, e.getScreenY() - mouseY);
+                final Point2D delta = new Point2D(mouseX - e.getScreenX(), mouseY - e.getScreenY());
 
                 //noinspection SuspiciousNameCombination
                 final Point3D dragOrthogonalAxis = new Point3D(delta.getY(), -delta.getX(), 0);
@@ -324,11 +324,11 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
     @Override
     public void updateMenus(MenuController controller) {
         super.updateMenus(controller);
-        MenuItem relaxMenuItem = new MenuItem("Relax...");
-        relaxMenuItem.setOnAction((z) -> {
-            iterations = 20;
 
+        controller.getRelaxMenuItem().setOnAction((z) -> {
+            iterations = 50;
 
+            controller.getRelaxMenuItem().setDisable(true);
             if (service == null) {
                 service = new EmbeddingService();
                 service.setOnSucceeded((x) -> {
@@ -339,18 +339,18 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
                     for (Edge e : graph.edges()) {
                         ((EdgeView3D) edge2view.get(e)).updateCoordinates(((NodeView3D) node2view.get(e.getSource())).getLocation(), ((NodeView3D) node2view.get(e.getTarget())).getLocation());
                     }
-                    if (--iterations > 0) {
+                    if (--iterations >= 0) {
                         service.restart();
                     }
                 });
-                service.stateProperty().addListener((c, o, n) -> System.err.println("state: " + n));
+                service.stateProperty().addListener((c, o, n) -> {
+                    if (iterations == 0)
+                        controller.getRelaxMenuItem().setDisable(n != Worker.State.RUNNING);
+                });
             }
             service.setup(graph, node2view, 5, false, true);
             service.restart();
         });
-
-
-        controller.getZoomInMenuItem().getParentMenu().getItems().add(relaxMenuItem);
     }
 
     private static Point3D from2to3D(Point2D point) {

@@ -214,6 +214,45 @@ public class NodeArray<T> extends GraphBase implements NodeAssociation<T> {
             }
         };
     }
+
+    /**
+     * get an iterator over all non-null values
+     *
+     * @return iterator
+     */
+    public Iterable<Node> keys() {
+        return () -> new Iterator<Node>() {
+            private Node v = getOwner().getFirstNode();
+
+            {
+                while (v != null) {
+                    if (data[v.getId()] != null)
+                        break;
+                    v = v.getNext();
+                }
+            }
+
+            @Override
+            public boolean hasNext() {
+                return v != null;
+            }
+
+            @Override
+            public Node next() {
+                if (v == null)
+                    throw new NoSuchElementException();
+                Node result = v;
+                v = v.getNext();
+                while (v != null) {
+                    if (data[v.getId()] != null)
+                        break;
+                    v = v.getNext();
+                }
+                return result;
+            }
+        };
+    }
+
 }
 
 // EOF

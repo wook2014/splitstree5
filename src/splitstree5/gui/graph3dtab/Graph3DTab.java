@@ -148,7 +148,7 @@ public abstract class Graph3DTab<G extends PhyloGraph> extends GraphTabBase<G> {
             if (!sceneIsSetup) {
                 sceneIsSetup = true;
 
-                setContent(rootNode);
+                setContent(borderPane);
                 SubScene subScene = new SubScene(group, centerPane.getWidth(), centerPane.getHeight(), true, SceneAntialiasing.BALANCED);
                 subScene.setCamera(camera);
 
@@ -171,7 +171,9 @@ public abstract class Graph3DTab<G extends PhyloGraph> extends GraphTabBase<G> {
 
                 subScene.widthProperty().bind(centerPane.widthProperty());
                 subScene.heightProperty().bind(centerPane.heightProperty());
-                rootNode.setCenter(centerPane);
+                borderPane.setCenter(centerPane);
+                // need to put this here after putting the center pane in:
+                borderPane.setTop(findToolBar);
             }
 
             for (NodeViewBase nv : node2view.values()) {
@@ -234,7 +236,11 @@ public abstract class Graph3DTab<G extends PhyloGraph> extends GraphTabBase<G> {
     @Override
     public void updateMenus(MenuController controller) {
         super.updateMenus(controller);
-        controller.getResetMenuItem().setOnAction((e -> worldTransformProperty.setValue(new Rotate())));
+        controller.getResetMenuItem().setOnAction((e -> {
+            worldTransformProperty.setValue(new Rotate());
+            camera.setTranslateX(0);
+            camera.setTranslateY(0);
+        }));
 
         controller.getZoomInMenuItem().setOnAction((e) -> camera.setTranslateY(camera.getTranslateY() + 10));
         controller.getZoomInMenuItem().setText("Move Up");

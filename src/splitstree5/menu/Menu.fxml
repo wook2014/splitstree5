@@ -233,7 +233,7 @@
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="resetMenuItem" mnemonicParsing="false" text="Reset">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="DIGIT0" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="DIGIT9" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
@@ -248,6 +248,11 @@
                     </accelerator>
                 </MenuItem>
                 <MenuItem fx:id="flipMenuItem" text="Flip">
+                </MenuItem>
+                <MenuItem fx:id="relaxMenuItem" text="Relax">
+                    <accelerator>
+                        <KeyCodeCombination alt="UP" code="R" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
+                    </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="formatNodesMenuItem" text="Format...">
@@ -270,14 +275,85 @@
                 </MenuItem>
             </items>
         </Menu>
-        <Menu mnemonicParsing="false" text="Distances"/>
-        <Menu mnemonicParsing="false" text="Data"/>
-        <Menu mnemonicParsing="false" text="Trees"/>
-        <Menu mnemonicParsing="false" text="Networks"/>
-        <Menu mnemonicParsing="false" text="Analysis"/>
-        <Menu mnemonicParsing="false" text="Workflow">
+        <Menu mnemonicParsing="false" text="Data">
             <items>
-                <CheckMenuItem mnemonicParsing="false" text="Show Workflow"/>
+                <MenuItem fx:id="filterTaxaMenuItem" mnemonicParsing="false" text="Filter Taxa"/>
+                <MenuItem fx:id="filterCharactersMenuItem" mnemonicParsing="false" text="Filter Characters"/>
+                <MenuItem fx:id="filterTreesMenuItem" mnemonicParsing="false" text="Filter Trees"/>
+                <MenuItem fx:id="filterSplitsMenuItem" mnemonicParsing="false" text="Filter Splits"/>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="traitsMenuItem" mnemonicParsing="false" text="Traits"/>
+            </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Distances">
+            <items>
+                <MenuItem fx:id="uncorrectedPMenuItem" mnemonicParsing="false" text="Uncorrected P"/>
+                <MenuItem fx:id="logDetMenuItem" mnemonicParsing="false" text="Log Det"/>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="hky85MenuItem" mnemonicParsing="false" text="HKY 85"/>
+                <MenuItem fx:id="jukesCantorMenuItem" mnemonicParsing="false" text="Jukes Cantor"/>
+                <MenuItem fx:id="k2pMenuItem" mnemonicParsing="false" text="K2P"/>
+                <MenuItem fx:id="k3stMenuItem" mnemonicParsing="false" text="K3ST"/>
+                <MenuItem fx:id="f81MenuItem" mnemonicParsing="false" text="F81"/>
+                <MenuItem fx:id="f84MenuItem" mnemonicParsing="false" text="F84"/>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="proteinMLDistanceMenuItem" mnemonicParsing="false" text="Protein ML Dist"/>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="njMenuItem" mnemonicParsing="false" text="Gene Content Distance"/>
+            </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Tree">
+            <items>
+                <MenuItem mnemonicParsing="false" text="NJ"/>
+                <MenuItem fx:id="bioNJMenuItem" mnemonicParsing="false" text="BioNJ"/>
+                <MenuItem fx:id="upgmaMenuItem" mnemonicParsing="false" text="UPGMA"/>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="bunemanTreeMenuItem" mnemonicParsing="false" text="Buneman Tree"/>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="consensusTreeMenuItem" mnemonicParsing="false" text="Consensus Tree"/>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="tanglegramMenuItem" mnemonicParsing="false" text="Tanglegram"/>
+            </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Network">
+            <items>
+                <MenuItem fx:id="neighborNetMenuItem" mnemonicParsing="false" text="Neighbor Net"/>
+                <MenuItem fx:id="splitDecompositionMenuItem" mnemonicParsing="false" text="Split Decomposition"/>
+                <MenuItem fx:id="parsimonySplitsMenuItem" mnemonicParsing="false" text="Parsimony Splits"/>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="consensusNetworkMenuItem" mnemonicParsing="false" text="Consensus Network"/>
+                <MenuItem fx:id="filteredSuperNetworkMenuItem" mnemonicParsing="false" text="Filtered Super Network"/>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="medianNetworkMenuItem" mnemonicParsing="false" text="Median Network"/>
+                <MenuItem fx:id="medianJoiningMenuItem" mnemonicParsing="false" text="Median Joining Network"/>
+                <MenuItem fx:id="minSpanningNetworkMenuItem" mnemonicParsing="false" text="Min Spanning Network"/>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="consensusClusterNetworkMenuItem" mnemonicParsing="false"
+                          text="Consensus Cluster Network"/>
+                <MenuItem fx:id="hybridizationNetworkMenuItem" mnemonicParsing="false" text="Hybridization Network"/>
+            </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="PCoA">
+            <items>
+                <MenuItem fx:id="pcoaMenuItem" mnemonicParsing="false" text="PCoA"/>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="brayCurtisMenuItem" mnemonicParsing="false" text="Bray Curtis"/>
+                <MenuItem fx:id="jsdMenuItem" mnemonicParsing="false" text="JSD"/>
+                <MenuItem fx:id="bootstrappingMenuItem" mnemonicParsing="false" text="Euclidean"/>
+            </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Analysis">
+            <items>
+                <MenuItem mnemonicParsing="false" text="Bootstrapping..."/>
+                <MenuItem fx:id="showBootStrapNetworkMenuItem" mnemonicParsing="false" text="Show Bootstrap Network"/>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="estimateInvariableSitesMenuItem" mnemonicParsing="false"
+                          text="Esimate Invariable Sites..."/>
+                <MenuItem fx:id="computePhylogeneticDiversityMenuItem" mnemonicParsing="false"
+                          text="Compute Phylogenetic Diversity"/>
+                <MenuItem fx:id="computeDeltaScoreMenuItem" mnemonicParsing="false" text="Compute Delta Score"/>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="showWorkflowMenuItem" mnemonicParsing="false" text="Show Workflow"/>
             </items>
         </Menu>
         <Menu fx:id="windowMenu" mnemonicParsing="false" text="Window">
@@ -287,8 +363,14 @@
                         <KeyCodeCombination alt="UP" code="H" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
+                <CheckMenuItem fx:id="showMessageWindowMenuItem" mnemonicParsing="false" text="Show Message Window..."/>
             </items>
         </Menu>
-        <Menu mnemonicParsing="false" text="Help"/>
+        <Menu mnemonicParsing="false" text="Help">
+            <items>
+                <MenuItem fx:id="communityWebsiteMenuItem" mnemonicParsing="false" text="Community Webpage..."/>
+                <MenuItem fx:id="checkForUpdatesMenuItem" mnemonicParsing="false" text="Check For Updates..."/>
+            </items>
+        </Menu>
     </menus>
 </MenuBar>

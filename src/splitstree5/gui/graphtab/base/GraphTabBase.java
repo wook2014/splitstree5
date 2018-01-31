@@ -79,7 +79,7 @@ public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISa
     protected final ASelectionModel<Node> nodeSelectionModel = new ASelectionModel<>();
     protected final ASelectionModel<Edge> edgeSelectionModel = new ASelectionModel<>();
 
-    protected final BorderPane rootNode = new BorderPane();
+    protected final BorderPane borderPane = new BorderPane();
     protected final Label label = new Label("Graph2DTab");
     protected G graph;
 
@@ -118,17 +118,17 @@ public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISa
 
             findToolBar = new FindToolBar(nodeLabelSearcher, edgeLabelSearcher);
             //findToolBar.setShowReplaceToolBar(true);
-            rootNode.setTop(findToolBar);
+            borderPane.setTop(findToolBar);
 
             nodeLabelSearcher.foundProperty().addListener((c, o, n) -> {
-                if (n != null) {
+                if (n != null && scrollPane != null) {
                     final NodeViewBase nv = getNode2view().get(n);
                     if (nv.getLabel() != null)
                         scrollPane.ensureVisible(nv.getLabel());
                 }
             });
             edgeLabelSearcher.foundProperty().addListener((c, o, n) -> {
-                if (n != null) {
+                if (n != null && scrollPane != null) {
                     final EdgeViewBase ev = getEdge2view().get(n);
                     if (ev.getLabel() != null)
                         scrollPane.ensureVisible(ev.getLabel());

@@ -54,6 +54,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class MenuController {
+
     @FXML
     private MenuBar menuBar;
 
@@ -126,7 +127,6 @@ public class MenuController {
     @FXML
     private MenuItem deleteMenuItem;
 
-
     @FXML
     private MenuItem findMenuItem;
 
@@ -155,20 +155,16 @@ public class MenuController {
     private MenuItem selectAllLabeledNodesMenuItem;
 
     @FXML
-    private MenuItem selectAllEdgesMenuItem;
-
-    @FXML
     private MenuItem selectAllBelowMenuItem;
-
-
-    @FXML
-    private MenuItem selectFromPreviousMenuItem;
 
     @FXML
     private MenuItem invertNodeSelectionMenuItem;
 
     @FXML
     private MenuItem deselectAllNodesMenuItem;
+
+    @FXML
+    private MenuItem selectAllEdgesMenuItem;
 
     @FXML
     private MenuItem selectAllLabeledEdgesMenuItem;
@@ -181,6 +177,9 @@ public class MenuController {
 
     @FXML
     private MenuItem deselectEdgesMenuItem;
+
+    @FXML
+    private MenuItem selectFromPreviousMenuItem;
 
     @FXML
     private MenuItem increaseFontSizeMenuItem;
@@ -207,6 +206,9 @@ public class MenuController {
     private MenuItem flipMenuItem;
 
     @FXML
+    private MenuItem relaxMenuItem;
+
+    @FXML
     private MenuItem formatNodesMenuItem;
 
     @FXML
@@ -219,10 +221,136 @@ public class MenuController {
     private MenuItem fullScreenMenuItem;
 
     @FXML
+    private MenuItem filterTaxaMenuItem;
+
+    @FXML
+    private MenuItem filterCharactersMenuItem;
+
+    @FXML
+    private MenuItem filterTreesMenuItem;
+
+    @FXML
+    private MenuItem filterSplitsMenuItem;
+
+    @FXML
+    private MenuItem traitsMenuItem;
+
+    @FXML
+    private MenuItem uncorrectedPMenuItem;
+
+    @FXML
+    private MenuItem logDetMenuItem;
+
+    @FXML
+    private MenuItem hky85MenuItem;
+
+    @FXML
+    private MenuItem jukesCantorMenuItem;
+
+    @FXML
+    private MenuItem k2pMenuItem;
+
+    @FXML
+    private MenuItem k3stMenuItem;
+
+    @FXML
+    private MenuItem f81MenuItem;
+
+    @FXML
+    private MenuItem f84MenuItem;
+
+    @FXML
+    private MenuItem proteinMLDistanceMenuItem;
+
+    @FXML
+    private MenuItem njMenuItem;
+
+    @FXML
+    private MenuItem bioNJMenuItem;
+
+    @FXML
+    private MenuItem upgmaMenuItem;
+
+    @FXML
+    private MenuItem bunemanTreeMenuItem;
+
+    @FXML
+    private MenuItem consensusTreeMenuItem;
+
+    @FXML
+    private MenuItem tanglegramMenuItem;
+
+    @FXML
+    private MenuItem neighborNetMenuItem;
+
+    @FXML
+    private MenuItem splitDecompositionMenuItem;
+
+    @FXML
+    private MenuItem parsimonySplitsMenuItem;
+
+    @FXML
+    private MenuItem consensusNetworkMenuItem;
+
+    @FXML
+    private MenuItem filteredSuperNetworkMenuItem;
+
+    @FXML
+    private MenuItem medianNetworkMenuItem;
+
+    @FXML
+    private MenuItem medianJoiningMenuItem;
+
+    @FXML
+    private MenuItem minSpanningNetworkMenuItem;
+
+    @FXML
+    private MenuItem consensusClusterNetworkMenuItem;
+
+    @FXML
+    private MenuItem hybridizationNetworkMenuItem;
+
+    @FXML
+    private MenuItem pcoaMenuItem;
+
+    @FXML
+    private MenuItem brayCurtisMenuItem;
+
+    @FXML
+    private MenuItem jsdMenuItem;
+
+    @FXML
+    private MenuItem bootstrappingMenuItem;
+
+    @FXML
+    private MenuItem showBootStrapNetworkMenuItem;
+
+    @FXML
+    private MenuItem estimateInvariableSitesMenuItem;
+
+    @FXML
+    private MenuItem computePhylogeneticDiversityMenuItem;
+
+    @FXML
+    private MenuItem computeDeltaScoreMenuItem;
+
+    @FXML
+    private MenuItem showWorkflowMenuItem;
+
+    @FXML
     private Menu windowMenu;
 
     @FXML
     private MenuItem aboutMenuItem;
+
+    @FXML
+    private CheckMenuItem showMessageWindowMenuItem;
+
+    @FXML
+    private MenuItem communityWebsiteMenuItem;
+
+    @FXML
+    private MenuItem checkForUpdatesMenuItem;
 
     public MenuBar getMenuBar() {
         return menuBar;
@@ -308,30 +436,28 @@ public class MenuController {
         return copyImageMenuItem;
     }
 
+    public MenuItem getPasteMenuItem() {
+        return pasteMenuItem;
+    }
 
     public MenuItem getDuplicateMenuItem() {
         return duplicateMenuItem;
-    }
-
-    public MenuItem getPasteMenuItem() {
-        return pasteMenuItem;
     }
 
     public MenuItem getDeleteMenuItem() {
         return deleteMenuItem;
     }
 
-
     public MenuItem getFindMenuItem() {
         return findMenuItem;
     }
 
-    public MenuItem getReplaceMenuItem() {
-        return replaceMenuItem;
-    }
-
     public MenuItem getFindAgainMenuItem() {
         return findAgainMenuItem;
+    }
+
+    public MenuItem getReplaceMenuItem() {
+        return replaceMenuItem;
     }
 
     public MenuItem getGotoLineMenuItem() {
@@ -358,16 +484,8 @@ public class MenuController {
         return selectAllLabeledNodesMenuItem;
     }
 
-    public MenuItem getSelectAllEdgesMenuItem() {
-        return selectAllEdgesMenuItem;
-    }
-
     public MenuItem getSelectAllBelowMenuItem() {
         return selectAllBelowMenuItem;
-    }
-
-    public MenuItem getSelectFromPreviousMenuItem() {
-        return selectFromPreviousMenuItem;
     }
 
     public MenuItem getInvertNodeSelectionMenuItem() {
@@ -376,6 +494,10 @@ public class MenuController {
 
     public MenuItem getDeselectAllNodesMenuItem() {
         return deselectAllNodesMenuItem;
+    }
+
+    public MenuItem getSelectAllEdgesMenuItem() {
+        return selectAllEdgesMenuItem;
     }
 
     public MenuItem getSelectAllLabeledEdgesMenuItem() {
@@ -392,6 +514,10 @@ public class MenuController {
 
     public MenuItem getDeselectEdgesMenuItem() {
         return deselectEdgesMenuItem;
+    }
+
+    public MenuItem getSelectFromPreviousMenuItem() {
+        return selectFromPreviousMenuItem;
     }
 
     public MenuItem getIncreaseFontSizeMenuItem() {
@@ -426,6 +552,10 @@ public class MenuController {
         return flipMenuItem;
     }
 
+    public MenuItem getRelaxMenuItem() {
+        return relaxMenuItem;
+    }
+
     public MenuItem getFormatNodesMenuItem() {
         return formatNodesMenuItem;
     }
@@ -442,12 +572,180 @@ public class MenuController {
         return fullScreenMenuItem;
     }
 
+    public MenuItem getFilterTaxaMenuItem() {
+        return filterTaxaMenuItem;
+    }
+
+    public MenuItem getFilterCharactersMenuItem() {
+        return filterCharactersMenuItem;
+    }
+
+    public MenuItem getFilterTreesMenuItem() {
+        return filterTreesMenuItem;
+    }
+
+    public MenuItem getFilterSplitsMenuItem() {
+        return filterSplitsMenuItem;
+    }
+
+    public MenuItem getTraitsMenuItem() {
+        return traitsMenuItem;
+    }
+
+    public MenuItem getUncorrectedPMenuItem() {
+        return uncorrectedPMenuItem;
+    }
+
+    public MenuItem getLogDetMenuItem() {
+        return logDetMenuItem;
+    }
+
+    public MenuItem getHky85MenuItem() {
+        return hky85MenuItem;
+    }
+
+    public MenuItem getJukesCantorMenuItem() {
+        return jukesCantorMenuItem;
+    }
+
+    public MenuItem getK2pMenuItem() {
+        return k2pMenuItem;
+    }
+
+    public MenuItem getK3stMenuItem() {
+        return k3stMenuItem;
+    }
+
+    public MenuItem getF81MenuItem() {
+        return f81MenuItem;
+    }
+
+    public MenuItem getF84MenuItem() {
+        return f84MenuItem;
+    }
+
+    public MenuItem getProteinMLDistanceMenuItem() {
+        return proteinMLDistanceMenuItem;
+    }
+
+    public MenuItem getNjMenuItem() {
+        return njMenuItem;
+    }
+
+    public MenuItem getBioNJMenuItem() {
+        return bioNJMenuItem;
+    }
+
+    public MenuItem getUpgmaMenuItem() {
+        return upgmaMenuItem;
+    }
+
+    public MenuItem getBunemanTreeMenuItem() {
+        return bunemanTreeMenuItem;
+    }
+
+    public MenuItem getConsensusTreeMenuItem() {
+        return consensusTreeMenuItem;
+    }
+
+    public MenuItem getTanglegramMenuItem() {
+        return tanglegramMenuItem;
+    }
+
+    public MenuItem getNeighborNetMenuItem() {
+        return neighborNetMenuItem;
+    }
+
+    public MenuItem getSplitDecompositionMenuItem() {
+        return splitDecompositionMenuItem;
+    }
+
+    public MenuItem getParsimonySplitsMenuItem() {
+        return parsimonySplitsMenuItem;
+    }
+
+    public MenuItem getConsensusNetworkMenuItem() {
+        return consensusNetworkMenuItem;
+    }
+
+    public MenuItem getFilteredSuperNetworkMenuItem() {
+        return filteredSuperNetworkMenuItem;
+    }
+
+    public MenuItem getMedianNetworkMenuItem() {
+        return medianNetworkMenuItem;
+    }
+
+    public MenuItem getMedianJoiningMenuItem() {
+        return medianJoiningMenuItem;
+    }
+
+    public MenuItem getMinSpanningNetworkMenuItem() {
+        return minSpanningNetworkMenuItem;
+    }
+
+    public MenuItem getConsensusClusterNetworkMenuItem() {
+        return consensusClusterNetworkMenuItem;
+    }
+
+    public MenuItem getHybridizationNetworkMenuItem() {
+        return hybridizationNetworkMenuItem;
+    }
+
+    public MenuItem getPcoaMenuItem() {
+        return pcoaMenuItem;
+    }
+
+    public MenuItem getBrayCurtisMenuItem() {
+        return brayCurtisMenuItem;
+    }
+
+    public MenuItem getJsdMenuItem() {
+        return jsdMenuItem;
+    }
+
+    public MenuItem getBootstrappingMenuItem() {
+        return bootstrappingMenuItem;
+    }
+
+    public MenuItem getShowBootStrapNetworkMenuItem() {
+        return showBootStrapNetworkMenuItem;
+    }
+
+    public MenuItem getEstimateInvariableSitesMenuItem() {
+        return estimateInvariableSitesMenuItem;
+    }
+
+    public MenuItem getComputePhylogeneticDiversityMenuItem() {
+        return computePhylogeneticDiversityMenuItem;
+    }
+
+    public MenuItem getComputeDeltaScoreMenuItem() {
+        return computeDeltaScoreMenuItem;
+    }
+
+    public MenuItem getShowWorkflowMenuItem() {
+        return showWorkflowMenuItem;
+    }
+
     public Menu getWindowMenu() {
         return windowMenu;
     }
 
     public MenuItem getAboutMenuItem() {
         return aboutMenuItem;
+    }
+
+    public CheckMenuItem getShowMessageWindowMenuItem() {
+        return showMessageWindowMenuItem;
+    }
+
+    public MenuItem getCommunityWebsiteMenuItem() {
+        return communityWebsiteMenuItem;
+    }
+
+    public MenuItem getCheckForUpdatesMenuItem() {
+        return checkForUpdatesMenuItem;
     }
 
     private final Set<MenuItem> alwaysOnMenuItems = new HashSet<>();
@@ -490,6 +788,7 @@ public class MenuController {
 
         final InvalidationListener invalidationListener = observable -> {
             windowMenu.getItems().clear();
+            windowMenu.getItems().add(getShowMessageWindowMenuItem());
             int count = 0;
             for (MainWindow mainWindow : MainWindowManager.getInstance().getMainWindows()) {
                 if (count == 0)

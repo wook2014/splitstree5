@@ -76,7 +76,7 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
             split2edges.get(splitId).add(edge);
         }
 
-        nodeLocations = new NodeArray<Point3D>(graph);
+        nodeLocations = new NodeArray<>(graph);
         for (Node v : graph.nodes()) {
             nodeLocations.set(v, ((NodeView3D) node2view.get(v)).getLocation());
         }
@@ -258,6 +258,8 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
             if (isCancelled())
                 return null;
         }
+        center(nodeLocations);
+
         return nodeLocations;
     }
 
@@ -284,5 +286,33 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
             maxZ = point.getZ() > maxZ ? point.getZ() : maxZ;
         }
         return (new Point3D(maxX, maxY, maxZ)).distance(new Point3D(minX, minY, minZ));
+    }
+
+
+    /**
+     * center the coordinates
+     *
+     * @param points
+     */
+    public static void center(NodeArray<Point3D> points) {
+        double minX = Double.MAX_VALUE;
+        double maxX = Double.MIN_VALUE;
+        double minY = Double.MAX_VALUE;
+        double maxY = Double.MIN_VALUE;
+        double minZ = Double.MAX_VALUE;
+        double maxZ = Double.MIN_VALUE;
+        for (Point3D point : points.values()) {
+            minX = point.getX() < minX ? point.getX() : minX;
+            minY = point.getY() < minY ? point.getY() : minY;
+            minZ = point.getZ() < minZ ? point.getZ() : minZ;
+            maxX = point.getX() > maxX ? point.getX() : maxX;
+            maxY = point.getY() > maxY ? point.getY() : maxY;
+            maxZ = point.getZ() > maxZ ? point.getZ() : maxZ;
+        }
+        final Point3D center = new Point3D(0.5 * (maxX + minX), 0.5 * (maxY + minY), 0.5 * (maxZ + minZ));
+
+        for (Node v : points.keys()) {
+            points.set(v, points.get(v).subtract(center));
+        }
     }
 }
