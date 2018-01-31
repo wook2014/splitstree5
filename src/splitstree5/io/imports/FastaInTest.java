@@ -29,7 +29,7 @@ public class FastaInTest {
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
         try (ProgressPercentage progress = new ProgressPercentage("Test")) {
-            fastaIn.parse(progress, "test/notNexusFiles/smallTest.fasta", taxaBlock, charactersBlock, null);
+            fastaIn.parse(progress, "test/notNexusFiles/smallTest.fasta", taxaBlock, charactersBlock);
         }
 
         // printing
@@ -49,7 +49,7 @@ public class FastaInTest {
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
         try (ProgressPercentage progress = new ProgressPercentage("Test")) {
-            fastaIn.parse(progress, "test/notNexusFiles/algae.fasta", taxaBlock, charactersBlock, null);
+            fastaIn.parse(progress, "test/notNexusFiles/algae.fasta", taxaBlock, charactersBlock);
         }
 
         // printing

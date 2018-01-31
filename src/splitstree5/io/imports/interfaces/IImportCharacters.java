@@ -37,6 +37,6 @@ public interface IImportCharacters extends IImporter {
      * @param taxaBlock
      * @param dataBlock
      */
-    void parse(ProgressListener progressListener, String fileName, TaxaBlock taxaBlock, CharactersBlock dataBlock, @Nullable CharactersNexusFormat format)
+    void parse(ProgressListener progressListener, String fileName, TaxaBlock taxaBlock, CharactersBlock dataBlock)
             throws CanceledException, IOException;
 }

@@ -21,8 +21,9 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
 
     public static final List<String> extensions = new ArrayList<>(Arrays.asList("phy", "phylip"));
 
+    // todo out : Format
     @Override
-    public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format)
+    public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxa, CharactersBlock characters)
             throws CanceledException, IOException {
         final ArrayList<String> labels = new ArrayList<>();
         final ArrayList<String> sequences = new ArrayList<>();
@@ -84,8 +85,8 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
             setCharactersStandard(labels, sequences, ntax, nchar, taxa, characters);
         else if (sameLengthNtax) {
             setCharactersInterleaved(labels, sequences, ntax, nchar, taxa, characters);
-            format.setInterleave(true);
-            format.setColumnsPerBlock(sequences.get(0).length());
+            /*format.setInterleave(true);
+            format.setColumnsPerBlock(sequences.get(0).length());*/
         } else
             setCharactersStandardEOL(labels, sequences, ntax, nchar, taxa, characters);
 

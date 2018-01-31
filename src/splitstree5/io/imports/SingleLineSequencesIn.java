@@ -20,7 +20,7 @@ public class SingleLineSequencesIn extends CharactersFormat implements IToCharac
     //public static final List<String> extensions = null;
 
     @Override
-    public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format)
+    public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, CharactersBlock characters)
             throws CanceledException, IOException {
         final ArrayList<String> taxonNames = new ArrayList<>();
         final ArrayList<String> matrix = new ArrayList<>();

@@ -21,9 +21,8 @@ public class SingleLineSequencesInTest {
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
         ProgressListener pl = new ProgressPercentage();
-        CharactersNexusFormat format = new CharactersNexusFormat();
 
-        singleLineSequencesIn.parse(pl, "test/notNexusFiles/singleLineDNA.txt", taxaBlock, charactersBlock, format);
+        singleLineSequencesIn.parse(pl, "test/notNexusFiles/singleLineDNA.txt", taxaBlock, charactersBlock);
 
         // printing
         final StringWriter w = new StringWriter();

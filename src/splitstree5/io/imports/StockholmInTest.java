@@ -21,8 +21,7 @@ public class StockholmInTest {
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
         ProgressListener pl = new ProgressPercentage();
-        CharactersNexusFormat format = new CharactersNexusFormat();
-        stockholmIn.parse(pl,"test/notNexusFiles/PF02171_seed.txt", taxaBlock, charactersBlock, format);
+        stockholmIn.parse(pl,"test/notNexusFiles/PF02171_seed.txt", taxaBlock, charactersBlock);
 
         // printing
         final StringWriter w = new StringWriter();
