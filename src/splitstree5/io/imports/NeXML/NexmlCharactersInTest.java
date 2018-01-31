@@ -24,10 +24,9 @@ public class NexmlCharactersInTest {
 
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
-        CharactersNexusFormat charactersNexusFormat = new CharactersNexusFormat();
         ProgressListener pl = new ProgressPercentage();
 
-        nexmlCharactersIn.parse(pl, "test/neXML/M4097_seq.xml", taxaBlock, charactersBlock, charactersNexusFormat);
+        nexmlCharactersIn.parse(pl, "test/neXML/M4097_seq.xml", taxaBlock, charactersBlock);
         // printing
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
@@ -42,10 +41,9 @@ public class NexmlCharactersInTest {
 
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
-        CharactersNexusFormat charactersNexusFormat = new CharactersNexusFormat();
         ProgressListener pl = new ProgressPercentage();
 
-        nexmlCharactersIn.parse(pl, "test/neXML/M4311_cell.xml", taxaBlock, charactersBlock, charactersNexusFormat);
+        nexmlCharactersIn.parse(pl, "test/neXML/M4311_cell.xml", taxaBlock, charactersBlock);
         // printing
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
