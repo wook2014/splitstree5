@@ -30,14 +30,14 @@ public class Nei_Li_RestrictionDistance extends Algorithm<CharactersBlock, Dista
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 
         int ntax = taxaBlock.getNtax();
         distancesBlock.setNtax(ntax);
 
-        progressListener.setTasks("Nei Li (1979) Restriction Site Distance", "Init.");
-        progressListener.setMaximum(ntax);
+        progress.setTasks("Nei Li (1979) Restriction Site Distance", "Init.");
+        progress.setMaximum(ntax);
 
         double maxDist = 0.0;
         int numUndefined = 0;
@@ -75,9 +75,9 @@ public class Nei_Li_RestrictionDistance extends Algorithm<CharactersBlock, Dista
                     maxDist = dist;
 
             }
-            progressListener.incrementProgress();
+            progress.incrementProgress();
         }
-        progressListener.close();
+        progress.close();
         if (numUndefined > 0) {
             for (int s = 1; s <= ntax; s++)
                 for (int t = s + 1; t <= ntax; t++) {

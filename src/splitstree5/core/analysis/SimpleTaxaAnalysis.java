@@ -42,7 +42,7 @@ public class SimpleTaxaAnalysis extends AConnector<TaxaBlock, AnalysisResultBloc
 
         setAlgorithm(new Algorithm<TaxaBlock, AnalysisResultBlock>() {
             @Override
-            public void compute(ProgressListener progressListener, TaxaBlock ignored, TaxaBlock parent, AnalysisResultBlock child) throws InterruptedException {
+            public void compute(ProgressListener progress, TaxaBlock ignored, TaxaBlock parent, AnalysisResultBlock child) throws InterruptedException {
                 child.setShortDescription("Number of taxa: " + parent.getTaxa().size());
             }
         });

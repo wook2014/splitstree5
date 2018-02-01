@@ -28,7 +28,7 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 
         System.err.println("Not tested under construction");

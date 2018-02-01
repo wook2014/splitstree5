@@ -259,7 +259,7 @@ public class PhyloGraph extends Graph {
      * @return the Node representing the taxon with id <code>taxId</code>.
      */
     public Node getTaxon2Node(int taxId) {
-        if (taxId <= taxon2node.size())
+        if (taxId > 0 && taxId <= taxon2node.size())
             return taxon2node.get(taxId - 1);
         else {
             //  System.err.println("getTaxon2Node: no Node set for taxId " + taxId + " (taxa2Nodes.size(): " + taxon2node.size() + ")");

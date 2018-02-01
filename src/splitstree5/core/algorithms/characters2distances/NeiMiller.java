@@ -38,7 +38,7 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 
         int nchar = charactersBlock.getNchar();
@@ -62,8 +62,8 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
 
         int maxProgress = 5 * taxaBlock.getNtax() + charactersBlock.getNchar();
 
-        progressListener.setTasks("NeiMiller distance", "Init.");
-        progressListener.setMaximum(maxProgress);
+        progress.setTasks("NeiMiller distance", "Init.");
+        progress.setMaximum(maxProgress);
 
         for (c = 1; c <= nchar; c++) {
             //if (!characters.isMasked(c)) {
@@ -86,7 +86,7 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
             //}
 
             //doc.notifySetProgress(100 * c / maxProgress);
-            progressListener.incrementProgress();
+            progress.incrementProgress();
         }
 
         // Compute mij_k:
@@ -105,7 +105,7 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
             }
 
             //doc.notifySetProgress((characters.getNchar() + i) * 100 / maxProgress);
-            progressListener.incrementProgress();
+            progress.incrementProgress();
         }
 
         // Compute sij_k  (equation 2):
@@ -129,7 +129,7 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
             }
 
             //doc.notifySetProgress((characters.getNchar() + ntax + i) * 100 / maxProgress);
-            progressListener.incrementProgress();
+            progress.incrementProgress();
         }
 
         // Compute dhij_k (i.e. dij_k_hat in equation (3)):
@@ -152,7 +152,7 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
             }
 
             //doc.notifySetProgress(100 * (characters.getNchar() + 2 * ntax + i) / maxProgress);
-            progressListener.incrementProgress();
+            progress.incrementProgress();
         }
 
         // Compute mk_k (mk_bar=(mii_k+mjj_k)/2):
@@ -167,7 +167,7 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
             }
 
             //doc.notifySetProgress((100 * characters.getNchar() + 3 * ntax + i) / maxProgress);
-            progressListener.incrementProgress();
+            progress.incrementProgress();
         }
 
         // Computes the distances as described in equation (4):
@@ -196,9 +196,9 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
             }
 
             //doc.notifySetProgress(100 * (characters.getNchar() + 4 * ntax + i) / maxProgress);
-            progressListener.incrementProgress();
+            progress.incrementProgress();
         }
-        progressListener.close();
+        progress.close();
     }
 
     // GETTER AND SETTER

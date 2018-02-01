@@ -20,7 +20,7 @@ public class GapDist extends Algorithm<CharactersBlock, DistancesBlock> implemen
     public final static String DESCRIPTION = "Calculates the gap distance from a set of sequences.";
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 
         int nchar = charactersBlock.getNchar();
@@ -31,8 +31,8 @@ public class GapDist extends Algorithm<CharactersBlock, DistancesBlock> implemen
         char gapchar = charactersBlock.getGapCharacter();
         int c, s, t;
 
-        progressListener.setTasks("Gap distance", "Init.");
-        progressListener.setMaximum(ntax);
+        progress.setTasks("Gap distance", "Init.");
+        progress.setMaximum(ntax);
 
         //todo getrow
         for (t = 0; t < ntax; t++) {
@@ -63,9 +63,9 @@ public class GapDist extends Algorithm<CharactersBlock, DistancesBlock> implemen
                 distancesBlock.set(s + 1, t + 1, v);
                 distancesBlock.set(t + 1, s + 1, v);
             }
-            progressListener.incrementProgress();
+            progress.incrementProgress();
         }
-        progressListener.close();
+        progress.close();
     }
 
     public String getDescription() {

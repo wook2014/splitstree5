@@ -77,6 +77,8 @@ public class NexusFileWriter {
             TreesNexusIO.write(w, taxaBlock, (TreesBlock) dataBlock, null);
         } else if (dataBlock instanceof SplitsBlock) {
             SplitsNexusIO.write(w, taxaBlock, (SplitsBlock) dataBlock, null);
+        } else if (dataBlock instanceof NetworkBlock) {
+            NetworkNexusIO.write(w, taxaBlock, (NetworkBlock) dataBlock);
         } else if (dataBlock instanceof CharactersBlock) {
             CharactersNexusIO.write(w, taxaBlock, (CharactersBlock) dataBlock, null);
         } else {

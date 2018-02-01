@@ -82,12 +82,12 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 
         int ntax = charactersBlock.getNtax();
-        progressListener.setTasks("logDet distance", "Init.");
-        progressListener.setMaximum(ntax);
+        progress.setTasks("logDet distance", "Init.");
+        progress.setMaximum(ntax);
         distancesBlock.setNtax(ntax);
         int numUndefined = 0;
 
@@ -211,14 +211,14 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
 
             }
             //doc.notifySetProgress(t * 100 / taxa.getNtax());
-            progressListener.incrementProgress();
+            progress.incrementProgress();
         }
 
         if (numUndefined > 0) {
             new Alert("Warning: there were saturated or missing distances in the matrix. These have been replaced with arbitrary large values - proceed with caution ");
         }
 
-        progressListener.close();
+        progress.close();
     }
 
 

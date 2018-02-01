@@ -55,15 +55,15 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> imple
      *
      * @throws InterruptedException
      */
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees)
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees)
             throws InterruptedException, CanceledException {
-        progressListener.setTasks("Neighbor Joining", "Init.");
-        progressListener.setMaximum(distances.getNtax());
+        progress.setTasks("Neighbor Joining", "Init.");
+        progress.setMaximum(distances.getNtax());
 
-        PhyloTree tree = computeNJTree(progressListener, taxaBlock, distances);
+        PhyloTree tree = computeNJTree(progress, taxaBlock, distances);
         trees.getTrees().setAll(tree);
 
-        progressListener.close();
+        progress.close();
     }
 
     private PhyloTree computeNJTree(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances)

@@ -48,15 +48,15 @@ public class GreedyTree extends Algorithm<SplitsBlock, TreesBlock> implements IF
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, SplitsBlock splits, TreesBlock trees)
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, SplitsBlock splits, TreesBlock trees)
             throws InterruptedException, CanceledException {
 
-        progressListener.setTasks("Greedy Tree", "Extracting compatible splits...");
+        progress.setTasks("Greedy Tree", "Extracting compatible splits...");
         final Map<BitSet, Double> cluster2Weight = new HashMap<>();
         for (ASplit split : splits.getSplits()) {
             cluster2Weight.put(split.getPartNotContaining(1), split.getWeight());
         }
-        final ArrayList<ASplit> compatible = GreedyCompatible.apply(progressListener, splits.getSplits());
+        final ArrayList<ASplit> compatible = GreedyCompatible.apply(progress, splits.getSplits());
 
         final BitSet[] clusters = new BitSet[compatible.size()];
         for (int i = 0; i < compatible.size(); i++) {
@@ -123,7 +123,7 @@ public class GreedyTree extends Algorithm<SplitsBlock, TreesBlock> implements IF
         }
 
         trees.getTrees().add(tree);
-        progressListener.close();
+        progress.close();
     }
 
     /**

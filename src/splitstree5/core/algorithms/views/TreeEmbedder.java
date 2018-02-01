@@ -101,8 +101,8 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock parent, TreeViewBlock child) throws Exception {
-        progressListener.setTasks("Tree viewer", "Init.");
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock parent, TreeViewBlock child) throws Exception {
+        progress.setTasks("Tree viewer", "Init.");
 
         final TreeViewTab view = child.getTab();
         view.setNodeLabel2Style(nodeLabel2Style);
@@ -226,7 +226,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
         changeListener = (c, o, n) -> child.getTab().getCenter().setDisable(n != UpdateState.VALID);
         getConnector().stateProperty().addListener(new WeakChangeListener<>(changeListener));
 
-        progressListener.close();
+        progress.close();
     }
 
 

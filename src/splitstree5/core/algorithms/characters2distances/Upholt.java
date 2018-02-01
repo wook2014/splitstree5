@@ -31,14 +31,14 @@ public class Upholt extends Algorithm<CharactersBlock, DistancesBlock> implement
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 
         int ntax = taxaBlock.getNtax();
         distancesBlock.setNtax(ntax);
 
-        progressListener.setTasks("Upholt distance", "Init.");
-        progressListener.setMaximum(ntax);
+        progress.setTasks("Upholt distance", "Init.");
+        progress.setMaximum(ntax);
 
         double maxDist = 0.0;
         int numUndefined = 0;
@@ -73,9 +73,9 @@ public class Upholt extends Algorithm<CharactersBlock, DistancesBlock> implement
                 if (dist > maxDist)
                     maxDist = dist;
             }
-            progressListener.incrementProgress();
+            progress.incrementProgress();
         }
-        progressListener.close();
+        progress.close();
         if (numUndefined > 0) {
             for (int s = 1; s <= ntax; s++)
                 for (int t = s + 1; t <= ntax; t++) {

@@ -223,8 +223,18 @@ public class EdgeSet extends GraphBase implements Set<Edge>, Iterable<Edge> {
      * @return an enumeration of the elements in the set
      */
     public Iterator<Edge> iterator() {
-        return new Iterator<Edge>() {
-            Edge e = getOwner().getFirstEdge();
+        return successors(null).iterator();
+    }
+
+    /**
+     * gets all successors
+     *
+     * @param afterMe
+     * @return all successors
+     */
+    public Iterable<Edge> successors(final Edge afterMe) {
+        return () -> new Iterator<Edge>() {
+            Edge e = (afterMe == null ? getOwner().getFirstEdge() : afterMe.getNext());
 
             {
                 while (e != null) {

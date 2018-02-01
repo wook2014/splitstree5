@@ -31,14 +31,14 @@ public class BalancedConfidenceNetwork extends Algorithm<TreesBlock, SplitsBlock
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock) throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock) throws Exception {
 
-        progressListener.setMaximum(100);
+        progress.setMaximum(100);
 
         final SplitMatrix M = new SplitMatrix(treesBlock, taxaBlock);
         M.print();
 
-        splitsBlock.copy(ConfidenceNetwork.getConfidenceNetwork(M, getOptionLevel(), taxaBlock.getNtax(), progressListener));
+        splitsBlock.copy(ConfidenceNetwork.getConfidenceNetwork(M, getOptionLevel(), taxaBlock.getNtax(), progress));
     }
 
     public String getDescription() {

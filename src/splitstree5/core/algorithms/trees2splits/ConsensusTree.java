@@ -10,12 +10,12 @@ import splitstree5.core.datablocks.TreesBlock;
 public class ConsensusTree extends Algorithm<TreesBlock, TreesBlock> implements IFromTrees, IToTrees {
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock parent, TreesBlock child) throws Exception {
-        progressListener.setTasks("Consensus tree", "Init.");
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock parent, TreesBlock child) throws Exception {
+        progress.setTasks("Consensus tree", "Init.");
         //progressListener.setMaximum(?);
 
         // todo needs new algorithms that are not contained in SplitsTree4
 
-        progressListener.close();
+        progress.close();
     }
 }

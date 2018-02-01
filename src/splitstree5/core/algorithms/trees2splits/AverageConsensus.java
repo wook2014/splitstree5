@@ -28,10 +28,10 @@ public class AverageConsensus extends Algorithm<TreesBlock, SplitsBlock> impleme
 
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock)
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock)
             throws Exception {
 
-        progressListener.setMaximum(100);
+        progress.setMaximum(100);
 
         DistancesBlock pairwiseDistances = new DistancesBlock();
         AverageDistances averageDistances = new AverageDistances();

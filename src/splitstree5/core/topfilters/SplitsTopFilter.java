@@ -48,7 +48,7 @@ public class SplitsTopFilter extends ATopFilter<SplitsBlock> {
         super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parentNode, childNode);
 
         setAlgorithm(new Algorithm<SplitsBlock, SplitsBlock>("TopFilter") {
-            public void compute(ProgressListener progressListener, TaxaBlock modifiedTaxaBlock, SplitsBlock parent, SplitsBlock child) {
+            public void compute(ProgressListener progress, TaxaBlock modifiedTaxaBlock, SplitsBlock parent, SplitsBlock child) {
                 if (originalTaxaNode.getDataBlock().getTaxa().equals(modifiedTaxaBlock.getTaxa())) {
                     child.copy(parent);
                     child.setCycle(parent.getCycle());

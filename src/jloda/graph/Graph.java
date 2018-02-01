@@ -195,6 +195,17 @@ public class Graph extends GraphBase {
         e.deleteEdge();
     }
 
+    public void deleteEdges(Collection<Edge> edges) {
+        for (Edge e : edges) {
+            e.deleteEdge();
+        }
+    }
+
+    public void deleteNodes(Collection<Node> nodes) {
+        for (Node v : nodes)
+            v.deleteNode();
+    }
+
     /**
      * called from edge when being deleted
      *

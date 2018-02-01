@@ -201,9 +201,24 @@ public class NodeSet extends GraphBase implements Set<Node> {
         }
     }
 
+    /**
+     * Returns an enumeration of the elements in the set.
+     *
+     * @return an enumeration of the elements in the set
+     */
     public Iterator<Node> iterator() {
-        return new Iterator<Node>() {
-            Node v = getOwner().getFirstNode();
+        return successors(null).iterator();
+    }
+
+    /**
+     * gets all successors
+     *
+     * @param afterMe
+     * @return all successors
+     */
+    public Iterable<Node> successors(final Node afterMe) {
+        return () -> new Iterator<Node>() {
+            Node v = (afterMe == null ? getOwner().getFirstNode() : afterMe.getNext());
 
             {
                 while (v != null) {
@@ -216,7 +231,6 @@ public class NodeSet extends GraphBase implements Set<Node> {
             @Override
             public boolean hasNext() {
                 return v != null;
-
             }
 
             @Override
@@ -234,7 +248,6 @@ public class NodeSet extends GraphBase implements Set<Node> {
             }
         };
     }
-
     /**
      * Returns the size of the set.
      *

@@ -35,17 +35,17 @@ public class HKY85 extends DNAdistance implements IFromChararacters, IToDistance
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 
-        progressListener.setTasks("HKY85 Distance", "Init.");
+        progress.setTasks("HKY85 Distance", "Init.");
 
         HKY85model model = new HKY85model(getNormedBaseFreq(), this.optionTsTvRatio);
         model.setPinv(getOptionPInvar());
         model.setGamma(getOptionGamma());
 
         setOptionMaximum_Likelihood(true);
-        distancesBlock.copy(fillDistanceMatrix(progressListener, charactersBlock, model));
+        distancesBlock.copy(fillDistanceMatrix(progress, charactersBlock, model));
     }
 
     @Override

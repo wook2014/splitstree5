@@ -38,14 +38,14 @@ public class Dice extends Algorithm<CharactersBlock, DistancesBlock> implements 
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 
         int ntax = taxaBlock.getNtax();
         distancesBlock.setNtax(ntax);
 
-        progressListener.setTasks("Dice distance", "Init.");
-        progressListener.setMaximum(ntax);
+        progress.setTasks("Dice distance", "Init.");
+        progress.setMaximum(ntax);
 
         double maxDist = 0.0;
         int numUndefined = 0;
@@ -78,9 +78,9 @@ public class Dice extends Algorithm<CharactersBlock, DistancesBlock> implements 
                 if (dist > maxDist)
                     maxDist = dist;
             }
-            progressListener.incrementProgress();
+            progress.incrementProgress();
         }
-        progressListener.close();
+        progress.close();
 
         if (numUndefined > 0) {
             for (int s = 1; s <= ntax; s++)

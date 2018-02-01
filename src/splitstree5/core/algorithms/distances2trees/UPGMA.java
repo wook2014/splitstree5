@@ -30,11 +30,11 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> implements IFro
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees)
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees)
             throws InterruptedException, CanceledException {
 
-        progressListener.setTasks("UPGMA", "Creating nodes...");
-        progressListener.setMaximum(taxaBlock.getNtax());
+        progress.setTasks("UPGMA", "Creating nodes...");
+        progress.setMaximum(taxaBlock.getNtax());
 
         PhyloTree tree = new PhyloTree();
         int ntax = distances.getNtax();
@@ -115,7 +115,7 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> implements IFro
                 heights[j_min] = heights[actual];
             }
 
-            progressListener.incrementProgress();
+            progress.incrementProgress();
         }
 
         int brother = 1;
@@ -140,6 +140,6 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> implements IFro
         tree.setRoot(root);
 
         trees.getTrees().addAll(tree);
-        progressListener.close();
+        progress.close();
     }
 }

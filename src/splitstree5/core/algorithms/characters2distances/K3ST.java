@@ -33,17 +33,17 @@ public class K3ST extends DNAdistance implements IFromChararacters, IToDistances
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 
-        progressListener.setTasks("K3ST Distance", "Init.");
-        progressListener.setMaximum(taxaBlock.getNtax());
+        progress.setTasks("K3ST Distance", "Init.");
+        progress.setMaximum(taxaBlock.getNtax());
 
         K3STmodel model = new K3STmodel(this.tratio, this.ACvsAT);
         model.setPinv(getOptionPInvar());
         model.setGamma(getOptionGamma());
 
-        distancesBlock.copy(fillDistanceMatrix(progressListener, charactersBlock, model));
+        distancesBlock.copy(fillDistanceMatrix(progress, charactersBlock, model));
     }
 
     @Override

@@ -46,8 +46,8 @@ public class HammingDistances extends Algorithm<CharactersBlock, DistancesBlock>
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxa, CharactersBlock characters, DistancesBlock distances) throws Exception {
-        progressListener.setMaximum(taxa.getNtax());
+    public void compute(ProgressListener progress, TaxaBlock taxa, CharactersBlock characters, DistancesBlock distances) throws Exception {
+        progress.setMaximum(taxa.getNtax());
 
         distances.setNtax(characters.getNtax());
 
@@ -73,7 +73,7 @@ public class HammingDistances extends Algorithm<CharactersBlock, DistancesBlock>
                 distances.set(s, t, p);
                 distances.set(t, s, p);
             }
-            progressListener.incrementProgress();
+            progress.incrementProgress();
         }
         if (numMissing > 0)
             new Alert("Warning: " + numMissing + " saturated or missing entries in the distance matrix - proceed with caution ");

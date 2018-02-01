@@ -48,12 +48,12 @@ public class ConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> implemen
     /**
      * compute the consensus splits
      *
-     * @param progressListener
+     * @param progress
      * @param taxaBlock
      * @param treesBlock
      * @param splitsBlock
      */
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock) throws CanceledException {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock) throws CanceledException {
         System.err.println("Not implemented");
     }
 

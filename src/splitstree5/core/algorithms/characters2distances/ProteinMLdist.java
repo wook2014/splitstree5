@@ -51,7 +51,7 @@ public class ProteinMLdist extends SequenceBasedDistance implements IFromCharara
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 
         boolean hasSaturated = false;
@@ -60,8 +60,8 @@ public class ProteinMLdist extends SequenceBasedDistance implements IFromCharara
         int npairs = ntax * (ntax - 1) / 2;
 
         distancesBlock.setNtax(ntax);
-        progressListener.setTasks("Protein ML distance", "Init.");
-        progressListener.setMaximum(npairs);
+        progress.setTasks("Protein ML distance", "Init.");
+        progress.setMaximum(npairs);
 
         ProteinModel model = selectModel(optionModel.get());
         model.setPinv(this.getOptionPInvar());
@@ -95,12 +95,12 @@ public class ProteinMLdist extends SequenceBasedDistance implements IFromCharara
                 distancesBlock.setVariance(t - 1, s - 1, var);
 
                 k++;
-                progressListener.incrementProgress();
+                progress.incrementProgress();
             }
 
         }
 
-        progressListener.close();
+        progress.close();
         if (hasSaturated) {
             new Alert("Warning: saturated or missing entries in the distance matrix - proceed with caution ");
         }

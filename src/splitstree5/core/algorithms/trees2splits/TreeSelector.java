@@ -29,8 +29,8 @@ public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> implements 
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock trees, SplitsBlock splits) throws Exception {
-        progressListener.setTasks("Tree selector", "Init.");
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock trees, SplitsBlock splits) throws Exception {
+        progress.setTasks("Tree selector", "Init.");
 
         if (optionWhich < 1)
             optionWhich = 1;
@@ -45,8 +45,8 @@ public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> implements 
         if (tree.getNumberOfNodes() == 0)
             return;
 
-        progressListener.setTasks("TreeSelector", "Extracting splits");
-        progressListener.incrementProgress();
+        progress.setTasks("TreeSelector", "Extracting splits");
+        progress.incrementProgress();
 
         final BitSet taxaInTree = TreesUtilities.computeSplits(taxaBlock, null, tree, splits.getSplits());
 
@@ -55,7 +55,7 @@ public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> implements 
         splits.setCycle(SplitsUtilities.computeCycle(taxaBlock.size(), splits.getSplits()));
 
         SplitsUtilities.verifySplits(splits.getSplits(), taxaBlock);
-        progressListener.close();
+        progress.close();
     }
 
     @Override

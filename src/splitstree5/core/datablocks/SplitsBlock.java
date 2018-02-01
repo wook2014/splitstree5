@@ -124,10 +124,6 @@ public class SplitsBlock extends ADataBlock {
         };
     }
 
-    public String getShortDescription() {
-        return "Number of splits: " + size();
-    }
-
     public Compatibility getCompatibility() {
         return compatibility;
     }

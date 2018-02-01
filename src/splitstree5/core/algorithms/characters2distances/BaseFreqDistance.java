@@ -31,7 +31,7 @@ public class BaseFreqDistance extends Algorithm<CharactersBlock, DistancesBlock>
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 
         String symbols = charactersBlock.getSymbols();
@@ -40,8 +40,8 @@ public class BaseFreqDistance extends Algorithm<CharactersBlock, DistancesBlock>
         int ntax = taxaBlock.getNtax();
         distancesBlock.setNtax(ntax);
 
-        progressListener.setTasks(TASK, "Init.");
-        progressListener.setMaximum(ntax);
+        progress.setTasks(TASK, "Init.");
+        progress.setMaximum(ntax);
 
         double[][] baseFreqs = new double[ntax + 1][nstates];
         System.err.println("Base Frequencies");
@@ -77,9 +77,9 @@ public class BaseFreqDistance extends Algorithm<CharactersBlock, DistancesBlock>
                 distancesBlock.set(s, t, p);
                 distancesBlock.set(t, s, p);
             }
-            progressListener.incrementProgress();
+            progress.incrementProgress();
         }
-        progressListener.close();
+        progress.close();
     }
 
     // GETTER AND SETTER

@@ -133,6 +133,10 @@ public class NexusFileParser {
                 final SplitsBlock splitsBlock = new SplitsBlock();
                 taxonNamesFound.addAll(SplitsNexusIO.parse(np, taxaBlock, splitsBlock, null));
                 return splitsBlock;
+            } else if (np.peekMatchIgnoreCase("begin network;")) {
+                final NetworkBlock networkBlock = new NetworkBlock();
+                taxonNamesFound.addAll(NetworkNexusIO.parse(np, taxaBlock, networkBlock));
+                return networkBlock;
             } else {
                 final String blockName = np.skipBlock();
                 System.err.println("Parse nexus block: " + blockName + ": not implemented;");

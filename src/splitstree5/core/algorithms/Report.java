@@ -36,7 +36,7 @@ import java.io.StringWriter;
  */
 public class Report extends Algorithm<ADataBlock, AnalysisResultBlock> implements IFromAnalysisResults, IFromChararacters, IFromTrees, IFromDistances, IFromSplits, IFromTaxa, IFromSplitsNetworkView, IFromTreeView, IToAnalysisResults {
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, ADataBlock parent, AnalysisResultBlock child) throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, ADataBlock parent, AnalysisResultBlock child) throws Exception {
         try (final StringWriter w = new StringWriter()) {
             w.write("### " + parent.getName() + (parent.getShortDescription() != null ? ", " + parent.getShortDescription() + "\n" : "\n"));
             NexusFileWriter.write(w, taxaBlock, parent);

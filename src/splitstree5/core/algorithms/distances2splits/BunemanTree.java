@@ -34,14 +34,14 @@ public class BunemanTree extends Algorithm<DistancesBlock, SplitsBlock> implemen
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distancesBlock, SplitsBlock splitsBlock) throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, DistancesBlock distancesBlock, SplitsBlock splitsBlock) throws Exception {
         ArrayList<ASplit> previousSplits = new ArrayList<>(); // list of previously computed splits
         ArrayList<ASplit> nextSplits; // current list of splits
 
         // ProgressDialog pd = new ProgressDialog("Split Decomposition...",""); //Set new progress bar.
         // doc.setProgressListener(pd);
-        progressListener.setMaximum(taxaBlock.getNtax());    //initialize maximum progress
-        progressListener.setProgress(0);
+        progress.setMaximum(taxaBlock.getNtax());    //initialize maximum progress
+        progress.setProgress(0);
 
         final BitSet previousTaxa = new BitSet(); // taxa already processed
         final int ntax = taxaBlock.getNtax();
@@ -90,7 +90,7 @@ public class BunemanTree extends Algorithm<DistancesBlock, SplitsBlock> implemen
 
             previousTaxa.set(t);
 
-            progressListener.incrementProgress();
+            progress.incrementProgress();
         }
 
         // copy splits to splits

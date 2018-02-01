@@ -25,16 +25,16 @@ public class GTR extends DNAdistance implements IFromChararacters, IToDistances 
     public final static String DESCRIPTION = "Calculates distances using a General Time Reversible model";
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 
-        progressListener.setTasks("GTR Distance", "Init.");
+        progress.setTasks("GTR Distance", "Init.");
 
         GTRmodel model = new GTRmodel(QMatrix, getNormedBaseFreq());
         model.setPinv(getOptionPInvar());
         model.setGamma(getOptionGamma());
 
-        distancesBlock.copy(fillDistanceMatrix(progressListener, charactersBlock, model));
+        distancesBlock.copy(fillDistanceMatrix(progress, charactersBlock, model));
     }
 
     @Override

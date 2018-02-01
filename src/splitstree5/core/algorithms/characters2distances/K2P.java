@@ -31,16 +31,16 @@ public class K2P extends DNAdistance implements IFromChararacters, IToDistances 
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock) throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock) throws Exception {
 
-        progressListener.setTasks("K2P Distance", "Init.");
-        progressListener.setMaximum(taxaBlock.getNtax());
+        progress.setTasks("K2P Distance", "Init.");
+        progress.setMaximum(taxaBlock.getNtax());
 
         K2Pmodel model = new K2Pmodel(this.optionTsTvRatio);
         model.setPinv(getOptionPInvar());
         model.setGamma(getOptionGamma());
 
-        distancesBlock.copy(fillDistanceMatrix(progressListener, charactersBlock, model));
+        distancesBlock.copy(fillDistanceMatrix(progress, charactersBlock, model));
     }
 
     @Override

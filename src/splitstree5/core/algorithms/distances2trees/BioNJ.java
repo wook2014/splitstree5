@@ -34,14 +34,14 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees) throws InterruptedException, CanceledException {
-        progressListener.setTasks("BioNJ", "Creating nodes...");
-        progressListener.setMaximum(distances.getNtax());
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees) throws InterruptedException, CanceledException {
+        progress.setTasks("BioNJ", "Creating nodes...");
+        progress.setMaximum(distances.getNtax());
 
-        PhyloTree tree = computeBioNJTree(progressListener, taxaBlock, distances);
+        PhyloTree tree = computeBioNJTree(progress, taxaBlock, distances);
         trees.getTrees().setAll(tree);
 
-        progressListener.close();
+        progress.close();
     }
 
     /**

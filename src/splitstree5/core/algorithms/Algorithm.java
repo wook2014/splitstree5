@@ -70,7 +70,7 @@ abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> exte
     /**
      * perform the computation
      */
-    abstract public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, P parent, C child) throws Exception;
+    abstract public void compute(ProgressListener progress, TaxaBlock taxaBlock, P parent, C child) throws Exception;
 
     /**
      * perform the computation for datablocks of unknown type

@@ -30,17 +30,17 @@ public class JukesCantor extends DNAdistance implements IFromChararacters, IToDi
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 
-        progressListener.setTasks("Jukes-Cantor Distance", "Init.");
-        progressListener.setMaximum(taxaBlock.getNtax());
+        progress.setTasks("Jukes-Cantor Distance", "Init.");
+        progress.setMaximum(taxaBlock.getNtax());
 
         JCmodel model = new JCmodel();
         model.setPinv(getOptionPInvar());
         model.setGamma(getOptionGamma());
 
-        distancesBlock.copy(fillDistanceMatrix(progressListener, charactersBlock, model));
+        distancesBlock.copy(fillDistanceMatrix(progress, charactersBlock, model));
     }
 
     @Override

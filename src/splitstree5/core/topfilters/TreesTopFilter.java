@@ -50,7 +50,7 @@ public class TreesTopFilter extends ATopFilter<TreesBlock> {
         super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parentBlock, childBlock);
 
         setAlgorithm(new Algorithm<TreesBlock, TreesBlock>("TopFilter") {
-            public void compute(ProgressListener progressListener, TaxaBlock modifiedTaxaBlock, TreesBlock parent, TreesBlock child) {
+            public void compute(ProgressListener progress, TaxaBlock modifiedTaxaBlock, TreesBlock parent, TreesBlock child) {
                 if (originalTaxaNode.getDataBlock().getTaxa().equals(modifiedTaxaBlock.getTaxa())) {
                     child.copy(parent);
                     setShortDescription("using all " + modifiedTaxaBlock.size() + " taxa");

@@ -39,7 +39,7 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 
         char missingchar = charactersBlock.getMissingCharacter();
@@ -48,8 +48,8 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
         int ntax = taxaBlock.getNtax();
         distancesBlock.setNtax(ntax);
 
-        progressListener.setTasks(TASK, "Init.");
-        progressListener.setMaximum(ntax);
+        progress.setTasks(TASK, "Init.");
+        progress.setMaximum(ntax);
 
         for (int i = 0; i < ntax; i++) {
             char[] seqi = charactersBlock.getRow0(i);
@@ -118,9 +118,9 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
                 distancesBlock.set(i + 1, j + 1, Math.sqrt(dij));
                 distancesBlock.set(j + 1, i + 1, Math.sqrt(dij));
             }
-            progressListener.incrementProgress();
+            progress.incrementProgress();
         }
-        progressListener.close();
+        progress.close();
     }
 
     // GETTER AND SETTER

@@ -32,7 +32,7 @@ public class Jaccard extends Algorithm<CharactersBlock, DistancesBlock> implemen
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 
         char gapchar = charactersBlock.getGapCharacter();
@@ -41,8 +41,8 @@ public class Jaccard extends Algorithm<CharactersBlock, DistancesBlock> implemen
         int ntax = taxaBlock.getNtax();
         distancesBlock.setNtax(ntax);
 
-        progressListener.setTasks("Jaccard distance", "Init.");
-        progressListener.setMaximum(ntax);
+        progress.setTasks("Jaccard distance", "Init.");
+        progress.setMaximum(ntax);
 
         double maxDist = 0.0;
         int numUndefined = 0;
@@ -76,9 +76,9 @@ public class Jaccard extends Algorithm<CharactersBlock, DistancesBlock> implemen
                 if (dist > maxDist)
                     maxDist = dist;
             }
-            progressListener.incrementProgress();
+            progress.incrementProgress();
         }
-        progressListener.close();
+        progress.close();
         if (numUndefined > 0) {
             for (int s = 1; s <= ntax; s++)
                 for (int t = s + 1; t <= ntax; t++) {

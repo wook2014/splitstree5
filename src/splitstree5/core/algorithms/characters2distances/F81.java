@@ -31,10 +31,10 @@ public class F81 extends DNAdistance implements IFromChararacters, IToDistances 
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 
-        progressListener.setTasks("F81 Distance", "computing...");
+        progress.setTasks("F81 Distance", "computing...");
         F81model model = new F81model(this.getNormedBaseFreq());
         model.setPinv(getOptionPInvar());
         model.setGamma(getOptionGamma());
@@ -49,7 +49,7 @@ public class F81 extends DNAdistance implements IFromChararacters, IToDistances 
 
         B = 1.0 - ((piA * piA) + (piC * piC) + (piG * piG) + (piT * piT));
 
-        distancesBlock.copy(fillDistanceMatrix(progressListener, charactersBlock, model));
+        distancesBlock.copy(fillDistanceMatrix(progress, charactersBlock, model));
     }
 
     /**

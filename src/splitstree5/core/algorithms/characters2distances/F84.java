@@ -33,11 +33,11 @@ public class F84 extends DNAdistance implements IFromChararacters, IToDistances 
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 
-        progressListener.setTasks("F84 Distance", "Init.");
-        progressListener.setMaximum(taxaBlock.getNtax());
+        progress.setTasks("F84 Distance", "Init.");
+        progress.setMaximum(taxaBlock.getNtax());
 
         F84Model model = new F84Model(this.getNormedBaseFreq(), this.tratio);
         model.setPinv(getOptionPInvar());
@@ -54,7 +54,7 @@ public class F84 extends DNAdistance implements IFromChararacters, IToDistances 
         B = piC * piT + piA * piG;
         C = piR * piY;
 
-        distancesBlock.copy(fillDistanceMatrix(progressListener, charactersBlock, model));
+        distancesBlock.copy(fillDistanceMatrix(progress, charactersBlock, model));
     }
 
     @Override

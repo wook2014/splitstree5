@@ -22,10 +22,9 @@ package splitstree5.core.datablocks;
 import javafx.application.Platform;
 import jloda.phylo.SplitsGraph;
 import splitstree5.core.Document;
-import splitstree5.core.algorithms.interfaces.IFromSplitsNetworkView;
-import splitstree5.core.algorithms.interfaces.IToSplitsNetworkView;
+import splitstree5.core.algorithms.interfaces.IFromNetworkView;
+import splitstree5.core.algorithms.interfaces.IToNetworkView;
 import splitstree5.gui.IHasTab;
-import splitstree5.gui.ViewerTab;
 import splitstree5.gui.graphtab.AlgorithmBreadCrumbsToolBar;
 import splitstree5.gui.graphtab.NetworkViewTab;
 import splitstree5.gui.graphtab.base.GraphLayout;
@@ -71,7 +70,7 @@ public class NetworkViewBlock extends ADataBlock implements IHasTab {
         super.setDataNode(dataNode);
     }
 
-    public ViewerTab getTab() {
+    public NetworkViewTab getTab() {
         return networkViewTAB;
     }
 
@@ -97,12 +96,12 @@ public class NetworkViewBlock extends ADataBlock implements IHasTab {
 
     @Override
     public Class getFromInterface() {
-        return IFromSplitsNetworkView.class;
+        return IFromNetworkView.class;
     }
 
     @Override
     public Class getToInterface() {
-        return IToSplitsNetworkView.class;
+        return IToNetworkView.class;
     }
 
     @Override

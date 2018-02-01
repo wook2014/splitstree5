@@ -59,7 +59,7 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
     }
 
     @Override
-    public void compute(ProgressListener progressListener, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock)
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock)
             throws Exception {
 
         /*
@@ -115,19 +115,19 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
         }*/
 
 
-        progressListener.setTasks("Z-closure", "init");
+        progress.setTasks("Z-closure", "init");
 
         Map[] pSplitsOfTrees = new Map[treesBlock.getNTrees() + 1];
         // for each tree, identity map on set of splits
         BitSet[] supportSet = new BitSet[treesBlock.getNTrees() + 1];
         Set allPSplits = new HashSet();
 
-        progressListener.setSubtask("extracting partial splits from trees");
-        progressListener.setMaximum(treesBlock.getNTrees());
+        progress.setSubtask("extracting partial splits from trees");
+        progress.setMaximum(treesBlock.getNTrees());
 
         for (int which = 1; which <= treesBlock.getNTrees(); which++) {
             try {
-                progressListener.incrementProgress();
+                progress.incrementProgress();
                 pSplitsOfTrees[which] = new HashMap();
                 supportSet[which] = new BitSet();
                 computePartialSplits(taxaBlock, treesBlock, which, pSplitsOfTrees[which], supportSet[which]);
@@ -135,7 +135,7 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
                     PartialSplit ps = (PartialSplit) o;
                     if (ps.isNonTrivial()) {
                         allPSplits.add(ps.clone());
-                        progressListener.incrementProgress();
+                        progress.incrementProgress();
                     }
                 }
             } catch (NotOwnerException e) {
@@ -145,11 +145,11 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
         SplitsBlock splits = new SplitsBlock();
 
         if (getOptionZRule()) {
-            computeClosureOuterLoop(progressListener, taxaBlock, allPSplits);
+            computeClosureOuterLoop(progress, taxaBlock, allPSplits);
         }
 
         if (getOptionApplyRefineHeuristic()) {
-            progressListener.setSubtask("Refinement heuristic");
+            progress.setSubtask("Refinement heuristic");
             applyRefineHeuristic(allPSplits);
         }
 
@@ -220,7 +220,7 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
 
         splitsBlock.copy(splits);
         splitsBlock.setCycle(SplitsUtilities.computeCycle(taxaBlock.getNtax(), splitsBlock.getSplits()));
-        progressListener.close();
+        progress.close();
     }
 
 
