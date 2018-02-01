@@ -19,9 +19,9 @@ import java.util.List;
 
 public class NexmlCharactersIn extends CharactersFormat implements IToCharacters, IImportCharacters {
     @Override
-    public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxaBlock, CharactersBlock characters, CharactersNexusFormat format) throws CanceledException, IOException {
+    public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxaBlock, CharactersBlock characters) throws CanceledException, IOException {
         try {
-            // todo somehow use progressListener
+            // todo somehow use progressListener : progressListener. set(-1)
 
             File file = new File(fileName);
             SAXParserFactory factory = SAXParserFactory.newInstance();

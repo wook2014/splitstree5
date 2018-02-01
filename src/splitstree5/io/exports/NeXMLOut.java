@@ -12,6 +12,9 @@ import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
+import splitstree5.io.exports.interfaces.IExportCharacters;
+import splitstree5.io.exports.interfaces.IExportTaxa;
+import splitstree5.io.exports.interfaces.IExportTrees;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -20,7 +23,18 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
-public class NeXMLOut implements IFromTaxa, IFromChararacters, IFromTrees {
+public class NeXMLOut implements IFromTaxa, /*IExportTaxa,*/ IFromChararacters, /*IExportCharacters,*/ IFromTrees /*IExportTrees*/ {
+
+
+    /*@Override
+    public void export(Writer w, TaxaBlock taxa, TreesBlock trees) throws IOException {
+
+    }
+
+    @Override
+    public List<String> getExtensions() {
+        return null;
+    }*/
 
     public enum CharactersOutputType {cell, matrix, both}
 

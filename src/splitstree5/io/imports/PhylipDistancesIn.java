@@ -1,6 +1,7 @@
 package splitstree5.io.imports;
 
 import com.sun.istack.internal.Nullable;
+import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.FileInputIterator;
 import jloda.util.ProgressListener;
@@ -10,10 +11,7 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
 import splitstree5.io.imports.interfaces.IImportDistances;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.StreamTokenizer;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -47,6 +45,7 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
         distances.clear();
         int ntax;
 
+        // todo : try upper triangle; diagonal
         final Map<String, Vector<Double>> matrix = new LinkedHashMap<>();
         boolean square = true;
         //final double[][] matrix = new double[ntax][ntax];
@@ -172,7 +171,11 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
 
     @Override
     public boolean isApplicable(String fileName) throws IOException {
-        return false;
+        String line = Basic.getFirstLineFromFile(new File(fileName));
+        if (line == null) return false;
+
+        StringTokenizer tokens = new StringTokenizer(line);
+        return tokens.countTokens() == 1 && isNumeric(tokens.nextToken());
     }
 
     private static void readSquareMatrix(Map<String, Vector<Double>> matrix, DistancesBlock distancesBlock){

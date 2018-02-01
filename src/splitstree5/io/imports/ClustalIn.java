@@ -4,6 +4,7 @@ package splitstree5.io.imports;
  * Daria Evseeva,05.08.2017.
  */
 
+import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.FileInputIterator;
 import jloda.util.ProgressListener;
@@ -13,6 +14,7 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.imports.interfaces.IImportCharacters;
 import splitstree5.io.nexus.CharactersNexusFormat;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -28,8 +30,9 @@ import java.util.Map;
  */
 
 public class ClustalIn extends CharactersFormat implements IToCharacters, IImportCharacters {
+
     @Override
-    public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format)
+    public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxa, CharactersBlock characters)
             throws CanceledException, IOException
     {
         final Map<String, String> taxa2seq = new LinkedHashMap<>();
@@ -43,17 +46,16 @@ public class ClustalIn extends CharactersFormat implements IToCharacters, IImpor
             progressListener.setMaximum(it.getMaximumProgress());
             progressListener.setProgress(0);
 
-            String sequence = "";
-            boolean startedNewSequence = false;
-
             while (it.hasNext()) {
                 final String line = it.next();
                 counter++;
-                if (line.startsWith("CLUSTAL"))
+                if (line.toUpperCase().startsWith("CLUSTAL"))
                     continue;
                 if (!line.equals("") && hasAlphabeticalSymbols(line)) {
 
                     String tmpLine = line;
+
+                    // cut numbers from the end
                     int lastSeqIndex = tmpLine.length();
                     while (Character.isDigit(tmpLine.charAt(lastSeqIndex - 1)))
                         lastSeqIndex--;
@@ -61,12 +63,16 @@ public class ClustalIn extends CharactersFormat implements IToCharacters, IImpor
 
                     int labelIndex = tmpLine.indexOf(' ');
                     String label = tmpLine.substring(0, labelIndex);
+                    if (label.isEmpty())
+                        throw new IOExceptionWithLineNumber("No taxa label is given at line "+counter, counter);
 
-                    tmpLine = tmpLine.replace(" ", "");
-                    tmpLine = tmpLine.replace("\t", "");
+                    tmpLine = tmpLine.replaceAll("\\s+", "");
+                    tmpLine = tmpLine.replaceAll("\t", "");
 
                     if (sequenceInLineLength == 0) sequenceInLineLength = tmpLine.substring(labelIndex).length();
 
+                    String allowedChars = "" + getMissing() + getMatchChar() + getGap();
+                    checkIfCharactersValid(line, counter, allowedChars);
                     if (!taxa2seq.containsKey(label)) {
                         taxa2seq.put(label, tmpLine.substring(labelIndex));
                     } else {
@@ -100,18 +106,8 @@ public class ClustalIn extends CharactersFormat implements IToCharacters, IImpor
         taxa.addTaxaByNames(taxa2seq.keySet());
         setCharacters(taxa2seq, ntax, nchar, characters);
 
-        format.setInterleave(true);
-        format.setColumnsPerBlock(sequenceInLineLength);
-    }
-
-    @Override
-    public List<String> getExtensions() {
-        return Arrays.asList("aln", "clustal");
-    }
-
-    @Override
-    public boolean isApplicable(String fileName) throws IOException {
-        return false;
+        /*format.setInterleave(true);
+        format.setColumnsPerBlock(sequenceInLineLength);*/
     }
 
     private void setCharacters(Map<String, String> taxa2seq, int ntax, int nchar, CharactersBlock characters) throws IOException {
@@ -145,5 +141,16 @@ public class ClustalIn extends CharactersFormat implements IToCharacters, IImpor
             if (Character.isLetter(c)) return true;
         }
         return false;
+    }
+
+    @Override
+    public List<String> getExtensions() {
+        return Arrays.asList("aln", "clustal");
+    }
+
+    @Override
+    public boolean isApplicable(String fileName) throws IOException {
+        String line = Basic.getFirstLineFromFile(new File(fileName));
+        return line != null && line.toUpperCase().startsWith("CLUSTAL");
     }
 }

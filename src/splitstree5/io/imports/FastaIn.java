@@ -29,7 +29,7 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
      * @param characters
      * @throws IOException
      */
-    public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format) throws IOException, CanceledException {
+    public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, CharactersBlock characters) throws IOException, CanceledException {
         final ArrayList<String> taxonNamesFound = new ArrayList<>();
         final ArrayList<String> matrix = new ArrayList<>();
         int ntax = 0;
@@ -39,60 +39,58 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
         try (FileInputIterator it = new FileInputIterator(inputFile)) {
             progressListener.setMaximum(it.getMaximumProgress());
             progressListener.setProgress(0);
-            int sequenceLength = 0;
-            StringBuilder sequence = new StringBuilder("");
-            boolean startedNewSequence = false;
+            int currentSequenceLength = 0;
+            StringBuilder currentSequence = new StringBuilder("");
 
             while (it.hasNext()) {
                 final String line = it.next();
 
                 counter++;
-                if (line.startsWith(";"))
+                if (line.startsWith(";") || line.isEmpty())
                     continue;
                 if (line.equals(">"))
-                    throw new IOExceptionWithLineNumber("No taxa label given", counter);
+                    throw new IOExceptionWithLineNumber("No taxa label given at line: "+counter, counter);
 
                 if (line.startsWith(">")) {
-                    startedNewSequence = true;
                     addTaxaName(line, taxonNamesFound, counter);
-                    if (taxonNamesFound.contains(line.substring(1))) {
-                        System.err.println("");
-                    }
                     ntax++;
+
+                    if (ntax > 1 && currentSequence.toString().isEmpty())
+                        throw new IOExceptionWithLineNumber("No sequence is given at line "+counter, counter);
+
+                    if (nchar != 0 && nchar != currentSequenceLength)
+                        throw new IOExceptionWithLineNumber("Sequences must be the same length. " +
+                                "Wrong number of chars at the line: " + (counter-1)+". Length "+nchar+" expected", counter-1);
+
+                    if(!currentSequence.toString().equals("")) matrix.add(currentSequence.toString());
+                    nchar = currentSequenceLength;
+                    currentSequenceLength = 0;
+                    currentSequence = new StringBuilder("");
                 } else {
                     String allowedChars = "" + getMissing() + getMatchChar() + getGap();
                     checkIfCharactersValid(line, counter, allowedChars);
-                    if (startedNewSequence) {
-                        if (!sequence.toString().equals("")) matrix.add(sequence.toString());
-                        if (nchar != 0 && nchar != sequenceLength) {
-                            throw new IOExceptionWithLineNumber("Sequences must be the same length. Wrong number of chars at the sequence " + (ntax - 1), counter);
-                        }
-                        nchar = sequenceLength;
-                        sequenceLength = 0;
-                        sequence = new StringBuilder("");
-                        startedNewSequence = false;
-                    }
                     String add = line.replaceAll("\\s+", "");
-                    sequenceLength += add.length();
-                    sequence.append(line.replaceAll("\\s+", ""));
+                    currentSequenceLength += add.length();
+                    currentSequence.append(add);
                 }
                 progressListener.setProgress(it.getProgress());
             }
 
-            if (sequence.length() == 0)
-                throw new IOExceptionWithLineNumber("Sequence " + ntax + " is zero", counter);
-            matrix.add(sequence.toString());
-            if (nchar != sequenceLength)
-                throw new IOExceptionWithLineNumber("Sequences must be the same length. Wrong number of chars at the sequence " + ntax, counter);
+            if (currentSequence.length() == 0)
+                throw new IOExceptionWithLineNumber("Line "+counter+": Sequence " + ntax + " is zero", counter);
+            matrix.add(currentSequence.toString());
+            if (nchar != currentSequenceLength)
+                throw new IOExceptionWithLineNumber("Sequences must be the same length. " +
+                        "Wrong number of chars at the line: " + counter+". Length "+nchar+" expected", counter);
 
         }
-        System.err.println("ntax: " + ntax + " nchar: " + nchar);
+        /*System.err.println("ntax: " + ntax + " nchar: " + nchar);
         for (String s : matrix) {
             System.err.println(s);
         }
         for (String s : taxonNamesFound) {
             System.err.println(s);
-        }
+        }*/
 
         taxa.addTaxaByNames(taxonNamesFound);
         characters.clear();
@@ -101,7 +99,6 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
     }
 
     private void readMatrix(ArrayList<String> matrix, CharactersBlock characters) throws IOException {
-        // todo check if valid and set parameters here
 
         Map<Character, Integer> frequency = new LinkedHashMap<>();
         StringBuilder foundSymbols = new StringBuilder("");
@@ -175,7 +172,7 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
 
     @Override
     public boolean isApplicable(String fileName) throws IOException {
-        String line = Basic.getFirstLineFromFile(new File(fileName));
+        String line = Basic.getFirstLineFromFileIgnoreEmptyLines(new File(fileName), ";", 1000);
         return line != null && line.startsWith(">");
     }
 }

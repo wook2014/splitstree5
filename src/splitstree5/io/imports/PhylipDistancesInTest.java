@@ -1,13 +1,21 @@
 package splitstree5.io.imports;
 
+import jloda.util.Basic;
 import jloda.util.ProgressListener;
 import jloda.util.ProgressPercentage;
+import org.junit.Test;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.nexus.DistancesNexusIO;
 import splitstree5.io.nexus.TaxaNexusIO;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Daria Evseeva,03.10.2017.
@@ -49,7 +57,6 @@ public class PhylipDistancesInTest {
         DistancesNexusIO.write(w3, taxaBlock, distancesBlock, null);
         System.err.println(w3.toString());
 
-        // todo
         phylipDistancesIn.parse(pl,"test/notNexusFiles/squareEOL-bf.dist", taxaBlock, distancesBlock);
         // printing
         final StringWriter w4 = new StringWriter();
@@ -57,6 +64,22 @@ public class PhylipDistancesInTest {
         TaxaNexusIO.write(w4, taxaBlock);
         DistancesNexusIO.write(w4, taxaBlock, distancesBlock, null);
         System.err.println(w4.toString());
+    }
+
+    @Test
+    public void isApplicable() throws IOException {
+        ArrayList<String> applicableFiles = new ArrayList<>();
+
+        File directory = new File("test/notNexusFiles");
+        File[] directoryListing = directory.listFiles();
+        if (directoryListing != null) {
+            for (File file : directoryListing) {
+                if (phylipDistancesIn.isApplicable(file.getPath()))
+                    applicableFiles.add(Basic.getFileNameWithoutPath(file.getName()));
+            }
+        }
+        System.err.println(applicableFiles);
+        assertEquals(applicableFiles, Arrays.asList("square.dist", "squareEOL-bf.dist", "triangular.dist", "triangularEOL.dist"));
     }
 
 }

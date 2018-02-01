@@ -6,14 +6,19 @@ import splitstree5.core.algorithms.interfaces.IFromTaxa;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.io.exports.interfaces.IExportDistances;
+import splitstree5.io.exports.interfaces.IExportSplits;
+import splitstree5.io.exports.interfaces.IExportTaxa;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Arrays;
 import java.util.BitSet;
+import java.util.List;
 
-public class MatlabOut implements IFromTaxa, IFromDistances, IFromSplits {
+public class MatlabOut implements IFromTaxa, IExportTaxa, IFromDistances, IExportDistances, IFromSplits, IExportSplits {
 
     private boolean optionExportDataBlockWithTaxa = false;
     private boolean bHeader = true;
@@ -107,5 +112,10 @@ public class MatlabOut implements IFromTaxa, IFromDistances, IFromSplits {
 
     public void setOptionExportDataBlockWithTaxa(boolean exportDataBlockWithTaxa) {
         this.optionExportDataBlockWithTaxa = exportDataBlockWithTaxa;
+    }
+
+    @Override
+    public List<String> getExtensions() {
+        return Arrays.asList("m", "matlab");
     }
 }

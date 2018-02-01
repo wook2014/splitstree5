@@ -1,5 +1,6 @@
 package splitstree5.io.imports;
 
+import jloda.util.Basic;
 import jloda.util.ProgressListener;
 import jloda.util.ProgressPercentage;
 import org.junit.Test;
@@ -9,7 +10,11 @@ import splitstree5.io.nexus.CharactersNexusFormat;
 import splitstree5.io.nexus.CharactersNexusIO;
 import splitstree5.io.nexus.TaxaNexusIO;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 
@@ -28,7 +33,7 @@ public class PhylipCharactersInTest {
         CharactersNexusFormat format = new CharactersNexusFormat();
         ProgressListener pl = new ProgressPercentage();
 
-        phylipCharactersIn.parse(pl,"test/notNexusFiles/standard.phy", taxaBlock, charactersBlock, format);
+        phylipCharactersIn.parse(pl,"test/notNexusFiles/standard.phy", taxaBlock, charactersBlock);
         // printing
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
@@ -37,7 +42,7 @@ public class PhylipCharactersInTest {
         System.err.println(w1.toString());
         String standard = w1.toString();
 
-        phylipCharactersIn.parse(pl,"test/notNexusFiles/standardEOL.phy", taxaBlock, charactersBlock, format);
+        phylipCharactersIn.parse(pl,"test/notNexusFiles/standardEOL.phy", taxaBlock, charactersBlock);
         // printing
         final StringWriter w2 = new StringWriter();
         w2.write("#nexus\n");
@@ -46,7 +51,7 @@ public class PhylipCharactersInTest {
         System.err.println(w2.toString());
         String standardEOL = w2.toString();
 
-        phylipCharactersIn.parse(pl,"test/notNexusFiles/interleaved.phy", taxaBlock, charactersBlock, format);
+        phylipCharactersIn.parse(pl,"test/notNexusFiles/interleaved.phy", taxaBlock, charactersBlock);
         // printing
         final StringWriter w3 = new StringWriter();
         w3.write("#nexus\n");
@@ -55,7 +60,7 @@ public class PhylipCharactersInTest {
         System.err.println(w3.toString());
         String interleaved = w3.toString();
 
-        phylipCharactersIn.parse(pl,"test/notNexusFiles/interleaved-multi.phy", taxaBlock, charactersBlock, format);
+        phylipCharactersIn.parse(pl,"test/notNexusFiles/interleaved-multi.phy", taxaBlock, charactersBlock);
         // printing
         final StringWriter w4 = new StringWriter();
         w4.write("#nexus\n");
@@ -69,6 +74,22 @@ public class PhylipCharactersInTest {
         assertEquals(interleaved, interleavedMulti);
         assertEquals(standard, standardEOL);
 
+    }
+
+    @Test
+    public void isApplicable() throws IOException {
+        ArrayList<String> applicableFiles = new ArrayList<>();
+
+        File directory = new File("test/notNexusFiles");
+        File[] directoryListing = directory.listFiles();
+        if (directoryListing != null) {
+            for (File file : directoryListing) {
+                if (phylipCharactersIn.isApplicable(file.getPath()))
+                    applicableFiles.add(Basic.getFileNameWithoutPath(file.getName()));
+            }
+        }
+        System.err.println(applicableFiles);
+        assertEquals(applicableFiles, Arrays.asList("interleaved-multi.phy", "interleaved.phy", "standard.phy", "standardEOL.phy"));
     }
 
 }

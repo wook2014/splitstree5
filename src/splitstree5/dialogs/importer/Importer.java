@@ -77,8 +77,7 @@ public class Importer {
 
                 if (importer instanceof IImportCharacters) {
                     final CharactersBlock dataBlock = new CharactersBlock();
-                    final CharactersNexusFormat format = new CharactersNexusFormat();
-                    ((IImportCharacters) importer).parse(progress, filename, taxaBlock, dataBlock, format);
+                    ((IImportCharacters) importer).parse(progress, filename, taxaBlock, dataBlock);
                     workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
                     final ADataNode<DistancesBlock> distances = workflow.createDataNode(new DistancesBlock());
                     workflow.createConnector(workflow.getWorkingDataNode(), distances, new HammingDistances());

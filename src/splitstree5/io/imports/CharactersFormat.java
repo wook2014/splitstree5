@@ -21,6 +21,14 @@ public abstract class CharactersFormat {
     private char missing = '?';
     private char matchChar = '.';
 
+    /**
+     * add taxa label to a given list of labels
+     * if repeating taxa label is found, convert to "label + number" form
+     *
+     * @param line
+     * @param taxonNames
+     * @param linesCounter
+     */
     static void addTaxaName(String line, ArrayList<String> taxonNames, int linesCounter) {
 
         int sameNamesCounter = 0;
@@ -38,14 +46,24 @@ public abstract class CharactersFormat {
             taxonNames.add(line.substring(1) + sameNamesCounter);
     }
 
+    /**
+     * check if a given sequence contains only numbers, alphabetic symbols and gap/missing/match chars
+     *
+     * @param line
+     * @param counter
+     * @param allowedChars
+     * @throws IOException
+     */
     static void checkIfCharactersValid(String line, int counter, String allowedChars) throws IOException {
 
         String regex = "[^a-z0-9 \t" + allowedChars + "]";
         Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher(line);
         boolean found = m.find();
-        if (found)
-            throw new IOExceptionWithLineNumber("Unexpected character in line ", counter);
+        if (found) {
+            String foundSymbol = m.group();
+            throw new IOExceptionWithLineNumber("Unexpected character "+foundSymbol+" in line "+counter, counter);
+        }
     }
 
     void estimateDataType(String foundSymbols, CharactersBlock characters, Map<Character, Integer> frequency) throws IOException {

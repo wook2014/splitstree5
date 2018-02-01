@@ -1,13 +1,19 @@
 package splitstree5.io.imports;
 
+import jloda.util.Basic;
 import jloda.util.ProgressPercentage;
+import org.junit.Test;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.io.nexus.TaxaNexusIO;
 import splitstree5.io.nexus.TreesNexusFormat;
 import splitstree5.io.nexus.TreesNexusIO;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 
@@ -42,6 +48,22 @@ public class NewickTreeInTest {
         TreesNexusIO.write(w, taxaBlock, treesBlock, tnf);
         System.err.println(w.toString());
         assertEquals(test1, treesBlock.getTrees().get(0).toString());
+    }
+
+    @Test
+    public void isApplicable() throws IOException {
+        ArrayList<String> applicableFiles = new ArrayList<>();
+
+        File directory = new File("test/notNexusFiles");
+        File[] directoryListing = directory.listFiles();
+        if (directoryListing != null) {
+            for (File file : directoryListing) {
+                if (newickTreeIn.isApplicable(file.getPath()))
+                    applicableFiles.add(Basic.getFileNameWithoutPath(file.getName()));
+            }
+        }
+        System.err.println(applicableFiles);
+        assertEquals(applicableFiles, Arrays.asList("colors-nj.tre", "trees3.tre", "trees49.tre"));
     }
 
 }

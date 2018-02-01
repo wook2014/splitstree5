@@ -1,5 +1,6 @@
 package splitstree5.io.imports;
 
+import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.FileInputIterator;
 import jloda.util.ProgressListener;
@@ -10,6 +11,7 @@ import splitstree5.io.imports.interfaces.IImportCharacters;
 import splitstree5.io.nexus.CharactersNexusFormat;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -22,7 +24,7 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
     public static final List<String> extensions = new ArrayList<>(Arrays.asList("phy", "phylip"));
 
     @Override
-    public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format)
+    public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxa, CharactersBlock characters)
             throws CanceledException, IOException {
         final ArrayList<String> labels = new ArrayList<>();
         final ArrayList<String> sequences = new ArrayList<>();
@@ -84,8 +86,8 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
             setCharactersStandard(labels, sequences, ntax, nchar, taxa, characters);
         else if (sameLengthNtax) {
             setCharactersInterleaved(labels, sequences, ntax, nchar, taxa, characters);
-            format.setInterleave(true);
-            format.setColumnsPerBlock(sequences.get(0).length());
+            /*format.setInterleave(true);
+            format.setColumnsPerBlock(sequences.get(0).length());*/
         } else
             setCharactersStandardEOL(labels, sequences, ntax, nchar, taxa, characters);
 
@@ -107,7 +109,19 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
 
     @Override
     public boolean isApplicable(String fileName) throws IOException {
-        return false;
+        String line = Basic.getFirstLineFromFile(new File(fileName));
+
+        if (line == null) return false;
+        StringTokenizer tokens = new StringTokenizer(line);
+        if (tokens.countTokens() != 2) return false;
+
+        while (tokens.hasMoreTokens())
+            try {
+                double d = Double.parseDouble(tokens.nextToken());
+            } catch (NumberFormatException nfe) {
+                return false;
+            }
+        return true;
     }
 
     private void setCharactersStandard(ArrayList<String> labels, ArrayList<String> sequences,
