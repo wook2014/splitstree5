@@ -37,6 +37,7 @@ import jloda.phylo.SplitsGraph;
 import jloda.util.Pair;
 import jloda.util.ResourceManager;
 import splitstree5.core.Document;
+import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.graph3dtab.EdgeView3D;
@@ -59,13 +60,14 @@ import java.util.Set;
 public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsViewTab {
     private final ASelectionModel<Integer> splitsSelectionModel = new ASelectionModel<>();
     private boolean inSelection;
+    private ADataNode dataNode;
 
     /**
      * constructor
      */
     public SplitsView3DTab() {
         super();
-        label.setText("Splits Network");
+        label.setText("Splits Network 3D");
         label.setGraphic(new ImageView(ResourceManager.getIcon("SplitsNetworkView16.gif")));
         setText("");
         setGraphic(label);
@@ -369,5 +371,15 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
     @Override
     public ViewerTab getTab() {
         return this;
+    }
+
+    @Override
+    public ADataNode getDataNode() {
+        return dataNode;
+    }
+
+    @Override
+    public void setDataNode(ADataNode dataNode) {
+        this.dataNode = dataNode;
     }
 }

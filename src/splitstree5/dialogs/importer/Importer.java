@@ -72,7 +72,7 @@ public class Importer {
                 final Document document = mainWindow.getDocument();
 
                 document.setFileName(Basic.replaceFileSuffix(filename, ".st5"));
-                Workflow workflow = document.getWorkflow();
+                final Workflow workflow = document.getWorkflow();
                 TaxaBlock taxaBlock = new TaxaBlock();
 
                 if (importer instanceof IImportCharacters) {

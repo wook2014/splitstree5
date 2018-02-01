@@ -30,6 +30,7 @@ import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import jloda.phylo.SplitsGraph;
 import splitstree5.core.Document;
+import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.graphtab.base.EdgeViewBase;
@@ -81,4 +82,8 @@ public interface ISplitsViewTab {
     void setName(String name);
 
     void updateMenus(MenuController controller);
+
+    ADataNode getDataNode();
+
+    void setDataNode(ADataNode dataNode);
 }

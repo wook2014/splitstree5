@@ -206,9 +206,6 @@ public class MenuController {
     private MenuItem flipMenuItem;
 
     @FXML
-    private MenuItem relaxMenuItem;
-
-    @FXML
     private MenuItem formatNodesMenuItem;
 
     @FXML
@@ -309,6 +306,12 @@ public class MenuController {
 
     @FXML
     private MenuItem hybridizationNetworkMenuItem;
+
+    @FXML
+    private MenuItem show3DViewerMenuItem;
+
+    @FXML
+    private MenuItem relaxMenuItem;
 
     @FXML
     private MenuItem pcoaMenuItem;
@@ -552,10 +555,6 @@ public class MenuController {
         return flipMenuItem;
     }
 
-    public MenuItem getRelaxMenuItem() {
-        return relaxMenuItem;
-    }
-
     public MenuItem getFormatNodesMenuItem() {
         return formatNodesMenuItem;
     }
@@ -690,6 +689,14 @@ public class MenuController {
 
     public MenuItem getHybridizationNetworkMenuItem() {
         return hybridizationNetworkMenuItem;
+    }
+
+    public MenuItem getShow3DViewerMenuItem() {
+        return show3DViewerMenuItem;
+    }
+
+    public MenuItem getRelaxMenuItem() {
+        return relaxMenuItem;
     }
 
     public MenuItem getPcoaMenuItem() {

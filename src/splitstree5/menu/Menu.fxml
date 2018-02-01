@@ -249,11 +249,6 @@
                 </MenuItem>
                 <MenuItem fx:id="flipMenuItem" text="Flip">
                 </MenuItem>
-                <MenuItem fx:id="relaxMenuItem" text="Relax">
-                    <accelerator>
-                        <KeyCodeCombination alt="UP" code="R" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
-                    </accelerator>
-                </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="formatNodesMenuItem" text="Format...">
                     <accelerator>
@@ -331,6 +326,13 @@
                 <MenuItem fx:id="consensusClusterNetworkMenuItem" mnemonicParsing="false"
                           text="Consensus Cluster Network"/>
                 <MenuItem fx:id="hybridizationNetworkMenuItem" mnemonicParsing="false" text="Hybridization Network"/>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="show3DViewerMenuItem" mnemonicParsing="false" text="3D Viewer"/>
+                <MenuItem fx:id="relaxMenuItem" text="Relax">
+                    <accelerator>
+                        <KeyCodeCombination alt="UP" code="R" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
+                    </accelerator>
+                </MenuItem>
             </items>
         </Menu>
         <Menu mnemonicParsing="false" text="PCoA">

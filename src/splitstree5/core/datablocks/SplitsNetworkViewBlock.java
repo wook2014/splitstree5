@@ -58,6 +58,7 @@ public class SplitsNetworkViewBlock extends ADataBlock implements IHasTab {
         //splitsViewTab = new SplitsViewTab();
 
         this.splitsViewTab = splitsViewTab;
+        splitsViewTab.setDataNode(getDataNode());
 
         splitsViewTab.setLayout(GraphLayout.Radial);
 
@@ -92,6 +93,7 @@ public class SplitsNetworkViewBlock extends ADataBlock implements IHasTab {
 
     @Override
     public void setDataNode(ADataNode dataNode) {
+        splitsViewTab.setDataNode(dataNode);
         super.setDataNode(dataNode);
     }
 

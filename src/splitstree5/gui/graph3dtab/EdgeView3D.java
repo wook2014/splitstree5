@@ -19,9 +19,11 @@
 
 package splitstree5.gui.graph3dtab;
 
+import javafx.event.EventHandler;
 import javafx.geometry.Point3D;
 import javafx.scene.Node;
 import javafx.scene.control.Labeled;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import jloda.graph.Edge;
@@ -33,6 +35,9 @@ import splitstree5.gui.utils.SelectionEffect;
  * Daniel Huson, 1.2018
  */
 public class EdgeView3D extends EdgeViewBase {
+    private static final EventHandler<MouseEvent> mouseEnteredHandler = (x) -> ((Line3D) x.getSource()).setLineWidth(2 * ((Line3D) x.getSource()).getLineWidth());
+    private static final EventHandler<MouseEvent> mouseExitedHandler = (x) -> ((Line3D) x.getSource()).setLineWidth(0.5 * ((Line3D) x.getSource()).getLineWidth());
+
     private final Line3D line;
     private Color color;
 
@@ -42,6 +47,8 @@ public class EdgeView3D extends EdgeViewBase {
         line = new Line3D(start, end);
         line.setColor(color);
         shapeGroup.getChildren().add(line);
+        line.setOnMouseEntered(mouseEnteredHandler);
+        line.setOnMouseExited(mouseExitedHandler);
     }
 
     public Line3D getShape() {

@@ -71,6 +71,7 @@ public abstract class Graph3DTab<G extends PhyloGraph> extends GraphTabBase<G> {
     private final Pane bottomPane = new Pane();
 
     private LongBinding viewChanged;
+    private LongProperty viewNumber = new SimpleLongProperty(0);
 
     final Property<Transform> worldTransformProperty;
     final LongProperty transformChangesProperty;
@@ -118,32 +119,32 @@ public abstract class Graph3DTab<G extends PhyloGraph> extends GraphTabBase<G> {
     public void show() {
         Platform.runLater(() -> {
 
-                if (centerPane.getChildren().size() == 0) {
-                    centerPane.setOnMouseClicked((e) -> {
-                        if (!e.isShiftDown()) {
-                            nodeSelectionModel.clearSelection();
-                            edgeSelectionModel.clearSelection();
-                        }
-                    });
-                }
+            if (centerPane.getChildren().size() == 0) {
+                centerPane.setOnMouseClicked((e) -> {
+                    if (!e.isShiftDown()) {
+                        nodeSelectionModel.clearSelection();
+                        edgeSelectionModel.clearSelection();
+                    }
+                });
+            }
 
-                group.getChildren().clear();
-                group.getChildren().addAll(edgesGroup.getChildren());
-                group.getChildren().addAll(nodesGroup.getChildren());
+            group.getChildren().clear();
+            group.getChildren().addAll(edgesGroup.getChildren());
+            group.getChildren().addAll(nodesGroup.getChildren());
 
+            topPane.getChildren().clear();
             // topPane.getChildren().addAll(edgeLabelsGroup.getChildren());
-            topPane.getChildren().addAll(nodeLabelsGroup.getChildren());
+            topPane.getChildren().setAll(nodeLabelsGroup.getChildren());
 
-                // empty all of these for the next computation
-                edgesGroup.getChildren().clear();
-                nodesGroup.getChildren().clear();
+            // empty all of these for the next computation
+            edgesGroup.getChildren().clear();
+            nodesGroup.getChildren().clear();
 
-                edgeLabelsGroup.getChildren().clear();
-                nodeLabelsGroup.getChildren().clear();
+            edgeLabelsGroup.getChildren().clear();
+            nodeLabelsGroup.getChildren().clear();
 
-                nodeSelectionModel.clearSelection();
-                edgeSelectionModel.clearSelection();
-
+            nodeSelectionModel.clearSelection();
+            edgeSelectionModel.clearSelection();
 
             if (!sceneIsSetup) {
                 sceneIsSetup = true;
@@ -154,11 +155,9 @@ public abstract class Graph3DTab<G extends PhyloGraph> extends GraphTabBase<G> {
 
                 viewChanged = new LongBinding() {
                     long value = 0;
-
                     {
-                        super.bind(transformChangesProperty, subScene.widthProperty(), subScene.heightProperty(), camera.translateXProperty(), camera.translateYProperty());
+                        super.bind(transformChangesProperty, subScene.widthProperty(), subScene.heightProperty(), camera.translateXProperty(), camera.translateYProperty(), viewNumber);
                     }
-
                     @Override
                     protected long computeValue() {
                         return value++;
@@ -172,13 +171,13 @@ public abstract class Graph3DTab<G extends PhyloGraph> extends GraphTabBase<G> {
                 subScene.widthProperty().bind(centerPane.widthProperty());
                 subScene.heightProperty().bind(centerPane.heightProperty());
                 borderPane.setCenter(centerPane);
-                // need to put this here after putting the center pane in:
                 borderPane.setTop(findToolBar);
             }
 
             for (NodeViewBase nv : node2view.values()) {
                 ((NodeView3D) nv).setupSelectionRectangle(bottomPane, viewChanged);
             }
+            viewNumber.set(viewNumber.get() + 1);
         });
     }
 

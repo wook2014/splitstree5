@@ -22,12 +22,15 @@ package splitstree5.gui.graph3dtab;
 import javafx.beans.binding.Binding;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
+import javafx.event.EventHandler;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point3D;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
+import javafx.scene.control.Tooltip;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -61,19 +64,59 @@ public class NodeView3D extends NodeViewBase {
         setLocation(location);
         Sphere sphere = new Sphere(2);
         setShape(sphere);
-        setLocation(location);
 
         if (text != null && text.length() > 0) {
             color = Color.GOLD;
             setLabel(new Label(text));
+            label.setVisible(false);
         } else {
             color = Color.SILVER;
-            sphere.setRadius(0.75);
+            sphere.setRadius(0.5);
         }
+
         final PhongMaterial material = new PhongMaterial(color);
         material.setSpecularColor(color.brighter());
         sphere.setMaterial(material);
-   }
+    }
+
+    private void updateStuff() {
+        if (label != null || shape != null) {
+            EventHandler<MouseEvent> mouseEnteredEventHandler = event -> {
+                if (shape != null) {
+                    shape.setScaleX(2 * shape.getScaleX());
+                    shape.setScaleY(2 * shape.getScaleY());
+                    shape.setScaleZ(2 * shape.getScaleZ());
+                }
+                if (label != null) {
+                    label.setScaleX(1.2 * label.getScaleX());
+                    label.setScaleY(1.2 * label.getScaleY());
+                }
+
+            };
+            EventHandler<MouseEvent> mouseExitedEventHandler = event -> {
+                if (shape != null) {
+                    shape.setScaleX(0.5 * shape.getScaleX());
+                    shape.setScaleY(0.5 * shape.getScaleY());
+                    shape.setScaleZ(0.5 * shape.getScaleZ());
+                }
+                if (label != null) {
+                    label.setScaleX(1.0 / 1.2 * label.getScaleX());
+                    label.setScaleY(1.0 / 1.2 * label.getScaleY());
+                }
+            };
+            if (shape != null) {
+                shape.setOnMouseEntered(mouseEnteredEventHandler);
+                shape.setOnMouseExited(mouseExitedEventHandler);
+            }
+            if (label != null) {
+                label.setOnMouseEntered(mouseEnteredEventHandler);
+                label.setOnMouseExited(mouseExitedEventHandler);
+            }
+            if (shape != null && label != null)
+                Tooltip.install(shape, new Tooltip(label.getText()));
+        }
+    }
+
 
     public Point3D getLocation() {
         return new Point3D(shapeGroup.getTranslateX(), shapeGroup.getTranslateY(), shapeGroup.getTranslateZ());
@@ -84,7 +127,7 @@ public class NodeView3D extends NodeViewBase {
         shapeGroup.setTranslateY(location.getY());
         shapeGroup.setTranslateZ(location.getZ());
         if (selectionRectangle != null && selectionRectangle.getUserData() instanceof ChangeListener)
-            ((ChangeListener) selectionRectangle.getUserData()).changed(null, null,null);
+            ((ChangeListener) selectionRectangle.getUserData()).changed(null, null, null);
     }
 
     public Shape3D getShape() {
@@ -97,6 +140,7 @@ public class NodeView3D extends NodeViewBase {
         this.shape = shape;
         if (this.shape != null)
             shapeGroup.getChildren().add(this.shape);
+        updateStuff();
     }
 
     public void setLabel(Labeled label) {
@@ -106,6 +150,8 @@ public class NodeView3D extends NodeViewBase {
         if (this.label != null)
             labelGroup.getChildren().add(this.label);
         bindLabel();
+        updateStuff();
+
     }
 
     public void setFill(Color color) {
@@ -156,7 +202,7 @@ public class NodeView3D extends NodeViewBase {
     @Override
     public boolean isShownAsSelected() {
         return selectionRectangle != null && labelGroup.getChildren().contains(selectionRectangle);
-     }
+    }
 
     @Override
     public double getWidth() {
@@ -192,7 +238,7 @@ public class NodeView3D extends NodeViewBase {
     private void bindLabel() {
         if (this.label != null && selectionRectangle != null) {
             label.layoutXProperty().bind(selectionRectangle.xProperty().add(selectionRectangle.widthProperty()).add(4));
-            label.layoutYProperty().bind(selectionRectangle.yProperty().add(selectionRectangle.heightProperty().multiply(0.5)));
+            label.layoutYProperty().bind(selectionRectangle.yProperty().add(selectionRectangle.heightProperty().multiply(-0.5)));
         }
     }
 
@@ -203,7 +249,12 @@ public class NodeView3D extends NodeViewBase {
      * @param viewChanged
      */
     public void setupSelectionRectangle(Pane pane, Binding viewChanged) {
+        if (selectionRectangle != null)
+            labelGroup.getChildren().remove(selectionRectangle);
+
         selectionRectangle = createBoundingRectangleWithBinding(pane, shapeGroup, viewChanged);
+        if (label != null)
+            label.setVisible(true);
         bindLabel();
     }
 

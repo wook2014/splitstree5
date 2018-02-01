@@ -97,6 +97,7 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
         service = new ConnectorService<>(this);
         if (connectToGraph)
             parent.stateProperty().addListener(new WeakChangeListener<>(parentStateChangeListener));
+        child.setParent(this);
     }
 
     /**
@@ -113,6 +114,8 @@ public class AConnector<P extends ADataBlock, C extends ADataBlock> extends ANod
     }
 
     public void disconnect() {
+        for (ADataNode child : getChildren())
+            child.setParent(null);
         parent.getChildren().remove(this);
         parent.stateProperty().removeListener(parentStateChangeListener);
     }

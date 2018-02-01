@@ -412,4 +412,12 @@ public class MainWindow {
     public void setUndoRedoManager(UndoManager undoManager) {
         this.undoRedoManager.set(undoManager);
     }
+
+    public WorkflowViewTab getWorkflowTab() {
+        for (Tab tab : mainWindowController.getMainTabPane().getTabs()) {
+            if (tab instanceof WorkflowViewTab)
+                return (WorkflowViewTab) tab;
+        }
+        return null;
+    }
 }

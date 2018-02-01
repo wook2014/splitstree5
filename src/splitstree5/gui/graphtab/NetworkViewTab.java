@@ -24,7 +24,7 @@ import javafx.scene.image.ImageView;
 import jloda.fx.ASelectionModel;
 import jloda.graph.Edge;
 import jloda.graph.Node;
-import jloda.phylo.PhyloTree;
+import jloda.phylo.PhyloGraph;
 import jloda.util.ResourceManager;
 import splitstree5.gui.graphtab.base.EdgeView2D;
 import splitstree5.gui.graphtab.base.Graph2DTab;
@@ -37,17 +37,17 @@ import java.util.Set;
 import java.util.Stack;
 
 /**
- * The tree viewer tab
- * Daniel Huson, 11.2017
+ * The network viewer tab
+ * Daniel Huson, 1.2018
  */
-public class TreeViewTab extends Graph2DTab<PhyloTree> {
+public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
     /**
      * constructor
      */
-    public TreeViewTab() {
+    public NetworkViewTab() {
         super();
-        label.setText("Tree");
-        label.setGraphic(new ImageView(ResourceManager.getIcon("TreeView16.gif")));
+        label.setText("NetworkView");
+        label.setGraphic(new ImageView(ResourceManager.getIcon("NetworkView16.gif")));
         setText("");
         setGraphic(label);
     }

@@ -32,7 +32,10 @@ import jloda.phylo.SplitsGraph;
 import jloda.util.Pair;
 import jloda.util.ResourceManager;
 import splitstree5.core.Document;
-import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.algorithms.views.SplitsNetworkAlgorithm;
+import splitstree5.core.connectors.AConnector;
+import splitstree5.core.datablocks.*;
+import splitstree5.core.workflow.Workflow;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.graphtab.base.*;
 import splitstree5.menu.MenuController;
@@ -46,6 +49,8 @@ import java.util.*;
 public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsViewTab {
     private final ASelectionModel<Integer> splitsSelectionModel = new ASelectionModel<>();
     private boolean inSelection;
+    private ADataNode dataNode;
+
     /**
      * constructor
      */
@@ -134,39 +139,39 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
         final NodeView2D nodeView = new NodeView2D(v, location, label);
 
         nodeView.getShapeGroup().setOnMousePressed((e) -> {
-                mouseX = e.getScreenX();
-                mouseY = e.getScreenY();
-                e.consume();
-            });
+            mouseX = e.getScreenX();
+            mouseY = e.getScreenY();
+            e.consume();
+        });
         nodeView.getShapeGroup().setOnMouseDragged((e) -> {
-                if (!splitsSelectionModel.isEmpty() && nodeSelectionModel.getSelectedItems().contains(nodeView.getNode())) {
-                    final HashSet<Node> selectedNodesSet = new HashSet<>(nodeSelectionModel.getSelectedItems());
-                    final Point2D center = computeAnchorCenter(edgeSelectionModel.getSelectedItems(), selectedNodesSet, (NodeArray) getNode2view());
-                    final Point2D prevPoint = group.localToParent(group.screenToLocal(mouseX, mouseY));
-                    final Point2D newPoint = group.localToParent(group.screenToLocal(e.getScreenX(), e.getScreenY()));
-                    final double angle = GeometryUtils.computeObservedAngle(center, prevPoint, newPoint);
-                    applySplitRotation(angle, edgeSelectionModel.getSelectedItems(), selectedNodesSet, (NodeArray) getNode2view(), (EdgeArray) getEdge2view());
-                }
-                mouseX = e.getScreenX();
-                mouseY = e.getScreenY();
-                e.consume();
-            });
+            if (!splitsSelectionModel.isEmpty() && nodeSelectionModel.getSelectedItems().contains(nodeView.getNode())) {
+                final HashSet<Node> selectedNodesSet = new HashSet<>(nodeSelectionModel.getSelectedItems());
+                final Point2D center = computeAnchorCenter(edgeSelectionModel.getSelectedItems(), selectedNodesSet, (NodeArray) getNode2view());
+                final Point2D prevPoint = group.localToParent(group.screenToLocal(mouseX, mouseY));
+                final Point2D newPoint = group.localToParent(group.screenToLocal(e.getScreenX(), e.getScreenY()));
+                final double angle = GeometryUtils.computeObservedAngle(center, prevPoint, newPoint);
+                applySplitRotation(angle, edgeSelectionModel.getSelectedItems(), selectedNodesSet, (NodeArray) getNode2view(), (EdgeArray) getEdge2view());
+            }
+            mouseX = e.getScreenX();
+            mouseY = e.getScreenY();
+            e.consume();
+        });
         nodeView.getShapeGroup().setOnMouseClicked((x) -> {
-                splitsSelectionModel.clearSelection();
-                edgeSelectionModel.clearSelection();
-                if (!x.isShiftDown())
-                    nodeSelectionModel.clearSelection();
-                if (nodeSelectionModel.getSelectedItems().contains(v))
-                    nodeSelectionModel.clearSelection(v);
-                else
-                    nodeSelectionModel.select(v);
-                if (x.getClickCount() >= 2) {
-                    ArrayList<Edge> edges = getAdjacentEdgesSortedByDecreasingWeight(v);
-                    int index = Math.min(edges.size() - 1, x.getClickCount() - 2);
-                    selectBySplit(edges.get(index));
-                }
-                x.consume();
-            });
+            splitsSelectionModel.clearSelection();
+            edgeSelectionModel.clearSelection();
+            if (!x.isShiftDown())
+                nodeSelectionModel.clearSelection();
+            if (nodeSelectionModel.getSelectedItems().contains(v))
+                nodeSelectionModel.clearSelection(v);
+            else
+                nodeSelectionModel.select(v);
+            if (x.getClickCount() >= 2) {
+                ArrayList<Edge> edges = getAdjacentEdgesSortedByDecreasingWeight(v);
+                int index = Math.min(edges.size() - 1, x.getClickCount() - 2);
+                selectBySplit(edges.get(index));
+            }
+            x.consume();
+        });
 
         if (nodeView.getLabelGroup() != null) {
             nodeView.getLabelGroup().setOnMouseClicked((x) -> {
@@ -341,10 +346,38 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
     @Override
     public void updateMenus(MenuController controller) {
         super.updateMenus(controller);
+
+        controller.getShow3DViewerMenuItem().setOnAction((e) -> {
+            ADataNode dataNode = getDataNode();
+            if (dataNode != null && dataNode.getParent() != null && dataNode.getParent().getParent() != null
+                    && dataNode.getParent().getParent().getDataBlock() instanceof SplitsBlock) {
+                final ADataNode<SplitsBlock> splitsNode = dataNode.getParent().getParent();
+                for (AConnector<SplitsBlock, ? extends ADataBlock> child : splitsNode.getChildren()) {
+                    if (child.getChild().getDataBlock() instanceof SplitsNetwork3DViewBlock) {
+                        getMainWindow().showDataView(child.getChild());
+                        return;
+                    }
+                }
+                // no 3d viewer found, set one up
+                final Workflow workflow = getMainWindow().getDocument().getWorkflow();
+                ADataNode<SplitsNetworkViewBlock> viewNode = workflow.createDataNode(new SplitsNetwork3DViewBlock());
+                workflow.createConnector(splitsNode, viewNode, new SplitsNetworkAlgorithm()).forceRecompute();
+                getMainWindow().getWorkflowTab().recompute();
+            }
+        });
     }
 
     @Override
     public ViewerTab getTab() {
         return this;
+    }
+
+    public ADataNode getDataNode() {
+        return dataNode;
+    }
+
+    @Override
+    public void setDataNode(ADataNode dataNode) {
+        this.dataNode = dataNode;
     }
 }

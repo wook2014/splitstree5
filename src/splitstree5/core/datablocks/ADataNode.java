@@ -34,7 +34,8 @@ import java.util.ArrayList;
  */
 public class ADataNode<D extends ADataBlock> extends ANode {
     private final D dataBlock;
-    private final ObservableList<AConnector> children;
+    private final ObservableList<AConnector<D, ? extends ADataBlock>> children;
+    private AConnector<? extends ADataBlock, D> parent;
 
     /**
      * constructor
@@ -67,16 +68,6 @@ public class ADataNode<D extends ADataBlock> extends ANode {
         }
     }
 
-    public ObservableList<AConnector> getChildren() {
-        return children;
-    }
-
-    public void disconnect() {
-        for (ANode connector : new ArrayList<>(getChildren())) {
-            connector.disconnect();
-        }
-    }
-
     @Override
     public String getName() {
         return dataBlock.getName();
@@ -93,5 +84,24 @@ public class ADataNode<D extends ADataBlock> extends ANode {
     }
 
     public void clear() {
+    }
+
+    public ObservableList<AConnector<D, ? extends ADataBlock>> getChildren() {
+        return children;
+    }
+
+    public void disconnect() {
+        setParent(null);
+        for (ANode connector : new ArrayList<>(getChildren())) {
+            connector.disconnect();
+        }
+    }
+
+    public AConnector<? extends ADataBlock, D> getParent() {
+        return parent;
+    }
+
+    public void setParent(AConnector<? extends ADataBlock, D> parent) {
+        this.parent = parent;
     }
 }
