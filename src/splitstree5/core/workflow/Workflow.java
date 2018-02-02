@@ -28,13 +28,12 @@ import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import jloda.fx.ASelectionModel;
 import jloda.util.Basic;
+import jloda.util.Pair;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.ReportConnector;
-import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.*;
 import splitstree5.core.topfilters.*;
-import splitstree5.gui.IHasTab;
 
 import java.util.*;
 
@@ -46,21 +45,21 @@ import java.util.*;
 public class Workflow {
     private final IntegerProperty size = new SimpleIntegerProperty();
 
-    private final ObservableSet<AConnector> connectorNodes = FXCollections.observableSet();
-    private final ObservableSet<ADataNode> dataNodes = FXCollections.observableSet();
+    private final ObservableSet<Connector> connectorNodes = FXCollections.observableSet();
+    private final ObservableSet<DataNode> dataNodes = FXCollections.observableSet();
 
-    private final ObjectProperty<ADataNode<TaxaBlock>> topTaxaNode = new SimpleObjectProperty<>();
-    private final ObjectProperty<AConnector<TaxaBlock, TaxaBlock>> taxaFilter = new SimpleObjectProperty<>();
+    private final ObjectProperty<DataNode<TaxaBlock>> topTaxaNode = new SimpleObjectProperty<>();
+    private final ObjectProperty<Connector<TaxaBlock, TaxaBlock>> taxaFilter = new SimpleObjectProperty<>();
 
-    private final ObjectProperty<ADataNode<TaxaBlock>> workingTaxaNode = new SimpleObjectProperty<>();
-    private final ObjectProperty<ADataNode> topDataNode = new SimpleObjectProperty<>();
-    private ObjectProperty<ATopFilter<? extends ADataBlock>> topFilter = new SimpleObjectProperty<>();
-    private final ObjectProperty<ADataNode> workingDataNode = new SimpleObjectProperty<>();
+    private final ObjectProperty<DataNode<TaxaBlock>> workingTaxaNode = new SimpleObjectProperty<>();
+    private final ObjectProperty<DataNode> topDataNode = new SimpleObjectProperty<>();
+    private ObjectProperty<ATopFilter<? extends DataBlock>> topFilter = new SimpleObjectProperty<>();
+    private final ObjectProperty<DataNode> workingDataNode = new SimpleObjectProperty<>();
 
     private final BooleanProperty updating = new SimpleBooleanProperty();
-    private final ObservableSet<ANode> invalidNodes = FXCollections.observableSet();
+    private final ObservableSet<WorkflowNode> invalidNodes = FXCollections.observableSet();
 
-    private final ASelectionModel<ANode> nodeSelectionModel = new ASelectionModel<>();
+    private final ASelectionModel<WorkflowNode> nodeSelectionModel = new ASelectionModel<>();
 
     private final LongProperty topologyChanged = new SimpleLongProperty(0);
 
@@ -83,16 +82,16 @@ public class Workflow {
             size.set(connectorNodes.size() + dataNodes.size());
         });
 
-        connectorNodes.addListener((SetChangeListener<AConnector>) change -> {
+        connectorNodes.addListener((SetChangeListener<Connector>) change -> {
             if (change.wasAdded() || change.wasRemoved()) {
                 updateSelectionModel();
             }
         });
-        dataNodes.addListener((SetChangeListener<ADataNode>) change -> {
+        dataNodes.addListener((SetChangeListener<DataNode>) change -> {
             size.set(connectorNodes.size() + dataNodes.size());
 
             if (change.wasAdded() || change.wasRemoved()) {
-                final Set<ANode> selected = new HashSet<>(nodeSelectionModel.getSelectedItems());
+                final Set<WorkflowNode> selected = new HashSet<>(nodeSelectionModel.getSelectedItems());
                 nodeSelectionModel.selectItems(selected);
                 updateSelectionModel();
             }
@@ -101,7 +100,7 @@ public class Workflow {
         updatingProperty().addListener((observable, oldValue, newValue) -> System.err.println("UPDATING: " + newValue));
 
         topologyChanged.addListener(observable -> {
-            ANode root = topDataNode.get();
+            WorkflowNode root = topDataNode.get();
             if (root != null) {
                 setPathIdsRec(root, pathIds.nextClearBit(1), pathIds);
             }
@@ -115,7 +114,7 @@ public class Workflow {
      * @param currentId
      * @param pathIds
      */
-    private void setPathIdsRec(ANode v, int currentId, BitSet pathIds) {
+    private void setPathIdsRec(WorkflowNode v, int currentId, BitSet pathIds) {
         if (v.getPathId() == 0) {
             v.setPathId(currentId);
             pathIds.set(currentId);
@@ -124,7 +123,7 @@ public class Workflow {
 
         boolean first = true;
         for (Object obj : v.getChildren()) {
-            final ANode w = (ANode) obj;
+            final WorkflowNode w = (WorkflowNode) obj;
             if (first) {
                 setPathIdsRec(w, currentId, pathIds);
                 first = false;
@@ -139,10 +138,10 @@ public class Workflow {
      * @param topTaxaBlock
      * @param topDataBlock
      */
-    public void setupTopAndWorkingNodes(TaxaBlock topTaxaBlock, ADataBlock topDataBlock) {
+    public void setupTopAndWorkingNodes(TaxaBlock topTaxaBlock, DataBlock topDataBlock) {
         setTopTaxaNode(createDataNode(topTaxaBlock));
         setWorkingTaxaNode(createDataNode((TaxaBlock) topTaxaBlock.newInstance()));
-        taxaFilter.set(new AConnector<>(getTopTaxaNode().getDataBlock(), getTopTaxaNode(), getWorkingTaxaNode(), new splitstree5.core.algorithms.filters.TaxaFilter()));
+        taxaFilter.set(new Connector<>(getTopTaxaNode().getDataBlock(), getTopTaxaNode(), getWorkingTaxaNode(), new splitstree5.core.algorithms.filters.TaxaFilter()));
         register(taxaFilter.get());
         setTopDataNode(createDataNode(topDataBlock));
         getTopDataNode().getDataBlock().setName("Orig" + getTopDataNode().getDataBlock().getName());
@@ -168,9 +167,9 @@ public class Workflow {
      * @param <D>
      * @return data node
      */
-    public <D extends ADataBlock> ADataNode<D> createDataNode(D dataBlock) {
+    public <D extends DataBlock> DataNode<D> createDataNode(D dataBlock) {
         dataBlock.setDocument(document);
-        return addDataNode(new ADataNode<>(dataBlock));
+        return addDataNode(new DataNode<>(dataBlock));
     }
 
     /**
@@ -178,7 +177,7 @@ public class Workflow {
      *
      * @param dataNode
      */
-    public <D extends ADataBlock> ADataNode<D> addDataNode(ADataNode<D> dataNode) {
+    public <D extends DataBlock> DataNode<D> addDataNode(DataNode<D> dataNode) {
         if (!dataNodes.contains(dataNode))
             register(dataNode);
         incrementTopologyChanged();
@@ -195,8 +194,8 @@ public class Workflow {
      * @param <C>
      * @return connector node
      */
-    public <P extends ADataBlock, C extends ADataBlock> AConnector<P, C> createConnector(ADataNode<P> parent, ADataNode<C> child, Algorithm<P, C> algorithm) {
-        final AConnector<P, C> connector = addConnector(new AConnector<>(getWorkingTaxaNode().getDataBlock(), parent, child, algorithm));
+    public <P extends DataBlock, C extends DataBlock> Connector<P, C> createConnector(DataNode<P> parent, DataNode<C> child, Algorithm<P, C> algorithm) {
+        final Connector<P, C> connector = addConnector(new Connector<>(getWorkingTaxaNode().getDataBlock(), parent, child, algorithm));
         if (algorithm != null)
             algorithm.setConnector(connector);
         return connector;
@@ -209,7 +208,7 @@ public class Workflow {
      * @param <P>
      * @return connector node
      */
-    public <P extends ADataBlock> AConnector createReporter(ADataNode<P> parent) {
+    public <P extends DataBlock> Connector createReporter(DataNode<P> parent) {
         return addConnector(new ReportConnector<P>(getWorkingTaxaNode().getDataBlock(), parent));
     }
 
@@ -218,7 +217,7 @@ public class Workflow {
      *
      * @param connector
      */
-    public <P extends ADataBlock, C extends ADataBlock> AConnector<P, C> addConnector(AConnector<P, C> connector) {
+    public <P extends DataBlock, C extends DataBlock> Connector<P, C> addConnector(Connector<P, C> connector) {
         if (!connectorNodes.contains(connector))
             register(connector);
         if (connector.getAlgorithm() != null)
@@ -227,19 +226,19 @@ public class Workflow {
         return connector;
     }
 
-    public ADataNode<TaxaBlock> getTopTaxaNode() {
+    public DataNode<TaxaBlock> getTopTaxaNode() {
         return topTaxaNode.get();
     }
 
-    public ObjectProperty<ADataNode<TaxaBlock>> topTaxaNodeProperty() {
+    public ObjectProperty<DataNode<TaxaBlock>> topTaxaNodeProperty() {
         return topTaxaNode;
     }
 
-    public void setTopTaxaNode(ADataNode<TaxaBlock> topTaxaNode) {
+    public void setTopTaxaNode(DataNode<TaxaBlock> topTaxaNode) {
         this.topTaxaNode.set(topTaxaNode);
     }
 
-    public ADataNode<TaxaBlock> getWorkingTaxaNode() {
+    public DataNode<TaxaBlock> getWorkingTaxaNode() {
         return workingTaxaNode.get();
     }
 
@@ -247,51 +246,51 @@ public class Workflow {
         return getWorkingTaxaNode().getDataBlock();
     }
 
-    public ObjectProperty<ADataNode<TaxaBlock>> workingTaxaNodeProperty() {
+    public ObjectProperty<DataNode<TaxaBlock>> workingTaxaNodeProperty() {
         return workingTaxaNode;
     }
 
-    public void setWorkingTaxaNode(ADataNode<TaxaBlock> workingTaxaNode) {
+    public void setWorkingTaxaNode(DataNode<TaxaBlock> workingTaxaNode) {
         this.workingTaxaNode.set(workingTaxaNode);
     }
 
-    public ADataNode getTopDataNode() {
+    public DataNode getTopDataNode() {
         return topDataNode.get();
     }
 
-    public ObjectProperty<ADataNode> topDataNodeProperty() {
+    public ObjectProperty<DataNode> topDataNodeProperty() {
         return topDataNode;
     }
 
-    public void setTopDataNode(ADataNode topDataNode) {
+    public void setTopDataNode(DataNode topDataNode) {
         this.topDataNode.set(topDataNode);
     }
 
-    public ADataNode getWorkingDataNode() {
+    public DataNode getWorkingDataNode() {
         return workingDataNode.get();
     }
 
-    public ObjectProperty<ADataNode> workingDataNodeProperty() {
+    public ObjectProperty<DataNode> workingDataNodeProperty() {
         return workingDataNode;
     }
 
-    public void setWorkingDataNode(ADataNode workingDataNode) {
+    public void setWorkingDataNode(DataNode workingDataNode) {
         this.workingDataNode.set(workingDataNode);
     }
 
-    public ObjectProperty<AConnector<TaxaBlock, TaxaBlock>> taxaFilterProperty() {
+    public ObjectProperty<Connector<TaxaBlock, TaxaBlock>> taxaFilterProperty() {
         return taxaFilter;
     }
 
-    public AConnector<TaxaBlock, TaxaBlock> getTaxaFilter() {
+    public Connector<TaxaBlock, TaxaBlock> getTaxaFilter() {
         return taxaFilter.get();
     }
 
-    public ATopFilter<? extends ADataBlock> getTopFilter() {
+    public ATopFilter<? extends DataBlock> getTopFilter() {
         return topFilter.get();
     }
 
-    public ObjectProperty<ATopFilter<? extends ADataBlock>> topFilterProperty() {
+    public ObjectProperty<ATopFilter<? extends DataBlock>> topFilterProperty() {
         return topFilter;
     }
 
@@ -304,6 +303,14 @@ public class Workflow {
         return ReadOnlyBooleanProperty.readOnlyBooleanProperty(updating);
     }
 
+    public ObservableSet<DataNode> dataNodes() {
+        return dataNodes;
+    }
+
+    public ObservableSet<Connector> connectors() {
+        return connectorNodes;
+    }
+
     /**
      * delete the given node, or only all below, or both node and all below. Note that setting both delete and all below to false doesn't make sense
      *
@@ -311,32 +318,27 @@ public class Workflow {
      * @param deleteNode       delete the node
      * @param deleteNodesBelow delete all its dependents
      */
-    public void delete(ANode node, boolean deleteNode, boolean deleteNodesBelow) {
+    public void delete(WorkflowNode node, boolean deleteNode, boolean deleteNodesBelow) {
         if (deleteNodesBelow) {
             for (Object obj : node.getChildren()) {
-                delete((AConnector) obj, true, true);
+                delete((Connector) obj, true, true);
             }
         }
         if (deleteNode) {
             node.disconnect();
 
-            if (node instanceof ADataNode)
+            if (node instanceof DataNode)
                 dataNodes.remove(node);
-            else if (node instanceof AConnector)
+            else if (node instanceof Connector)
                 connectorNodes.remove(node);
-
-            if (node instanceof ADataNode && ((ADataNode) node).getDataBlock() instanceof IHasTab) {
-                ((ADataNode) node).getDataBlock().getDocument().getMainWindow().remove(((IHasTab) ((ADataNode) node).getDataBlock()).getTab());
-            }
-
             if (invalidNodes.contains(node))
                 invalidNodes.remove(node);
         }
         topologyChanged.set(topologyChanged.get() + 1);
     }
 
-    public void delete(Collection<ANode> nodes) {
-        for (ANode node : nodes) {
+    public void delete(Collection<WorkflowNode> nodes) {
+        for (WorkflowNode node : nodes) {
             delete(node, true, false);
         }
     }
@@ -347,9 +349,9 @@ public class Workflow {
      * @param nodes
      * @return new nodes
      */
-    public Collection<ANode> duplicate(Collection<ANode> nodes) {
-        final ADataNode root = getTopDataNode(); // only allow duplication below top data node
-        final Set<ANode> newNodes = new HashSet<>();
+    public Collection<WorkflowNode> duplicate(Collection<WorkflowNode> nodes) {
+        final DataNode root = getTopDataNode(); // only allow duplication below top data node
+        final Set<WorkflowNode> newNodes = new HashSet<>();
         if (root != null) {
             for (Object v : root.getChildren()) {
                 duplicateRec(root, root, nodes, newNodes);
@@ -366,14 +368,14 @@ public class Workflow {
      * @param nodesToDuplicate
      * @param newNodes
      */
-    private void duplicateRec(ADataNode parent, ADataNode parentCopy, Collection<ANode> nodesToDuplicate, Set<ANode> newNodes) {
-        ArrayList<AConnector> children = new ArrayList<>(parent.getChildren());
-        for (AConnector connector : children) {
+    private void duplicateRec(DataNode parent, DataNode parentCopy, Collection<WorkflowNode> nodesToDuplicate, Set<WorkflowNode> newNodes) {
+        ArrayList<Connector> children = new ArrayList<>(parent.getChildren());
+        for (Connector connector : children) {
             if (!newNodes.contains(connector)) {
                 if (nodesToDuplicate.contains(connector)) {
-                    final ADataNode childCopy = createDataNode(connector.getChild().getDataBlock().newInstance());
+                    final DataNode childCopy = createDataNode(connector.getChild().getDataBlock().newInstance());
                     newNodes.add(childCopy);
-                    final AConnector connectorCopy = createConnector(parentCopy, childCopy, connector.getAlgorithm().newInstance());
+                    final Connector connectorCopy = createConnector(parentCopy, childCopy, connector.getAlgorithm().newInstance());
                     newNodes.add(connectorCopy);
                     duplicateRec(connector.getChild(), childCopy, nodesToDuplicate, newNodes);
                 } else {
@@ -388,15 +390,15 @@ public class Workflow {
      *
      * @param nodes
      */
-    public void recomputeTop(Collection<ANode> nodes) {
-        final ADataNode root = getTopDataNode(); // only allow duplication below top data node
+    public void recomputeTop(Collection<WorkflowNode> nodes) {
+        final DataNode root = getTopDataNode(); // only allow duplication below top data node
         if (root != null) {
-            final Stack<ANode> stack = new Stack<>();
+            final Stack<WorkflowNode> stack = new Stack<>();
             stack.push(root);
             while (stack.size() > 0) {
-                ANode node = stack.pop();
-                if (node instanceof AConnector && nodes.contains(node)) {
-                    ((AConnector) node).forceRecompute();
+                WorkflowNode node = stack.pop();
+                if (node instanceof Connector && nodes.contains(node)) {
+                    ((Connector) node).forceRecompute();
                 } else {
                     stack.addAll(node.getChildren());
                 }
@@ -413,9 +415,9 @@ public class Workflow {
     public void clear() {
         setTopTaxaNode(null);
         setTopDataNode(null);
-        final ArrayList<ANode> toRemove = new ArrayList<>(dataNodes);
+        final ArrayList<WorkflowNode> toRemove = new ArrayList<>(dataNodes);
         toRemove.addAll(connectorNodes);
-        for (ANode node : toRemove)
+        for (WorkflowNode node : toRemove)
             delete(node, true, false);
         invalidNodes.clear();
     }
@@ -425,12 +427,12 @@ public class Workflow {
      *
      * @param node
      */
-    private void register(final ANode node) {
-        if (node instanceof ADataNode) {
-            dataNodes.add((ADataNode) node);
-            ((ADataNode) node).getDataBlock().setDocument(document);
+    private void register(final WorkflowNode node) {
+        if (node instanceof DataNode) {
+            dataNodes.add((DataNode) node);
+            ((DataNode) node).getDataBlock().setDocument(document);
         } else {
-            connectorNodes.add((AConnector) node);
+            connectorNodes.add((Connector) node);
         }
         node.stateProperty().addListener((ObservableValue<? extends UpdateState> c, UpdateState o, UpdateState n) -> {
             if (n != UpdateState.VALID && n != UpdateState.FAILED) {
@@ -460,40 +462,47 @@ public class Workflow {
         return ReadOnlyIntegerProperty.readOnlyIntegerProperty(size);
     }
 
-    public ASelectionModel<ANode> getNodeSelectionModel() {
+    public ASelectionModel<WorkflowNode> getNodeSelectionModel() {
         return nodeSelectionModel;
     }
 
-    public void reconnect(ANode parent, ANode node, ObservableList<ANode> children) {
+    public void reconnect(WorkflowNode parent, WorkflowNode node, ObservableList<WorkflowNode> children) {
         if (parent != null) {
-            if (parent instanceof AConnector)
-                ((AConnector) parent).getChildren().add(node);
+            if (parent instanceof Connector)
+                ((Connector) parent).getChildren().add(node);
             else
-                ((ADataNode) parent).getChildren().add(node);
+                ((DataNode) parent).getChildren().add(node);
         }
-        for (ANode child : children) {
-            if (node instanceof AConnector)
-                ((AConnector) node).getChildren().add(child);
+        for (WorkflowNode child : children) {
+            if (node instanceof Connector)
+                ((Connector) node).getChildren().add(child);
             else
-                ((ADataNode) node).getChildren().add(child);
+                ((DataNode) node).getChildren().add(child);
         }
-        if (node instanceof ADataNode)
-            dataNodes.add((ADataNode) node);
-        else if (node instanceof AConnector)
-            connectorNodes.add((AConnector) node);
+        if (node instanceof DataNode)
+            dataNodes.add((DataNode) node);
+        else if (node instanceof Connector)
+            connectorNodes.add((Connector) node);
     }
 
-    public ANode findParent(ANode node) {
-        if (node instanceof ADataNode) {
-            for (ANode parent : connectorNodes) {
-                if (parent.getChildren().contains(node))
-                    return parent;
-            }
-        } else {
-            return ((AConnector) node).getParent();
+    /**
+     * gets node and all its descendants
+     *
+     * @param parent
+     * @return node and all below
+     */
+    private Set<WorkflowNode> getAllDecendants(DataNode parent) {
+        final Set<WorkflowNode> all = new HashSet<>();
+        Stack<WorkflowNode> stack = new Stack<>();
+        stack.push(parent);
+        while (stack.size() > 0) {
+            WorkflowNode node = stack.pop();
+            all.add(node);
+            stack.addAll(node.getChildren());
         }
-        return null;
+        return all;
     }
+
 
     public void incrementTopologyChanged() {
         topologyChanged.set(topologyChanged.get() + 1);
@@ -508,8 +517,87 @@ public class Workflow {
     }
 
     public void cancelAll() {
-        for (AConnector aConnector : connectorNodes) {
-            aConnector.getService().cancel();
+        for (Connector connector : connectorNodes) {
+            connector.getService().cancel();
         }
     }
+
+    /**
+     * finds the lowest ancestor whose datablock is of the given class
+     *
+     * @param dataNode
+     * @param clazz
+     * @return lowest ancestor whose datablock is of the given class or null
+     */
+    public DataNode getAncestor(DataNode dataNode, Class<? extends DataBlock> clazz) {
+        while (dataNode != null) {
+            if (dataNode.getDataBlock().getClass().isAssignableFrom(clazz))
+                break;
+            if (dataNode.getParent() != null)
+                dataNode = dataNode.getParent().getParent();
+            else
+                dataNode = null;
+        }
+        return dataNode;
+    }
+
+    /**
+     * creates a short chain of nodes leading to a view. If the type of view is already present, returns the node
+     *
+     * @param parent
+     * @param algorithmClass
+     * @param childClass
+     * @param viewAlgorithmClass
+     * @param viewerClass
+     * @return view node
+     * @throws Exception
+     */
+    public Pair<Connector, DataNode> createView(DataNode parent, Class<? extends Algorithm> algorithmClass, Class<? extends DataBlock> childClass,
+                                                Class<? extends Algorithm> viewAlgorithmClass, Class<? extends ViewDataBlock> viewerClass) throws Exception {
+        Set<WorkflowNode> allBelow = getAllDecendants(parent);
+        for (WorkflowNode node : allBelow) {
+            if (pathMatches(parent, node, algorithmClass, childClass, viewAlgorithmClass, viewerClass))
+                return new Pair<>((Connector) node.getParent().getParent().getParent(), (DataNode) node);
+        }
+
+
+        DataNode child = createDataNode(childClass.newInstance());
+        Connector connector1 = createConnector(parent, child, (Algorithm) algorithmClass.newInstance());
+        DataNode viewerNode = createDataNode(viewerClass.newInstance());
+        createConnector(child, viewerNode, (Algorithm) viewAlgorithmClass.newInstance());
+        connector1.forceRecompute();
+        return new Pair<>(connector1, viewerNode);
+    }
+
+    /**
+     * attempts to match the path in the existing graph and if can, it sets the algorithm
+     *
+     * @param source
+     * @param target
+     * @param algorithmClass
+     * @param childClass
+     * @param viewAlgorithmClass
+     * @param viewerClass
+     * @return true, if matched
+     * @throws Exception
+     */
+    private boolean pathMatches(DataNode source, WorkflowNode target, Class<? extends Algorithm> algorithmClass, Class<? extends DataBlock> childClass,
+                                Class<? extends Algorithm> viewAlgorithmClass, Class<? extends ViewDataBlock> viewerClass) throws Exception {
+        if (target instanceof DataNode && ((DataNode) target).getDataBlock().getClass().isAssignableFrom(viewerClass)) { // is correct view
+            target = target.getParent(); // view algorithm
+            if (target != null && ((Connector) target).getAlgorithm().getClass().isAssignableFrom(viewAlgorithmClass)) { // is correct view algorithm
+                target = target.getParent(); // data
+                if (target != null && ((DataNode) target).getDataBlock().getClass().isAssignableFrom(childClass)) // is correct input data
+                    target = target.getParent();
+                if (target != null) {
+                    Connector connector = (Connector) target;
+                    if (connector.getParent() != null && connector.getParent().getClass().isAssignableFrom(source.getClass())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
 }

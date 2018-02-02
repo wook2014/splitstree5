@@ -50,8 +50,8 @@ import javafx.util.converter.FloatStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import jloda.util.Basic;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.connectors.AConnector;
-import splitstree5.core.datablocks.ADataBlock;
+import splitstree5.core.datablocks.DataBlock;
+import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.undo.UndoManager;
 import splitstree5.utils.Option;
@@ -64,10 +64,10 @@ import java.util.ArrayList;
  * <p>
  * Daniel Huson, 1/8/17.
  */
-public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> extends AlgorithmPane {
+public class GenericAlgorithmPane<P extends DataBlock, C extends DataBlock> extends AlgorithmPane {
     private UndoManager undoManager;
 
-    private final AConnector<P, C> connector;
+    private final Connector<P, C> connector;
     private final ArrayList<Option> options = new ArrayList<>();
 
     private final BooleanProperty applicable = new SimpleBooleanProperty(true);
@@ -77,7 +77,7 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
      *
      * @param connector
      */
-    public GenericAlgorithmPane(AConnector<P, C> connector) {
+    public GenericAlgorithmPane(Connector<P, C> connector) {
         this.connector = connector;
         options.addAll(OptionsAccessor.getAllOptions(connector.getAlgorithm()));
     }
@@ -87,7 +87,7 @@ public class GenericAlgorithmPane<P extends ADataBlock, C extends ADataBlock> ex
      *
      * @param algorithm
      */
-    public GenericAlgorithmPane(AConnector<P, C> connector, Algorithm<P, C> algorithm) {
+    public GenericAlgorithmPane(Connector<P, C> connector, Algorithm<P, C> algorithm) {
         this.connector = connector;
         options.addAll(OptionsAccessor.getAllOptions(algorithm));
     }

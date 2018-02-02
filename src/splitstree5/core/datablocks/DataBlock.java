@@ -24,6 +24,7 @@ import javafx.beans.value.WeakChangeListener;
 import jloda.util.Basic;
 import jloda.util.PluginClassLoader;
 import splitstree5.core.Document;
+import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.io.nexus.NexusFileWriter;
 import splitstree5.utils.OptionableBase;
@@ -34,16 +35,16 @@ import java.util.ArrayList;
  * A data block
  * Daniel Huson, 12/21/16.
  */
-abstract public class ADataBlock extends OptionableBase {
+abstract public class DataBlock extends OptionableBase {
     private Document document; // the document associated with this datablock
-    private ADataNode dataNode; // the node associated with this datablock
+    private DataNode dataNode; // the node associated with this datablock
     private final ChangeListener<UpdateState> stateChangeListener;
 
 
     /**
      * default constructor
      */
-    public ADataBlock() {
+    public DataBlock() {
         setName(Basic.getShortName(this.getClass()).replaceAll("Block$", ""));
         stateChangeListener = (c, o, n) -> {
             if (n == UpdateState.VALID) {
@@ -58,7 +59,7 @@ abstract public class ADataBlock extends OptionableBase {
      *
      * @return new instance
      */
-    public ADataBlock newInstance() {
+    public DataBlock newInstance() {
         try {
             return getClass().newInstance();
         } catch (Exception e) {
@@ -82,10 +83,10 @@ abstract public class ADataBlock extends OptionableBase {
      *
      * @return
      */
-    public static ArrayList<ADataBlock> getAllDataBlocks() {
-        final ArrayList<ADataBlock> list = new ArrayList<>();
-        for (Object object : PluginClassLoader.getInstances(ADataBlock.class, "splitstree5.core.datablocks")) {
-            list.add((ADataBlock) object);
+    public static ArrayList<DataBlock> getAllDataBlocks() {
+        final ArrayList<DataBlock> list = new ArrayList<>();
+        for (Object object : PluginClassLoader.getInstances(DataBlock.class, "splitstree5.core.datablocks")) {
+            list.add((DataBlock) object);
         }
         return list;
     }
@@ -109,11 +110,11 @@ abstract public class ADataBlock extends OptionableBase {
         this.document = document;
     }
 
-    public ADataNode getDataNode() {
+    public DataNode getDataNode() {
         return dataNode;
     }
 
-    public void setDataNode(ADataNode dataNode) {
+    public void setDataNode(DataNode dataNode) {
         this.dataNode = dataNode;
         if (dataNode != null) {
             dataNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));

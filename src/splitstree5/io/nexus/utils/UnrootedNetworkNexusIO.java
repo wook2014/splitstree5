@@ -22,12 +22,12 @@ package splitstree5.io.nexus.utils;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.SplitsGraph;
+import jloda.util.Basic;
 import jloda.util.parse.NexusStreamParser;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,17 +53,8 @@ public class UnrootedNetworkNexusIO {
         for (Node v = graph.getFirstNode(); v != null; v = v.getNext()) {
             w.write("{" + v.getId());
             if (saveTaxonIds) {
-                final List<Integer> taxa = graph.getNode2Taxa(v);
-                if (taxa != null && taxa.size() > 0) {
-                    boolean first = true;
-                    for (Integer taxon : taxa) {
-                        if (first) {
-                            w.write(" t=");
-                            first = false;
-                        } else
-                            w.write(" ");
-                        w.write("" + taxon);
-                    }
+                if (graph.hasTaxa(v)) {
+                    w.write(" t=" + Basic.toString(graph.getTaxa(v), " "));
                 }
             }
             if (node2attributes != null) {
@@ -142,7 +133,7 @@ public class UnrootedNetworkNexusIO {
             if (np.peekMatchIgnoreCase("t=")) {
                 np.matchIgnoreCase("t=");
                 while (!np.peekMatchAnyTokenIgnoreCase("{}")) {
-                    graph.setNode2Taxa(v, np.getInt());
+                    graph.addTaxon(v, np.getInt());
                 }
             }
             if (np.peekMatchIgnoreCase("{")) {

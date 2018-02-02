@@ -36,7 +36,7 @@ import java.util.*;
  * A taxa block
  * Daniel Huson, 12/21/16.
  */
-public class TaxaBlock extends ADataBlock {
+public class TaxaBlock extends DataBlock {
     private final ObservableList<Taxon> taxa;
     private final ObservableMap<Taxon, Integer> taxon2index;
     private final ObservableMap<String, Taxon> name2taxon;

@@ -51,12 +51,15 @@ import java.util.concurrent.Executors;
  */
 public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
 
-    protected final RubberBandSelection rubberBandSelection;
-    protected DoubleProperty scaleChangeX = new SimpleDoubleProperty(1); // keep track of scale changes, used for reset
-    protected DoubleProperty scaleChangeY = new SimpleDoubleProperty(1);
-    protected DoubleProperty angleChange = new SimpleDoubleProperty(0);
-    protected ObjectProperty<GraphLayout> layout = new SimpleObjectProperty<>(GraphLayout.LeftToRight);
+    private final RubberBandSelection rubberBandSelection;
+    private DoubleProperty scaleChangeX = new SimpleDoubleProperty(1); // keep track of scale changes, used for reset
+    private DoubleProperty scaleChangeY = new SimpleDoubleProperty(1);
+    private DoubleProperty angleChange = new SimpleDoubleProperty(0);
+    private ObjectProperty<GraphLayout> layout = new SimpleObjectProperty<>(GraphLayout.LeftToRight);
 
+    /**
+     * constructor
+     */
     public Graph2DTab() {
         super();
         rubberBandSelection = new RubberBandSelection(centerPane, group, createRubberBandSelectionHandler());

@@ -35,7 +35,7 @@ import java.util.Map;
  * A characters block
  * Daniel Huson, 14/1/2017
  */
-public class CharactersBlock extends ADataBlock {
+public class CharactersBlock extends DataBlock {
     // characters matrix
     private char[][] matrix;
 

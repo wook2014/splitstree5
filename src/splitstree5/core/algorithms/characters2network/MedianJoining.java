@@ -49,7 +49,6 @@ public class MedianJoining extends Algorithm<CharactersBlock, NetworkBlock> impl
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock parent, NetworkBlock child) throws Exception {
         MedianJoiningCalculator medianJoiningCalculator = new MedianJoiningCalculator();
-
         medianJoiningCalculator.apply(progress, taxaBlock, parent, child);
     }
 }

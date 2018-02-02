@@ -21,23 +21,23 @@ package splitstree5.core.analysis;
 
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.connectors.AConnector;
-import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.AnalysisResultBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.workflow.Connector;
+import splitstree5.core.workflow.DataNode;
 
 /**
  * Taxa analysis
  * Daniel Huson, 12/22/16.
  */
-public class SimpleTaxaAnalysis extends AConnector<TaxaBlock, AnalysisResultBlock> {
+public class SimpleTaxaAnalysis extends Connector<TaxaBlock, AnalysisResultBlock> {
     /**
      * constructor
      *
      * @param parent
      * @param child
      */
-    public SimpleTaxaAnalysis(ADataNode<TaxaBlock> parent, ADataNode<AnalysisResultBlock> child) {
+    public SimpleTaxaAnalysis(DataNode<TaxaBlock> parent, DataNode<AnalysisResultBlock> child) {
         super(null, parent, child);
 
         setAlgorithm(new Algorithm<TaxaBlock, AnalysisResultBlock>() {

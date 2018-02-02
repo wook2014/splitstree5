@@ -109,9 +109,10 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, SplitsNetwork
 
         if (getOptionAlgorithm() != Algorithm.EqualAngleOnly && usedSplits.cardinality() < parent.getNsplits()) {
             progress.setProgress(60);
-            ConvexHull.apply(progress, isOptionUseWeights(), taxa, parent, graph, node2point, usedSplits);
+            ConvexHull.apply(progress, taxa, parent, graph, usedSplits);
         }
 
+        EqualAngle.assignAnglesToEdges(taxa.getNtax(), parent, parent.getCycle(), graph, forbiddenSplits);
         EqualAngle.assignCoordinatesToNodes(isOptionUseWeights(), graph, node2point); // need coordinates
 
         if (getOptionDaylightIterations() > 0) {
@@ -126,7 +127,7 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, SplitsNetwork
 
         progress.setProgress(100);   //set progress to 100%
 
-        TreeEmbedder.scaleToFitTarget(GraphLayout.Radial, splitsViewTab.getTargetDimensions(), graph, node2point);
+        TreeEmbedder.scaleToFitTarget(GraphLayout.Radial, splitsViewTab.getTargetDimensions(), node2point);
 
         // compute all views and put their parts into the appropriate groups
         for (Node v : graph.nodes()) {

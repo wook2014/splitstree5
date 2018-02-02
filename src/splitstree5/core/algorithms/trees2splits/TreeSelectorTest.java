@@ -84,10 +84,10 @@ public class TreeSelectorTest {
         document.setFileName("test/nexus/trees6-translate.nex");
         NexusFileParser.parse(document);
 
-        ADataNode<TreesBlock> treesNode = document.getWorkflow().getWorkingDataNode();
+        DataNode<TreesBlock> treesNode = document.getWorkflow().getWorkingDataNode();
         System.err.println(NexusFileWriter.toString(document.getWorkflow().getWorkingTaxaNode().getDataBlock(), treesNode.getDataBlock()));
 
-        ADataNode<SplitsBlock> splitsNode = new ADataNode<>(new SplitsBlock());
+        DataNode<SplitsBlock> splitsNode = new DataNode<>(new SplitsBlock());
 
         TreeSelector treeSelector = new TreeSelector();
 

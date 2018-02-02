@@ -21,11 +21,11 @@ package splitstree5.core.topfilters;
 
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
+import splitstree5.core.workflow.DataNode;
 
 import java.util.BitSet;
 import java.util.Map;
@@ -44,7 +44,7 @@ public class SplitsTopFilter extends ATopFilter<SplitsBlock> {
      * @param parentNode
      * @param childNode
      */
-    public SplitsTopFilter(ADataNode<TaxaBlock> originalTaxaNode, ADataNode<TaxaBlock> modifiedTaxaNode, ADataNode<SplitsBlock> parentNode, ADataNode<SplitsBlock> childNode) {
+    public SplitsTopFilter(DataNode<TaxaBlock> originalTaxaNode, DataNode<TaxaBlock> modifiedTaxaNode, DataNode<SplitsBlock> parentNode, DataNode<SplitsBlock> childNode) {
         super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parentNode, childNode);
 
         setAlgorithm(new Algorithm<SplitsBlock, SplitsBlock>("TopFilter") {

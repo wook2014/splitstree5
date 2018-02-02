@@ -23,6 +23,6 @@ package splitstree5.core.algorithms.interfaces;
  * This is used to identify algorithms at runtime
  * Daniel Huson, 2/2018
  */
-public interface IFromNetworkView {
+public interface IFromNetworkView extends IFrom {
 
 }

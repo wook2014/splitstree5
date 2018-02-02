@@ -116,11 +116,6 @@ public class NodeArray<T> extends GraphBase implements NodeAssociation<T> {
             isClear = false;
     }
 
-    public void set(Node v, T obj) {
-        setValue(v, obj);
-    }
-
-
     @Override
     public void put(Node v, T obj) {
         setValue(v, obj);

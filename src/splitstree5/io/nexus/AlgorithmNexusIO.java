@@ -22,7 +22,7 @@ package splitstree5.io.nexus;
 import jloda.util.Basic;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.datablocks.ADataBlock;
+import splitstree5.core.datablocks.DataBlock;
 import splitstree5.utils.Option;
 import splitstree5.utils.OptionsAccessor;
 
@@ -36,7 +36,7 @@ import java.util.Set;
  * performs nexus input and output for an algorithm
  * Daniel Huson, 12/27/16.
  */
-public class AlgorithmNexusIO<P extends ADataBlock, C extends ADataBlock> {
+public class AlgorithmNexusIO<P extends DataBlock, C extends DataBlock> {
     public static final String NAME = "ST_ALGORITHM";
 
     /**
@@ -45,7 +45,7 @@ public class AlgorithmNexusIO<P extends ADataBlock, C extends ADataBlock> {
      * @param np
      * @throws IOException
      */
-    public static <P extends ADataBlock, C extends ADataBlock> void parse(Algorithm<P, C> algorithm, NexusStreamParser np, boolean skipHeader) throws IOException {
+    public static <P extends DataBlock, C extends DataBlock> void parse(Algorithm<P, C> algorithm, NexusStreamParser np, boolean skipHeader) throws IOException {
         algorithm.clear();
         if (!skipHeader) {
             np.matchBeginBlock(NAME);
@@ -80,7 +80,7 @@ public class AlgorithmNexusIO<P extends ADataBlock, C extends ADataBlock> {
      * @param w
      * @throws IOException
      */
-    public static <P extends ADataBlock, C extends ADataBlock> void write(Algorithm<P, C> algorithm, Writer w) throws IOException {
+    public static <P extends DataBlock, C extends DataBlock> void write(Algorithm<P, C> algorithm, Writer w) throws IOException {
         w.write("\nBEGIN " + NAME + ";\n");
         UtilitiesNexusIO.writeTitleLinks(w, algorithm);
         w.write("\tALGORITHM = '" + algorithm.getName() + "';\n");
@@ -90,7 +90,7 @@ public class AlgorithmNexusIO<P extends ADataBlock, C extends ADataBlock> {
         w.write("END; [" + NAME + "]\n");
     }
 
-    public static <P extends ADataBlock, C extends ADataBlock> String getUsage(Algorithm<P, C> algorithm) {
+    public static <P extends DataBlock, C extends DataBlock> String getUsage(Algorithm<P, C> algorithm) {
         final StringBuilder buf = new StringBuilder();
         buf.append("BEGIN " + NAME + ";\n");
         buf.append("\t[TITLE title;]\n");

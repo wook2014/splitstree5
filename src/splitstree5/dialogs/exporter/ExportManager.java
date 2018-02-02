@@ -72,7 +72,7 @@ public class ExportManager {
      * @param dataBlock
      * @return
      */
-    public ArrayList<String> getExporterNames(ADataBlock dataBlock) {
+    public ArrayList<String> getExporterNames(DataBlock dataBlock) {
         final ArrayList<String> list = new ArrayList<>();
 
         for (IExporter exporter : exporters) {
@@ -118,7 +118,7 @@ public class ExportManager {
      * @param exporterName
      * @throws IOException
      */
-    public void exportFile(String fileName, TaxaBlock taxaBlock, ADataBlock dataBlock, String exporterName) throws IOException {
+    public void exportFile(String fileName, TaxaBlock taxaBlock, DataBlock dataBlock, String exporterName) throws IOException {
         IExporter exporter = getExporterByName(exporterName);
         if (exporter != null) {
             try (BufferedWriter w = new BufferedWriter(new FileWriter(fileName))) {

@@ -708,7 +708,7 @@ public class BoxOptimizer {
      * @param graph
      */
     private void assignCoordinatesToNodes(Node start, boolean useWeights, SplitsGraph graph, NodeArray<Point2D> node2point) {
-        node2point.set(start, new Point2D(0, 0));
+        node2point.put(start, new Point2D(0, 0));
         final BitSet splitsInPath = new BitSet();
         final NodeSet nodesVisited = new NodeSet(graph);
 
@@ -733,7 +733,7 @@ public class BoxOptimizer {
                 if (!splitsInPath.get(s)) {
                     Node w = graph.getOpposite(v, e);
                     Point2D p = GeometryUtils.translateByAngle(node2point.get(v), GeometryUtils.rad2deg(graph.getAngle(e)), useWeights ? graph.getWeight(e) : 1);
-                    node2point.set(w, p);
+                    node2point.put(w, p);
                     splitsInPath.set(s, true);
                     assignCoordinatesToNodesRec(w, splitsInPath, nodesVisited, useWeights, graph, node2point);
                     splitsInPath.set(s, false);

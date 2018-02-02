@@ -23,6 +23,7 @@ import javafx.application.Platform;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.interfaces.IFromTreeView;
 import splitstree5.core.algorithms.interfaces.IToTreeView;
+import splitstree5.core.workflow.DataNode;
 import splitstree5.gui.IHasTab;
 import splitstree5.gui.graphtab.AlgorithmBreadCrumbsToolBar;
 import splitstree5.gui.graphtab.TreeViewTab;
@@ -32,7 +33,7 @@ import splitstree5.gui.graphtab.base.GraphLayout;
  * This block represents the view of a tree
  * Daniel Huson, 11.2017
  */
-public class TreeViewBlock extends ADataBlock implements IHasTab {
+public class TreeViewBlock extends ViewDataBlock implements IHasTab {
     private final TreeViewTab treeViewTab;
 
     /**
@@ -42,6 +43,7 @@ public class TreeViewBlock extends ADataBlock implements IHasTab {
         super();
         setTitle("Tree Viewer");
         treeViewTab = new TreeViewTab();
+        treeViewTab.setDataNode(getDataNode());
     }
 
     @Override
@@ -50,17 +52,16 @@ public class TreeViewBlock extends ADataBlock implements IHasTab {
             super.setDocument(document);
             if (document.getMainWindow() != null) {
                 Platform.runLater(() -> { // setup tab
-                    document.getMainWindow().add(treeViewTab);
+                    document.getMainWindow().showDataView(getDataNode());
                 });
             }
         }
     }
 
     @Override
-    public void setDataNode(ADataNode dataNode) {
+    public void setDataNode(DataNode dataNode) {
+        treeViewTab.setDataNode(dataNode);
         super.setDataNode(dataNode);
-        Platform.runLater(() -> { // setup tab
-        });
     }
 
     /**

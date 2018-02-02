@@ -28,8 +28,8 @@ import jloda.phylo.PhyloGraph;
 import jloda.util.ResourceManager;
 import splitstree5.gui.graphtab.base.EdgeView2D;
 import splitstree5.gui.graphtab.base.Graph2DTab;
-import splitstree5.gui.graphtab.base.GraphLayout;
 import splitstree5.gui.graphtab.base.NodeView2D;
+import splitstree5.gui.graphtab.commands.MoveNodesCommand;
 import splitstree5.menu.MenuController;
 
 import java.util.HashSet;
@@ -52,6 +52,9 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
         setGraphic(label);
     }
 
+    private double mouseX;
+    private double mouseY;
+
     /**
      * show the tree
      */
@@ -69,8 +72,27 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
      */
     public NodeView2D createNodeView(Node v, Point2D location, String text) {
         final NodeView2D nodeView = new NodeView2D(v, location, text);
+
+        nodeView.getShapeGroup().setOnMousePressed((e) -> {
+            e.consume();
+            mouseX = e.getScreenX();
+            mouseY = e.getScreenY();
+        });
+
+        nodeView.getShapeGroup().setOnMouseDragged((e) -> {
+            e.consume();
+            if (nodeSelectionModel.getSelectedItems().contains(nodeView.getNode())) {
+                double deltaX = e.getScreenX() - mouseX;
+                double deltaY = e.getScreenY() - mouseY;
+                getUndoManager().doAndAdd(new MoveNodesCommand(node2view, edge2view, nodeSelectionModel.getSelectedItems(), deltaX, deltaY));
+            }
+            mouseX = e.getScreenX();
+            mouseY = e.getScreenY();
+        });
+
         if (nodeView.getShapeGroup() != null) {
             nodeView.getShapeGroup().setOnMouseClicked((x) -> {
+                x.consume();
                 edgeSelectionModel.clearSelection();
                 if (!x.isShiftDown())
                     nodeSelectionModel.clearSelection();
@@ -82,12 +104,12 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
                         selectAllBelowRec(v, nodeSelectionModel, edgeSelectionModel);
                     }
                 }
-                x.consume();
             });
         }
 
         if (nodeView.getLabel() != null) {
             nodeView.getLabel().setOnMouseClicked((x) -> {
+                x.consume();
                 edgeSelectionModel.clearSelection();
                 if (!x.isShiftDown())
                     nodeSelectionModel.clearSelection();
@@ -95,9 +117,9 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
                     nodeSelectionModel.clearSelection(v);
                 else
                     nodeSelectionModel.select(v);
-                x.consume();
             });
         }
+
         addNodeLabelMovementSupport(nodeView);
         return nodeView;
     }
@@ -105,22 +127,9 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
 
     /**
      * create an edge view
-     *
-     * @param layout
-     * @param shape
-     * @param weight
-     * @param start
-     * @param control1
-     * @param mid
-     * @param control2
-     * @param support
-     * @param end
-     * @return edge view
      */
-    public EdgeView2D createEdgeView(Edge e, GraphLayout layout, EdgeView2D.EdgeShape shape, Double weight,
-                                     final Point2D start, final Point2D control1, final Point2D mid, final Point2D control2, final Point2D support, final Point2D end) {
-
-        final EdgeView2D edgeView = new EdgeView2D(e, layout, shape, weight, start, control1, mid, control2, support, end);
+    public EdgeView2D createEdgeView(final Edge e, final Point2D start, final Point2D end) {
+        final EdgeView2D edgeView = new EdgeView2D(e, 1.0, start, end);
 
         if (edgeView.getShape() != null) {
             edgeView.getShape().setOnMouseClicked((x) -> {
@@ -153,6 +162,7 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
                 x.consume();
             });
         }
+
         return edgeView;
     }
 

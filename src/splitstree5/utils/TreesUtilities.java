@@ -47,16 +47,15 @@ public class TreesUtilities {
      * @param taxa
      */
     public static void setNode2taxa(PhyloTree tree, TaxaBlock taxa) {
-        tree.clearTaxon2Node();
+        tree.clearTaxa();
         for (Node v = tree.getFirstNode(); v != null; v = v.getNext()) {
-            tree.clearNode2Taxa(v);
+            tree.clearTaxa(v);
             String label = tree.getLabel(v);
             if (label != null) {
                 //int id = taxa.indexOf(label);
                 int id = taxa.indexOf(label);
                 if (id > 0) {
-                    tree.setNode2Taxa(v, id);
-                    tree.setTaxon2Node(id, v);
+                    tree.addTaxon(v, id);
                 }
             }
         }
@@ -71,8 +70,8 @@ public class TreesUtilities {
     public static BitSet getTaxa(PhyloTree tree) {
         BitSet taxa = new BitSet();
         for (Node v : tree.nodes()) {
-            if (tree.getNode2Taxa(v) != null) {
-                for (Integer t : tree.getNode2Taxa(v)) {
+            if (tree.getTaxa(v) != null) {
+                for (Integer t : tree.getTaxa(v)) {
                     taxa.set(t);
                 }
             }
@@ -282,7 +281,7 @@ public class TreesUtilities {
         else {
             // choose an arbitrary leaf
             for (Node v : tree.nodes()) {
-                if (tree.getNode2Taxa(v).size() > 0 && v.getDegree() == 1) {
+                if (tree.hasTaxa(v) && v.getDegree() == 1) {
                     root = v;
                     break;
                 }
@@ -304,7 +303,7 @@ public class TreesUtilities {
      * @return
      */
     private static BitSet tree2splitsRec(final Node v, final Edge e, final PhyloTree tree, final BitSet taxaInTree, final Collection<ASplit> splits) {
-        final BitSet vAndBelowTaxa = asBitSet(tree.getNode2Taxa(v));
+        final BitSet vAndBelowTaxa = asBitSet(tree.getTaxa(v));
 
         for (Edge f = v.getFirstAdjacentEdge(); f != null; f = v.getNextAdjacentEdge(f)) {
             if (f != e) {
@@ -320,7 +319,7 @@ public class TreesUtilities {
                 double weight = tree.getWeight(f);
                 double confidence = tree.getConfidence(f);
                 Node root = tree.getRoot();
-                if (root != null && (f.getSource() == root || f.getTarget() == root) && root.getDegree() == 2 && tree.getNode2Taxa(v).size() == 0) {
+                if (root != null && (f.getSource() == root || f.getTarget() == root) && root.getDegree() == 2 && !tree.hasTaxa(v)) {
                     // get the other  edge adjacent to root:
                     final Edge g;
                     if (root.getFirstAdjacentEdge() != f)
@@ -348,7 +347,7 @@ public class TreesUtilities {
         return vAndBelowTaxa;
     }
 
-    public static BitSet asBitSet(Collection<Integer> integers) {
+    public static BitSet asBitSet(Iterable<Integer> integers) {
         final BitSet bitSet = new BitSet();
         for (Integer i : integers) {
             bitSet.set(i);

@@ -22,10 +22,10 @@ package splitstree5.core.topfilters;
 
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
+import splitstree5.core.workflow.DataNode;
 
 /**
  * distances top taxon filter
@@ -40,7 +40,7 @@ public class DistancesTopFilter extends ATopFilter<DistancesBlock> {
      * @param parent
      * @param child
      */
-    public DistancesTopFilter(ADataNode<TaxaBlock> originalTaxaNode, ADataNode<TaxaBlock> modifiedTaxaNode, ADataNode<DistancesBlock> parent, ADataNode<DistancesBlock> child) {
+    public DistancesTopFilter(DataNode<TaxaBlock> originalTaxaNode, DataNode<TaxaBlock> modifiedTaxaNode, DataNode<DistancesBlock> parent, DataNode<DistancesBlock> child) {
         super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parent, child);
 
         setAlgorithm(new Algorithm<DistancesBlock, DistancesBlock>("TopFilter") {

@@ -19,6 +19,7 @@
 package splitstree5.gui.graphtab.commands;
 
 import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import jloda.util.ProgramProperties;
 import splitstree5.gui.graphtab.base.NodeViewBase;
 import splitstree5.undo.UndoableRedoableCommand;
@@ -42,7 +43,7 @@ public class ChangeNodeLabelCommand extends UndoableRedoableCommand {
     @Override
     public void undo() {
         if (oldText == null)
-            nv.setLabel(null);
+            nv.setLabel((Labeled) null);
         else
             nv.getLabel().setText(oldText);
     }

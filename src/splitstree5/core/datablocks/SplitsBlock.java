@@ -37,7 +37,7 @@ import java.util.NoSuchElementException;
  * A splits block
  * Daniel Huson, 12/21/16.
  */
-public class SplitsBlock extends ADataBlock {
+public class SplitsBlock extends DataBlock {
     private final ObservableList<ASplit> splits;
 
     private Compatibility compatibility = Compatibility.unknown;

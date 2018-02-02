@@ -25,10 +25,10 @@ import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
+import splitstree5.core.workflow.DataNode;
 import splitstree5.io.nexus.CharactersNexusFormat;
 import splitstree5.io.nexus.CharactersNexusIO;
 
@@ -49,7 +49,7 @@ public class CharactersTopFilter extends ATopFilter<CharactersBlock> {
      * @param parentNode
      * @param childNode
      */
-    public CharactersTopFilter(ADataNode<TaxaBlock> originalTaxaNode, ADataNode<TaxaBlock> modifiedTaxaNode, ADataNode<CharactersBlock> parentNode, ADataNode<CharactersBlock> childNode) {
+    public CharactersTopFilter(DataNode<TaxaBlock> originalTaxaNode, DataNode<TaxaBlock> modifiedTaxaNode, DataNode<CharactersBlock> parentNode, DataNode<CharactersBlock> childNode) {
         super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parentNode, childNode);
 
         setAlgorithm(new Algorithm<CharactersBlock, CharactersBlock>("TopFilter") {

@@ -22,8 +22,8 @@ package splitstree5.gui.workflowtree;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import splitstree5.core.Document;
-import splitstree5.core.workflow.ANode;
 import splitstree5.core.workflow.Workflow;
+import splitstree5.core.workflow.WorkflowNode;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -74,13 +74,13 @@ public class WorkflowTreeSupport {
      *
      * @param document
      * @param treeItem
-     * @param aNode
+     * @param workflowNode
      */
-    private void addToTreeRec(final Document document, final WorkflowTreeItem treeItem, final ANode aNode) {
-        for (ANode child : aNode.getChildren()) {
+    private void addToTreeRec(final Document document, final WorkflowTreeItem treeItem, final WorkflowNode workflowNode) {
+        for (WorkflowNode child : workflowNode.getChildren()) {
             WorkflowTreeItem childItem = new WorkflowTreeItem(document, child);
             treeItem.getChildren().add(childItem);
-            if (child.getChildren().size() == 1 && aNode.getChildren().size() == 1)
+            if (child.getChildren().size() == 1 && workflowNode.getChildren().size() == 1)
                 addToTreeRec(document, treeItem, child);
             else
                 addToTreeRec(document, childItem, child);

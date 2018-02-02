@@ -62,8 +62,8 @@ import jloda.util.Pair;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.filters.IFilter;
-import splitstree5.core.connectors.AConnector;
-import splitstree5.core.datablocks.ADataNode;
+import splitstree5.core.workflow.Connector;
+import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.Workflow;
 import splitstree5.main.Version;
 
@@ -124,19 +124,19 @@ public class MethodsTextGenerator {
                 int removed = (dag.getTopTaxaNode().getDataBlock().getNtax() - dag.getWorkingTaxaBlock().getNtax());
                 buf.append(String.format(taxonFilterTemplate, removed, dag.getWorkingTaxaBlock().getInfo(), dag.getWorkingDataNode().getDataBlock().getInfo()));
             }
-            final ADataNode root = dag.getWorkingDataNode();
-            final Set<ADataNode> visited = new HashSet<>();
-            final Stack<ADataNode> stack = new Stack<>();
+            final DataNode root = dag.getWorkingDataNode();
+            final Set<DataNode> visited = new HashSet<>();
+            final Stack<DataNode> stack = new Stack<>();
             stack.push(root); // should only contain data nodes
             while (stack.size() > 0) {
-                final ADataNode v = stack.pop();
+                final DataNode v = stack.pop();
                 if (!visited.contains(v)) {
                     visited.add(v);
                     for (Object obj : v.getChildren()) {
-                        if (obj instanceof AConnector) {
-                            final AConnector connector = (AConnector) obj;
+                        if (obj instanceof Connector) {
+                            final Connector connector = (Connector) obj;
                             final Algorithm algorithm = connector.getAlgorithm();
-                            final ADataNode w = connector.getChild();
+                            final DataNode w = connector.getChild();
 
                             if (algorithm instanceof IFilter) {
                                 if (((IFilter) algorithm).isActive()) {

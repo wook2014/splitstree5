@@ -27,13 +27,8 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
 import splitstree5.core.Document;
-import splitstree5.core.connectors.AConnector;
-import splitstree5.core.datablocks.ADataNode;
-import splitstree5.core.datablocks.SplitsNetworkViewBlock;
-import splitstree5.core.datablocks.TreeViewBlock;
-import splitstree5.core.workflow.ANode;
-import splitstree5.core.workflow.UpdateState;
-import splitstree5.core.workflow.Workflow;
+import splitstree5.core.datablocks.ViewDataBlock;
+import splitstree5.core.workflow.*;
 
 import java.util.ArrayList;
 
@@ -43,18 +38,18 @@ import java.util.ArrayList;
  */
 public class AlgorithmBreadCrumbsToolBar extends ToolBar {
     private final Document document;
-    private final ANode aNode;
+    private final WorkflowNode workflowNode;
     private final ArrayList<ChangeListener<UpdateState>> stateChangeListeners = new ArrayList<>();
 
     /**
      * constructor
      *
      * @param document
-     * @param aNode
+     * @param workflowNode
      */
-    public AlgorithmBreadCrumbsToolBar(Document document, ANode aNode) {
+    public AlgorithmBreadCrumbsToolBar(Document document, WorkflowNode workflowNode) {
         this.document = document;
-        this.aNode = aNode;
+        this.workflowNode = workflowNode;
         document.getWorkflow().getTopologyChanged().addListener((c, o, n) -> update());
     }
 
@@ -68,49 +63,48 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
             getItems().add(makeBreadCrumb(document, workflow.getTaxaFilter()));
         }
         if (workflow.getTopFilter() != null && workflow.getTopFilter().getChild() != null) {
-            final ArrayList<AConnector> connectors = new ArrayList<>();
-            findConnectorsAlongPathRec(workflow.getTopFilter().getChild(), aNode, connectors);
-            for (AConnector connector : connectors) {
+            final ArrayList<Connector> connectors = new ArrayList<>();
+            findConnectorsAlongPathRec(workflow.getTopFilter().getChild(), workflowNode, connectors);
+            for (Connector connector : connectors) {
                 getItems().add(makeBreadCrumb(document, connector));
             }
         }
-        if (aNode instanceof ADataNode && (((ADataNode) aNode).getDataBlock() instanceof SplitsNetworkViewBlock
-                || ((ADataNode) aNode).getDataBlock() instanceof TreeViewBlock))
-            getItems().add(makeFormatBreadCrumb((ADataNode) aNode, document));
+        if (workflowNode instanceof DataNode && (((DataNode) workflowNode).getDataBlock() instanceof ViewDataBlock))
+            getItems().add(makeFormatBreadCrumb((DataNode) workflowNode, document));
     }
 
     /**
      * collects all connectors on the path to the target node
      *
-     * @param aNode
+     * @param workflowNode
      * @param targetNode
      * @param connectors
      * @return path of connectors
      */
-    private boolean findConnectorsAlongPathRec(ANode aNode, ANode targetNode, ArrayList<AConnector> connectors) {
-        if (aNode instanceof AConnector) {
-            connectors.add((AConnector) aNode);
+    private boolean findConnectorsAlongPathRec(WorkflowNode workflowNode, WorkflowNode targetNode, ArrayList<Connector> connectors) {
+        if (workflowNode instanceof Connector) {
+            connectors.add((Connector) workflowNode);
         }
-        if (aNode == targetNode)
+        if (workflowNode == targetNode)
             return true;
-        for (ANode child : aNode.getChildren()) {
+        for (WorkflowNode child : workflowNode.getChildren()) {
             if (findConnectorsAlongPathRec(child, targetNode, connectors))
                 return true;
         }
-        if (aNode instanceof AConnector) {
-            connectors.remove(aNode);
+        if (workflowNode instanceof Connector) {
+            connectors.remove(workflowNode);
         }
         return false;
     }
 
-    private Node makeBreadCrumb(Document document, AConnector aConnector) {
+    private Node makeBreadCrumb(Document document, Connector connector) {
         final Button button = new Button();
         final String shape = "-fx-shape: \"M 0 0 L 5 9 L 0 18 L 100 18 L 105 9 L 100 0 z\";"; // arrow shape
         button.setStyle(shape);
-        button.textProperty().bind(aConnector.nameProperty());
-        button.disableProperty().bind(aConnector.applicableProperty().not().and(aConnector.stateProperty().isEqualTo(UpdateState.VALID).not()));
+        button.textProperty().bind(connector.nameProperty());
+        button.disableProperty().bind(connector.applicableProperty().not().and(connector.stateProperty().isEqualTo(UpdateState.VALID).not()));
         final Tooltip tooltip = new Tooltip();
-        tooltip.textProperty().bind(aConnector.shortDescriptionProperty());
+        tooltip.textProperty().bind(connector.shortDescriptionProperty());
         button.setTooltip(tooltip);
 
         final ChangeListener<UpdateState> stateChangeListener = (c, o, n) -> {
@@ -128,16 +122,16 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
                             button.setStyle(shape);
                     }
         };
-        aConnector.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
+        connector.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
         stateChangeListeners.add(stateChangeListener);
 
         button.setOnAction((e) -> {
-            document.getMainWindow().showAlgorithmView(aConnector);
+            document.getMainWindow().showAlgorithmView(connector);
         });
         return button;
     }
 
-    private Node makeFormatBreadCrumb(ADataNode dataNode, Document document) {
+    private Node makeFormatBreadCrumb(DataNode dataNode, Document document) {
         final Button button = new Button();
         final String shape = "-fx-shape: \"M 0 0 L 5 9 L 0 18 L 100 18 L 105 9 L 100 0 z\";"; // arrow shape
         button.setStyle(shape);

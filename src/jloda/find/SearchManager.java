@@ -24,7 +24,7 @@ import javafx.beans.property.*;
 import jloda.fx.CallableService;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
-import splitstree5.core.connectors.TaskWithProgressListener;
+import splitstree5.core.workflow.TaskWithProgressListener;
 
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;

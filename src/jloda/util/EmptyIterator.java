@@ -17,12 +17,24 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.algorithms.interfaces;
+package jloda.util;
+
+import java.util.Iterator;
 
 /**
- * from splits network view interface.
- * This is used to identify algorithms at runtime
- * Daniel Huson, 1.2018
+ * an empty iterator
+ * Daniel Huson, 2.2018
+ *
+ * @param <T>
  */
-public interface IFromSplitsNetworkView extends IFrom {
+public class EmptyIterator<T> implements Iterator<T> {
+    @Override
+    public boolean hasNext() {
+        return false;
+    }
+
+    @Override
+    public T next() {
+        return null;
+    }
 }

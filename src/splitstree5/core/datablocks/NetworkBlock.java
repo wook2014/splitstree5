@@ -33,10 +33,14 @@ import java.util.HashMap;
  * implements a network
  * Daniel Huson, 2.2018
  */
-public class NetworkBlock extends ADataBlock {
+public class NetworkBlock extends DataBlock {
+    public enum Type {HaplotypeNetwork, Other}
+
     private final PhyloGraph graph;
     private final NodeArray<NodeData> node2data;
     private final EdgeArray<EdgeData> edge2data;
+
+    private Type networkType;
 
     public NetworkBlock() {
         this.graph = new PhyloGraph();
@@ -44,6 +48,13 @@ public class NetworkBlock extends ADataBlock {
         edge2data = new EdgeArray<>(graph);
 
         //getNetworkNodes().addListener((InvalidationListener) observable -> setShortDescription(getInfo()));
+    }
+
+    public void clear() {
+        graph.clear();
+        node2data.clear();
+        edge2data.clear();
+        networkType = Type.Other;
     }
 
     public NetworkBlock(String name) {
@@ -92,11 +103,11 @@ public class NetworkBlock extends ADataBlock {
         return nodeData;
     }
 
-    public EdgeData getEdgeData(Edge v) {
-        EdgeData edgeData = edge2data.get(v);
+    public EdgeData getEdgeData(Edge e) {
+        EdgeData edgeData = edge2data.get(e);
         if (edgeData == null) {
             edgeData = new EdgeData();
-            edge2data.put(v, edgeData);
+            edge2data.put(e, edgeData);
         }
         return edgeData;
     }
@@ -109,10 +120,17 @@ public class NetworkBlock extends ADataBlock {
         return graph.getNumberOfEdges();
     }
 
-    public class NodeData extends HashMap<String, Object> {
+    public class NodeData extends HashMap<String, String> {
     }
 
-    public class EdgeData extends HashMap<String, Object> {
+    public class EdgeData extends HashMap<String, String> {
     }
 
+    public Type getNetworkType() {
+        return networkType;
+    }
+
+    public void setNetworkType(Type networkType) {
+        this.networkType = networkType;
+    }
 }

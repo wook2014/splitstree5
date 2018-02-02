@@ -65,9 +65,9 @@ import javafx.stage.Stage;
 import jloda.fx.ExtendedFXMLLoader;
 import jloda.util.ProgramProperties;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.connectors.AConnector;
-import splitstree5.core.datablocks.ADataBlock;
-import splitstree5.core.datablocks.ADataNode;
+import splitstree5.core.datablocks.DataBlock;
+import splitstree5.core.workflow.Connector;
+import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.Workflow;
 import splitstree5.undo.UndoableRedoableCommand;
 
@@ -92,7 +92,7 @@ public class NewNodeDialog {
      */
     public NewNodeDialog(final WorkflowViewTab workflowView, WorkflowNodeView sourceNodeView, MouseEvent me) throws IOException {
         final Workflow workflow = workflowView.getDocument().getWorkflow();
-        final ADataNode sourceNode = (ADataNode) sourceNodeView.getANode();
+        final DataNode sourceNode = (DataNode) sourceNodeView.getANode();
 
         final ExtendedFXMLLoader<NewNodeDialogController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         root = extendedFXMLLoader.getRoot();
@@ -100,16 +100,16 @@ public class NewNodeDialog {
 
         controller.getSourceDataLabel().setText(sourceNode.getDataBlock().getName());
 
-        controller.getTargetDataComboBox().getItems().setAll(ADataBlock.getAllDataBlocks());
+        controller.getTargetDataComboBox().getItems().setAll(DataBlock.getAllDataBlocks());
         controller.getTargetDataComboBox().getSelectionModel().select(0);
 
 
         controller.getTargetDataComboBox().valueProperty().addListener((observable, oldValue, newValue) -> {
-            controller.getAlgorithmChoiceBox().getItems().setAll((new AConnector(workflow.getWorkingTaxaBlock(), sourceNode, new ADataNode(newValue), false)).getAllAlgorithms());
+            controller.getAlgorithmChoiceBox().getItems().setAll((new Connector(workflow.getWorkingTaxaBlock(), sourceNode, new DataNode(newValue), false)).getAllAlgorithms());
             controller.getAlgorithmChoiceBox().getSelectionModel().select(0);
         });
 
-        controller.getAlgorithmChoiceBox().getItems().setAll((new AConnector(workflow.getWorkingTaxaBlock(), sourceNode, new ADataNode(controller.getTargetDataComboBox().getValue()), false)).getAllAlgorithms());
+        controller.getAlgorithmChoiceBox().getItems().setAll((new Connector(workflow.getWorkingTaxaBlock(), sourceNode, new DataNode(controller.getTargetDataComboBox().getValue()), false)).getAllAlgorithms());
         controller.getAlgorithmChoiceBox().getSelectionModel().select(0);
 
         controller.getCancelButton().setOnAction((e) -> stage.close());
@@ -144,10 +144,10 @@ public class NewNodeDialog {
      * @param xTarget
      * @param yTarget
      */
-    private void makeNewNodes(final WorkflowViewTab workflowView, WorkflowNodeView sourceNodeView, ADataBlock childDataBlock, double xTarget, double yTarget) {
-        final ADataNode targetNode = new ADataNode(childDataBlock);
+    private void makeNewNodes(final WorkflowViewTab workflowView, WorkflowNodeView sourceNodeView, DataBlock childDataBlock, double xTarget, double yTarget) {
+        final DataNode targetNode = new DataNode(childDataBlock);
         workflowView.getWorkflow().addDataNode(targetNode);
-        final AConnector connectorNode = workflowView.getWorkflow().createConnector((ADataNode) sourceNodeView.getANode(), (ADataNode) targetNode, (Algorithm) controller.getAlgorithmChoiceBox().getValue());
+        final Connector connectorNode = workflowView.getWorkflow().createConnector((DataNode) sourceNodeView.getANode(), (DataNode) targetNode, (Algorithm) controller.getAlgorithmChoiceBox().getValue());
         final WorkflowNodeView targetNodeView = new WorkflowNodeView(workflowView, targetNode);
         final WorkflowNodeView connectorNodeView = new WorkflowNodeView(workflowView, connectorNode);
 

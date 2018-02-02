@@ -30,7 +30,7 @@ import splitstree5.core.algorithms.interfaces.IToTrees;
  * A trees block
  * Daniel Huson, 12/21/16.
  */
-public class TreesBlock extends ADataBlock {
+public class TreesBlock extends DataBlock {
     private final ObservableList<PhyloTree> trees;
     private boolean partial = false; // are partial trees present?
     private boolean rooted = false; // are the trees explicitly rooted?

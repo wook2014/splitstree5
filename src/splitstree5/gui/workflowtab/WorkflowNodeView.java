@@ -71,10 +71,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Shear;
-import splitstree5.core.connectors.AConnector;
-import splitstree5.core.datablocks.ADataNode;
-import splitstree5.core.workflow.ANode;
+import splitstree5.core.workflow.Connector;
+import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.UpdateState;
+import splitstree5.core.workflow.WorkflowNode;
 
 import java.util.ArrayList;
 
@@ -84,18 +84,18 @@ import java.util.ArrayList;
  */
 public class WorkflowNodeView extends Group {
     private final Rectangle rectangle;
-    private final ANode aNode;
+    private final WorkflowNode workflowNode;
     private final ArrayList<ChangeListener<UpdateState>> stateChangeListeners = new ArrayList<>();
 
     /**
      * constructor
      *
      * @param workflowView
-     * @param aNode
+     * @param workflowNode
      */
-    public WorkflowNodeView(WorkflowViewTab workflowView, @NotNull ANode aNode) {
+    public WorkflowNodeView(WorkflowViewTab workflowView, @NotNull WorkflowNode workflowNode) {
         rectangle = new Rectangle(160, 60);
-        this.aNode = aNode;
+        this.workflowNode = workflowNode;
 
         {
             final ChangeListener<UpdateState> stateChangeListener = (c, o, n) -> {
@@ -114,7 +114,7 @@ public class WorkflowNodeView extends Group {
                 }
             };
 
-            aNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
+            workflowNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
             stateChangeListeners.add(stateChangeListener);
         }
 
@@ -123,27 +123,27 @@ public class WorkflowNodeView extends Group {
         getChildren().add(rectangle);
 
         final Tooltip tooltip = new Tooltip();
-        tooltip.textProperty().bind(aNode.shortDescriptionProperty());
+        tooltip.textProperty().bind(workflowNode.shortDescriptionProperty());
         Tooltip.install(rectangle, tooltip);
 
         final Label label = new Label();
-        label.textProperty().bind(aNode.nameProperty());
+        label.textProperty().bind(workflowNode.nameProperty());
         label.setFont(Font.font("Helvetica", 12));
         label.setLayoutX(10);
         label.setLayoutY(4);
         getChildren().add(label);
 
-        if (aNode instanceof AConnector) {
+        if (workflowNode instanceof Connector) {
             final Label descriptionLabel = new Label();
             descriptionLabel.setFont(Font.font("Helvetica", 11));
 
             {
-                final ChangeListener<UpdateState> stateChangeListener = (c, o, n) -> descriptionLabel.setText(aNode.getShortDescription());
-                aNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
+                final ChangeListener<UpdateState> stateChangeListener = (c, o, n) -> descriptionLabel.setText(workflowNode.getShortDescription());
+                workflowNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
                 stateChangeListeners.add(stateChangeListener);
             }
 
-            descriptionLabel.setText(aNode.getShortDescription());
+            descriptionLabel.setText(workflowNode.getShortDescription());
             descriptionLabel.setLayoutX(10);
             descriptionLabel.setLayoutY(24);
             getChildren().add(descriptionLabel);
@@ -151,10 +151,10 @@ public class WorkflowNodeView extends Group {
             final Button openButton = new Button("Open...");
             openButton.setFont(Font.font("Helvetica", 10));
             openButton.setOnAction((e) -> {
-                if (!((AConnector) aNode).getAlgorithm().getName().endsWith("TopFilter"))
-                    workflowView.getDocument().getMainWindow().showAlgorithmView((AConnector) aNode);
+                if (!((Connector) workflowNode).getAlgorithm().getName().endsWith("TopFilter"))
+                    workflowView.getDocument().getMainWindow().showAlgorithmView((Connector) workflowNode);
             });
-            openButton.disableProperty().bind(Bindings.equal(UpdateState.VALID, aNode.stateProperty()).not());
+            openButton.disableProperty().bind(Bindings.equal(UpdateState.VALID, workflowNode.stateProperty()).not());
             openButton.setPrefWidth(50);
             openButton.setPrefHeight(20);
             openButton.setLayoutX(rectangle.getWidth() - 53);
@@ -166,10 +166,10 @@ public class WorkflowNodeView extends Group {
             progressBar.setPrefHeight(20);
             progressBar.setLayoutX(10);
             progressBar.setLayoutY(rectangle.getHeight() - 23);
-            progressBar.visibleProperty().bind(((AConnector) aNode).getService().runningProperty());
-            progressBar.progressProperty().bind(((AConnector) aNode).getService().progressProperty());
+            progressBar.visibleProperty().bind(((Connector) workflowNode).getService().runningProperty());
+            progressBar.progressProperty().bind(((Connector) workflowNode).getService().progressProperty());
             getChildren().add(progressBar);
-        } else if (aNode instanceof ADataNode) {
+        } else if (workflowNode instanceof DataNode) {
             {
                 Shear sh = new Shear(-0.2, 0, rectangle.getX() + rectangle.getWidth() / 2, rectangle.getY() + rectangle.getHeight() / 2);
                 rectangle.getTransforms().add(sh);
@@ -177,19 +177,19 @@ public class WorkflowNodeView extends Group {
             final Label sizeLabel = new Label();
             sizeLabel.setFont(Font.font("Helvetica", 11));
             {
-                final ChangeListener<UpdateState> stateChangeListener = (c, o, n) -> sizeLabel.setText("Size=" + ((ADataNode) aNode).getDataBlock().size());
-                aNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
+                final ChangeListener<UpdateState> stateChangeListener = (c, o, n) -> sizeLabel.setText("Size=" + ((DataNode) workflowNode).getDataBlock().size());
+                workflowNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
                 stateChangeListeners.add(stateChangeListener);
             }
-            sizeLabel.setText("Size=" + ((ADataNode) aNode).getDataBlock().size());
+            sizeLabel.setText("Size=" + ((DataNode) workflowNode).getDataBlock().size());
             sizeLabel.setLayoutX(10);
             sizeLabel.setLayoutY(24);
             getChildren().add(sizeLabel);
 
             final Button openButton = new Button("Open...");
             openButton.setFont(Font.font("Helvetica", 10));
-            openButton.setOnAction((e) -> workflowView.getDocument().getMainWindow().showDataView((ADataNode) aNode));
-            openButton.disableProperty().bind(Bindings.equal(UpdateState.VALID, aNode.stateProperty()).not());
+            openButton.setOnAction((e) -> workflowView.getDocument().getMainWindow().showDataView((DataNode) workflowNode));
+            openButton.disableProperty().bind(Bindings.equal(UpdateState.VALID, workflowNode.stateProperty()).not());
 
             openButton.setPrefWidth(50);
             openButton.setPrefHeight(20);
@@ -234,8 +234,8 @@ public class WorkflowNodeView extends Group {
         return rectangle.heightProperty();
     }
 
-    public ANode getANode() {
-        return aNode;
+    public WorkflowNode getANode() {
+        return workflowNode;
     }
 
     public void setXY(double x, double y) {

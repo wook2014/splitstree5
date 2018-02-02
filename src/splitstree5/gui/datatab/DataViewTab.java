@@ -28,7 +28,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import jloda.util.ResourceManager;
 import splitstree5.core.Document;
-import splitstree5.core.datablocks.ADataNode;
+import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.texttab.TextViewTab;
 
@@ -44,7 +44,7 @@ public class DataViewTab extends TextViewTab {
      * @param document
      * @param aNode
      */
-    public DataViewTab(Document document, ADataNode aNode) {
+    public DataViewTab(Document document, DataNode aNode) {
         super(aNode.nameProperty());
         final StringProperty textProperty = new SimpleStringProperty(aNode.getDataBlock().getDisplayText());
         stateChangeListener = (c, o, n) -> {

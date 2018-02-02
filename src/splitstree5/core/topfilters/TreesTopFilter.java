@@ -24,9 +24,9 @@ import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
+import splitstree5.core.workflow.DataNode;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -46,7 +46,7 @@ public class TreesTopFilter extends ATopFilter<TreesBlock> {
      * @param parentBlock
      * @param childBlock
      */
-    public TreesTopFilter(ADataNode<TaxaBlock> originalTaxaNode, ADataNode<TaxaBlock> modifiedTaxaNode, ADataNode<TreesBlock> parentBlock, ADataNode<TreesBlock> childBlock) {
+    public TreesTopFilter(DataNode<TaxaBlock> originalTaxaNode, DataNode<TaxaBlock> modifiedTaxaNode, DataNode<TreesBlock> parentBlock, DataNode<TreesBlock> childBlock) {
         super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parentBlock, childBlock);
 
         setAlgorithm(new Algorithm<TreesBlock, TreesBlock>("TopFilter") {

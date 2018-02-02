@@ -21,6 +21,7 @@ package splitstree5.gui.graphtab.base;
 
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -89,6 +90,15 @@ public abstract class EdgeViewBase {
 
     public void setLabel(Labeled label) {
         this.label = label;
+    }
+
+    public void setLabel(String text) {
+        if (text == null)
+            setLabel((Labeled) null);
+        else if (getLabel() != null)
+            getLabel().setText(text);
+        else
+            setLabel(new Label(text));
     }
 
     public abstract void showAsSelected(boolean selected);

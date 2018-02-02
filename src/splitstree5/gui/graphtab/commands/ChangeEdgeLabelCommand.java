@@ -20,6 +20,7 @@
 package splitstree5.gui.graphtab.commands;
 
 import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import jloda.util.ProgramProperties;
 import splitstree5.gui.graphtab.base.EdgeViewBase;
 import splitstree5.undo.UndoableRedoableCommand;
@@ -43,7 +44,7 @@ public class ChangeEdgeLabelCommand extends UndoableRedoableCommand {
     @Override
     public void undo() {
         if (oldText == null)
-            ev.setLabel(null);
+            ev.setLabel((Labeled) null);
         else
             ev.getLabel().setText(oldText);
     }

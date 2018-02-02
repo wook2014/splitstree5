@@ -2,8 +2,8 @@ package splitstree5.io.exports;
 
 import jloda.util.parse.NexusStreamParser;
 import org.junit.Test;
-import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.datablocks.CharactersBlock;
+import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.io.imports.NeXML.NexmlFileParser;
@@ -36,7 +36,7 @@ public class NeXMLOutTest {
         CharactersNexusIO.parse(np, taxa, characters, null);
         // todo problem when reading M1000: must have "labels=left" attribute
 
-        List<ADataBlock> list = new ArrayList<>();
+        List<DataBlock> list = new ArrayList<>();
         list.add(taxa);
         list.add(characters);
 
@@ -56,7 +56,7 @@ public class NeXMLOutTest {
         NexmlFileParser nexmlFileParser = new NexmlFileParser();
         nexmlFileParser.parse("test/neXML/simple.xml", taxaBlock, treesBlock);
 
-        List<ADataBlock> trees_list = new ArrayList<>();
+        List<DataBlock> trees_list = new ArrayList<>();
         trees_list.add(taxaBlock);
         trees_list.add(treesBlock);
         neXMLOut.export(writer_trees, trees_list);

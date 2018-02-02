@@ -23,9 +23,9 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import jloda.util.Basic;
 import jloda.util.ProgressListener;
-import splitstree5.core.connectors.AConnector;
-import splitstree5.core.datablocks.ADataBlock;
+import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.workflow.Connector;
 import splitstree5.utils.Option;
 import splitstree5.utils.OptionableBase;
 import splitstree5.utils.OptionsAccessor;
@@ -34,9 +34,9 @@ import splitstree5.utils.OptionsAccessor;
  * An algorithm
  * Daniel Huson 12.2016
  */
-abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> extends OptionableBase {
+abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extends OptionableBase {
     private final BooleanProperty disabled = new SimpleBooleanProperty(true);
-    private AConnector<P, C> connector;
+    private Connector<P, C> connector;
 
     /**
      * constructor
@@ -81,7 +81,7 @@ abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> exte
      * @param child
      * @throws Exception
      */
-    public void compute0(ProgressListener progressListener, TaxaBlock taxaBlock, ADataBlock parent, ADataBlock child) throws Exception {
+    public void compute0(ProgressListener progressListener, TaxaBlock taxaBlock, DataBlock parent, DataBlock child) throws Exception {
         compute(progressListener, taxaBlock, (P) parent, (C) child);
     }
 
@@ -142,14 +142,14 @@ abstract public class Algorithm<P extends ADataBlock, C extends ADataBlock> exte
     /**
      * gets the associated connector
      */
-    public AConnector<P, C> getConnector() {
+    public Connector<P, C> getConnector() {
         return connector;
     }
 
     /**
      * sets the associated connector
      */
-    public void setConnector(AConnector<P, C> connector) {
+    public void setConnector(Connector<P, C> connector) {
         this.connector = connector;
     }
 

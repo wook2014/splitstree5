@@ -64,7 +64,7 @@ public class NexusFileParser {
                     needToDetectTaxa = (topTaxaBlock.getTaxa().size() == 0);
                 }
                 final ArrayList<String> namesFound = new ArrayList<>();
-                final ADataBlock topDataBlock = parseBlock(np, topTaxaBlock, namesFound);
+                final DataBlock topDataBlock = parseBlock(np, topTaxaBlock, namesFound);
                 if (needToDetectTaxa) {
                     if (namesFound.size() == 0)
                         throw new IOException("Couldn't detect taxon names in input file");
@@ -84,8 +84,8 @@ public class NexusFileParser {
                 else {
                     TaxaBlock topTaxa = document.getWorkflow().getTopTaxaNode().getDataBlock();
                     TaxaBlock workingTaxa = document.getWorkflow().getWorkingTaxaNode().getDataBlock();
-                    ADataBlock topData = document.getWorkflow().getTopDataNode().getDataBlock();
-                    ADataBlock workingData = document.getWorkflow().getWorkingDataNode().getDataBlock();
+                    DataBlock topData = document.getWorkflow().getTopDataNode().getDataBlock();
+                    DataBlock workingData = document.getWorkflow().getWorkingDataNode().getDataBlock();
                     try {
                         document.getWorkflow().getTaxaFilter().getAlgorithm().compute(new ProgressPercentage(), topTaxa, topTaxa, workingTaxa);
                         document.getWorkflow().getTopFilter().getAlgorithm().compute0(new ProgressPercentage(), topTaxa, topData, workingData);
@@ -107,7 +107,7 @@ public class NexusFileParser {
      * @return block parsed
      * @throws IOException
      */
-    public static ADataBlock parseBlock(NexusStreamParser np, TaxaBlock taxaBlock, List<String> taxonNamesFound) throws IOException {
+    public static DataBlock parseBlock(NexusStreamParser np, TaxaBlock taxaBlock, List<String> taxonNamesFound) throws IOException {
         if (np.peekMatchIgnoreCase("begin")) {
             if (np.peekMatchIgnoreCase("begin taxa;")) {
                 final TaxaBlock taxaBlock2 = new TaxaBlock();

@@ -19,9 +19,21 @@
 
 package splitstree5.main;
 
+import javafx.beans.binding.Bindings;
+import javafx.scene.control.Tab;
 import javafx.stage.FileChooser;
 import jloda.util.Basic;
 import splitstree5.core.Document;
+import splitstree5.core.algorithms.characters2network.MedianJoining;
+import splitstree5.core.algorithms.distances2network.MinSpanningNetwork;
+import splitstree5.core.algorithms.views.NetworkEmbedder;
+import splitstree5.core.datablocks.CharactersBlock;
+import splitstree5.core.datablocks.DistancesBlock;
+import splitstree5.core.datablocks.NetworkBlock;
+import splitstree5.core.datablocks.NetworkViewBlock;
+import splitstree5.core.workflow.DataNode;
+import splitstree5.core.workflow.IHasDataNode;
+import splitstree5.core.workflow.Workflow;
 import splitstree5.dialogs.importer.ImportDialog;
 import splitstree5.io.nexus.NexusFileParser;
 import splitstree5.io.nexus.NexusFileWriter;
@@ -134,5 +146,44 @@ public class MainWindowMenuController {
             }
         }
         return file != null;
+    }
+
+    /**
+     * this is where we setup all the construction menu item that add nodes to the workflow
+     *
+     * @param mainWindow
+     * @param selectedTab
+     * @param controller
+     */
+    public static void updateConstructionMenuItems(MainWindow mainWindow, final Tab selectedTab, MenuController controller) {
+        final Workflow workflow = mainWindow.getDocument().getWorkflow();
+
+        if (selectedTab instanceof IHasDataNode) {
+            System.err.println("Data: " + ((IHasDataNode) selectedTab).getDataNode());
+
+            controller.getMedianJoiningMenuItem().setOnAction((e) -> {
+                final DataNode dataNode = workflow.getAncestor(((IHasDataNode) selectedTab).getDataNode(), CharactersBlock.class);
+                if (dataNode != null) {
+                    try {
+                        mainWindow.show(workflow.createView(dataNode, MedianJoining.class, NetworkBlock.class, NetworkEmbedder.class, NetworkViewBlock.class));
+                    } catch (Exception ex) {
+                        Basic.caught(ex);
+                    }
+                }
+            });
+            controller.getMedianJoiningMenuItem().disableProperty().bind(Bindings.createBooleanBinding(() -> workflow.getAncestor(((IHasDataNode) selectedTab).getDataNode(), CharactersBlock.class) == null, workflow.updatingProperty()));
+
+            controller.getMinSpanningNetworkMenuItem().setOnAction((e) -> {
+                final DataNode dataNode = workflow.getAncestor(((IHasDataNode) selectedTab).getDataNode(), DistancesBlock.class);
+                if (dataNode != null) {
+                    try {
+                        mainWindow.show(workflow.createView(dataNode, MinSpanningNetwork.class, NetworkBlock.class, NetworkEmbedder.class, NetworkViewBlock.class));
+                    } catch (Exception ex) {
+                        Basic.caught(ex);
+                    }
+                }
+            });
+            controller.getMinSpanningNetworkMenuItem().disableProperty().bind(Bindings.createBooleanBinding(() -> workflow.getAncestor(((IHasDataNode) selectedTab).getDataNode(), DistancesBlock.class) == null, workflow.updatingProperty()));
+        }
     }
 }

@@ -131,8 +131,7 @@ public class EqualAngle {
             Node v = graph.newNode();
 
             graph.setLabel(v, taxa.getLabel(t));
-            graph.setNode2Taxa(v, t);
-            graph.setTaxon2Node(t, v);
+            graph.addTaxon(v, t);
 
             Edge e = graph.newEdge(center, v);
             if (taxon2TrivialSplit[t] != 0) {
@@ -315,16 +314,15 @@ public class EqualAngle {
                 w = e.getSource();
                 v = e.getTarget();
             }
-            for (Integer t : graph.getNode2Taxa(v)) {
-                graph.setNode2Taxa(w, t);
-                graph.setTaxon2Node(t, w);
+            for (Integer t : graph.getTaxa(v)) {
+                graph.addTaxon(w, t);
             }
 
             if (graph.getLabel(w) != null && graph.getLabel(w).length() > 0)
                 graph.setLabel(w, graph.getLabel(w) + ", " + graph.getLabel(v));
             else
                 graph.setLabel(w, graph.getLabel(v));
-            graph.getNode2Taxa(v).clear();
+            graph.clearTaxa(v);
             graph.setLabel(v, null);
             graph.deleteNode(v);
         }
@@ -338,7 +336,7 @@ public class EqualAngle {
      * @param graph
      * @param forbiddenSplits : set of all the splits such as their edges won't have their angles changed
      */
-    private static void assignAnglesToEdges(int ntaxa, SplitsBlock splits, int[] cycle, SplitsGraph graph, BitSet forbiddenSplits) {
+    public static void assignAnglesToEdges(int ntaxa, SplitsBlock splits, int[] cycle, SplitsGraph graph, BitSet forbiddenSplits) {
         //We create the list of angles representing the taxas on a circle.
         double[] TaxaAngles = new double[ntaxa + 1];
         for (int t = 1; t < ntaxa + 1; t++) {

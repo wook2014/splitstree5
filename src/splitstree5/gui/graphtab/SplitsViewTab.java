@@ -33,8 +33,9 @@ import jloda.util.Pair;
 import jloda.util.ResourceManager;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.views.SplitsNetworkAlgorithm;
-import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.*;
+import splitstree5.core.workflow.Connector;
+import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.Workflow;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.graphtab.base.*;
@@ -49,7 +50,7 @@ import java.util.*;
 public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsViewTab {
     private final ASelectionModel<Integer> splitsSelectionModel = new ASelectionModel<>();
     private boolean inSelection;
-    private ADataNode dataNode;
+    private DataNode dataNode;
 
     /**
      * constructor
@@ -123,7 +124,7 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
         super.updateSelectionModels(graph, taxa, document);
         splitsSelectionModel.setItems(graph.getSplitIds());
 
-        getMainWindow().getDocument().getTaxaSelectionModel().getSelectedItems().addListener((InvalidationListener) (c) -> {
+        document.getTaxaSelectionModel().getSelectedItems().addListener((InvalidationListener) (c) -> {
             if (!inSelection)
                 splitsSelectionModel.clearSelection();
         });
@@ -348,21 +349,21 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
         super.updateMenus(controller);
 
         controller.getShow3DViewerMenuItem().setOnAction((e) -> {
-            ADataNode dataNode = getDataNode();
+            DataNode dataNode = getDataNode();
             if (dataNode != null && dataNode.getParent() != null && dataNode.getParent().getParent() != null
                     && dataNode.getParent().getParent().getDataBlock() instanceof SplitsBlock) {
-                final ADataNode<SplitsBlock> splitsNode = dataNode.getParent().getParent();
-                for (AConnector<SplitsBlock, ? extends ADataBlock> child : splitsNode.getChildren()) {
+                final DataNode<SplitsBlock> splitsNode = dataNode.getParent().getParent();
+                for (Connector<SplitsBlock, ? extends DataBlock> child : splitsNode.getChildren()) {
                     if (child.getChild().getDataBlock() instanceof SplitsNetwork3DViewBlock) {
                         getMainWindow().showDataView(child.getChild());
                         return;
                     }
                 }
                 // no 3d viewer found, set one up
-                final Workflow workflow = getMainWindow().getDocument().getWorkflow();
-                ADataNode<SplitsNetworkViewBlock> viewNode = workflow.createDataNode(new SplitsNetwork3DViewBlock());
+                final Workflow workflow = controller.getMainWindow().getWorkflow();
+                DataNode<SplitsNetworkViewBlock> viewNode = workflow.createDataNode(new SplitsNetwork3DViewBlock());
                 workflow.createConnector(splitsNode, viewNode, new SplitsNetworkAlgorithm()).forceRecompute();
-                getMainWindow().getWorkflowTab().recompute();
+                controller.getMainWindow().getWorkflowTab().recompute();
             }
         });
     }
@@ -372,12 +373,12 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
         return this;
     }
 
-    public ADataNode getDataNode() {
+    public DataNode getDataNode() {
         return dataNode;
     }
 
     @Override
-    public void setDataNode(ADataNode dataNode) {
+    public void setDataNode(DataNode dataNode) {
         this.dataNode = dataNode;
     }
 }

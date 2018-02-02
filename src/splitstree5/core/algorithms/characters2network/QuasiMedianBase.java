@@ -37,6 +37,9 @@ import java.util.*;
  * huson 10.2009
  */
 public abstract class QuasiMedianBase {
+    public static final String NODE_STATES_KEY = "states";
+    public static final String EDGE_SITES_KEY = "sites";
+
     /**
      * Applies the method to the given data
      *
@@ -98,38 +101,34 @@ public abstract class QuasiMedianBase {
 
         for (Node v : graph.nodes()) {
             String condensed = (String) v.getInfo();
-
+            graph.setLabel(v, null);
             if (condensedInputSet.contains(condensed)) {
                 for (int t = 1; t <= taxa.getNtax(); t++) {
                     int o = orig2CondensedTaxa[t];
                     if (condensedCharacters[o].equals(condensed)) {
-                        graph.setTaxon2Node(t, v);
-                        graph.setNode2Taxa(v, t);
+                        graph.addTaxon(v, t);
                     }
                 }
 
-                List<Integer> vTaxa = graph.getNode2Taxa(v);
-                StringBuilder buf = new StringBuilder();
-                boolean first = true;
-                for (Integer vTax : vTaxa) {
-                    if (first)
-                        first = false;
-                    else
-                        buf.append(",");
-                    buf.append(taxa.getLabel(vTax));
+                if (graph.hasTaxa(v)) {
+                    final StringBuilder buf = new StringBuilder();
+                    for (Integer t : graph.getTaxa(v)) {
+                        if (buf.length() > 0)
+                            buf.append(", ");
+                        buf.append(taxa.getLabel(t));
+                    }
+                    graph.setLabel(v, buf.toString());
                 }
-                graph.setLabel(v, buf.toString());
-            } else {
-                graph.setLabel(v, null);
             }
             String full = expandCondensed(condensed, orig2CondensedPos, translator);
-            networkBlock.getNodeData(v).put("states", full);
+            networkBlock.getNodeData(v).put(NODE_STATES_KEY, full);
         }
 
         for (Edge e : graph.edges()) {
             String label = computeEdgeLabel(characterLabels, (String) e.getSource().getInfo(), (String) e.getTarget().getInfo(), orig2CondensedPos, translator);
-            networkBlock.getEdgeData(e).put("sites", label);
+            networkBlock.getEdgeData(e).put(EDGE_SITES_KEY, label);
         }
+        networkBlock.setNetworkType(NetworkBlock.Type.HaplotypeNetwork);
     }
 
     /**

@@ -75,9 +75,9 @@ import javafx.scene.paint.Color;
 import jloda.fx.ASelectionModel;
 import jloda.fx.ZoomableScrollPane;
 import splitstree5.core.Document;
-import splitstree5.core.connectors.AConnector;
-import splitstree5.core.workflow.ANode;
+import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.Workflow;
+import splitstree5.core.workflow.WorkflowNode;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.utils.SelectionEffect;
 import splitstree5.menu.MenuController;
@@ -97,8 +97,8 @@ public class WorkflowViewTab extends ViewerTab {
     private final Group nodeViews = new Group();
     private final Group edgeViews = new Group();
 
-    private final Map<ANode, WorkflowNodeView> node2NodeView = new HashMap<>();
-    private final Map<ANode, ArrayList<WorkflowEdgeView>> node2EdgeViews = new HashMap<>();
+    private final Map<WorkflowNode, WorkflowNodeView> node2NodeView = new HashMap<>();
+    private final Map<WorkflowNode, ArrayList<WorkflowEdgeView>> node2EdgeViews = new HashMap<>();
 
     private final Label noDataLabel = new Label("No data - open or import data from a file");
 
@@ -131,13 +131,13 @@ public class WorkflowViewTab extends ViewerTab {
                 getWorkflow().getNodeSelectionModel().clearSelection();
         });
 
-        getWorkflow().getNodeSelectionModel().getSelectedItems().addListener((ListChangeListener<ANode>) c -> {
+        getWorkflow().getNodeSelectionModel().getSelectedItems().addListener((ListChangeListener<WorkflowNode>) c -> {
             while (c.next()) {
-                for (ANode node : c.getAddedSubList()) {
+                for (WorkflowNode node : c.getAddedSubList()) {
                     if (node2NodeView.containsKey(node))
                         node2NodeView.get(node).setEffect(SelectionEffect.getInstance());
                 }
-                for (ANode node : c.getRemoved()) {
+                for (WorkflowNode node : c.getRemoved()) {
                     if (node2NodeView.containsKey(node))
                         node2NodeView.get(node).setEffect(null);
                 }
@@ -234,12 +234,12 @@ public class WorkflowViewTab extends ViewerTab {
      * @param yDelta
      * @param horizontal
      */
-    private void assignNodeViewsAndCoordinatesForChildrenRec(WorkflowViewTab workflowView, ANode v, Map<ANode, WorkflowNodeView> node2nodeView, double xDelta, double yDelta, boolean horizontal) {
+    private void assignNodeViewsAndCoordinatesForChildrenRec(WorkflowViewTab workflowView, WorkflowNode v, Map<WorkflowNode, WorkflowNodeView> node2nodeView, double xDelta, double yDelta, boolean horizontal) {
         double x = node2nodeView.get(v).xProperty().get();
         double y = node2nodeView.get(v).yProperty().get();
 
         int count = 0;
-        for (ANode w : v.getChildren()) {
+        for (WorkflowNode w : v.getChildren()) {
             if (count == 1)
                 horizontal = !horizontal;
             else if (count == 2) {
@@ -282,15 +282,15 @@ public class WorkflowViewTab extends ViewerTab {
         return edgeViews;
     }
 
-    public WorkflowNodeView getNodeView(ANode node) {
+    public WorkflowNodeView getNodeView(WorkflowNode node) {
         return node2NodeView.get(node);
     }
 
-    Map<ANode, WorkflowNodeView> getNode2NodeView() {
+    Map<WorkflowNode, WorkflowNodeView> getNode2NodeView() {
         return node2NodeView;
     }
 
-    Map<ANode, ArrayList<WorkflowEdgeView>> getNode2EdgeViews() {
+    Map<WorkflowNode, ArrayList<WorkflowEdgeView>> getNode2EdgeViews() {
         return node2EdgeViews;
     }
 
@@ -304,7 +304,7 @@ public class WorkflowViewTab extends ViewerTab {
         controller.getPageSetupMenuItem().setOnAction((e) -> Print.showPageLayout(getMainWindow().getStage()));
         controller.getPrintMenuitem().setOnAction((e) -> Print.print(getMainWindow().getStage(), centerPane));
 
-        final ASelectionModel<ANode> selectionModel = getWorkflow().getNodeSelectionModel();
+        final ASelectionModel<WorkflowNode> selectionModel = getWorkflow().getNodeSelectionModel();
 
         controller.getUndoMenuItem().setOnAction((e) -> getUndoManager().undo());
         controller.getUndoMenuItem().disableProperty().bind(new SimpleBooleanProperty(false).isEqualTo(getUndoManager().canUndoProperty()));
@@ -339,12 +339,12 @@ public class WorkflowViewTab extends ViewerTab {
         controller.getInvertNodeSelectionMenuItem().setOnAction((e) -> selectionModel.invertSelection());
 
         controller.getSelectAllBelowMenuItem().setOnAction((e) -> {
-            final Stack<ANode> stack = new Stack<>();
-            final Set<ANode> nodesToSelect = new HashSet<>();
+            final Stack<WorkflowNode> stack = new Stack<>();
+            final Set<WorkflowNode> nodesToSelect = new HashSet<>();
             stack.addAll(selectionModel.getSelectedItems());
             while (stack.size() > 0) {
-                final ANode v = stack.pop();
-                for (ANode w : v.getChildren()) {
+                final WorkflowNode v = stack.pop();
+                for (WorkflowNode w : v.getChildren()) {
                     stack.push(w);
                     nodesToSelect.add(w);
                 }
@@ -354,7 +354,7 @@ public class WorkflowViewTab extends ViewerTab {
         controller.getSelectAllBelowMenuItem().disableProperty().bind(selectionModel.emptyProperty());
 
         controller.getDeleteMenuItem().setOnAction((e) -> {
-            Set<ANode> deletableSelection = new HashSet<>(selectionModel.getSelectedItems());
+            Set<WorkflowNode> deletableSelection = new HashSet<>(selectionModel.getSelectedItems());
             deletableSelection.remove(getWorkflow().getTopTaxaNode());
             deletableSelection.remove(getWorkflow().getTopDataNode());
             deletableSelection.remove(getWorkflow().getTaxaFilter());
@@ -362,20 +362,20 @@ public class WorkflowViewTab extends ViewerTab {
             deletableSelection.remove(getWorkflow().getWorkingTaxaNode());
             deletableSelection.remove(getWorkflow().getWorkingDataNode());
 
-            Set<ANode> toDelete = new HashSet<>();
+            Set<WorkflowNode> toDelete = new HashSet<>();
             for (Node node : nodeViews.getChildren()) {
                 if (node instanceof WorkflowNodeView) {
-                    final ANode aNode = ((WorkflowNodeView) node).getANode();
-                    if (aNode instanceof AConnector) {
-                        ANode child = ((AConnector) aNode).getChild();
+                    final WorkflowNode workflowNode = ((WorkflowNodeView) node).getANode();
+                    if (workflowNode instanceof Connector) {
+                        WorkflowNode child = ((Connector) workflowNode).getChild();
                         if (deletableSelection.contains(child))
-                            toDelete.add(aNode);
+                            toDelete.add(workflowNode);
                     }
                 }
             }
             final ArrayList<UndoableRedoableCommand> list = new ArrayList<>();
             toDelete.addAll(deletableSelection);
-            for (ANode node : toDelete) {
+            for (WorkflowNode node : toDelete) {
                 if (node2EdgeViews.keySet().contains(node)) {
                     final ArrayList<WorkflowEdgeView> listOfEdgeView = new ArrayList<>(node2EdgeViews.get(node));
                     for (WorkflowEdgeView edgeView : listOfEdgeView) {
@@ -402,8 +402,8 @@ public class WorkflowViewTab extends ViewerTab {
                     });
                 }
                 final WorkflowNodeView nodeView = node2NodeView.get(node);
-                final ObservableList<ANode> children = FXCollections.observableArrayList(node.getChildren());
-                final ANode parent = getWorkflow().findParent(node);
+                final ObservableList<WorkflowNode> children = FXCollections.observableArrayList(node.getChildren());
+                final WorkflowNode parent = node.getParent();
                 list.add(new UndoableRedoableCommand("Delete") {
                     public void undo() {
                         if (!nodeViews.getChildren().contains(nodeView))
@@ -442,8 +442,8 @@ public class WorkflowViewTab extends ViewerTab {
         controller.getDeleteMenuItem().disableProperty().bind(selectionModel.emptyProperty());
 
         controller.getDuplicateMenuItem().setOnAction((e) -> {
-            final ArrayList<ANode> selected = new ArrayList<>(selectionModel.getSelectedItems());
-            final Collection<ANode> newNodes = getWorkflow().duplicate(selected);
+            final ArrayList<WorkflowNode> selected = new ArrayList<>(selectionModel.getSelectedItems());
+            final Collection<WorkflowNode> newNodes = getWorkflow().duplicate(selected);
             recompute();
             getWorkflow().recomputeTop(newNodes);
 

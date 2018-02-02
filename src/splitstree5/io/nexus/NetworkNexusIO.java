@@ -22,6 +22,7 @@ package splitstree5.io.nexus;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloGraph;
+import jloda.util.Basic;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.NetworkBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -40,19 +41,20 @@ public class NetworkNexusIO {
             "\t[TITLE title;]\n" +
             "\t[LINK name = title;]\n" +
             "\t[DIMENSIONS [NNODES=number-of-nodes] [NEDGES=number-of-edges];]\n" +
+            "\t\t[NETWORK={" + Basic.toString(NetworkBlock.Type.values(), "|") + "};]\n" +
             "\t[FORMAT\n" +
             "\t;]\n" +
             "\t[PROPERTIES\n" +
             "\t;]\n" +
             "\tNODES\n" +
-            "\tID=number [LABEL=label] [x=number] [y=number] [key=value ...],\n" +
-            "\t...\n" +
-            "\tID=number [LABEL=label] [x=number] [y=number] [key=value ...]\n" +
+            "\t\tID=number [LABEL=label] [x=number] [y=number] [key=value ...],\n" +
+            "\t\t...\n" +
+            "\t\tID=number [LABEL=label] [x=number] [y=number] [key=value ...]\n" +
             "\t;\n" +
             "\tEDGES\n" +
-            "\tID=number SID=number TID=number [LABEL=label] [key=value ...],\n" +
-            "\t...\n" +
-            "\tID=number SID=number TID=number [LABEL=label] [key=value ...]\n" +
+            "\t\tID=number SID=number TID=number [LABEL=label] [key=value ...],\n" +
+            "\t\t...\n" +
+            "\t\tID=number SID=number TID=number [LABEL=label] [key=value ...]\n" +
             "\t;\n" +
             "END;\n";
 
@@ -87,6 +89,16 @@ public class NetworkNexusIO {
         np.matchIgnoreCase("nEdges=");
         final int nEdges = np.getInt(0, Integer.MAX_VALUE);
         np.matchIgnoreCase(";");
+
+        if (np.peekMatchIgnoreCase("TYPE")) {
+            np.matchIgnoreCase("TYPE=");
+            String typeString = np.getWordRespectCase().toUpperCase();
+            NetworkBlock.Type type = Basic.valueOfIgnoreCase(NetworkBlock.Type.class, typeString);
+            if (type == null)
+                throw new IOExceptionWithLineNumber("Unknown network type: " + typeString, np.lineno());
+            networkBlock.setNetworkType(type);
+            np.matchIgnoreCase(";");
+        }
 
         if (np.peekMatchIgnoreCase("FORMAT")) {
             np.matchIgnoreCase("FORMAT");
@@ -189,20 +201,22 @@ public class NetworkNexusIO {
         UtilitiesNexusIO.writeTitleLinks(w, networkBlock);
         w.write("\tDIMENSIONS nNodes=" + networkBlock.getNumberOfNodes() + " nEdges=" + networkBlock.getNumberOfEdges() + ";\n");
 
+        w.write("\tTYPE=" + networkBlock.getNetworkType() + ";\n");
+
         final PhyloGraph graph = networkBlock.getGraph();
         // format?
 
         // properties?
 
         {
-            w.write("NODES\n");
+            w.write("\tNODES\n");
             boolean first = true;
             for (Node v : graph.nodes()) {
                 if (first)
                     first = false;
                 else
                     w.write(",\n");
-                w.write("\tid=" + v.getId());
+                w.write("\t\tid=" + v.getId());
                 if (graph.getLabel(v) != null && graph.getLabel(v).trim().length() > 0) {
                     w.write(" label='" + graph.getLabel(v).trim() + "'");
                 }
@@ -210,20 +224,18 @@ public class NetworkNexusIO {
                     w.write(" " + key + "='" + networkBlock.getNodeData(v).get(key) + "'");
                 }
             }
-            w.write("\n");
-            w.write(";\n");
-
+            w.write("\n\t;\n");
         }
 
         {
-            w.write("EDGES\n");
+            w.write("\tEDGES\n");
             boolean first = true;
             for (Edge e : graph.edges()) {
                 if (first)
                     first = false;
                 else
                     w.write(",\n");
-                w.write("\tid=" + e.getId());
+                w.write("\t\tid=" + e.getId());
                 w.write(" sid=" + e.getSource().getId());
                 w.write(" tid=" + e.getTarget().getId());
 
@@ -234,9 +246,8 @@ public class NetworkNexusIO {
                     w.write(" " + key + "='" + networkBlock.getEdgeData(e).get(key) + "'");
                 }
             }
-            w.write("\n");
-            w.write(";\n");
+            w.write("\n\t;\n");
         }
+        w.write("END; [" + NAME + "]\n");
     }
-
 }

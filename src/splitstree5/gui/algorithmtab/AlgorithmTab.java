@@ -32,8 +32,8 @@ import javafx.util.Callback;
 import jloda.fx.ExtendedFXMLLoader;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.connectors.AConnector;
-import splitstree5.core.datablocks.ADataBlock;
+import splitstree5.core.datablocks.DataBlock;
+import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.ViewerTab;
 import splitstree5.menu.MenuController;
@@ -49,7 +49,7 @@ import java.util.Map;
  * @param <P>
  * @param <C>
  */
-public class AlgorithmTab<P extends ADataBlock, C extends ADataBlock> extends ViewerTab {
+public class AlgorithmTab<P extends DataBlock, C extends DataBlock> extends ViewerTab {
     private final Document document;
     private final AlgorithmTabController controller;
     private AlgorithmPane algorithmPane;
@@ -60,7 +60,7 @@ public class AlgorithmTab<P extends ADataBlock, C extends ADataBlock> extends Vi
 
     private Map<Algorithm<P, C>, AlgorithmPane> algorithm2pane = new HashMap<>(); // we keep used panes around in case we want to undo back to one
 
-    private final AConnector<P, C> connector;
+    private final Connector<P, C> connector;
 
     private final ChangeListener<UpdateState> connectorStateChangeListener;
     private final ChangeListener<UpdateState> parentStateChangeListener;
@@ -69,7 +69,7 @@ public class AlgorithmTab<P extends ADataBlock, C extends ADataBlock> extends Vi
     /**
      * constructor
      */
-    public AlgorithmTab(Document document, AConnector<P, C> connector) {
+    public AlgorithmTab(Document document, Connector<P, C> connector) {
         this.document = document;
         this.connector = connector;
         this.currentAlgorithm = connector.getAlgorithm();

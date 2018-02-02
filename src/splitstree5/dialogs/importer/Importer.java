@@ -38,11 +38,11 @@ import splitstree5.core.algorithms.trees2splits.SuperNetwork;
 import splitstree5.core.algorithms.views.SplitsNetworkAlgorithm;
 import splitstree5.core.algorithms.views.TreeEmbedder;
 import splitstree5.core.datablocks.*;
+import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.core.workflow.Workflow;
 import splitstree5.gui.utils.Alert;
 import splitstree5.io.imports.interfaces.*;
-import splitstree5.io.nexus.CharactersNexusFormat;
 import splitstree5.main.MainWindow;
 
 import java.io.IOException;
@@ -79,19 +79,19 @@ public class Importer {
                     final CharactersBlock dataBlock = new CharactersBlock();
                     ((IImportCharacters) importer).parse(progress, filename, taxaBlock, dataBlock);
                     workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
-                    final ADataNode<DistancesBlock> distances = workflow.createDataNode(new DistancesBlock());
+                    final DataNode<DistancesBlock> distances = workflow.createDataNode(new DistancesBlock());
                     workflow.createConnector(workflow.getWorkingDataNode(), distances, new HammingDistances());
-                    final ADataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
+                    final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
                     workflow.createConnector(distances, splits, new NeighborNet());
-                    final ADataNode<SplitsNetworkViewBlock> splitsView = workflow.createDataNode(new SplitsNetworkViewBlock());
+                    final DataNode<SplitsNetworkViewBlock> splitsView = workflow.createDataNode(new SplitsNetworkViewBlock());
                     workflow.createConnector(splits, splitsView, new SplitsNetworkAlgorithm());
                 } else if (importer instanceof IToDistances) {
                     final DistancesBlock dataBlock = new DistancesBlock();
                     ((IImportDistances) importer).parse(progress, filename, taxaBlock, dataBlock);
                     workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
-                    final ADataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
+                    final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
                     workflow.createConnector(workflow.getWorkingDataNode(), splits, new NeighborNet());
-                    final ADataNode<SplitsNetworkViewBlock> splitsView = workflow.createDataNode(new SplitsNetworkViewBlock());
+                    final DataNode<SplitsNetworkViewBlock> splitsView = workflow.createDataNode(new SplitsNetworkViewBlock());
                     workflow.createConnector(splits, splitsView, new SplitsNetworkAlgorithm());
 
                 } else if (importer instanceof IToTrees) {
@@ -99,36 +99,36 @@ public class Importer {
                     ((IImportTrees) importer).parse(progress, filename, taxaBlock, dataBlock);
                     workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
                     if (dataBlock.size() == 1) { // only one tree, don't need a filter
-                        final ADataNode<TreeViewBlock> treesView = workflow.createDataNode(new TreeViewBlock());
+                        final DataNode<TreeViewBlock> treesView = workflow.createDataNode(new TreeViewBlock());
                         workflow.createConnector(workflow.getWorkingDataNode(), treesView, new TreeEmbedder());
                     } else { // more than one tree, need a filter:
-                        final ADataNode<TreesBlock> trees = workflow.createDataNode(new TreesBlock());
+                        final DataNode<TreesBlock> trees = workflow.createDataNode(new TreesBlock());
 
                         workflow.createConnector(workflow.getWorkingDataNode(), trees, new TreesFilter());
 
-                        final ADataNode<SplitsBlock> splits0 = workflow.createDataNode(new SplitsBlock());
+                        final DataNode<SplitsBlock> splits0 = workflow.createDataNode(new SplitsBlock());
                         if (dataBlock.isPartial()) {
                             workflow.createConnector(trees, splits0, new SuperNetwork());
                         } else {
                             workflow.createConnector(trees, splits0, new ConsensusNetwork());
                         }
-                        final ADataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
+                        final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
                         workflow.createConnector(splits0, splits, new DimensionFilter());
 
-                        final ADataNode<SplitsNetworkViewBlock> splitsNetworkViewBlockADataNode = workflow.createDataNode(new SplitsNetworkViewBlock());
-                        workflow.createConnector(splits, splitsNetworkViewBlockADataNode, new SplitsNetworkAlgorithm());
+                        final DataNode<SplitsNetworkViewBlock> splitsNetworkViewBlockDataNode = workflow.createDataNode(new SplitsNetworkViewBlock());
+                        workflow.createConnector(splits, splitsNetworkViewBlockDataNode, new SplitsNetworkAlgorithm());
 
-                        final ADataNode<TreesBlock> singleTree = workflow.createDataNode(new TreesBlock());
+                        final DataNode<TreesBlock> singleTree = workflow.createDataNode(new TreesBlock());
                         workflow.createConnector(trees, singleTree, new TreeSelector());
 
-                        final ADataNode<TreeViewBlock> treesView = workflow.createDataNode(new TreeViewBlock());
+                        final DataNode<TreeViewBlock> treesView = workflow.createDataNode(new TreeViewBlock());
                         workflow.createConnector(singleTree, treesView, new TreeEmbedder());
                     }
                 } else if (importer instanceof IToSplits) {
                     final SplitsBlock dataBlock = new SplitsBlock();
                     ((IImportSplits) importer).parse(progress, filename, taxaBlock, dataBlock);
                     workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
-                    final ADataNode<SplitsNetworkViewBlock> splitsView = workflow.createDataNode(new SplitsNetworkViewBlock());
+                    final DataNode<SplitsNetworkViewBlock> splitsView = workflow.createDataNode(new SplitsNetworkViewBlock());
                     workflow.createConnector(workflow.getWorkingDataNode(), splitsView, new SplitsNetworkAlgorithm());
                 }
                 document.setupTaxonSelectionModel();

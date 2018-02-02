@@ -19,25 +19,25 @@
 
 package splitstree5.core.algorithms;
 
-import splitstree5.core.connectors.AConnector;
-import splitstree5.core.datablocks.ADataBlock;
-import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.AnalysisResultBlock;
+import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.workflow.Connector;
+import splitstree5.core.workflow.DataNode;
 
 /**
  * report the content of a block
  * Daniel Huson, 12/26/16.
  */
-public class ReportConnector<D extends ADataBlock> extends AConnector<D, AnalysisResultBlock> {
+public class ReportConnector<D extends DataBlock> extends Connector<D, AnalysisResultBlock> {
     /**
      * report the block
      *
      * @param taxaBlock
      * @param parent
      */
-    public ReportConnector(TaxaBlock taxaBlock, ADataNode<D> parent) {
-        super(taxaBlock, parent, new ADataNode<>(new AnalysisResultBlock()));
+    public ReportConnector(TaxaBlock taxaBlock, DataNode<D> parent) {
+        super(taxaBlock, parent, new DataNode<>(new AnalysisResultBlock()));
         setAlgorithm((Algorithm) new Report());
     }
 }

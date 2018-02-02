@@ -22,8 +22,8 @@ package splitstree5.io.nexus;
 import jloda.util.Basic;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.filters.TaxaFilter;
-import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.*;
+import splitstree5.core.workflow.Connector;
 
 import java.io.*;
 
@@ -48,7 +48,7 @@ public class NexusFileWriter {
             write(writer, document.getWorkflow().getTopTaxaNode().getDataBlock(), document.getWorkflow().getTopDataNode().getDataBlock());
 
             // taxa filter and second block, if necessary:
-            AConnector<TaxaBlock, TaxaBlock> taxaFilter = new AConnector<>(document.getWorkflow().getTopTaxaNode().getDataBlock(), document.getWorkflow().getTopTaxaNode(), document.getWorkflow().getWorkingTaxaNode(), new splitstree5.core.algorithms.filters.TaxaFilter());
+            Connector<TaxaBlock, TaxaBlock> taxaFilter = new Connector<>(document.getWorkflow().getTopTaxaNode().getDataBlock(), document.getWorkflow().getTopTaxaNode(), document.getWorkflow().getWorkingTaxaNode(), new splitstree5.core.algorithms.filters.TaxaFilter());
             if (((TaxaFilter) taxaFilter.getAlgorithm()).getDisabledTaxa().size() > 0) { // some taxa have been filtered
                 writer.write("[NEED to report taxa filter]\n");
             }
@@ -66,7 +66,7 @@ public class NexusFileWriter {
      * @param dataBlock
      * @throws IOException
      */
-    public static void write(Writer w, TaxaBlock taxaBlock, ADataBlock dataBlock) throws IOException {
+    public static void write(Writer w, TaxaBlock taxaBlock, DataBlock dataBlock) throws IOException {
         if (dataBlock instanceof TaxaBlock) {
             TaxaNexusIO.write(w, (TaxaBlock) dataBlock);
         } else if (dataBlock instanceof AnalysisResultBlock) {
@@ -93,7 +93,7 @@ public class NexusFileWriter {
      * @param dataBlock
      * @return block as string
      */
-    public static String toString(TaxaBlock taxaBlock, ADataBlock dataBlock) {
+    public static String toString(TaxaBlock taxaBlock, DataBlock dataBlock) {
         final StringWriter w = new StringWriter();
         try {
             write(w, taxaBlock, dataBlock);

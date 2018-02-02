@@ -28,7 +28,7 @@ import splitstree5.core.algorithms.interfaces.IToAnalysisResults;
  * This block saves the result of an analysis in its info variable
  * Daniel Huson 12/2016
  */
-public class AnalysisResultBlock extends ADataBlock {
+public class AnalysisResultBlock extends DataBlock {
     @Override
     public void clear() {
         super.clear();

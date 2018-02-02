@@ -27,7 +27,7 @@ import splitstree5.core.algorithms.interfaces.IToDistances;
  * A distances block
  * Daniel Huson, 12/21/16.
  */
-public class DistancesBlock extends ADataBlock {
+public class DistancesBlock extends DataBlock {
     private double[][] distances;
     private double[][] variances;
 

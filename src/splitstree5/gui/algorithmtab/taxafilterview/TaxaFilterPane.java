@@ -30,9 +30,9 @@ import jloda.fx.ExtendedFXMLLoader;
 import jloda.util.Triplet;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.filters.TaxaFilter;
-import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
+import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.algorithmtab.AlgorithmPane;
 import splitstree5.gui.graphtab.base.Graph2DTab;
@@ -59,7 +59,7 @@ public class TaxaFilterPane extends AlgorithmPane {
 
     private final Map<Graph2DTab, Triplet<ListChangeListener<Taxon>, InvalidationListener, Boolean>> graphTab2SelectionListeners = new HashMap<>();
 
-    private AConnector connector;
+    private Connector connector;
 
     private boolean inSync = false;
 
@@ -121,7 +121,7 @@ public class TaxaFilterPane extends AlgorithmPane {
     }
 
     @Override
-    public void setConnector(AConnector connector) {
+    public void setConnector(Connector connector) {
         this.connector = connector;
     }
 

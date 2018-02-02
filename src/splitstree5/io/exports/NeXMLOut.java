@@ -8,13 +8,10 @@ import jloda.phylo.PhyloTree;
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
 import splitstree5.core.algorithms.interfaces.IFromTaxa;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
-import splitstree5.core.datablocks.ADataBlock;
 import splitstree5.core.datablocks.CharactersBlock;
+import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.io.exports.interfaces.IExportCharacters;
-import splitstree5.io.exports.interfaces.IExportTaxa;
-import splitstree5.io.exports.interfaces.IExportTrees;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -42,7 +39,7 @@ public class NeXMLOut implements IFromTaxa, /*IExportTaxa,*/ IFromChararacters, 
 
     private boolean exportSingleBlock = true;
 
-    public void export(Writer w, List<ADataBlock> blocks) throws IOException, XMLStreamException {
+    public void export(Writer w, List<DataBlock> blocks) throws IOException, XMLStreamException {
         XMLOutputFactory xMLOutputFactory = XMLOutputFactory.newInstance();
         XMLStreamWriter xmlWriter =
                 xMLOutputFactory.createXMLStreamWriter(w);
@@ -54,7 +51,7 @@ public class NeXMLOut implements IFromTaxa, /*IExportTaxa,*/ IFromChararacters, 
         xmlWriter.writeCharacters("\n\t");
 
         TaxaBlock topTaxa = null;
-        for (ADataBlock block : blocks) {
+        for (DataBlock block : blocks) {
             if (block instanceof TaxaBlock) {
                 System.err.println("Found a taxa block");
                 topTaxa = (TaxaBlock) block;

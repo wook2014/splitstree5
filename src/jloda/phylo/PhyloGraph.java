@@ -22,10 +22,11 @@ package jloda.phylo;
 /**
  * Phylogenetic graph
  *
- * @author Daniel Huson, 2005
+ * @author Daniel Huson, 2005, 2018
  */
 
 import jloda.graph.*;
+import jloda.util.EmptyIterator;
 
 import java.util.*;
 
@@ -34,7 +35,7 @@ public class PhyloGraph extends Graph {
     protected final EdgeDoubleArray edgeWeights;
     protected final EdgeArray<String> edgeLabels;
     protected final EdgeDoubleArray edgeConfidences;
-    protected final Vector<Node> taxon2node;
+    protected final Map<Integer, Node> taxon2node;
     protected final NodeArray<List<Integer>> node2taxa;
 
     public boolean edgeConfidencesSet = false; // use this to decide whether to output edge confidences
@@ -52,7 +53,7 @@ public class PhyloGraph extends Graph {
         edgeLabels = new EdgeArray<>(this);
         edgeConfidences = new EdgeDoubleArray(this);
 
-        taxon2node = new Vector<>();
+        taxon2node = new HashMap<>();
         node2taxa = new NodeArray<>(this);
 
         addGraphUpdateListener(new GraphUpdateAdapter() {
@@ -60,7 +61,7 @@ public class PhyloGraph extends Graph {
                 List<Integer> list = node2taxa.getValue(v);
                 if (list != null) {
                     for (Integer t : list) {
-                        taxon2node.set(t - 1, null);
+                        taxon2node.put(t, null);
                     }
                 }
             }
@@ -121,10 +122,10 @@ public class PhyloGraph extends Graph {
             edgeLabels.put(f, src.edgeLabels.getValue(e));
             edgeConfidences.put(f, src.edgeConfidences.getValue(e));
         }
-        for (int i = 0; i < src.taxon2node.size(); i++) {
-            Node v = src.getTaxon2Node(i + 1);
+        for (Integer t : taxon2node.keySet()) {
+            Node v = src.getTaxon2Node(t);
             if (v != null)
-                setTaxon2Node(i + 1, oldNode2NewNode.getValue(v));
+                addTaxon(oldNode2NewNode.getValue(v), t);
         }
         return oldNode2NewNode;
     }
@@ -259,12 +260,7 @@ public class PhyloGraph extends Graph {
      * @return the Node representing the taxon with id <code>taxId</code>.
      */
     public Node getTaxon2Node(int taxId) {
-        if (taxId > 0 && taxId <= taxon2node.size())
-            return taxon2node.get(taxId - 1);
-        else {
-            //  System.err.println("getTaxon2Node: no Node set for taxId " + taxId + " (taxa2Nodes.size(): " + taxon2node.size() + ")");
-            return null;
-        }
+        return taxon2node.get(taxId);
     }
 
     /**
@@ -276,66 +272,91 @@ public class PhyloGraph extends Graph {
         return taxon2node.size();
     }
 
-    /**
-     * set which Node represents the taxon with id <code>taxId</code>.
-     *
-     * @param taxId   the taxon-id.
-     * @param taxNode the Node representing the taxon with id <code>taxId</code>.
-     * @throws NotOwnerException
-     */
-    public void setTaxon2Node(int taxId, Node taxNode) {
-        this.checkOwner(taxNode);
-        if (taxId <= taxon2node.size()) {
-            taxon2node.setElementAt(taxNode, taxId - 1);
-        } else {
-            taxon2node.setSize(taxId);
-            taxon2node.setElementAt(taxNode, taxId - 1);
-        }
+    public boolean hasTaxa(Node v) {
+        return getNumberOfTaxa(v) > 0;
+    }
+
+    public int getNumberOfTaxa(Node v) {
+        final List list = node2taxa.get(v);
+        return list == null ? 0 : list.size();
     }
 
     /**
      * add a taxon to be represented by the specified node
      *
      * @param v     the node.
-     * @param taxon the id of the taxon to be added
+     * @param taxId the id of the taxon to be added
      */
-    public void setNode2Taxa(Node v, int taxon) {
-        getNode2Taxa(v).add(taxon);
-    }
-
-    /**
-     * Gets a list of all taxa represented by this node
-     *
-     * @param v the node
-     * @return list containing ids of taxa associated with that node, or null
-     */
-    public List<Integer> getNode2Taxa(Node v) {
-        if (node2taxa.getValue(v) == null)
-            node2taxa.setValue(v, new ArrayList<Integer>()); // lazy initialization // todo: remove this
-        return node2taxa.getValue(v);
-    }
-
-    /**
-     * Clears the taxon 2 node3 map
-     */
-    public void clearTaxon2Node() {
-        taxon2node.clear();
-    }
-
-    /**
-     * Clears the taxon 2 node3 map
-     */
-    public void clearNode2Taxa() {
-        node2taxa.clear();
+    public void addTaxon(Node v, int taxId) {
+        taxon2node.put(taxId, v);
+        List<Integer> list = node2taxa.get(v);
+        if (list == null) {
+            list = new ArrayList<>();
+            list.add(taxId);
+            node2taxa.put(v, list);
+        } else if (!list.contains(taxId))
+            list.add(taxId);
+        else
+            System.err.println("Already contained");
     }
 
     /**
      * Clears the taxa entries for the specified node
      *
-     * @param node the node
+     * @param v the node
      */
-    public void clearNode2Taxa(Node node) {
-        node2taxa.setValue(node, null);
+    public void clearTaxa(Node v) {
+        final List<Integer> list = node2taxa.get(v);
+        if (list != null) {
+            for (int t : list) {
+                if (taxon2node.get(t) == v)
+                    taxon2node.put(t, null);
+            }
+            node2taxa.put(v, null);
+        }
+    }
+
+    /**
+     * Iterates over all taxon ids of a node
+     *
+     * @param v the node
+     * @return taxa
+     */
+    public Iterable<Integer> getTaxa(Node v) {
+        return () -> {
+            if (node2taxa.get(v) == null)
+                return new EmptyIterator<>();
+            else
+                return node2taxa.get(v).iterator();
+        };
+    }
+
+    /**
+     * Clears all taxa
+     */
+    public void clearTaxa() {
+        node2taxa.clear();
+        taxon2node.clear();
+    }
+
+    /**
+     * removes a taxon from the graph, but leaves the corresponding node label, if any
+     *
+     * @param taxonId
+     */
+    public void removeTaxon(int taxonId) {
+        if (taxonId > 0 && taxonId < taxon2node.size()) {
+            taxon2node.put(taxonId, null);
+            for (Node v : nodes()) {
+                List<Integer> list = node2taxa.get(v);
+                if (list != null && list.contains(taxonId)) {
+                    list.remove((Integer) taxonId);
+                    if (list.size() == 0)
+                        node2taxa.put(v, null);
+                    return;
+                }
+            }
+        }
     }
 
     /**
@@ -348,23 +369,6 @@ public class PhyloGraph extends Graph {
         PhyloGraph result = new PhyloGraph();
         result.copy(this);
         return result;
-    }
-
-    /**
-     * removes a taxon from the graph, but leaves the corresponding node label, if any
-     *
-     * @param id
-     */
-    public void removeTaxon(int id) {
-        taxon2node.set(id - 1, null);
-        for (Node v : nodes()) {
-            List list = getNode2Taxa(v);
-            int which = list.indexOf(id);
-            if (which != -1) {
-                list.remove(which);
-                break; // should only be one mention of this taxon
-            }
-        }
     }
 
 

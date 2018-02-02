@@ -34,10 +34,10 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import jloda.util.ResourceManager;
 import splitstree5.core.Document;
-import splitstree5.core.connectors.AConnector;
-import splitstree5.core.datablocks.ADataNode;
-import splitstree5.core.workflow.ANode;
+import splitstree5.core.workflow.Connector;
+import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.UpdateState;
+import splitstree5.core.workflow.WorkflowNode;
 import splitstree5.dialogs.exporter.ExportDialog;
 
 
@@ -47,31 +47,31 @@ import splitstree5.dialogs.exporter.ExportDialog;
  */
 public class WorkflowTreeItem extends TreeItem<String> {
     private final Document document;
-    private final ANode aNode;
+    private final WorkflowNode workflowNode;
     private BooleanProperty disable = new SimpleBooleanProperty();
     private final ChangeListener<UpdateState> stateChangeListener;
 
     /**
      * constructor
      *
-     * @param aNode
+     * @param workflowNode
      */
-    public WorkflowTreeItem(Document document, ANode aNode) {
+    public WorkflowTreeItem(Document document, WorkflowNode workflowNode) {
         super("");
         this.document = document;
-        this.aNode = aNode;
+        this.workflowNode = workflowNode;
 
         final Label label = new Label();
         setGraphic(label);
 
-        if (aNode != null) {
-            label.textProperty().bind(aNode.nameProperty());
+        if (workflowNode != null) {
+            label.textProperty().bind(workflowNode.nameProperty());
             final Tooltip tooltip = new Tooltip();
             final RotateTransition rotateTransition;
 
-            if (aNode instanceof AConnector) {
-                disable.bind(((AConnector) aNode).applicableProperty().not().and(aNode.stateProperty().isEqualTo(UpdateState.VALID).not()).or(new ReadOnlyBooleanWrapper(aNode.getName().endsWith("TopFilter"))));
-                final Image icon = ResourceManager.getIcon(aNode.getName().endsWith("Filter") ? "Filter16.gif" : "Algorithm16.gif");
+            if (workflowNode instanceof Connector) {
+                disable.bind(((Connector) workflowNode).applicableProperty().not().and(workflowNode.stateProperty().isEqualTo(UpdateState.VALID).not()).or(new ReadOnlyBooleanWrapper(workflowNode.getName().endsWith("TopFilter"))));
+                final Image icon = ResourceManager.getIcon(workflowNode.getName().endsWith("Filter") ? "Filter16.gif" : "Algorithm16.gif");
                 if (icon != null) {
                     final ImageView imageView = new ImageView(icon);
                     rotateTransition = new RotateTransition(Duration.millis(1000), imageView);
@@ -82,18 +82,18 @@ public class WorkflowTreeItem extends TreeItem<String> {
                 } else
                     rotateTransition = null;
             } else { // a data node
-                disable.bind(aNode.stateProperty().isEqualTo(UpdateState.VALID).not());
-                Image icon = ResourceManager.getIcon(aNode.getName().replaceAll("^Orig", "").replaceAll(".*]", "") + "16.gif");
+                disable.bind(workflowNode.stateProperty().isEqualTo(UpdateState.VALID).not());
+                Image icon = ResourceManager.getIcon(workflowNode.getName().replaceAll("^Orig", "").replaceAll(".*]", "") + "16.gif");
                 if (icon != null) {
                     label.setGraphic(new ImageView(icon));
                 }
                 rotateTransition = null;
             }
-            tooltip.textProperty().bind(aNode.shortDescriptionProperty());
+            tooltip.textProperty().bind(workflowNode.shortDescriptionProperty());
             Tooltip.install(getGraphic(), tooltip);
 
             stateChangeListener = (c, o, n) -> {
-                // System.err.println("State change: " + aNode.getName() + ": " + n);
+                // System.err.println("State change: " + workflowNode.getName() + ": " + n);
                 switch (n) {
                     case COMPUTING:
                         label.setTextFill(Color.BLACK);
@@ -118,7 +118,7 @@ public class WorkflowTreeItem extends TreeItem<String> {
                         }
                 }
             };
-            aNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
+            workflowNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
             {
                 final MenuItem show = new MenuItem("Open...");
                 show.setOnAction((x) -> {
@@ -127,10 +127,10 @@ public class WorkflowTreeItem extends TreeItem<String> {
                 show.disableProperty().bind(disable);
                 MenuItem export = new MenuItem("Export...");
                 export.setOnAction((x) -> {
-                    if (aNode instanceof ADataNode)
-                        ExportDialog.show(document.getMainWindow(), document.getWorkflow().getWorkingTaxaBlock(), ((ADataNode) aNode).getDataBlock());
+                    if (workflowNode instanceof DataNode)
+                        ExportDialog.show(document.getMainWindow(), document.getWorkflow().getWorkingTaxaBlock(), ((DataNode) workflowNode).getDataBlock());
                 });
-                export.setDisable(!(aNode instanceof ADataNode));
+                export.setDisable(!(workflowNode instanceof DataNode));
                 label.setContextMenu(new ContextMenu(show, new SeparatorMenuItem(), export));
             }
             label.setOnMouseClicked((e) -> {
@@ -161,10 +161,10 @@ public class WorkflowTreeItem extends TreeItem<String> {
      *
      */
     public void showView() {
-        if (aNode instanceof ADataNode)
-            document.getMainWindow().showDataView((ADataNode) aNode);
+        if (workflowNode instanceof DataNode)
+            document.getMainWindow().showDataView((DataNode) workflowNode);
         else {
-            document.getMainWindow().showAlgorithmView((AConnector) aNode);
+            document.getMainWindow().showAlgorithmView((Connector) workflowNode);
         }
     }
 }

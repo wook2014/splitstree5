@@ -45,7 +45,6 @@ import javafx.beans.value.WeakChangeListener;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
 import jloda.graph.*;
-import jloda.phylo.PhyloGraph;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
 import jloda.util.ProgressListener;
@@ -106,6 +105,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
 
         final TreeViewTab view = child.getTab();
         view.setNodeLabel2Style(nodeLabel2Style);
+        view.setDataNode(child.getDataNode());
 
         Platform.runLater(() -> {
             child.getTab().setName(child.getName());
@@ -148,7 +148,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                             computeNodeLocationsForRadialRec(root, new Point2D(0, 0), edgeLengths, edge2Angle, node2point);
                         else
                             computeNodeLocationsForCircular(root, edgeLengths, edge2Angle, node2point);
-                        scaleToFitTarget(getOptionLayout(), view.getTargetDimensions(), tree, node2point);
+                        scaleToFitTarget(getOptionLayout(), view.getTargetDimensions(), node2point);
                         computeEdgePointsForCircularRec(root, 0, edge2Angle, node2point, edge2controlPoints);
 
                         break;
@@ -158,13 +158,13 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                         if (getOptionEdgeShape() == EdgeView2D.EdgeShape.Straight) {
                             setOptionEdgeLengths(EdgeLengths.Cladogram);
                             computeEmbeddingForTriangularLayoutRec(root, null, 0, 0, edgeLengths, node2point);
-                            scaleToFitTarget(getOptionLayout(), view.getTargetDimensions(), tree, node2point);
+                            scaleToFitTarget(getOptionLayout(), view.getTargetDimensions(), node2point);
                             computeEdgePointsForRectilinearRec(root, node2point, edge2controlPoints);
                         } else {
                             final NodeFloatArray nodeHeights = new NodeFloatArray(tree); // angle of edge
                             setNodeHeightsRec(root, 0, nodeHeights);
                             computeNodeLocationsForRectilinearRec(root, 0, edgeLengths, nodeHeights, node2point);
-                            scaleToFitTarget(getOptionLayout(), view.getTargetDimensions(), tree, node2point);
+                            scaleToFitTarget(getOptionLayout(), view.getTargetDimensions(), node2point);
                             computeEdgePointsForRectilinearRec(root, node2point, edge2controlPoints);
                         }
                         break;
@@ -232,13 +232,11 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
 
     /**
      * scale all node coordinates so that they fit into the current scene
-     *
-     * @param optionLayout
+     *  @param optionLayout
      * @param target
-     * @param phyloGraph
      * @param node2point
      */
-    public static void scaleToFitTarget(GraphLayout optionLayout, Dimension2D target, PhyloGraph phyloGraph, NodeArray<Point2D> node2point) {
+    public static void scaleToFitTarget(GraphLayout optionLayout, Dimension2D target, NodeArray<Point2D> node2point) {
         // scale to target dimensions:
         final float factorX;
         final float factorY;
@@ -247,8 +245,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
         {
             float minX = Float.MAX_VALUE;
             float minY = Float.MAX_VALUE;
-            for (Node v : phyloGraph.nodes()) {
-                final Point2D point = node2point.getValue(v);
+            for (Point2D point : node2point.values()) {
                 if (point != null) {
                     minX = Math.min(minX, (float) point.getX());
                     maxX = Math.max(maxX, (float) point.getX());
@@ -266,7 +263,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
         }
 
         if (factorX != 1 || factorY != 1) {
-            for (Node v : phyloGraph.nodes()) {
+            for (Node v : node2point.keys()) {
                 final Point2D point = node2point.getValue(v);
                 if (point != null)
                     node2point.setValue(v, new Point2D(factorX * point.getX(), factorY * point.getY()));

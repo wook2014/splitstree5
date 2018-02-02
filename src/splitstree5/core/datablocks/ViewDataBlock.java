@@ -17,12 +17,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.algorithms.interfaces;
+package splitstree5.core.datablocks;
+
+import splitstree5.gui.IHasTab;
+import splitstree5.gui.ViewerTab;
 
 /**
- * from splits network view interface.
- * This is used to identify algorithms at runtime
- * Daniel Huson, 1.2018
+ * datablock that supports a view
+ * Daniel Huson, 2.2018
  */
-public interface IFromSplitsNetworkView extends IFrom {
+public abstract class ViewDataBlock extends DataBlock implements IHasTab {
+    abstract public ViewerTab getTab();
 }

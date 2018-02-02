@@ -17,12 +17,17 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.algorithms.interfaces;
+package splitstree5.core.workflow;
 
 /**
- * from splits network view interface.
- * This is used to identify algorithms at runtime
- * Daniel Huson, 1.2018
+ * Has an associated data node
+ * Daniel Huson, 2.2018
  */
-public interface IFromSplitsNetworkView extends IFrom {
+public interface IHasDataNode {
+    /**
+     * gets the data node, if set
+     *
+     * @return data node
+     */
+    DataNode getDataNode();
 }

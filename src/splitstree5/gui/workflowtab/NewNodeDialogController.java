@@ -62,12 +62,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.datablocks.ADataBlock;
+import splitstree5.core.datablocks.DataBlock;
 
 public class NewNodeDialogController {
 
     @FXML
-    private ComboBox<ADataBlock> targetDataComboBox;
+    private ComboBox<DataBlock> targetDataComboBox;
 
     @FXML
     private ComboBox<Algorithm> algorithmComboBox;
@@ -81,7 +81,7 @@ public class NewNodeDialogController {
     @FXML
     private Label sourceDataLabel;
 
-    public ComboBox<ADataBlock> getTargetDataComboBox() {
+    public ComboBox<DataBlock> getTargetDataComboBox() {
         return targetDataComboBox;
     }
 

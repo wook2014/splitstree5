@@ -897,7 +897,7 @@ public class PhyloTree extends PhyloGraph {
      */
     public void setRoot(Edge e, double weightToSource, double weightToTarget, EdgeArray<String> edgeLabels) {
         final Node root = getRoot();
-        if (root != null && root.getDegree() == 2 && (getNode2Taxa(root) == null || getNode2Taxa(root).size() == 0)) {
+        if (root != null && root.getDegree() == 2 && (getTaxa(root) == null || hasTaxa(root))) {
             if (root == e.getSource()) {
                 Edge f = (root.getFirstAdjacentEdge() != e ? root.getFirstAdjacentEdge() : root.getLastAdjacentEdge());
                 setWeight(e, weightToSource);

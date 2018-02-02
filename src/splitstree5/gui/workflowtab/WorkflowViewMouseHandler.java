@@ -64,8 +64,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import jloda.fx.ASelectionModel;
 import jloda.util.Basic;
-import splitstree5.core.datablocks.ADataNode;
-import splitstree5.core.workflow.ANode;
+import splitstree5.core.workflow.DataNode;
+import splitstree5.core.workflow.WorkflowNode;
 import splitstree5.undo.UndoableChangeList;
 import splitstree5.undo.UndoableChangePropertyPair;
 
@@ -81,7 +81,7 @@ public class WorkflowViewMouseHandler {
     private double mouseDownX;
     private double mouseDownY;
 
-    private final Map<ANode, UndoableChangePropertyPair> node2change = new HashMap<>();
+    private final Map<WorkflowNode, UndoableChangePropertyPair> node2change = new HashMap<>();
 
     private boolean shiftDown;
     private boolean controlDown;
@@ -124,7 +124,7 @@ public class WorkflowViewMouseHandler {
 
                 node2change.clear();
 
-                if (controlDown && !shiftDown && nodeView.getANode() instanceof ADataNode) {
+                if (controlDown && !shiftDown && nodeView.getANode() instanceof DataNode) {
                     line.setStartX(mouseDownX);
                     line.setStartY(mouseDownY);
                     line.setEndX(mouseDownX);
@@ -139,7 +139,7 @@ public class WorkflowViewMouseHandler {
                 if (!controlDown) {
                     dragged = true;
 
-                    final ASelectionModel<ANode> selectionModel = workflowView.getWorkflow().getNodeSelectionModel();
+                    final ASelectionModel<WorkflowNode> selectionModel = workflowView.getWorkflow().getNodeSelectionModel();
 
                     if (!selectionModel.getSelectedItems().contains(nodeView.getANode())) {
                         if (!e.isShiftDown())
@@ -150,7 +150,7 @@ public class WorkflowViewMouseHandler {
                     final boolean setupUndo = (node2change.size() == 0);
 
                     final Point2D point = group.screenToLocal(e.getScreenX(), e.getScreenY());
-                    for (ANode node : selectionModel.getSelectedItems()) {
+                    for (WorkflowNode node : selectionModel.getSelectedItems()) {
                         final WorkflowNodeView selectedNodeView = workflowView.getNodeView(node);
                         if (selectedNodeView != null) {
                             if (setupUndo) {
@@ -166,7 +166,7 @@ public class WorkflowViewMouseHandler {
                     mouseDownY = point.getY();
 
                 }
-                if (controlDown && nodeView.getANode() instanceof ADataNode) {
+                if (controlDown && nodeView.getANode() instanceof DataNode) {
                     final Point2D point = group.screenToLocal(e.getScreenX(), e.getScreenY());
                     line.setEndX(point.getX());
                     line.setEndY(point.getY());
@@ -178,8 +178,8 @@ public class WorkflowViewMouseHandler {
                     if (nodeView == lock) {
                         if (dragged) {
                             if (!controlDown) {
-                                final ASelectionModel<ANode> selectionModel = workflowView.getWorkflow().getNodeSelectionModel();
-                                for (ANode node : selectionModel.getSelectedItems()) {
+                                final ASelectionModel<WorkflowNode> selectionModel = workflowView.getWorkflow().getNodeSelectionModel();
+                                for (WorkflowNode node : selectionModel.getSelectedItems()) {
                                     final WorkflowNodeView selectedNodeView = workflowView.getNodeView(node);
                                     UndoableChangePropertyPair pair = node2change.get(node);
                                     if (pair != null) {
@@ -190,7 +190,7 @@ public class WorkflowViewMouseHandler {
                                 }
                             }
                         } else {
-                            final ASelectionModel<ANode> selectionModel = workflowView.getWorkflow().getNodeSelectionModel();
+                            final ASelectionModel<WorkflowNode> selectionModel = workflowView.getWorkflow().getNodeSelectionModel();
                             if (!e.isShiftDown()) {
                                 selectionModel.clearSelection();
                             }
@@ -199,7 +199,7 @@ public class WorkflowViewMouseHandler {
                             } else
                                 selectionModel.select(nodeView.getANode());
 
-                            if (controlDown && nodeView.getANode() instanceof ADataNode) {
+                            if (controlDown && nodeView.getANode() instanceof DataNode) {
                                 try {
                                     new NewNodeDialog(workflowView, nodeView, e);
                                 } catch (IOException ex) {

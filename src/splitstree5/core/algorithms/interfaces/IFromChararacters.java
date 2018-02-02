@@ -24,5 +24,5 @@ package splitstree5.core.algorithms.interfaces;
  * This is used to identify algorithms at runtime
  * Daniel Huson 1/31/17.
  */
-public interface IFromChararacters {
+public interface IFromChararacters extends IFrom {
 }

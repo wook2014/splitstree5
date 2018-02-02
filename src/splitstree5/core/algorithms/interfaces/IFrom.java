@@ -20,9 +20,8 @@
 package splitstree5.core.algorithms.interfaces;
 
 /**
- * from splits network view interface.
- * This is used to identify algorithms at runtime
- * Daniel Huson, 1.2018
+ * from marker interface
+ * Daniel Huson, 2.2018
  */
-public interface IFromSplitsNetworkView extends IFrom {
+public interface IFrom {
 }

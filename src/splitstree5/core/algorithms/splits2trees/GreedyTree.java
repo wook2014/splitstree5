@@ -96,7 +96,7 @@ public class GreedyTree extends Algorithm<SplitsBlock, TreesBlock> implements IF
             node2taxa.put(u, cluster);
         }
 
-        tree.setNode2Taxa(tree.getRoot(), 1);
+        tree.addTaxon(tree.getRoot(), 1);
         for (int t = allTaxa.nextSetBit(2); t != -1; t = allTaxa.nextSetBit(t + 1)) {
             Node v = tree.getRoot();
             while (node2taxa.get(v).get(t)) {
@@ -112,7 +112,7 @@ public class GreedyTree extends Algorithm<SplitsBlock, TreesBlock> implements IF
                 if (!isBelow)
                     break;
             }
-            tree.setNode2Taxa(v, t);
+            tree.addTaxon(v, t);
             String label = tree.getLabel(v);
             if (label == null)
                 tree.setLabel(v, "" + t);

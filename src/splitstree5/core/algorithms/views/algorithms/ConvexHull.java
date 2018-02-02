@@ -19,7 +19,6 @@
 
 package splitstree5.core.algorithms.views.algorithms;
 
-import javafx.geometry.Point2D;
 import jloda.graph.Edge;
 import jloda.graph.EdgeIntegerArray;
 import jloda.graph.Node;
@@ -29,7 +28,6 @@ import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.gui.graphtab.base.GeometryUtils;
 
 import java.util.*;
 
@@ -40,31 +38,25 @@ import java.util.*;
 public class ConvexHull {
     /**
      * apply the algorithm to build a new graph
-     *
      * @param progress
-     * @param useWeights
      * @param taxa
      * @param splits
      * @param splitsGraph
-     * @param node2point
      */
-    public static void apply(ProgressListener progress, boolean useWeights, TaxaBlock taxa, SplitsBlock splits, SplitsGraph splitsGraph, NodeArray<Point2D> node2point) throws CanceledException {
+    public static void apply(ProgressListener progress, TaxaBlock taxa, SplitsBlock splits, SplitsGraph splitsGraph) throws CanceledException {
         splitsGraph.clear();
-        apply(progress, useWeights, taxa, splits, splitsGraph, node2point, new BitSet());
+        apply(progress, taxa, splits, splitsGraph, new BitSet());
     }
 
     /**
      * assume that some splits have already been processed and applies convex hull algorithm to remaining splits
-     *
      * @param progress
-     * @param useWeights
      * @param taxa
      * @param splits
      * @param graph
-     * @param node2point
      * @param usedSplits
      */
-    public static void apply(ProgressListener progress, boolean useWeights, TaxaBlock taxa, SplitsBlock splits, SplitsGraph graph, NodeArray<Point2D> node2point, BitSet usedSplits) throws CanceledException {
+    public static void apply(ProgressListener progress, TaxaBlock taxa, SplitsBlock splits, SplitsGraph graph, BitSet usedSplits) throws CanceledException {
 
         if (usedSplits.cardinality() == splits.getNsplits())
             return; // all nodes have been processed
@@ -76,14 +68,21 @@ public class ConvexHull {
 
         if (graph.getNumberOfNodes() == 0) {
             Node startNode = graph.newNode();
-            graph.setTaxon2Node(1, startNode);
+            graph.addTaxon(startNode, 1);
             //graph.setLabel(startNode, taxa.getLabel(1));
-            graph.setNode2Taxa(startNode, 1);
 
             for (int i = 2; i <= taxa.getNtax(); i++) {
-                graph.setTaxon2Node(i, startNode);
                 //graph.setLabel(startNode, (graph.getLabel(startNode)+", "+taxa.getLabel(i)));
-                graph.setNode2Taxa(startNode, i);
+                graph.addTaxon(startNode, i);
+            }
+        } else {
+            for (int t = 1; t <= taxa.getNtax(); t++) {
+                if (graph.getTaxon2Node(t) == null)
+                    System.err.println("Internal error: incomplete taxa");
+            }
+            for (Edge e : graph.edges()) {
+                if (graph.getSplit(e) == 0)
+                    System.err.println("Internal error: edge without split: " + e);
             }
         }
 
@@ -94,10 +93,9 @@ public class ConvexHull {
         progress.setProgress(0);
 
         for (int z = 0; z < order.length; z++) {
+            progress.incrementProgress();
 
-            progress.setProgress(z);
-
-            BitSet currentSplitPartA = splits.getA(order[z] - 1);
+            final BitSet currentSplitPartA = splits.getA(order[z] - 1);
 
             //is 0, if the node is member of convex hull for the "0"-side of the current split,
             //is 1, if the node is member of convex hull for the "1"-side of the current split,
@@ -113,7 +111,6 @@ public class ConvexHull {
             //find splits, where taxa of side "0" of current split are divided
             for (int i = 1; i <= splits.getNsplits(); i++) {
                 if (!usedSplits.get(i)) continue;    //only splits already used must be regarded
-
                 if (splits.intersect2(order[z] - 1, false, i - 1, true).cardinality() != 0 &&
                         splits.intersect2(order[z] - 1, false, i - 1, false).cardinality() != 0)
                     splits0.set(i);
@@ -145,13 +142,13 @@ public class ConvexHull {
                 if (start0 != null && start1 != null) break;
             }
 
-            hulls.set(start0, 0);
+            hulls.put(start0, 0);
 
             if (start0 == start1) {
-                hulls.set(start1, 2);
+                hulls.put(start1, 2);
                 intersectionNodes.add(start1);
             } else
-                hulls.set(start1, 1);
+                hulls.put(start1, 1);
 
             //construct the remainder of convex hull for split-side "0" by traversing all allowed (and reachable) edges (i.e. all edges in splits0)
 
@@ -166,26 +163,25 @@ public class ConvexHull {
             convexHullPath(graph, start1, visited, hulls, splits1, intersectionNodes, 1);
 
             //first duplicate the intersection nodes, set an edge between each node and its duplicate and label new edges and nodes
-            for (Object intersectionNode1 : intersectionNodes) {
+            for (Node v : intersectionNodes) {
+                final Node v1 = graph.newNode();
+                final Edge e = graph.newEdge(v1, v);
 
-                Node v = (Node) intersectionNode1;
-                Node v1 = graph.newNode();
-
-                Edge e = graph.newEdge(v1, v);
                 graph.setSplit(e, order[z]);
                 graph.setWeight(e, splits.getWeight(order[z] - 1));
                 graph.setLabel(e, "" + order[z]);
 
-                final List<Integer> aTaxa = graph.getNode2Taxa(v);
 
-                graph.clearNode2Taxa(v);
-
-                for (Integer taxon : aTaxa) {
+                final List<Integer> vTaxa = new ArrayList<>();
+                for (Integer t : graph.getTaxa(v)) {
+                    vTaxa.add(t);
+                }
+                graph.clearTaxa(v);
+                for (Integer taxon : vTaxa) {
                     if (currentSplitPartA.get(taxon)) {
-                        graph.setTaxon2Node(taxon, v1);
-                        graph.setNode2Taxa(v1, taxon);
+                        graph.addTaxon(v1, taxon);
                     } else {
-                        graph.setNode2Taxa(v, taxon);
+                        graph.addTaxon(v, taxon);
                     }
                 }
 
@@ -248,31 +244,15 @@ public class ConvexHull {
             usedSplits.set(order[z], true);
         }
 
-
         progress.setProgress(-1);
         for (Node n : graph.nodes()) {
-
-            graph.setLabel(n, null);
-            List list = graph.getNode2Taxa(n);
-            if (list.size() != 0) {
-                String label = taxa.getLabel((Integer) list.get(0));
-                for (int i = 1; i < list.size(); i++) {
-                    int taxon = (Integer) list.get(i);
-                    label += (", " + taxa.getLabel(taxon));
-                }
-                graph.setLabel(n, label);
+            final StringBuilder buf = new StringBuilder();
+            for (Integer t : graph.getTaxa(n)) {
+                if (buf.length() > 0)
+                    buf.append(", ");
+                buf.append(taxa.getLabel(t));
             }
-        }
-
-        int[] cyclicOrdering = splits.getCycle();
-
-        final NodeArray coords = embed(graph, cyclicOrdering, useWeights, true);
-
-        int maxNumberOfTaxaOnNode = 0;
-        for (Node v : graph.nodes()) {
-            node2point.put(v, (Point2D) coords.get(v));
-            if (graph.getNode2Taxa(v) != null && graph.getNode2Taxa(v).size() > maxNumberOfTaxaOnNode)
-                maxNumberOfTaxaOnNode = graph.getNode2Taxa(v).size();
+            graph.setLabel(n, buf.toString());
         }
 
         final BitSet seen = new BitSet();
@@ -312,10 +292,10 @@ public class ConvexHull {
                     visited.set(f, 1);
 
                     if (hulls.get(w) == null) {
-                        hulls.set(w, side);
+                        hulls.put(w, side);
                         todo.push(w);
                     } else if (hulls.getValue(w) == Math.abs(side - 1)) {
-                        hulls.set(w, 2);
+                        hulls.put(w, 2);
                         intersectionNodes.add(w);
                         todo.push(w);
                     }
@@ -351,325 +331,5 @@ public class ConvexHull {
             order[i++] = id;
         }
         return order;
-    }
-
-    /**
-     * Embeds the graph using the given cyclic ordering.
-     *
-     * @param ordering   the cyclic ordering.
-     * @param useWeights scale edges by their weights?
-     * @param noise      alter split-angles randomly by a small amount to prevent occlusion of edges.
-     * @return node array of coordinates
-     */
-    public static NodeArray embed(SplitsGraph graph, int[] ordering, boolean useWeights, boolean noise) {
-        final int ntax = ordering.length - 1;
-
-        final Node[] orderedNodes = new Node[ntax];
-
-        for (int i = 1; i <= ntax; i++) {
-            orderedNodes[ordering[i] - 1] = graph.getTaxon2Node(i);
-        }
-
-        // get splits
-        HashMap<Integer, ArrayList<Node>> splits = getSplits(graph, orderedNodes);
-        for (Integer key : splits.keySet()) sortSplit(orderedNodes, splits.get(key));
-
-        /* get unit-vectors in split-direction */
-        HashMap<Integer, Double> dirs = getDirectionVectors(graph, splits, orderedNodes, noise);
-
-        /* compute coords */
-        return computeCoords(graph, dirs, orderedNodes, useWeights);
-    }
-
-    /**
-     * get splits:
-     * depth search / cross each split just once
-     * add taxa to currently crossed splits.
-     *
-     * @param ordering the cyclic ordering
-     */
-    private static HashMap<Integer, ArrayList<Node>> getSplits(SplitsGraph graph, Node[] ordering) {
-
-        /* the splits */
-        HashMap<Integer, ArrayList<Node>> splits = new HashMap<>();
-
-        /* stack for nodes which still have to be visited */
-        Stack<Node> toVisit = new Stack<>();
-        /* Boolean-stack to determine whether current Node is backtracking-node */
-        Stack<Boolean> backtrack = new Stack<>();
-        /* Edge-stack to determine enter-edge */
-        Stack<Edge> edges = new Stack<>();
-        /* collect already seen nodes */
-        ArrayList<Node> seen = new ArrayList<>();
-        /* collect currently crossed split-ids */
-        ArrayList<Integer> crossedSplits = new ArrayList<>();
-
-        // init..
-        if (ordering[0] == null)
-            System.err.println("null");
-        toVisit.push(ordering[0]);
-        backtrack.push(false);
-        Edge enter = null;
-
-        // start traversal
-        while (!toVisit.empty()) {
-            // current Node
-            Node u = toVisit.pop();
-            // enter-edge
-            if (!edges.isEmpty()) enter = edges.pop();
-            // are we backtracking?
-            boolean backtracking = backtrack.pop();
-
-            /* first visit (not backtracking) */
-            if (!backtracking) {   //  && !seen.contains(u)
-                if (enter != null) {
-                    // current split-id
-                    Integer cId = graph.getSplit(enter);
-                    crossedSplits.add(cId);
-                    if (!splits.containsKey(cId))
-                        splits.put(cId, new ArrayList<Node>());
-                }
-                seen.add(u);
-
-                /* if the current Node is a taxa-node, add it to currently crossed splits */
-                if (graph.getNode2Taxa(u).size() != 0) {
-                    for (Integer crossedSplit : crossedSplits) {
-                        ArrayList<Node> s = splits.get(crossedSplit);
-                        s.add(u);
-                    }
-                }
-
-                /*
-                 * push adjacent nodes (if not already seen)
-                 * and current node (backtrack)
-                 */
-                for (Edge e : u.adjacentEdges()) {
-                    Integer sId = graph.getSplit(e);
-                    Node v = graph.getOpposite(u, e);
-                    if (!seen.contains(v) && !crossedSplits.contains(sId)) {
-                        toVisit.push(u);
-                        backtrack.push(true);
-                        toVisit.push(v);
-                        backtrack.push(false);
-                        // push edge twice (visit & backtrack)
-                        edges.push(e);
-                        edges.push(e);
-                    }
-                }
-
-                /* backtrack */
-            } else {
-                // backtracking -> remove crossed split
-                if (enter != null) {
-                    Integer cId = graph.getSplit(enter);
-                    crossedSplits.remove(cId);
-                }
-
-            }
-        } // end while
-        return splits;
-    }
-
-    /**
-     * sort a split according to the cyclic ordering.
-     *
-     * @param ordering the cyclic ordering
-     * @param split    the split which has to be sorted
-     */
-    private static void sortSplit(Node[] ordering, ArrayList<Node> split) {
-
-        // convert Node[] to List in order to use List.indexOf(..)
-        List<Node> orderingList = Arrays.asList(ordering);
-        ArrayList<Node> t1 = new ArrayList<>(split.size());
-        ArrayList<Node> t2 = new ArrayList<>(split.size());
-        for (int i = 0; i < split.size(); i++) {
-            int index = orderingList.indexOf(split.get(i)) - 1;
-            if (index == -1) index = ordering.length - 1;
-            // split doesn't contain previous taxa in the cyclic ordering
-            // => the following (split.cardinality) taxa in the cyclic ordering
-            //      give the sorted split.
-            if (!(split.contains(ordering[index]))) {
-                int j = 1;
-                // get both sides of the split
-                for (; j < split.size() + 1; j++) {
-                    t1.add(ordering[(index + j) % ordering.length]);
-                }
-                for (int k = j; k < j + (ordering.length - split.size()); k++) {
-                    t2.add(ordering[(index + k) % ordering.length]);
-                }
-                break;
-            }
-        }
-        // chose the split that doesn't contain the first taxon in the
-        // cyclic ordering, because coordinates are computed starting there.
-        split.clear();
-        if (t2.contains(ordering[0]))
-            split.addAll(t1);
-        else
-            split.addAll(t2);
-    }
-
-
-    /**
-     * determine the direction vectors for each split.
-     * angle: ((leftSplitBoundary + rightSplitBoundary)/amountOfTaxa)*Pi
-     *
-     * @param splits   the sorted splits
-     * @param ordering the cyclic ordering
-     * @param noise    alter split-angles randomly by a small amount to prevent occlusion of edges
-     * @return direction vectors for each split
-     */
-    private static HashMap<Integer, Double> getDirectionVectors(SplitsGraph graph, HashMap<Integer, ArrayList<Node>> splits, Node[] ordering, boolean noise) {
-        final Random rand = new Random(666);    // add noise, if necessary
-        final HashMap<Integer, Double> dirs = new HashMap<>(splits.size());
-        final List<Node> orderingList = Arrays.asList(ordering);
-
-        Edge currentEdge = graph.getFirstEdge();
-        int currentSplit;
-
-        for (int j = 0; j < graph.getNumberOfEdges(); j++) {
-            //We do a loop on the edges to keep the angles of the splits which have already been computed
-            double angle;
-            currentSplit = graph.getSplit(currentEdge);
-            Integer splitId = currentSplit;
-            if (!dirs.containsKey(splitId)) {
-                if (graph.getAngle(currentEdge) > 0.000000001) {
-                    //This is an old edge, we attach its angle to its split
-                    angle = graph.getAngle(currentEdge);
-                    dirs.put(currentSplit, angle);
-                } else {
-                    //This is a new edge, so we give it an angle according to the equal angle algorithm
-                    final ArrayList<Node> split = splits.get(splitId);
-                    int xp = 0;
-                    int xq = 0;
-
-                    if (split.size() > 0) {
-                        xp = orderingList.indexOf(split.get(0));
-                        xq = orderingList.indexOf(split.get(split.size() - 1));
-                    }
-
-                    angle = 180 + ((((double) xp + (double) xq) / (double) ordering.length) * 180);
-
-                    if (noise && split.size() > 1) {
-                        angle += 3 * rand.nextFloat();
-                    }
-                    dirs.put(splitId, angle);
-                }
-            } else {
-                angle = dirs.get(currentSplit);
-            }
-
-            graph.setAngle(currentEdge, angle);
-            currentEdge = currentEdge.getNext();
-        }
-        return dirs;
-    }
-
-    /**
-     * compute coords for each node.
-     * depth first traversal / cross each split just once before backtracking
-     *
-     * @param dirs       the direction vectors for each split
-     * @param ordering   the cyclic ordering
-     * @param useWeights scale edges by edge weights?
-     * @return node array of coordinates
-     */
-    public static NodeArray computeCoords(SplitsGraph graph, HashMap<Integer, Double> dirs, Node[] ordering, boolean useWeights) {
-        NodeArray<Point2D> coords = new NodeArray<>(graph);
-
-        /* stack for nodes which still have to be visited */
-        Stack<Node> toVisit = new Stack<>();
-        /* Boolean-stack to determine wether current Node is backtracking-node */
-        Stack<Boolean> backtrack = new Stack<>();
-        /* Edge-stack to determine enter-edge */
-        Stack<Edge> edges = new Stack<>();
-        /* collect already seen nodes */
-        ArrayList<Node> seen = new ArrayList<>();
-        /* collect already computed nodes to check equal locations */
-        HashMap<Node, Point2D> locations = new HashMap<>();
-        /* collect currently crossed split-ids */
-        ArrayList<Integer> crossedSplits = new ArrayList<>();
-        /* current node-location */
-        Point2D currentPoint = new Point2D(0, 0);
-
-        // init..
-        toVisit.push(ordering[0]);
-        backtrack.push(false);
-        Edge enter = null;
-
-        // start traversal
-        while (!toVisit.empty()) {
-            // current Node
-            Node u = toVisit.pop();
-            // enter-edge
-            if (!edges.isEmpty()) enter = edges.pop();
-
-            // are we backtracking?
-            boolean backtracking = backtrack.pop();
-
-            /* visit */
-            if (!backtracking) {
-                if (enter != null) {
-                    // current split-id
-                    Integer cId = graph.getSplit(enter);
-                    double w = (useWeights ? graph.getWeight(enter) : 1.0);
-                    crossedSplits.add(cId);
-
-                    double angle = dirs.get(cId);
-                    currentPoint = GeometryUtils.translateByAngle(currentPoint, angle, -w);
-                }
-
-                // set location, check equal locations
-                Point2D loc = new Point2D(currentPoint.getX(), currentPoint.getY());
-                // equal locations: append labels
-                if (locations.containsValue(loc)) {
-                    Node twinNode;
-                    String tLabel = graph.getLabel(u);
-
-                    for (Node v : locations.keySet()) {
-                        if (locations.get(v).equals(loc)) {
-                            twinNode = v;
-                            if (graph.getLabel(twinNode) != null)
-                                tLabel = (tLabel != null) ? tLabel + ", " + graph.getLabel(twinNode) : graph.getLabel(twinNode);
-                            graph.setLabel(twinNode, null);
-                            graph.setLabel(u, tLabel);
-                        }
-                    }
-                }
-                coords.set(u, loc);
-                locations.put(u, loc);
-
-                seen.add(u);
-
-                /*
-                 * push adjacent nodes (if not already seen)
-                 * and current node (backtrack)
-                 */
-                for (Edge e : u.adjacentEdges()) {
-                    Integer sId = graph.getSplit(e);
-                    Node v = graph.getOpposite(u, e);
-                    if (!seen.contains(v) && !crossedSplits.contains(sId)) {
-                        toVisit.push(u);
-                        backtrack.push(true);
-                        toVisit.push(v);
-                        backtrack.push(false);
-                        // push edge twice (visit & backtrack)
-                        edges.push(e);
-                        edges.push(e);
-                    }
-                }
-
-                /* backtrack */
-            } else {
-                if (enter != null) {
-                    Integer cId = graph.getSplit(enter);
-                    crossedSplits.remove(cId);
-                    double w = (useWeights ? graph.getWeight(enter) : 1.0);
-                    double angle = dirs.get(cId);
-                    currentPoint = GeometryUtils.translateByAngle(currentPoint, angle, w);
-                }
-            }
-        } // end while
-        return coords;
     }
 }

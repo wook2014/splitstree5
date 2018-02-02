@@ -20,10 +20,11 @@ package splitstree5.core.datablocks;
 
 
 import javafx.application.Platform;
-import jloda.phylo.SplitsGraph;
+import jloda.phylo.PhyloGraph;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.interfaces.IFromNetworkView;
 import splitstree5.core.algorithms.interfaces.IToNetworkView;
+import splitstree5.core.workflow.DataNode;
 import splitstree5.gui.IHasTab;
 import splitstree5.gui.graphtab.AlgorithmBreadCrumbsToolBar;
 import splitstree5.gui.graphtab.NetworkViewTab;
@@ -33,8 +34,8 @@ import splitstree5.gui.graphtab.base.GraphLayout;
  * This block represents the view of a general network
  * Daniel Huson, 1.2018
  */
-public class NetworkViewBlock extends ADataBlock implements IHasTab {
-    private final NetworkViewTab networkViewTAB;
+public class NetworkViewBlock extends ViewDataBlock implements IHasTab {
+    private final NetworkViewTab networkViewTab;
 
     public NetworkViewBlock() {
         this(new NetworkViewTab());
@@ -43,14 +44,11 @@ public class NetworkViewBlock extends ADataBlock implements IHasTab {
     /**
      * constructor
      */
-    public NetworkViewBlock(NetworkViewTab networkViewTAB) {
-        super();
+    public NetworkViewBlock(NetworkViewTab networkViewTab) {
         setTitle("Network Viewer");
-
-        this.networkViewTAB = new NetworkViewTab();
-
-        networkViewTAB.setLayout(GraphLayout.Radial);
-
+        this.networkViewTab = new NetworkViewTab();
+        networkViewTab.setDataNode(getDataNode());
+        networkViewTab.setLayout(GraphLayout.Radial);
     }
 
     @Override
@@ -59,19 +57,14 @@ public class NetworkViewBlock extends ADataBlock implements IHasTab {
             super.setDocument(document);
             if (document.getMainWindow() != null) {
                 Platform.runLater(() -> { // setup tab
-                    document.getMainWindow().add(networkViewTAB);
+                    document.getMainWindow().showDataView(getDataNode());
                 });
             }
         }
     }
 
-    @Override
-    public void setDataNode(ADataNode dataNode) {
-        super.setDataNode(dataNode);
-    }
-
     public NetworkViewTab getTab() {
-        return networkViewTAB;
+        return networkViewTab;
     }
 
 
@@ -79,19 +72,26 @@ public class NetworkViewBlock extends ADataBlock implements IHasTab {
      * show the network
      */
     public void show() {
-        networkViewTAB.show();
+        networkViewTab.show();
         Platform.runLater(() -> {
+            networkViewTab.setLayout(GraphLayout.Radial);
             setShortDescription(getInfo());
-            if (networkViewTAB.getToolBar() == null) {
-                networkViewTAB.setToolBar(new AlgorithmBreadCrumbsToolBar(getDocument(), getDataNode()));
-                ((AlgorithmBreadCrumbsToolBar) networkViewTAB.getToolBar()).update();
+            if (networkViewTab.getToolBar() == null) {
+                networkViewTab.setToolBar(new AlgorithmBreadCrumbsToolBar(getDocument(), getDataNode()));
+                ((AlgorithmBreadCrumbsToolBar) networkViewTab.getToolBar()).update();
             }
 
         });
     }
 
-    public void updateSelectionModels(SplitsGraph graph, TaxaBlock taxa, Document document) {
-        networkViewTAB.updateSelectionModels(graph, taxa, document);
+    @Override
+    public void setDataNode(DataNode dataNode) {
+        networkViewTab.setDataNode(dataNode);
+        super.setDataNode(dataNode);
+    }
+
+    public void updateSelectionModels(PhyloGraph graph, TaxaBlock taxa, Document document) {
+        networkViewTab.updateSelectionModels(graph, taxa, document);
     }
 
     @Override
@@ -106,13 +106,13 @@ public class NetworkViewBlock extends ADataBlock implements IHasTab {
 
     @Override
     public int size() {
-        return networkViewTAB.size();
+        return networkViewTab.size();
     }
 
     @Override
     public String getInfo() {
-        if (networkViewTAB != null && networkViewTAB.getGraph() != null) {
-            return "a network with " + networkViewTAB.getGraph().getNumberOfNodes() + " nodes and " + networkViewTAB.getGraph().getNumberOfEdges() + " edges";
+        if (networkViewTab != null && networkViewTab.getGraph() != null) {
+            return "a network with " + networkViewTab.getGraph().getNumberOfNodes() + " nodes and " + networkViewTab.getGraph().getNumberOfEdges() + " edges";
         } else
             return "a network";
     }

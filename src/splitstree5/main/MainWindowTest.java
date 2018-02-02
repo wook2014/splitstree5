@@ -30,6 +30,7 @@ import splitstree5.core.algorithms.distances2trees.NeighborJoining;
 import splitstree5.core.algorithms.views.SplitsNetworkAlgorithm;
 import splitstree5.core.algorithms.views.TreeEmbedder;
 import splitstree5.core.datablocks.*;
+import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.Workflow;
 import splitstree5.io.nexus.NexusFileParser;
 
@@ -52,17 +53,17 @@ public class MainWindowTest extends Application {
         final Workflow workflow = document.getWorkflow();
 
         if (workflow.getWorkingDataNode().getDataBlock() instanceof CharactersBlock) {
-            final ADataNode<DistancesBlock> distances = workflow.createDataNode(new DistancesBlock());
+            final DataNode<DistancesBlock> distances = workflow.createDataNode(new DistancesBlock());
             workflow.createConnector(workflow.getWorkingDataNode(), distances, new HammingDistances());
 
-            final ADataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
+            final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
             workflow.createConnector(distances, splits, new NeighborNet());
-            final ADataNode<SplitsNetworkViewBlock> splitsView = workflow.createDataNode(new SplitsNetworkViewBlock());
+            final DataNode<SplitsNetworkViewBlock> splitsView = workflow.createDataNode(new SplitsNetworkViewBlock());
             workflow.createConnector(splits, splitsView, new SplitsNetworkAlgorithm());
 
-            final ADataNode<TreesBlock> trees = workflow.createDataNode(new TreesBlock());
+            final DataNode<TreesBlock> trees = workflow.createDataNode(new TreesBlock());
             workflow.createConnector(distances, trees, new NeighborJoining());
-            final ADataNode<TreeViewBlock> treeView = workflow.createDataNode(new TreeViewBlock());
+            final DataNode<TreeViewBlock> treeView = workflow.createDataNode(new TreeViewBlock());
             workflow.createConnector(trees, treeView, new TreeEmbedder());
 
         }

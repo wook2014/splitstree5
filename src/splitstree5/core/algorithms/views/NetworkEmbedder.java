@@ -26,14 +26,11 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
 import javafx.geometry.Point2D;
-import jloda.graph.Edge;
-import jloda.graph.Node;
-import jloda.graph.NodeArray;
-import jloda.graph.NodeDoubleArray;
+import jloda.graph.*;
 import jloda.phylo.PhyloGraph;
-import jloda.phylo.SplitsGraph;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
+import splitstree5.core.algorithms.characters2network.QuasiMedianBase;
 import splitstree5.core.algorithms.interfaces.IFromNetwork;
 import splitstree5.core.algorithms.interfaces.IToNetworkView;
 import splitstree5.core.datablocks.NetworkBlock;
@@ -41,8 +38,8 @@ import splitstree5.core.datablocks.NetworkViewBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.graphtab.NetworkViewTab;
-import splitstree5.gui.graphtab.base.EdgeView2D;
 import splitstree5.gui.graphtab.base.EdgeViewBase;
+import splitstree5.gui.graphtab.base.GraphLayout;
 import splitstree5.gui.graphtab.base.NodeViewBase;
 
 import java.util.Arrays;
@@ -53,7 +50,10 @@ import java.util.List;
  * Daniel Huson, 2.2018
  */
 public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> implements IFromNetwork, IToNetworkView {
-    private final SplitsGraph graph = new SplitsGraph();
+    private final PhyloGraph graph = new PhyloGraph();
+    private final NodeArray<NetworkBlock.NodeData> node2data = new NodeArray<>(graph);
+    private final EdgeArray<NetworkBlock.EdgeData> edge2data = new EdgeArray<>(graph);
+
 
     private ChangeListener<UpdateState> changeListener;
 
@@ -61,7 +61,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> i
 
     private final ObjectProperty<Algorithm> optionAlgorithm = new SimpleObjectProperty<>(Algorithm.SpringEmbedder);
 
-    private final IntegerProperty optionIterations = new SimpleIntegerProperty(100);
+    private final IntegerProperty optionIterations = new SimpleIntegerProperty(1000);
 
     public List<String> listOptions() {
         return Arrays.asList("optionAlgorithm", "optionIterations");
@@ -82,12 +82,14 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> i
             child.getTab().setName(child.getName());
         });
 
-        graph.clear();
-        networkViewTab.init(graph);
+        copyData(parent, graph, node2data, edge2data);
 
+        networkViewTab.init(graph);
 
         final NodeArray<Point2D> node2point = new NodeArray<>(graph);
         computeSpringEmbedding(graph, node2point, getOptionIterations(), networkViewTab.getTargetDimensions().getWidth(), networkViewTab.getTargetDimensions().getHeight(), false);
+
+        TreeEmbedder.scaleToFitTarget(GraphLayout.Radial, networkViewTab.getTargetDimensions(), node2point);
 
 
         progress.setProgress(100);   //set progress to 100%
@@ -102,12 +104,18 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> i
             networkViewTab.getNodeLabelsGroup().getChildren().addAll(nodeView.getLabelGroup());
         }
         for (Edge e : graph.edges()) {
-            final EdgeViewBase edgeView = new EdgeView2D(e, 1.0, node2point.get(e.getSource()), node2point.get(e.getTarget()));
+            final EdgeViewBase edgeView = networkViewTab.createEdgeView(e, node2point.get(e.getSource()), node2point.get(e.getTarget()));
 
             networkViewTab.getEdge2view().put(e, edgeView);
             networkViewTab.getEdgesGroup().getChildren().addAll(edgeView.getShapeGroup().getChildren());
             if (edgeView.getLabel() != null)
                 networkViewTab.getEdgeLabelsGroup().getChildren().addAll(edgeView.getLabel());
+
+            if (parent.getNetworkType() == NetworkBlock.Type.HaplotypeNetwork && edge2data.get(e) != null) {
+                String label = edge2data.get(e).get(QuasiMedianBase.EDGE_SITES_KEY);
+                if (label != null)
+                    edgeView.setLabel(label);
+            }
         }
         Platform.runLater(() -> child.updateSelectionModels(graph, taxa, child.getDocument()));
         child.show();
@@ -116,9 +124,40 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> i
 
         if (changeListener != null)
             getConnector().stateProperty().removeListener(changeListener);
+
         changeListener = (c, o, n) -> child.getTab().getCenter().setDisable(n != UpdateState.VALID);
         getConnector().stateProperty().addListener(new WeakChangeListener<>(changeListener));
 
+    }
+
+    /**
+     * make working copy of data
+     *
+     * @param networkBlock
+     * @param tarGraph
+     * @param tarNode2Data
+     * @param tarEdge2Data
+     */
+    private void copyData(NetworkBlock networkBlock, PhyloGraph tarGraph, NodeArray<NetworkBlock.NodeData> tarNode2Data, EdgeArray<NetworkBlock.EdgeData> tarEdge2Data) {
+        final PhyloGraph srcGraph = networkBlock.getGraph();
+
+        tarGraph.clear();
+        final NodeArray<Node> src2tar = new NodeArray<>(srcGraph);
+        for (Node src : srcGraph.nodes()) {
+            final Node tar = tarGraph.newNode();
+            src2tar.put(src, tar);
+            for (int t : srcGraph.getTaxa(src))
+                tarGraph.addTaxon(tar, t);
+            tarGraph.setLabel(tar, srcGraph.getLabel(src));
+            tarNode2Data.put(tar, networkBlock.getNodeData(src));
+        }
+
+        for (Edge src : srcGraph.edges()) {
+            final Edge tar = tarGraph.newEdge(src2tar.get(src.getSource()), src2tar.get(src.getTarget()));
+            tarGraph.setWeight(tar, srcGraph.getWeight(src));
+            tarGraph.setLabel(tar, srcGraph.getLabel(src));
+            tarEdge2Data.put(tar, networkBlock.getEdgeData(src));
+        }
     }
 
     public Algorithm getOptionAlgorithm() {

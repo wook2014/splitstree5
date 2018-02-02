@@ -41,7 +41,7 @@ package splitstree5.gui.algorithmtab;
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.layout.StackPane;
 import splitstree5.core.Document;
-import splitstree5.core.connectors.AConnector;
+import splitstree5.core.workflow.Connector;
 import splitstree5.undo.UndoManager;
 
 /**
@@ -70,7 +70,7 @@ public abstract class AlgorithmPane extends StackPane {
      *
      * @param connector
      */
-    public void setConnector(AConnector connector) {
+    public void setConnector(Connector connector) {
     }
 
     /**

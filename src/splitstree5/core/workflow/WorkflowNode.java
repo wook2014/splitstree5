@@ -28,7 +28,7 @@ import splitstree5.core.misc.ANamed;
  * A Workflow node
  * Daniel Huson, 12/21/16.
  */
-abstract public class ANode extends ANamed {
+abstract public class WorkflowNode extends ANamed {
     private static int created = 0;
     private static final Object lock = new Object();
     private final int uid;
@@ -40,7 +40,7 @@ abstract public class ANode extends ANamed {
     /**
      * constructor
      */
-    public ANode() {
+    public WorkflowNode() {
         synchronized (lock) {
             this.uid = (++created);
         }
@@ -78,7 +78,7 @@ abstract public class ANode extends ANamed {
      *
      * @return children
      */
-    abstract public ObservableList<? extends ANode> getChildren();
+    abstract public ObservableList<? extends WorkflowNode> getChildren();
 
 
     public int getPathId() {
@@ -96,4 +96,6 @@ abstract public class ANode extends ANamed {
         else
             this.setName("[" + id + "]" + getName().substring(0, pos));
     }
+
+    abstract public WorkflowNode getParent();
 }

@@ -37,8 +37,8 @@ import jloda.phylo.SplitsGraph;
 import jloda.util.Pair;
 import jloda.util.ResourceManager;
 import splitstree5.core.Document;
-import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.workflow.DataNode;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.graph3dtab.EdgeView3D;
 import splitstree5.gui.graph3dtab.EmbeddingService;
@@ -60,7 +60,7 @@ import java.util.Set;
 public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsViewTab {
     private final ASelectionModel<Integer> splitsSelectionModel = new ASelectionModel<>();
     private boolean inSelection;
-    private ADataNode dataNode;
+    private DataNode dataNode;
 
     /**
      * constructor
@@ -132,7 +132,7 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
         super.updateSelectionModels(graph, taxa, document);
         splitsSelectionModel.setItems(graph.getSplitIds());
 
-        getMainWindow().getDocument().getTaxaSelectionModel().getSelectedItems().addListener((InvalidationListener) (c) -> {
+        document.getTaxaSelectionModel().getSelectedItems().addListener((InvalidationListener) (c) -> {
             if (!inSelection)
                 splitsSelectionModel.clearSelection();
         });
@@ -374,12 +374,12 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
     }
 
     @Override
-    public ADataNode getDataNode() {
+    public DataNode getDataNode() {
         return dataNode;
     }
 
     @Override
-    public void setDataNode(ADataNode dataNode) {
+    public void setDataNode(DataNode dataNode) {
         this.dataNode = dataNode;
     }
 }

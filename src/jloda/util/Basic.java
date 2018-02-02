@@ -248,7 +248,7 @@ public class Basic {
      * @return
      */
     public static String toString(float[] array, String separator) {
-        return toString(array, 0, array.length, separator, false);
+        return toString(Arrays.asList(array).iterator(), separator);
     }
 
     /**
@@ -323,17 +323,7 @@ public class Basic {
      * @return string representation
      */
     public static String toString(long[] array, String separator) {
-        final StringBuilder buf = new StringBuilder();
-
-        boolean first = true;
-        for (long a : array) {
-            if (first)
-                first = false;
-            else
-                buf.append(separator);
-            buf.append(a);
-        }
-        return buf.toString();
+        return toString(Arrays.asList(array).iterator(), separator);
     }
 
 
@@ -345,17 +335,7 @@ public class Basic {
      * @return string representation
      */
     public static String toString(double[] array, String separator) {
-        final StringBuilder buf = new StringBuilder();
-
-        boolean first = true;
-        for (double a : array) {
-            if (first)
-                first = false;
-            else
-                buf.append(separator);
-            buf.append(a);
-        }
-        return buf.toString();
+        return toString(Arrays.asList(array).iterator(), separator);
     }
 
     /**
@@ -380,29 +360,36 @@ public class Basic {
     }
 
     /**
-     * returns a collection of objects a separated string
+     * returns an iterable collection of objects as separator separated string
      *
-     * @param collection
+     * @param iterable
      * @param separator
      * @return string representation
      */
-    public static String toString(Collection collection, String separator) {
-        if (collection == null)
+    public static String toString(Iterable iterable, String separator) {
+        return toString(iterable.iterator(), separator);
+    }
+
+    /**
+     * returns a collection of objects a separated string
+     *
+     * @param iterator
+     * @param separator
+     * @return string representation
+     */
+    public static String toString(Iterator iterator, String separator) {
+        if (iterator == null)
             return "";
         final StringBuilder buf = new StringBuilder();
 
-        boolean first = true;
-        for (Object aCollection : collection) {
-            if (aCollection != null) {
-                if (first)
-                    first = false;
-                else if (separator != null)
-                    buf.append(separator);
-                buf.append(aCollection);
-            }
+        while (iterator.hasNext()) {
+            if (buf.length() > 0)
+                buf.append(separator);
+            buf.append(iterator.next());
         }
         return buf.toString();
     }
+
 
     /**
      * returns a set a comma separated string

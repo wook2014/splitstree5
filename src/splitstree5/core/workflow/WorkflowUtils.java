@@ -20,8 +20,6 @@
 package splitstree5.core.workflow;
 
 import jloda.util.Basic;
-import splitstree5.core.connectors.AConnector;
-import splitstree5.core.datablocks.ADataNode;
 import splitstree5.core.datablocks.TaxaBlock;
 
 /**
@@ -29,7 +27,7 @@ import splitstree5.core.datablocks.TaxaBlock;
  * Daniel Huson, 12/27/16.
  */
 public class WorkflowUtils {
-    public static void print(ADataNode<TaxaBlock> originalTaxonNode, ADataNode originalDataNode) {
+    public static void print(DataNode<TaxaBlock> originalTaxonNode, DataNode originalDataNode) {
         System.err.println("+++ Document update graph:");
         printRec(originalTaxonNode, true, 0);
         printRec(originalDataNode, false, 0);
@@ -41,26 +39,26 @@ public class WorkflowUtils {
      *
      * @param node
      */
-    private static void printRec(final ANode node, final boolean stopBeforeTopFilter, int level) {
-        if (node instanceof ADataNode) {
-            final ADataNode that = (ADataNode) node;
+    private static void printRec(final WorkflowNode node, final boolean stopBeforeTopFilter, int level) {
+        if (node instanceof DataNode) {
+            final DataNode that = (DataNode) node;
 
             for (int i = 0; i < level; i++)
                 System.err.print("--");
 
-            System.err.print("Data " + Basic.getShortName(((ADataNode) node).getDataBlock().getClass()) + "[" + node.getUid() + "]");
+            System.err.print("Data " + Basic.getShortName(((DataNode) node).getDataBlock().getClass()) + "[" + node.getUid() + "]");
             if (that.getChildren().size() > 0) {
                 System.err.print(": c=");
                 for (Object b : that.getChildren()) {
-                    System.err.print(" " + ((ANode) b).getUid());
+                    System.err.print(" " + ((WorkflowNode) b).getUid());
                 }
             }
             System.err.println();
             for (Object b : that.getChildren()) {
-                printRec((ANode) b, stopBeforeTopFilter, level + 1);
+                printRec((WorkflowNode) b, stopBeforeTopFilter, level + 1);
             }
-        } else if (node instanceof AConnector) {
-            final AConnector that = (AConnector) node;
+        } else if (node instanceof Connector) {
+            final Connector that = (Connector) node;
 
             if (stopBeforeTopFilter && that.getAlgorithm() != null && that.getAlgorithm().getName().equals("TopFilter"))
                 return;

@@ -66,8 +66,8 @@ import jloda.fx.ExtendedFXMLLoader;
 import jloda.phylo.PhyloTree;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.filters.TreesFilter;
-import splitstree5.core.connectors.AConnector;
 import splitstree5.core.datablocks.TreesBlock;
+import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.algorithmtab.AlgorithmPane;
 import splitstree5.gui.utils.DragAndDropSupportListView2;
@@ -92,7 +92,7 @@ public class TreeSelectorPane extends AlgorithmPane {
 
     final SimpleBooleanProperty applicableProperty = new SimpleBooleanProperty();
 
-    private AConnector connector;
+    private Connector connector;
 
     private boolean inSync = false;
 
@@ -118,7 +118,7 @@ public class TreeSelectorPane extends AlgorithmPane {
     }
 
     @Override
-    public void setConnector(AConnector connector) {
+    public void setConnector(Connector connector) {
         this.connector = connector;
     }
 

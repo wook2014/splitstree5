@@ -22,7 +22,7 @@ package splitstree5.dialogs.importer;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import jloda.util.CanceledException;
-import splitstree5.core.connectors.TaskWithProgressListener;
+import splitstree5.core.workflow.TaskWithProgressListener;
 import splitstree5.io.imports.interfaces.IImporter;
 import splitstree5.main.MainWindow;
 

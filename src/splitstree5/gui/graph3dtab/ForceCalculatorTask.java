@@ -78,7 +78,7 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
 
         nodeLocations = new NodeArray<>(graph);
         for (Node v : graph.nodes()) {
-            nodeLocations.set(v, ((NodeView3D) node2view.get(v)).getLocation());
+            nodeLocations.put(v, ((NodeView3D) node2view.get(v)).getLocation());
         }
     }
 
@@ -312,7 +312,7 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
         final Point3D center = new Point3D(0.5 * (maxX + minX), 0.5 * (maxY + minY), 0.5 * (maxZ + minZ));
 
         for (Node v : points.keys()) {
-            points.set(v, points.get(v).subtract(center));
+            points.put(v, points.get(v).subtract(center));
         }
     }
 }

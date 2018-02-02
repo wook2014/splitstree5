@@ -22,9 +22,9 @@ package splitstree5.dialogs.exporter;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import jloda.util.CanceledException;
-import splitstree5.core.connectors.TaskWithProgressListener;
-import splitstree5.core.datablocks.ADataBlock;
+import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.workflow.TaskWithProgressListener;
 
 import java.io.IOException;
 
@@ -35,16 +35,16 @@ import java.io.IOException;
 public class ExportService extends Service<Boolean> {
     private String fileName;
     private TaxaBlock taxaBlock;
-    private ADataBlock aDataBlock;
+    private DataBlock dataBlock;
     private String exportFormatName;
 
 
     private ExportDialog exportDialog;
 
-    public void setup(String fileName, TaxaBlock taxaBlock, ADataBlock aDataBlock, String exportFormatName, ExportDialog exportDialog) {
+    public void setup(String fileName, TaxaBlock taxaBlock, DataBlock dataBlock, String exportFormatName, ExportDialog exportDialog) {
         this.fileName = fileName;
         this.taxaBlock = taxaBlock;
-        this.aDataBlock = aDataBlock;
+        this.dataBlock = dataBlock;
         this.exportFormatName = exportFormatName;
         this.exportDialog = exportDialog;
     }
@@ -61,7 +61,7 @@ public class ExportService extends Service<Boolean> {
                     cancel();
                 }
                 try {
-                    ExportManager.getInstance().exportFile(fileName, taxaBlock, aDataBlock, exportFormatName);
+                    ExportManager.getInstance().exportFile(fileName, taxaBlock, dataBlock, exportFormatName);
                 } catch (IOException ex) {
                     return false;
                 }

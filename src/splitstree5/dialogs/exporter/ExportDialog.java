@@ -28,7 +28,7 @@ import javafx.stage.Stage;
 import jloda.fx.ExtendedFXMLLoader;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
-import splitstree5.core.datablocks.ADataBlock;
+import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.main.MainWindow;
 
@@ -51,7 +51,7 @@ public class ExportDialog {
      * @param parentMainWindow
      * @throws IOException
      */
-    public ExportDialog(MainWindow parentMainWindow, TaxaBlock workingTaxa, ADataBlock dataBlock) {
+    public ExportDialog(MainWindow parentMainWindow, TaxaBlock workingTaxa, DataBlock dataBlock) {
         final ExtendedFXMLLoader<ExportDialogController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         controller = extendedFXMLLoader.getController();
 
@@ -122,7 +122,7 @@ public class ExportDialog {
      *
      * @param other
      */
-    public static void show(MainWindow other, TaxaBlock taxonBlock, ADataBlock dataBlock) {
+    public static void show(MainWindow other, TaxaBlock taxonBlock, DataBlock dataBlock) {
         ExportDialog exportDialog = new ExportDialog(other, taxonBlock, dataBlock);
         exportDialog.show();
     }

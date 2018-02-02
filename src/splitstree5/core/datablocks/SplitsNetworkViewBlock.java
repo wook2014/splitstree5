@@ -27,6 +27,7 @@ import jloda.phylo.SplitsGraph;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.interfaces.IFromSplitsNetworkView;
 import splitstree5.core.algorithms.interfaces.IToSplitsNetworkView;
+import splitstree5.core.workflow.DataNode;
 import splitstree5.gui.IHasTab;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.graphtab.AlgorithmBreadCrumbsToolBar;
@@ -41,10 +42,13 @@ import java.util.Set;
  * This block represents the 3D view of a split network
  * Daniel Huson, 1.2018
  */
-public class SplitsNetworkViewBlock extends ADataBlock implements IHasTab {
+public class SplitsNetworkViewBlock extends ViewDataBlock implements IHasTab {
     private final ASelectionModel<Integer> splitsSelectionModel = new ASelectionModel<>();
     private final ISplitsViewTab splitsViewTab;
 
+    /**
+     * constructor
+     */
     public SplitsNetworkViewBlock() {
         this(new SplitsViewTab());
     }
@@ -54,11 +58,10 @@ public class SplitsNetworkViewBlock extends ADataBlock implements IHasTab {
      */
     public SplitsNetworkViewBlock(ISplitsViewTab splitsViewTab) {
         super();
+        this.splitsViewTab = splitsViewTab;
+
         setTitle("Split Network Viewer");
         //splitsViewTab = new SplitsViewTab();
-
-        this.splitsViewTab = splitsViewTab;
-        splitsViewTab.setDataNode(getDataNode());
 
         splitsViewTab.setLayout(GraphLayout.Radial);
 
@@ -85,14 +88,14 @@ public class SplitsNetworkViewBlock extends ADataBlock implements IHasTab {
             super.setDocument(document);
             if (document.getMainWindow() != null) {
                 Platform.runLater(() -> { // setup tab
-                    document.getMainWindow().add(splitsViewTab.getTab());
+                    document.getMainWindow().showDataView(getDataNode());
                 });
             }
         }
     }
 
     @Override
-    public void setDataNode(ADataNode dataNode) {
+    public void setDataNode(DataNode dataNode) {
         splitsViewTab.setDataNode(dataNode);
         super.setDataNode(dataNode);
     }

@@ -97,7 +97,7 @@ public class SplitsGraph extends PhyloGraph {
         for (int i = 0; i < src.taxon2node.size(); i++) {
             Node v = src.getTaxon2Node(i + 1);
             if (v != null)
-                setTaxon2Node(i + 1, oldNode2NewNode.getValue(v));
+                addTaxon(oldNode2NewNode.getValue(v), i + 1);
         }
         return oldNode2NewNode;
     }
@@ -205,13 +205,13 @@ public class SplitsGraph extends PhyloGraph {
                         setLabel(v, getLabel(v) + ", " + getLabel(w));
                 }
 
-                if (getNode2Taxa(w) != null) // node is labeled by taxa, move labels to v
+                if (getTaxa(w) != null) // node is labeled by taxa, move labels to v
                 {
-                    for (Integer t : getNode2Taxa(w)) {
-                        setTaxon2Node(t, v);
-                        setNode2Taxa(v, t);
+                    for (Integer t : getTaxa(w)) {
+                        addTaxon(v, t);
+                        addTaxon(v, t);
                     }
-                    getNode2Taxa(w).clear();
+                    clearTaxa(w);
                 }
                 // delete old node w.
                 deleteNode(w);

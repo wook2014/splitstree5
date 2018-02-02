@@ -355,6 +355,8 @@ public class MenuController {
     @FXML
     private MenuItem checkForUpdatesMenuItem;
 
+    private MainWindow mainWindow;
+
     public MenuBar getMenuBar() {
         return menuBar;
     }
@@ -874,5 +876,13 @@ public class MenuController {
             stage.setFullScreen(!stage.isFullScreen());
         });
         fullScreenMenuItem.setDisable(false);
+    }
+
+    public MainWindow getMainWindow() {
+        return mainWindow;
+    }
+
+    public void setMainWindow(MainWindow mainWindow) {
+        this.mainWindow = mainWindow;
     }
 }

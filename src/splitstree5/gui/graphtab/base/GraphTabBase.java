@@ -50,6 +50,8 @@ import jloda.util.Single;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
+import splitstree5.core.workflow.DataNode;
+import splitstree5.core.workflow.IHasDataNode;
 import splitstree5.gui.ISavesPreviousSelection;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.formattab.FontSizeIncrementCommand;
@@ -68,7 +70,7 @@ import java.util.*;
  *
  * @param <G>
  */
-public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISavesPreviousSelection {
+public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISavesPreviousSelection, IHasDataNode {
     protected ZoomableScrollPane scrollPane;
 
     protected final Group group = new Group();
@@ -101,6 +103,8 @@ public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISa
 
     protected ListChangeListener<Node> weakNodeSelectionChangeListener;
     protected ListChangeListener<Taxon> weakDocumentTaxonSelectionChangeListener;
+
+    private DataNode dataNode;
 
 
     /**
@@ -256,7 +260,7 @@ public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISa
                                     Taxon taxon = taxaBlock.get(name);
                                     if (taxon != null)
                                         document.getTaxaSelectionModel().select(taxon);
-                                    for (Integer taxId : graph.getNode2Taxa(v)) {
+                                    for (Integer taxId : graph.getTaxa(v)) {
                                         document.getTaxaSelectionModel().select(taxaBlock.get(taxId));
                                     }
                                 }
@@ -271,7 +275,7 @@ public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISa
                                     Taxon taxon = taxaBlock.get(name);
                                     if (taxon != null)
                                         document.getTaxaSelectionModel().clearSelection(taxon);
-                                    for (Integer taxId : graph.getNode2Taxa(v)) {
+                                    for (Integer taxId : graph.getTaxa(v)) {
                                         document.getTaxaSelectionModel().clearSelection(taxaBlock.get(taxId));
                                     }
                                 }
@@ -309,12 +313,12 @@ public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISa
                             String label = taxon.getName();
                             for (Node v : this.graph.nodes()) {
                                 if (this.graph.getLabel(v) != null) {
-                                    if (label.equals(graph.getLabel(v))) {
+                                    if (label.equals(this.graph.getLabel(v))) {
                                         nodeSelectionModel.clearSelection(v);
                                     }
                                 }
                             }
-                            final Node v = graph.getTaxon2Node(document.getWorkflow().getWorkingTaxaBlock().indexOf(taxon));
+                            final Node v = this.graph.getTaxon2Node(document.getWorkflow().getWorkingTaxaBlock().indexOf(taxon));
                             if (v != null)
                                 nodeSelectionModel.clearSelection(v);
                         }
@@ -581,5 +585,12 @@ public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISa
         return findToolBar;
     }
 
+    public DataNode getDataNode() {
+        return dataNode;
+    }
+
+    public void setDataNode(DataNode dataNode) {
+        this.dataNode = dataNode;
+    }
 }
 
