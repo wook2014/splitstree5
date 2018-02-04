@@ -5,9 +5,9 @@ import jloda.util.ProgressPercentage;
 import org.junit.Test;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.io.nexus.TaxaNexusIO;
+import splitstree5.io.nexus.TaxaNexusOutput;
 import splitstree5.io.nexus.TreesNexusFormat;
-import splitstree5.io.nexus.TreesNexusIO;
+import splitstree5.io.nexus.TreesNexusOutput;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,10 +42,10 @@ public class NewickTreeInTest {
         // printing
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
-        TaxaNexusIO.write(w, taxaBlock);
+        new TaxaNexusOutput().write(w, taxaBlock);
         TreesNexusFormat tnf = new TreesNexusFormat();
         tnf.setTranslate(false);
-        TreesNexusIO.write(w, taxaBlock, treesBlock, tnf);
+        new TreesNexusOutput().write(w, taxaBlock, treesBlock, tnf);
         System.err.println(w.toString());
         assertEquals(test1, treesBlock.getTrees().get(0).toString());
     }

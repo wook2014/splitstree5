@@ -8,10 +8,10 @@ import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.misc.Taxon;
 import splitstree5.io.imports.interfaces.IImportDistances;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -80,12 +80,12 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
                     if (!isNumeric(token)) {
 
                         if (tokensInCurrentRow > ntax || tokensInCurrentRow < tokensInPreviousRow)
-                            throw  new IOException("line "+counter+": Wrong number of entries for Taxa "+currentLabel);
+                            throw new IOException("line " + counter + ": Wrong number of entries for Taxa " + currentLabel);
                         if (tokensInCurrentRow != tokensInPreviousRow && matrix.keySet().size() >= 2)
                             square = false;
 
                         foundFirstLabel = true;
-                        System.err.println("curr " +tokensInCurrentRow + " pref "+tokensInPreviousRow);
+                        System.err.println("curr " + tokensInCurrentRow + " pref " + tokensInPreviousRow);
                         tokensInPreviousRow = tokensInCurrentRow;
                         tokensInCurrentRow = 0;
 
@@ -95,7 +95,7 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
                     } else {
 
                         if (!foundFirstLabel)
-                            throw new IOException("line "+counter+": Taxa label expected");
+                            throw new IOException("line " + counter + ": Taxa label expected");
 
                         tokensInCurrentRow++;
                         matrix.get(currentLabel).add(Double.parseDouble(token));
@@ -105,8 +105,8 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
             }
         }
         System.err.println(square);
-        for (String s : matrix.keySet()){
-            System.err.println("Row " +s+" "+matrix.get(s));
+        for (String s : matrix.keySet()) {
+            System.err.println("Row " + s + " " + matrix.get(s));
         }
 
         taxa.addTaxaByNames(matrix.keySet());
@@ -178,25 +178,25 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
         return tokens.countTokens() == 1 && isNumeric(tokens.nextToken());
     }
 
-    private static void readSquareMatrix(Map<String, Vector<Double>> matrix, DistancesBlock distancesBlock){
+    private static void readSquareMatrix(Map<String, Vector<Double>> matrix, DistancesBlock distancesBlock) {
         int ntax = distancesBlock.getNtax();
         int taxaCounter = 0;
         for (String taxa : matrix.keySet()) {
             taxaCounter++;
             for (int j = 1; j <= ntax; j++) {
-                distancesBlock.set(taxaCounter, j, matrix.get(taxa).get(j-1));
+                distancesBlock.set(taxaCounter, j, matrix.get(taxa).get(j - 1));
             }
         }
     }
 
-    private static void readTriangularMatrix(Map<String, Vector<Double>> matrix, DistancesBlock distancesBlock){
+    private static void readTriangularMatrix(Map<String, Vector<Double>> matrix, DistancesBlock distancesBlock) {
         int ntax = distancesBlock.getNtax();
         int taxaCounter = 0;
         for (String taxa : matrix.keySet()) {
             taxaCounter++;
             for (int j = 1; j < taxaCounter; j++) {
-                distancesBlock.set(taxaCounter, j, matrix.get(taxa).get(j-1));
-                distancesBlock.set(j, taxaCounter, matrix.get(taxa).get(j-1));
+                distancesBlock.set(taxaCounter, j, matrix.get(taxa).get(j - 1));
+                distancesBlock.set(j, taxaCounter, matrix.get(taxa).get(j - 1));
             }
             distancesBlock.set(taxaCounter, taxaCounter, 0.0);
         }

@@ -7,9 +7,7 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ASplit;
-import splitstree5.io.nexus.DistancesNexusIO;
-import splitstree5.io.nexus.SplitsNexusIO;
-import splitstree5.io.nexus.TaxaNexusIO;
+import splitstree5.io.nexus.*;
 
 import java.io.FileReader;
 import java.io.StringWriter;
@@ -33,8 +31,8 @@ public class BunemanTreeTest {
         DistancesBlock distancesBlock = new DistancesBlock();
         try (NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/distances7-taxa.nex"))) {
             np.matchIgnoreCase("#nexus");
-            TaxaNexusIO.parse(np, taxaBlock);
-            DistancesNexusIO.parse(np, taxaBlock, distancesBlock, null);
+            new TaxaNexusInput().parse(np, taxaBlock);
+            new DistancesNexusInput().parse(np, taxaBlock, distancesBlock, null);
             assertEquals(taxaBlock.getNtax(), 7);
             assertEquals(distancesBlock.getNtax(), 7);
         }
@@ -45,9 +43,9 @@ public class BunemanTreeTest {
 
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
-        TaxaNexusIO.write(w, taxaBlock);
-        DistancesNexusIO.write(w, taxaBlock, distancesBlock, null);
-        SplitsNexusIO.write(w, taxaBlock, splitsBlock, null);
+        new TaxaNexusOutput().write(w, taxaBlock);
+        new DistancesNexusOutput().write(w, taxaBlock, distancesBlock, null);
+        new SplitsNexusOutput().write(w, taxaBlock, splitsBlock, null);
         System.err.println(w.toString());
 
         // compare splits
@@ -56,8 +54,8 @@ public class BunemanTreeTest {
         SplitsBlock splitsFromST4 = new SplitsBlock();
         NexusStreamParser np = new NexusStreamParser(new FileReader("test/splits/distances7-Buneman.txt"));
         np.matchIgnoreCase("#nexus");
-        TaxaNexusIO.parse(np, taxaFromST4);
-        SplitsNexusIO.parse(np, taxaFromST4, splitsFromST4, null);
+        new TaxaNexusInput().parse(np, taxaFromST4);
+        new SplitsNexusInput().parse(np, taxaFromST4, splitsFromST4, null);
 
         for (int i = 0; i < splitsBlock.getSplits().size(); i++) {
             ASplit aSplit = splitsBlock.getSplits().get(i);
@@ -81,8 +79,8 @@ public class BunemanTreeTest {
         DistancesBlock distancesBlock2 = new DistancesBlock();
         try (NexusStreamParser np2 = new NexusStreamParser(new FileReader("test/distances/algaeBaseFreqTaxa.nex"))) {
             np2.matchIgnoreCase("#nexus");
-            TaxaNexusIO.parse(np2, taxaBlock2);
-            DistancesNexusIO.parse(np2, taxaBlock2, distancesBlock2, null);
+            new TaxaNexusInput().parse(np2, taxaBlock2);
+            new DistancesNexusInput().parse(np2, taxaBlock2, distancesBlock2, null);
             assertEquals(taxaBlock2.getNtax(), 8);
             assertEquals(distancesBlock2.getNtax(), 8);
         }
@@ -93,9 +91,9 @@ public class BunemanTreeTest {
 
         final StringWriter w2 = new StringWriter();
         w2.write("#nexus\n");
-        TaxaNexusIO.write(w2, taxaBlock2);
-        DistancesNexusIO.write(w2, taxaBlock2, distancesBlock2, null);
-        SplitsNexusIO.write(w2, taxaBlock2, splitsBlock2, null);
+        new TaxaNexusOutput().write(w2, taxaBlock2);
+        new DistancesNexusOutput().write(w2, taxaBlock2, distancesBlock2, null);
+        new SplitsNexusOutput().write(w2, taxaBlock2, splitsBlock2, null);
         System.err.println(w2.toString());
 
         // compare splits
@@ -104,8 +102,8 @@ public class BunemanTreeTest {
         SplitsBlock splitsFromST42 = new SplitsBlock();
         NexusStreamParser np2 = new NexusStreamParser(new FileReader("test/splits/algae-Buneman.txt"));
         np2.matchIgnoreCase("#nexus");
-        TaxaNexusIO.parse(np2, taxaFromST42);
-        SplitsNexusIO.parse(np2, taxaFromST42, splitsFromST42, null);
+        new TaxaNexusInput().parse(np2, taxaFromST42);
+        new SplitsNexusInput().parse(np2, taxaFromST42, splitsFromST42, null);
 
         for (int i = 0; i < splitsBlock2.getSplits().size(); i++) {
             ASplit aSplit = splitsBlock2.getSplits().get(i);

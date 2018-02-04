@@ -16,7 +16,6 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package splitstree5.io.nexus;
 
 import jloda.util.Pair;
@@ -49,7 +48,7 @@ public class UtilitiesNexusIO {
             np.matchIgnoreCase("=");
             String title = np.getLabelRespectCase();
             np.matchIgnoreCase(";");
-            block.getLinks().add(new Pair<String, String>(name, title));
+            block.getLinks().add(new Pair<>(name, title));
         }
     }
 

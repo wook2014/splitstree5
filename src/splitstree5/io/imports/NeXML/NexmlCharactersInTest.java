@@ -6,14 +6,11 @@ import jloda.util.ProgressPercentage;
 import org.junit.Test;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.io.nexus.CharactersNexusFormat;
-import splitstree5.io.nexus.CharactersNexusIO;
-import splitstree5.io.nexus.TaxaNexusIO;
+import splitstree5.io.nexus.CharactersNexusOutput;
+import splitstree5.io.nexus.TaxaNexusOutput;
 
 import java.io.IOException;
 import java.io.StringWriter;
-
-import static org.junit.Assert.*;
 
 public class NexmlCharactersInTest {
 
@@ -30,8 +27,8 @@ public class NexmlCharactersInTest {
         // printing
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
-        TaxaNexusIO.write(w1, taxaBlock);
-        CharactersNexusIO.write(w1, taxaBlock, charactersBlock, null);
+        new TaxaNexusOutput().write(w1, taxaBlock);
+        new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock, null);
         System.err.println(w1.toString());
 
     }
@@ -47,8 +44,8 @@ public class NexmlCharactersInTest {
         // printing
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
-        TaxaNexusIO.write(w1, taxaBlock);
-        CharactersNexusIO.write(w1, taxaBlock, charactersBlock, null);
+        new TaxaNexusOutput().write(w1, taxaBlock);
+        new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock, null);
         System.err.println(w1.toString());
     }
 

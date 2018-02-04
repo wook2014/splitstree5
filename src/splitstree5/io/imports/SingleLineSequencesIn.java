@@ -8,10 +8,15 @@ import splitstree5.core.algorithms.interfaces.IToCharacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.imports.interfaces.IImportCharacters;
-import splitstree5.io.nexus.CharactersNexusFormat;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SingleLineSequencesIn extends CharactersFormat implements IToCharacters, IImportCharacters {
 
@@ -93,7 +98,7 @@ public class SingleLineSequencesIn extends CharactersFormat implements IToCharac
         if (line == null) return false;
         try {
             checkIfCharactersValid(line, 1, allowedChars);
-        } catch (IOExceptionWithLineNumber exception){
+        } catch (IOExceptionWithLineNumber exception) {
             return false;
         }
         return true;

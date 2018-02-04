@@ -7,9 +7,7 @@ import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
-import splitstree5.io.nexus.SplitsNexusIO;
-import splitstree5.io.nexus.TaxaNexusIO;
-import splitstree5.io.nexus.TreesNexusIO;
+import splitstree5.io.nexus.*;
 
 import java.io.FileReader;
 import java.io.StringWriter;
@@ -33,8 +31,8 @@ public class ConsensusNetworkTest {
         TreesBlock treesBlock = new TreesBlock();
         NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/trees6-translate.nex"));
         np.matchIgnoreCase("#nexus");
-        TaxaNexusIO.parse(np, taxaBlock);
-        TreesNexusIO.parse(np, taxaBlock, treesBlock, null);
+        new TaxaNexusInput().parse(np, taxaBlock);
+        new TreesNexusInput().parse(np, taxaBlock, treesBlock, null);
 
 
         final SplitsBlock splitsBlock = new SplitsBlock();
@@ -45,9 +43,9 @@ public class ConsensusNetworkTest {
 
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
-        TaxaNexusIO.write(w, taxaBlock);
-        TreesNexusIO.write(w, taxaBlock, treesBlock, null);
-        SplitsNexusIO.write(w, taxaBlock, splitsBlock, null);
+        new TaxaNexusOutput().write(w, taxaBlock);
+        new TreesNexusOutput().write(w, taxaBlock, treesBlock, null);
+        new SplitsNexusOutput().write(w, taxaBlock, splitsBlock, null);
         System.err.println(w.toString());
 
         // compare splits
@@ -56,8 +54,8 @@ public class ConsensusNetworkTest {
         SplitsBlock splitsFromST4 = new SplitsBlock();
         NexusStreamParser np4 = new NexusStreamParser(new FileReader("test/splits/trees6-consensNet.nex"));
         np4.matchIgnoreCase("#nexus");
-        TaxaNexusIO.parse(np4, taxaFromST4);
-        SplitsNexusIO.parse(np4, taxaFromST4, splitsFromST4, null);
+        new TaxaNexusInput().parse(np4, taxaFromST4);
+        new SplitsNexusInput().parse(np4, taxaFromST4, splitsFromST4, null);
 
         assertEquals(splitsBlock.size(), splitsFromST4.size());
         for (int i = 0; i < splitsBlock.getSplits().size(); i++) {

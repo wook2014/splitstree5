@@ -38,6 +38,7 @@ import java.util.*;
 public class ConvexHull {
     /**
      * apply the algorithm to build a new graph
+     *
      * @param progress
      * @param taxa
      * @param splits
@@ -50,6 +51,7 @@ public class ConvexHull {
 
     /**
      * assume that some splits have already been processed and applies convex hull algorithm to remaining splits
+     *
      * @param progress
      * @param taxa
      * @param splits

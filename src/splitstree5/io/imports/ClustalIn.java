@@ -12,7 +12,6 @@ import splitstree5.core.algorithms.interfaces.IToCharacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.imports.interfaces.IImportCharacters;
-import splitstree5.io.nexus.CharactersNexusFormat;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,8 +32,7 @@ public class ClustalIn extends CharactersFormat implements IToCharacters, IImpor
 
     @Override
     public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxa, CharactersBlock characters)
-            throws CanceledException, IOException
-    {
+            throws CanceledException, IOException {
         final Map<String, String> taxa2seq = new LinkedHashMap<>();
 
         int ntax = 0;
@@ -64,7 +62,7 @@ public class ClustalIn extends CharactersFormat implements IToCharacters, IImpor
                     int labelIndex = tmpLine.indexOf(' ');
                     String label = tmpLine.substring(0, labelIndex);
                     if (label.isEmpty())
-                        throw new IOExceptionWithLineNumber("No taxa label is given at line "+counter, counter);
+                        throw new IOExceptionWithLineNumber("No taxa label is given at line " + counter, counter);
 
                     tmpLine = tmpLine.replaceAll("\\s+", "");
                     tmpLine = tmpLine.replaceAll("\t", "");

@@ -16,7 +16,6 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package splitstree5.io.nexus;
 
 import jloda.util.parse.NexusStreamParser;
@@ -43,31 +42,31 @@ public class SplitsNexusIOTest {
         SplitsBlock splitsBlock = new SplitsBlock();
         try (NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/splits41.nex"))) {
             np.matchIgnoreCase("#nexus");
-            TaxaNexusIO.parse(np, taxaBlock);
-            SplitsNexusIO.parse(np, taxaBlock, splitsBlock, null);
+            new TaxaNexusInput().parse(np, taxaBlock);
+            new SplitsNexusInput().parse(np, taxaBlock, splitsBlock, null);
             assertEquals(taxaBlock.getNtax(), 10);
             assertEquals(splitsBlock.getNsplits(), 41);
         }
 
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
-        TaxaNexusIO.write(w, taxaBlock);
-        SplitsNexusIO.write(w, taxaBlock, splitsBlock, null);
+        new TaxaNexusOutput().write(w, taxaBlock);
+        new SplitsNexusOutput().write(w, taxaBlock, splitsBlock, null);
 
         TaxaBlock taxaBlock2 = new TaxaBlock();
         SplitsBlock splitsBlock2 = new SplitsBlock();
         try (NexusStreamParser np = new NexusStreamParser(new StringReader(w.toString()))) {
             np.matchIgnoreCase("#nexus");
-            TaxaNexusIO.parse(np, taxaBlock2);
-            SplitsNexusIO.parse(np, taxaBlock2, splitsBlock2, null);
+            new TaxaNexusInput().parse(np, taxaBlock2);
+            new SplitsNexusInput().parse(np, taxaBlock2, splitsBlock2, null);
             assertEquals(taxaBlock2.getNtax(), 10);
             assertEquals(splitsBlock2.getNsplits(), 41);
         }
 
         final StringWriter w2 = new StringWriter();
         w2.write("#nexus\n");
-        TaxaNexusIO.write(w2, taxaBlock);
-        SplitsNexusIO.write(w2, taxaBlock, splitsBlock, null);
+        new TaxaNexusOutput().write(w2, taxaBlock);
+        new SplitsNexusOutput().write(w2, taxaBlock, splitsBlock, null);
 
         assertEquals(w.toString(), w2.toString());
     }

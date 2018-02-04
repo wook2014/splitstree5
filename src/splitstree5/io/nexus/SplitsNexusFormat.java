@@ -16,14 +16,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package splitstree5.io.nexus;
 
 /**
  * splits format
  * Daniel Huson, 12/29/16.
  */
-public class SplitsNexusFormat {
+public class SplitsNexusFormat implements INexusFormat {
 
     private boolean labels = false;
     private boolean weights = true;

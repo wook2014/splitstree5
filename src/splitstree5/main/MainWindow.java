@@ -187,16 +187,16 @@ public class MainWindow {
 
         workflow.dataNodes().addListener((SetChangeListener<DataNode>) (c) -> {
             if (c.wasRemoved() && aNode2ViewerTab.get(c.getElementRemoved()) != null) {
-                getMainWindowController().getMainTabPane().getTabs().remove(aNode2ViewerTab.get(c.getElementRemoved()));
+                Platform.runLater(() -> getMainWindowController().getMainTabPane().getTabs().remove(aNode2ViewerTab.get(c.getElementRemoved())));
             }
             if (c.wasAdded() && c.getElementAdded().getDataBlock() instanceof ViewDataBlock) {
-                showDataView(c.getElementAdded());
+                Platform.runLater(() -> showDataView(c.getElementAdded()));
             }
         });
 
         workflow.connectors().addListener((SetChangeListener<Connector>) (c) -> {
             if (c.wasRemoved() && aNode2ViewerTab.get(c.getElementRemoved()) != null) {
-                getMainWindowController().getAlgorithmTabPane().getTabs().remove(aNode2ViewerTab.get(c.getElementRemoved()));
+                Platform.runLater(() -> getMainWindowController().getAlgorithmTabPane().getTabs().remove(aNode2ViewerTab.get(c.getElementRemoved())));
             }
         });
     }

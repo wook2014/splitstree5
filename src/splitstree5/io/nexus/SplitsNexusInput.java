@@ -19,8 +19,6 @@
 
 package splitstree5.io.nexus;
 
-import com.sun.istack.internal.Nullable;
-import jloda.util.Basic;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -28,17 +26,26 @@ import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
 /**
- * input and output of a splits block in Nexus format
- * Daniel Huson, 12/28/16.
+ * nexus input parser
+ * Daniel Huson, 2.2018
  */
-public class SplitsNexusIO {
+public class SplitsNexusInput implements INexusInput<SplitsBlock, SplitsNexusFormat> {
     public static final String NAME = "SPLITS";
+
+    /**
+     * is the parser at the beginning of a block that this class can parse?
+     *
+     * @param np
+     * @return true, if can parse from here
+     */
+    public boolean atBeginOfBlock(NexusStreamParser np) {
+        return np.peekMatchIgnoreCase("begin " + NAME + ";");
+    }
 
     public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
             "\t[TITLE title;]\n" +
@@ -82,10 +89,11 @@ public class SplitsNexusIO {
      * @param taxaBlock
      * @param splitsBlock
      * @param splitsNexusFormat
-     * @return taxon names found in this block
+     * @return
      * @throws IOException
      */
-    public static ArrayList<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, SplitsBlock splitsBlock, @Nullable SplitsNexusFormat splitsNexusFormat) throws IOException {
+    @Override
+    public List<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, SplitsBlock splitsBlock, SplitsNexusFormat splitsNexusFormat) throws IOException {
         splitsBlock.clear();
 
         final ArrayList<String> taxonNamesFound = new ArrayList<>();
@@ -225,88 +233,5 @@ public class SplitsNexusIO {
                 split.setLabel(label);
             splitsBlock.getSplits().add(split);
         }
-    }
-
-    /**
-     * write a block in nexus format
-     *
-     * @param w
-     * @param taxaBlock
-     * @param splitsBlock
-     * @param splitsNexusFormat - if null
-     * @throws IOException
-     */
-    public static void write(Writer w, TaxaBlock taxaBlock, SplitsBlock splitsBlock, @Nullable SplitsNexusFormat splitsNexusFormat) throws IOException {
-        if (splitsNexusFormat == null)
-            splitsNexusFormat = new SplitsNexusFormat();
-
-        final int ntax = taxaBlock.getNtax();
-        final int nsplits = splitsBlock.getNsplits();
-
-        w.write("\nBEGIN " + NAME + ";\n");
-        UtilitiesNexusIO.writeTitleLinks(w, splitsBlock);
-        w.write("\tDIMENSIONS ntax=" + ntax + " nsplits=" + nsplits + ";\n");
-
-        w.write("\tFORMAT");
-        if (splitsNexusFormat.isLabels())
-            w.write(" labels=left");
-        else
-            w.write(" labels=no");
-        if (splitsNexusFormat.isWeights())
-            w.write(" weights=yes");
-        else
-            w.write(" weights=no");
-        if (splitsNexusFormat.isConfidences())
-            w.write(" confidences=yes");
-        else
-            w.write(" confidences=no");
-        w.write(";\n");
-        if (splitsBlock.getThreshold() != 0)
-            w.write("\tTHRESHOLD=" + splitsBlock.getThreshold() + "; \n");
-        w.write(String.format("\tPROPERTIES fit=%.2f", splitsBlock.getFit()));
-        switch (splitsBlock.getCompatibility()) {
-            case compatible:
-                w.write(" compatible");
-                break;
-            case cyclic:
-                w.write(" cyclic");
-                break;
-            case weaklyCompatible:
-                w.write(" weakly compatible");
-                break;
-            case incompatible:
-                w.write(" non compatible");
-            default:
-                break;
-        }
-        w.write(";\n");
-
-        if (splitsBlock.getCycle() != null) {
-            w.write("\tCYCLE");
-            int[] cycle = splitsBlock.getCycle();
-            for (int i = 1; i < cycle.length; i++)
-                w.write(" " + cycle[i]);
-            w.write(";\n");
-        }
-
-        w.write("MATRIX\n");
-
-        int t = 1;
-        for (ASplit split : splitsBlock.getSplits()) {
-            w.write("\t[" + (t++) + ", size=" + split.size() + "]" + " \t");
-            if (splitsNexusFormat.isLabels()) {
-                String lab = split.getLabel();
-                w.write(" '" + lab + "'" + " \t");
-            }
-            if (splitsNexusFormat.isWeights()) {
-                w.write(" " + split.getWeight() + " \t");
-            }
-            if (splitsNexusFormat.isConfidences()) {
-                w.write(" " + split.getConfidence() + " \t");
-            }
-            w.write(" " + Basic.toString(split.getA(), " ") + ",\n");
-        }
-        w.write(";\n");
-        w.write("END; [" + NAME + "]\n");
     }
 }

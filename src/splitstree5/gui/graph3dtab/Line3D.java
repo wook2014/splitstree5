@@ -35,7 +35,6 @@ public class Line3D extends Cylinder {
 
     /**
      * constructor
-     *
      */
     public Line3D(Point3D start, Point3D end) {
         super(0.5, 100, 8);

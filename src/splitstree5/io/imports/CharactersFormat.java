@@ -62,7 +62,7 @@ public abstract class CharactersFormat {
         boolean found = m.find();
         if (found) {
             String foundSymbol = m.group();
-            throw new IOExceptionWithLineNumber("Unexpected character "+foundSymbol+" in line "+counter, counter);
+            throw new IOExceptionWithLineNumber("Unexpected character " + foundSymbol + " in line " + counter, counter);
         }
     }
 

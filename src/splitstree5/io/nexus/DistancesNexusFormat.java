@@ -16,7 +16,6 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package splitstree5.io.nexus;
 
 import java.io.IOException;
@@ -25,7 +24,7 @@ import java.io.IOException;
  * Distances format
  * Daniel Huson, 12/22/16.
  */
-public class DistancesNexusFormat {
+public class DistancesNexusFormat implements INexusFormat {
     private String triangle;
     private boolean labels;
     private boolean diagonal;

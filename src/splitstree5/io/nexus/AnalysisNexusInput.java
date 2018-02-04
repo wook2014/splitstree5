@@ -16,25 +16,32 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package splitstree5.io.nexus;
 
-import jloda.util.Basic;
 import jloda.util.parse.NexusStreamParser;
-import splitstree5.core.datablocks.AnalysisResultBlock;
+import splitstree5.core.datablocks.AnalysisBlock;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 
 /**
- * analysis results block nexus implementation
- * Daniel Huson, 12/22/16.
+ * analysis result nexus input
+ * Daniel Huson, 2.2018
  */
-public class AnalysisResultIO {
-    private static final String NAME = "ST_ANALYSIS_RESULT";
+public class AnalysisNexusInput {
+    public static final String NAME = "ST_ANALYSIS_RESULT";
 
-    public static final String SYNTAX = "BEGIN ST_ANALYSIS_RESULT;\n" +
+    /**
+     * is the parser at the beginning of a block that this class can parse?
+     *
+     * @param np
+     * @return true, if can parse from here
+     */
+    public boolean atBeginOfBlock(NexusStreamParser np) {
+        return np.peekMatchIgnoreCase("begin " + NAME + ";");
+    }
+
+    public static final String SYNTAX = "BEGIN ST_ANALYSIS;\n" +
             "\t[TITLE title;]\n" +
             "\t[LINK name = title;]\n" +
             "\t[DIMENSIONS [NLINES=number-of-lines];]\n" +
@@ -42,25 +49,19 @@ public class AnalysisResultIO {
             "\t\tresults...\n" +
             "END;\n";
 
-
-    /**
-     * gets syntax
-     *
-     * @return syntax message
-     */
-    public static String getSyntax() {
+    public String getSyntax() {
         return SYNTAX;
     }
 
     /**
-     * parse an analysis block
+     * parse an analysis result block
      *
      * @param np
      * @param block
      * @return list of taxon names found
      * @throws IOException
      */
-    public static ArrayList<String> parse(NexusStreamParser np, AnalysisResultBlock block) throws IOException {
+    public ArrayList<String> parse(NexusStreamParser np, AnalysisBlock block) throws IOException {
         block.clear();
         final ArrayList<String> taxonNamesFound = new ArrayList<>();
 
@@ -90,24 +91,5 @@ public class AnalysisResultIO {
         np.matchIgnoreCase("END;");
 
         return taxonNamesFound;
-    }
-
-
-    /**
-     * writes the block in nexus format
-     *
-     * @param w
-     * @param block
-     * @throws IOException
-     */
-    public static void write(Writer w, AnalysisResultBlock block) throws IOException {
-        w.write("\nBEGIN " + NAME + ";\n");
-        UtilitiesNexusIO.writeTitleLinks(w, block);
-        w.write("\tDIMENSIONS nlines=" + Basic.countOccurrences(block.getShortDescription(), '\n') + ";\n");
-        w.write("\tRESULT;\n");
-        w.write(block.getShortDescription());
-        if (!block.getShortDescription().endsWith("\n"))
-            w.write("\n");
-        w.write("END; [" + NAME + "]\n");
     }
 }

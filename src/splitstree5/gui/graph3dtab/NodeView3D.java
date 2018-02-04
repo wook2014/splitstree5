@@ -71,7 +71,7 @@ public class NodeView3D extends NodeViewBase {
             label.setVisible(false);
         } else {
             color = Color.SILVER;
-            sphere.setRadius(0.5);
+            sphere.setRadius(1);
         }
 
         final PhongMaterial material = new PhongMaterial(color);

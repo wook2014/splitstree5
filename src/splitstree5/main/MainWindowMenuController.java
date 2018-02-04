@@ -34,15 +34,13 @@ import splitstree5.core.datablocks.NetworkViewBlock;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.IHasDataNode;
 import splitstree5.core.workflow.Workflow;
+import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.dialogs.importer.ImportDialog;
-import splitstree5.io.nexus.NexusFileParser;
-import splitstree5.io.nexus.NexusFileWriter;
+import splitstree5.io.nexus.WorkflowNexusOutput;
 import splitstree5.menu.MenuController;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 
 /**
  * controller class for main window menus
@@ -68,23 +66,8 @@ public class MainWindowMenuController {
             fileChooser.setTitle("Open SplitsTree5 file");
             fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("SplitsTree5 Files", "*.nxs", "*.nex", "*.nexus"));
             final File file = fileChooser.showOpenDialog(mainWindow.getStage());
-            if (file != null) {
-                final Document useDocument;
-                try {
-                    if (document.getWorkflow().getNumberOfDataNodes() == 0 && !document.getWorkflow().updatingProperty().get()) {
-                        useDocument = document;
-                    } else {
-                        final MainWindow newMainWindow = new MainWindow();
-                        newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50);
-                        useDocument = newMainWindow.getDocument();
-
-                    }
-                    useDocument.setFileName(file.getPath());
-                    NexusFileParser.parse(useDocument);
-                    useDocument.setDirty(false);
-                } catch (IOException ex) {
-                    Basic.caught(ex);
-                }
+            if (file != null && FileOpener.isOpenable(file.getPath())) {
+                FileOpener.open(mainWindow, file.getPath()); // todo: add progress bar to window
             }
         });
 
@@ -99,7 +82,7 @@ public class MainWindowMenuController {
 
         controller.getSaveMenuItem().setOnAction((e) -> {
             try {
-                NexusFileWriter.write(mainWindow.getDocument());
+                new WorkflowNexusOutput().save(mainWindow.getDocument());
                 mainWindow.getDocument().setDirty(false);
             } catch (IOException ex) {
                 Basic.caught(ex);
@@ -136,11 +119,8 @@ public class MainWindowMenuController {
         if (file != null) {
             try {
                 mainWindow.getDocument().setFileName(file.getPath());
-                System.err.println("Save!");
+                new WorkflowNexusOutput().save(mainWindow.getDocument());
                 mainWindow.getDocument().setDirty(false);
-                try (Writer w = new FileWriter(new File(file.getPath()))) {
-                }
-                // NexusFileWriter.write(mainWindow.getDocument());
             } catch (IOException e) {
                 Basic.caught(e);
             }

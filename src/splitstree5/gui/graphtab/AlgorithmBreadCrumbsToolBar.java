@@ -108,19 +108,19 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
         button.setTooltip(tooltip);
 
         final ChangeListener<UpdateState> stateChangeListener = (c, o, n) -> {
-                    switch (n) {
-                        case COMPUTING:
-                            button.setTextFill(Color.BLACK);
-                            button.setStyle(shape + "-fx-background-color: LIGHTBLUE;");
-                            break;
-                        case FAILED:
-                            button.setTextFill(Color.DARKRED);
-                            button.setStyle(shape);
-                            break;
-                        default:
-                            button.setTextFill(Color.BLACK);
-                            button.setStyle(shape);
-                    }
+            switch (n) {
+                case COMPUTING:
+                    button.setTextFill(Color.BLACK);
+                    button.setStyle(shape + "-fx-background-color: LIGHTBLUE;");
+                    break;
+                case FAILED:
+                    button.setTextFill(Color.DARKRED);
+                    button.setStyle(shape);
+                    break;
+                default:
+                    button.setTextFill(Color.BLACK);
+                    button.setStyle(shape);
+            }
         };
         connector.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
         stateChangeListeners.add(stateChangeListener);
@@ -140,16 +140,16 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
         final Tooltip tooltip = new Tooltip("Format nodes and edges");
         button.setTooltip(tooltip);
         final ChangeListener<UpdateState> stateChangeListener = (c, o, n) -> {
-                    switch (n) {
-                        case COMPUTING:
-                            button.setStyle(shape + "-fx-background-color: LIGHTBLUE;");
-                            break;
-                        case FAILED:
-                            button.setStyle(shape); // can't fail
-                            break;
-                        default:
-                            button.setStyle(shape);
-                    }
+            switch (n) {
+                case COMPUTING:
+                    button.setStyle(shape + "-fx-background-color: LIGHTBLUE;");
+                    break;
+                case FAILED:
+                    button.setStyle(shape); // can't fail
+                    break;
+                default:
+                    button.setStyle(shape);
+            }
         };
         dataNode.stateProperty().addListener(stateChangeListener);
         stateChangeListeners.add(stateChangeListener);

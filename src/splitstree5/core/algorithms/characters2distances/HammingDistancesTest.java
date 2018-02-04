@@ -25,8 +25,9 @@ import org.junit.Test;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.io.nexus.CharactersNexusIO;
-import splitstree5.io.nexus.DistancesNexusIO;
+import splitstree5.io.nexus.CharactersNexusInput;
+import splitstree5.io.nexus.DistancesNexusInput;
+import splitstree5.io.nexus.DistancesNexusOutput;
 
 import java.io.FileReader;
 import java.io.StringWriter;
@@ -46,22 +47,22 @@ public class HammingDistancesTest {
         final TaxaBlock taxa = new TaxaBlock();
         final CharactersBlock characters = new CharactersBlock();
         final DistancesBlock distances = new DistancesBlock();
-        taxa.addTaxaByNames(CharactersNexusIO.parse(new NexusStreamParser(new FileReader("test/nexus/characters-simple.nex")), taxa, characters, null));
+        taxa.addTaxaByNames(new CharactersNexusInput().parse(new NexusStreamParser(new FileReader("test/nexus/characters-simple.nex")), taxa, characters, null));
 
         final HammingDistances hammingDistances = new HammingDistances();
 
         hammingDistances.compute(new ProgressPercentage(), taxa, characters, distances);
 
         StringWriter w = new StringWriter();
-        DistancesNexusIO.write(w, taxa, distances, null);
+        new DistancesNexusOutput().write(w, taxa, distances, null);
         System.err.println(w.toString());
 
         final TaxaBlock taxaFromSplitsTree4 = new TaxaBlock();
         final DistancesBlock distancesFromSplitsTree4 = new DistancesBlock();
-        taxaFromSplitsTree4.addTaxaByNames(DistancesNexusIO.parse(new NexusStreamParser(new FileReader("test/nexus/distances-simple.nex")), taxaFromSplitsTree4, distancesFromSplitsTree4, null));
+        taxaFromSplitsTree4.addTaxaByNames(new DistancesNexusInput().parse(new NexusStreamParser(new FileReader("test/nexus/distances-simple.nex")), taxaFromSplitsTree4, distancesFromSplitsTree4, null));
 
         StringWriter wFromSplitsTree4 = new StringWriter();
-        DistancesNexusIO.write(wFromSplitsTree4, taxaFromSplitsTree4, distancesFromSplitsTree4, null);
+        new DistancesNexusOutput().write(wFromSplitsTree4, taxaFromSplitsTree4, distancesFromSplitsTree4, null);
         //System.err.println(wFromSplitsTree4.toString());
 
         assertEquals(w.toString(), wFromSplitsTree4.toString());

@@ -19,24 +19,33 @@
 
 package splitstree5.io.nexus;
 
-import com.sun.istack.internal.Nullable;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * input and output of a distance block in Nexus format
- * Daniel Huson, 12/28/16.
+ * nexus input parser
+ * Daniel Huson, 2.2018
  */
-public class DistancesNexusIO {
+public class DistancesNexusInput implements INexusInput<DistancesBlock, DistancesNexusFormat> {
     public static final String NAME = "DISTANCES";
 
+    /**
+     * is the parser at the beginning of a block that this class can parse?
+     *
+     * @param np
+     * @return true, if can parse from here
+     */
+    public boolean atBeginOfBlock(NexusStreamParser np) {
+        return np.peekMatchIgnoreCase("begin " + NAME + ";");
+    }
+
     public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
+
             "\t[TITLE title;]\n" +
             "\t[LINK name = title;]\n" +
             "\t[DIMENSIONS [NTAX=number-of-taxa];]\n" +
@@ -53,11 +62,8 @@ public class DistancesNexusIO {
             "\t;]\n" +
             "END;\n";
 
-    /**
-     * report the syntax for this block
-     *
-     * @return syntax string
-     */
+
+    @Override
     public String getSyntax() {
         return SYNTAX;
     }
@@ -69,10 +75,11 @@ public class DistancesNexusIO {
      * @param taxaBlock
      * @param distances
      * @param distancesNexusFormat
-     * @return taxon names found in this block
+     * @return taxon names, if found
      * @throws IOException
      */
-    public static ArrayList<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, DistancesBlock distances, @Nullable DistancesNexusFormat distancesNexusFormat) throws IOException {
+    @Override
+    public List<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, DistancesBlock distances, DistancesNexusFormat distancesNexusFormat) throws IOException {
         distances.clear();
 
         if (distancesNexusFormat == null)
@@ -214,129 +221,11 @@ public class DistancesNexusIO {
     }
 
     /**
-     * write a block in nexus format
-     *
-     * @param w
-     * @param taxaBlock
-     * @param distances
-     * @param distancesNexusFormat - if null
-     * @throws IOException
-     */
-    public static void write(Writer w, TaxaBlock taxaBlock, DistancesBlock distances, @Nullable DistancesNexusFormat distancesNexusFormat) throws IOException {
-        if (distancesNexusFormat == null)
-            distancesNexusFormat = new DistancesNexusFormat();
-
-        w.write("\nBEGIN " + NAME + ";\n");
-        UtilitiesNexusIO.writeTitleLinks(w, distances);
-        w.write("DIMENSIONS ntax=" + distances.getNtax() + ";\n");
-        w.write("FORMAT");
-        if (distancesNexusFormat.getLabels())
-            w.write(" labels=left");
-        else
-            w.write(" labels=no");
-        if (distancesNexusFormat.getDiagonal())
-            w.write(" diagonal");
-        else
-            w.write(" no diagonal");
-
-        w.write(" triangle=" + distancesNexusFormat.getTriangle());
-        w.write(";\n");
-
-        final int diag = distancesNexusFormat.getDiagonal() ? 0 : 1;
-
-        // write matrix:
-        {
-            w.write("MATRIX\n");
-
-            for (int t = 1; t <= distances.getNtax(); t++) {
-                if (distancesNexusFormat.getLabels()) {
-                    w.write("[" + t + "]");
-                    w.write(" '" + taxaBlock.get(t).getName() + "'");
-                    pad(w, taxaBlock, t);
-
-                }
-                int left;
-                int right;
-
-                switch (distancesNexusFormat.getTriangle()) {
-                    case "lower":
-                        left = 1;//1;
-
-                        right = t - diag;//t-1+diag;
-
-                        break;
-                    case "upper":
-                        left = t + diag;//t-1+diag;
-
-                        right = distances.getNtax();
-                        for (int i = 1; i < t; i++)
-                            w.write("      ");
-                        break;
-                    default: // both
-                        left = 1;
-                        right = distances.getNtax();
-                        break;
-                }
-
-                for (int q = left; q <= right; q++) {
-                    w.write(" " + (float) (distances.get(t, q)));
-                }
-                w.write("\n");
-            }
-            w.write(";\n");
-        }
-
-        // write variances, if present
-        if (distancesNexusFormat.isVariancesIO() && distances.isVariances()) {
-            w.write("VARMATRIX\n");
-
-            for (int t = 1; t <= distances.getNtax(); t++) {
-                if (distancesNexusFormat.getLabels()) {
-                    w.write("[" + t + "]");
-                    w.write(" '" + taxaBlock.get(t).getName() + "'");
-                    pad(w, taxaBlock, t);
-
-                }
-                int left;
-                int right;
-
-                switch (distancesNexusFormat.getTriangle()) {
-                    case "lower":
-                        left = 1;//1;
-
-                        right = t - diag;//t-1+diag;
-
-                        break;
-                    case "upper":
-                        left = t + diag;//t-1+diag;
-
-                        right = distances.getNtax();
-                        for (int i = 1; i < t; i++)
-                            w.write("      ");
-                        break;
-                    default: // both
-                        left = 1;
-                        right = distances.getNtax();
-                        break;
-                }
-
-                for (int q = left; q <= right; q++) {
-                    w.write(" " + (float) (distances.getVariance(t, q)));
-                }
-                w.write("\n");
-            }
-            w.write(";\n");
-        }
-        w.write("END; [" + NAME + "]\n");
-    }
-
-
-    /**
      * Check if the matrix is symmetric.
      *
      * @return boolean. True if it is symmetric.
      */
-    private static boolean isSymmetric(DistancesBlock distancesBlock) {
+    private boolean isSymmetric(DistancesBlock distancesBlock) {
         int ntax = distancesBlock.getNtax();
         for (int i = 1; i <= ntax; i++) {
             for (int j = 1; j < i; j++)
@@ -349,7 +238,7 @@ public class DistancesNexusIO {
     /**
      * Symmetrize the matrix. Replace d_ij and d_ji with (d_ij+d_ji)/2
      */
-    private static void symmetrize(DistancesBlock distancesBlock) {
+    private void symmetrize(DistancesBlock distancesBlock) {
         int ntax = distancesBlock.getNtax();
         for (int i = 1; i <= ntax; i++) {
             for (int j = 1; j < i; j++) {
@@ -359,43 +248,4 @@ public class DistancesNexusIO {
             }
         }
     }
-
-    /**
-     * pad with white space
-     *
-     * @param w         the writer
-     * @param taxaBlock the Taxa
-     * @param index     the index of label
-     */
-    private static void pad(Writer w, TaxaBlock taxaBlock, int index) {
-        try {
-            int len = taxaBlock.getLabel(index).length();
-            int max = maxLabelLength(taxaBlock);
-
-            for (int i = 1; i <= (max - len + 2); i++) {
-                w.write(" ");
-            }
-        } catch (Exception ex) {
-        }
-    }
-
-    /**
-     * Get the max length of all the labels.
-     *
-     * @param taxaBlock
-     * @return longer the max length.
-     */
-    public static int maxLabelLength(TaxaBlock taxaBlock) {
-        int len;
-        int longer = 0;
-
-        for (int i = 1; i <= taxaBlock.getNtax(); i++) {
-            len = taxaBlock.getLabel(i).length();
-            if (longer < len) {
-                longer = len;
-            }
-        }
-        return longer;
-    }
-
 }

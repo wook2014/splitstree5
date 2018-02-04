@@ -8,7 +8,6 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.imports.CharactersFormat;
 import splitstree5.io.imports.NeXML.handlers.NexmlCharactersHandler;
 import splitstree5.io.imports.interfaces.IImportCharacters;
-import splitstree5.io.nexus.CharactersNexusFormat;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;

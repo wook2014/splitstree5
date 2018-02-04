@@ -18,6 +18,7 @@
 
 package splitstree5.io.exports.interfaces;
 
+import splitstree5.core.algorithms.interfaces.IFromDistances;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
@@ -28,9 +29,10 @@ import java.io.Writer;
  * export distances
  * Daniel Huson, 1.2018
  */
-public interface IExportDistances extends IExporter {
+public interface IExportDistances extends IExporter, IFromDistances {
     /**
      * export distances
+     *
      * @param w
      * @param taxa
      * @param distances

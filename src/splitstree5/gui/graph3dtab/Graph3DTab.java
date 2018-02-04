@@ -155,9 +155,11 @@ public abstract class Graph3DTab<G extends PhyloGraph> extends GraphTabBase<G> {
 
                 viewChanged = new LongBinding() {
                     long value = 0;
+
                     {
                         super.bind(transformChangesProperty, subScene.widthProperty(), subScene.heightProperty(), camera.translateXProperty(), camera.translateYProperty(), viewNumber);
                     }
+
                     @Override
                     protected long computeValue() {
                         return value++;

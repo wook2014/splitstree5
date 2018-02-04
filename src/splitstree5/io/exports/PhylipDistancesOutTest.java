@@ -4,7 +4,7 @@ import jloda.util.parse.NexusStreamParser;
 import org.junit.Test;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.io.nexus.DistancesNexusIO;
+import splitstree5.io.nexus.DistancesNexusInput;
 
 import java.io.*;
 
@@ -23,7 +23,7 @@ public class PhylipDistancesOutTest {
 
         TaxaBlock taxa = new TaxaBlock();
         DistancesBlock distances = new DistancesBlock();
-        taxa.addTaxaByNames(DistancesNexusIO.parse(new NexusStreamParser(
+        taxa.addTaxaByNames(new DistancesNexusInput().parse(new NexusStreamParser(
                         new FileReader("test/distances/algaeCod.nex")),
                 taxa, distances, null));
 

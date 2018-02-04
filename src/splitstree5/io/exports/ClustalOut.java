@@ -1,6 +1,5 @@
 package splitstree5.io.exports;
 
-import splitstree5.core.algorithms.interfaces.IFromChararacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.exports.interfaces.IExportCharacters;
@@ -10,7 +9,7 @@ import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
 
-public class ClustalOut implements IFromChararacters, IExportCharacters {
+public class ClustalOut implements IExportCharacters {
 
     private int optionLineLength = 40;
 

@@ -158,7 +158,6 @@ public class WorkflowTreeItem extends TreeItem<String> {
 
     /**
      * show the view for this node
-     *
      */
     public void showView() {
         if (workflowNode instanceof DataNode)

@@ -18,6 +18,7 @@
 
 package splitstree5.io.exports.interfaces;
 
+import splitstree5.core.algorithms.interfaces.IFromTaxa;
 import splitstree5.core.datablocks.TaxaBlock;
 
 import java.io.IOException;
@@ -27,9 +28,10 @@ import java.io.Writer;
  * export taxa
  * Daniel Huson, 1.2018
  */
-public interface IExportTaxa extends IExporter {
+public interface IExportTaxa extends IExporter, IFromTaxa {
     /**
      * export taxa
+     *
      * @param w
      * @param taxa
      */

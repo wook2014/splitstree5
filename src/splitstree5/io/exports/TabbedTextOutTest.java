@@ -4,15 +4,12 @@ import jloda.util.ProgressListener;
 import jloda.util.ProgressPercentage;
 import jloda.util.parse.NexusStreamParser;
 import org.junit.Test;
-import splitstree5.core.algorithms.characters2distances.HammingDistances;
 import splitstree5.core.algorithms.characters2distances.Uncorrected_P;
 import splitstree5.core.algorithms.distances2trees.NeighborJoining;
 import splitstree5.core.algorithms.trees2splits.TreeSelector;
 import splitstree5.core.datablocks.*;
-import splitstree5.io.nexus.CharactersNexusIO;
-import splitstree5.io.nexus.DistancesNexusIO;
-import splitstree5.io.nexus.SplitsNexusIO;
-import splitstree5.io.nexus.TaxaNexusIO;
+import splitstree5.io.nexus.CharactersNexusInput;
+import splitstree5.io.nexus.TaxaNexusInput;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -40,10 +37,10 @@ public class TabbedTextOutTest {
 
         NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/algae_char.nex"));
         np.matchIgnoreCase("#nexus");
-        TaxaNexusIO.parse(np, taxa);
-        CharactersNexusIO.parse(np, taxa, character, null);
-        /*DistancesNexusIO.parse(np, taxa, distances, null);
-        SplitsNexusIO.parse(np, taxa, splits, null);*/
+        new TaxaNexusInput().parse(np, taxa);
+        new CharactersNexusInput().parse(np, taxa, character, null);
+        /*new DistancesNexusInput().parse(np, taxa, distances, null);
+        new SplitsNexusInput().parse(np, taxa, splits, null);*/
 
         // algorithms
         Uncorrected_P uncorrected_p = new Uncorrected_P();

@@ -26,9 +26,11 @@ import jloda.util.PluginClassLoader;
 import splitstree5.core.Document;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.UpdateState;
-import splitstree5.io.nexus.NexusFileWriter;
+import splitstree5.io.exports.NexusOut;
 import splitstree5.utils.OptionableBase;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 /**
@@ -127,6 +129,17 @@ abstract public class DataBlock extends OptionableBase {
      * @return display text
      */
     public String getDisplayText() {
-        return NexusFileWriter.toString(document.getWorkflow().getWorkingTaxaNode().getDataBlock(), this);
+        final StringWriter w = new StringWriter();
+        try {
+            if (this instanceof TaxaBlock) {
+                new NexusOut().export(w, (TaxaBlock) this);
+            } else if (this instanceof AnalysisBlock) {
+                new NexusOut().export(w, (AnalysisBlock) this);
+            } else
+                new NexusOut().export(w, document.getWorkflow().getWorkingTaxaNode().getDataBlock(), this);
+        } catch (IOException ex) {
+            Basic.caught(ex);
+        }
+        return w.toString();
     }
 }

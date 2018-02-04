@@ -8,9 +8,9 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.nexus.CharactersNexusFormat;
-import splitstree5.io.nexus.CharactersNexusIO;
-import splitstree5.io.nexus.DistancesNexusIO;
-import splitstree5.io.nexus.TaxaNexusIO;
+import splitstree5.io.nexus.CharactersNexusInput;
+import splitstree5.io.nexus.DistancesNexusOutput;
+import splitstree5.io.nexus.TaxaNexusOutput;
 
 import java.io.FileReader;
 import java.io.StringWriter;
@@ -34,7 +34,7 @@ public class NeiMillerTest {
         CharactersBlock charactersBlock = new CharactersBlock();
 
         CharactersNexusFormat format = new CharactersNexusFormat();
-        List<String> taxonNames = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock, format);
+        List<String> taxonNames = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock, format);
         taxaBlock.addTaxaByNames(taxonNames);
         DistancesBlock distancesBlock = new DistancesBlock();
 
@@ -42,8 +42,8 @@ public class NeiMillerTest {
 
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
-        TaxaNexusIO.write(w, taxaBlock);
-        DistancesNexusIO.write(w, taxaBlock, distancesBlock, null);
+        new TaxaNexusOutput().write(w, taxaBlock);
+        new DistancesNexusOutput().write(w, taxaBlock, distancesBlock, null);
         System.err.println(w.toString());
 
         throw new Exception("NO TEST DATA FROM ST4");
@@ -51,7 +51,7 @@ public class NeiMillerTest {
         /*final TaxaBlock taxaFromSplitsTree4 = new TaxaBlock();
         final DistancesBlock distancesFromSplitsTree4 = new DistancesBlock();
         taxaFromSplitsTree4.addTaxaByNames
-                (DistancesNexusIO.parse(new NexusStreamParser(new FileReader("test//distances//....nex")),
+                (new DistancesNexusInput().parse(new NexusStreamParser(new FileReader("test//distances//....nex")),
                         taxaFromSplitsTree4, distancesFromSplitsTree4, null));
 
 

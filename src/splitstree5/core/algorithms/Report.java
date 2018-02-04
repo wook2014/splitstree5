@@ -22,10 +22,10 @@ package splitstree5.core.algorithms;
 import jloda.util.Basic;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.interfaces.*;
-import splitstree5.core.datablocks.AnalysisResultBlock;
+import splitstree5.core.datablocks.AnalysisBlock;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.io.nexus.NexusFileWriter;
+import splitstree5.io.exports.NexusOut;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -34,12 +34,18 @@ import java.io.StringWriter;
  * report on the contents of a block
  * Daniel Huson, 1/31/17.
  */
-public class Report extends Algorithm<DataBlock, AnalysisResultBlock> implements IFromAnalysisResults, IFromChararacters, IFromTrees, IFromDistances, IFromSplits, IFromTaxa, IFromSplitsNetworkView, IFromTreeView, IToAnalysisResults {
+public class Report extends Algorithm<DataBlock, AnalysisBlock> implements IFromAnalysis, IFromChararacters, IFromTrees, IFromDistances, IFromSplits, IFromTaxa, IFromSplitsNetworkView, IFromTreeView, IToAnalysis {
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, DataBlock parent, AnalysisResultBlock child) throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, DataBlock parent, AnalysisBlock child) throws Exception {
         try (final StringWriter w = new StringWriter()) {
             w.write("### " + parent.getName() + (parent.getShortDescription() != null ? ", " + parent.getShortDescription() + "\n" : "\n"));
-            NexusFileWriter.write(w, taxaBlock, parent);
+
+            if (parent instanceof TaxaBlock)
+                new NexusOut().export(w, (TaxaBlock) parent);
+            else if (parent instanceof AnalysisBlock)
+                new NexusOut().export(w, (AnalysisBlock) parent);
+            else
+                new NexusOut().export(w, taxaBlock, parent);
             child.setShortDescription(w.toString());
         } catch (IOException e) {
             Basic.caught(e);

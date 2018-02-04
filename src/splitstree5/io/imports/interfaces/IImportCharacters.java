@@ -19,12 +19,10 @@
 
 package splitstree5.io.imports.interfaces;
 
-import com.sun.istack.internal.Nullable;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.io.nexus.CharactersNexusFormat;
 
 import java.io.IOException;
 

@@ -2,7 +2,7 @@ package splitstree5.io.imports;
 
 import org.junit.Test;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.io.nexus.TaxaNexusIO;
+import splitstree5.io.nexus.TaxaNexusOutput;
 
 import java.io.StringWriter;
 
@@ -19,7 +19,7 @@ public class MatlabInTest {
         // printing
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
-        TaxaNexusIO.write(w1, taxaBlock);
+        new TaxaNexusOutput().write(w1, taxaBlock);
         System.err.println(w1.toString());
 
     }

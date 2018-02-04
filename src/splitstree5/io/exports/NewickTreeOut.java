@@ -1,12 +1,8 @@
 package splitstree5.io.exports;
 
-import com.sun.istack.internal.Nullable;
-import splitstree5.core.algorithms.interfaces.IFromSplits;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
-import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.core.misc.Compatibility;
 import splitstree5.io.exports.interfaces.IExportTrees;
 
 import java.io.IOException;

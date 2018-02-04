@@ -19,7 +19,6 @@
 
 package splitstree5.io.nexus;
 
-import com.sun.istack.internal.Nullable;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
@@ -29,15 +28,19 @@ import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.Taxon;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.util.*;
 
 /**
- * input and output of a trees block in Nexus format
- * Daniel Huson, 12/28/16.
+ * nexus input parser
+ * Daniel Huson, 2.2018
  */
-public class TreesNexusIO {
+public class TreesNexusInput implements INexusInput<TreesBlock, TreesNexusFormat> {
     public static final String NAME = "TREES";
+
+    @Override
+    public boolean atBeginOfBlock(NexusStreamParser np) {
+        return np.peekMatchIgnoreCase("begin " + NAME + ";");
+    }
 
     public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
             "\t[TITLE title;]\n" +
@@ -55,11 +58,7 @@ public class TreesNexusIO {
             "[TREE nameM = treeM-in-Newick-format;]\n" +
             "END;\n";
 
-    /**
-     * report the syntax for this block
-     *
-     * @return syntax string
-     */
+    @Override
     public String getSyntax() {
         return SYNTAX;
     }
@@ -70,10 +69,12 @@ public class TreesNexusIO {
      * @param np
      * @param taxaBlock
      * @param treesBlock
-     * @return taxon names found in this block
+     * @param treesNexusFormat
+     * @return taxon names, if found
      * @throws IOException
      */
-    public static ArrayList<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, TreesBlock treesBlock, @Nullable TreesNexusFormat treesNexusFormat) throws IOException {
+    @Override
+    public List<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, TreesBlock treesBlock, TreesNexusFormat treesNexusFormat) throws IOException {
         treesBlock.clear();
         if (treesNexusFormat == null)
             treesNexusFormat = new TreesNexusFormat();
@@ -209,86 +210,13 @@ public class TreesNexusIO {
         return taxonNamesFound;
     }
 
-
-    /**
-     * write a block in nexus format
-     *
-     * @param w
-     * @param taxaBlock
-     * @param treesBlock
-     * @throws IOException
-     */
-    public static void write(Writer w, TaxaBlock taxaBlock, TreesBlock treesBlock, @Nullable TreesNexusFormat treesNexusFormat) throws IOException {
-        if (treesNexusFormat == null)
-            treesNexusFormat = new TreesNexusFormat();
-
-        w.write("\nBEGIN " + NAME + ";\n");
-        UtilitiesNexusIO.writeTitleLinks(w, treesBlock);
-        if (treesBlock.isPartial() || treesBlock.isRooted()) {
-            w.write("\tPROPERTIES");
-            w.write(" partialTrees=" + (treesBlock.isPartial() ? "yes" : "no"));
-            w.write(" rooted=" + (treesBlock.isRooted() ? "yes" : "no"));
-            w.write(";\n");
-        }
-
-        final Map<String, String> translator;
-        if (treesNexusFormat.isTranslate()) {
-            translator = computeTranslationName2Number(taxaBlock);
-            w.write("\tTRANSLATE\n");
-
-            for (int t = 1; t <= taxaBlock.getNtax(); t++) {
-                w.write("\t\t" + t + " '" + taxaBlock.getLabel(t) + "',\n");
-            }
-            w.write(";\n");
-        } else
-            translator = null;
-
-        w.write("\t[TREES]\n");
-        int t = 1;
-        for (PhyloTree tree : treesBlock.getTrees()) {
-            final String name = (tree.getName() != null && tree.getName().length() > 0 ? tree.getName() : "t" + t);
-            w.write("\t\t[" + (t++) + "] tree '" + name + "'=" + getFlags(tree) + " ");
-            tree.write(w, treesNexusFormat.isShowWeights(), translator);
-            w.write(";\n");
-        }
-        w.write("END; [" + NAME + "]\n");
-    }
-
-    /**
-     * Returns the nexus flag [&R] indicating whether the tree should be considered
-     * as rooted
-     *
-     * @param tree
-     * @return String  Returns [&R] if rooted, and "" otherwise.
-     */
-    public static String getFlags(PhyloTree tree) {
-        if (tree.getRoot() != null)
-            return "[&R]";
-        else
-            return "";
-    }
-
-    /**
-     * compute translation from taxon names to number
-     *
-     * @param taxaBlock
-     * @return translation
-     */
-    private static Map<String, String> computeTranslationName2Number(TaxaBlock taxaBlock) {
-        final Map<String, String> translation = new HashMap<>();
-        for (Taxon taxon : taxaBlock.getTaxa()) {
-            translation.put(taxon.getName(), "" + taxaBlock.indexOf(taxon));
-        }
-        return translation;
-    }
-
     /**
      * are there any labeled internal nodes and are all such labels numbers?
      *
      * @param tree
      * @return true, if some internal nodes labeled by numbers
      */
-    public static boolean hasNumbersOnInternalNodes(PhyloTree tree) {
+    public boolean hasNumbersOnInternalNodes(PhyloTree tree) {
         boolean hasNumbersOnInternalNodes = false;
         for (Node v = tree.getFirstNode(); v != null; v = v.getNext()) {
             if (v.getOutDegree() != 0 && v.getInDegree() != 0) {
@@ -309,7 +237,7 @@ public class TreesNexusIO {
      *
      * @param tree
      */
-    public static void changeNumbersOnInternalNodesToEdgeConfidencies(PhyloTree tree) {
+    public void changeNumbersOnInternalNodesToEdgeConfidencies(PhyloTree tree) {
         for (Node v = tree.getFirstNode(); v != null; v = v.getNext()) {
             if (v.getOutDegree() != 0 && v.getInDegree() == 1) {
                 String label = tree.getLabel(v);

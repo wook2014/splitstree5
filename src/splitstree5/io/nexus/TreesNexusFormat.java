@@ -16,14 +16,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package splitstree5.io.nexus;
 
 /**
  * trees block nexus format
  * Daniel Huson, 12/30/16.
  */
-public class TreesNexusFormat {
+public class TreesNexusFormat implements INexusFormat {
     private boolean translate = true; // use translation table
     private boolean showWeights = true;
 

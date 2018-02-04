@@ -8,8 +8,8 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.nexus.CharactersNexusFormat;
-import splitstree5.io.nexus.CharactersNexusIO;
-import splitstree5.io.nexus.DistancesNexusIO;
+import splitstree5.io.nexus.CharactersNexusInput;
+import splitstree5.io.nexus.DistancesNexusInput;
 
 import java.io.FileReader;
 import java.util.List;
@@ -33,7 +33,7 @@ public class DiceTest {
         TaxaBlock taxaBlock1 = new TaxaBlock();
         CharactersBlock charactersBlock1 = new CharactersBlock();
         CharactersNexusFormat format1 = new CharactersNexusFormat();
-        List<String> taxonNames1 = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile1)), taxaBlock1, charactersBlock1, format1);
+        List<String> taxonNames1 = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile1)), taxaBlock1, charactersBlock1, format1);
         taxaBlock1.addTaxaByNames(taxonNames1);
         DistancesBlock distancesBlock1 = new DistancesBlock();
 
@@ -43,7 +43,7 @@ public class DiceTest {
         TaxaBlock taxaBlock2 = new TaxaBlock();
         CharactersBlock charactersBlock2 = new CharactersBlock();
         CharactersNexusFormat format2 = new CharactersNexusFormat();
-        List<String> taxonNames2 = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile2)), taxaBlock2, charactersBlock2, format2);
+        List<String> taxonNames2 = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile2)), taxaBlock2, charactersBlock2, format2);
         taxaBlock2.addTaxaByNames(taxonNames2);
         DistancesBlock distancesBlock2 = new DistancesBlock();
 
@@ -53,7 +53,7 @@ public class DiceTest {
         TaxaBlock taxaBlock3 = new TaxaBlock();
         CharactersBlock charactersBlock3 = new CharactersBlock();
         CharactersNexusFormat format3 = new CharactersNexusFormat();
-        List<String> taxonNames3 = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile3)), taxaBlock3, charactersBlock3, format3);
+        List<String> taxonNames3 = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile3)), taxaBlock3, charactersBlock3, format3);
         taxaBlock3.addTaxaByNames(taxonNames3);
         DistancesBlock distancesBlock3 = new DistancesBlock();
 
@@ -63,7 +63,7 @@ public class DiceTest {
         TaxaBlock taxaBlock4 = new TaxaBlock();
         CharactersBlock charactersBlock4 = new CharactersBlock();
         CharactersNexusFormat format4 = new CharactersNexusFormat();
-        List<String> taxonNames4 = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile4)), taxaBlock4, charactersBlock4, format4);
+        List<String> taxonNames4 = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile4)), taxaBlock4, charactersBlock4, format4);
         taxaBlock4.addTaxaByNames(taxonNames4);
         DistancesBlock distancesBlock4 = new DistancesBlock();
 
@@ -80,7 +80,7 @@ public class DiceTest {
         CharactersBlock charactersBlock = new CharactersBlock();
 
         CharactersNexusFormat format = new CharactersNexusFormat();
-        List<String> taxonNames = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock, format);
+        List<String> taxonNames = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock, format);
         taxaBlock.addTaxaByNames(taxonNames);
         DistancesBlock distancesBlock = new DistancesBlock();
 
@@ -89,7 +89,7 @@ public class DiceTest {
         final TaxaBlock taxaFromSplitsTree4 = new TaxaBlock();
         final DistancesBlock distancesFromSplitsTree4 = new DistancesBlock();
         taxaFromSplitsTree4.addTaxaByNames
-                (DistancesNexusIO.parse(new NexusStreamParser(new FileReader("test//distances//dolphinsDice.nex")),
+                (new DistancesNexusInput().parse(new NexusStreamParser(new FileReader("test//distances//dolphinsDice.nex")),
                         taxaFromSplitsTree4, distancesFromSplitsTree4, null));
 
 

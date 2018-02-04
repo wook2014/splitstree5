@@ -5,9 +5,9 @@ import org.junit.Test;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.io.nexus.DistancesNexusIO;
-import splitstree5.io.nexus.SplitsNexusIO;
-import splitstree5.io.nexus.TaxaNexusIO;
+import splitstree5.io.nexus.DistancesNexusInput;
+import splitstree5.io.nexus.SplitsNexusInput;
+import splitstree5.io.nexus.TaxaNexusInput;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -32,9 +32,9 @@ public class MatlabOutTest {
 
         NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/algae.nex"));
         np.matchIgnoreCase("#nexus");
-        TaxaNexusIO.parse(np, taxa);
-        DistancesNexusIO.parse(np, taxa, distances, null);
-        SplitsNexusIO.parse(np, taxa, splits, null);
+        new TaxaNexusInput().parse(np, taxa);
+        new DistancesNexusInput().parse(np, taxa, distances, null);
+        new SplitsNexusInput().parse(np, taxa, splits, null);
 
         matlabOut.export(writer, taxa);
         matlabOut.export(writer, taxa, splits);

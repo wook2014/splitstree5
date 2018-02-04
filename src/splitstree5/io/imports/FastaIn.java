@@ -8,7 +8,6 @@ import splitstree5.core.algorithms.interfaces.IToCharacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.imports.interfaces.IImportCharacters;
-import splitstree5.io.nexus.CharactersNexusFormat;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +19,7 @@ import java.util.*;
  */
 public class FastaIn extends CharactersFormat implements IToCharacters, IImportCharacters {
     private static final String[] possibleIDs = {"gb", "emb", "ena", "dbj", "pir", "prf", "sp", "pdb", "pat", "bbs", "gnl", "ref", "lcl"};
+
     /**
      * parse a file
      *
@@ -49,20 +49,20 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
                 if (line.startsWith(";") || line.isEmpty())
                     continue;
                 if (line.equals(">"))
-                    throw new IOExceptionWithLineNumber("No taxa label given at line: "+counter, counter);
+                    throw new IOExceptionWithLineNumber("No taxa label given at line: " + counter, counter);
 
                 if (line.startsWith(">")) {
                     addTaxaName(line, taxonNamesFound, counter);
                     ntax++;
 
                     if (ntax > 1 && currentSequence.toString().isEmpty())
-                        throw new IOExceptionWithLineNumber("No sequence is given at line "+counter, counter);
+                        throw new IOExceptionWithLineNumber("No sequence is given at line " + counter, counter);
 
                     if (nchar != 0 && nchar != currentSequenceLength)
                         throw new IOExceptionWithLineNumber("Sequences must be the same length. " +
-                                "Wrong number of chars at the line: " + (counter-1)+". Length "+nchar+" expected", counter-1);
+                                "Wrong number of chars at the line: " + (counter - 1) + ". Length " + nchar + " expected", counter - 1);
 
-                    if(!currentSequence.toString().equals("")) matrix.add(currentSequence.toString());
+                    if (!currentSequence.toString().equals("")) matrix.add(currentSequence.toString());
                     nchar = currentSequenceLength;
                     currentSequenceLength = 0;
                     currentSequence = new StringBuilder("");
@@ -77,11 +77,11 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
             }
 
             if (currentSequence.length() == 0)
-                throw new IOExceptionWithLineNumber("Line "+counter+": Sequence " + ntax + " is zero", counter);
+                throw new IOExceptionWithLineNumber("Line " + counter + ": Sequence " + ntax + " is zero", counter);
             matrix.add(currentSequence.toString());
             if (nchar != currentSequenceLength)
                 throw new IOExceptionWithLineNumber("Sequences must be the same length. " +
-                        "Wrong number of chars at the line: " + counter+". Length "+nchar+" expected", counter);
+                        "Wrong number of chars at the line: " + counter + ". Length " + nchar + " expected", counter);
 
         }
         /*System.err.println("ntax: " + ntax + " nchar: " + nchar);

@@ -203,6 +203,7 @@ public class MethodsTextGenerator {
 
     /**
      * get all the key - paper pairs for an algorithm
+     *
      * @param algorithm
      * @return pairs
      */

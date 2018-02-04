@@ -64,38 +64,46 @@ public class ImportService extends Service<Boolean> {
 
     @Override
     protected void running() {
-        importDialog.getController().getProgressBar().setVisible(true);
-        importDialog.getController().getProgressBar().progressProperty().bind(progressProperty());
-        importDialog.getController().getCancelButton().setOnAction((c) -> {
-            cancel();
-            importDialog.close();
-        });
+        if (importDialog != null) {
+            importDialog.getController().getProgressBar().setVisible(true);
+            importDialog.getController().getProgressBar().progressProperty().bind(progressProperty());
+            importDialog.getController().getCancelButton().setOnAction((c) -> {
+                cancel();
+                importDialog.close();
+            });
+        }
     }
 
     @Override
     protected void succeeded() {
-        importDialog.getController().getProgressBar().setVisible(false);
-        importDialog.getController().getProgressBar().progressProperty().unbind();
-        importDialog.getController().getCancelButton().setOnAction((c) -> {
-            importDialog.close();
-        });
+        if (importDialog != null) {
+            importDialog.getController().getProgressBar().setVisible(false);
+            importDialog.getController().getProgressBar().progressProperty().unbind();
+            importDialog.getController().getCancelButton().setOnAction((c) -> {
+                importDialog.close();
+            });
+        }
     }
 
     @Override
     protected void cancelled() {
-        importDialog.getController().getProgressBar().setVisible(false);
-        importDialog.getController().getProgressBar().progressProperty().unbind();
-        importDialog.getController().getCancelButton().setOnAction((c) -> {
-            importDialog.close();
-        });
+        if (importDialog != null) {
+            importDialog.getController().getProgressBar().setVisible(false);
+            importDialog.getController().getProgressBar().progressProperty().unbind();
+            importDialog.getController().getCancelButton().setOnAction((c) -> {
+                importDialog.close();
+            });
+        }
     }
 
     @Override
     protected void failed() {
-        importDialog.getController().getProgressBar().setVisible(false);
-        importDialog.getController().getProgressBar().progressProperty().unbind();
-        importDialog.getController().getCancelButton().setOnAction((c) -> {
-            importDialog.close();
-        });
+        if (importDialog != null) {
+            importDialog.getController().getProgressBar().setVisible(false);
+            importDialog.getController().getProgressBar().progressProperty().unbind();
+            importDialog.getController().getCancelButton().setOnAction((c) -> {
+                importDialog.close();
+            });
+        }
     }
 }

@@ -142,11 +142,11 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
      * @param dist Distance matrix
      */
     static public int[] computeNeighborNetOrdering(int ntax, double[][] dist) {
-            try {
-                return runNeighborNet(new ProgressSilent(), ntax, dist);
-            } catch (CanceledException e) {
-                return null;
-            }
+        try {
+            return runNeighborNet(new ProgressSilent(), ntax, dist);
+        } catch (CanceledException e) {
+            return null;
+        }
     }
 
     /**

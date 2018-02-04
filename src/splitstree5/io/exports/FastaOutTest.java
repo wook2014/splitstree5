@@ -6,9 +6,9 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.nexus.CharactersNexusFormat;
-import splitstree5.io.nexus.CharactersNexusIO;
-import splitstree5.io.nexus.SplitsNexusIO;
-import splitstree5.io.nexus.TaxaNexusIO;
+import splitstree5.io.nexus.CharactersNexusInput;
+import splitstree5.io.nexus.SplitsNexusInput;
+import splitstree5.io.nexus.TaxaNexusInput;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -33,7 +33,7 @@ public class FastaOutTest {
         CharactersBlock characters = new CharactersBlock();
         CharactersNexusFormat format = new CharactersNexusFormat();
 
-        List<String> taxonNames = CharactersNexusIO.parse(
+        List<String> taxonNames = new CharactersNexusInput().parse(
                 new NexusStreamParser(new FileReader("test/characters/microsat1.nex")),
                 taxa, characters, format);
         taxa.addTaxaByNames(taxonNames);
@@ -54,8 +54,8 @@ public class FastaOutTest {
 
         NexusStreamParser np = new NexusStreamParser(new FileReader("test/splits/algae.txt"));
         np.matchIgnoreCase("#nexus");
-        TaxaNexusIO.parse(np, taxa);
-        SplitsNexusIO.parse(np, taxa, splits, null);
+        new TaxaNexusInput().parse(np, taxa);
+        new SplitsNexusInput().parse(np, taxa, splits, null);
 
         fastaOut.export(writer, taxa, splits);
         writer.close();
@@ -82,8 +82,8 @@ public class FastaOutTest {
 
         NexusStreamParser np = new NexusStreamParser(new FileReader("test/splits/trees49-SuperNet.nex"));
         np.matchIgnoreCase("#nexus");
-        TaxaNexusIO.parse(np, taxa);
-        SplitsNexusIO.parse(np, taxa, splits, null);
+        new TaxaNexusInput().parse(np, taxa);
+        new SplitsNexusInput().parse(np, taxa, splits, null);
 
         fastaOut.export(writer, taxa, splits);
         writer.close();

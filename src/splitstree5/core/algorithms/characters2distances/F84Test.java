@@ -8,7 +8,7 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.nexus.CharactersNexusFormat;
-import splitstree5.io.nexus.CharactersNexusIO;
+import splitstree5.io.nexus.CharactersNexusInput;
 
 import java.io.FileReader;
 import java.util.List;
@@ -33,7 +33,7 @@ public class F84Test {
         CharactersBlock charactersBlock = new CharactersBlock();
 
         CharactersNexusFormat format = new CharactersNexusFormat();
-        List<String> taxonNames = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock, format);
+        List<String> taxonNames = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock, format);
         taxaBlock.addTaxaByNames(taxonNames);
         DistancesBlock distancesBlock = new DistancesBlock();
 

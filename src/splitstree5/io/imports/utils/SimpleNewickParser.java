@@ -113,8 +113,7 @@ public class SimpleNewickParser {
                                 System.err.println("Leaf label occurs multiple times: " + label);
                             else
                                 leafLabels.add(label);
-                        }
-                        else
+                        } else
                             internalLabels.add(label);
                     }
                 } else // everything to next ) : or , is considered a label:
@@ -145,8 +144,7 @@ public class SimpleNewickParser {
                             System.err.println("Leaf label occurs multiple times: " + label);
                         else
                             leafLabels.add(label);
-                    }
-                    else
+                    } else
                         internalLabels.add(label);
                 }
                 Edge e = null;

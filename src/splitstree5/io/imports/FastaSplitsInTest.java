@@ -5,7 +5,7 @@ import jloda.util.ProgressPercentage;
 import org.junit.Test;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.io.nexus.SplitsNexusIO;
+import splitstree5.io.nexus.SplitsNexusOutput;
 
 import java.io.StringWriter;
 
@@ -26,8 +26,8 @@ public class FastaSplitsInTest {
         // printing
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
-        //TaxaNexusIO.write(w, taxaBlock);
-        SplitsNexusIO.write(w, taxaBlock, splitsBlock, null);
+        //new TaxaNexusOutput().write(w, taxaBlock);
+        new SplitsNexusOutput().write(w, taxaBlock, splitsBlock, null);
         System.err.println(w.toString());
 
         String splits = "\n" +

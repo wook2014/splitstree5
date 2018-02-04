@@ -1,8 +1,17 @@
 package splitstree5.io.exports;
 
-import splitstree5.core.algorithms.interfaces.*;
-import splitstree5.core.datablocks.*;
-import splitstree5.io.exports.interfaces.*;
+import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IFromDistances;
+import splitstree5.core.algorithms.interfaces.IFromSplits;
+import splitstree5.core.algorithms.interfaces.IFromTaxa;
+import splitstree5.core.datablocks.CharactersBlock;
+import splitstree5.core.datablocks.DistancesBlock;
+import splitstree5.core.datablocks.SplitsBlock;
+import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.io.exports.interfaces.IExportCharacters;
+import splitstree5.io.exports.interfaces.IExportDistances;
+import splitstree5.io.exports.interfaces.IExportSplits;
+import splitstree5.io.exports.interfaces.IExportTaxa;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -12,7 +21,7 @@ import java.util.List;
 
 public class TabbedTextOut implements
         IFromTaxa, IFromChararacters, IFromDistances, IFromSplits,
-        IExportTaxa, IExportCharacters, IExportDistances, IExportSplits{
+        IExportTaxa, IExportCharacters, IExportDistances, IExportSplits {
 
     public void export(Writer w, TaxaBlock taxa) throws IOException {
 

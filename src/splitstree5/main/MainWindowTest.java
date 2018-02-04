@@ -23,16 +23,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import jloda.util.ProgramProperties;
 import jloda.util.ResourceManager;
-import splitstree5.core.Document;
-import splitstree5.core.algorithms.characters2distances.HammingDistances;
-import splitstree5.core.algorithms.distances2splits.NeighborNet;
-import splitstree5.core.algorithms.distances2trees.NeighborJoining;
-import splitstree5.core.algorithms.views.SplitsNetworkAlgorithm;
-import splitstree5.core.algorithms.views.TreeEmbedder;
-import splitstree5.core.datablocks.*;
-import splitstree5.core.workflow.DataNode;
-import splitstree5.core.workflow.Workflow;
-import splitstree5.io.nexus.NexusFileParser;
+import splitstree5.dialogs.importer.FileOpener;
 
 public class MainWindowTest extends Application {
     @Override
@@ -45,28 +36,7 @@ public class MainWindowTest extends Application {
     public void start(Stage primaryStage) throws Exception {
         final MainWindow mainWindow = new MainWindow();
 
-        final Document document = mainWindow.getDocument();
-
-        document.setFileName("test/nexus/characters-simple.nex");
-        NexusFileParser.parse(document);
-
-        final Workflow workflow = document.getWorkflow();
-
-        if (workflow.getWorkingDataNode().getDataBlock() instanceof CharactersBlock) {
-            final DataNode<DistancesBlock> distances = workflow.createDataNode(new DistancesBlock());
-            workflow.createConnector(workflow.getWorkingDataNode(), distances, new HammingDistances());
-
-            final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
-            workflow.createConnector(distances, splits, new NeighborNet());
-            final DataNode<SplitsNetworkViewBlock> splitsView = workflow.createDataNode(new SplitsNetworkViewBlock());
-            workflow.createConnector(splits, splitsView, new SplitsNetworkAlgorithm());
-
-            final DataNode<TreesBlock> trees = workflow.createDataNode(new TreesBlock());
-            workflow.createConnector(distances, trees, new NeighborJoining());
-            final DataNode<TreeViewBlock> treeView = workflow.createDataNode(new TreeViewBlock());
-            workflow.createConnector(trees, treeView, new TreeEmbedder());
-
-        }
+        FileOpener.open(mainWindow, "test/nexus/characters-simple.nex");
 
         mainWindow.show(primaryStage, 100, 100);
     }

@@ -30,7 +30,8 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.io.nexus.CharactersNexusFormat;
-import splitstree5.io.nexus.CharactersNexusIO;
+import splitstree5.io.nexus.CharactersNexusInput;
+import splitstree5.io.nexus.CharactersNexusOutput;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -61,8 +62,8 @@ public class CharactersTopFilter extends ATopFilter<CharactersBlock> {
                     try {
                         CharactersNexusFormat charactersNexusFormat = new CharactersNexusFormat();
                         charactersNexusFormat.setIgnoreMatrix(true);
-                        CharactersNexusIO.write(w, originalTaxaNode.getDataBlock(), parent, charactersNexusFormat);
-                        CharactersNexusIO.parse(new NexusStreamParser(new StringReader(w.toString())), originalTaxaNode.getDataBlock(), child, charactersNexusFormat);
+                        new CharactersNexusOutput().write(w, originalTaxaNode.getDataBlock(), parent, charactersNexusFormat);
+                        new CharactersNexusInput().parse(new NexusStreamParser(new StringReader(w.toString())), originalTaxaNode.getDataBlock(), child, charactersNexusFormat);
                     } catch (IOException e) {
                         Basic.caught(e);
                     }

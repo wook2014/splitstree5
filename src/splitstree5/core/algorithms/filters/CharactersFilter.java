@@ -125,8 +125,7 @@ public class CharactersFilter extends Algorithm<CharactersBlock, CharactersBlock
             setShortDescription(null);
         else if (columnMask.cardinality() > 0) {
             setShortDescription("using " + (totalColumns - columnMask.cardinality()) + " (of " + totalColumns + ") chars");
-        }
-        else
+        } else
             setShortDescription("using all " + totalColumns + " chars");
     }
 

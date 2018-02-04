@@ -4,8 +4,8 @@ import jloda.util.parse.NexusStreamParser;
 import org.junit.Test;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.io.nexus.TaxaNexusIO;
-import splitstree5.io.nexus.TreesNexusIO;
+import splitstree5.io.nexus.TaxaNexusInput;
+import splitstree5.io.nexus.TreesNexusInput;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -29,8 +29,8 @@ public class NewickTreeOutTest {
 
         NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/trees49-taxa.nex"));
         np.matchIgnoreCase("#nexus");
-        TaxaNexusIO.parse(np, taxa);
-        TreesNexusIO.parse(np, taxa, treesBlock, null);
+        new TaxaNexusInput().parse(np, taxa);
+        new TreesNexusInput().parse(np, taxa, treesBlock, null);
 
         newickTreeOut.export(writer, taxa, treesBlock);
         writer.close();

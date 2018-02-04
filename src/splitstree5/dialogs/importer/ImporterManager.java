@@ -70,6 +70,8 @@ import java.util.*;
  * Daniel Huson, 1.2018
  */
 public class ImporterManager {
+    public static final String UNKNOWN = "Unknown";
+
     private final ArrayList<IImporter> importers;
     private final ArrayList<FileChooser.ExtensionFilter> extensionFilters;
 
@@ -155,7 +157,7 @@ public class ImporterManager {
             set.add(getDataType(importer));
         }
         final ArrayList<String> result = new ArrayList<>();
-        result.add("Unknown");
+        result.add(UNKNOWN);
         result.addAll(set);
         return result;
     }
@@ -166,7 +168,7 @@ public class ImporterManager {
             set.add(getFileFormat(importer));
         }
         final ArrayList<String> result = new ArrayList<>();
-        result.add("Unknown");
+        result.add(UNKNOWN);
         result.addAll(set);
         return result;
     }
@@ -180,8 +182,10 @@ public class ImporterManager {
             return "Trees";
         } else if (importer instanceof IImportSplits) {
             return "Splits";
+        } else if (importer instanceof IImportNetwork) {
+            return "Splits";
         } else
-            return "Unknown";
+            return UNKNOWN;
     }
 
     private static String getFileFormat(IImporter importer) {
@@ -202,18 +206,18 @@ public class ImporterManager {
             try {
                 if (importer.isApplicable(fileName)) {
                     String type = getDataType(importer);
-                    if (!type.equals("Unknown")) {
+                    if (!type.equals(UNKNOWN)) {
                         if (dataType == null)
                             dataType = type;
                         else if (!dataType.equals(type))
-                            return "Unknown";
+                            return UNKNOWN;
                     }
                 }
             } catch (IOException ex) {
             }
         }
         if (dataType == null)
-            return "Unknown";
+            return UNKNOWN;
         else
             return dataType;
     }
@@ -228,13 +232,13 @@ public class ImporterManager {
                     if (fileFormat == null)
                         fileFormat = format;
                     else if (!fileFormat.equals(format))
-                        return "Unknown";
+                        return UNKNOWN;
                 }
             } catch (IOException ex) {
             }
         }
         if (fileFormat == null)
-            return "Unknown";
+            return UNKNOWN;
         else
             return fileFormat;
     }

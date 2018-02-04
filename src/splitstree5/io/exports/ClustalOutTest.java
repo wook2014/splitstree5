@@ -5,7 +5,7 @@ import org.junit.Test;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.nexus.CharactersNexusFormat;
-import splitstree5.io.nexus.CharactersNexusIO;
+import splitstree5.io.nexus.CharactersNexusInput;
 
 import java.io.*;
 import java.util.List;
@@ -25,7 +25,7 @@ public class ClustalOutTest {
         CharactersBlock characters = new CharactersBlock();
         CharactersNexusFormat format = new CharactersNexusFormat();
 
-        List<String> taxonNames = CharactersNexusIO.parse(
+        List<String> taxonNames = new CharactersNexusInput().parse(
                 new NexusStreamParser(new FileReader("test/characters/microsat1.nex")),
                 taxa, characters, format);
         taxa.addTaxaByNames(taxonNames);

@@ -30,7 +30,7 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.Taxon;
 import splitstree5.io.nexus.CharactersNexusFormat;
-import splitstree5.io.nexus.CharactersNexusIO;
+import splitstree5.io.nexus.CharactersNexusInput;
 
 import java.io.FileReader;
 import java.util.List;
@@ -118,7 +118,7 @@ public class NeighborJoiningTest {
         CharactersBlock charactersBlock3 = new CharactersBlock();
 
         CharactersNexusFormat format = new CharactersNexusFormat();
-        List<String> taxonNames = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile)),
+        List<String> taxonNames = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile)),
                 taxaBlock3, charactersBlock3, format);
         taxaBlock3.addTaxaByNames(taxonNames);
 

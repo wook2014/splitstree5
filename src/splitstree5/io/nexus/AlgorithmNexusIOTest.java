@@ -16,12 +16,12 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package splitstree5.io.nexus;
 
 
 import jloda.util.parse.NexusStreamParser;
 import org.junit.Test;
+import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.distances2splits.NeighborNet;
 
 import java.io.StringReader;
@@ -37,12 +37,12 @@ public class AlgorithmNexusIOTest {
 
     @Test
     public void testParse() throws Exception {
-        NeighborNet neighborNet = new NeighborNet();
+        Algorithm neighborNet = new NeighborNet();
 
-        System.err.println("Usage: " + AlgorithmNexusIO.getUsage(neighborNet));
+        System.err.println("Usage: " + new AlgorithmNexusOutput().getUsage(neighborNet));
 
         StringWriter w = new StringWriter();
-        AlgorithmNexusIO.write(neighborNet, w);
+        new AlgorithmNexusOutput().write(neighborNet, w);
         String output = w.toString();
         System.err.println(output);
 
@@ -52,10 +52,10 @@ public class AlgorithmNexusIOTest {
         System.err.println(output);
 
         StringReader reader = new StringReader(output);
-        AlgorithmNexusIO.parse(neighborNet, new NexusStreamParser(reader), false);
+        neighborNet = new AlgorithmNexusInput().parse(new NexusStreamParser(reader));
 
         StringWriter w2 = new StringWriter();
-        AlgorithmNexusIO.write(neighborNet, w2);
+        new AlgorithmNexusOutput().write(neighborNet, w2);
         String output2 = w2.toString();
         System.err.println(output2);
 

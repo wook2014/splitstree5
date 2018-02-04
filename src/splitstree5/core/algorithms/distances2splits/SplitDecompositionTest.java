@@ -27,9 +27,7 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ASplit;
-import splitstree5.io.nexus.DistancesNexusIO;
-import splitstree5.io.nexus.SplitsNexusIO;
-import splitstree5.io.nexus.TaxaNexusIO;
+import splitstree5.io.nexus.*;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -50,8 +48,8 @@ public class SplitDecompositionTest {
         DistancesBlock distancesBlock = new DistancesBlock();
         try (NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/distances7-taxa.nex"))) {
             np.matchIgnoreCase("#nexus");
-            TaxaNexusIO.parse(np, taxaBlock);
-            DistancesNexusIO.parse(np, taxaBlock, distancesBlock, null);
+            new TaxaNexusInput().parse(np, taxaBlock);
+            new DistancesNexusInput().parse(np, taxaBlock, distancesBlock, null);
             assertEquals(taxaBlock.getNtax(), 7);
             assertEquals(distancesBlock.getNtax(), 7);
         }
@@ -63,9 +61,9 @@ public class SplitDecompositionTest {
 
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
-        TaxaNexusIO.write(w, taxaBlock);
-        DistancesNexusIO.write(w, taxaBlock, distancesBlock, null);
-        SplitsNexusIO.write(w, taxaBlock, splitsBlock, null);
+        new TaxaNexusOutput().write(w, taxaBlock);
+        new DistancesNexusOutput().write(w, taxaBlock, distancesBlock, null);
+        new SplitsNexusOutput().write(w, taxaBlock, splitsBlock, null);
         System.err.println(w.toString());
 
         // compare splits
@@ -74,8 +72,8 @@ public class SplitDecompositionTest {
         SplitsBlock splitsFromST4 = new SplitsBlock();
         NexusStreamParser np = new NexusStreamParser(new FileReader("test/splits/distances7-SplitDecomp.txt"));
         np.matchIgnoreCase("#nexus");
-        TaxaNexusIO.parse(np, taxaFromST4);
-        SplitsNexusIO.parse(np, taxaFromST4, splitsFromST4, null);
+        new TaxaNexusInput().parse(np, taxaFromST4);
+        new SplitsNexusInput().parse(np, taxaFromST4, splitsFromST4, null);
 
         for (int i = 0; i < splitsBlock.getSplits().size(); i++) {
             ASplit aSplit = splitsBlock.getSplits().get(i);

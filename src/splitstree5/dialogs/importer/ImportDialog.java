@@ -103,8 +103,10 @@ public class ImportDialog {
                     controller.getFileFormatComboBox().getSelectionModel().getSelectedItem());
             if (importer == null)
                 new Alert("Can't import selected data type and file format");
-            importService.setup(parentMainWindow, importer, controller.getFileTextField().getText(), ImportDialog.this);
-            importService.restart();
+            else {
+                importService.setup(parentMainWindow, importer, controller.getFileTextField().getText(), ImportDialog.this);
+                importService.restart();
+            }
         });
         controller.getImportButton().disableProperty().bind(controller.getProgressBar().visibleProperty().or(
                 Bindings.isNull(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty()).or(Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), "Unknown"))

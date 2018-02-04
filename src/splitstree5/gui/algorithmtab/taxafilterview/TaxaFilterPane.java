@@ -95,27 +95,27 @@ public class TaxaFilterPane extends AlgorithmPane {
                 inSelection = true;
                 while (c.next()) {
                     if (c.getAddedSize() > 0) {
-                            document.getTaxaSelectionModel().selectItems(c.getAddedSubList());
+                        document.getTaxaSelectionModel().selectItems(c.getAddedSubList());
                     }
                     if (c.getRemovedSize() > 0) {
                         document.getTaxaSelectionModel().clearSelection(c.getRemoved());
                     }
-                    }
-                } finally {
-                inSelection = false;
                 }
+            } finally {
+                inSelection = false;
+            }
         };
         documentTaxonSelectionChangeListener = c -> {
             if (!inSelection) {
                 while (c.next()) {
                     if (c.getAddedSize() > 0) {
-                            select(c.getAddedSubList(), true);
+                        select(c.getAddedSubList(), true);
 
                     }
                     if (c.getRemovedSize() > 0) {
                         select(c.getRemoved(), false);
                     }
-                    }
+                }
             }
         };
     }

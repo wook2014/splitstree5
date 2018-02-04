@@ -7,8 +7,8 @@ import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.io.imports.NeXML.NexmlFileParser;
-import splitstree5.io.nexus.CharactersNexusIO;
-import splitstree5.io.nexus.TaxaNexusIO;
+import splitstree5.io.nexus.CharactersNexusInput;
+import splitstree5.io.nexus.TaxaNexusInput;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -32,8 +32,8 @@ public class NeXMLOutTest {
 
         NexusStreamParser np = new NexusStreamParser(new FileReader("test/neXML/M1000.nex"));
         np.matchIgnoreCase("#nexus");
-        TaxaNexusIO.parse(np, taxa);
-        CharactersNexusIO.parse(np, taxa, characters, null);
+        new TaxaNexusInput().parse(np, taxa);
+        new CharactersNexusInput().parse(np, taxa, characters, null);
         // todo problem when reading M1000: must have "labels=left" attribute
 
         List<DataBlock> list = new ArrayList<>();

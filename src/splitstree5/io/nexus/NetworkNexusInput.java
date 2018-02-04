@@ -29,13 +29,27 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.imports.IOExceptionWithLineNumber;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class NetworkNexusIO {
+/**
+ * network block nexus input
+ * Daniel Huson, 2.2018
+ */
+public class NetworkNexusInput implements INexusInput<NetworkBlock, INexusFormat> {
     public static final String NAME = "NETWORK";
+
+    /**
+     * is the parser at the beginning of a block that this class can parse?
+     *
+     * @param np
+     * @return true, if can parse from here
+     */
+    public boolean atBeginOfBlock(NexusStreamParser np) {
+        return np.peekMatchIgnoreCase("begin " + NAME + ";");
+    }
 
     public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
             "\t[TITLE title;]\n" +
@@ -58,11 +72,7 @@ public class NetworkNexusIO {
             "\t;\n" +
             "END;\n";
 
-    /**
-     * report the syntax for this block
-     *
-     * @return syntax string
-     */
+    @Override
     public String getSyntax() {
         return SYNTAX;
     }
@@ -73,10 +83,12 @@ public class NetworkNexusIO {
      * @param np
      * @param taxaBlock
      * @param networkBlock
-     * @return taxon names found in this block
+     * @param format
+     * @return taxa labels found
      * @throws IOException
      */
-    public static ArrayList<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, NetworkBlock networkBlock) throws IOException {
+    @Override
+    public List<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, NetworkBlock networkBlock, INexusFormat format) throws IOException {
         networkBlock.clear();
 
         final ArrayList<String> taxonNamesFound = new ArrayList<>();
@@ -140,7 +152,6 @@ public class NetworkNexusIO {
         }
         np.matchIgnoreCase(";");
 
-
         final Map<Integer, Edge> id2edge = new TreeMap<>();
 
         np.matchIgnoreCase("EDGES");
@@ -180,74 +191,8 @@ public class NetworkNexusIO {
             }
         }
         np.matchIgnoreCase(";");
-
-
         np.matchEndBlock();
 
         return taxonNamesFound;
-
-    }
-
-    /**
-     * write a block in nexus format
-     *
-     * @param w
-     * @param taxaBlock
-     * @param networkBlock
-     * @throws IOException
-     */
-    public static void write(Writer w, TaxaBlock taxaBlock, NetworkBlock networkBlock) throws IOException {
-        w.write("\nBEGIN " + NAME + ";\n");
-        UtilitiesNexusIO.writeTitleLinks(w, networkBlock);
-        w.write("\tDIMENSIONS nNodes=" + networkBlock.getNumberOfNodes() + " nEdges=" + networkBlock.getNumberOfEdges() + ";\n");
-
-        w.write("\tTYPE=" + networkBlock.getNetworkType() + ";\n");
-
-        final PhyloGraph graph = networkBlock.getGraph();
-        // format?
-
-        // properties?
-
-        {
-            w.write("\tNODES\n");
-            boolean first = true;
-            for (Node v : graph.nodes()) {
-                if (first)
-                    first = false;
-                else
-                    w.write(",\n");
-                w.write("\t\tid=" + v.getId());
-                if (graph.getLabel(v) != null && graph.getLabel(v).trim().length() > 0) {
-                    w.write(" label='" + graph.getLabel(v).trim() + "'");
-                }
-                for (String key : networkBlock.getNodeData(v).keySet()) {
-                    w.write(" " + key + "='" + networkBlock.getNodeData(v).get(key) + "'");
-                }
-            }
-            w.write("\n\t;\n");
-        }
-
-        {
-            w.write("\tEDGES\n");
-            boolean first = true;
-            for (Edge e : graph.edges()) {
-                if (first)
-                    first = false;
-                else
-                    w.write(",\n");
-                w.write("\t\tid=" + e.getId());
-                w.write(" sid=" + e.getSource().getId());
-                w.write(" tid=" + e.getTarget().getId());
-
-                if (graph.getLabel(e) != null && graph.getLabel(e).trim().length() > 0) {
-                    w.write(" label='" + graph.getLabel(e).trim() + "'");
-                }
-                for (String key : networkBlock.getEdgeData(e).keySet()) {
-                    w.write(" " + key + "='" + networkBlock.getEdgeData(e).get(key) + "'");
-                }
-            }
-            w.write("\n\t;\n");
-        }
-        w.write("END; [" + NAME + "]\n");
     }
 }

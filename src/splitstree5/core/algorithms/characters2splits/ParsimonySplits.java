@@ -12,7 +12,6 @@ import splitstree5.core.misc.Compatibility;
 import splitstree5.utils.SplitsUtilities;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.BitSet;
 
 /**
@@ -47,9 +46,9 @@ public class ParsimonySplits extends Algorithm<CharactersBlock, SplitsBlock> imp
             BitSet At = new BitSet();
             At.set(t);
 
-            System.err.println("wgt1 stuff: t="+t+" AT="+At);
+            System.err.println("wgt1 stuff: t=" + t + " AT=" + At);
             int wgt = pIndex(optionGapsAsMissing, t, At, chars);
-            System.err.println("wgt1: "+wgt);
+            System.err.println("wgt1: " + wgt);
             if (wgt > 0) {
                 currentSplits.add(new ASplit(At, t, wgt));
             }
@@ -179,7 +178,7 @@ public class ParsimonySplits extends Algorithm<CharactersBlock, SplitsBlock> imp
                 continue;
             if (gapMissingMode && (c_a1 == gapChar || c_a2 == gapChar || c_b1 == gapChar || c_b2 == gapChar))
                 continue;
-            if (c_a1 == c_a2 && c_b1 == c_b2){
+            if (c_a1 == c_a2 && c_b1 == c_b2) {
                 a1a2_b1b2++;
                 //System.err.println("CHARS: "+c_a1+c_a2+c_b1+c_b2);
             }
@@ -189,8 +188,8 @@ public class ParsimonySplits extends Algorithm<CharactersBlock, SplitsBlock> imp
                 a1b2_a2b1++;
         }
         int min_val = Math.min(a1b1_a2b2, a1b2_a2b1);
-        System.err.println("min_val: "+ min_val);
-        System.err.println("a1a2_b1b2 "+ a1a2_b1b2); // todo problem here!
+        System.err.println("min_val: " + min_val);
+        System.err.println("a1a2_b1b2 " + a1a2_b1b2); // todo problem here!
         if (a1a2_b1b2 > min_val)
             return a1a2_b1b2 - min_val;
         else

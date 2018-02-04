@@ -16,14 +16,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package splitstree5.io.nexus;
 
 /**
  * Characters nexus format
  * Daniel Huson, 12/22/16.
  */
-public class CharactersNexusFormat {
+public class CharactersNexusFormat implements INexusFormat {
     private boolean transpose;
     private boolean interleave;
     private boolean labels = true;

@@ -38,7 +38,7 @@ public class AverageConsensus extends Algorithm<TreesBlock, SplitsBlock> impleme
         averageDistances.compute(new ProgressPercentage(), taxaBlock, treesBlock, pairwiseDistances);
 
         //StringWriter sw = new StringWriter();
-        //DistancesNexusIO.write(sw, taxaBlock, pairwiseDistances, null);
+        //new DistancesNexusOutput().write(sw, taxaBlock, pairwiseDistances, null);
         //dist.write(sw, taxa);
         //System.out.println(sw.toString());
 

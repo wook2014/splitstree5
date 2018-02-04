@@ -8,8 +8,8 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.nexus.CharactersNexusFormat;
-import splitstree5.io.nexus.CharactersNexusIO;
-import splitstree5.io.nexus.DistancesNexusIO;
+import splitstree5.io.nexus.CharactersNexusInput;
+import splitstree5.io.nexus.DistancesNexusInput;
 
 import java.io.FileReader;
 import java.util.List;
@@ -34,7 +34,7 @@ public class GeneContentDistanceTest {
         CharactersBlock charactersBlock = new CharactersBlock();
 
         CharactersNexusFormat format = new CharactersNexusFormat();
-        List<String> taxonNames = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock, format);
+        List<String> taxonNames = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock, format);
         taxaBlock.addTaxaByNames(taxonNames);
         DistancesBlock distancesBlock = new DistancesBlock();
 
@@ -43,7 +43,7 @@ public class GeneContentDistanceTest {
         final TaxaBlock taxaFromSplitsTree4 = new TaxaBlock();
         final DistancesBlock distancesFromSplitsTree4 = new DistancesBlock();
         taxaFromSplitsTree4.addTaxaByNames
-                (DistancesNexusIO.parse(new NexusStreamParser(new FileReader("test//distances//dolphinsGeneCont.nex")),
+                (new DistancesNexusInput().parse(new NexusStreamParser(new FileReader("test//distances//dolphinsGeneCont.nex")),
                         taxaFromSplitsTree4, distancesFromSplitsTree4, null));
 
 
@@ -53,7 +53,7 @@ public class GeneContentDistanceTest {
 
         // test 2
 
-        List<String> taxonNames2 = CharactersNexusIO.parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock, format);
+        List<String> taxonNames2 = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock, format);
         taxaBlock.addTaxaByNames(taxonNames2);
         DistancesBlock distancesBlock2 = new DistancesBlock();
 
@@ -63,7 +63,7 @@ public class GeneContentDistanceTest {
         final TaxaBlock taxaFromSplitsTree4_2 = new TaxaBlock();
         final DistancesBlock distancesFromSplitsTree4_2 = new DistancesBlock();
         taxaFromSplitsTree4.addTaxaByNames
-                (DistancesNexusIO.parse(new NexusStreamParser(new FileReader("test//distances//dolphinsGeneContML.nex")),
+                (new DistancesNexusInput().parse(new NexusStreamParser(new FileReader("test//distances//dolphinsGeneContML.nex")),
                         taxaFromSplitsTree4_2, distancesFromSplitsTree4_2, null));
 
 

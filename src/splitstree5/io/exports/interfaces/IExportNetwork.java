@@ -16,13 +16,28 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package splitstree5.io.exports.interfaces;
 
-package splitstree5.core.algorithms.interfaces;
+import splitstree5.core.algorithms.interfaces.IFromNetwork;
+import splitstree5.core.datablocks.NetworkBlock;
+import splitstree5.core.datablocks.TaxaBlock;
+
+import java.io.IOException;
+import java.io.Writer;
 
 /**
- * to analysis results interface.
- * This is used to identify algorithms at runtime
- * Daniel Huson, 1/31/17.
+ * export network
+ * Daniel Huson, 1.2018
  */
-public interface IToAnalysisResults {
+public interface IExportNetwork extends IExporter, IFromNetwork {
+    /**
+     * export characters
+     *
+     * @param w
+     * @param taxa
+     * @param network
+     */
+    void export(Writer w, TaxaBlock taxa, NetworkBlock network) throws IOException;
+
+    ;
 }

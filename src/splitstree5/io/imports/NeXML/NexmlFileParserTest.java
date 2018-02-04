@@ -4,10 +4,10 @@ import org.junit.Test;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.io.nexus.CharactersNexusIO;
-import splitstree5.io.nexus.TaxaNexusIO;
+import splitstree5.io.nexus.CharactersNexusOutput;
+import splitstree5.io.nexus.TaxaNexusOutput;
 import splitstree5.io.nexus.TreesNexusFormat;
-import splitstree5.io.nexus.TreesNexusIO;
+import splitstree5.io.nexus.TreesNexusOutput;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -23,7 +23,7 @@ public class NexmlFileParserTest {
         // printing
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
-        TaxaNexusIO.write(w1, taxaBlock);
+        new TaxaNexusOutput().write(w1, taxaBlock);
         System.err.println(w1.toString());
 
     }
@@ -39,8 +39,8 @@ public class NexmlFileParserTest {
         // printing
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
-        //TaxaNexusIO.write(w1, taxaBlock);
-        CharactersNexusIO.write(w1, taxaBlock, charactersBlock, null);
+        //new TaxaNexusOutput().write(w1, taxaBlock);
+        new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock, null);
         System.err.println(w1.toString());
     }
 
@@ -55,8 +55,8 @@ public class NexmlFileParserTest {
         // printing
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
-        TaxaNexusIO.write(w1, taxaBlock);
-        CharactersNexusIO.write(w1, taxaBlock, charactersBlock, null);
+        new TaxaNexusOutput().write(w1, taxaBlock);
+        new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock, null);
         System.err.println(w1.toString());
     }
 
@@ -71,10 +71,10 @@ public class NexmlFileParserTest {
         // printing
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
-        TaxaNexusIO.write(w1, taxaBlock);
+        new TaxaNexusOutput().write(w1, taxaBlock);
         TreesNexusFormat treesNexusFormat = new TreesNexusFormat();
         treesNexusFormat.setTranslate(false);
-        TreesNexusIO.write(w1, taxaBlock, treesBlock, treesNexusFormat);
+        new TreesNexusOutput().write(w1, taxaBlock, treesBlock, treesNexusFormat);
         System.err.println(w1.toString());
     }
 

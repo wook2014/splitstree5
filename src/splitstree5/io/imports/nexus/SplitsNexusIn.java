@@ -16,41 +16,30 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package splitstree5.io.imports.nexus;
 
-package splitstree5.core.datablocks;
+import jloda.util.parse.NexusStreamParser;
+import splitstree5.core.datablocks.SplitsBlock;
+import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.io.imports.interfaces.IImportSplits;
+import splitstree5.io.nexus.SplitsNexusInput;
 
-
-import splitstree5.core.algorithms.interfaces.IFromAnalysisResults;
-import splitstree5.core.algorithms.interfaces.IToAnalysisResults;
-
+import java.io.IOException;
+import java.util.List;
 
 /**
- * This block saves the result of an analysis in its info variable
- * Daniel Huson 12/2016
+ * nexus splits importer
+ * daniel huson, 2.2018
  */
-public class AnalysisResultBlock extends DataBlock {
+public class SplitsNexusIn extends NexusImporter<SplitsBlock> implements IImportSplits {
+
     @Override
-    public void clear() {
-        super.clear();
+    public boolean isApplicable(String fileName) throws IOException {
+        return isApplicable(fileName, SplitsNexusInput.NAME);
     }
 
     @Override
-    public int size() {
-        return getShortDescription() == null ? 0 : getShortDescription().length();
-    }
-
-    @Override
-    public Class getFromInterface() {
-        return IFromAnalysisResults.class;
-    }
-
-    @Override
-    public Class getToInterface() {
-        return IToAnalysisResults.class;
-    }
-
-    @Override
-    public String getInfo() {
-        return "analysis results";
+    public List<String> parseBlock(NexusStreamParser np, TaxaBlock taxaBlock, SplitsBlock dataBlock) throws IOException {
+        return new SplitsNexusInput().parse(np, taxaBlock, dataBlock, null);
     }
 }

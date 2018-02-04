@@ -51,6 +51,19 @@ public class PluginClassLoader {
      * @return instances
      */
     public static <T> List<T> getInstances(Class<T> clazz1, Class clazz2, String... packageNames) {
+        return getInstances(null, clazz1, clazz2, packageNames);
+    }
+
+    /**
+     * get an instance of each class of the given types in the given packages
+     *
+     * @param className    the name of the class (ignoring case)
+     * @param clazz1       this must be assignable from the returned class
+     * @param clazz2       if non-null, must also be assignable from the returned class
+     * @param packageNames
+     * @return instances
+     */
+    public static <T> List<T> getInstances(String className, Class<T> clazz1, Class clazz2, String... packageNames) {
         final List<T> plugins = new LinkedList<>();
         final LinkedList<String> packageNameQueue = new LinkedList<>();
         packageNameQueue.addAll(Arrays.asList(packageNames));
@@ -65,7 +78,8 @@ public class PluginClassLoader {
                         try {
                             resources[i] = resources[i].substring(0, resources[i].length() - 6);
                             final Class<T> c = ResourcesUtils.classForName(packageName.concat(".").concat(resources[i]));
-                            if (!c.isInterface() && !Modifier.isAbstract(c.getModifiers()) && clazz1.isAssignableFrom(c) && (clazz2 == null || clazz2.isAssignableFrom(c))) {
+                            if (!c.isInterface() && !Modifier.isAbstract(c.getModifiers()) && clazz1.isAssignableFrom(c) && (clazz2 == null || clazz2.isAssignableFrom(c))
+                                    && (className == null || Basic.getShortName(c).equalsIgnoreCase(className))) {
                                 try {
                                     plugins.add(c.newInstance());
                                 } catch (InstantiationException ex) {
@@ -92,17 +106,6 @@ public class PluginClassLoader {
             }
         }
         return plugins;
-    }
-
-    /**
-     * get an instance of each class of the given type in the given packages
-     *
-     * @param packageNames
-     * @param clazz
-     * @return instances
-     */
-    public static <T> List<T> getInstances(String[] packageNames, Class<T> clazz) {
-        return getInstances(clazz, null, packageNames);
     }
 }
 

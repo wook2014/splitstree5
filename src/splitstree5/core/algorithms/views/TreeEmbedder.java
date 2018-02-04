@@ -232,7 +232,8 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
 
     /**
      * scale all node coordinates so that they fit into the current scene
-     *  @param optionLayout
+     *
+     * @param optionLayout
      * @param target
      * @param node2point
      */

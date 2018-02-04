@@ -17,12 +17,24 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.algorithms.interfaces;
+package splitstree5.io.exports.interfaces;
+
+import splitstree5.core.algorithms.interfaces.IFromAnalysis;
+import splitstree5.core.datablocks.AnalysisBlock;
+
+import java.io.IOException;
+import java.io.Writer;
 
 /**
- * from analysis results interface.
- * This is used to identify algorithms at runtime
- * Daniel Huson, 1/31/17.
+ * export analysis
+ * Daniel Huson, 1.2018
  */
-public interface IFromAnalysisResults extends IFrom {
+public interface IExportAnalysis extends IExporter, IFromAnalysis {
+    /**
+     * export analysis
+     *
+     * @param w
+     * @param analysis
+     */
+    void export(Writer w, AnalysisBlock analysis) throws IOException;
 }

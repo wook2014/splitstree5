@@ -24,17 +24,26 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 
 /**
- * Taxa block block nexus implementation
- * Daniel Huson, 12/22/16.
+ * taxa nexus input
+ * Daniel Huson, 2.2018
  */
-public class TaxaNexusIO {
-    private static final String NAME = "TAXA";
+public class TaxaNexusInput {
+    public static final String NAME = "TAXA";
 
-    public static final String SYNTAX = "BEGIN TAXA;\n" +
+    /**
+     * is the parser at the beginning of a block that this class can parse?
+     *
+     * @param np
+     * @return true, if can parse from here
+     */
+    public boolean atBeginOfBlock(NexusStreamParser np) {
+        return np.peekMatchIgnoreCase("begin " + NAME + ";");
+    }
+
+    public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
             "\t[TITLE title;]\n" +
             "\tDIMENSIONS NTAX=number-of-taxa;\n" +
             "\t[TAXLABELS\n" +
@@ -45,12 +54,7 @@ public class TaxaNexusIO {
             "\t;]\n" +
             "END;\n";
 
-    /**
-     * gets syntax
-     *
-     * @return syntax message
-     */
-    public static String getSyntax() {
+    public String getSyntax() {
         return SYNTAX;
     }
 
@@ -62,7 +66,7 @@ public class TaxaNexusIO {
      * @return list of taxon names found
      * @throws IOException
      */
-    public static ArrayList<String> parse(NexusStreamParser np, TaxaBlock taxaBlock) throws IOException {
+    public ArrayList<String> parse(NexusStreamParser np, TaxaBlock taxaBlock) throws IOException {
         final ArrayList<String> taxonNamesFound = new ArrayList<>();
 
         taxaBlock.getTaxa().clear();
@@ -125,42 +129,5 @@ public class TaxaNexusIO {
         }
         np.matchEndBlock();
         return taxonNamesFound;
-    }
-
-
-    /**
-     * writes the taxa block in nexus format
-     *
-     * @param w
-     * @param taxaBlock
-     * @throws IOException
-     */
-    public static void write(Writer w, TaxaBlock taxaBlock) throws IOException {
-        w.write("\nBEGIN " + NAME + ";\n");
-        UtilitiesNexusIO.writeTitleLinks(w, taxaBlock);
-        w.write("\tDIMENSIONS ntax=" + taxaBlock.getNtax() + ";\n");
-        w.write("\tTAXLABELS\n");
-        for (int i = 1; i <= taxaBlock.getNtax(); i++)
-            w.write("\t\t[" + i + "] '" + taxaBlock.get(i).getName() + "'\n");
-        w.write("\t;\n");
-        if (hasInfos(taxaBlock)) {
-            w.write("\tTAXINFO\n");
-            for (int i = 1; i <= taxaBlock.getNtax(); i++)
-                w.write("\t\t[" + i + "] '" + taxaBlock.get(i).getInfo() + "'\n");
-            w.write(";\n");
-        }
-        w.write("END; [" + NAME + "]\n");
-    }
-
-    /**
-     * returns true, if any taxon has an info string associated with it
-     *
-     * @return true, if some taxon has info
-     */
-    private static boolean hasInfos(TaxaBlock taxaBlock) {
-        for (int t = 1; t <= taxaBlock.getNtax(); t++)
-            if (taxaBlock.get(t).getInfo() != null && taxaBlock.get(t).getInfo().length() > 0)
-                return true;
-        return false;
     }
 }

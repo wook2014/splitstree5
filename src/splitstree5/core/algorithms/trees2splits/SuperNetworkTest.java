@@ -7,9 +7,7 @@ import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
-import splitstree5.io.nexus.SplitsNexusIO;
-import splitstree5.io.nexus.TaxaNexusIO;
-import splitstree5.io.nexus.TreesNexusIO;
+import splitstree5.io.nexus.*;
 
 import java.io.FileReader;
 import java.io.StringWriter;
@@ -35,8 +33,8 @@ public class SuperNetworkTest {
         TreesBlock treesBlock = new TreesBlock();
         NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/trees6-partial.nex"));
         np.matchIgnoreCase("#nexus");
-        TaxaNexusIO.parse(np, taxaBlock);
-        TreesNexusIO.parse(np, taxaBlock, treesBlock, null);
+        new TaxaNexusInput().parse(np, taxaBlock);
+        new TreesNexusInput().parse(np, taxaBlock, treesBlock, null);
 
         final SplitsBlock splitsBlock = new SplitsBlock();
         System.err.println(treesBlock.isPartial());
@@ -46,9 +44,9 @@ public class SuperNetworkTest {
         // printing
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
-        TaxaNexusIO.write(w, taxaBlock);
-        TreesNexusIO.write(w, taxaBlock, treesBlock, null);
-        SplitsNexusIO.write(w, taxaBlock, splitsBlock, null);
+        new TaxaNexusOutput().write(w, taxaBlock);
+        new TreesNexusOutput().write(w, taxaBlock, treesBlock, null);
+        new SplitsNexusOutput().write(w, taxaBlock, splitsBlock, null);
         System.err.println(w.toString());
 
         // compare splits
@@ -56,8 +54,8 @@ public class SuperNetworkTest {
         SplitsBlock splitsFromST4 = new SplitsBlock();
         NexusStreamParser np4 = new NexusStreamParser(new FileReader("test/splits/trees6-partial-SuperNet.nex"));
         np4.matchIgnoreCase("#nexus");
-        TaxaNexusIO.parse(np4, taxaFromST4);
-        SplitsNexusIO.parse(np4, taxaFromST4, splitsFromST4, null);
+        new TaxaNexusInput().parse(np4, taxaFromST4);
+        new SplitsNexusInput().parse(np4, taxaFromST4, splitsFromST4, null);
 
         double[] confidences = {33.0, 33.0, 33.0, 33.0, 33.0, 33.0, 33.0, 33.0, 33.0, 33.0, 33.0, 28.0, 28.0, 28.0};
         assertEquals(splitsBlock.size(), splitsFromST4.size());
@@ -83,8 +81,8 @@ public class SuperNetworkTest {
         TreesBlock treesBlock1 = new TreesBlock();
         NexusStreamParser np1 = new NexusStreamParser(new FileReader("test/nexus/trees49-taxa.nex"));
         np1.matchIgnoreCase("#nexus");
-        TaxaNexusIO.parse(np1, taxaBlock1);
-        TreesNexusIO.parse(np1, taxaBlock1, treesBlock1, null);
+        new TaxaNexusInput().parse(np1, taxaBlock1);
+        new TreesNexusInput().parse(np1, taxaBlock1, treesBlock1, null);
 
         final SplitsBlock splitsBlock1 = new SplitsBlock();
         System.err.println(treesBlock1.isPartial());
@@ -94,9 +92,9 @@ public class SuperNetworkTest {
         // printing
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
-        TaxaNexusIO.write(w1, taxaBlock1);
-        TreesNexusIO.write(w1, taxaBlock1, treesBlock1, null);
-        SplitsNexusIO.write(w1, taxaBlock1, splitsBlock1, null);
+        new TaxaNexusOutput().write(w1, taxaBlock1);
+        new TreesNexusOutput().write(w1, taxaBlock1, treesBlock1, null);
+        new SplitsNexusOutput().write(w1, taxaBlock1, splitsBlock1, null);
         System.err.println(w1.toString());
 
         // compare splits
@@ -104,8 +102,8 @@ public class SuperNetworkTest {
         SplitsBlock splitsFromST41 = new SplitsBlock();
         NexusStreamParser np41 = new NexusStreamParser(new FileReader("test/splits/trees49-SuperNet-noFilter.nex"));
         np41.matchIgnoreCase("#nexus");
-        TaxaNexusIO.parse(np41, taxaFromST41);
-        SplitsNexusIO.parse(np41, taxaFromST41, splitsFromST41, null);
+        new TaxaNexusInput().parse(np41, taxaFromST41);
+        new SplitsNexusInput().parse(np41, taxaFromST41, splitsFromST41, null);
 
         double[] confidences1 = {4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4367.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4457.0, 4367.0, 4457.0};
 
@@ -136,8 +134,8 @@ public class SuperNetworkTest {
         TreesBlock treesBlock2 = new TreesBlock();
         NexusStreamParser np2 = new NexusStreamParser(new FileReader("test/nexus/trees6-translate.nex"));
         np2.matchIgnoreCase("#nexus");
-        TaxaNexusIO.parse(np2, taxaBlock2);
-        TreesNexusIO.parse(np2, taxaBlock2, treesBlock2, null);
+        new TaxaNexusInput().parse(np2, taxaBlock2);
+        new TreesNexusInput().parse(np2, taxaBlock2, treesBlock2, null);
 
         final SplitsBlock splitsBlock2 = new SplitsBlock();
         superNetwork.compute(new ProgressPercentage(), taxaBlock2, treesBlock2, splitsBlock2);
@@ -145,9 +143,9 @@ public class SuperNetworkTest {
         // printing
         final StringWriter w2 = new StringWriter();
         w2.write("#nexus\n");
-        TaxaNexusIO.write(w2, taxaBlock2);
-        TreesNexusIO.write(w2, taxaBlock2, treesBlock2, null);
-        SplitsNexusIO.write(w2, taxaBlock2, splitsBlock2, null);
+        new TaxaNexusOutput().write(w2, taxaBlock2);
+        new TreesNexusOutput().write(w2, taxaBlock2, treesBlock2, null);
+        new SplitsNexusOutput().write(w2, taxaBlock2, splitsBlock2, null);
         System.err.println(w2.toString());
 
         // compare splits
@@ -155,8 +153,8 @@ public class SuperNetworkTest {
         SplitsBlock splitsFromST42 = new SplitsBlock();
         NexusStreamParser np42 = new NexusStreamParser(new FileReader("test/splits/trees6-SuperNet.nex"));
         np42.matchIgnoreCase("#nexus");
-        TaxaNexusIO.parse(np42, taxaFromST42);
-        SplitsNexusIO.parse(np42, taxaFromST42, splitsFromST42, null);
+        new TaxaNexusInput().parse(np42, taxaFromST42);
+        new SplitsNexusInput().parse(np42, taxaFromST42, splitsFromST42, null);
 
         double[] confidences2 = {36.0, 36.0, 36.0, 36.0, 36.0, 36.0, 36.0, 36.0, 36.0, 36.0, 36.0, 36.0, 36.0, 36.0};
         assertEquals(splitsBlock2.size(), splitsFromST42.size());
@@ -177,8 +175,8 @@ public class SuperNetworkTest {
         TreesBlock treesBlock3 = new TreesBlock();
         NexusStreamParser np3 = new NexusStreamParser(new FileReader("test/nexus/trees6-translate.nex"));
         np3.matchIgnoreCase("#nexus");
-        TaxaNexusIO.parse(np3, taxaBlock3);
-        TreesNexusIO.parse(np3, taxaBlock3, treesBlock3, null);
+        new TaxaNexusInput().parse(np3, taxaBlock3);
+        new TreesNexusInput().parse(np3, taxaBlock3, treesBlock3, null);
 
         final SplitsBlock splitsBlock3 = new SplitsBlock();
         superNetwork.setOptionZRule(false);
@@ -191,9 +189,9 @@ public class SuperNetworkTest {
         // printing
         final StringWriter w3 = new StringWriter();
         w3.write("#nexus\n");
-        TaxaNexusIO.write(w3, taxaBlock3);
-        TreesNexusIO.write(w3, taxaBlock3, treesBlock3, null);
-        SplitsNexusIO.write(w3, taxaBlock3, splitsBlock3, null);
+        new TaxaNexusOutput().write(w3, taxaBlock3);
+        new TreesNexusOutput().write(w3, taxaBlock3, treesBlock3, null);
+        new SplitsNexusOutput().write(w3, taxaBlock3, splitsBlock3, null);
         System.err.println(w3.toString());
 
         // compare splits
@@ -201,8 +199,8 @@ public class SuperNetworkTest {
         SplitsBlock splitsFromST43 = new SplitsBlock();
         NexusStreamParser np43 = new NexusStreamParser(new FileReader("test/splits/trees6-SuperNet-Param.nex"));
         np43.matchIgnoreCase("#nexus");
-        TaxaNexusIO.parse(np43, taxaFromST43);
-        SplitsNexusIO.parse(np43, taxaFromST43, splitsFromST43, null);
+        new TaxaNexusInput().parse(np43, taxaFromST43);
+        new SplitsNexusInput().parse(np43, taxaFromST43, splitsFromST43, null);
 
         double[] confidences3 = {36.0, 36.0, 36.0, 36.0, 36.0, 36.0, 36.0};
         assertEquals(splitsBlock3.size(), splitsFromST43.size());
@@ -223,8 +221,8 @@ public class SuperNetworkTest {
         TreesBlock treesBlock4 = new TreesBlock();
         NexusStreamParser np_4 = new NexusStreamParser(new FileReader("test/nexus/trees6-translate.nex"));
         np_4.matchIgnoreCase("#nexus");
-        TaxaNexusIO.parse(np_4, taxaBlock4);
-        TreesNexusIO.parse(np_4, taxaBlock4, treesBlock4, null);
+        new TaxaNexusInput().parse(np_4, taxaBlock4);
+        new TreesNexusInput().parse(np_4, taxaBlock4, treesBlock4, null);
 
         final SplitsBlock splitsBlock4 = new SplitsBlock();
         superNetwork.setOptionZRule(true);
@@ -237,9 +235,9 @@ public class SuperNetworkTest {
         // printing
         final StringWriter w4 = new StringWriter();
         w4.write("#nexus\n");
-        TaxaNexusIO.write(w4, taxaBlock4);
-        TreesNexusIO.write(w4, taxaBlock4, treesBlock4, null);
-        SplitsNexusIO.write(w4, taxaBlock4, splitsBlock4, null);
+        new TaxaNexusOutput().write(w4, taxaBlock4);
+        new TreesNexusOutput().write(w4, taxaBlock4, treesBlock4, null);
+        new SplitsNexusOutput().write(w4, taxaBlock4, splitsBlock4, null);
         System.err.println(w4.toString());
 
         // compare splits
@@ -247,8 +245,8 @@ public class SuperNetworkTest {
         SplitsBlock splitsFromST44 = new SplitsBlock();
         NexusStreamParser np44 = new NexusStreamParser(new FileReader("test/splits/trees6-SuperNet-AR.nex"));
         np44.matchIgnoreCase("#nexus");
-        TaxaNexusIO.parse(np44, taxaFromST44);
-        SplitsNexusIO.parse(np44, taxaFromST44, splitsFromST44, null);
+        new TaxaNexusInput().parse(np44, taxaFromST44);
+        new SplitsNexusInput().parse(np44, taxaFromST44, splitsFromST44, null);
 
         double[] confidences4 = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
         assertEquals(splitsBlock4.size(), splitsFromST44.size());

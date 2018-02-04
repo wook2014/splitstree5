@@ -38,6 +38,7 @@ import splitstree5.gui.texttab.TextViewTab;
  */
 public class DataViewTab extends TextViewTab {
     private final ChangeListener<UpdateState> stateChangeListener;
+
     /**
      * constructor
      *
