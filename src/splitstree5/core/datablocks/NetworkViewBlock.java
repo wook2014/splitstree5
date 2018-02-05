@@ -80,7 +80,8 @@ public class NetworkViewBlock extends ViewDataBlock implements IHasTab {
                 networkViewTab.setToolBar(new AlgorithmBreadCrumbsToolBar(getDocument(), getDataNode()));
                 ((AlgorithmBreadCrumbsToolBar) networkViewTab.getToolBar()).update();
             }
-
+            if (networkViewTab.getTabPane() != null)
+                networkViewTab.getTabPane().getSelectionModel().select(networkViewTab);
         });
     }
 

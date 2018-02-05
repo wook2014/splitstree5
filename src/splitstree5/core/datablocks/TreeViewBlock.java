@@ -75,6 +75,8 @@ public class TreeViewBlock extends ViewDataBlock implements IHasTab {
                 treeViewTab.setToolBar(new AlgorithmBreadCrumbsToolBar(getDocument(), getDataNode()));
                 ((AlgorithmBreadCrumbsToolBar) treeViewTab.getToolBar()).update();
             }
+            if (treeViewTab.getTabPane() != null)
+                treeViewTab.getTabPane().getSelectionModel().select(treeViewTab);
         });
     }
 

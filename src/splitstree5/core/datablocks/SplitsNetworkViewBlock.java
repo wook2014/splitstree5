@@ -120,7 +120,8 @@ public class SplitsNetworkViewBlock extends ViewDataBlock implements IHasTab {
                 splitsViewTab.setToolBar(new AlgorithmBreadCrumbsToolBar(getDocument(), getDataNode()));
                 ((AlgorithmBreadCrumbsToolBar) splitsViewTab.getToolBar()).update();
             }
-
+            if (splitsViewTab.getTab().getTabPane() != null)
+                splitsViewTab.getTab().getTabPane().getSelectionModel().select(splitsViewTab.getTab());
         });
     }
 

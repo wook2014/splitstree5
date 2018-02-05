@@ -114,9 +114,9 @@ public class PairwiseCompare {
                                 Fcount[statex][statey] += weight * charWeight;
                             else {
                                 if (statex < 0)
-                                    throw new SplitsException("Position " + k + " for taxa " + i + " is the invalid character " + cx);
+                                    throw new SplitsException("Position " + k + " for taxa " + i + ": invalid character '" + cx + "'");
                                 else if (statey < 0)
-                                    throw new SplitsException("Position " + k + " for taxa " + j + " is the invalid character " + cy);
+                                    throw new SplitsException("Position " + k + " for taxa " + j + ": invalid character '" + cy + "'");
                             }
                         }
                     }
@@ -132,9 +132,9 @@ public class PairwiseCompare {
                     Fcount[statei][statej] += charWeight;
                 else {
                     if (statei < 0)
-                        throw new SplitsException("Position " + k + " for taxa " + i + " is the invalid character " + ci);
+                        throw new SplitsException("Position " + k + " for taxa " + i + ": invalid character '" + ci + "'");
                     else if (statej < 0)
-                        throw new SplitsException("Position " + k + " for taxa " + j + " is the invalid character " + cj);
+                        throw new SplitsException("Position " + k + " for taxa " + j + ": invalid character '" + cj + "'");
                 }
             }
         }
