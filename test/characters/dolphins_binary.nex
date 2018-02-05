@@ -1,3 +1,5 @@
+#nexus
+
 BEGIN Characters;
 DIMENSIONS ntax=36 nchar=60;
 FORMAT

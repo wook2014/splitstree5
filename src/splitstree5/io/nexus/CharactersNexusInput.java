@@ -26,6 +26,7 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.datablocks.characters.CharactersType;
 import splitstree5.gui.utils.Alert;
+import splitstree5.io.imports.IOExceptionWithLineNumber;
 import splitstree5.io.nexus.stateLabeler.MicrostatStateLabeler;
 import splitstree5.io.nexus.stateLabeler.ProteinStateLabeler;
 import splitstree5.io.nexus.stateLabeler.StandardStateLabeler;
@@ -154,10 +155,10 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
 
             // we ignore respect case:
             {
-                boolean respectCase = np.findIgnoreCase(formatTokens, "respectcase=yes", true, false);
-                respectCase = np.findIgnoreCase(formatTokens, "respectcase=no", false, respectCase);
-                respectCase = np.findIgnoreCase(formatTokens, "respectcase", true, respectCase);
-                respectCase = np.findIgnoreCase(formatTokens, "no respectcase", false, respectCase);
+                boolean respectCase = np.findIgnoreCase(formatTokens, "respectCase=yes", true, false);
+                respectCase = np.findIgnoreCase(formatTokens, "respectCase=no", false, respectCase);
+                respectCase = np.findIgnoreCase(formatTokens, "respectCase", true, respectCase);
+                respectCase = np.findIgnoreCase(formatTokens, "no respectCase", false, respectCase);
                 if (respectCase)
                     System.err.println("WARNING: Format 'RespectCase' not implemented. All character-states will be converted to lower case");
             }
@@ -232,7 +233,7 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
 
         characters.setCharLabeler(null);
         characters.setStateLabeler(null);
-        if (np.peekMatchIgnoreCase("CharStateLabels")) { // todo is false for ferment4-diploid (microsat data)
+        if (np.peekMatchIgnoreCase("CharStateLabels")) { // todo: is false for ferment4-diploid (microsat data)
             np.matchIgnoreCase("CharStateLabels");
             switch (characters.getDataType()) {
                 case protein:
@@ -463,12 +464,16 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
 
         try {
             int c = 0;
+            boolean firstBlock = true;
             while (c < characters.getNchar()) {
-                int linelength = 0;
+                int lineLength = 0;
                 for (int t = 1; t <= characters.getNtax(); t++) {
                     if (format.isLabels()) {
                         if (taxa.getNtax() == 0) {
-                            taxonNamesFound.add(np.getLabelRespectCase());
+                            final String name = np.getLabelRespectCase();
+                            if (firstBlock) {
+                                taxonNamesFound.add(name);
+                            }
                         } else {
                             np.matchLabelRespectCase(taxa.getLabel(t));
                             taxonNamesFound.add(taxa.getLabel(t));
@@ -477,34 +482,37 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
                     } else {
                         np.setEolIsSignificant(true);
                         if (t == 1 && np.nextToken() != StreamTokenizer.TT_EOL) //cosume eol
-                            throw new IOException("line " + np.lineno() + ": EOL expected");
+                            throw new IOExceptionWithLineNumber("EOL expected", np.lineno());
                     }
 
                     final String str;
-                    if (format.isTokens()) {
-                        if (characters.getStateLabeler() == null)
-                            characters.setStateLabeler(new StandardStateLabeler(characters.getNchar(), characters.getMissingCharacter(), format.getMatchChar(), characters.getGapCharacter()));
-                        final LinkedList<String> tokenList = new LinkedList<>();
-                        while (np.peekNextToken() != StreamTokenizer.TT_EOL && np.peekNextToken() != StreamTokenizer.TT_EOF) {
-                            tokenList.add(np.getWordRespectCase());
+                    try {
+                        if (format.isTokens()) {
+                            if (characters.getStateLabeler() == null)
+                                characters.setStateLabeler(new StandardStateLabeler(characters.getNchar(), characters.getMissingCharacter(), format.getMatchChar(), characters.getGapCharacter()));
+                            final LinkedList<String> tokenList = new LinkedList<>();
+                            while (np.peekNextToken() != StreamTokenizer.TT_EOL && np.peekNextToken() != StreamTokenizer.TT_EOF) {
+                                tokenList.add(np.getWordRespectCase());
+                            }
+                            str = characters.getStateLabeler().parseSequence(tokenList, c + 1, false);
+                        } else {
+                            final StringBuilder buf = new StringBuilder();
+                            while (np.peekNextToken() != StreamTokenizer.TT_EOL && np.peekNextToken() != StreamTokenizer.TT_EOF) {
+                                buf.append(np.getWordRespectCase());
+                            }
+                            str = buf.toString();
                         }
-                        str = characters.getStateLabeler().parseSequence(tokenList, c + 1, false);
-                    } else {
-                        final StringBuilder buf = new StringBuilder();
-                        while (np.peekNextToken() != StreamTokenizer.TT_EOL && np.peekNextToken() != StreamTokenizer.TT_EOF) {
-                            buf.append(np.getWordRespectCase());
-                        }
-                        str = buf.toString();
+                        np.nextToken(); // consume the eol
+                    } finally {
+                        np.setEolIsSignificant(false);
                     }
 
-                    np.nextToken(); // consume the eol
-                    np.setEolIsSignificant(false);
                     if (t == 1) { // first line in this block
-                        linelength = str.length();
-                    } else if (linelength != str.length())
-                        throw new IOException("line " + np.lineno() + ": wrong number of chars: " + str.length() + " should be: " + linelength);
+                        lineLength = str.length();
+                    } else if (lineLength != str.length())
+                        throw new IOExceptionWithLineNumber("Wrong number of chars: " + str.length() + " should be: " + lineLength, np.lineno());
 
-                    for (int d = 1; d <= linelength; d++) {
+                    for (int d = 1; d <= lineLength; d++) {
                         int i = c + d;
                         if (i > characters.getNchar())
                             throw new IOException("line " + np.lineno() + ": too many chars");
@@ -519,14 +527,14 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
 
                         if (ch == format.getMatchChar()) {
                             if (t == 1) {
-                                throw new IOException("line " + np.lineno() + ": matchchar illegal in first sequence");
+                                throw new IOExceptionWithLineNumber("matchChar illegal in first sequence", np.lineno());
                             } else
                                 characters.set(t, i, characters.get(1, i));
                         } else {
                             if (!checkStates || isValidState(characters, format, ch))
                                 characters.set(t, i, ch);
                             else if (treatUnknownAsError)
-                                throw new IOException("line " + np.lineno() + " invalid character: " + ch);
+                                throw new IOExceptionWithLineNumber("Invalid character: " + ch, np.lineno());
                             else  // don't know this, replace by gap
                             {
                                 characters.set(t, i, characters.getGapCharacter());
@@ -535,7 +543,8 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
                         }
                     }
                 }
-                c += linelength;
+                firstBlock = false;
+                c += lineLength;
             }
         } finally {
             np.setEolIsSignificant(false);

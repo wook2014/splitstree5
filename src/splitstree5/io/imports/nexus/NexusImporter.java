@@ -100,8 +100,15 @@ public abstract class NexusImporter<D extends DataBlock> {
      */
     public boolean isApplicable(String fileName, String blockName) throws IOException {
         try (FileInputIterator it = new FileInputIterator(fileName)) {
+            boolean first = true;
             while (it.hasNext()) {
                 final String aLine = it.next().toLowerCase();
+                if (first) {
+                    if (!aLine.startsWith("#nexus"))
+                        return false;
+                    first = false;
+                }
+
                 if (aLine.startsWith("begin")) {
                     final NexusStreamParser np = new NexusStreamParser(new StringReader(aLine));
                     if (np.peekMatchIgnoreCase("begin " + blockName + ";"))
