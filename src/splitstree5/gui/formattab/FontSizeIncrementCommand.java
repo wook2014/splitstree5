@@ -73,15 +73,21 @@ public class FontSizeIncrementCommand extends UndoableRedoableCommand {
         if (nodes != null && node2view != null) {
             for (Node v : nodes) {
                 Labeled label = node2view.get(v).getLabel();
-                if (label != null)
-                    label.setStyle("-fx-font-size: " + (label.getFont().getSize() - increment) + ";");
+                if (label != null) {
+                    final double size = (label.getFont().getSize() - increment);
+                    if (size >= 0)
+                        label.setStyle("-fx-font-size: " + size + ";");
+                }
             }
         }
         if (edges != null && edge2view != null) {
             for (Edge v : edges) {
                 Labeled label = edge2view.get(v).getLabel();
-                if (label != null)
-                    label.setStyle("-fx-font-size: " + (label.getFont().getSize() - increment) + ";");
+                if (label != null) {
+                    final double size = (label.getFont().getSize() - increment);
+                    if (size >= 0)
+                        label.setStyle("-fx-font-size: " + size + ";");
+                }
             }
         }
     }
@@ -91,15 +97,19 @@ public class FontSizeIncrementCommand extends UndoableRedoableCommand {
         if (nodes != null && node2view != null) {
             for (Node v : nodes) {
                 Labeled label = node2view.get(v).getLabel();
-                if (label != null)
-                    label.setStyle("-fx-font-size: " + (label.getFont().getSize() + increment) + ";");
+                if (label != null) {
+                    final double size = (label.getFont().getSize() + increment);
+                    label.setStyle("-fx-font-size: " + size + ";");
+                }
             }
         }
         if (edges != null && edge2view != null) {
             for (Edge v : edges) {
                 Labeled label = edge2view.get(v).getLabel();
-                if (label != null)
-                    label.setStyle("-fx-font-size: " + (label.getFont().getSize() + increment) + ";");
+                if (label != null) {
+                    final double size = (label.getFont().getSize() + increment);
+                    label.setStyle("-fx-font-size: " + size + ";");
+                }
             }
         }
 

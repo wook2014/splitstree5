@@ -72,8 +72,8 @@ public class FormatItem implements Cloneable {
     private Color labelColor = null;
 
     private NodeShape nodeShape;
-    private Integer nodeWidth;
-    private Integer nodeHeight;
+    private Double nodeWidth;
+    private Double nodeHeight;
 
     private Color nodeColor = null;
 
@@ -99,11 +99,11 @@ public class FormatItem implements Cloneable {
         return nodeShape;
     }
 
-    public Integer getNodeWidth() {
+    public Double getNodeWidth() {
         return nodeWidth;
     }
 
-    public Integer getNodeHeight() {
+    public Double getNodeHeight() {
         return nodeHeight;
     }
 
@@ -211,7 +211,7 @@ public class FormatItem implements Cloneable {
             this.nodeShape = null;
     }
 
-    public void addNodeSize(Integer width, Integer height) {
+    public void addNodeSize(Double width, Double height) {
         if (this.nodeWidth == null && this.nodeHeight == null) {
             this.nodeWidth = width;
             this.nodeHeight = height;
@@ -272,7 +272,7 @@ public class FormatItem implements Cloneable {
                 }
                 if (nv.getNodeShape() != null) {
                     formatItem.addNodeShape((NodeShape.valueOf(nv.getNodeShape())));
-                    formatItem.addNodeSize((int) Math.round(nv.getWidth()), (int) Math.round(nv.getHeight()));
+                    formatItem.addNodeSize(nv.getWidth(), nv.getHeight());
                     formatItem.addNodeColor(nv.getFill());
                 }
             }

@@ -36,6 +36,7 @@ import splitstree5.core.workflow.IHasDataNode;
 import splitstree5.core.workflow.Workflow;
 import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.dialogs.importer.ImportDialog;
+import splitstree5.dialogs.importer.ImporterManager;
 import splitstree5.io.nexus.WorkflowNexusOutput;
 import splitstree5.menu.MenuController;
 
@@ -63,8 +64,8 @@ public class MainWindowMenuController {
 
         controller.getOpenMenuItem().setOnAction((e) -> {
             final FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Open SplitsTree5 file");
-            fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("SplitsTree5 Files", "*.nxs", "*.nex", "*.nexus"));
+            fileChooser.setTitle("Open input file");
+            fileChooser.getExtensionFilters().addAll(ImporterManager.getInstance().getAllExtensionFilters());
             final File file = fileChooser.showOpenDialog(mainWindow.getStage());
             if (file != null && FileOpener.isOpenable(file.getPath())) {
                 FileOpener.open(mainWindow, file.getPath()); // todo: add progress bar to window

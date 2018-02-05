@@ -127,7 +127,7 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, SplitsNetwork
 
         progress.setProgress(100);   //set progress to 100%
 
-        TreeEmbedder.scaleToFitTarget(GraphLayout.Radial, splitsViewTab.getTargetDimensions(), node2point);
+        TreeEmbedder.centerAndScaleToFitTarget(GraphLayout.Radial, splitsViewTab.getTargetDimensions(), node2point);
 
         // compute all views and put their parts into the appropriate groups
         for (Node v : graph.nodes()) {
@@ -145,6 +145,8 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, SplitsNetwork
             if (edgeView.getLabel() != null)
                 splitsViewTab.getEdgeLabelsGroup().getChildren().addAll(edgeView.getLabel());
         }
+
+
         Platform.runLater(() -> child.updateSelectionModels(graph, taxa, child.getDocument()));
         child.show();
 

@@ -72,7 +72,7 @@ public class SplitsTree5 extends Application {
         options.comment("Configuration:");
         final String defaultPreferenceFile;
         if (ProgramProperties.isMacOS())
-            defaultPreferenceFile = System.getProperty("user.home") + "/Library/Preferences/SplitsTree5Prefs.def";
+            defaultPreferenceFile = System.getProperty("user.home") + "/Library/Preferences/SplitsTree5.def";
         else
             defaultPreferenceFile = System.getProperty("user.home") + File.separator + ".SplitsTree5.def";
         final String propertiesFile = options.getOption("-p", "propertiesFile", "Properties file", defaultPreferenceFile);
@@ -117,5 +117,6 @@ public class SplitsTree5 extends Application {
 
     public void stop() {
         ProgramProperties.store();
+        System.exit(0);
     }
 }

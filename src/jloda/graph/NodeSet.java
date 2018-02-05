@@ -332,6 +332,10 @@ public class NodeSet extends GraphBase implements Set<Node> {
     public boolean intersects(NodeSet aset) {
         return bits.intersects(aset.bits);
     }
+
+    public void close() {
+        getOwner().registerNodeSet(this);
+    }
 }
 
 // EOF

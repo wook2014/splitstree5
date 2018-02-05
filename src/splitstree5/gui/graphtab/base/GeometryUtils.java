@@ -114,6 +114,7 @@
 package splitstree5.gui.graphtab.base;
 
 import javafx.geometry.Point2D;
+import javafx.geometry.Point3D;
 
 public class GeometryUtils {
     private final static double RAD_TO_DEG_FACTOR = 180.0 / Math.PI;
@@ -324,7 +325,14 @@ public class GeometryUtils {
      * @param B
      */
     public static double squaredDistance(Point2D A, Point2D B) {
-
         return (B.getX() - A.getX()) * (B.getX() - A.getX()) + (B.getY() - A.getY()) * (B.getY() - A.getY());
+    }
+
+    public static Point3D from2Dto3D(Point2D point) {
+        return new Point3D(point.getX(), point.getY(), 0);
+    }
+
+    public static Point2D from3Dto2D(Point3D point) {
+        return new Point2D(point.getX(), point.getY());
     }
 }

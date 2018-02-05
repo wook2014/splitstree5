@@ -157,6 +157,14 @@ public class SplitsBlock extends DataBlock {
     }
 
     public int[] getCycle() {
+        if (cycle == null && getNsplits() > 0) {
+            final BitSet taxa = new BitSet();
+            for (ASplit split : splits) {
+                taxa.or(split.getA());
+                taxa.or(split.getB());
+            }
+            cycle = SplitsUtilities.computeCycle(taxa.cardinality(), splits);
+        }
         return cycle;
     }
 

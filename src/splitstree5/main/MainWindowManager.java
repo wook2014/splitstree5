@@ -38,6 +38,7 @@
 
 package splitstree5.main;
 
+import javafx.application.Platform;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.ReadOnlyLongProperty;
 import javafx.beans.property.SimpleLongProperty;
@@ -122,7 +123,7 @@ public class MainWindowManager {
         mainWindow.getStage().close();
 
         if (mainWindows.size() == 0) {
-            System.exit(0); // todo: replace by Platform.exit();
+            Platform.exit();
         }
         return true;
     }

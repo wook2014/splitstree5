@@ -51,10 +51,10 @@ public class FormatTabController {
     private ComboBox<Double> edgeWidthComboBox;
 
     @FXML
-    private ComboBox<Integer> nodeWidthComboBox;
+    private ComboBox<Double> nodeWidthComboBox;
 
     @FXML
-    private ComboBox<Integer> nodeHeightComboBox;
+    private ComboBox<Double> nodeHeightComboBox;
 
     private FontSelector fontPicker;
 
@@ -89,11 +89,11 @@ public class FormatTabController {
         return edgeWidthComboBox;
     }
 
-    public ComboBox<Integer> getNodeWidthComboBox() {
+    public ComboBox<Double> getNodeWidthComboBox() {
         return nodeWidthComboBox;
     }
 
-    public ComboBox<Integer> getNodeHeightComboBox() {
+    public ComboBox<Double> getNodeHeightComboBox() {
         return nodeHeightComboBox;
     }
 }

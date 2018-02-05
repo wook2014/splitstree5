@@ -38,6 +38,7 @@
 
 package splitstree5.dialogs.exporter;
 
+import jloda.fx.RecentFilesManager;
 import jloda.util.Basic;
 import jloda.util.PluginClassLoader;
 import splitstree5.core.datablocks.*;
@@ -110,7 +111,7 @@ public class ExportManager {
     }
 
     /**
-     * export a datablock in the named foramt
+     * export a datablock in the named format
      *
      * @param fileName
      * @param taxaBlock
@@ -137,6 +138,7 @@ public class ExportManager {
             }
             System.err.println(String.format("Wrote %,d bytes to file: %s", (new File(fileName)).length(), fileName));
             // todo: use notification
+            RecentFilesManager.getInstance().addRecentFile(fileName);
         }
     }
 }

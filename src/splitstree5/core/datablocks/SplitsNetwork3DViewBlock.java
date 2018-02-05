@@ -19,7 +19,7 @@
 
 package splitstree5.core.datablocks;
 
-import splitstree5.gui.graphtab.SplitsView3DTab;
+import splitstree5.gui.graph3dtab.SplitsView3DTab;
 
 /**
  * This block represents the 3D view of a split network

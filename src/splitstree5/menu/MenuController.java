@@ -43,6 +43,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCharacterCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
+import jloda.fx.RecentFilesManager;
 import jloda.util.AppleStuff;
 import jloda.util.ProgramProperties;
 import splitstree5.main.MainWindow;
@@ -822,6 +823,7 @@ public class MenuController {
 
         alwaysOnMenuItems.add(fullScreenMenuItem);
         alwaysOnMenuItems.add(quitMenuItem);
+        alwaysOnMenuItems.add(openRecentMenu);
     }
 
     /**
@@ -850,9 +852,12 @@ public class MenuController {
     }
 
     /**
-     * enables all memnu items whose disable property is not bound and that have an action
+     * enables all menu items whose disable property is not bound and that have an action
      */
     public void enableAllUnboundActionMenuItems() {
+        if (getOpenRecentMenu().getItems().size() == 0) // can't do this in init because mainWindow not available there
+            RecentFilesManager.getInstance().setupMenu(mainWindow, getOpenRecentMenu());
+
         for (Menu menu : getMenuBar().getMenus()) {
             for (MenuItem menuItem : menu.getItems()) {
                 if (!alwaysOnMenuItems.contains(menuItem)) {

@@ -21,6 +21,7 @@ package splitstree5.dialogs.importer;
 
 import javafx.application.Platform;
 import javafx.stage.Stage;
+import jloda.fx.RecentFilesManager;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
@@ -54,9 +55,9 @@ public class Importer {
      *
      * @param parentMainWindow
      * @param importer
-     * @param filename
+     * @param fileName
      */
-    public static void apply(ProgressListener progress, MainWindow parentMainWindow, IImporter importer, String filename) {
+    public static void apply(ProgressListener progress, MainWindow parentMainWindow, IImporter importer, String fileName) {
         if (importer != null) {
             try {
                 final MainWindow mainWindow;
@@ -68,13 +69,13 @@ public class Importer {
                 }
                 final Document document = mainWindow.getDocument();
 
-                document.setFileName(Basic.replaceFileSuffix(filename, ".st5"));
+                document.setFileName(Basic.replaceFileSuffix(fileName, ".stree5"));
                 final Workflow workflow = document.getWorkflow();
                 TaxaBlock taxaBlock = new TaxaBlock();
 
                 if (importer instanceof IImportCharacters) {
                     final CharactersBlock dataBlock = new CharactersBlock();
-                    ((IImportCharacters) importer).parse(progress, filename, taxaBlock, dataBlock);
+                    ((IImportCharacters) importer).parse(progress, fileName, taxaBlock, dataBlock);
                     workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
                     final DataNode<DistancesBlock> distances = workflow.createDataNode(new DistancesBlock());
                     workflow.createConnector(workflow.getWorkingDataNode(), distances, new HammingDistances());
@@ -84,7 +85,7 @@ public class Importer {
                     workflow.createConnector(splits, splitsView, new SplitsNetworkAlgorithm());
                 } else if (importer instanceof IImportDistances) {
                     final DistancesBlock dataBlock = new DistancesBlock();
-                    ((IImportDistances) importer).parse(progress, filename, taxaBlock, dataBlock);
+                    ((IImportDistances) importer).parse(progress, fileName, taxaBlock, dataBlock);
                     workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
                     final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
                     workflow.createConnector(workflow.getWorkingDataNode(), splits, new NeighborNet());
@@ -93,7 +94,7 @@ public class Importer {
 
                 } else if (importer instanceof IImportTrees) {
                     final TreesBlock dataBlock = new TreesBlock();
-                    ((IImportTrees) importer).parse(progress, filename, taxaBlock, dataBlock);
+                    ((IImportTrees) importer).parse(progress, fileName, taxaBlock, dataBlock);
                     workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
                     if (dataBlock.size() == 1) { // only one tree, don't need a filter
                         final DataNode<TreeViewBlock> treesView = workflow.createDataNode(new TreeViewBlock());
@@ -123,15 +124,15 @@ public class Importer {
                     }
                 } else if (importer instanceof IImportSplits) {
                     final SplitsBlock dataBlock = new SplitsBlock();
-                    ((IImportSplits) importer).parse(progress, filename, taxaBlock, dataBlock);
+                    ((IImportSplits) importer).parse(progress, fileName, taxaBlock, dataBlock);
                     workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
                     final DataNode<SplitsNetworkViewBlock> splitsView = workflow.createDataNode(new SplitsNetworkViewBlock());
                     workflow.createConnector(workflow.getWorkingDataNode(), splitsView, new SplitsNetworkAlgorithm());
                 }
                 document.setupTaxonSelectionModel();
-                document.setDirty(true);
 
                 Platform.runLater(() -> {
+                    document.setDirty(true);
                     if (mainWindow == parentMainWindow) // using existing document
                         mainWindow.getStage().toFront();
                     else // new document
@@ -140,6 +141,7 @@ public class Importer {
 
                 Platform.runLater(() -> {
                     document.getWorkflow().getTopTaxaNode().setState(UpdateState.VALID);
+                    RecentFilesManager.getInstance().addRecentFile(fileName);
                 });
             } catch (IOException ex) {
                 new Alert("Import failed: " + ex.getMessage());

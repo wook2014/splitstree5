@@ -26,13 +26,11 @@ import java.util.*;
 
 /**
  * A graph
- * <p/>
  * The nodes and edges are stored in several doubly-linked lists.
  * The set of nodes in the graph is stored in a list
  * The set of edges in the graph is stored in a list
  * Around each node, the set of incident edges is stored in a list.
  * Daniel Huson, 2002
- * <p/>
  */
 public class Graph extends GraphBase {
     private Node firstNode;
@@ -670,6 +668,15 @@ public class Graph extends GraphBase {
      * @param array
      */
     void registerNodeAssociation(NodeAssociation array) {
+        {
+            final List<WeakReference> toDelete = new LinkedList<>();
+            for (WeakReference<NodeAssociation> ref : nodeAssociations) {
+                if (ref.get() == null)
+                    toDelete.add(ref); // reference is dead
+            }
+            if (toDelete.size() > 0)
+                nodeAssociations.removeAll(toDelete);
+        }
         nodeAssociations.add(new WeakReference<>(array));
     }
 
@@ -698,8 +705,18 @@ public class Graph extends GraphBase {
      * @param set
      */
     void registerNodeSet(NodeSet set) {
+        {
+            final List<WeakReference> toDelete = new LinkedList<>();
+            for (WeakReference<NodeSet> ref : nodeSets) {
+                if (ref.get() == null)
+                    toDelete.add(ref); // reference is dead
+            }
+            if (toDelete.size() > 0)
+                nodeSets.removeAll(toDelete);
+        }
         nodeSets.add(new WeakReference<>(set));
     }
+
 
     /**
      * called from deleteNode to clean all array entries for the node
@@ -708,7 +725,7 @@ public class Graph extends GraphBase {
      */
     void deleteNodeFromSets(Node v) {
         checkOwner(v);
-        List<WeakReference> toDelete = new LinkedList<>();
+        final List<WeakReference> toDelete = new LinkedList<>();
         for (WeakReference<NodeSet> ref : nodeSets) {
             NodeSet set = ref.get();
             if (set == null)
@@ -726,6 +743,15 @@ public class Graph extends GraphBase {
      * @param array
      */
     void registerEdgeAssociation(EdgeAssociation array) {
+        {
+            final List<WeakReference> toDelete = new LinkedList<>();
+            for (WeakReference<EdgeAssociation> ref : edgeAssociations) {
+                if (ref.get() == null)
+                    toDelete.add(ref); // reference is dead
+            }
+            if (toDelete.size() > 0)
+                edgeAssociations.removeAll(toDelete);
+        }
         edgeAssociations.add(new WeakReference<>(array));
     }
 
@@ -754,6 +780,15 @@ public class Graph extends GraphBase {
      * @param set
      */
     void registerEdgeSet(EdgeSet set) {
+        {
+            final List<WeakReference> toDelete = new LinkedList<>();
+            for (WeakReference<EdgeSet> ref : edgeSets) {
+                if (ref.get() == null)
+                    toDelete.add(ref); // reference is dead
+            }
+            if (toDelete.size() > 0)
+                edgeSets.removeAll(toDelete);
+        }
         edgeSets.add(new WeakReference<>(set));
     }
 

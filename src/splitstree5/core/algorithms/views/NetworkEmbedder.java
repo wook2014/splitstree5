@@ -89,7 +89,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> i
         final NodeArray<Point2D> node2point = new NodeArray<>(graph);
         computeSpringEmbedding(graph, node2point, getOptionIterations(), networkViewTab.getTargetDimensions().getWidth(), networkViewTab.getTargetDimensions().getHeight(), false);
 
-        TreeEmbedder.scaleToFitTarget(GraphLayout.Radial, networkViewTab.getTargetDimensions(), node2point);
+        TreeEmbedder.centerAndScaleToFitTarget(GraphLayout.Radial, networkViewTab.getTargetDimensions(), node2point);
 
 
         progress.setProgress(100);   //set progress to 100%

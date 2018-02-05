@@ -82,7 +82,6 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
         }
     }
 
-
     /**
      * Calculates a linear force-vector which acts from a given point to the other one
      *
@@ -126,7 +125,8 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
         v1New = v2.add(v1NewVec);
         Point3D moveVec = v1New.subtract(v1);
 
-        NodeSet splitNodes = getSplitAssociatedNodes(graph.getSplit(edge), edge.getSource());
+        final NodeSet splitNodes = new NodeSet(graph);
+        getSplitAssociatedNodes(graph.getSplit(edge), edge.getSource(), splitNodes);
         splitNodes.forEach(v -> {
             nodeLocations.put(v, new Point3D(nodeLocations.get(v).getX() + moveVec.getX(),
                     nodeLocations.get(v).getY() + moveVec.getY(),
@@ -135,14 +135,17 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
     }
 
     private void calculateStep(NodeArray<Point3D> nodeLocations, boolean linear) {
+        final NodeSet leftNodes = new NodeSet(graph);
+        final NodeSet leftSplit = new NodeSet(graph);
+        final NodeSet rightSplit = new NodeSet(graph);
+
         // For each split
         for (List<Edge> edges : split2edges.values()) {
             if (edges != null) {
-                final NodeSet leftSplit = getSplitAssociatedNodes(graph.getSplit(edges.get(0)), edges.get(0).getSource());
-                final NodeSet rightSplit = getSplitAssociatedNodes(graph.getSplit(edges.get(0)), edges.get(0).getTarget());
+                getSplitAssociatedNodes(graph.getSplit(edges.get(0)), edges.get(0).getSource(), leftSplit);
+                getSplitAssociatedNodes(graph.getSplit(edges.get(0)), edges.get(0).getTarget(), rightSplit);
 
-                final NodeSet leftNodes = new NodeSet(graph);
-                // final NodeSet rightNodes = new NodeSet(graph);
+                leftNodes.clear();
 
                 // For each edge get left node
                 edges.forEach(edge -> {
@@ -201,14 +204,14 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
     }
 
     /**
-     * gets all nodes on one side of split
+     * determines all nodes on one side of split
      *
      * @param splitId
      * @param v
      * @return nodes on one side of split
      */
-    private NodeSet getSplitAssociatedNodes(int splitId, Node v) {
-        final NodeSet nodes = new NodeSet(graph);
+    private void getSplitAssociatedNodes(int splitId, Node v, NodeSet nodes) {
+        nodes.clear();
 
         final Stack<Node> stack = new Stack<>();
         stack.push(v);
@@ -225,7 +228,6 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
                 }
             }
         }
-        return nodes;
     }
 
     /**
@@ -251,7 +253,6 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
         }
 
         maxDist = calculateMaxDist(nodeLocations.values());
-
         for (int i = 0; i < numOfSteps; i++) {
             calculateStep(nodeLocations, linear);
             updateProgress(i, numOfSteps - 1);
@@ -290,29 +291,28 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
 
 
     /**
-     * center the coordinates
+     * center coordinates
      *
      * @param points
      */
     public static void center(NodeArray<Point3D> points) {
-        double minX = Double.MAX_VALUE;
-        double maxX = Double.MIN_VALUE;
-        double minY = Double.MAX_VALUE;
-        double maxY = Double.MIN_VALUE;
-        double minZ = Double.MAX_VALUE;
-        double maxZ = Double.MIN_VALUE;
+        double averageX = 0;
+        double averageY = 0;
+        double averageZ = 0;
+        int count = 0;
         for (Point3D point : points.values()) {
-            minX = point.getX() < minX ? point.getX() : minX;
-            minY = point.getY() < minY ? point.getY() : minY;
-            minZ = point.getZ() < minZ ? point.getZ() : minZ;
-            maxX = point.getX() > maxX ? point.getX() : maxX;
-            maxY = point.getY() > maxY ? point.getY() : maxY;
-            maxZ = point.getZ() > maxZ ? point.getZ() : maxZ;
+            averageX += point.getX();
+            averageY += point.getY();
+            averageZ += point.getZ();
+            count++;
         }
-        final Point3D center = new Point3D(0.5 * (maxX + minX), 0.5 * (maxY + minY), 0.5 * (maxZ + minZ));
-
-        for (Node v : points.keys()) {
-            points.put(v, points.get(v).subtract(center));
+        if (count > 0) {
+            final Point3D center = new Point3D(averageX / count, averageY / count, averageZ / count);
+            for (Node v : points.keys()) {
+                points.put(v, points.get(v).subtract(center));
+            }
         }
     }
+
+
 }

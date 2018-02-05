@@ -44,6 +44,7 @@ public class WorkflowNexusOutput {
         try (Writer w = new BufferedWriter(new FileWriter(fileName))) {
             write(w, workflow);
         }
+        // todo: RecentFilesManager.getInstance().addRecentFile(fileName);
     }
 
     /**

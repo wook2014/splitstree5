@@ -148,7 +148,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                             computeNodeLocationsForRadialRec(root, new Point2D(0, 0), edgeLengths, edge2Angle, node2point);
                         else
                             computeNodeLocationsForCircular(root, edgeLengths, edge2Angle, node2point);
-                        scaleToFitTarget(getOptionLayout(), view.getTargetDimensions(), node2point);
+                        centerAndScaleToFitTarget(getOptionLayout(), view.getTargetDimensions(), node2point);
                         computeEdgePointsForCircularRec(root, 0, edge2Angle, node2point, edge2controlPoints);
 
                         break;
@@ -158,13 +158,13 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                         if (getOptionEdgeShape() == EdgeView2D.EdgeShape.Straight) {
                             setOptionEdgeLengths(EdgeLengths.Cladogram);
                             computeEmbeddingForTriangularLayoutRec(root, null, 0, 0, edgeLengths, node2point);
-                            scaleToFitTarget(getOptionLayout(), view.getTargetDimensions(), node2point);
+                            centerAndScaleToFitTarget(getOptionLayout(), view.getTargetDimensions(), node2point);
                             computeEdgePointsForRectilinearRec(root, node2point, edge2controlPoints);
                         } else {
                             final NodeFloatArray nodeHeights = new NodeFloatArray(tree); // angle of edge
                             setNodeHeightsRec(root, 0, nodeHeights);
                             computeNodeLocationsForRectilinearRec(root, 0, edgeLengths, nodeHeights, node2point);
-                            scaleToFitTarget(getOptionLayout(), view.getTargetDimensions(), node2point);
+                            centerAndScaleToFitTarget(getOptionLayout(), view.getTargetDimensions(), node2point);
                             computeEdgePointsForRectilinearRec(root, node2point, edge2controlPoints);
                         }
                         break;
@@ -237,15 +237,16 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
      * @param target
      * @param node2point
      */
-    public static void scaleToFitTarget(GraphLayout optionLayout, Dimension2D target, NodeArray<Point2D> node2point) {
+    public static void centerAndScaleToFitTarget(GraphLayout optionLayout, Dimension2D target, NodeArray<Point2D> node2point) {
         // scale to target dimensions:
         final float factorX;
         final float factorY;
         float maxX = Float.MIN_VALUE;
         float maxY = Float.MIN_VALUE;
+        float minX = Float.MAX_VALUE;
+        float minY = Float.MAX_VALUE;
+
         {
-            float minX = Float.MAX_VALUE;
-            float minY = Float.MAX_VALUE;
             for (Point2D point : node2point.values()) {
                 if (point != null) {
                     minX = Math.min(minX, (float) point.getX());
@@ -262,12 +263,14 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                 factorX = factorY = (float) Math.min(((target.getWidth() - 50) / (maxX - minX)), ((target.getHeight() - 50) / (maxY - minY)));
             }
         }
+        float midX = 0.5f * (maxX + minX);
+        float midY = 0.5f * (maxY + minY);
 
         if (factorX != 1 || factorY != 1) {
             for (Node v : node2point.keys()) {
                 final Point2D point = node2point.getValue(v);
                 if (point != null)
-                    node2point.setValue(v, new Point2D(factorX * point.getX(), factorY * point.getY()));
+                    node2point.setValue(v, new Point2D(factorX * (point.getX() - midX), factorY * (point.getY() - midY)));
             }
         }
     }
