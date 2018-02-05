@@ -11,8 +11,9 @@ import splitstree5.io.nexus.TaxaNexusOutput;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
@@ -65,7 +66,7 @@ public class FastaInTest {
 
     @Test
     public void isApplicable() throws IOException {
-        ArrayList<String> applicableFiles = new ArrayList<>();
+        Set<String> applicableFiles = new HashSet<>();
 
         File directory = new File("test/notNexusFiles");
         File[] directoryListing = directory.listFiles();
@@ -76,8 +77,7 @@ public class FastaInTest {
             }
         }
         System.err.println(applicableFiles);
-        assertEquals(applicableFiles, Arrays.asList("algae.fasta", "algae_splits.fasta",
-                "ncbi.fasta", "smallTest.fasta", "trees49_splits.fasta"));
+        assertEquals(applicableFiles, new HashSet<>(Arrays.asList("algae.fasta", "algae_splits.fasta", "ncbi.fasta", "smallTest.fasta", "trees49_splits.fasta")));
     }
 
 }
