@@ -67,7 +67,7 @@ public class CharactersNexusIOTest {
 
         inputFiles.add("test//characters//ferment4-diploid.nex");
 
-        /*inputFiles.add("test//characters//tokens.nex");
+        inputFiles.add("test//characters//tokens.nex");
 
         inputFiles.add("test//nexus//characters-simple.nex");
 
@@ -82,6 +82,7 @@ public class CharactersNexusIOTest {
         inputFiles.add("test//characters//microsat1.nex");
         inputFiles.add("test//characters//microsat2.nex");
 
+
         // transposed matrix
         inputFiles.add("test//characters//transpose//algae_rna_interleave.nex");
         inputFiles.add("test//characters//transpose//bees_dna_interleave.nex");
@@ -94,7 +95,7 @@ public class CharactersNexusIOTest {
 
         //new
         inputFiles.add("test//characters//pf02171.nexus");
-        inputFiles.add("test//characters//pf01569.nexus");*/
+        inputFiles.add("test//characters//pf01569.nexus");
 
 
         for (String inputFile : inputFiles) {
