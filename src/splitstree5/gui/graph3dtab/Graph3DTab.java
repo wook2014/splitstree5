@@ -174,6 +174,9 @@ public abstract class Graph3DTab<G extends PhyloGraph> extends GraphTabBase<G> {
                 subScene.heightProperty().bind(centerPane.heightProperty());
                 borderPane.setCenter(centerPane);
                 borderPane.setTop(findToolBar);
+                findToolBar.visibleProperty().addListener((c, o, n) -> {
+                    borderPane.setTop(n ? findToolBar : null);
+                });
             }
 
             for (NodeViewBase nv : node2view.values()) {

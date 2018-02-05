@@ -122,7 +122,6 @@ public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISa
 
             findToolBar = new FindToolBar(nodeLabelSearcher, edgeLabelSearcher);
             //findToolBar.setShowReplaceToolBar(true);
-            borderPane.setTop(findToolBar);
 
             nodeLabelSearcher.foundProperty().addListener((c, o, n) -> {
                 if (n != null && scrollPane != null) {
