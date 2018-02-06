@@ -43,6 +43,7 @@ import java.util.*;
 public class CharactersNexusInput implements INexusInput<CharactersBlock, CharactersNexusFormat> {
     public static final String NAME = "CHARACTERS";
 
+    private boolean ignoreMatrix = false;
     private boolean treatUnknownAsError = false;
 
     /**
@@ -111,26 +112,24 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
 
         UtilitiesNexusIO.readTitleLinks(np, characters);
 
+        final int ntax;
+        final int nchar;
+
         if (taxa.getNtax() == 0) {
             np.matchIgnoreCase("dimensions ntax=");
-            int ntax = np.getInt(1, Integer.MAX_VALUE);
+            ntax = np.getInt(1, Integer.MAX_VALUE);
             np.matchIgnoreCase("nchar=");
-            int nchar = np.getInt(1, Integer.MAX_VALUE);
-            if (format.isIgnoreMatrix())
-                characters.setDimension(ntax, 0);
-            else
-                characters.setDimension(ntax, nchar);
+            nchar = np.getInt(1, Integer.MAX_VALUE);
+            characters.setDimension(ntax, nchar);
             np.matchIgnoreCase(";");
         } else {
             np.matchIgnoreCase("dimensions");
             if (np.peekMatchIgnoreCase("ntax"))
                 np.matchIgnoreCase("ntax=" + taxa.getNtax());
+            ntax = taxa.getNtax();
             np.matchIgnoreCase("nchar=");
-            int nchar = np.getInt(1, Integer.MAX_VALUE);
-            if (format.isIgnoreMatrix())
-                characters.setDimension(taxa.getNtax(), 0);
-            else
-                characters.setDimension(taxa.getNtax(), nchar);
+            nchar = np.getInt(1, Integer.MAX_VALUE);
+            characters.setDimension(ntax, nchar);
             np.matchIgnoreCase(";");
         }
 
@@ -187,8 +186,8 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
                 labels = np.findIgnoreCase(formatTokens, "labels", true, labels);
                 format.setLabels(labels);
 
-                if (taxa.getNtax() == 0 && !format.isLabels())
-                    throw new IOException("line " + np.lineno() + ": 'no labels' invalid because no taxlabels given in TAXA block");
+                if (ntax == 0 && !format.isLabels())
+                    throw new IOExceptionWithLineNumber("Format 'no labels' invalid because no taxlabels given in TAXA block", np.lineno());
             }
 
             {
@@ -217,13 +216,13 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
             }
 
             if (formatTokens.size() != 0)
-                throw new IOException("line " + np.lineno() + ": '" + formatTokens + "' unexpected in FORMAT");
+                throw new IOExceptionWithLineNumber("Unexpected in FORMAT: '" + Basic.toString(formatTokens, " ") + "'", np.lineno());
         }
 
         if (np.peekMatchIgnoreCase("CharWeights")) {
             np.matchIgnoreCase("CharWeights");
-            double[] charWeights = new double[characters.getNchar() + 1];
-            for (int i = 1; i <= characters.getNchar(); i++)
+            double[] charWeights = new double[nchar + 1];
+            for (int i = 1; i <= nchar; i++)
                 charWeights[i] = np.getDouble();
             np.matchIgnoreCase(";");
             characters.setCharacterWeights(charWeights);
@@ -244,20 +243,23 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
                     break;
                 default:
                 case unknown:
-                    characters.setStateLabeler(new StandardStateLabeler(characters.getNchar(), characters.getMissingCharacter(), format.getMatchChar(), characters.getGapCharacter()));
+                    characters.setStateLabeler(new StandardStateLabeler(nchar, characters.getMissingCharacter(), format.getMatchChar(), characters.getGapCharacter()));
                     break;
             }
 
             characters.setCharLabeler(new HashMap<>());
             readCharStateLabels(np, characters.getCharLabeler(), characters.getStateLabeler());
             np.matchIgnoreCase(";");
+
+            if (characters.getSymbols() == null || characters.getSymbols().length() == 0)
+                characters.setSymbols(Basic.toString(characters.getCharLabeler().keySet(), ""));
         }
 
         ArrayList<String> taxonNamesFound;
         final TreeSet<Character> unknownStates = new TreeSet<>();
         {
             np.matchIgnoreCase("MATRIX");
-            if (!format.isIgnoreMatrix()) {
+            if (!isIgnoreMatrix()) {
                 if (!format.isTranspose() && !format.isInterleave()) {
                     taxonNamesFound = readMatrix(np, taxa, characters, format, unknownStates);
                 } else if (format.isTranspose() && !format.isInterleave()) {
@@ -319,7 +321,7 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
                     tokenList.add(word);
                     length++;
                 }
-                System.err.print("StateLabeler is " + characters.getStateLabeler());
+                // System.err.print("StateLabeler is " + characters.getStateLabeler());
                 str = characters.getStateLabeler().parseSequence(tokenList, 1, false);
             } else {
                 final StringBuilder buf = new StringBuilder();
@@ -565,7 +567,7 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
         while (np.peekNextToken() != (int) ';') {
             int charNumber = np.getInt(); //get the number in front of the label
 
-            // Deal with the fact that it is possible to not have a label for some nubmer.
+            // Deal with the fact that it is possible to not have a label for some number.
             if (np.peekNextToken() == ',' || np.peekNextToken() == '/') {
             } else {
                 String charLabel = np.getWordRespectCase();   //get the label otherwise
@@ -599,4 +601,11 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
                 || (characters.getDataType() == CharactersType.DNA && AmbiguityCodes.isAmbiguityCode(ch));
     }
 
+    public boolean isIgnoreMatrix() {
+        return ignoreMatrix;
+    }
+
+    public void setIgnoreMatrix(boolean ignoreMatrix) {
+        this.ignoreMatrix = ignoreMatrix;
+    }
 }

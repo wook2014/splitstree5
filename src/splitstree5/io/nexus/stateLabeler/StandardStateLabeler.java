@@ -64,8 +64,8 @@ public class StandardStateLabeler extends StateLabeler {
         token2charMaps = new HashMap[nchar + 1];
         char2tokenMaps = new HashMap[nchar + 1];
         for (int i = 1; i <= nchar; i++) {
-            token2charMaps[i] = new HashMap();
-            char2tokenMaps[i] = new HashMap();
+            token2charMaps[i] = new HashMap<>();
+            char2tokenMaps[i] = new HashMap<>();
         }
     }
 

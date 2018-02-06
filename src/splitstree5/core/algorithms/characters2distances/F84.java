@@ -7,6 +7,7 @@ import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.datablocks.characters.CharactersType;
 import splitstree5.core.models.F84Model;
 
 /**
@@ -79,5 +80,11 @@ public class F84 extends DNAdistance implements IFromChararacters, IToDistances 
 
     public double getOptionTRatio() {
         return this.tratio;
+    }
+
+
+    @Override
+    public boolean isApplicable(TaxaBlock taxa, CharactersBlock ch) {
+        return ch.getDataType() == CharactersType.DNA || ch.getDataType() == CharactersType.RNA;
     }
 }

@@ -21,6 +21,7 @@ package splitstree5.dialogs.importer;
 
 import javafx.application.Platform;
 import javafx.stage.Stage;
+import jloda.fx.NotificationManager;
 import jloda.fx.RecentFilesManager;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
@@ -39,7 +40,6 @@ import splitstree5.core.datablocks.*;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.core.workflow.Workflow;
-import splitstree5.gui.utils.Alert;
 import splitstree5.io.imports.interfaces.*;
 import splitstree5.main.MainWindow;
 
@@ -126,8 +126,10 @@ public class Importer {
                     final SplitsBlock dataBlock = new SplitsBlock();
                     ((IImportSplits) importer).parse(progress, fileName, taxaBlock, dataBlock);
                     workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
+                    final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
+                    workflow.createConnector(workflow.getWorkingDataNode(), splits, new DimensionFilter());
                     final DataNode<SplitsNetworkViewBlock> splitsView = workflow.createDataNode(new SplitsNetworkViewBlock());
-                    workflow.createConnector(workflow.getWorkingDataNode(), splitsView, new SplitsNetworkAlgorithm());
+                    workflow.createConnector(splits, splitsView, new SplitsNetworkAlgorithm());
                 }
                 document.setupTaxonSelectionModel();
 
@@ -137,16 +139,16 @@ public class Importer {
                         mainWindow.getStage().toFront();
                     else // new document
                         mainWindow.show(new Stage(), parentMainWindow.getStage().getX() + 50, parentMainWindow.getStage().getY() + 50);
+                    final String shortDescription = workflow.getTopDataNode().getShortDescription();
+                    NotificationManager.showInformation("Opened file: " + Basic.getFileNameWithoutPath(fileName) + (shortDescription.length() > 0 ? "\nLoaded " + shortDescription : ""));
                 });
 
                 Platform.runLater(() -> {
                     document.getWorkflow().getTopTaxaNode().setState(UpdateState.VALID);
                     RecentFilesManager.getInstance().addRecentFile(fileName);
                 });
-            } catch (IOException ex) {
-                new Alert("Import failed: " + ex.getMessage());
-            } catch (CanceledException ex) {
-                new Alert("Import failed: " + ex.getMessage());
+            } catch (IOException | CanceledException ex) {
+                NotificationManager.showError("Import failed: " + ex.getMessage());
             }
         }
     }

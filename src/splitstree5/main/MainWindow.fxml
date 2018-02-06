@@ -106,9 +106,8 @@
     <bottom>
         <AnchorPane BorderPane.alignment="CENTER">
             <children>
-                <ToolBar fx:id="bottomToolBar" prefHeight="40.0" prefWidth="200.0" style="-fx-border-color: lightgray;"
-                         AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                         AnchorPane.topAnchor="0.0"/>
+                <FlowPane fx:id="progressBarPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                          AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
                 <Button fx:id="openCloseRight" maxHeight="10.0" maxWidth="10.0" mnemonicParsing="false"
                         prefHeight="10.0" prefWidth="10.0" rotate="-90.0"
                         style="-fx-border-style: none; -fx-background-color: transparent;" text="&gt;"

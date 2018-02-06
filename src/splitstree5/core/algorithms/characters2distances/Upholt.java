@@ -2,6 +2,7 @@ package splitstree5.core.algorithms.characters2distances;
 
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
+import splitstree5.core.algorithms.characters2distances.utils.FixUndefinedDistances;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
 import splitstree5.core.algorithms.interfaces.IToDistances;
@@ -9,7 +10,6 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.CharactersType;
-import splitstree5.gui.utils.Alert;
 
 /**
  * Implements the Upholt (1979) distance for restriction site data.
@@ -75,20 +75,10 @@ public class Upholt extends Algorithm<CharactersBlock, DistancesBlock> implement
             }
             progress.incrementProgress();
         }
+        if (numUndefined > 0)
+            FixUndefinedDistances.apply(ntax, maxDist, distancesBlock);
+
         progress.close();
-        if (numUndefined > 0) {
-            for (int s = 1; s <= ntax; s++)
-                for (int t = s + 1; t <= ntax; t++) {
-                    if (distancesBlock.get(s, t) < 0) {
-                        distancesBlock.set(s, t, 2.0 * maxDist);
-                        distancesBlock.set(t, s, 2.0 * maxDist);
-                    }
-                }
-            String message = "Distance matrix contains " + numUndefined + " undefined ";
-            message += "distances. These have been arbitrarily set to 2 times the maximum";
-            message += " defined distance (= " + (2.0 * maxDist) + ").";
-            new Alert(message);
-        }
     }
 
     /**

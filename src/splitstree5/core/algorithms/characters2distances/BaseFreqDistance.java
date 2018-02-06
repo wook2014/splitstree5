@@ -89,7 +89,7 @@ public class BaseFreqDistance extends Algorithm<CharactersBlock, DistancesBlock>
      *
      * @return true if gaps are ignored
      */
-    public boolean getOptionignoregaps() {
+    public boolean getOptionIgnoreGaps() {
         return optionIgnoreGaps;
     }
 
@@ -98,7 +98,7 @@ public class BaseFreqDistance extends Algorithm<CharactersBlock, DistancesBlock>
      *
      * @param ignore
      */
-    public void setOptionignoregaps(boolean ignore) {
+    public void setOptionIgnoreGaps(boolean ignore) {
         optionIgnoreGaps = ignore;
     }
 

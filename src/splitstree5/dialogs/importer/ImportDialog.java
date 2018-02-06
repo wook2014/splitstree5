@@ -61,13 +61,11 @@ public class ImportDialog {
         }
         stage.setTitle("Import - " + ProgramProperties.getProgramName());
 
-        controller.getProgressBar().setVisible(false);
-
         controller.getDataTypeComboBox().getItems().addAll(ImporterManager.getInstance().getAllDataTypes());
-        controller.getDataTypeComboBox().disableProperty().bind(controller.getProgressBar().visibleProperty());
+        controller.getDataTypeComboBox().disableProperty().bind(importService.runningProperty());
 
         controller.getFileFormatComboBox().getItems().addAll(ImporterManager.getInstance().getAllFileFormats());
-        controller.getFileFormatComboBox().disableProperty().bind(controller.getProgressBar().visibleProperty());
+        controller.getFileFormatComboBox().disableProperty().bind(importService.runningProperty());
 
         final ObjectProperty<FileChooser.ExtensionFilter> selectedExtensionFilter = new SimpleObjectProperty<>();
         controller.getBrowseButton().setOnAction((e) -> {
@@ -84,7 +82,7 @@ public class ImportDialog {
 
             }
         });
-        controller.getBrowseButton().disableProperty().bind(controller.getProgressBar().visibleProperty());
+        controller.getBrowseButton().disableProperty().bind(importService.runningProperty());
 
 
         controller.getFileTextField().textProperty().addListener((c, o, n) -> {
@@ -93,7 +91,7 @@ public class ImportDialog {
             String dataFormat = ImporterManager.getInstance().getFileFormat(n);
             controller.getFileFormatComboBox().setValue(dataFormat);
         });
-        controller.getFileTextField().disableProperty().bind(controller.getProgressBar().visibleProperty());
+        controller.getFileTextField().disableProperty().bind(importService.runningProperty());
 
 
         controller.getCancelButton().setOnAction((e) -> close());
@@ -104,11 +102,12 @@ public class ImportDialog {
             if (importer == null)
                 new Alert("Can't import selected data type and file format");
             else {
-                importService.setup(parentMainWindow, importer, controller.getFileTextField().getText(), ImportDialog.this);
+                final String fileName = controller.getFileTextField().getText();
+                importService.setup(parentMainWindow, importer, fileName, "Loading file", controller.getProgressBarPane());
                 importService.restart();
             }
         });
-        controller.getImportButton().disableProperty().bind(controller.getProgressBar().visibleProperty().or(
+        controller.getImportButton().disableProperty().bind(importService.runningProperty().or(
                 Bindings.isNull(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty()).or(Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), "Unknown"))
                         .or(Bindings.isNull(controller.getFileFormatComboBox().getSelectionModel().selectedItemProperty())).or(Bindings.equal(controller.getFileFormatComboBox().getSelectionModel().selectedItemProperty(), "Unknown"))));
     }

@@ -118,6 +118,8 @@ public class MethodsTextGenerator {
 
         final Set<Pair<String, String>> allKeysAndPapers = new TreeSet<>(getSplitsTreeKeysAndPapers());
 
+        final Set<String> set = new HashSet<>(); // use this to avoid duplicate lines
+
         if (dag.getTopTaxaNode().getDataBlock() != null && dag.getTopDataNode() != null) {
             buf.append(String.format(inputDataTemplate, dag.getTopTaxaNode().getDataBlock().getInfo(), dag.getTopDataNode().getDataBlock().getInfo()));
             if (dag.getWorkingTaxaBlock() != null && dag.getWorkingTaxaBlock().getNtax() < dag.getTopTaxaNode().getDataBlock().getNtax()) {
@@ -142,7 +144,11 @@ public class MethodsTextGenerator {
                                 if (((IFilter) algorithm).isActive()) {
                                     final String name = Basic.fromCamelCase(algorithm.getName());
                                     final String parameters = (algorithm.getParameters().length() > 0 ? " (parameters: " + algorithm.getParameters() + ")" : "");
-                                    buf.append(String.format(filterTemplate, name, parameters, algorithm.getShortDescription()));
+                                    final String line = String.format(filterTemplate, name, parameters, algorithm.getShortDescription());
+                                    if (!set.contains(line)) {
+                                        buf.append(line);
+                                        set.add(line);
+                                    }
                                 }
                             } else {
                                 if (algorithm != null) {
@@ -153,10 +159,15 @@ public class MethodsTextGenerator {
                                     final String name = Basic.fromCamelCase(algorithm.getName());
 
                                     final String parameters = (algorithm.getParameters().length() > 0 ? " (parameters: " + algorithm.getParameters() + ")" : "");
+                                    final String line;
                                     if (w != null) {
-                                        buf.append(String.format(methodWithOutputTemplate, name, keys, parameters, w.getDataBlock().getInfo()));
+                                        line = String.format(methodWithOutputTemplate, name, keys, parameters, w.getDataBlock().getInfo());
                                     } else {
-                                        buf.append(String.format(methodTemplate, name, keys, parameters));
+                                        line = String.format(methodTemplate, name, keys, parameters);
+                                    }
+                                    if (!set.contains(line)) {
+                                        buf.append(line);
+                                        set.add(line);
                                     }
                                 }
                             }
@@ -227,9 +238,7 @@ public class MethodsTextGenerator {
     }
 
     public static Collection<Pair<String, String>> getSplitsTreeKeysAndPapers() {
-        return Arrays.asList(new Pair<>("Huson 1998",
-                        "D.H.Huson. SplitsTree: analyzing an visualizing evolutionary data.Bioinformatics, 14(10):68–73, 1998."),
-                new Pair<>("Huson and Bryant 2006",
+        return Arrays.asList(new Pair<>("Huson and Bryant 2006",
                         "D.H. Huson and D. Bryant. Application of phylogenetic networks in evolutionary studies. Molecular Biology and Evolution, 23:254–267, 2006."));
     }
 

@@ -61,6 +61,8 @@ import java.util.ArrayList;
  * Daniel Huson, 12/21/16.
  */
 public class Connector<P extends DataBlock, C extends DataBlock> extends WorkflowNode {
+    private final boolean verbose = false;
+
     private final ConnectorService<P, C> service;
 
     private final TaxaBlock taxaBlock;
@@ -201,7 +203,8 @@ public class Connector<P extends DataBlock, C extends DataBlock> extends Workflo
 
                     child.setState(UpdateState.INVALID);
                     if (getParent().getState() == UpdateState.VALID) {
-                        System.err.println(getAlgorithm().getName() + " " + oldState + " -> " + UpdateState.COMPUTING);
+                        if (verbose)
+                            System.err.println(getAlgorithm().getName() + " " + oldState + " -> " + UpdateState.COMPUTING);
                         super.setState(UpdateState.COMPUTING);
                         if (Platform.isFxApplicationThread())
                             service.restart();

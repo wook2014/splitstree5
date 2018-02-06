@@ -75,7 +75,7 @@ public class Workflow {
 
         invalidNodes.addListener((InvalidationListener) observable -> {
             updating.set(invalidNodes.size() > 0);
-            System.err.println("Workflow updating: " + updating.get());
+            // System.err.println("Workflow updating: " + updating.get());
         });
 
         connectorNodes.addListener((InvalidationListener) observable -> {
@@ -97,7 +97,7 @@ public class Workflow {
             }
         });
 
-        updatingProperty().addListener((observable, oldValue, newValue) -> System.err.println("UPDATING: " + newValue));
+        // updatingProperty().addListener((observable, oldValue, newValue) -> System.err.println("UPDATING: " + newValue));
 
         topologyChanged.addListener(observable -> {
             WorkflowNode root = topDataNode.get();

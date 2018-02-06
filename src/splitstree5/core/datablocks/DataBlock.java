@@ -26,7 +26,7 @@ import jloda.util.PluginClassLoader;
 import splitstree5.core.Document;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.UpdateState;
-import splitstree5.io.exports.NexusOut;
+import splitstree5.io.exports.NexusExporter;
 import splitstree5.utils.OptionableBase;
 
 import java.io.IOException;
@@ -131,12 +131,14 @@ abstract public class DataBlock extends OptionableBase {
     public String getDisplayText() {
         final StringWriter w = new StringWriter();
         try {
+            final NexusExporter nexusExporter = new NexusExporter();
+            nexusExporter.setPrependTaxa(false);
             if (this instanceof TaxaBlock) {
-                new NexusOut().export(w, (TaxaBlock) this);
+                nexusExporter.export(w, (TaxaBlock) this);
             } else if (this instanceof AnalysisBlock) {
-                new NexusOut().export(w, (AnalysisBlock) this);
+                nexusExporter.export(w, (AnalysisBlock) this);
             } else
-                new NexusOut().export(w, document.getWorkflow().getWorkingTaxaNode().getDataBlock(), this);
+                nexusExporter.export(w, document.getWorkflow().getWorkingTaxaNode().getDataBlock(), this);
         } catch (IOException ex) {
             Basic.caught(ex);
         }

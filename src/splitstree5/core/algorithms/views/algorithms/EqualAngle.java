@@ -49,7 +49,7 @@ public class EqualAngle {
      * @param node2point
      */
     public static void apply(ProgressListener progress, boolean useWeights, TaxaBlock taxa, SplitsBlock splits, SplitsGraph graph, NodeArray<Point2D> node2point, BitSet forbiddenSplits, BitSet usedSplits) throws CanceledException {
-        System.err.println("Running equal angle algorithm");
+        //System.err.println("Running equal angle algorithm");
         graph.clear();
         usedSplits.clear();
 

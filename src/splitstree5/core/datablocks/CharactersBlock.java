@@ -296,7 +296,7 @@ public class CharactersBlock extends DataBlock {
     }
 
     /**
-     * set proprotion invariable sites (use Float.MAX_VALUE to unset)
+     * set proportion invariable sites (use Float.MAX_VALUE to unset)
      *
      * @param pInvar
      */
@@ -468,7 +468,10 @@ public class CharactersBlock extends DataBlock {
 
     @Override
     public String getInfo() {
-        return getNtax() + " " + getDataType().toString() + " character sequences of length " + getNchar();
+        if (getDataType().equals(CharactersType.unknown))
+            return getNtax() + " character sequences of length " + getNchar();
+        else
+            return getNtax() + " " + getDataType().toString() + " character sequences of length " + getNchar();
     }
 }
 

@@ -55,15 +55,18 @@ public class CharactersTopFilter extends ATopFilter<CharactersBlock> {
 
         setAlgorithm(new Algorithm<CharactersBlock, CharactersBlock>("TopFilter") {
             public void compute(ProgressListener progress, TaxaBlock modifiedTaxaBlock, CharactersBlock parent, CharactersBlock child) throws CanceledException {
-                // todo: implement copy command
+                // todo: implement direct copy?
                 {
                     progress.setMaximum(modifiedTaxaBlock.size());
                     final StringWriter w = new StringWriter();
                     try {
                         CharactersNexusFormat charactersNexusFormat = new CharactersNexusFormat();
-                        charactersNexusFormat.setIgnoreMatrix(true);
-                        new CharactersNexusOutput().write(w, originalTaxaNode.getDataBlock(), parent, charactersNexusFormat);
-                        new CharactersNexusInput().parse(new NexusStreamParser(new StringReader(w.toString())), originalTaxaNode.getDataBlock(), child, charactersNexusFormat);
+                        final CharactersNexusOutput charactersNexusOutput = new CharactersNexusOutput();
+                        charactersNexusOutput.setIgnoreMatrix(true);
+                        charactersNexusOutput.write(w, originalTaxaNode.getDataBlock(), parent, charactersNexusFormat);
+                        final CharactersNexusInput charactersNexusInput = new CharactersNexusInput();
+                        charactersNexusInput.setIgnoreMatrix(true);
+                        charactersNexusInput.parse(new NexusStreamParser(new StringReader(w.toString())), originalTaxaNode.getDataBlock(), child, charactersNexusFormat);
                     } catch (IOException e) {
                         Basic.caught(e);
                     }

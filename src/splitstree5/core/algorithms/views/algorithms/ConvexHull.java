@@ -62,7 +62,7 @@ public class ConvexHull {
 
         if (usedSplits.cardinality() == splits.getNsplits())
             return; // all nodes have been processed
-        System.err.println("Running convex hull algorithm");
+        //System.err.println("Running convex hull algorithm");
 
         progress.setTasks("Convex Hull", null);
         progress.setMaximum(splits.getNsplits());    //initialize maximum progress

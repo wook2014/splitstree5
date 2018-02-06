@@ -38,6 +38,7 @@
 
 package splitstree5.dialogs.exporter;
 
+import jloda.fx.NotificationManager;
 import jloda.fx.RecentFilesManager;
 import jloda.util.Basic;
 import jloda.util.PluginClassLoader;
@@ -134,11 +135,10 @@ public class ExportManager {
                 else if (exporter instanceof IExportTaxa)
                     ((IExportTaxa) exporter).export(w, taxaBlock);
                 else
-                    throw new IOException("Export failed: invalid combination of exporter and data");
+                    NotificationManager.showError("Export failed: invalid combination of exporter and data");
             }
-            System.err.println(String.format("Wrote %,d bytes to file: %s", (new File(fileName)).length(), fileName));
-            // todo: use notification
             RecentFilesManager.getInstance().addRecentFile(fileName);
+            NotificationManager.showInformation(String.format("Wrote %,d bytes to file: %s", (new File(fileName)).length(), fileName));
         }
     }
 }

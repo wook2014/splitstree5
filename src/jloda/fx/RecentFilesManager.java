@@ -20,18 +20,16 @@
 package jloda.fx;
 
 import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.collections.WeakListChangeListener;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import jloda.util.ProgramProperties;
-import splitstree5.dialogs.importer.FileOpener;
-import splitstree5.main.MainWindow;
 
-import java.util.ArrayList;
+import java.lang.ref.WeakReference;
+import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * manages recent files
@@ -42,16 +40,64 @@ public class RecentFilesManager {
 
     private final int maxNumberRecentFiles;
     private final ObservableList<String> recentFiles;
+    private final ArrayList<WeakReference<Menu>> menuReferences = new ArrayList<>();
+    private final Map<WeakReference<Menu>, Consumer<String>> menuRef2FileOpener = new HashMap<>();
 
     private RecentFilesManager() {
+
         recentFiles = FXCollections.observableArrayList();
+
         maxNumberRecentFiles = ProgramProperties.get("MaxNumberRecentFiles", 40);
         for (String fileName : ProgramProperties.get("RecentFiles", new String[0]))
             addRecentFile(fileName);
-        recentFiles.addListener((InvalidationListener) (c) -> {
-            synchronized (recentFiles) {
+
+
+        recentFiles.addListener((ListChangeListener<String>) (c) -> {
+            Platform.runLater(() -> {
+                final Set<WeakReference<Menu>> deadRefs = new HashSet<>();
+
+                while (c.next()) {
+                    if (c.wasRemoved()) {
+                        for (WeakReference<Menu> ref : menuReferences) {
+                            final Menu menu = ref.get();
+                            if (menu != null) {
+                                final ArrayList<MenuItem> toDelete = new ArrayList<>();
+                                for (MenuItem menuItem : menu.getItems()) {
+                                    if (c.getRemoved().contains(menuItem.getText())) {
+                                        toDelete.add(menuItem);
+
+                                    }
+                                }
+                                menu.getItems().removeAll(toDelete);
+                            } else
+                                deadRefs.add(ref);
+                        }
+                    }
+                    if (c.wasAdded()) {
+                        for (WeakReference<Menu> ref : menuReferences) {
+                            final Menu menu = ref.get();
+                            if (menu != null) {
+                                final Consumer<String> fileOpen = menuRef2FileOpener.get(ref);
+                                for (String fileName : c.getAddedSubList()) {
+                                    final MenuItem openMenuItem = new MenuItem(fileName);
+                                    openMenuItem.setOnAction((e) -> {
+                                                fileOpen.accept(fileName);
+                                            }
+                                    );
+                                    menu.getItems().add(0, openMenuItem);
+                                }
+                            } else
+                                deadRefs.add(ref);
+                        }
+                    }
+                }
+
+                if (deadRefs.size() > 0) {
+                    menuRef2FileOpener.keySet().removeAll(deadRefs);
+                    menuReferences.removeAll(deadRefs); // purge anything that has been garbage collected
+                }
                 ProgramProperties.put("RecentFiles", recentFiles.toArray(new String[recentFiles.size()]));
-            }
+            });
         });
     }
 
@@ -69,40 +115,17 @@ public class RecentFilesManager {
     /**
      * create the recent files menu
      *
-     * @param mainWindow
      * @return recent files menuy
      */
-    public void setupMenu(MainWindow mainWindow, final Menu menu) {
-        final ListChangeListener<String> changeListener = (c) -> {
-            Platform.runLater(() -> {
-                while (c.next()) {
-                    for (String fileName : c.getAddedSubList()) {
-                        final MenuItem openMenuItem = new MenuItem(fileName);
-                        openMenuItem.setOnAction((e) -> {
-                                    FileOpener.open(mainWindow, fileName);
-                                }
-                        );
-                        menu.getItems().add(0, openMenuItem);
-                    }
-                    if (c.getRemovedSize() > 0) {
-                        final ArrayList<MenuItem> toDelete = new ArrayList<>();
-                        for (MenuItem menuItem : menu.getItems()) {
-                            if (c.getRemoved().contains(menuItem.getText())) {
-                                toDelete.add(menuItem);
-                            }
-                        }
-                        menu.getItems().removeAll(toDelete);
+    public void setupMenu(final Menu menu, Consumer<String> fileOpener) {
+        final WeakReference<Menu> ref = new WeakReference<>(menu);
+        menuRef2FileOpener.put(ref, fileOpener);
+        menuReferences.add(ref);
 
-                    }
-                }
-            });
-        };
-        menu.setUserData(changeListener); // need to keep a reference
-        recentFiles.addListener(new WeakListChangeListener<>(changeListener));
         for (String fileName : recentFiles) {
             final MenuItem openMenuItem = new MenuItem(fileName);
             openMenuItem.setOnAction((e) -> {
-                        FileOpener.open(mainWindow, fileName);
+                fileOpener.accept(fileName);
                     }
             );
             menu.getItems().add(0, openMenuItem);

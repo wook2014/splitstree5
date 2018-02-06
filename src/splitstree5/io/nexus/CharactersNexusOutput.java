@@ -53,6 +53,8 @@ import static splitstree5.io.nexus.CharactersNexusInput.NAME;
  * Daniel Huson, 2.2018
  */
 public class CharactersNexusOutput implements INexusOutput<CharactersBlock, CharactersNexusFormat> {
+    private boolean ignoreMatrix = false;
+
     /**
      * write a block in nexus format
      *
@@ -74,7 +76,7 @@ public class CharactersNexusOutput implements INexusOutput<CharactersBlock, Char
         w.write("\tdatatype='" + characters.getDataType().toString() + "'");
 
         if (characters.isRespectCase())
-            w.write(" respectcase");
+            w.write(" respectCase");
 
         if (characters.getMissingCharacter() != 0)
             w.write(" missing=" + characters.getMissingCharacter());
@@ -150,7 +152,7 @@ public class CharactersNexusOutput implements INexusOutput<CharactersBlock, Char
         }
 
         w.write("MATRIX\n");
-        if (!format.isIgnoreMatrix()) {
+        if (!isIgnoreMatrix()) {
             if (format.isTranspose() && !format.isInterleave())
                 writeMatrixTranposed(w, taxa, characters, format);
             else if (!format.isTranspose() && format.isInterleave())
@@ -346,5 +348,13 @@ public class CharactersNexusOutput implements INexusOutput<CharactersBlock, Char
             maxLength = Math.max(maxLength, Basic.quoteIfNecessary(taxa.getLabel(i)).length());
         }
         return maxLength;
+    }
+
+    public boolean isIgnoreMatrix() {
+        return ignoreMatrix;
+    }
+
+    public void setIgnoreMatrix(boolean ignoreMatrix) {
+        this.ignoreMatrix = ignoreMatrix;
     }
 }

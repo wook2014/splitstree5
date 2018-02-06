@@ -29,10 +29,7 @@ import jloda.graph.NodeSet;
 import jloda.phylo.SplitsGraph;
 import splitstree5.gui.graphtab.base.NodeViewBase;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Embeds a 3D splits graph
@@ -112,26 +109,35 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
         return force;
     }
 
-    private void shiftOneSplit() {
-        Edge edge = split2edges.values().iterator().next().get(0);
-        Point3D v1 = nodeLocations.get(edge.getSource());
-        Point3D v2 = nodeLocations.get(edge.getTarget());
+    /**
+     * shift some random splits by a small amount
+     *
+     * @param count
+     */
+    private void shiftRandomSplits(int count) {
+        final Integer[] keys = split2edges.keySet().toArray(new Integer[split2edges.size()]);
+        final Random random = new Random(666);
+        while (count-- > 0) {
+            final Edge edge = split2edges.get(keys[random.nextInt(keys.length)]).get(0);
+            final Point3D v1 = nodeLocations.get(edge.getSource());
+            final Point3D v2 = nodeLocations.get(edge.getTarget());
 
-        double edgeLength = v1.subtract(v2).magnitude();
-        double zOffset = edgeLength * 0.01;
+            double edgeLength = v1.subtract(v2).magnitude();
+            double zOffset = edgeLength * (0.02 * (0.5 - random.nextDouble()));
 
-        Point3D v1New = new Point3D(v1.getX(), v1.getY(), v1.getZ() + zOffset);
-        Point3D v1NewVec = v1New.subtract(v2).multiply(edgeLength / v1New.subtract(v2).magnitude());
-        v1New = v2.add(v1NewVec);
-        Point3D moveVec = v1New.subtract(v1);
+            Point3D v1New = new Point3D(v1.getX(), v1.getY(), v1.getZ() + zOffset);
+            Point3D v1NewVec = v1New.subtract(v2).multiply(edgeLength / v1New.subtract(v2).magnitude());
+            v1New = v2.add(v1NewVec);
+            Point3D moveVec = v1New.subtract(v1);
 
-        final NodeSet splitNodes = new NodeSet(graph);
-        getSplitAssociatedNodes(graph.getSplit(edge), edge.getSource(), splitNodes);
-        splitNodes.forEach(v -> {
-            nodeLocations.put(v, new Point3D(nodeLocations.get(v).getX() + moveVec.getX(),
-                    nodeLocations.get(v).getY() + moveVec.getY(),
-                    nodeLocations.get(v).getZ() + moveVec.getZ()));
-        });
+            final NodeSet splitNodes = new NodeSet(graph);
+            getSplitAssociatedNodes(graph.getSplit(edge), edge.getSource(), splitNodes);
+            splitNodes.forEach(v -> {
+                nodeLocations.put(v, new Point3D(nodeLocations.get(v).getX() + moveVec.getX(),
+                        nodeLocations.get(v).getY() + moveVec.getY(),
+                        nodeLocations.get(v).getZ() + moveVec.getZ()));
+            });
+        }
     }
 
     private void calculateStep(NodeArray<Point3D> nodeLocations, boolean linear) {
@@ -247,9 +253,10 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
 
     @Override
     protected NodeArray<Point3D> call() throws Exception {
+        updateTitle("Relaxing");
         updateProgress(0, numOfSteps);
         if (withZpush) {
-            shiftOneSplit();
+            shiftRandomSplits(3);
         }
 
         maxDist = calculateMaxDist(nodeLocations.values());

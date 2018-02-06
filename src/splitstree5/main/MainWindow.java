@@ -129,6 +129,9 @@ public class MainWindow {
             toolBarController.getSaveButton().setOnAction((e) -> menuController.getSaveMenuItem().fire());
             toolBarController.getSaveButton().disableProperty().bind(menuController.getSaveMenuItem().disableProperty());
 
+            toolBarController.getZoomButton().setOnAction((e -> menuController.getResetMenuItem().fire()));
+            toolBarController.getZoomButton().disableProperty().bind(menuController.getResetMenuItem().disableProperty());
+
             toolBarController.getZoomInButton().setOnAction((e) -> menuController.getZoomInMenuItem().fire());
             toolBarController.getZoomInButton().disableProperty().bind(menuController.getZoomInMenuItem().disableProperty());
 
@@ -136,10 +139,9 @@ public class MainWindow {
             toolBarController.getZoomOutButton().disableProperty().bind(menuController.getZoomOutMenuItem().disableProperty());
 
             toolBarController.getRotateLeftButton().setOnAction((e) -> menuController.getRotateLeftMenuItem().fire());
-            toolBarController.getRotateLeftButton().disableProperty().bind(menuController.getRotateLeftMenuItem().disableProperty());
+            toolBarController.getRotateLeftButton().disableProperty().bind(menuController.getRotateLeftMenuItem().disableProperty().or(menuController.getRotateLeftMenuItem().textProperty().isNotEqualTo("Rotate Left")));
             toolBarController.getRotateRightButton().setOnAction((e) -> menuController.getRotateRightMenuItem().fire());
-            toolBarController.getRotateRightButton().disableProperty().bind(menuController.getRotateRightMenuItem().disableProperty());
-
+            toolBarController.getRotateRightButton().disableProperty().bind(menuController.getRotateRightMenuItem().disableProperty().or(menuController.getRotateRightMenuItem().textProperty().isNotEqualTo("Rotate Right")));
         }
         mainWindowController.getTopVBox().getChildren().setAll(menuController.getMenuBar());
         mainWindowController.getTopVBox().getChildren().add(toolBarController.getToolBar());

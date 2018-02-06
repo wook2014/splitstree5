@@ -21,8 +21,10 @@ package splitstree5.dialogs.importer;
 
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import javafx.scene.layout.Pane;
 import jloda.util.CanceledException;
 import splitstree5.core.workflow.TaskWithProgressListener;
+import splitstree5.dialogs.ProgressPane;
 import splitstree5.io.imports.interfaces.IImporter;
 import splitstree5.main.MainWindow;
 
@@ -34,15 +36,25 @@ public class ImportService extends Service<Boolean> {
     private MainWindow parentMainWindow;
     private IImporter importer;
     private String fileName;
+    private String title;
 
-
-    private ImportDialog importDialog;
-
-    public void setup(MainWindow parentMainWindow, IImporter importer, String fileName, ImportDialog importDialog) {
+    /**
+     * setup a task
+     *
+     * @param parentMainWindow
+     * @param importer
+     * @param fileName
+     * @param progressBarParent
+     */
+    public void setup(MainWindow parentMainWindow, IImporter importer, String fileName, String title, Pane progressBarParent) {
         this.parentMainWindow = parentMainWindow;
         this.importer = importer;
         this.fileName = fileName;
-        this.importDialog = importDialog;
+        this.title = title;
+
+        final ProgressPane progressPane = new ProgressPane(titleProperty(), messageProperty(), progressProperty(), runningProperty(), this::cancel);
+        if (progressBarParent != null)
+            progressBarParent.getChildren().add(progressPane);
     }
 
     @Override
@@ -50,6 +62,7 @@ public class ImportService extends Service<Boolean> {
         return new TaskWithProgressListener<Boolean>() {
             @Override
             public Boolean call() {
+                updateTitle(title);
                 try {
                     getProgressListener().setMaximum(0);
                     getProgressListener().setProgress(0);
@@ -60,50 +73,5 @@ public class ImportService extends Service<Boolean> {
                 return true;
             }
         };
-    }
-
-    @Override
-    protected void running() {
-        if (importDialog != null) {
-            importDialog.getController().getProgressBar().setVisible(true);
-            importDialog.getController().getProgressBar().progressProperty().bind(progressProperty());
-            importDialog.getController().getCancelButton().setOnAction((c) -> {
-                cancel();
-                importDialog.close();
-            });
-        }
-    }
-
-    @Override
-    protected void succeeded() {
-        if (importDialog != null) {
-            importDialog.getController().getProgressBar().setVisible(false);
-            importDialog.getController().getProgressBar().progressProperty().unbind();
-            importDialog.getController().getCancelButton().setOnAction((c) -> {
-                importDialog.close();
-            });
-        }
-    }
-
-    @Override
-    protected void cancelled() {
-        if (importDialog != null) {
-            importDialog.getController().getProgressBar().setVisible(false);
-            importDialog.getController().getProgressBar().progressProperty().unbind();
-            importDialog.getController().getCancelButton().setOnAction((c) -> {
-                importDialog.close();
-            });
-        }
-    }
-
-    @Override
-    protected void failed() {
-        if (importDialog != null) {
-            importDialog.getController().getProgressBar().setVisible(false);
-            importDialog.getController().getProgressBar().progressProperty().unbind();
-            importDialog.getController().getCancelButton().setOnAction((c) -> {
-                importDialog.close();
-            });
-        }
     }
 }

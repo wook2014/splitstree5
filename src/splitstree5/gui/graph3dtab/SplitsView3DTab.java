@@ -58,8 +58,10 @@ import jloda.util.ResourceManager;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.DataNode;
+import splitstree5.dialogs.ProgressPane;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.graphtab.ISplitsViewTab;
+import splitstree5.gui.graphtab.base.GeometryUtils;
 import splitstree5.gui.graphtab.base.GraphLayout;
 import splitstree5.gui.graphtab.base.NodeViewBase;
 import splitstree5.menu.MenuController;
@@ -272,7 +274,7 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
      * create an edge view
      */
     public EdgeView3D createEdgeView(final SplitsGraph graph, final Edge e, final Double weight, final Point2D start, final Point2D end) {
-        final EdgeView3D edgeView = new EdgeView3D(e, weight, from2to3D(start), from2to3D(end));
+        final EdgeView3D edgeView = new EdgeView3D(e, weight, GeometryUtils.from2Dto3D(start), GeometryUtils.from2Dto3D(end));
         final int splitId = graph.getSplit(e);
 
         final EventHandler<? super MouseEvent> handler = (EventHandler<MouseEvent>) x -> {
@@ -337,18 +339,16 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
     }
 
     private EmbeddingService service;
-    private int iterations;
 
     @Override
     public void updateMenus(MenuController controller) {
         super.updateMenus(controller);
 
         controller.getRelaxMenuItem().setOnAction((z) -> {
-            iterations = 50;
-
             controller.getRelaxMenuItem().setDisable(true);
             if (service == null) {
                 service = new EmbeddingService();
+                service.stateProperty().addListener((c, o, n) -> controller.getRelaxMenuItem().setDisable(n == Worker.State.RUNNING));
                 service.setOnSucceeded((x) -> {
                     NodeArray<Point3D> newLocations = service.getValue();
                     for (Node v : graph.nodes()) {
@@ -357,31 +357,16 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
                     for (Edge e : graph.edges()) {
                         ((EdgeView3D) edge2view.get(e)).updateCoordinates(((NodeView3D) node2view.get(e.getSource())).getLocation(), ((NodeView3D) node2view.get(e.getTarget())).getLocation());
                     }
-                    if (--iterations >= 0) {
-                        service.restart();
-                    }
-                });
-                service.stateProperty().addListener((c, o, n) -> {
-                    if (iterations == 0)
-                        controller.getRelaxMenuItem().setDisable(n != Worker.State.RUNNING);
                 });
             }
             service.setup(graph, node2view, 5, false, true);
+            getDataNode().getDataBlock().getDocument().getMainWindow().getMainWindowController().getBottomPane().getChildren().add(new ProgressPane(service));
             service.restart();
         });
     }
 
-    private static Point3D from2to3D(Point2D point) {
-        return new Point3D(point.getX(), point.getY(), 0);
-    }
-
-    private static Point2D from3to2D(Point3D point) {
-        return new Point2D(point.getX(), point.getY());
-    }
-
     @Override
     public void setLayout(GraphLayout graphLayout) {
-
     }
 
     @Override

@@ -46,6 +46,7 @@ import javafx.stage.Stage;
 import jloda.fx.RecentFilesManager;
 import jloda.util.AppleStuff;
 import jloda.util.ProgramProperties;
+import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.main.MainWindow;
 import splitstree5.main.MainWindowManager;
 
@@ -856,7 +857,9 @@ public class MenuController {
      */
     public void enableAllUnboundActionMenuItems() {
         if (getOpenRecentMenu().getItems().size() == 0) // can't do this in init because mainWindow not available there
-            RecentFilesManager.getInstance().setupMenu(mainWindow, getOpenRecentMenu());
+            RecentFilesManager.getInstance().setupMenu(getOpenRecentMenu(), (fileName) -> {
+                FileOpener.open(mainWindow, fileName);
+            });
 
         for (Menu menu : getMenuBar().getMenus()) {
             for (MenuItem menuItem : menu.getItems()) {

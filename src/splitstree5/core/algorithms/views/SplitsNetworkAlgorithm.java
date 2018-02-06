@@ -24,10 +24,12 @@ import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
 import javafx.geometry.Point2D;
+import javafx.scene.text.Font;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import jloda.phylo.SplitsGraph;
+import jloda.util.ProgramProperties;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromSplits;
@@ -130,22 +132,25 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, SplitsNetwork
         TreeEmbedder.centerAndScaleToFitTarget(GraphLayout.Radial, splitsViewTab.getTargetDimensions(), node2point);
 
         // compute all views and put their parts into the appropriate groups
+        final Font labelFont = Font.font(ProgramProperties.getDefaultFont().getFamily(), taxa.getNtax() <= 64 ? 16 : Math.max(4, 12 - Math.log(taxa.getNtax() - 64) / Math.log(2)));
         for (Node v : graph.nodes()) {
-            String text = graph.getLabel(v);
-            //String text = (graph.getLabel(v) != null ? graph.getLabel(v) : "Node " + v.getId());
+            final String text = graph.getLabel(v);
             final NodeViewBase nodeView = splitsViewTab.createNodeView(v, node2point.getValue(v), text);
             splitsViewTab.getNode2view().put(v, nodeView);
             splitsViewTab.getNodesGroup().getChildren().addAll(nodeView.getShapeGroup());
             splitsViewTab.getNodeLabelsGroup().getChildren().addAll(nodeView.getLabelGroup());
+            if (nodeView.getLabel() != null)
+                nodeView.getLabel().setFont(labelFont);
         }
         for (Edge e : graph.edges()) {
             final EdgeViewBase edgeView = splitsViewTab.createEdgeView(graph, e, graph.getWeight(e), node2point.get(e.getSource()), node2point.get(e.getTarget()));
             splitsViewTab.getEdge2view().put(e, edgeView);
             splitsViewTab.getEdgesGroup().getChildren().addAll(edgeView.getShapeGroup().getChildren());
-            if (edgeView.getLabel() != null)
+            if (edgeView.getLabel() != null) {
                 splitsViewTab.getEdgeLabelsGroup().getChildren().addAll(edgeView.getLabel());
+                edgeView.getLabel().setFont(labelFont);
+            }
         }
-
 
         Platform.runLater(() -> child.updateSelectionModels(graph, taxa, child.getDocument()));
         child.show();

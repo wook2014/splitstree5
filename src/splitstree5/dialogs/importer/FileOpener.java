@@ -19,9 +19,11 @@
 
 package splitstree5.dialogs.importer;
 
-import splitstree5.gui.utils.Alert;
+import jloda.fx.NotificationManager;
 import splitstree5.io.imports.interfaces.IImporter;
 import splitstree5.main.MainWindow;
+
+import java.io.File;
 
 import static splitstree5.dialogs.importer.ImporterManager.UNKNOWN;
 
@@ -36,6 +38,8 @@ public class FileOpener {
      * @return
      */
     public static boolean isOpenable(String fileName) {
+        if (!(new File(fileName)).canRead())
+            return false;
         final String dataType = ImporterManager.getInstance().getDataType(fileName);
         final String fileFormat = ImporterManager.getInstance().getFileFormat(fileName);
         return !dataType.equals(UNKNOWN) && !fileFormat.equals(UNKNOWN);
@@ -48,16 +52,19 @@ public class FileOpener {
      * @param fileName
      */
     public static void open(MainWindow parentMainWindow, String fileName) {
-
-        final String dataType = ImporterManager.getInstance().getDataType(fileName);
-        final String fileFormat = ImporterManager.getInstance().getFileFormat(fileName);
-        final IImporter importer = ImporterManager.getInstance().getImporterByDataTypeAndFileFormat(dataType, fileFormat);
-        if (importer == null)
-            new Alert("Unknown data type or fileFormat");
+        if (!(new File(fileName)).canRead())
+            NotificationManager.showError("Can't open file '" + fileName + "'\nNot found or unreadable");
         else {
-            final ImportService importService = new ImportService();
-            importService.setup(parentMainWindow, importer, fileName, null);
-            importService.start();
+            final String dataType = ImporterManager.getInstance().getDataType(fileName);
+            final String fileFormat = ImporterManager.getInstance().getFileFormat(fileName);
+            final IImporter importer = ImporterManager.getInstance().getImporterByDataTypeAndFileFormat(dataType, fileFormat);
+            if (importer == null)
+                NotificationManager.showError("Can't open file '" + fileName + "'\nUnknown data type or file format");
+            else {
+                final ImportService importService = new ImportService();
+                importService.setup(parentMainWindow, importer, fileName, "Loading file", parentMainWindow.getMainWindowController().getBottomPane());
+                importService.start();
+            }
         }
     }
 }

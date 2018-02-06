@@ -22,8 +22,8 @@ package splitstree5.dialogs.importer;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 
 /**
@@ -33,7 +33,7 @@ import javafx.scene.layout.VBox;
 public class ImportDialogController {
 
     @FXML
-    private ProgressBar progressBar;
+    private FlowPane progressBarPane;
 
     @FXML
     private Button cancelButton;
@@ -56,8 +56,8 @@ public class ImportDialogController {
     @FXML
     private ComboBox<String> fileFormatComboBox;
 
-    public ProgressBar getProgressBar() {
-        return progressBar;
+    public FlowPane getProgressBarPane() {
+        return progressBarPane;
     }
 
     public Button getCancelButton() {

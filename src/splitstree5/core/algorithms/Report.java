@@ -25,7 +25,7 @@ import splitstree5.core.algorithms.interfaces.*;
 import splitstree5.core.datablocks.AnalysisBlock;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.io.exports.NexusOut;
+import splitstree5.io.exports.NexusExporter;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -41,11 +41,11 @@ public class Report extends Algorithm<DataBlock, AnalysisBlock> implements IFrom
             w.write("### " + parent.getName() + (parent.getShortDescription() != null ? ", " + parent.getShortDescription() + "\n" : "\n"));
 
             if (parent instanceof TaxaBlock)
-                new NexusOut().export(w, (TaxaBlock) parent);
+                new NexusExporter().export(w, (TaxaBlock) parent);
             else if (parent instanceof AnalysisBlock)
-                new NexusOut().export(w, (AnalysisBlock) parent);
+                new NexusExporter().export(w, (AnalysisBlock) parent);
             else
-                new NexusOut().export(w, taxaBlock, parent);
+                new NexusExporter().export(w, taxaBlock, parent);
             child.setShortDescription(w.toString());
         } catch (IOException e) {
             Basic.caught(e);

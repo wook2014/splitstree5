@@ -38,9 +38,9 @@
 
 package splitstree5.core.workflow;
 
-import javafx.application.Platform;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import jloda.fx.NotificationManager;
 import jloda.util.CanceledException;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.misc.ProgramExecutorService;
@@ -51,7 +51,7 @@ import splitstree5.dialogs.ProgressPane;
  * Daniel Huson, 12/21/16.
  */
 public class ConnectorService<P extends DataBlock, C extends DataBlock> extends Service<Boolean> {
-    public static boolean verbose = true;
+    public static boolean verbose = false;
     private Connector<P, C> connector;
 
     public ConnectorService(Connector<P, C> connector) {
@@ -72,13 +72,12 @@ public class ConnectorService<P extends DataBlock, C extends DataBlock> extends 
      * create a task that also provides support for the old progress listener interface
      */
     private class MyTask extends TaskWithProgressListener<Boolean> {
-        private ProgressPane progressPane;
-
         @Override
         public Boolean call() throws Exception {
             synchronized (connector.getChild().getDataBlock()) { // make sure that we only ever have one task working on a given datablock
                 try {
-                    System.err.println("--- Compute " + getMethodName() + " called");
+                    if (verbose)
+                        System.err.println("--- Compute " + getMethodName() + " called");
                     connector.getChild().stateProperty().set(UpdateState.INVALID);
                     connector.stateProperty().set(UpdateState.COMPUTING);
 
@@ -87,10 +86,12 @@ public class ConnectorService<P extends DataBlock, C extends DataBlock> extends 
                     getProgressListener().setTasks(connector.getAlgorithm().getName(), "Running");
                     connector.getAlgorithm().compute(getProgressListener(), connector.getTaxaBlock(), connector.getParent().getDataBlock(), connector.getChild().getDataBlock());
                 } catch (CanceledException ex) {
-                    System.err.println("USER CANCELED");
+                    if (verbose)
+                        System.err.println("USER CANCELED");
                     connector.stateProperty().set(UpdateState.FAILED);
                 } finally {
-                    System.err.println("--- Compute " + getMethodName() + " done");
+                    if (verbose)
+                        System.err.println("--- Compute " + getMethodName() + " done");
                 }
                 return true;
             }
@@ -98,22 +99,7 @@ public class ConnectorService<P extends DataBlock, C extends DataBlock> extends 
 
         @Override
         protected void running() {
-            if (verbose)
-                System.err.println("Compute " + getMethodName() + " task running");
-
-            (new Thread(() -> { // wait three seconds before showing the progress pane
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                }
-                Platform.runLater(() -> {
-                    if (isRunning()) {
-                        progressPane = new ProgressPane(titleProperty(), messageProperty(), progressProperty(), runningProperty(), () -> cancel(true));
-                        connector.getParent().getDataBlock().getDocument().getMainWindow().getMainWindowController().getBottomToolBar().getItems().add(progressPane);
-                    }
-                });
-
-            })).start();
+            connector.getParent().getDataBlock().getDocument().getMainWindow().getMainWindowController().getBottomPane().getChildren().add(new ProgressPane(ConnectorService.this));
         }
 
         @Override
@@ -128,26 +114,22 @@ public class ConnectorService<P extends DataBlock, C extends DataBlock> extends 
                 System.err.println("Compute " + getMethodName() + " task succeeded");
             connector.setState(UpdateState.VALID);
             connector.getChild().setState(UpdateState.VALID); // child is presumably valid once method has completed...
-            if (progressPane != null)
-                connector.getParent().getDataBlock().getDocument().getMainWindow().getMainWindowController().getBottomToolBar().getItems().remove(progressPane);
         }
 
         @Override
         protected void failed() {
             if (verbose)
-                System.err.println("Compute " + getMethodName() + " task failed: " + getException());
+                System.err.println("Algorithm " + getMethodName() + " failed: " + getException());
+            NotificationManager.showError("Algorithm " + getMethodName() + " failed: " + getException().getMessage());
             connector.setState(UpdateState.FAILED);
-            if (progressPane != null)
-                connector.getParent().getDataBlock().getDocument().getMainWindow().getMainWindowController().getBottomToolBar().getItems().remove(progressPane);
         }
 
         @Override
         protected void cancelled() {
             if (verbose)
-                System.err.println("Compute " + getMethodName() + " task canceled");
+                System.err.println("Algorithm " + getMethodName() + " canceled");
             connector.setState(UpdateState.FAILED);
-            if (progressPane != null)
-                connector.getParent().getDataBlock().getDocument().getMainWindow().getMainWindowController().getBottomToolBar().getItems().remove(progressPane);
+            NotificationManager.showWarning("Algorithm " + getMethodName() + " canceled");
         }
     }
 }

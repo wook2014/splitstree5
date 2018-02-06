@@ -1,4 +1,4 @@
-SplitsTree; Huson 1998; D.H.Huson. SplitsTree: analyzing an visualizing evolutionary data.Bioinformatics, 14(10):68–73, 1998.
+SplitsTree; Huson 1998; D.H.Huson. SplitsTree: analyzing and visualizing evolutionary data.Bioinformatics, 14(10):68–73, 1998.
 SplitsTree4; Huson and Bryant 2006; D.H. Huson and D. Bryant. Application of phylogenetic networks in evolutionary studies. Molecular Biology and Evolution, 23:254–267, 2006.
 SplitsTree5; Huson et al (unpublished); D.H. Huson and D. Bryant and possibly others. SplitsTree5 - software under development.
 BunemanTree;Bandelt and Dress 1992; H.-J. Bandelt and A.W.M.Dress. A canonical decomposition theory for metrics on a finite set. Advances in Mathematics, 92:47–105, 1992.

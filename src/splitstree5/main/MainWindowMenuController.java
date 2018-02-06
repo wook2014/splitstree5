@@ -140,7 +140,7 @@ public class MainWindowMenuController {
         final Workflow workflow = mainWindow.getDocument().getWorkflow();
 
         if (selectedTab instanceof IHasDataNode) {
-            System.err.println("Data: " + ((IHasDataNode) selectedTab).getDataNode());
+            //System.err.println("Data: " + ((IHasDataNode) selectedTab).getDataNode());
 
             controller.getMedianJoiningMenuItem().setOnAction((e) -> {
                 final DataNode dataNode = workflow.getAncestor(((IHasDataNode) selectedTab).getDataNode(), CharactersBlock.class);

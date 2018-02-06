@@ -26,6 +26,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import jloda.util.MemoryUsage;
@@ -71,7 +72,7 @@ public class MainWindowController {
     private ToolBar algorithmToolBar;
 
     @FXML
-    private ToolBar bottomToolBar;
+    private FlowPane progressBarPane;
 
     @FXML
     private Button collapseAllButton;
@@ -120,8 +121,8 @@ public class MainWindowController {
         return treeView;
     }
 
-    public ToolBar getBottomToolBar() {
-        return bottomToolBar;
+    public FlowPane getBottomPane() {
+        return progressBarPane;
     }
 
 
