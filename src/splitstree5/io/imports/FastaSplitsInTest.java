@@ -21,7 +21,7 @@ public class FastaSplitsInTest {
         TaxaBlock taxaBlock = new TaxaBlock();
         SplitsBlock splitsBlock = new SplitsBlock();
         ProgressListener pl = new ProgressPercentage();
-        fastaSplitsIn.parse(pl, "test/notNexusFiles/fasta/algae_splits.fasta", taxaBlock, splitsBlock);
+        fastaSplitsIn.parse(pl, "test/notNexusFiles/algae_splits.fasta", taxaBlock, splitsBlock);
 
         // printing
         final StringWriter w = new StringWriter();

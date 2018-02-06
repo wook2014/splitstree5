@@ -35,8 +35,8 @@ public class ClustalIn extends CharactersFormat implements IToCharacters, IImpor
             throws CanceledException, IOException {
         final Map<String, String> taxa2seq = new LinkedHashMap<>();
 
-        int ntax = 0;
-        int nchar = 0;
+        int ntax;
+        int nchar;
         int sequenceInLineLength = 0;
         int counter = 0;
         try (FileInputIterator it = new FileInputIterator(fileName)) {
@@ -59,18 +59,19 @@ public class ClustalIn extends CharactersFormat implements IToCharacters, IImpor
                         lastSeqIndex--;
                     tmpLine = tmpLine.substring(0, lastSeqIndex);
 
+                    String label = "";
                     int labelIndex = tmpLine.indexOf(' ');
-                    String label = tmpLine.substring(0, labelIndex);
-                    if (label.isEmpty())
+                    if (labelIndex == -1 || labelIndex == 0)
                         throw new IOExceptionWithLineNumber("No taxa label is given at line " + counter, counter);
+                    else
+                        label = tmpLine.substring(0, labelIndex);
 
                     tmpLine = tmpLine.replaceAll("\\s+", "");
-                    tmpLine = tmpLine.replaceAll("\t", "");
 
                     if (sequenceInLineLength == 0) sequenceInLineLength = tmpLine.substring(labelIndex).length();
 
                     String allowedChars = "" + getMissing() + getMatchChar() + getGap();
-                    checkIfCharactersValid(line, counter, allowedChars);
+                    checkIfCharactersValid(tmpLine.substring(labelIndex), counter, allowedChars);
                     if (!taxa2seq.containsKey(label)) {
                         taxa2seq.put(label, tmpLine.substring(labelIndex));
                     } else {
@@ -94,11 +95,11 @@ public class ClustalIn extends CharactersFormat implements IToCharacters, IImpor
                 nchar = taxa2seq.get(s).length();
         }
 
-        System.err.println("ntax: " + ntax + " nchar: " + nchar);
+        /*System.err.println("ntax: " + ntax + " nchar: " + nchar);
         for (String s : taxa2seq.keySet()) {
             System.err.println(s);
             System.err.println(taxa2seq.get(s));
-        }
+        }*/
 
         taxa.clear();
         taxa.addTaxaByNames(taxa2seq.keySet());
