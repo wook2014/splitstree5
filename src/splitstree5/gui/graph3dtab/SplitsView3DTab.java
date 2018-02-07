@@ -373,14 +373,4 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
     public ViewerTab getTab() {
         return this;
     }
-
-    @Override
-    public DataNode getDataNode() {
-        return dataNode;
-    }
-
-    @Override
-    public void setDataNode(DataNode dataNode) {
-        this.dataNode = dataNode;
-    }
 }

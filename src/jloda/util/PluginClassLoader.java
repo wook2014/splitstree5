@@ -38,7 +38,7 @@ public class PluginClassLoader {
      * @param packageNames
      * @return instances
      */
-    public static <T> List<T> getInstances(Class<T> clazz, String... packageNames) {
+    public static <C> List<C> getInstances(Class<C> clazz, String... packageNames) {
         return getInstances(clazz, null, packageNames);
     }
 
@@ -50,7 +50,7 @@ public class PluginClassLoader {
      * @param packageNames
      * @return instances
      */
-    public static <T> List<T> getInstances(Class<T> clazz1, Class clazz2, String... packageNames) {
+    public static <C, D> List<C> getInstances(Class<C> clazz1, Class<D> clazz2, String... packageNames) {
         return getInstances(null, clazz1, clazz2, packageNames);
     }
 
@@ -63,8 +63,8 @@ public class PluginClassLoader {
      * @param packageNames
      * @return instances
      */
-    public static <T> List<T> getInstances(String className, Class<T> clazz1, Class clazz2, String... packageNames) {
-        final List<T> plugins = new LinkedList<>();
+    public static <C, D> List<C> getInstances(String className, Class<C> clazz1, Class<D> clazz2, String... packageNames) {
+        final List<C> plugins = new LinkedList<>();
         final LinkedList<String> packageNameQueue = new LinkedList<>();
         packageNameQueue.addAll(Arrays.asList(packageNames));
         while (packageNameQueue.size() > 0) {
@@ -73,11 +73,11 @@ public class PluginClassLoader {
                 final String[] resources = ResourcesUtils.fetchResources(packageName);
 
                 for (int i = 0; i != resources.length; ++i) {
-                    //System.err.println("Resource: " + resources[i]);
+                    // System.err.println("Resource: " + resources[i]);
                     if (resources[i].endsWith(".class")) {
                         try {
                             resources[i] = resources[i].substring(0, resources[i].length() - 6);
-                            final Class<T> c = ResourcesUtils.classForName(packageName.concat(".").concat(resources[i]));
+                            final Class<C> c = ResourcesUtils.classForName(packageName.concat(".").concat(resources[i]));
                             if (!c.isInterface() && !Modifier.isAbstract(c.getModifiers()) && clazz1.isAssignableFrom(c) && (clazz2 == null || clazz2.isAssignableFrom(c))
                                     && (className == null || Basic.getShortName(c).equalsIgnoreCase(className))) {
                                 try {

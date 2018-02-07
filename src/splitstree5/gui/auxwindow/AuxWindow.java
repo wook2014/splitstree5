@@ -20,7 +20,6 @@
 package splitstree5.gui.auxwindow;
 
 import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -72,24 +71,21 @@ public class AuxWindow implements IStageSupplier {
 
         if (tab instanceof ViewerTab) {
             final Document document = ((ViewerTab) tab).getMainWindow().getDocument();
-            controller.getTabPane().getTabs().addListener(new InvalidationListener() {
-                @Override
-                public void invalidated(Observable observable) {
-                    final StringBuilder buf = new StringBuilder();
-                    boolean first = true;
-                    for (Tab aTab : controller.getTabPane().getTabs()) {
-                        if (first)
-                            first = false;
-                        else
-                            buf.append(",");
-                        if (aTab.getGraphic() instanceof Labeled)
-                            buf.append(" ").append(((Labeled) aTab.getGraphic()).getText());
-                        else
-                            buf.append(" ").append(aTab.getText());
-                    }
-                    buf.append(" - ");
-                    stage.titleProperty().bind(Bindings.concat(buf.toString()).concat(document.nameProperty()).concat(" - " + ProgramProperties.getProgramName()));
+            controller.getTabPane().getTabs().addListener((InvalidationListener) observable -> {
+                final StringBuilder buf = new StringBuilder();
+                boolean first = true;
+                for (Tab aTab : controller.getTabPane().getTabs()) {
+                    if (first)
+                        first = false;
+                    else
+                        buf.append(",");
+                    if (aTab.getGraphic() instanceof Labeled)
+                        buf.append(" ").append(((Labeled) aTab.getGraphic()).getText());
+                    else
+                        buf.append(" ").append(aTab.getText());
                 }
+                buf.append(" - ");
+                stage.titleProperty().bind(Bindings.concat(buf.toString()).concat(document.nameProperty()).concat(" - " + ProgramProperties.getProgramName()));
             });
             stage.titleProperty().bind(Bindings.concat("Aux Window - ").concat(document.nameProperty()).concat(" SplitsTree5"));
         } else {

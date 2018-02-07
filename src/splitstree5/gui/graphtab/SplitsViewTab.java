@@ -372,13 +372,4 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
     public ViewerTab getTab() {
         return this;
     }
-
-    public DataNode getDataNode() {
-        return dataNode;
-    }
-
-    @Override
-    public void setDataNode(DataNode dataNode) {
-        this.dataNode = dataNode;
-    }
 }

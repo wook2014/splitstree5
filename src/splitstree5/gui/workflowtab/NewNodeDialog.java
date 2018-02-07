@@ -103,7 +103,6 @@ public class NewNodeDialog {
         controller.getTargetDataComboBox().getItems().setAll(DataBlock.getAllDataBlocks());
         controller.getTargetDataComboBox().getSelectionModel().select(0);
 
-
         controller.getTargetDataComboBox().valueProperty().addListener((observable, oldValue, newValue) -> {
             controller.getAlgorithmChoiceBox().getItems().setAll((new Connector(workflow.getWorkingTaxaBlock(), sourceNode, new DataNode(newValue), false)).getAllAlgorithms());
             controller.getAlgorithmChoiceBox().getSelectionModel().select(0);

@@ -252,7 +252,7 @@
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="formatNodesMenuItem" text="Format...">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="F" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="J" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>

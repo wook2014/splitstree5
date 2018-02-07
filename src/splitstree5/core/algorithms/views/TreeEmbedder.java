@@ -44,9 +44,11 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
+import javafx.scene.text.Font;
 import jloda.graph.*;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
+import jloda.util.ProgramProperties;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
@@ -171,6 +173,8 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                     }
                 }
 
+                final Font labelFont = Font.font(ProgramProperties.getDefaultFont().getFamily(), taxaBlock.getNtax() <= 64 ? 16 : Math.max(4, 12 - Math.log(taxaBlock.getNtax() - 64) / Math.log(2)));
+
                 // compute all views and put their parts into the appropriate groups
                 for (Node v : tree.nodes()) {
                     final StringBuilder buf = new StringBuilder();
@@ -200,6 +204,9 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                     if (text != null && text.length() > 0 && view.getNodeLabel2Style().containsKey(text)) {
                         nodeView.setStyling(view.getNodeLabel2Style().get(text));
                     }
+                    if (nodeView.getLabel() != null) {
+                        nodeView.getLabel().setFont(labelFont);
+                    }
 
                     view.getNode2view().put(v, nodeView);
                     view.getNodesGroup().getChildren().addAll(nodeView.getShapeGroup());
@@ -213,8 +220,13 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                     view.getEdge2view().put(e, edgeView);
                     if (edgeView.getShape() != null)
                         view.getEdgesGroup().getChildren().add(edgeView.getShape());
-                    if (edgeView.getLabel() != null)
+                    if (edgeView.getLabel() != null) {
                         view.getEdgeLabelsGroup().getChildren().addAll(edgeView.getLabel());
+                        if (edgeView.getLabel() != null) {
+                            edgeView.getLabel().setFont(labelFont);
+                        }
+                    }
+
                 }
             }
             Platform.runLater(() -> view.updateSelectionModels(tree, taxaBlock, child.getDocument()));

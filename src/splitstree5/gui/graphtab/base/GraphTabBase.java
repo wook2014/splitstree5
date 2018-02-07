@@ -590,6 +590,8 @@ public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISa
 
     public void setDataNode(DataNode dataNode) {
         this.dataNode = dataNode;
+        if (dataNode != null && dataNode.getDataBlock() != null && dataNode.getDataBlock().getDocument() != null)
+            setMainWindow(dataNode.getDataBlock().getDocument().getMainWindow());
     }
 }
 

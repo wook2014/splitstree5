@@ -45,10 +45,9 @@ import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
-import javafx.scene.Camera;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Pane;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
@@ -59,6 +58,7 @@ import jloda.phylo.PhyloGraph;
 import splitstree5.gui.graphtab.base.GraphTabBase;
 import splitstree5.gui.graphtab.base.NodeViewBase;
 import splitstree5.menu.MenuController;
+import splitstree5.utils.Print;
 
 /**
  * tree and split network two-dimensional graph
@@ -240,6 +240,15 @@ public abstract class Graph3DTab<G extends PhyloGraph> extends GraphTabBase<G> {
     @Override
     public void updateMenus(MenuController controller) {
         super.updateMenus(controller);
+
+        controller.getPrintMenuitem().setOnAction((e) -> {
+            final SnapshotParameters snapshotParameters = new SnapshotParameters();
+            snapshotParameters.setDepthBuffer(true);
+            WritableImage bottomImage = bottomPane.snapshot(snapshotParameters, null);
+            // todo: need to overlay top pane or place labels into bottom pane
+            Print.print(getMainWindow().getStage(), new ImageView(bottomImage));
+        });
+
         controller.getResetMenuItem().setOnAction((e -> {
             worldTransformProperty.setValue(new Rotate());
             camera.setTranslateX(0);
