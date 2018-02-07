@@ -51,7 +51,7 @@ import java.util.concurrent.Executors;
  */
 public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
 
-    private final RubberBandSelection rubberBandSelection;
+    private RubberBandSelection rubberBandSelection;
     private DoubleProperty scaleChangeX = new SimpleDoubleProperty(1); // keep track of scale changes, used for reset
     private DoubleProperty scaleChangeY = new SimpleDoubleProperty(1);
     private DoubleProperty angleChange = new SimpleDoubleProperty(0);
@@ -62,7 +62,6 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
      */
     public Graph2DTab() {
         super();
-        rubberBandSelection = new RubberBandSelection(centerPane, group, createRubberBandSelectionHandler());
     }
 
     /**
@@ -140,6 +139,7 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
                         }
                     }
                 };
+                rubberBandSelection = new RubberBandSelection(centerPane, scrollPane, group, createRubberBandSelectionHandler());
                 scrollPane.lockAspectRatioProperty().bind(layout.isEqualTo(GraphLayout.Radial));
                 centerPane.minWidthProperty().bind(Bindings.createDoubleBinding(() ->
                         scrollPane.getViewportBounds().getWidth(), scrollPane.viewportBoundsProperty()).subtract(20));
@@ -150,7 +150,7 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
                 // need to put this here after putting the center pane in:
                 borderPane.setTop(findToolBar);
 
-                /* this works once window is open, but first time around...
+                /* this works once window is open, but not first time around...
                 scrollPane.layout();
                 System.err.print("Center: "+scrollPane.getVvalue());
                 scrollPane.setVvalue(0.5);
@@ -158,8 +158,6 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
 
                 scrollPane.setHvalue(0.5);
                 */
-
-
             }
         });
     }

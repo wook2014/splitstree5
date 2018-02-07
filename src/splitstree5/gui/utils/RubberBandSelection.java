@@ -45,6 +45,7 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -79,15 +80,18 @@ public class RubberBandSelection {
     private boolean stillDownWithoutMoving;
     private boolean inWait;
     private final BooleanProperty inRubberBand = new SimpleBooleanProperty();
+    private final BooleanProperty inDrag = new SimpleBooleanProperty();
+
 
     /**
      * constructor
      *
      * @param pane    node on which mouse can be clicked and dragged to show rubber band
+     * @param scrollPane if non-null, will implement panning
      * @param group   group into which rubber band should be temporarily added so that it appears in the scene
      * @param handler this is called when rubber band is released
      */
-    public RubberBandSelection(final Pane pane, final Group group, final Handler handler) {
+    public RubberBandSelection(final Pane pane, final ScrollPane scrollPane, final Group group, final Handler handler) {
         if (service == null)
             service = Executors.newFixedThreadPool(1);
 
@@ -103,6 +107,10 @@ public class RubberBandSelection {
                 group.getChildren().add(rectangle);
             else
                 group.getChildren().remove(rectangle);
+        });
+
+        inDrag.addListener((c, o, n) -> {
+            pane.setCursor(n ? Cursor.OPEN_HAND : Cursor.DEFAULT);
         });
 
         pane.addEventHandler(MouseEvent.MOUSE_PRESSED, (e) -> {
@@ -149,6 +157,21 @@ public class RubberBandSelection {
                     rectangle.setHeight(Math.abs(end.getY() - start.getY()));
                     e.consume();
                 }
+            } else if (scrollPane != null && start != null) {
+                inDrag.set(true);
+                double deltaX = e.getScreenX() - start.getX();
+                double deltaY = e.getScreenY() - start.getY();
+                // todo: determine the correct amount to scroll by
+                if (deltaX > 5)
+                    scrollPane.setHvalue(scrollPane.getHvalue() - 0.01 * scrollPane.getHmax());
+                else if (deltaX < -5)
+                    scrollPane.setHvalue(scrollPane.getHvalue() + 0.01 * scrollPane.getHmax());
+                if (deltaY > 5)
+                    scrollPane.setVvalue(scrollPane.getVvalue() - 0.01 * scrollPane.getVmax());
+                else if (deltaY < -5)
+                    scrollPane.setVvalue(scrollPane.getVvalue() + 0.01 * scrollPane.getVmax());
+                if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5)
+                    start = new Point2D(e.getScreenX(), e.getScreenY());
             }
         });
 
@@ -166,6 +189,7 @@ public class RubberBandSelection {
                 }
                 inRubberBand.set(false);
             }
+            inDrag.set(false);
         });
     }
 
