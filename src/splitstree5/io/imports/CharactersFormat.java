@@ -55,6 +55,8 @@ public abstract class CharactersFormat {
      * @throws IOException
      */
     static void checkIfCharactersValid(String line, int counter, String allowedChars) throws IOException {
+        if (line.isEmpty())
+            throw  new IOExceptionWithLineNumber("No characters sequence is given in line "+counter, counter);
 
         String regex = "[^a-z0-9 \t" + allowedChars + "]";
         Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);

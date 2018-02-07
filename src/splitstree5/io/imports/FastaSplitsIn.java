@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 
-public class FastaSplitsIn implements IToSplits, IImportSplits {
+public class FastaSplitsIn extends CharactersFormat implements IToSplits, IImportSplits {
 
     public static final List<String> extensions = new ArrayList<>(Arrays.asList("fasta", "fas", "fa", "seq", "fsa", "fna"));
 
@@ -34,51 +34,48 @@ public class FastaSplitsIn implements IToSplits, IImportSplits {
         try (FileInputIterator it = new FileInputIterator(fileName)) {
             progressListener.setMaximum(it.getMaximumProgress());
             progressListener.setProgress(0);
-            counter++;
-            int sequenceLength = 0;
-            StringBuilder sequence = new StringBuilder("");
-            boolean startedNewSequence = false;
+            int currentSequenceLength = 0;
+            StringBuilder currentSequence = new StringBuilder("");
 
             while (it.hasNext()) {
                 final String line = it.next();
-                counter++;
 
-                if (line.startsWith(";"))
+                counter++;
+                if (line.startsWith(";") || line.isEmpty())
                     continue;
                 if (line.equals(">"))
-                    throw new IOException("No taxa label given at the sequence " + (ntax + 1) + " in line: " + counter);
+                    throw new IOExceptionWithLineNumber("No taxa label given at line: " + counter, counter);
 
                 if (line.startsWith(">")) {
-                    startedNewSequence = true;
                     addTaxaName(line, taxonNamesFound, counter);
-                    if (taxonNamesFound.contains(line.substring(1))) {
-                        System.err.println("");
-                    }
                     ntax++;
+
+                    if (ntax > 1 && currentSequence.toString().isEmpty())
+                        throw new IOExceptionWithLineNumber("No sequence is given at line " + counter, counter);
+
+                    if (nsplits != 0 && nsplits != currentSequenceLength)
+                        throw new IOExceptionWithLineNumber("Sequences must be the same length. " +
+                                "Wrong number of chars at the line: " + (counter - 1) + ". Length " + nsplits + " expected", counter - 1);
+
+                    if (!currentSequence.toString().equals("")) binarySplits.add(currentSequence.toString());
+                    nsplits = currentSequenceLength;
+                    currentSequenceLength = 0;
+                    currentSequence = new StringBuilder("");
                 } else {
-                    if (startedNewSequence) {
-                        if (!sequence.toString().equals("")) binarySplits.add(sequence.toString());
-                        if (nsplits != 0 && nsplits != sequenceLength) {
-                            throw new IOException("Sequences must be the same length. Wrong number of chars at the sequence "
-                                    + (ntax - 1) + " in line: " + counter);
-                        }
-                        nsplits = sequenceLength;
-                        sequenceLength = 0;
-                        sequence = new StringBuilder("");
-                        startedNewSequence = false;
-                    }
+                    String allowedChars = "" + getMissing() + getMatchChar() + getGap();
+                    checkIfCharactersValid(line, counter, allowedChars);
                     String add = line.replaceAll("\\s+", "");
-                    sequenceLength += add.length();
-                    sequence.append(line.replaceAll("\\s+", ""));
+                    currentSequenceLength += add.length();
+                    currentSequence.append(add);
                 }
                 progressListener.setProgress(it.getProgress());
             }
 
-            if (sequence.length() == 0)
-                throw new IOException("Sequence " + ntax + " is zero");
-            binarySplits.add(sequence.toString());
-            if (nsplits != sequenceLength)
-                throw new IOException("Sequences must be the same length. Wrong number of chars at the sequence " + ntax);
+            if (currentSequence.length() == 0)
+                throw new IOExceptionWithLineNumber("Line: "+counter+": Sequence " + ntax + " is zero", counter);
+            binarySplits.add(currentSequence.toString());
+            if (nsplits != currentSequenceLength)
+                throw new IOExceptionWithLineNumber("Wrong number of chars at the line: " + counter + ". Length " + nsplits + " expected", counter);
 
         }
         System.err.println("ntax: " + ntax + " nsplits: " + nsplits);
@@ -117,21 +114,5 @@ public class FastaSplitsIn implements IToSplits, IImportSplits {
             ASplit aSplit = new ASplit(A, ntax);
             splitsBlock.getSplits().add(aSplit);
         }
-    }
-
-    private static void addTaxaName(String line, ArrayList<String> taxonNames, int linesCounter) {
-
-        int sameNamesCounter = 0;
-        if (taxonNames.contains(line.substring(1))) {
-            System.err.println("Repeating taxon name in line " + linesCounter);
-            sameNamesCounter++;
-        }
-        while (taxonNames.contains(line.substring(1)))
-            sameNamesCounter++;
-
-        if (sameNamesCounter == 0)
-            taxonNames.add(line.substring(1));
-        else
-            taxonNames.add(line.substring(1) + sameNamesCounter);
     }
 }
