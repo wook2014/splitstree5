@@ -57,13 +57,17 @@ public class FileOpener {
         else {
             final String dataType = ImporterManager.getInstance().getDataType(fileName);
             final String fileFormat = ImporterManager.getInstance().getFileFormat(fileName);
-            final IImporter importer = ImporterManager.getInstance().getImporterByDataTypeAndFileFormat(dataType, fileFormat);
-            if (importer == null)
-                NotificationManager.showError("Can't open file '" + fileName + "'\nUnknown data type or file format");
-            else {
-                final ImportService importService = new ImportService();
-                importService.setup(parentMainWindow, importer, fileName, "Loading file", parentMainWindow.getMainWindowController().getBottomPane());
-                importService.start();
+            if (!dataType.equals(UNKNOWN) && !fileFormat.equals(UNKNOWN)) {
+                final IImporter importer = ImporterManager.getInstance().getImporterByDataTypeAndFileFormat(dataType, fileFormat);
+                if (importer == null)
+                    NotificationManager.showError("Can't open file '" + fileName + "'\nUnknown data type or file format");
+                else {
+                    final ImportService importService = new ImportService();
+                    importService.setup(parentMainWindow, importer, fileName, "Loading file", parentMainWindow.getMainWindowController().getBottomPane());
+                    importService.start();
+                }
+            } else {
+                ImportDialog.show(parentMainWindow, fileName);
             }
         }
     }

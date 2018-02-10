@@ -28,7 +28,7 @@ public class PhylipCharactersOutTest {
 
         List<String> taxonNamesI = new CharactersNexusInput().parse(
                 new NexusStreamParser(new FileReader("test/characters/microsat1.nex")),
-                taxaI, charactersI, formatI);
+                taxaI, charactersI);
         taxaI.addTaxaByNames(taxonNamesI);
 
         phylipCharactersOut.export(writerI, taxaI, charactersI);
@@ -47,7 +47,7 @@ public class PhylipCharactersOutTest {
 
         List<String> taxonNames = new CharactersNexusInput().parse(
                 new NexusStreamParser(new FileReader("test/characters/microsat1.nex")),
-                taxa, characters, format);
+                taxa, characters);
         taxa.addTaxaByNames(taxonNames);
 
         phylipCharactersOut.export(writer, taxa, characters);

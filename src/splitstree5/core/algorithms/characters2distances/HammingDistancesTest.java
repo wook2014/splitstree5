@@ -47,22 +47,22 @@ public class HammingDistancesTest {
         final TaxaBlock taxa = new TaxaBlock();
         final CharactersBlock characters = new CharactersBlock();
         final DistancesBlock distances = new DistancesBlock();
-        taxa.addTaxaByNames(new CharactersNexusInput().parse(new NexusStreamParser(new FileReader("test/nexus/characters-simple.nex")), taxa, characters, null));
+        taxa.addTaxaByNames(new CharactersNexusInput().parse(new NexusStreamParser(new FileReader("test/nexus/characters-simple.nex")), taxa, characters));
 
         final HammingDistances hammingDistances = new HammingDistances();
 
         hammingDistances.compute(new ProgressPercentage(), taxa, characters, distances);
 
         StringWriter w = new StringWriter();
-        new DistancesNexusOutput().write(w, taxa, distances, null);
+        new DistancesNexusOutput().write(w, taxa, distances);
         System.err.println(w.toString());
 
         final TaxaBlock taxaFromSplitsTree4 = new TaxaBlock();
         final DistancesBlock distancesFromSplitsTree4 = new DistancesBlock();
-        taxaFromSplitsTree4.addTaxaByNames(new DistancesNexusInput().parse(new NexusStreamParser(new FileReader("test/nexus/distances-simple.nex")), taxaFromSplitsTree4, distancesFromSplitsTree4, null));
+        taxaFromSplitsTree4.addTaxaByNames(new DistancesNexusInput().parse(new NexusStreamParser(new FileReader("test/nexus/distances-simple.nex")), taxaFromSplitsTree4, distancesFromSplitsTree4));
 
         StringWriter wFromSplitsTree4 = new StringWriter();
-        new DistancesNexusOutput().write(wFromSplitsTree4, taxaFromSplitsTree4, distancesFromSplitsTree4, null);
+        new DistancesNexusOutput().write(wFromSplitsTree4, taxaFromSplitsTree4, distancesFromSplitsTree4);
         //System.err.println(wFromSplitsTree4.toString());
 
         assertEquals(w.toString(), wFromSplitsTree4.toString());

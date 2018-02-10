@@ -28,7 +28,7 @@ public class NexmlCharactersInTest {
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
         new TaxaNexusOutput().write(w1, taxaBlock);
-        new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock, null);
+        new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock);
         System.err.println(w1.toString());
 
     }
@@ -45,7 +45,7 @@ public class NexmlCharactersInTest {
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
         new TaxaNexusOutput().write(w1, taxaBlock);
-        new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock, null);
+        new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock);
         System.err.println(w1.toString());
     }
 

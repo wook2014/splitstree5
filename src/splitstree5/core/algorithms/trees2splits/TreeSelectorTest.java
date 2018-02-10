@@ -32,7 +32,7 @@ public class TreeSelectorTest {
         NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/trees6-translate.nex"));
         np.matchIgnoreCase("#nexus");
         new TaxaNexusInput().parse(np, taxaBlock);
-        new TreesNexusInput().parse(np, taxaBlock, treesBlock, null);
+        new TreesNexusInput().parse(np, taxaBlock, treesBlock);
 
         for (int which = 1; which <= treesBlock.getNTrees(); which++) {
 
@@ -45,8 +45,8 @@ public class TreeSelectorTest {
             final StringWriter w = new StringWriter();
             w.write("#nexus\n");
             new TaxaNexusOutput().write(w, taxaBlock);
-            new TreesNexusOutput().write(w, taxaBlock, treesBlock, null);
-            new SplitsNexusOutput().write(w, taxaBlock, splitsBlock, null);
+            new TreesNexusOutput().write(w, taxaBlock, treesBlock);
+            new SplitsNexusOutput().write(w, taxaBlock, splitsBlock);
             System.err.println(w.toString());
 
             // compare splits
@@ -58,7 +58,7 @@ public class TreeSelectorTest {
             NexusStreamParser np4 = new NexusStreamParser(new FileReader(fileName));
             np4.matchIgnoreCase("#nexus");
             new TaxaNexusInput().parse(np4, taxaFromST4);
-            new SplitsNexusInput().parse(np4, taxaFromST4, splitsFromST4, null);
+            new SplitsNexusInput().parse(np4, taxaFromST4, splitsFromST4);
 
             assertEquals(splitsBlock.size(), splitsFromST4.size());
             for (int i = 0; i < splitsBlock.getNsplits(); i++) {

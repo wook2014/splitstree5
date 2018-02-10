@@ -33,7 +33,7 @@ import java.util.List;
  * @param <D>
  * @param <F>
  */
-public interface INexusInput<D extends DataBlock, F extends INexusFormat> {
+public interface INexusInput<D extends DataBlock> {
     /**
      * get syntax
      */
@@ -45,10 +45,9 @@ public interface INexusInput<D extends DataBlock, F extends INexusFormat> {
      * @param np
      * @param taxaBlock
      * @param dataBlock
-     * @param format
      * @return taxon names, if found
      */
-    List<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, D dataBlock, F format) throws IOException;
+    List<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, D dataBlock) throws IOException;
 
     /**
      * is the parser at the beginning of a block that this class can parse?

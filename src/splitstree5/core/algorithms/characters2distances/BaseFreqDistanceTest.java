@@ -36,7 +36,7 @@ public class BaseFreqDistanceTest {
         CharactersBlock charactersBlock = new CharactersBlock();
 
         CharactersNexusFormat format = new CharactersNexusFormat();
-        List<String> taxonNames = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock, format);
+        List<String> taxonNames = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock);
         taxaBlock.addTaxaByNames(taxonNames);
         DistancesBlock distancesBlock = new DistancesBlock();
 
@@ -46,7 +46,7 @@ public class BaseFreqDistanceTest {
         final DistancesBlock distancesFromSplitsTree4 = new DistancesBlock();
         taxaFromSplitsTree4.addTaxaByNames
                 (new DistancesNexusInput().parse(new NexusStreamParser(new FileReader("test//distances//miniBaseFreq.nex")),
-                        taxaFromSplitsTree4, distancesFromSplitsTree4, null));
+                        taxaFromSplitsTree4, distancesFromSplitsTree4));
 
 
         System.out.println("MATRIX");
@@ -66,7 +66,7 @@ public class BaseFreqDistanceTest {
 
         CharactersNexusFormat format1 = new CharactersNexusFormat();
         List<String> taxonNames1 = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile1)),
-                taxaBlock1, charactersBlock1, format1);
+                taxaBlock1, charactersBlock1);
         taxaBlock1.addTaxaByNames(taxonNames1);
         DistancesBlock distancesBlock1 = new DistancesBlock();
 
@@ -76,7 +76,7 @@ public class BaseFreqDistanceTest {
         final DistancesBlock distancesFromSplitsTree41 = new DistancesBlock();
         taxaFromSplitsTree41.addTaxaByNames
                 (new DistancesNexusInput().parse(new NexusStreamParser(new FileReader("test//distances//algaeBaseFreq.nex")),
-                        taxaFromSplitsTree41, distancesFromSplitsTree41, null));
+                        taxaFromSplitsTree41, distancesFromSplitsTree41));
 
 
         System.out.println("MATRIX");
@@ -95,7 +95,7 @@ public class BaseFreqDistanceTest {
         CharactersBlock charactersBlock2 = new CharactersBlock();
 
         CharactersNexusFormat format2 = new CharactersNexusFormat();
-        List<String> taxonNames2 = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile2)), taxaBlock2, charactersBlock2, format2);
+        List<String> taxonNames2 = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile2)), taxaBlock2, charactersBlock2);
         taxaBlock2.addTaxaByNames(taxonNames2);
         DistancesBlock distancesBlock2 = new DistancesBlock();
 
@@ -105,7 +105,7 @@ public class BaseFreqDistanceTest {
         final DistancesBlock distancesFromSplitsTree4_2 = new DistancesBlock();
         taxaFromSplitsTree4_2.addTaxaByNames
                 (new DistancesNexusInput().parse(new NexusStreamParser(new FileReader("test//distances//myosinBaseFreq.nex")),
-                        taxaFromSplitsTree4_2, distancesFromSplitsTree4_2, null));
+                        taxaFromSplitsTree4_2, distancesFromSplitsTree4_2));
 
 
         for (int i = 0; i < distancesBlock2.getDistances().length; i++) {

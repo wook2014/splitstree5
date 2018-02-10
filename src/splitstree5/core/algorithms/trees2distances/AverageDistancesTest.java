@@ -35,7 +35,7 @@ public class AverageDistancesTest {
         NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/trees6-translate.nex"));
         np.matchIgnoreCase("#nexus");
         new TaxaNexusInput().parse(np, taxaBlock);
-        new TreesNexusInput().parse(np, taxaBlock, treesBlock, null);
+        new TreesNexusInput().parse(np, taxaBlock, treesBlock);
 
         ProgressListener pl = new ProgressPercentage();
         DistancesBlock distancesBlock = new DistancesBlock();
@@ -45,7 +45,7 @@ public class AverageDistancesTest {
         final DistancesBlock distancesFromSplitsTree4 = new DistancesBlock();
         taxaFromSplitsTree4.addTaxaByNames
                 (new DistancesNexusInput().parse(new NexusStreamParser(new FileReader("test/distances/trees6-averageDist.nex")),
-                        taxaFromSplitsTree4, distancesFromSplitsTree4, null));
+                        taxaFromSplitsTree4, distancesFromSplitsTree4));
 
         for (int i = 0; i < distancesBlock.getDistances().length; i++) {
             assertArrayEquals(distancesFromSplitsTree4.getDistances()[i], distancesBlock.getDistances()[i], 0.000001);
@@ -60,7 +60,7 @@ public class AverageDistancesTest {
 
         // compute NJ tree from distances
         DistancesBlock colors = new DistancesBlock();
-        new DistancesNexusInput().parse(np2, taxaBlock2, colors, null);
+        new DistancesNexusInput().parse(np2, taxaBlock2, colors);
         final NeighborJoining nj = new NeighborJoining();
         nj.compute(new ProgressPercentage(), taxaBlock2, colors, treesBlock2);
 
@@ -73,7 +73,7 @@ public class AverageDistancesTest {
         final DistancesBlock distancesFromSplitsTree42 = new DistancesBlock();
         taxaFromSplitsTree42.addTaxaByNames
                 (new DistancesNexusInput().parse(new NexusStreamParser(new FileReader("test/distances/colors-NJ-averageDist.nex")),
-                        taxaFromSplitsTree42, distancesFromSplitsTree42, null));
+                        taxaFromSplitsTree42, distancesFromSplitsTree42));
 
         for (int i = 0; i < distancesBlock2.getDistances().length; i++) {
             assertArrayEquals(distancesFromSplitsTree42.getDistances()[i], distancesBlock2.getDistances()[i], 0.00001);
@@ -86,7 +86,7 @@ public class AverageDistancesTest {
         NexusStreamParser np3 = new NexusStreamParser(new FileReader("test/trees/dolphins-NJ.nex"));
         np3.matchIgnoreCase("#nexus");
         new TaxaNexusInput().parse(np3, taxaBlock3);
-        new TreesNexusInput().parse(np3, taxaBlock3, treesBlock3, null);
+        new TreesNexusInput().parse(np3, taxaBlock3, treesBlock3);
 
         ProgressListener pl3 = new ProgressPercentage();
         DistancesBlock distancesBlock3 = new DistancesBlock();
@@ -96,7 +96,7 @@ public class AverageDistancesTest {
         final DistancesBlock distancesFromSplitsTree43 = new DistancesBlock();
         taxaFromSplitsTree43.addTaxaByNames
                 (new DistancesNexusInput().parse(new NexusStreamParser(new FileReader("test/distances/dolphins-NJ-averageDist.nex")),
-                        taxaFromSplitsTree43, distancesFromSplitsTree43, null));
+                        taxaFromSplitsTree43, distancesFromSplitsTree43));
 
         for (int i = 0; i < distancesBlock3.getDistances().length; i++) {
             assertArrayEquals(distancesFromSplitsTree43.getDistances()[i], distancesBlock3.getDistances()[i], 0.000001);

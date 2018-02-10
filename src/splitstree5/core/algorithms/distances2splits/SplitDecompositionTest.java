@@ -49,7 +49,7 @@ public class SplitDecompositionTest {
         try (NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/distances7-taxa.nex"))) {
             np.matchIgnoreCase("#nexus");
             new TaxaNexusInput().parse(np, taxaBlock);
-            new DistancesNexusInput().parse(np, taxaBlock, distancesBlock, null);
+            new DistancesNexusInput().parse(np, taxaBlock, distancesBlock);
             assertEquals(taxaBlock.getNtax(), 7);
             assertEquals(distancesBlock.getNtax(), 7);
         }
@@ -62,8 +62,8 @@ public class SplitDecompositionTest {
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
         new TaxaNexusOutput().write(w, taxaBlock);
-        new DistancesNexusOutput().write(w, taxaBlock, distancesBlock, null);
-        new SplitsNexusOutput().write(w, taxaBlock, splitsBlock, null);
+        new DistancesNexusOutput().write(w, taxaBlock, distancesBlock);
+        new SplitsNexusOutput().write(w, taxaBlock, splitsBlock);
         System.err.println(w.toString());
 
         // compare splits
@@ -73,7 +73,7 @@ public class SplitDecompositionTest {
         NexusStreamParser np = new NexusStreamParser(new FileReader("test/splits/distances7-SplitDecomp.txt"));
         np.matchIgnoreCase("#nexus");
         new TaxaNexusInput().parse(np, taxaFromST4);
-        new SplitsNexusInput().parse(np, taxaFromST4, splitsFromST4, null);
+        new SplitsNexusInput().parse(np, taxaFromST4, splitsFromST4);
 
         for (int i = 0; i < splitsBlock.getSplits().size(); i++) {
             ASplit aSplit = splitsBlock.getSplits().get(i);

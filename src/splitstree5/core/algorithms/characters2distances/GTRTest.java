@@ -34,7 +34,7 @@ public class GTRTest {
         CharactersBlock charactersBlock = new CharactersBlock();
 
         CharactersNexusFormat format = new CharactersNexusFormat();
-        List<String> taxonNames = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock, format);
+        List<String> taxonNames = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock);
         taxaBlock.addTaxaByNames(taxonNames);
         DistancesBlock distancesBlock = new DistancesBlock();
 
@@ -44,7 +44,7 @@ public class GTRTest {
         final DistancesBlock distancesFromSplitsTree4 = new DistancesBlock();
         taxaFromSplitsTree4.addTaxaByNames
                 (new DistancesNexusInput().parse(new NexusStreamParser(new FileReader("test//distances//beesGTR.nex")),
-                        taxaFromSplitsTree4, distancesFromSplitsTree4, null));
+                        taxaFromSplitsTree4, distancesFromSplitsTree4));
 
 
         for (int i = 0; i < distancesBlock.getDistances().length; i++) {

@@ -34,7 +34,7 @@ public class SingleLineSequencesInTest {
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
         new TaxaNexusOutput().write(w, taxaBlock);
-        new CharactersNexusOutput().write(w, taxaBlock, charactersBlock, null);
+        new CharactersNexusOutput().write(w, taxaBlock, charactersBlock);
         System.err.println(w.toString());
 
     }

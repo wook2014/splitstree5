@@ -27,7 +27,7 @@ public class FastaSplitsInTest {
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
         //new TaxaNexusOutput().write(w, taxaBlock);
-        new SplitsNexusOutput().write(w, taxaBlock, splitsBlock, null);
+        new SplitsNexusOutput().write(w, taxaBlock, splitsBlock);
         System.err.println(w.toString());
 
         String splits = "\n" +

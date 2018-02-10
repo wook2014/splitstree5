@@ -19,6 +19,10 @@
 package splitstree5.gui.graphtab;
 
 
+import com.sun.javafx.charts.Legend;
+import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.image.ImageView;
 import jloda.fx.ASelectionModel;
@@ -41,6 +45,8 @@ import java.util.Stack;
  * Daniel Huson, 1.2018
  */
 public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
+    private final ObjectProperty<Legend> legend = new SimpleObjectProperty<>();
+
     /**
      * constructor
      */
@@ -52,15 +58,21 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
         setGraphic(label);
     }
 
-    private double mouseX;
-    private double mouseY;
 
     /**
      * show the tree
      */
     public void show() {
         super.show();
+        Platform.runLater(() -> {
+            if (getLegend() != null) {
+                borderPane.setBottom(getLegend());
+            } else borderPane.setBottom(null);
+        });
     }
+
+    private double mouseX;
+    private double mouseY;
 
     /**
      * create a node view
@@ -81,13 +93,15 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
 
         nodeView.getShapeGroup().setOnMouseDragged((e) -> {
             e.consume();
-            if (nodeSelectionModel.getSelectedItems().contains(nodeView.getNode())) {
-                double deltaX = e.getScreenX() - mouseX;
-                double deltaY = e.getScreenY() - mouseY;
-                getUndoManager().doAndAdd(new MoveNodesCommand(node2view, edge2view, nodeSelectionModel.getSelectedItems(), deltaX, deltaY));
+            final double deltaX = e.getScreenX() - mouseX;
+            final double deltaY = e.getScreenY() - mouseY;
+            if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+                if (nodeSelectionModel.getSelectedItems().contains(nodeView.getNode())) {
+                    getUndoManager().doAndAdd(new MoveNodesCommand(node2view, edge2view, nodeSelectionModel.getSelectedItems(), deltaX, deltaY));
+                }
+                mouseX = e.getScreenX();
+                mouseY = e.getScreenY();
             }
-            mouseX = e.getScreenX();
-            mouseY = e.getScreenY();
         });
 
         if (nodeView.getShapeGroup() != null) {
@@ -180,6 +194,18 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
         }
     }
 
+    public Legend getLegend() {
+        return legend.get();
+    }
+
+    public ObjectProperty<Legend> legendProperty() {
+        return legend;
+    }
+
+    public void setLegend(Legend legend) {
+        this.legend.set(legend);
+    }
+
     @Override
     public void updateMenus(MenuController controller) {
         super.updateMenus(controller);
@@ -216,4 +242,6 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
         controller.getSelectAllEdgesBelowMenuItem().disableProperty().bind(nodeSelectionModel.emptyProperty());
 
     }
+
+
 }

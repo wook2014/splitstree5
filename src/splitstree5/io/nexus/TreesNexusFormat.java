@@ -23,22 +23,22 @@ package splitstree5.io.nexus;
  * Daniel Huson, 12/30/16.
  */
 public class TreesNexusFormat implements INexusFormat {
-    private boolean translate = true; // use translation table
-    private boolean showWeights = true;
+    private boolean optionTranslate = true; // use translation table
+    private boolean optionWeights = true;
 
-    public boolean isTranslate() {
-        return translate;
+    public boolean isOptionTranslate() {
+        return optionTranslate;
     }
 
-    public void setTranslate(boolean translate) {
-        this.translate = translate;
+    public void setOptionTranslate(boolean optionTranslate) {
+        this.optionTranslate = optionTranslate;
     }
 
-    public boolean isShowWeights() {
-        return showWeights;
+    public boolean isOptionWeights() {
+        return optionWeights;
     }
 
-    public void setShowWeights(boolean showWeights) {
-        this.showWeights = showWeights;
+    public void setOptionWeights(boolean optionWeights) {
+        this.optionWeights = optionWeights;
     }
 }

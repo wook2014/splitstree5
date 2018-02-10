@@ -34,7 +34,7 @@ public class Nei_Li_RestrictionDistanceTest {
         CharactersBlock charactersBlock = new CharactersBlock();
 
         CharactersNexusFormat format = new CharactersNexusFormat();
-        List<String> taxonNames = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock, format);
+        List<String> taxonNames = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock);
         taxaBlock.addTaxaByNames(taxonNames);
         DistancesBlock distancesBlock = new DistancesBlock();
 
@@ -43,14 +43,14 @@ public class Nei_Li_RestrictionDistanceTest {
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
         new TaxaNexusOutput().write(w, taxaBlock);
-        new DistancesNexusOutput().write(w, taxaBlock, distancesBlock, null);
+        new DistancesNexusOutput().write(w, taxaBlock, distancesBlock);
         System.err.println(w.toString());
 
         final TaxaBlock taxaFromSplitsTree4 = new TaxaBlock();
         final DistancesBlock distancesFromSplitsTree4 = new DistancesBlock();
         taxaFromSplitsTree4.addTaxaByNames
                 (new DistancesNexusInput().parse(new NexusStreamParser(new FileReader("test//distances//aflp-nei-li.nex")),
-                        taxaFromSplitsTree4, distancesFromSplitsTree4, null));
+                        taxaFromSplitsTree4, distancesFromSplitsTree4));
 
 
         for (int i = 0; i < distancesBlock.getDistances().length; i++) {

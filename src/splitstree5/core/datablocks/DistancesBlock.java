@@ -22,6 +22,7 @@ package splitstree5.core.datablocks;
 import com.sun.istack.internal.NotNull;
 import splitstree5.core.algorithms.interfaces.IFromDistances;
 import splitstree5.core.algorithms.interfaces.IToDistances;
+import splitstree5.io.nexus.DistancesNexusFormat;
 
 /**
  * A distances block
@@ -36,6 +37,7 @@ public class DistancesBlock extends DataBlock {
      */
     public DistancesBlock() {
         distances = new double[0][0];
+        format = new DistancesNexusFormat();
     }
 
     /**
@@ -56,6 +58,7 @@ public class DistancesBlock extends DataBlock {
     public void copy(DistancesBlock that) {
         distances = that.getDistances();
         variances = that.getVariances();
+        format = that.getFormat();
     }
 
     @Override

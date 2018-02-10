@@ -25,6 +25,7 @@ import splitstree5.core.algorithms.interfaces.IFromChararacters;
 import splitstree5.core.algorithms.interfaces.IToCharacters;
 import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.datablocks.characters.CharactersType;
+import splitstree5.io.nexus.CharactersNexusFormat;
 import splitstree5.io.nexus.stateLabeler.StateLabeler;
 
 import java.util.Arrays;
@@ -81,6 +82,7 @@ public class CharactersBlock extends DataBlock {
         matrix = new char[0][0];
         symbol2color = new HashMap<>();
         color2symbols = new HashMap<>();
+        format = new CharactersNexusFormat();
     }
 
     /**
@@ -472,6 +474,22 @@ public class CharactersBlock extends DataBlock {
             return getNtax() + " character sequences of length " + getNchar();
         else
             return getNtax() + " " + getDataType().toString() + " character sequences of length " + getNchar();
+    }
+
+    public void check() {
+        String missingSymbols = "";
+        for (int t = 1; t <= getNtax(); t++) {
+            for (int c = 1; c <= getNchar(); c++) {
+                char ch = get(t, c);
+
+                if (symbols.indexOf(ch) == -1 && ch != missingCharacter && ch != gapCharacter) {
+                    missingSymbols += ch;
+                }
+            }
+        }
+        if (missingSymbols.length() > 0)
+            System.err.println("Missing symbols: " + missingSymbols);
+        setSymbols(symbols + missingSymbols);
     }
 }
 

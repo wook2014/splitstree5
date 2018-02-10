@@ -1144,6 +1144,35 @@ public class Basic {
             return string.substring(0, length - 1) + "...";
 
     }
+
+    public static boolean isArrayOfIntegers(String string) {
+        if (string == null)
+            return false;
+        final String[] tokens = string.split("[\\s+,;]");
+        if (tokens.length == 0)
+            return false;
+        for (String token : tokens) {
+            if (!isInteger(token))
+                return false;
+        }
+        return true;
+    }
+
+    public static int[] parseArrayOfIntegers(String string) {
+        if (string == null)
+            return null;
+        final String[] tokens = string.split("[\\s+,;]");
+        ArrayList<Integer> values = new ArrayList<>();
+        for (String token : tokens) {
+            if (isInteger(token))
+                values.add(Basic.parseInt(token));
+        }
+        int[] result = new int[values.size()];
+        for (int i = 0; i < values.size(); i++)
+            result[i] = values.get(i);
+        return result;
+
+    }
 }
 
 /**

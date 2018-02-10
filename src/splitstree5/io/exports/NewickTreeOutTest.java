@@ -30,7 +30,7 @@ public class NewickTreeOutTest {
         NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/trees49-taxa.nex"));
         np.matchIgnoreCase("#nexus");
         new TaxaNexusInput().parse(np, taxa);
-        new TreesNexusInput().parse(np, taxa, treesBlock, null);
+        new TreesNexusInput().parse(np, taxa, treesBlock);
 
         newickTreeOut.export(writer, taxa, treesBlock);
         writer.close();

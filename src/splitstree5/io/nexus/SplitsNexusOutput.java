@@ -38,7 +38,6 @@
 
 package splitstree5.io.nexus;
 
-import com.sun.istack.internal.Nullable;
 import jloda.util.Basic;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -53,20 +52,18 @@ import static splitstree5.io.nexus.SplitsNexusInput.NAME;
  * splits nexus output
  * Daniel Huson, 2.2018
  */
-public class SplitsNexusOutput implements INexusOutput<SplitsBlock, SplitsNexusFormat> {
+public class SplitsNexusOutput implements INexusOutput<SplitsBlock> {
     /**
      * write a block in nexus format
      *
      * @param w
      * @param taxaBlock
      * @param splitsBlock
-     * @param splitsNexusFormat - if null
      * @throws IOException
      */
     @Override
-    public void write(Writer w, TaxaBlock taxaBlock, SplitsBlock splitsBlock, @Nullable SplitsNexusFormat splitsNexusFormat) throws IOException {
-        if (splitsNexusFormat == null)
-            splitsNexusFormat = new SplitsNexusFormat();
+    public void write(Writer w, TaxaBlock taxaBlock, SplitsBlock splitsBlock) throws IOException {
+        final SplitsNexusFormat format = (SplitsNexusFormat) splitsBlock.getFormat();
 
         final int ntax = taxaBlock.getNtax();
         final int nsplits = splitsBlock.getNsplits();
@@ -76,15 +73,15 @@ public class SplitsNexusOutput implements INexusOutput<SplitsBlock, SplitsNexusF
         w.write("\tDIMENSIONS ntax=" + ntax + " nsplits=" + nsplits + ";\n");
 
         w.write("\tFORMAT");
-        if (splitsNexusFormat.isLabels())
+        if (format.isOptionsLabels())
             w.write(" labels=left");
         else
             w.write(" labels=no");
-        if (splitsNexusFormat.isWeights())
+        if (format.isOptionWeights())
             w.write(" weights=yes");
         else
             w.write(" weights=no");
-        if (splitsNexusFormat.isConfidences())
+        if (format.isOptionConfidences())
             w.write(" confidences=yes");
         else
             w.write(" confidences=no");
@@ -122,14 +119,14 @@ public class SplitsNexusOutput implements INexusOutput<SplitsBlock, SplitsNexusF
         int t = 1;
         for (ASplit split : splitsBlock.getSplits()) {
             w.write("\t[" + (t++) + ", size=" + split.size() + "]" + " \t");
-            if (splitsNexusFormat.isLabels()) {
+            if (format.isOptionsLabels()) {
                 String lab = split.getLabel();
                 w.write(" '" + lab + "'" + " \t");
             }
-            if (splitsNexusFormat.isWeights()) {
+            if (format.isOptionWeights()) {
                 w.write(" " + split.getWeight() + " \t");
             }
-            if (splitsNexusFormat.isConfidences()) {
+            if (format.isOptionConfidences()) {
                 w.write(" " + split.getConfidence() + " \t");
             }
             w.write(" " + Basic.toString(split.getA(), " ") + ",\n");

@@ -49,9 +49,11 @@ public class Workflow {
     private final ObservableSet<DataNode> dataNodes = FXCollections.observableSet();
 
     private final ObjectProperty<DataNode<TaxaBlock>> topTaxaNode = new SimpleObjectProperty<>();
+    private final ObjectProperty<DataNode<TraitsBlock>> topTraitsNode = new SimpleObjectProperty<>();
     private final ObjectProperty<Connector<TaxaBlock, TaxaBlock>> taxaFilter = new SimpleObjectProperty<>();
 
     private final ObjectProperty<DataNode<TaxaBlock>> workingTaxaNode = new SimpleObjectProperty<>();
+    private final ObjectProperty<DataNode<TraitsBlock>> workingTraitsNode = new SimpleObjectProperty<>();
     private final ObjectProperty<DataNode> topDataNode = new SimpleObjectProperty<>();
     private ObjectProperty<ATopFilter<? extends DataBlock>> topFilter = new SimpleObjectProperty<>();
     private final ObjectProperty<DataNode> workingDataNode = new SimpleObjectProperty<>();
@@ -132,6 +134,7 @@ public class Workflow {
         }
     }
 
+
     /**
      * setup the top nodes, taxa filter, top filter and working nodes
      *
@@ -139,12 +142,14 @@ public class Workflow {
      * @param topDataBlock
      */
     public void setupTopAndWorkingNodes(TaxaBlock topTaxaBlock, DataBlock topDataBlock) {
+        topTaxaBlock.setName("Input" + topTaxaBlock.getName());
         setTopTaxaNode(createDataNode(topTaxaBlock));
         setWorkingTaxaNode(createDataNode((TaxaBlock) topTaxaBlock.newInstance()));
+
         taxaFilter.set(new Connector<>(getTopTaxaNode().getDataBlock(), getTopTaxaNode(), getWorkingTaxaNode(), new splitstree5.core.algorithms.filters.TaxaFilter()));
         register(taxaFilter.get());
+        topDataBlock.setName("Input" + topDataBlock.getName());
         setTopDataNode(createDataNode(topDataBlock));
-        getTopDataNode().getDataBlock().setName("Orig" + getTopDataNode().getDataBlock().getName());
         setWorkingDataNode(createDataNode(topDataBlock.newInstance()));
 
         if (topDataBlock instanceof CharactersBlock) {
@@ -182,6 +187,16 @@ public class Workflow {
             register(dataNode);
         incrementTopologyChanged();
         return dataNode;
+    }
+
+    public void createTopTraitsAndWorkingTraitsNodes(TraitsBlock topTraitsBlock) {
+        topTraitsBlock.setName("Input" + topTraitsBlock.getName());
+        topTraitsNode.set(createDataNode(topTraitsBlock));
+        topTaxaNode.get().getDataBlock().setTraitsBlock(topTraitsBlock);
+        final TraitsBlock workingTraitsBlock = (TraitsBlock) topTraitsBlock.newInstance();
+        workingTraitsNode.set(createDataNode(workingTraitsBlock));
+        workingTaxaNode.get().getDataBlock().setTraitsBlock(workingTraitsBlock);
+        incrementTopologyChanged();
     }
 
     /**
@@ -252,6 +267,14 @@ public class Workflow {
 
     public void setWorkingTaxaNode(DataNode<TaxaBlock> workingTaxaNode) {
         this.workingTaxaNode.set(workingTaxaNode);
+    }
+
+    public DataNode<TraitsBlock> getTopTraitsNode() {
+        return topTraitsNode.get();
+    }
+
+    public DataNode<TraitsBlock> getWorkingTraitsNode() {
+        return workingTraitsNode.get();
     }
 
     public DataNode getTopDataNode() {

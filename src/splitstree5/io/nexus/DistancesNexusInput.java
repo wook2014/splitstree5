@@ -19,6 +19,7 @@
 
 package splitstree5.io.nexus;
 
+import jloda.util.Basic;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -31,7 +32,7 @@ import java.util.List;
  * nexus input parser
  * Daniel Huson, 2.2018
  */
-public class DistancesNexusInput implements INexusInput<DistancesBlock, DistancesNexusFormat> {
+public class DistancesNexusInput implements INexusInput<DistancesBlock> {
     public static final String NAME = "DISTANCES";
 
     /**
@@ -73,151 +74,153 @@ public class DistancesNexusInput implements INexusInput<DistancesBlock, Distance
      *
      * @param np
      * @param taxaBlock
-     * @param distances
-     * @param distancesNexusFormat
+     * @param distancesBlock
      * @return taxon names, if found
      * @throws IOException
      */
     @Override
-    public List<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, DistancesBlock distances, DistancesNexusFormat distancesNexusFormat) throws IOException {
-        distances.clear();
+    public List<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, DistancesBlock distancesBlock) throws IOException {
+        try {
+            distancesBlock.clear();
 
-        if (distancesNexusFormat == null)
-            distancesNexusFormat = new DistancesNexusFormat();
+            final DistancesNexusFormat format = (DistancesNexusFormat) distancesBlock.getFormat();
 
-        np.matchBeginBlock(NAME);
-        UtilitiesNexusIO.readTitleLinks(np, distances);
+            np.matchBeginBlock(NAME);
+            UtilitiesNexusIO.readTitleLinks(np, distancesBlock);
 
-        if (taxaBlock.getNtax() == 0) {
-            np.matchIgnoreCase("dimensions ntax=");
-            distances.setNtax(np.getInt(1, Integer.MAX_VALUE));
-            np.matchIgnoreCase(";");
-        } else {
-            np.matchIgnoreCase("dimensions ntax=" + taxaBlock.getNtax() + ";");
-            distances.setNtax(taxaBlock.getNtax());
-        }
-
-        if (np.peekMatchIgnoreCase("FORMAT")) {
-            final List<String> tokens = np.getTokensLowerCase("format", ";");
-
-            distancesNexusFormat.setLabels(np.findIgnoreCase(tokens, "labels=left", true, distancesNexusFormat.getLabels()));
-            distancesNexusFormat.setLabels(np.findIgnoreCase(tokens, "labels=no", false, distancesNexusFormat.getLabels())); //DJB 14mar03
-
-
-            distancesNexusFormat.setDiagonal(np.findIgnoreCase(tokens, "diagonal=no", false, distancesNexusFormat.getDiagonal()));
-            distancesNexusFormat.setDiagonal(np.findIgnoreCase(tokens, "diagonal=yes", true, distancesNexusFormat.getDiagonal()));
-
-            distancesNexusFormat.setTriangle(np.findIgnoreCase(tokens, "triangle=", "both upper lower", distancesNexusFormat.getTriangle()));
-
-            // backward compatibility:
-            distancesNexusFormat.setLabels(np.findIgnoreCase(tokens, "no labels", false, distancesNexusFormat.getLabels()));
-            distancesNexusFormat.setLabels(np.findIgnoreCase(tokens, "nolabels", false, distancesNexusFormat.getLabels())); //DJB 14mar03
-            distancesNexusFormat.setLabels(np.findIgnoreCase(tokens, "labels", true, distancesNexusFormat.getLabels()));
-
-            distancesNexusFormat.setDiagonal(np.findIgnoreCase(tokens, "no diagonal", false, distancesNexusFormat.getDiagonal()));
-            distancesNexusFormat.setDiagonal(np.findIgnoreCase(tokens, "diagonal", true, distancesNexusFormat.getDiagonal()));
-            distancesNexusFormat.setDiagonal(np.findIgnoreCase(tokens, "noDiagonal", false, distancesNexusFormat.getDiagonal())); //DJB 14mar03
-
-            // for compatibilty with splitstree3, swallow missing=?
-            np.findIgnoreCase(tokens, "missing=", null, '?');
-
-            if (tokens.size() != 0)
-                throw new IOException("line " + np.lineno() + ": '" + tokens + "' unexpected in FORMAT");
-        }
-
-        final boolean both = distancesNexusFormat.getTriangle().equals("both");
-        final boolean upper = distancesNexusFormat.getTriangle().equals("upper");
-        final boolean lower = distancesNexusFormat.getTriangle().equals("lower");
-        final int diag = distancesNexusFormat.getDiagonal() ? 0 : 1;
-
-        final ArrayList<String> taxonNamesFound = new ArrayList<>(distances.getNtax());
-
-        {
-            np.matchIgnoreCase("MATRIX");
-            for (int t = 1; t <= distances.getNtax(); t++) {
-                String label = np.getLabelRespectCase();
-                if (taxaBlock.getNtax() > 0 && !taxaBlock.get(t).getName().equals(label))
-                    throw new IOException("line " + np.lineno() + ": expected '" + taxaBlock.get(t).getName() + "', found: '" + label + "'");
-                taxonNamesFound.add(label);
-
-                distances.set(t, t, 0);
-
-                int left;
-                int right;
-
-                if (lower) {
-                    left = 1;
-                    right = t - diag;
-                } else if (upper) {
-                    left = t + diag;
-                    right = distances.getNtax();
-                } else // both
-                {
-                    left = 1;
-                    right = distances.getNtax();
-                }
-
-                for (int q = left; q <= right; q++) {
-                    double z = np.getDouble();
-
-                    if (both)
-                        distances.set(t, q, z);
-                    else
-                        distances.setBoth(t, q, z);
-
-                }
+            if (taxaBlock.getNtax() == 0) {
+                np.matchIgnoreCase("dimensions ntax=");
+                distancesBlock.setNtax(np.getInt(1, Integer.MAX_VALUE));
+                np.matchIgnoreCase(";");
+            } else {
+                np.matchIgnoreCase("dimensions ntax=" + taxaBlock.getNtax() + ";");
+                distancesBlock.setNtax(taxaBlock.getNtax());
             }
-            np.matchIgnoreCase(";");
-        }
 
-        if (np.peekMatchIgnoreCase("VARMATRIX")) {
-            np.matchIgnoreCase("VARMATRIX");
-            for (int t = 1; t <= distances.getNtax(); t++) {
-                String label = np.getLabelRespectCase();
-                if (taxaBlock.getNtax() > 0 && !taxaBlock.get(t).getName().equals(label))
-                    throw new IOException("line " + np.lineno() + ": expected '" + taxaBlock.get(t).getName() + "', found: '" + label + "'");
+            if (np.peekMatchIgnoreCase("FORMAT")) {
+                final List<String> tokens = np.getTokensLowerCase("format", ";");
 
-                if (distancesNexusFormat.isVariancesIO())
-                    distances.setVariance(t, t, 0);
+                format.setOptionLabels(np.findIgnoreCase(tokens, "labels=left", true, format.isOptionLabels()));
+                format.setOptionLabels(np.findIgnoreCase(tokens, "labels=no", false, format.isOptionLabels())); //DJB 14mar03
 
-                int left;
-                int right;
 
-                if (lower) {
-                    left = 1;
-                    right = t - diag;
-                } else if (upper) {
-                    left = t + diag;
-                    right = distances.getNtax();
-                } else // both
-                {
-                    left = 1;
-                    right = distances.getNtax();
-                }
+                format.setOptionDiagonal(np.findIgnoreCase(tokens, "diagonal=no", false, format.getOptionDiagonal()));
+                format.setOptionDiagonal(np.findIgnoreCase(tokens, "diagonal=yes", true, format.getOptionDiagonal()));
 
-                for (int q = left; q <= right; q++) {
-                    double z = np.getDouble();
+                format.setOptionTriangle(np.findIgnoreCase(tokens, "triangle=", Basic.toString(DistancesNexusFormat.Triangle.values(), " "), format.getOptionTriangle().toString()));
 
-                    if (distancesNexusFormat.isVariancesIO()) {
+                // backward compatibility:
+                format.setOptionLabels(np.findIgnoreCase(tokens, "no labels", false, format.isOptionLabels()));
+                format.setOptionLabels(np.findIgnoreCase(tokens, "nolabels", false, format.isOptionLabels())); //DJB 14mar03
+                format.setOptionLabels(np.findIgnoreCase(tokens, "labels", true, format.isOptionLabels()));
+
+                format.setOptionDiagonal(np.findIgnoreCase(tokens, "no diagonal", false, format.getOptionDiagonal()));
+                format.setOptionDiagonal(np.findIgnoreCase(tokens, "diagonal", true, format.getOptionDiagonal()));
+                format.setOptionDiagonal(np.findIgnoreCase(tokens, "noDiagonal", false, format.getOptionDiagonal())); //DJB 14mar03
+
+                // for compatibilty with splitstree3, swallow missing=?
+                np.findIgnoreCase(tokens, "missing=", null, '?');
+
+                if (tokens.size() != 0)
+                    throw new IOException("line " + np.lineno() + ": '" + tokens + "' unexpected in FORMAT");
+            }
+
+            final boolean both = format.getOptionTriangle().equals("both");
+            final boolean upper = format.getOptionTriangle().equals("upper");
+            final boolean lower = format.getOptionTriangle().equals("lower");
+            final int diag = format.getOptionDiagonal() ? 0 : 1;
+
+            final ArrayList<String> taxonNamesFound = new ArrayList<>(distancesBlock.getNtax());
+
+            {
+                np.matchIgnoreCase("MATRIX");
+                for (int t = 1; t <= distancesBlock.getNtax(); t++) {
+                    String label = np.getLabelRespectCase();
+                    if (taxaBlock.getNtax() > 0 && !taxaBlock.get(t).getName().equals(label))
+                        throw new IOException("line " + np.lineno() + ": expected '" + taxaBlock.get(t).getName() + "', found: '" + label + "'");
+                    taxonNamesFound.add(label);
+
+                    distancesBlock.set(t, t, 0);
+
+                    int left;
+                    int right;
+
+                    if (lower) {
+                        left = 1;
+                        right = t - diag;
+                    } else if (upper) {
+                        left = t + diag;
+                        right = distancesBlock.getNtax();
+                    } else // both
+                    {
+                        left = 1;
+                        right = distancesBlock.getNtax();
+                    }
+
+                    for (int q = left; q <= right; q++) {
+                        double z = np.getDouble();
+
                         if (both)
-                            distances.setVariance(t, q, z);
+                            distancesBlock.set(t, q, z);
                         else
-                            distances.setVariance(t, q, z);
+                            distancesBlock.setBoth(t, q, z);
+
                     }
                 }
+                np.matchIgnoreCase(";");
             }
-            np.matchIgnoreCase(";");
-        }
 
-        np.matchEndBlock();
+            if (np.peekMatchIgnoreCase("VARMATRIX")) {
+                np.matchIgnoreCase("VARMATRIX");
+                for (int t = 1; t <= distancesBlock.getNtax(); t++) {
+                    String label = np.getLabelRespectCase();
+                    if (taxaBlock.getNtax() > 0 && !taxaBlock.get(t).getName().equals(label))
+                        throw new IOException("line " + np.lineno() + ": expected '" + taxaBlock.get(t).getName() + "', found: '" + label + "'");
 
-        if (both) {
-            if (!isSymmetric(distances)) {
-                symmetrize(distances);
-                System.err.println("Warning: Distance matrix not symmetric: averaging between upper and lower parts");
+                    if (format.isOptionVariancesIO())
+                        distancesBlock.setVariance(t, t, 0);
+
+                    int left;
+                    int right;
+
+                    if (lower) {
+                        left = 1;
+                        right = t - diag;
+                    } else if (upper) {
+                        left = t + diag;
+                        right = distancesBlock.getNtax();
+                    } else // both
+                    {
+                        left = 1;
+                        right = distancesBlock.getNtax();
+                    }
+
+                    for (int q = left; q <= right; q++) {
+                        double z = np.getDouble();
+
+                        if (format.isOptionVariancesIO()) {
+                            if (both)
+                                distancesBlock.setVariance(t, q, z);
+                            else
+                                distancesBlock.setVariance(t, q, z);
+                        }
+                    }
+                }
+                np.matchIgnoreCase(";");
             }
+
+            np.matchEndBlock();
+
+            if (both) {
+                if (!isSymmetric(distancesBlock)) {
+                    symmetrize(distancesBlock);
+                    System.err.println("Warning: Distance matrix not symmetric: averaging between upper and lower parts");
+                }
+            }
+            return taxonNamesFound;
+        } catch (Exception ex) {
+            throw new IOException(ex);
         }
-        return taxonNamesFound;
     }
 
     /**

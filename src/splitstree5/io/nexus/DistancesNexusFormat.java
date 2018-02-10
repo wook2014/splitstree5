@@ -18,26 +18,28 @@
  */
 package splitstree5.io.nexus;
 
-import java.io.IOException;
+import jloda.util.Basic;
 
 /**
  * Distances format
  * Daniel Huson, 12/22/16.
  */
 public class DistancesNexusFormat implements INexusFormat {
-    private String triangle;
-    private boolean labels;
-    private boolean diagonal;
-    private boolean VariancesIO = true;
+    public enum Triangle {Upper, Lower, Both}
+
+    private Triangle optionTriangle;
+    private boolean optionLabels;
+    private boolean optionDiagonal;
+    private boolean optionVariancesIO = true;
     private String varType = "ols";
 
     /**
      * the Constructor
      */
     public DistancesNexusFormat() {
-        triangle = "both";
-        labels = true;
-        diagonal = true;
+        optionTriangle = Triangle.Both;
+        optionLabels = true;
+        optionDiagonal = true;
         varType = "ols";
     }
 
@@ -46,19 +48,21 @@ public class DistancesNexusFormat implements INexusFormat {
      *
      * @return the value of triangle
      */
-    public String getTriangle() {
-        return triangle;
+    public Triangle getOptionTriangle() {
+        return optionTriangle;
     }
 
     /**
      * Set the value of triangle.
      *
-     * @param triangle the value of triangle
+     * @param triangleLabel the label of triangle
      */
-    public void setTriangle(String triangle) throws IOException {
-        if (!triangle.equals("both") && !triangle.equals("lower") && !triangle.equals("upper"))
-            throw new IOException("Illegal triangle:" + triangle);
-        this.triangle = triangle;
+    public void setOptionTriangle(String triangleLabel) {
+        this.optionTriangle = Basic.valueOfIgnoreCase(Triangle.class, triangleLabel);
+    }
+
+    public void setOptionTriangle(Triangle triangle) {
+        this.optionTriangle = triangle;
     }
 
     /**
@@ -66,17 +70,17 @@ public class DistancesNexusFormat implements INexusFormat {
      *
      * @return the value of labels
      */
-    public boolean getLabels() {
-        return labels;
+    public boolean isOptionLabels() {
+        return optionLabels;
     }
 
     /**
      * Set the value of labels.
      *
-     * @param labels the value of labels
+     * @param optionLabels the value of labels
      */
-    public void setLabels(boolean labels) {
-        this.labels = labels;
+    public void setOptionLabels(boolean optionLabels) {
+        this.optionLabels = optionLabels;
     }
 
     /**
@@ -84,17 +88,17 @@ public class DistancesNexusFormat implements INexusFormat {
      *
      * @return the value of diagonal
      */
-    public boolean getDiagonal() {
-        return diagonal;
+    public boolean getOptionDiagonal() {
+        return optionDiagonal;
     }
 
     /**
      * Set the value of diagonal.
      *
-     * @param diagonal the value diagonal
+     * @param optionDiagonal the value diagonal
      */
-    public void setDiagonal(boolean diagonal) {
-        this.diagonal = diagonal;
+    public void setOptionDiagonal(boolean optionDiagonal) {
+        this.optionDiagonal = optionDiagonal;
     }
 
     /**
@@ -120,11 +124,11 @@ public class DistancesNexusFormat implements INexusFormat {
      *
      * @return true, if want defined variances to in and output
      */
-    public boolean isVariancesIO() {
-        return VariancesIO;
+    public boolean isOptionVariancesIO() {
+        return optionVariancesIO;
     }
 
-    public void setVariancesIO(boolean variancesIO) {
-        this.VariancesIO = variancesIO;
+    public void setOptionVariancesIO(boolean optionVariancesIO) {
+        this.optionVariancesIO = optionVariancesIO;
     }
 }

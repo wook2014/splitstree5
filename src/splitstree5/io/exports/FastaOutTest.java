@@ -35,7 +35,7 @@ public class FastaOutTest {
 
         List<String> taxonNames = new CharactersNexusInput().parse(
                 new NexusStreamParser(new FileReader("test/characters/microsat1.nex")),
-                taxa, characters, format);
+                taxa, characters);
         taxa.addTaxaByNames(taxonNames);
 
         fastaOut.export(writer, taxa, characters);
@@ -55,7 +55,7 @@ public class FastaOutTest {
         NexusStreamParser np = new NexusStreamParser(new FileReader("test/splits/algae.txt"));
         np.matchIgnoreCase("#nexus");
         new TaxaNexusInput().parse(np, taxa);
-        new SplitsNexusInput().parse(np, taxa, splits, null);
+        new SplitsNexusInput().parse(np, taxa, splits);
 
         fastaOut.export(writer, taxa, splits);
         writer.close();
@@ -83,7 +83,7 @@ public class FastaOutTest {
         NexusStreamParser np = new NexusStreamParser(new FileReader("test/splits/trees49-SuperNet.nex"));
         np.matchIgnoreCase("#nexus");
         new TaxaNexusInput().parse(np, taxa);
-        new SplitsNexusInput().parse(np, taxa, splits, null);
+        new SplitsNexusInput().parse(np, taxa, splits);
 
         fastaOut.export(writer, taxa, splits);
         writer.close();

@@ -41,6 +41,6 @@ public class DistancesNexusIn extends NexusImporter<DistancesBlock> implements I
 
     @Override
     public List<String> parseBlock(NexusStreamParser np, TaxaBlock taxaBlock, DistancesBlock dataBlock) throws IOException {
-        return new DistancesNexusInput().parse(np, taxaBlock, dataBlock, null);
+        return new DistancesNexusInput().parse(np, taxaBlock, dataBlock);
     }
 }

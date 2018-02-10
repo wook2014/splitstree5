@@ -35,7 +35,7 @@ public class ProteinMLdistTest {
         CharactersBlock charactersBlock = new CharactersBlock();
 
         CharactersNexusFormat format = new CharactersNexusFormat();
-        List<String> taxonNames = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock, format);
+        List<String> taxonNames = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock);
         taxaBlock.addTaxaByNames(taxonNames);
         DistancesBlock distancesBlock = new DistancesBlock();
 
@@ -45,7 +45,7 @@ public class ProteinMLdistTest {
         final DistancesBlock distancesFromSplitsTree4 = new DistancesBlock();
         taxaFromSplitsTree4.addTaxaByNames
                 (new DistancesNexusInput().parse(new NexusStreamParser(new FileReader("test//distances//myosinProtML.nex")),
-                        taxaFromSplitsTree4, distancesFromSplitsTree4, null));
+                        taxaFromSplitsTree4, distancesFromSplitsTree4));
 
 
         for (int i = 0; i < distancesBlock.getDistances().length; i++) {
@@ -54,7 +54,7 @@ public class ProteinMLdistTest {
 
         // test 2
 
-        List<String> taxonNames2 = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock, format);
+        List<String> taxonNames2 = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock);
         taxaBlock.addTaxaByNames(taxonNames2);
         DistancesBlock distancesBlock2 = new DistancesBlock();
 
@@ -66,7 +66,7 @@ public class ProteinMLdistTest {
         final DistancesBlock distancesFromSplitsTree4_2 = new DistancesBlock();
         taxaFromSplitsTree4.addTaxaByNames
                 (new DistancesNexusInput().parse(new NexusStreamParser(new FileReader("test//distances//myosinProtML_pmb.nex")),
-                        taxaFromSplitsTree4_2, distancesFromSplitsTree4_2, null));
+                        taxaFromSplitsTree4_2, distancesFromSplitsTree4_2));
 
 
         for (int i = 0; i < distancesBlock2.getDistances().length; i++) {

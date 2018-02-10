@@ -33,7 +33,6 @@ import java.util.List;
  * daniel huson, 2.2018
  */
 public class CharactersNexusIn extends NexusImporter<CharactersBlock> implements IImportCharacters {
-
     @Override
     public boolean isApplicable(String fileName) throws IOException {
         return isApplicable(fileName, CharactersNexusInput.NAME);
@@ -41,6 +40,6 @@ public class CharactersNexusIn extends NexusImporter<CharactersBlock> implements
 
     @Override
     public List<String> parseBlock(NexusStreamParser np, TaxaBlock taxaBlock, CharactersBlock dataBlock) throws IOException {
-        return (new CharactersNexusInput()).parse(np, taxaBlock, dataBlock, null);
+        return (new CharactersNexusInput()).parse(np, taxaBlock, dataBlock);
     }
 }

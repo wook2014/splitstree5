@@ -106,8 +106,7 @@ public class ProgressPane extends StackPane {
             }
         });
 
-
-        (new Thread(() -> { // wait three seconds before showing the progress pane
+        final Thread thread = new Thread(() -> { // wait three seconds before showing the progress pane
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
@@ -117,7 +116,8 @@ public class ProgressPane extends StackPane {
                     setVisible(true);
                 }
             });
-        })).start();
-
+        });
+        thread.setDaemon(true);
+        thread.start();
     }
 }

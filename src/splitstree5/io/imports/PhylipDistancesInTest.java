@@ -36,7 +36,7 @@ public class PhylipDistancesInTest {
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
         new TaxaNexusOutput().write(w1, taxaBlock);
-        new DistancesNexusOutput().write(w1, taxaBlock, distancesBlock, null);
+        new DistancesNexusOutput().write(w1, taxaBlock, distancesBlock);
         System.err.println(w1.toString());
         String s1 = w1.toString();
 
@@ -45,7 +45,7 @@ public class PhylipDistancesInTest {
         final StringWriter w2 = new StringWriter();
         w2.write("#nexus\n");
         new TaxaNexusOutput().write(w2, taxaBlock);
-        new DistancesNexusOutput().write(w2, taxaBlock, distancesBlock, null);
+        new DistancesNexusOutput().write(w2, taxaBlock, distancesBlock);
         System.err.println(w2.toString());
         String s2 = w2.toString();
 
@@ -54,7 +54,7 @@ public class PhylipDistancesInTest {
         final StringWriter w3 = new StringWriter();
         w3.write("#nexus\n");
         new TaxaNexusOutput().write(w3, taxaBlock);
-        new DistancesNexusOutput().write(w3, taxaBlock, distancesBlock, null);
+        new DistancesNexusOutput().write(w3, taxaBlock, distancesBlock);
         System.err.println(w3.toString());
 
         phylipDistancesIn.parse(pl, "test/notNexusFiles/squareEOL-bf.dist", taxaBlock, distancesBlock);
@@ -62,7 +62,7 @@ public class PhylipDistancesInTest {
         final StringWriter w4 = new StringWriter();
         w4.write("#nexus\n");
         new TaxaNexusOutput().write(w4, taxaBlock);
-        new DistancesNexusOutput().write(w4, taxaBlock, distancesBlock, null);
+        new DistancesNexusOutput().write(w4, taxaBlock, distancesBlock);
         System.err.println(w4.toString());
     }
 

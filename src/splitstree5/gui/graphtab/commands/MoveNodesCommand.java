@@ -83,15 +83,29 @@ public class MoveNodesCommand extends UndoableRedoableCommand {
     public void redo() {
         final Set<Edge> edges2Update = new HashSet<>();
         for (Node v : nodes) {
-            ((NodeView2D) node2view.get(v)).translateCoordinates(deltaX, deltaY);
-            for (Edge e : v.adjacentEdges()) {
-                edges2Update.add(e);
+            if (v.getOwner() != null) {
+                ((NodeView2D) node2view.get(v)).translateCoordinates(deltaX, deltaY);
+                for (Edge e : v.adjacentEdges()) {
+                    edges2Update.add(e);
+                }
             }
         }
         for (Edge e : edges2Update) {
-            final Point2D src = ((NodeView2D) node2view.get(e.getSource())).getLocation();
-            final Point2D tar = ((NodeView2D) node2view.get(e.getTarget())).getLocation();
-            ((EdgeView2D) edge2view.get(e)).setCoordinates(src, tar);
+            if (e.getOwner() != null) {
+                final Point2D src = ((NodeView2D) node2view.get(e.getSource())).getLocation();
+                final Point2D tar = ((NodeView2D) node2view.get(e.getTarget())).getLocation();
+                ((EdgeView2D) edge2view.get(e)).setCoordinates(src, tar);
+            }
         }
+    }
+
+    @Override
+    public boolean isRedoable() {
+        return deltaX != 0 || deltaY != 0;
+    }
+
+    @Override
+    public boolean isUndoable() {
+        return deltaX != 0 || deltaY != 0;
     }
 }

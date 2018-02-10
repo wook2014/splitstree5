@@ -27,6 +27,7 @@ import splitstree5.core.algorithms.interfaces.IFromSplits;
 import splitstree5.core.algorithms.interfaces.IToSplits;
 import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
+import splitstree5.io.nexus.SplitsNexusFormat;
 import splitstree5.utils.SplitsUtilities;
 
 import java.util.BitSet;
@@ -54,6 +55,7 @@ public class SplitsBlock extends DataBlock {
      */
     public SplitsBlock() {
         splits = FXCollections.observableArrayList();
+        format = new SplitsNexusFormat();
     }
 
     /**

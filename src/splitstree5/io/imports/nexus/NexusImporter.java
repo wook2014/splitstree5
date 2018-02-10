@@ -24,6 +24,7 @@ import jloda.util.FileInputIterator;
 import jloda.util.ProgressListener;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.DataBlock;
+import splitstree5.core.datablocks.IAdditionalBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
 import splitstree5.io.nexus.TaxaNexusInput;
@@ -60,7 +61,7 @@ public abstract class NexusImporter<D extends DataBlock> {
                 System.err.println("Not implemented");
             } else { // this is a user input file
 
-                boolean needToDetectTaxa = true;
+                boolean needToDetectTaxa = !(dataBlock instanceof IAdditionalBlock);
 
                 if (np.peekMatchIgnoreCase("begin taxa;")) {
                     new TaxaNexusInput().parse(np, taxaBlock);
@@ -69,7 +70,7 @@ public abstract class NexusImporter<D extends DataBlock> {
                 final List<String> namesFound = parseBlock(np, taxaBlock, dataBlock);
                 if (needToDetectTaxa) {
                     if (namesFound.size() == 0)
-                        throw new IOException("Couldn't detect taxon names in input file");
+                        throw new IOException("Failed to find taxon names in input file");
                     for (String name : namesFound) {
                         taxaBlock.add(new Taxon(name));
                     }
@@ -99,6 +100,8 @@ public abstract class NexusImporter<D extends DataBlock> {
      * @throws IOException
      */
     public boolean isApplicable(String fileName, String blockName) throws IOException {
+        blockName = blockName.toLowerCase();
+
         try (FileInputIterator it = new FileInputIterator(fileName)) {
             boolean first = true;
             while (it.hasNext()) {
@@ -113,7 +116,9 @@ public abstract class NexusImporter<D extends DataBlock> {
                     final NexusStreamParser np = new NexusStreamParser(new StringReader(aLine));
                     if (np.peekMatchIgnoreCase("begin " + blockName + ";"))
                         return true;
-                    else if (!np.peekMatchIgnoreCase("begin taxa;"))
+                    else if (blockName.equals("characters") && np.peekMatchIgnoreCase("begin data;"))
+                        return true;
+                    else if (!np.peekMatchIgnoreCase("begin taxa;") && !blockName.equals("traits"))
                         return false;
                 }
             }

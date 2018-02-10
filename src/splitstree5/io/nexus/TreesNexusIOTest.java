@@ -63,7 +63,7 @@ public class TreesNexusIOTest {
         TreesBlock treesBlock = new TreesBlock();
         try (NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/trees49-notaxa.nex"))) {
             np.matchIgnoreCase("#nexus");
-            final List<String> taxaLabelsFound = new TreesNexusInput().parse(np, taxaBlock, treesBlock, null);
+            final List<String> taxaLabelsFound = new TreesNexusInput().parse(np, taxaBlock, treesBlock);
             assertEquals(taxaLabelsFound.size(), 91);
             assertEquals(treesBlock.getNTrees(), 49);
         }
@@ -76,7 +76,7 @@ public class TreesNexusIOTest {
         try (NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/trees49-taxa.nex"))) {
             np.matchIgnoreCase("#nexus");
             new TaxaNexusInput().parse(np, taxaBlock);
-            final List<String> taxaLabelsFound = new TreesNexusInput().parse(np, taxaBlock, treesBlock, null);
+            final List<String> taxaLabelsFound = new TreesNexusInput().parse(np, taxaBlock, treesBlock);
             assertEquals(taxaLabelsFound.size(), taxaBlock.getNtax());
             assertEquals(taxaLabelsFound.size(), 91);
             assertEquals(treesBlock.getNTrees(), 49);
@@ -90,7 +90,7 @@ public class TreesNexusIOTest {
         try (NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/trees6-translate.nex"))) {
             np.matchIgnoreCase("#nexus");
             new TaxaNexusInput().parse(np, taxaBlock);
-            final List<String> taxaLabelsFound = new TreesNexusInput().parse(np, taxaBlock, treesBlock, null);
+            final List<String> taxaLabelsFound = new TreesNexusInput().parse(np, taxaBlock, treesBlock);
             assertEquals(taxaLabelsFound.size(), taxaBlock.getNtax());
             assertEquals(taxaLabelsFound.size(), 6);
             assertEquals(treesBlock.getNTrees(), 6);
@@ -104,7 +104,7 @@ public class TreesNexusIOTest {
         try (NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/trees6-translate.nex"))) {
             np.matchIgnoreCase("#nexus");
             new TaxaNexusInput().parse(np, taxaBlock);
-            final List<String> taxaLabelsFound = new TreesNexusInput().parse(np, taxaBlock, treesBlock, null);
+            final List<String> taxaLabelsFound = new TreesNexusInput().parse(np, taxaBlock, treesBlock);
             assertEquals(taxaLabelsFound.size(), taxaBlock.getNtax());
             assertEquals(taxaLabelsFound.size(), 6);
             assertEquals(treesBlock.getNTrees(), 6);
@@ -113,7 +113,7 @@ public class TreesNexusIOTest {
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
         new TaxaNexusOutput().write(w, taxaBlock);
-        new TreesNexusOutput().write(w, taxaBlock, treesBlock, null);
+        new TreesNexusOutput().write(w, taxaBlock, treesBlock);
 
         // System.err.println(w.toString());
 
@@ -122,14 +122,14 @@ public class TreesNexusIOTest {
         try (NexusStreamParser np = new NexusStreamParser(new StringReader(w.toString()))) {
             np.matchIgnoreCase("#nexus");
             new TaxaNexusInput().parse(np, taxaBlock2);
-            new TreesNexusInput().parse(np, taxaBlock2, treesBlock2, null);
+            new TreesNexusInput().parse(np, taxaBlock2, treesBlock2);
             assertEquals(taxaBlock.getTaxa(), taxaBlock2.getTaxa());
         }
 
         final StringWriter w2 = new StringWriter();
         w2.write("#nexus\n");
         new TaxaNexusOutput().write(w2, taxaBlock2);
-        new TreesNexusOutput().write(w2, taxaBlock2, treesBlock2, null);
+        new TreesNexusOutput().write(w2, taxaBlock2, treesBlock2);
         assertEquals(w.toString(), w2.toString());
     }
 

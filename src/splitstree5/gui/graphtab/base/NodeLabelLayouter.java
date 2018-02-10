@@ -130,7 +130,7 @@ public class NodeLabelLayouter {
         for (Node v : phyloGraph.nodes()) {
             final NodeView2D nv = (NodeView2D) node2view.getValue(v);
             if (phyloGraph.getLabel(v) != null) {
-                final javafx.scene.Node shape = nv.getShape();
+                final javafx.scene.Node shape = nv.getShapeGroup();
                 if (shape != null)
                     shapeBoundsList.add(new BoundingBox(shape.getTranslateX() - 0.5 * shape.getBoundsInLocal().getWidth(), shape.getTranslateY() - 0.5 * shape.getBoundsInLocal().getHeight(), shape.getLayoutBounds().getWidth(), shape.getLayoutBounds().getHeight()));
             }
@@ -141,7 +141,7 @@ public class NodeLabelLayouter {
         for (Node v : phyloGraph.nodes()) {
             if (v.getDegree() > 0) {
                 final NodeView2D nv = (NodeView2D) node2view.getValue(v);
-                final javafx.scene.Node shape = nv.getShape();
+                final javafx.scene.Node shape = nv.getShapeGroup();
                 final Bounds shapeBounds;
                 if (shape != null)
                     shapeBounds = new BoundingBox(shape.getTranslateX() - 0.5 * shape.getBoundsInLocal().getWidth(), shape.getTranslateY() - 0.5 * shape.getBoundsInLocal().getHeight(), shape.getBoundsInLocal().getWidth(), shape.getBoundsInLocal().getHeight());
@@ -253,13 +253,10 @@ public class NodeLabelLayouter {
             if (nv.getLabel() != null) {
                 nv.getLabel().setVisible(true);
                 final Label label = (Label) nv.getLabel();
-                final Point2D reference;
-                if (nv.getShape() != null) {
-                    final javafx.scene.Node shape = nv.getShape();
-                    reference = new Point2D(shape.getTranslateX() + shape.getLayoutBounds().getWidth(),
+
+                final javafx.scene.Node shape = nv.getShapeGroup();
+                final Point2D reference = new Point2D(shape.getTranslateX() + shape.getLayoutBounds().getWidth(),
                             shape.getTranslateY() - 0.5 * shape.getLayoutBounds().getHeight());
-                } else
-                    reference = nv.getLocation();
 
                 if (v.isLeaf()) {
                     label.setTranslateX(reference.getX() + 5);

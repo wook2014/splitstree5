@@ -57,7 +57,7 @@ public class DataViewTab extends TextViewTab {
         getTextArea().textProperty().bind(textProperty);
         setMainWindow(document.getMainWindow());
         if (getGraphic() instanceof Labeled) {
-            Image icon = ResourceManager.getIcon(aNode.getName().replaceAll("^Orig", "").replaceAll(".*]", "") + "16.gif");
+            Image icon = ResourceManager.getIcon(aNode.getName().replaceAll("^Input", "").replaceAll(".*]", "") + "16.gif");
             if (icon != null) {
                 ((Labeled) getGraphic()).setGraphic(new ImageView(icon));
             }

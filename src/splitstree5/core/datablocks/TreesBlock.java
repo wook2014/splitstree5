@@ -25,6 +25,7 @@ import javafx.collections.ObservableList;
 import jloda.phylo.PhyloTree;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToTrees;
+import splitstree5.io.nexus.TreesNexusFormat;
 
 /**
  * A trees block
@@ -37,6 +38,7 @@ public class TreesBlock extends DataBlock {
 
     public TreesBlock() {
         trees = FXCollections.observableArrayList();
+        format = new TreesNexusFormat();
     }
 
     public TreesBlock(String name) {

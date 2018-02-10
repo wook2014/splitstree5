@@ -26,7 +26,9 @@ import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTaxa;
 import splitstree5.core.algorithms.interfaces.IToTaxa;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.datablocks.TraitsBlock;
 import splitstree5.core.misc.Taxon;
+import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.algorithmtab.AlgorithmPane;
 import splitstree5.gui.algorithmtab.taxafilterview.TaxaFilterPane;
 
@@ -46,7 +48,9 @@ public class TaxaFilter extends Algorithm<TaxaBlock, TaxaBlock> implements IFrom
         child.getTaxa().clear();
 
         if (enabledTaxa.size() == 0 && disabledTaxa.size() == 0) // nothing has been explicitly set, copy everything
+        {
             child.getTaxa().setAll(parent.getTaxa());
+        }
         else {
             for (Taxon taxon : enabledTaxa) {
                 if (!disabledTaxa.contains(taxon)) {
@@ -54,12 +58,23 @@ public class TaxaFilter extends Algorithm<TaxaBlock, TaxaBlock> implements IFrom
                 }
             }
         }
+
+        final TraitsBlock parentTraits = parent.getTraitsBlock();
+        final TraitsBlock childTraits = child.getTraitsBlock();
+
+        if (parentTraits != null && childTraits != null) {
+            childTraits.copySubset(parent, parentTraits, child.getTaxa());
+            if (childTraits.getDataNode() != null)
+                childTraits.getDataNode().setState(UpdateState.VALID);
+        }
+
         if (enabledTaxa.size() == 0 && disabledTaxa.size() == 0)
             setShortDescription(Basic.fromCamelCase(Basic.getShortName(this.getClass())));
         else if (disabledTaxa.size() == 0)
             setShortDescription("using all " + enabledTaxa.size() + " taxa");
         else
             setShortDescription("using " + enabledTaxa.size() + " of " + (parent.getNtax() + " taxa"));
+
     }
 
     @Override

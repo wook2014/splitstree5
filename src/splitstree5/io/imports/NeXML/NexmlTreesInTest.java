@@ -28,8 +28,8 @@ public class NexmlTreesInTest {
         w1.write("#nexus\n");
         new TaxaNexusOutput().write(w1, taxaBlock);
         TreesNexusFormat treesNexusFormat = new TreesNexusFormat();
-        treesNexusFormat.setTranslate(false);
-        new TreesNexusOutput().write(w1, taxaBlock, treesBlock, treesNexusFormat);
+        treesNexusFormat.setOptionTranslate(false);
+        new TreesNexusOutput().write(w1, taxaBlock, treesBlock);
         System.err.println(w1.toString());
 
     }

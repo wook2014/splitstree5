@@ -38,7 +38,6 @@
 
 package splitstree5.io.nexus;
 
-import com.sun.istack.internal.Nullable;
 import jloda.phylo.PhyloTree;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
@@ -55,7 +54,7 @@ import static splitstree5.io.nexus.TreesNexusInput.NAME;
  * tree nexus output
  * Daniel Huson, 2.2018
  */
-public class TreesNexusOutput implements INexusOutput<TreesBlock, TreesNexusFormat> {
+public class TreesNexusOutput implements INexusOutput<TreesBlock> {
     /**
      * write a block in nexus format
      *
@@ -65,9 +64,8 @@ public class TreesNexusOutput implements INexusOutput<TreesBlock, TreesNexusForm
      * @throws IOException
      */
     @Override
-    public void write(Writer w, TaxaBlock taxaBlock, TreesBlock treesBlock, @Nullable TreesNexusFormat treesNexusFormat) throws IOException {
-        if (treesNexusFormat == null)
-            treesNexusFormat = new TreesNexusFormat();
+    public void write(Writer w, TaxaBlock taxaBlock, TreesBlock treesBlock) throws IOException {
+        final TreesNexusFormat format = (TreesNexusFormat) treesBlock.getFormat();
 
         w.write("\nBEGIN " + NAME + ";\n");
         UtilitiesNexusIO.writeTitleLinks(w, treesBlock);
@@ -79,7 +77,7 @@ public class TreesNexusOutput implements INexusOutput<TreesBlock, TreesNexusForm
         }
 
         final Map<String, String> translator;
-        if (treesNexusFormat.isTranslate()) {
+        if (format.isOptionTranslate()) {
             translator = computeTranslationName2Number(taxaBlock);
             w.write("\tTRANSLATE\n");
 
@@ -95,7 +93,7 @@ public class TreesNexusOutput implements INexusOutput<TreesBlock, TreesNexusForm
         for (PhyloTree tree : treesBlock.getTrees()) {
             final String name = (tree.getName() != null && tree.getName().length() > 0 ? tree.getName() : "t" + t);
             w.write("\t\t[" + (t++) + "] tree '" + name + "'=" + getFlags(tree) + " ");
-            tree.write(w, treesNexusFormat.isShowWeights(), translator);
+            tree.write(w, format.isOptionWeights(), translator);
             w.write(";\n");
         }
         w.write("END; [" + NAME + "]\n");

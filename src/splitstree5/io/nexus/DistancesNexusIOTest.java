@@ -62,7 +62,7 @@ public class DistancesNexusIOTest {
         try (NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/distances7-taxa.nex"))) {
             np.matchIgnoreCase("#nexus");
             new TaxaNexusInput().parse(np, taxaBlock);
-            new DistancesNexusInput().parse(np, taxaBlock, distancesBlock, null);
+            new DistancesNexusInput().parse(np, taxaBlock, distancesBlock);
             assertEquals(taxaBlock.getNtax(), 7);
             assertEquals(distancesBlock.getNtax(), 7);
         }
@@ -70,14 +70,14 @@ public class DistancesNexusIOTest {
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
         new TaxaNexusOutput().write(w, taxaBlock);
-        new DistancesNexusOutput().write(w, taxaBlock, distancesBlock, null);
+        new DistancesNexusOutput().write(w, taxaBlock, distancesBlock);
 
         TaxaBlock taxaBlock2 = new TaxaBlock();
         DistancesBlock distancesBlock2 = new DistancesBlock();
         try (NexusStreamParser np = new NexusStreamParser(new StringReader(w.toString()))) {
             np.matchIgnoreCase("#nexus");
             new TaxaNexusInput().parse(np, taxaBlock2);
-            new DistancesNexusInput().parse(np, taxaBlock2, distancesBlock2, null);
+            new DistancesNexusInput().parse(np, taxaBlock2, distancesBlock2);
             assertEquals(taxaBlock2.getNtax(), 7);
             assertEquals(distancesBlock2.getNtax(), 7);
         }
@@ -85,7 +85,7 @@ public class DistancesNexusIOTest {
         final StringWriter w2 = new StringWriter();
         w2.write("#nexus\n");
         new TaxaNexusOutput().write(w2, taxaBlock);
-        new DistancesNexusOutput().write(w2, taxaBlock, distancesBlock, null);
+        new DistancesNexusOutput().write(w2, taxaBlock, distancesBlock);
 
         assertEquals(w.toString(), w2.toString());
 

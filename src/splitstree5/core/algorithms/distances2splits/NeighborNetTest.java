@@ -48,7 +48,7 @@ public class NeighborNetTest {
         try (NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/distances7-taxa.nex"))) {
             np.matchIgnoreCase("#nexus");
             new TaxaNexusInput().parse(np, taxaBlock);
-            new DistancesNexusInput().parse(np, taxaBlock, distancesBlock, null);
+            new DistancesNexusInput().parse(np, taxaBlock, distancesBlock);
             assertEquals(taxaBlock.getNtax(), 7);
             assertEquals(distancesBlock.getNtax(), 7);
         }
@@ -61,8 +61,8 @@ public class NeighborNetTest {
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
         new TaxaNexusOutput().write(w, taxaBlock);
-        new DistancesNexusOutput().write(w, taxaBlock, distancesBlock, null);
-        new SplitsNexusOutput().write(w, taxaBlock, splitsBlock, null);
+        new DistancesNexusOutput().write(w, taxaBlock, distancesBlock);
+        new SplitsNexusOutput().write(w, taxaBlock, splitsBlock);
         System.err.println(w.toString());
     }
 

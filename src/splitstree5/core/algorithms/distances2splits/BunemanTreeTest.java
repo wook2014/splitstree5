@@ -32,7 +32,7 @@ public class BunemanTreeTest {
         try (NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/distances7-taxa.nex"))) {
             np.matchIgnoreCase("#nexus");
             new TaxaNexusInput().parse(np, taxaBlock);
-            new DistancesNexusInput().parse(np, taxaBlock, distancesBlock, null);
+            new DistancesNexusInput().parse(np, taxaBlock, distancesBlock);
             assertEquals(taxaBlock.getNtax(), 7);
             assertEquals(distancesBlock.getNtax(), 7);
         }
@@ -44,8 +44,8 @@ public class BunemanTreeTest {
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
         new TaxaNexusOutput().write(w, taxaBlock);
-        new DistancesNexusOutput().write(w, taxaBlock, distancesBlock, null);
-        new SplitsNexusOutput().write(w, taxaBlock, splitsBlock, null);
+        new DistancesNexusOutput().write(w, taxaBlock, distancesBlock);
+        new SplitsNexusOutput().write(w, taxaBlock, splitsBlock);
         System.err.println(w.toString());
 
         // compare splits
@@ -55,7 +55,7 @@ public class BunemanTreeTest {
         NexusStreamParser np = new NexusStreamParser(new FileReader("test/splits/distances7-Buneman.txt"));
         np.matchIgnoreCase("#nexus");
         new TaxaNexusInput().parse(np, taxaFromST4);
-        new SplitsNexusInput().parse(np, taxaFromST4, splitsFromST4, null);
+        new SplitsNexusInput().parse(np, taxaFromST4, splitsFromST4);
 
         for (int i = 0; i < splitsBlock.getSplits().size(); i++) {
             ASplit aSplit = splitsBlock.getSplits().get(i);
@@ -80,7 +80,7 @@ public class BunemanTreeTest {
         try (NexusStreamParser np2 = new NexusStreamParser(new FileReader("test/distances/algaeBaseFreqTaxa.nex"))) {
             np2.matchIgnoreCase("#nexus");
             new TaxaNexusInput().parse(np2, taxaBlock2);
-            new DistancesNexusInput().parse(np2, taxaBlock2, distancesBlock2, null);
+            new DistancesNexusInput().parse(np2, taxaBlock2, distancesBlock2);
             assertEquals(taxaBlock2.getNtax(), 8);
             assertEquals(distancesBlock2.getNtax(), 8);
         }
@@ -92,8 +92,8 @@ public class BunemanTreeTest {
         final StringWriter w2 = new StringWriter();
         w2.write("#nexus\n");
         new TaxaNexusOutput().write(w2, taxaBlock2);
-        new DistancesNexusOutput().write(w2, taxaBlock2, distancesBlock2, null);
-        new SplitsNexusOutput().write(w2, taxaBlock2, splitsBlock2, null);
+        new DistancesNexusOutput().write(w2, taxaBlock2, distancesBlock2);
+        new SplitsNexusOutput().write(w2, taxaBlock2, splitsBlock2);
         System.err.println(w2.toString());
 
         // compare splits
@@ -103,7 +103,7 @@ public class BunemanTreeTest {
         NexusStreamParser np2 = new NexusStreamParser(new FileReader("test/splits/algae-Buneman.txt"));
         np2.matchIgnoreCase("#nexus");
         new TaxaNexusInput().parse(np2, taxaFromST42);
-        new SplitsNexusInput().parse(np2, taxaFromST42, splitsFromST42, null);
+        new SplitsNexusInput().parse(np2, taxaFromST42, splitsFromST42);
 
         for (int i = 0; i < splitsBlock2.getSplits().size(); i++) {
             ASplit aSplit = splitsBlock2.getSplits().get(i);

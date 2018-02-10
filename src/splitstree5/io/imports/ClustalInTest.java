@@ -38,9 +38,9 @@ public class ClustalInTest {
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
         new TaxaNexusOutput().write(w1, taxaBlock);
-        new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock, format);
+        new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock);
         System.err.println(w1.toString());
-        System.err.println(format.isInterleave());
+        System.err.println(format.isOptionInterleave());
         //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
 
         clustalIn.parse(pl, "test/notNexusFiles/protein.aln", taxaBlock, charactersBlock);
@@ -48,7 +48,7 @@ public class ClustalInTest {
         final StringWriter w2 = new StringWriter();
         w2.write("#nexus\n");
         new TaxaNexusOutput().write(w2, taxaBlock);
-        new CharactersNexusOutput().write(w2, taxaBlock, charactersBlock, format);
+        new CharactersNexusOutput().write(w2, taxaBlock, charactersBlock);
         System.err.println(w2.toString());
         //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
 
@@ -57,7 +57,7 @@ public class ClustalInTest {
         final StringWriter w3 = new StringWriter();
         w3.write("#nexus\n");
         new TaxaNexusOutput().write(w3, taxaBlock);
-        new CharactersNexusOutput().write(w3, taxaBlock, charactersBlock, format);
+        new CharactersNexusOutput().write(w3, taxaBlock, charactersBlock);
         System.err.println(w3.toString());
         //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
 
@@ -66,7 +66,7 @@ public class ClustalInTest {
         final StringWriter w4 = new StringWriter();
         w4.write("#nexus\n");
         new TaxaNexusOutput().write(w4, taxaBlock);
-        new CharactersNexusOutput().write(w4, taxaBlock, charactersBlock, format);
+        new CharactersNexusOutput().write(w4, taxaBlock, charactersBlock);
         System.err.println(w4.toString());
         //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
 
@@ -75,7 +75,7 @@ public class ClustalInTest {
         final StringWriter w5 = new StringWriter();
         w5.write("#nexus\n");
         new TaxaNexusOutput().write(w5, taxaBlock);
-        new CharactersNexusOutput().write(w5, taxaBlock, charactersBlock, format);
+        new CharactersNexusOutput().write(w5, taxaBlock, charactersBlock);
         System.err.println(w5.toString());
         //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
     }

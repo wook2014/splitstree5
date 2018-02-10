@@ -35,7 +35,7 @@ public class HKY85Test {
         CharactersBlock charactersBlock = new CharactersBlock();
 
         CharactersNexusFormat format = new CharactersNexusFormat();
-        List<String> taxonNames = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock, format);
+        List<String> taxonNames = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock);
         taxaBlock.addTaxaByNames(taxonNames);
         DistancesBlock distancesBlock = new DistancesBlock();
 
@@ -45,7 +45,7 @@ public class HKY85Test {
         final DistancesBlock distancesFromSplitsTree4 = new DistancesBlock();
         taxaFromSplitsTree4.addTaxaByNames
                 (new DistancesNexusInput().parse(new NexusStreamParser(new FileReader("test//distances//bees-HKY85.nex")),
-                        taxaFromSplitsTree4, distancesFromSplitsTree4, null));
+                        taxaFromSplitsTree4, distancesFromSplitsTree4));
 
 
         for (int i = 0; i < distancesBlock.getDistances().length; i++) {
@@ -60,7 +60,7 @@ public class HKY85Test {
 
         CharactersNexusFormat format1 = new CharactersNexusFormat();
         List<String> taxonNames1 = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile1)), taxaBlock1,
-                charactersBlock1, format1);
+                charactersBlock1);
         taxaBlock1.addTaxaByNames(taxonNames1);
         DistancesBlock distancesBlock1 = new DistancesBlock();
 
@@ -70,7 +70,7 @@ public class HKY85Test {
         final DistancesBlock distancesFromSplitsTree41 = new DistancesBlock();
         taxaFromSplitsTree41.addTaxaByNames
                 (new DistancesNexusInput().parse(new NexusStreamParser(new FileReader("test//distances//algae-HKY85.nex")),
-                        taxaFromSplitsTree41, distancesFromSplitsTree41, null));
+                        taxaFromSplitsTree41, distancesFromSplitsTree41));
 
 
         for (int i = 0; i < distancesBlock1.getDistances().length; i++) {

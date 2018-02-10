@@ -40,6 +40,6 @@ public class SplitsNexusIn extends NexusImporter<SplitsBlock> implements IImport
 
     @Override
     public List<String> parseBlock(NexusStreamParser np, TaxaBlock taxaBlock, SplitsBlock dataBlock) throws IOException {
-        return new SplitsNexusInput().parse(np, taxaBlock, dataBlock, null);
+        return new SplitsNexusInput().parse(np, taxaBlock, dataBlock);
     }
 }

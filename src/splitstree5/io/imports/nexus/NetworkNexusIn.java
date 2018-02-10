@@ -40,6 +40,6 @@ public class NetworkNexusIn extends NexusImporter<NetworkBlock> implements IImpo
 
     @Override
     public List<String> parseBlock(NexusStreamParser np, TaxaBlock taxaBlock, NetworkBlock dataBlock) throws IOException {
-        return new NetworkNexusInput().parse(np, taxaBlock, dataBlock, null);
+        return new NetworkNexusInput().parse(np, taxaBlock, dataBlock);
     }
 }

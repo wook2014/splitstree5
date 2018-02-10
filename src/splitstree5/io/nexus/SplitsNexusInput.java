@@ -34,7 +34,7 @@ import java.util.List;
  * nexus input parser
  * Daniel Huson, 2.2018
  */
-public class SplitsNexusInput implements INexusInput<SplitsBlock, SplitsNexusFormat> {
+public class SplitsNexusInput implements INexusInput<SplitsBlock> {
     public static final String NAME = "SPLITS";
 
     /**
@@ -88,18 +88,16 @@ public class SplitsNexusInput implements INexusInput<SplitsBlock, SplitsNexusFor
      * @param np
      * @param taxaBlock
      * @param splitsBlock
-     * @param splitsNexusFormat
      * @return
      * @throws IOException
      */
     @Override
-    public List<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, SplitsBlock splitsBlock, SplitsNexusFormat splitsNexusFormat) throws IOException {
+    public List<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, SplitsBlock splitsBlock) throws IOException {
         splitsBlock.clear();
 
         final ArrayList<String> taxonNamesFound = new ArrayList<>();
 
-        if (splitsNexusFormat == null)
-            splitsNexusFormat = new SplitsNexusFormat();
+        final SplitsNexusFormat format = (SplitsNexusFormat) splitsBlock.getFormat();
 
         np.matchBeginBlock(NAME);
         UtilitiesNexusIO.readTitleLinks(np, splitsBlock);
@@ -115,28 +113,28 @@ public class SplitsNexusInput implements INexusInput<SplitsBlock, SplitsNexusFor
 
         if (np.peekMatchIgnoreCase("FORMAT")) {
             final List<String> formatTokens = np.getTokensLowerCase("format", ";");
-            splitsNexusFormat.setLabels(np.findIgnoreCase(formatTokens, "labels=no", false, splitsNexusFormat.isLabels()));
-            splitsNexusFormat.setLabels(np.findIgnoreCase(formatTokens, "labels=left", true, splitsNexusFormat.isLabels()));
+            format.setOptionsLabels(np.findIgnoreCase(formatTokens, "labels=no", false, format.isOptionsLabels()));
+            format.setOptionsLabels(np.findIgnoreCase(formatTokens, "labels=left", true, format.isOptionsLabels()));
 
-            splitsNexusFormat.setWeights(np.findIgnoreCase(formatTokens, "weights=no", false, splitsNexusFormat.isWeights()));
-            splitsNexusFormat.setWeights(np.findIgnoreCase(formatTokens, "weights=yes", true, splitsNexusFormat.isWeights()));
+            format.setOptionWeights(np.findIgnoreCase(formatTokens, "weights=no", false, format.isOptionWeights()));
+            format.setOptionWeights(np.findIgnoreCase(formatTokens, "weights=yes", true, format.isOptionWeights()));
 
-            splitsNexusFormat.setConfidences(np.findIgnoreCase(formatTokens, "confidences=no", false, splitsNexusFormat.isConfidences()));
-            splitsNexusFormat.setConfidences(np.findIgnoreCase(formatTokens, "confidences=yes", true, splitsNexusFormat.isConfidences()));
+            format.setOptionConfidences(np.findIgnoreCase(formatTokens, "confidences=no", false, format.isOptionConfidences()));
+            format.setOptionConfidences(np.findIgnoreCase(formatTokens, "confidences=yes", true, format.isOptionConfidences()));
 
             // for backward compatiblity, we never used this in SplitsTree4...
             np.findIgnoreCase(formatTokens, "intervals=no", false, false);
             np.findIgnoreCase(formatTokens, "intervals=true", true, false);
 
             // for backward compatibility:
-            splitsNexusFormat.setLabels(np.findIgnoreCase(formatTokens, "no labels", false, splitsNexusFormat.isLabels()));
-            splitsNexusFormat.setLabels(np.findIgnoreCase(formatTokens, "labels", true, splitsNexusFormat.isLabels()));
+            format.setOptionsLabels(np.findIgnoreCase(formatTokens, "no labels", false, format.isOptionsLabels()));
+            format.setOptionsLabels(np.findIgnoreCase(formatTokens, "labels", true, format.isOptionsLabels()));
 
-            splitsNexusFormat.setWeights(np.findIgnoreCase(formatTokens, "no weights", false, splitsNexusFormat.isWeights()));
-            splitsNexusFormat.setWeights(np.findIgnoreCase(formatTokens, "weights", true, splitsNexusFormat.isWeights()));
+            format.setOptionWeights(np.findIgnoreCase(formatTokens, "no weights", false, format.isOptionWeights()));
+            format.setOptionWeights(np.findIgnoreCase(formatTokens, "weights", true, format.isOptionWeights()));
 
-            splitsNexusFormat.setConfidences(np.findIgnoreCase(formatTokens, "no confidences", false, splitsNexusFormat.isConfidences()));
-            splitsNexusFormat.setConfidences(np.findIgnoreCase(formatTokens, "confidences", true, splitsNexusFormat.isConfidences()));
+            format.setOptionConfidences(np.findIgnoreCase(formatTokens, "no confidences", false, format.isOptionConfidences()));
+            format.setOptionConfidences(np.findIgnoreCase(formatTokens, "confidences", true, format.isOptionConfidences()));
 
             // for backward compatiblity, we never used this in SplitsTree4...
             np.findIgnoreCase(formatTokens, "no intervals", false, false);
@@ -184,7 +182,7 @@ public class SplitsNexusInput implements INexusInput<SplitsBlock, SplitsNexusFor
         }
         if (np.peekMatchIgnoreCase("matrix")) {
             np.matchIgnoreCase("matrix");
-            readMatrix(np, ntax, nsplits, splitsBlock, splitsNexusFormat);
+            readMatrix(np, ntax, nsplits, splitsBlock, format);
             np.matchIgnoreCase(";");
         }
         np.matchEndBlock();
@@ -203,15 +201,15 @@ public class SplitsNexusInput implements INexusInput<SplitsBlock, SplitsNexusFor
             float confidence = -1;
             String label = null;
 
-            if (splitsNexusFormat.isLabels()) {
+            if (splitsNexusFormat.isOptionsLabels()) {
                 label = np.getWordRespectCase();
                 if (label.equals("null"))
                     label = null;
             }
-            if (splitsNexusFormat.isWeights())
+            if (splitsNexusFormat.isOptionWeights())
                 weight = (float) Math.max(0.0, np.getDouble());
 
-            if (splitsNexusFormat.isConfidences())
+            if (splitsNexusFormat.isOptionConfidences())
                 confidence = (float) Math.max(0.0, np.getDouble());
 
             final BitSet set = new BitSet();

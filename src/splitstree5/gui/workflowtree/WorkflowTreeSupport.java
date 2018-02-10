@@ -25,9 +25,6 @@ import splitstree5.core.Document;
 import splitstree5.core.workflow.Workflow;
 import splitstree5.core.workflow.WorkflowNode;
 
-import java.util.LinkedList;
-import java.util.Queue;
-
 
 public class WorkflowTreeSupport {
     /**
@@ -44,26 +41,32 @@ public class WorkflowTreeSupport {
 
         workflow.getTopologyChanged().addListener((c, o, n) -> {
             treeView.getRoot().getChildren().clear();
+            treeView.getRoot().setExpanded(true);
+
             WorkflowTreeItem topTaxaItem = new WorkflowTreeItem(document, workflow.getTopTaxaNode());
             treeView.getRoot().getChildren().add(topTaxaItem);
+            if (workflow.getTopTraitsNode() != null)
+                topTaxaItem.getChildren().add(new WorkflowTreeItem(document, workflow.getTopTraitsNode()));
+
+            if (workflow.getTopDataNode() != null) {
+                final WorkflowTreeItem topDataItem = new WorkflowTreeItem(document, workflow.getTopDataNode());
+                topTaxaItem.getChildren().add(topDataItem);
+            }
+
             WorkflowTreeItem taxaFilterItem = new WorkflowTreeItem(document, workflow.getTaxaFilter());
             topTaxaItem.getChildren().add(taxaFilterItem);
+
             WorkflowTreeItem workingTaxaItem = new WorkflowTreeItem(document, workflow.getWorkingTaxaNode());
             topTaxaItem.getChildren().add(workingTaxaItem);
 
-            if (workflow.getTopDataNode() != null) {
-                WorkflowTreeItem topDataItem = new WorkflowTreeItem(document, workflow.getTopDataNode());
-                treeView.getRoot().getChildren().add(topDataItem);
-                addToTreeRec(document, topDataItem, workflow.getTopDataNode());
-            }
-            if (treeView.getRoot() != null) {
-                final Queue<TreeItem> queue = new LinkedList<>();
-                queue.add(treeView.getRoot());
-                while (queue.size() > 0) {
-                    final TreeItem item = queue.poll();
-                    item.setExpanded(true);
-                    queue.addAll(item.getChildren());
-                }
+            if (workflow.getWorkingTraitsNode() != null)
+                topTaxaItem.getChildren().add(new WorkflowTreeItem(document, workflow.getWorkingTraitsNode()));
+
+            if (workflow.getWorkingDataNode() != null) {
+                final WorkflowTreeItem workingDataItem = new WorkflowTreeItem(document, workflow.getWorkingDataNode());
+                treeView.getRoot().getChildren().add(workingDataItem);
+                workingDataItem.setExpanded(true);
+                addToTreeRec(document, workingDataItem, workflow.getWorkingDataNode());
             }
         });
 
@@ -76,9 +79,10 @@ public class WorkflowTreeSupport {
      * @param treeItem
      * @param workflowNode
      */
-    private void addToTreeRec(final Document document, final WorkflowTreeItem treeItem, final WorkflowNode workflowNode) {
+    private void addToTreeRec(final Document document, final TreeItem<String> treeItem, final WorkflowNode workflowNode) {
         for (WorkflowNode child : workflowNode.getChildren()) {
-            WorkflowTreeItem childItem = new WorkflowTreeItem(document, child);
+            TreeItem<String> childItem = new WorkflowTreeItem(document, child);
+            childItem.setExpanded(true);
             treeItem.getChildren().add(childItem);
             if (child.getChildren().size() == 1 && workflowNode.getChildren().size() == 1)
                 addToTreeRec(document, treeItem, child);

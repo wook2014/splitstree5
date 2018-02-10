@@ -32,7 +32,7 @@ public class BalancedConfidenceNetworkTest {
         NexusStreamParser np = new NexusStreamParser(new FileReader("test/trees/colors-NJ.nex"));
         np.matchIgnoreCase("#nexus");
         new TaxaNexusInput().parse(np, taxaBlock);
-        new TreesNexusInput().parse(np, taxaBlock, treesBlock, null);
+        new TreesNexusInput().parse(np, taxaBlock, treesBlock);
 
         final SplitsBlock splitsBlock = new SplitsBlock();
         bcn.compute(new ProgressPercentage(), taxaBlock, treesBlock, splitsBlock);
@@ -41,8 +41,8 @@ public class BalancedConfidenceNetworkTest {
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
         new TaxaNexusOutput().write(w, taxaBlock);
-        new TreesNexusOutput().write(w, taxaBlock, treesBlock, null);
-        new SplitsNexusOutput().write(w, taxaBlock, splitsBlock, null);
+        new TreesNexusOutput().write(w, taxaBlock, treesBlock);
+        new SplitsNexusOutput().write(w, taxaBlock, splitsBlock);
         System.err.println(w.toString());
 
         // compare splits
@@ -51,7 +51,7 @@ public class BalancedConfidenceNetworkTest {
         NexusStreamParser np4 = new NexusStreamParser(new FileReader("test/splits/colors-BCN.nex"));
         np4.matchIgnoreCase("#nexus");
         new TaxaNexusInput().parse(np4, taxaFromST4);
-        new SplitsNexusInput().parse(np4, taxaFromST4, splitsFromST4, null);
+        new SplitsNexusInput().parse(np4, taxaFromST4, splitsFromST4);
 
         double[] confidence = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
         assertEquals(splitsBlock.getSplits().size(), splitsFromST4.getSplits().size());

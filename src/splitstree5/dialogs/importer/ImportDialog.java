@@ -19,6 +19,7 @@
 
 package splitstree5.dialogs.importer;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -44,7 +45,13 @@ public class ImportDialog {
     private final ImportDialogController controller;
     private final Stage stage;
 
-    public ImportDialog(MainWindow parentMainWindow) throws IOException {
+    /**
+     * constructor
+     *
+     * @param parentMainWindow
+     * @throws IOException
+     */
+    public ImportDialog(MainWindow parentMainWindow, String fileName) throws IOException {
         final ExtendedFXMLLoader<ImportDialogController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         controller = extendedFXMLLoader.getController();
 
@@ -66,6 +73,9 @@ public class ImportDialog {
 
         controller.getFileFormatComboBox().getItems().addAll(ImporterManager.getInstance().getAllFileFormats());
         controller.getFileFormatComboBox().disableProperty().bind(importService.runningProperty());
+
+        if (fileName != null)
+            controller.getFileTextField().setText(fileName);
 
         final ObjectProperty<FileChooser.ExtensionFilter> selectedExtensionFilter = new SimpleObjectProperty<>();
         controller.getBrowseButton().setOnAction((e) -> {
@@ -102,8 +112,7 @@ public class ImportDialog {
             if (importer == null)
                 new Alert("Can't import selected data type and file format");
             else {
-                final String fileName = controller.getFileTextField().getText();
-                importService.setup(parentMainWindow, importer, fileName, "Loading file", controller.getProgressBarPane());
+                importService.setup(parentMainWindow, importer, controller.getFileTextField().getText(), "Loading file", controller.getProgressBarPane());
                 importService.restart();
             }
         });
@@ -112,8 +121,32 @@ public class ImportDialog {
                         .or(Bindings.isNull(controller.getFileFormatComboBox().getSelectionModel().selectedItemProperty())).or(Bindings.equal(controller.getFileFormatComboBox().getSelectionModel().selectedItemProperty(), "Unknown"))));
     }
 
+    private Thread thread;
+
     public void show() {
         stage.show();
+        stage.focusedProperty().addListener((c, o, n) -> {
+            if (n) {
+                if (thread != null)
+                    thread = null;
+            } else {
+                thread = new Thread(() -> { // wait three seconds before showing the progress pane
+                    try {
+                        Thread.sleep(120000);
+                        if (thread != null)
+                            Platform.runLater(stage::close);
+                    } catch (InterruptedException e) {
+                    }
+                });
+                thread.setDaemon(true);
+                thread.start();
+            }
+
+        });
+    }
+
+    public static void show(MainWindow other) {
+        show(other,null);
     }
 
     /**
@@ -121,9 +154,9 @@ public class ImportDialog {
      *
      * @param other
      */
-    public static void show(MainWindow other) {
+    public static void show(MainWindow other, String file) {
         try {
-            ImportDialog importDialog = new ImportDialog(other);
+            ImportDialog importDialog = new ImportDialog(other, file);
             importDialog.show();
         } catch (IOException e) {
             Basic.caught(e);

@@ -40,7 +40,7 @@ import java.util.*;
  * nexus input parser
  * Daniel Huson, 2.2018
  */
-public class CharactersNexusInput implements INexusInput<CharactersBlock, CharactersNexusFormat> {
+public class CharactersNexusInput implements INexusInput<CharactersBlock> {
     public static final String NAME = "CHARACTERS";
 
     private boolean ignoreMatrix = false;
@@ -90,27 +90,25 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
      *
      * @param np
      * @param taxa
-     * @param characters
-     * @param format
+     * @param charactersBlock
      * @return taxon names, if found
      * @throws IOException
      */
     @Override
-    public List<String> parse(NexusStreamParser np, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format) throws IOException {
-        characters.clear();
+    public List<String> parse(NexusStreamParser np, TaxaBlock taxa, CharactersBlock charactersBlock) throws IOException {
+        charactersBlock.clear();
+
+        final CharactersNexusFormat format = (CharactersNexusFormat) charactersBlock.getFormat();
 
         if (np.peekMatchIgnoreCase("#nexus"))
             np.matchIgnoreCase("#nexus");
 
-        if (format == null)
-            format = new CharactersNexusFormat();
-
         if (np.peekMatchIgnoreCase("begin " + NAME))
             np.matchBeginBlock(NAME);
         else if (np.peekMatchIgnoreCase("begin Data"))
-            np.matchBeginBlock("begin Data");
+            np.matchBeginBlock("Data");
 
-        UtilitiesNexusIO.readTitleLinks(np, characters);
+        UtilitiesNexusIO.readTitleLinks(np, charactersBlock);
 
         final int ntax;
         final int nchar;
@@ -120,7 +118,7 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
             ntax = np.getInt(1, Integer.MAX_VALUE);
             np.matchIgnoreCase("nchar=");
             nchar = np.getInt(1, Integer.MAX_VALUE);
-            characters.setDimension(ntax, nchar);
+            charactersBlock.setDimension(ntax, nchar);
             np.matchIgnoreCase(";");
         } else {
             np.matchIgnoreCase("dimensions");
@@ -129,27 +127,27 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
             ntax = taxa.getNtax();
             np.matchIgnoreCase("nchar=");
             nchar = np.getInt(1, Integer.MAX_VALUE);
-            characters.setDimension(ntax, nchar);
+            charactersBlock.setDimension(ntax, nchar);
             np.matchIgnoreCase(";");
         }
 
 
         if (np.peekMatchIgnoreCase("PROPERTIES")) {
             final List<String> tokens = np.getTokensLowerCase("properties", ";");
-            characters.setGammaParam(np.findIgnoreCase(tokens, "gammaShape=", Float.MAX_VALUE));
-            characters.setPInvar(np.findIgnoreCase(tokens, "PINVAR=", Float.MAX_VALUE));
+            charactersBlock.setGammaParam(np.findIgnoreCase(tokens, "gammaShape=", Float.MAX_VALUE));
+            charactersBlock.setPInvar(np.findIgnoreCase(tokens, "PINVAR=", Float.MAX_VALUE));
             if (tokens.size() != 0)
                 throw new IOException("line " + np.lineno() + ": '" + tokens + "' unexpected in PROPERTIES");
         } else {
-            characters.setGammaParam(Float.MAX_VALUE);
-            characters.setPInvar(Float.MAX_VALUE);
+            charactersBlock.setGammaParam(Float.MAX_VALUE);
+            charactersBlock.setPInvar(Float.MAX_VALUE);
         }
 
         if (np.peekMatchIgnoreCase("FORMAT")) {
             final List<String> formatTokens = np.getTokensLowerCase("FORMAT", ";");
             {
                 final String dataType = np.findIgnoreCase(formatTokens, "dataType=", Basic.toString(CharactersType.values(), " "), CharactersType.unknown.toString());
-                characters.setDataType(CharactersType.valueOfIgnoreCase(dataType));
+                charactersBlock.setDataType(CharactersType.valueOfIgnoreCase(dataType));
             }
 
             // we ignore respect case:
@@ -162,32 +160,33 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
                     System.err.println("WARNING: Format 'RespectCase' not implemented. All character-states will be converted to lower case");
             }
 
-            characters.setMissingCharacter(Character.toLowerCase(np.findIgnoreCase(formatTokens, "missing=", null, '?')));
-            characters.setGapCharacter(Character.toLowerCase(np.findIgnoreCase(formatTokens, "gap=", null, '-')));
+            charactersBlock.setMissingCharacter(Character.toLowerCase(np.findIgnoreCase(formatTokens, "missing=", null, '?')));
+            charactersBlock.setGapCharacter(Character.toLowerCase(np.findIgnoreCase(formatTokens, "gap=", null, '-')));
 
             {
                 boolean nomatchchar = np.findIgnoreCase(formatTokens, "no matchChar", true, false);
                 if (nomatchchar)
-                    format.setMatchChar((char) 0);
+                    format.setOptionMatchCharacter((char) 0);
             }
-            format.setMatchChar(np.findIgnoreCase(formatTokens, "matchChar=", null, (char) 0));
+            format.setOptionMatchCharacter(np.findIgnoreCase(formatTokens, "matchChar=", null, (char) 0));
 
             {
-                String symbols = np.findIgnoreCase(formatTokens, "symbols=", "\"", "\"", characters.getSymbols());
-                if (characters.getDataType() == CharactersType.standard || characters.getDataType() == CharactersType.microsat || characters.getDataType() == CharactersType.unknown) {
-                    characters.setSymbols(symbols.replaceAll("\\s", "").toLowerCase());
+                String symbols = np.findIgnoreCase(formatTokens, "symbols=", "\"", "\"", charactersBlock.getSymbols());
+                if (charactersBlock.getDataType() == CharactersType.standard || charactersBlock.getDataType() == CharactersType.microsat || charactersBlock.getDataType() == CharactersType.unknown) {
+                    charactersBlock.setSymbols(symbols.replaceAll("\\s", "").toLowerCase());
                 }
             }
 
             {
-                boolean labels = np.findIgnoreCase(formatTokens, "labels=no", false, false);
+                boolean labels = np.findIgnoreCase(formatTokens, "labels=no", false, true);
                 labels = np.findIgnoreCase(formatTokens, "labels=left", true, labels);
+                labels = np.findIgnoreCase(formatTokens, "labels=yes", true, labels);
                 labels = np.findIgnoreCase(formatTokens, "no labels", false, labels);
                 labels = np.findIgnoreCase(formatTokens, "labels", true, labels);
-                format.setLabels(labels);
+                format.setOptionLabels(labels);
 
-                if (ntax == 0 && !format.isLabels())
-                    throw new IOExceptionWithLineNumber("Format 'no labels' invalid because no taxlabels given in TAXA block", np.lineno());
+                if (ntax == 0 && !format.isOptionLabels())
+                    throw new IOExceptionWithLineNumber("Format 'no labels' invalid because no taxLabels given in TAXA block", np.lineno());
             }
 
             {
@@ -195,24 +194,24 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
                 transpose = np.findIgnoreCase(formatTokens, "transpose=yes", true, transpose);
                 transpose = np.findIgnoreCase(formatTokens, "no transpose", false, transpose);
                 transpose = np.findIgnoreCase(formatTokens, "transpose", true, transpose);
-                format.setTranspose(transpose);
+                format.setOptionTranspose(transpose);
 
                 boolean interleave = np.findIgnoreCase(formatTokens, "interleave=no", false, false);
                 interleave = np.findIgnoreCase(formatTokens, "interleave=yes", true, interleave);
                 interleave = np.findIgnoreCase(formatTokens, "no interleave", false, interleave);
                 interleave = np.findIgnoreCase(formatTokens, "interleave", true, interleave);
-                format.setInterleave(interleave);
+                format.setOptionInterleave(interleave);
 
                 boolean tokens = np.findIgnoreCase(formatTokens, "tokens=no", false, false);
                 tokens = np.findIgnoreCase(formatTokens, "tokens=yes", true, tokens);
                 tokens = np.findIgnoreCase(formatTokens, "no tokens", false, tokens);
                 tokens = np.findIgnoreCase(formatTokens, "tokens", true, tokens);
-                format.setTokens(tokens);
+                format.setOptionTokens(tokens);
 
                 boolean diploid = np.findIgnoreCase(formatTokens, "diploid=no", false, false);
                 diploid = np.findIgnoreCase(formatTokens, "diploid=yes", true, diploid);
                 diploid = np.findIgnoreCase(formatTokens, "diploid", true, diploid);
-                characters.setDiploid(diploid);
+                charactersBlock.setDiploid(diploid);
             }
 
             if (formatTokens.size() != 0)
@@ -225,34 +224,34 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
             for (int i = 1; i <= nchar; i++)
                 charWeights[i] = np.getDouble();
             np.matchIgnoreCase(";");
-            characters.setCharacterWeights(charWeights);
+            charactersBlock.setCharacterWeights(charWeights);
         } else
-            characters.setCharacterWeights(null);
+            charactersBlock.setCharacterWeights(null);
         // adding CharStateLabels
 
-        characters.setCharLabeler(null);
-        characters.setStateLabeler(null);
+        charactersBlock.setCharLabeler(null);
+        charactersBlock.setStateLabeler(null);
         if (np.peekMatchIgnoreCase("CharStateLabels")) { // todo: is false for ferment4-diploid (microsat data)
             np.matchIgnoreCase("CharStateLabels");
-            switch (characters.getDataType()) {
+            switch (charactersBlock.getDataType()) {
                 case protein:
-                    characters.setStateLabeler(new ProteinStateLabeler());
+                    charactersBlock.setStateLabeler(new ProteinStateLabeler());
                     break;
                 case microsat:
-                    characters.setStateLabeler(new MicrostatStateLabeler());
+                    charactersBlock.setStateLabeler(new MicrostatStateLabeler());
                     break;
                 default:
                 case unknown:
-                    characters.setStateLabeler(new StandardStateLabeler(nchar, characters.getMissingCharacter(), format.getMatchChar(), characters.getGapCharacter()));
+                    charactersBlock.setStateLabeler(new StandardStateLabeler(nchar, charactersBlock.getMissingCharacter(), format.getOptionMatchCharacter(), charactersBlock.getGapCharacter()));
                     break;
             }
 
-            characters.setCharLabeler(new HashMap<>());
-            readCharStateLabels(np, characters.getCharLabeler(), characters.getStateLabeler());
+            charactersBlock.setCharLabeler(new HashMap<>());
+            readCharStateLabels(np, charactersBlock.getCharLabeler(), charactersBlock.getStateLabeler());
             np.matchIgnoreCase(";");
 
-            if (characters.getSymbols() == null || characters.getSymbols().length() == 0)
-                characters.setSymbols(Basic.toString(characters.getCharLabeler().keySet(), ""));
+            if (charactersBlock.getSymbols() == null || charactersBlock.getSymbols().length() == 0)
+                charactersBlock.setSymbols(Basic.toString(charactersBlock.getCharLabeler().keySet(), ""));
         }
 
         ArrayList<String> taxonNamesFound;
@@ -260,12 +259,12 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
         {
             np.matchIgnoreCase("MATRIX");
             if (!isIgnoreMatrix()) {
-                if (!format.isTranspose() && !format.isInterleave()) {
-                    taxonNamesFound = readMatrix(np, taxa, characters, format, unknownStates);
-                } else if (format.isTranspose() && !format.isInterleave()) {
-                    taxonNamesFound = readMatrixTransposed(np, taxa, characters, format, unknownStates);
-                } else if (!format.isTranspose() && format.isInterleave()) {
-                    taxonNamesFound = readMatrixInterleaved(np, taxa, characters, format, unknownStates);
+                if (!format.isOptionTranspose() && !format.isOptionInterleave()) {
+                    taxonNamesFound = readMatrix(np, taxa, charactersBlock, format, unknownStates);
+                } else if (format.isOptionTranspose() && !format.isOptionInterleave()) {
+                    taxonNamesFound = readMatrixTransposed(np, taxa, charactersBlock, format, unknownStates);
+                } else if (!format.isOptionTranspose() && format.isOptionInterleave()) {
+                    taxonNamesFound = readMatrixInterleaved(np, taxa, charactersBlock, format, unknownStates);
                 } else
                     throw new IOException("line " + np.lineno() + ": can't read matrix!");
                 np.matchIgnoreCase(";");
@@ -277,7 +276,7 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
         if (unknownStates.size() > 0)  // warn that stuff has been replaced!
         {
             new Alert("Unknown states encountered in matrix:\n" + Basic.toString(unknownStates, " ") + "\n"
-                    + "All replaced by the gap-char '" + characters.getGapCharacter() + "'");
+                    + "All replaced by the gap-char '" + charactersBlock.getGapCharacter() + "'");
         }
 
         return taxonNamesFound;
@@ -301,7 +300,7 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
         final ArrayList<String> taxonNamesFound = new ArrayList<>(characters.getNtax());
 
         for (int t = 1; t <= characters.getNtax(); t++) {
-            if (format.isLabels()) {
+            if (format.isOptionLabels()) {
                 if (taxa.getNtax() > 0) {
                     np.matchLabelRespectCase(taxa.getLabel(t));
                     taxonNamesFound.add(taxa.getLabel(t));
@@ -312,9 +311,9 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
             final String str;
             int length = 0;
 
-            if (format.isTokens()) {
+            if (format.isOptionTokens()) {
                 if (characters.getStateLabeler() == null)
-                    characters.setStateLabeler(new StandardStateLabeler(characters.getNchar(), characters.getMissingCharacter(), format.getMatchChar(), characters.getGapCharacter()));
+                    characters.setStateLabeler(new StandardStateLabeler(characters.getNchar(), characters.getMissingCharacter(), format.getOptionMatchCharacter(), characters.getGapCharacter()));
                 final List<String> tokenList = new LinkedList<>();
                 while (length < characters.getNchar()) {
                     final String word = np.getWordRespectCase();
@@ -342,7 +341,7 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
                 //TODo clean this up.
                 final char ch = str.charAt(i - 1);
 
-                if (ch == format.getMatchChar()) {
+                if (ch == format.getOptionMatchCharacter()) {
                     if (t == 1)
                         throw new IOException("line " + np.lineno() + " matchchar illegal in first sequence");
                     else
@@ -380,7 +379,7 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
                 characters.getDataType() == CharactersType.DNA || characters.getDataType() == CharactersType.RNA;
         final ArrayList<String> taxonNamesFound = new ArrayList<>(characters.getNtax());
 
-        if (format.isLabels()) {
+        if (format.isOptionLabels()) {
             for (int t = 1; t <= characters.getNtax(); t++) {
                 if (taxa.getNtax() > 0) {
                     np.matchLabelRespectCase(taxa.getLabel(t));
@@ -394,9 +393,9 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
             int length = 0;
 
             final String str;
-            if (format.isTokens()) {
+            if (format.isOptionTokens()) {
                 if (characters.getStateLabeler() == null)
-                    characters.setStateLabeler(new StandardStateLabeler(characters.getNchar(), characters.getMissingCharacter(), format.getMatchChar(), characters.getGapCharacter()));
+                    characters.setStateLabeler(new StandardStateLabeler(characters.getNchar(), characters.getMissingCharacter(), format.getOptionMatchCharacter(), characters.getGapCharacter()));
                 final List<String> tokenList = new LinkedList<>();
                 while (length < characters.getNtax()) {
                     String tmp = np.getWordRespectCase();
@@ -421,12 +420,12 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
                 //char ch = str.getRowSubset(t - 1);
                 // @todo: until we know that respectcase works, fold all characters to lower-case
                 char ch;
-                if (!format.isTokens())
+                if (!format.isOptionTokens())
                     ch = Character.toLowerCase(str.charAt(t - 1));
                 else
                     ch = str.charAt(t - 1);
 
-                if (ch == format.getMatchChar()) {
+                if (ch == format.getOptionMatchCharacter()) {
                     if (t == 1)
                         throw new IOException("line " + np.lineno() + ": matchchar illegal in first col");
                     else
@@ -470,7 +469,7 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
             while (c < characters.getNchar()) {
                 int lineLength = 0;
                 for (int t = 1; t <= characters.getNtax(); t++) {
-                    if (format.isLabels()) {
+                    if (format.isOptionLabels()) {
                         if (taxa.getNtax() == 0) {
                             final String name = np.getLabelRespectCase();
                             if (firstBlock) {
@@ -489,9 +488,9 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
 
                     final String str;
                     try {
-                        if (format.isTokens()) {
+                        if (format.isOptionTokens()) {
                             if (characters.getStateLabeler() == null)
-                                characters.setStateLabeler(new StandardStateLabeler(characters.getNchar(), characters.getMissingCharacter(), format.getMatchChar(), characters.getGapCharacter()));
+                                characters.setStateLabeler(new StandardStateLabeler(characters.getNchar(), characters.getMissingCharacter(), format.getOptionMatchCharacter(), characters.getGapCharacter()));
                             final LinkedList<String> tokenList = new LinkedList<>();
                             while (np.peekNextToken() != StreamTokenizer.TT_EOL && np.peekNextToken() != StreamTokenizer.TT_EOF) {
                                 tokenList.add(np.getWordRespectCase());
@@ -522,12 +521,12 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
 //char ch = str.getRowSubset(d - 1);
 // @todo: until we now that respectcase works, fold all characters to lower-case
                         char ch;
-                        if (!format.isTokens())
+                        if (!format.isOptionTokens())
                             ch = Character.toLowerCase(str.charAt(d - 1));
                         else
                             ch = str.charAt(d - 1);
 
-                        if (ch == format.getMatchChar()) {
+                        if (ch == format.getOptionMatchCharacter()) {
                             if (t == 1) {
                                 throw new IOExceptionWithLineNumber("matchChar illegal in first sequence", np.lineno());
                             } else
@@ -596,7 +595,7 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock, Charac
      * @return boolean  true if character consistent with the symbol list of the block's datatype
      */
     private boolean isValidState(CharactersBlock characters, CharactersNexusFormat format, char ch) {
-        return characters.getDataType() == CharactersType.unknown || ch == characters.getMissingCharacter() || ch == characters.getGapCharacter() || ch == format.getMatchChar()
+        return characters.getDataType() == CharactersType.unknown || ch == characters.getMissingCharacter() || ch == characters.getGapCharacter() || ch == format.getOptionMatchCharacter()
                 || characters.getSymbols().indexOf(ch) >= 0
                 || (characters.getDataType() == CharactersType.DNA && AmbiguityCodes.isAmbiguityCode(ch));
     }

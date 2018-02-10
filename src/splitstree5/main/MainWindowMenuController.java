@@ -67,8 +67,8 @@ public class MainWindowMenuController {
             fileChooser.setTitle("Open input file");
             fileChooser.getExtensionFilters().addAll(ImporterManager.getInstance().getAllExtensionFilters());
             final File file = fileChooser.showOpenDialog(mainWindow.getStage());
-            if (file != null && FileOpener.isOpenable(file.getPath())) {
-                FileOpener.open(mainWindow, file.getPath()); // todo: add progress bar to window
+            if (file != null) {
+                FileOpener.open(mainWindow, file.getPath());
             }
         });
 

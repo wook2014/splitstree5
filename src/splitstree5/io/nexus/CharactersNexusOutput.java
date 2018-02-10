@@ -52,7 +52,7 @@ import static splitstree5.io.nexus.CharactersNexusInput.NAME;
  * characters nexus output
  * Daniel Huson, 2.2018
  */
-public class CharactersNexusOutput implements INexusOutput<CharactersBlock, CharactersNexusFormat> {
+public class CharactersNexusOutput implements INexusOutput<CharactersBlock> {
     private boolean ignoreMatrix = false;
 
     /**
@@ -61,13 +61,11 @@ public class CharactersNexusOutput implements INexusOutput<CharactersBlock, Char
      * @param w
      * @param taxa
      * @param characters
-     * @param format     - if null
      * @throws IOException
      */
     @Override
-    public void write(Writer w, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format) throws IOException {
-        if (format == null)
-            format = new CharactersNexusFormat();
+    public void write(Writer w, TaxaBlock taxa, CharactersBlock characters) throws IOException {
+        final CharactersNexusFormat format = (CharactersNexusFormat) characters.getFormat();
 
         w.write("\nBEGIN " + NAME + ";\n");
         UtilitiesNexusIO.writeTitleLinks(w, characters);
@@ -80,13 +78,13 @@ public class CharactersNexusOutput implements INexusOutput<CharactersBlock, Char
 
         if (characters.getMissingCharacter() != 0)
             w.write(" missing=" + characters.getMissingCharacter());
-        if (format.getMatchChar() != 0)
-            w.write(" matchChar=" + format.getMatchChar());
+        if (format.getOptionMatchCharacter() != 0)
+            w.write(" matchChar=" + format.getOptionMatchCharacter());
         if (characters.getGapCharacter() != 0)
             w.write(" gap=" + characters.getGapCharacter());
         if (characters.isDiploid())
             w.write(" diploid = yes");
-        if (!characters.getSymbols().equals("") && !format.isTokens()) {
+        if (!characters.getSymbols().equals("") && !format.isOptionTokens()) {
             w.write(" symbols=\"");
             for (int i = 0; i < characters.getSymbols().length(); i++) {
                 //if (i > 0)
@@ -96,20 +94,20 @@ public class CharactersNexusOutput implements INexusOutput<CharactersBlock, Char
             w.write("\"");
         }
 
-        if (format.isLabels())
+        if (format.isOptionLabels())
             w.write(" labels=left");
         else
             w.write(" labels=no");
 
-        if (format.isTranspose())
+        if (format.isOptionTranspose())
             w.write(" transpose=yes");
         else
             w.write(" transpose=no");
 
-        if (format.isTokens())
+        if (format.isOptionTokens())
             w.write(" tokens=yes");
 
-        if (format.isInterleave())
+        if (format.isOptionInterleave())
             w.write(" interleave=yes");
         else
             w.write(" interleave=no");
@@ -153,9 +151,9 @@ public class CharactersNexusOutput implements INexusOutput<CharactersBlock, Char
 
         w.write("MATRIX\n");
         if (!isIgnoreMatrix()) {
-            if (format.isTranspose() && !format.isInterleave())
+            if (format.isOptionTranspose() && !format.isOptionInterleave())
                 writeMatrixTranposed(w, taxa, characters, format);
-            else if (!format.isTranspose() && format.isInterleave())
+            else if (!format.isOptionTranspose() && format.isOptionInterleave())
                 writeMatrixInterleaved(w, taxa, characters, format);
             else
                 writeMatrix(w, taxa, characters, format);
@@ -176,32 +174,32 @@ public class CharactersNexusOutput implements INexusOutput<CharactersBlock, Char
     private void writeMatrix(Writer w, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format) throws IOException {
         //Determine width of matrix columns (if appropriate) and taxa column (if appropriate)
         int columnWidth = 0;
-        if (format.isTokens())
+        if (format.isOptionTokens())
             columnWidth = characters.getStateLabeler().getMaximumLabelLength() + 1;
         int taxaWidth = 0;
-        if (format.isLabels()) {
+        if (format.isOptionLabels()) {
             taxaWidth = maxLabelLength(taxa) + 1;
         }
 
         for (int t = 1; t <= characters.getNtax(); t++) {
             //Print taxon label
-            if (format.isLabels()) {
+            if (format.isOptionLabels()) {
                 w.write(padLabel(taxa.getLabel(t), taxaWidth));
             }
 
-            if (!format.isTokens() || characters.getStateLabeler() == null) { //Write sequence without tokens
+            if (!format.isOptionTokens() || characters.getStateLabeler() == null) { //Write sequence without tokens
                 for (int c = 1; c <= characters.getNchar(); c++) {
-                    if (format.getMatchChar() == 0 || t == 1 || characters.get(t, c) != characters.get(1, c))
+                    if (format.getOptionMatchCharacter() == 0 || t == 1 || characters.get(t, c) != characters.get(1, c))
                         w.write(characters.get(t, c)); // get original?
                     else
-                        w.write(format.getMatchChar());
+                        w.write(format.getOptionMatchCharacter());
                 }
             } else {  //Write with tokens
                 for (int c = 1; c <= characters.getNchar(); c++) {
-                    if (format.getMatchChar() == 0 || c == 1 || characters.get(t, c) != characters.get(1, c))
+                    if (format.getOptionMatchCharacter() == 0 || c == 1 || characters.get(t, c) != characters.get(1, c))
                         w.write(padLabel(characters.getStateLabeler().char2token(c, characters.get(t, c)), columnWidth));
                     else
-                        w.write(padLabel("" + format.getMatchChar(), columnWidth));
+                        w.write(padLabel("" + format.getOptionMatchCharacter(), columnWidth));
                 }
             }
             w.write("\n");
@@ -222,30 +220,30 @@ public class CharactersNexusOutput implements INexusOutput<CharactersBlock, Char
 
         //Determine width of matrix columns (if appropriate) and taxa column (if appropriate)
         int columnWidth = 0;
-        if (format.isTokens())
+        if (format.isOptionTokens())
             columnWidth = characters.getStateLabeler().getMaximumLabelLength() + 1;
         int taxaWidth = 0;
-        if (format.isLabels()) {
+        if (format.isOptionLabels()) {
             taxaWidth = maxLabelLength(taxa) + 1;
         }
         columnWidth = Math.max(taxaWidth, columnWidth); //Taxa printed above columns
 
         //Print taxa first
-        if (format.isLabels()) {
+        if (format.isOptionLabels()) {
             for (int t = 1; t <= characters.getNtax(); t++) {
                 w.write(padLabel(taxa.getLabel(t), columnWidth));
             }
             w.write("\n");
         }
 
-        if (!format.isTokens()) {  //No tokens
+        if (!format.isOptionTokens()) {  //No tokens
             String padString = padLabel("", columnWidth - 1); //String of (columnWidth-1) spaces.
             for (int c = 1; c <= characters.getNchar(); c++) {
                 for (int t = 1; t <= characters.getNtax(); t++) {
-                    if (format.getMatchChar() == 0 || t == 1 || characters.get(t, c) != characters.get(1, c))
+                    if (format.getOptionMatchCharacter() == 0 || t == 1 || characters.get(t, c) != characters.get(1, c))
                         w.write(characters.get(t, c)); // todo: get original
                     else
-                        w.write(format.getMatchChar());
+                        w.write(format.getOptionMatchCharacter());
                     w.write(padString);
                 }
                 w.write("\n");
@@ -253,10 +251,10 @@ public class CharactersNexusOutput implements INexusOutput<CharactersBlock, Char
         } else {
             for (int c = 1; c <= characters.getNchar(); c++) {
                 for (int t = 1; t <= characters.getNtax(); t++) {
-                    if (format.getMatchChar() == 0 || t == 1 || characters.get(t, c) != characters.get(1, c))
+                    if (format.getOptionMatchCharacter() == 0 || t == 1 || characters.get(t, c) != characters.get(1, c))
                         w.write(padLabel(characters.getStateLabeler().char2token(c, characters.get(t, c)), columnWidth));
                     else
-                        w.write(padLabel("" + format.getMatchChar(), columnWidth));
+                        w.write(padLabel("" + format.getOptionMatchCharacter(), columnWidth));
                 }
                 w.write("\n");
             }
@@ -275,40 +273,40 @@ public class CharactersNexusOutput implements INexusOutput<CharactersBlock, Char
     private void writeMatrixInterleaved(Writer w, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format) throws IOException {
         //Determine width of matrix columns (if appropriate) and taxa column (if appropriate)
         int columnWidth = 1;
-        if (format.isTokens())
+        if (format.isOptionTokens())
             columnWidth = characters.getStateLabeler().getMaximumLabelLength() + 1;
         int taxaWidth = 0;
-        if (format.isLabels()) {
+        if (format.isOptionLabels()) {
             taxaWidth = maxLabelLength(taxa) + 1;
         }
 
         int maxColumns;
-        if (format.getColumnsPerBlock() == 0)
+        if (format.getOptionColumnsPerBlock() == 0)
             // will use 60 columns per block
             maxColumns = Math.max(1, 60 / columnWidth); //Maximum number of sites to print on one line.
         else
-            maxColumns = Math.max(1, format.getColumnsPerBlock() / columnWidth); //Maximum number of sites to print on one line.
+            maxColumns = Math.max(1, format.getOptionColumnsPerBlock() / columnWidth); //Maximum number of sites to print on one line.
 
         for (int c0 = 1; c0 <= characters.getNchar(); c0 += maxColumns) {
             final int cMax = Math.min(c0 + maxColumns - 1, characters.getNchar());
             for (int t = 1; t <= taxa.getNtax(); t++) {
-                if (format.isLabels()) {
+                if (format.isOptionLabels()) {
                     w.write(padLabel(taxa.getLabel(t), taxaWidth));
                 }
-                if (!format.isTokens()) {
+                if (!format.isOptionTokens()) {
                     for (int c = c0; c <= cMax; c++) {
-                        if (format.getMatchChar() == 0 || t == 1 || characters.get(t, c) != characters.get(1, c))
+                        if (format.getOptionMatchCharacter() == 0 || t == 1 || characters.get(t, c) != characters.get(1, c))
                             w.write(characters.get(t, c));
                         else
-                            w.write(format.getMatchChar());
+                            w.write(format.getOptionMatchCharacter());
                     }
 
                 } else {
                     for (int c = c0; c <= cMax; c++) {
-                        if (format.getMatchChar() == 0 || t == 1 || characters.get(t, c) != characters.get(1, c))
+                        if (format.getOptionMatchCharacter() == 0 || t == 1 || characters.get(t, c) != characters.get(1, c))
                             w.write(padLabel(characters.getStateLabeler().char2token(c, characters.get(t, c)), columnWidth));
                         else
-                            w.write(padLabel("" + format.getMatchChar(), columnWidth));
+                            w.write(padLabel("" + format.getOptionMatchCharacter(), columnWidth));
                     }
                 }
                 w.write("\n");

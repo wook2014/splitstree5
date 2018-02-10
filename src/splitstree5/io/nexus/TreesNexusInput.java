@@ -34,7 +34,7 @@ import java.util.*;
  * nexus input parser
  * Daniel Huson, 2.2018
  */
-public class TreesNexusInput implements INexusInput<TreesBlock, TreesNexusFormat> {
+public class TreesNexusInput implements INexusInput<TreesBlock> {
     public static final String NAME = "TREES";
 
     @Override
@@ -69,15 +69,14 @@ public class TreesNexusInput implements INexusInput<TreesBlock, TreesNexusFormat
      * @param np
      * @param taxaBlock
      * @param treesBlock
-     * @param treesNexusFormat
      * @return taxon names, if found
      * @throws IOException
      */
     @Override
-    public List<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, TreesBlock treesBlock, TreesNexusFormat treesNexusFormat) throws IOException {
+    public List<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, TreesBlock treesBlock) throws IOException {
         treesBlock.clear();
-        if (treesNexusFormat == null)
-            treesNexusFormat = new TreesNexusFormat();
+
+        final TreesNexusFormat format = (TreesNexusFormat) treesBlock.getFormat();
 
         boolean rootedExplicitySet = false;
 
@@ -121,7 +120,7 @@ public class TreesNexusInput implements INexusInput<TreesBlock, TreesNexusFormat
 
         if (np.peekMatchIgnoreCase("translate")) {
             translator = new HashMap<>();
-            treesNexusFormat.setTranslate(true);
+            format.setOptionTranslate(true);
             np.matchIgnoreCase("translate");
             while (!np.peekMatchIgnoreCase(";")) {
                 final String nodelabel = np.getWordRespectCase();
@@ -136,7 +135,7 @@ public class TreesNexusInput implements INexusInput<TreesBlock, TreesNexusFormat
             haveSetKnownTaxonNames = true;
         } else {
             translator = null;
-            treesNexusFormat.setTranslate(false);
+            format.setOptionTranslate(false);
             if (taxaBlock.getTaxa().size() > 0) {
                 for (Taxon taxon : taxaBlock.getTaxa()) {
                     taxonNamesFound.add(taxon.getName());

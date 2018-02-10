@@ -33,7 +33,7 @@ public class NeXMLOutTest {
         NexusStreamParser np = new NexusStreamParser(new FileReader("test/neXML/M1000.nex"));
         np.matchIgnoreCase("#nexus");
         new TaxaNexusInput().parse(np, taxa);
-        new CharactersNexusInput().parse(np, taxa, characters, null);
+        new CharactersNexusInput().parse(np, taxa, characters);
         // todo problem when reading M1000: must have "labels=left" attribute
 
         List<DataBlock> list = new ArrayList<>();

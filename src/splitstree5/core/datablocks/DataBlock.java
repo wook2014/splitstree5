@@ -27,6 +27,7 @@ import splitstree5.core.Document;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.io.exports.NexusExporter;
+import splitstree5.io.nexus.INexusFormat;
 import splitstree5.utils.OptionableBase;
 
 import java.io.IOException;
@@ -40,6 +41,7 @@ import java.util.ArrayList;
 abstract public class DataBlock extends OptionableBase {
     private Document document; // the document associated with this datablock
     private DataNode dataNode; // the node associated with this datablock
+    protected INexusFormat format; // text display format
     private final ChangeListener<UpdateState> stateChangeListener;
 
 
@@ -143,5 +145,10 @@ abstract public class DataBlock extends OptionableBase {
             Basic.caught(ex);
         }
         return w.toString();
+    }
+
+
+    public INexusFormat getFormat() {
+        return format;
     }
 }

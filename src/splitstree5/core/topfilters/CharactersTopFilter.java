@@ -63,10 +63,10 @@ public class CharactersTopFilter extends ATopFilter<CharactersBlock> {
                         CharactersNexusFormat charactersNexusFormat = new CharactersNexusFormat();
                         final CharactersNexusOutput charactersNexusOutput = new CharactersNexusOutput();
                         charactersNexusOutput.setIgnoreMatrix(true);
-                        charactersNexusOutput.write(w, originalTaxaNode.getDataBlock(), parent, charactersNexusFormat);
+                        charactersNexusOutput.write(w, originalTaxaNode.getDataBlock(), parent);
                         final CharactersNexusInput charactersNexusInput = new CharactersNexusInput();
                         charactersNexusInput.setIgnoreMatrix(true);
-                        charactersNexusInput.parse(new NexusStreamParser(new StringReader(w.toString())), originalTaxaNode.getDataBlock(), child, charactersNexusFormat);
+                        charactersNexusInput.parse(new NexusStreamParser(new StringReader(w.toString())), originalTaxaNode.getDataBlock(), child);
                     } catch (IOException e) {
                         Basic.caught(e);
                     }

@@ -43,7 +43,7 @@ public class SplitsNexusIOTest {
         try (NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/splits41.nex"))) {
             np.matchIgnoreCase("#nexus");
             new TaxaNexusInput().parse(np, taxaBlock);
-            new SplitsNexusInput().parse(np, taxaBlock, splitsBlock, null);
+            new SplitsNexusInput().parse(np, taxaBlock, splitsBlock);
             assertEquals(taxaBlock.getNtax(), 10);
             assertEquals(splitsBlock.getNsplits(), 41);
         }
@@ -51,14 +51,14 @@ public class SplitsNexusIOTest {
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
         new TaxaNexusOutput().write(w, taxaBlock);
-        new SplitsNexusOutput().write(w, taxaBlock, splitsBlock, null);
+        new SplitsNexusOutput().write(w, taxaBlock, splitsBlock);
 
         TaxaBlock taxaBlock2 = new TaxaBlock();
         SplitsBlock splitsBlock2 = new SplitsBlock();
         try (NexusStreamParser np = new NexusStreamParser(new StringReader(w.toString()))) {
             np.matchIgnoreCase("#nexus");
             new TaxaNexusInput().parse(np, taxaBlock2);
-            new SplitsNexusInput().parse(np, taxaBlock2, splitsBlock2, null);
+            new SplitsNexusInput().parse(np, taxaBlock2, splitsBlock2);
             assertEquals(taxaBlock2.getNtax(), 10);
             assertEquals(splitsBlock2.getNsplits(), 41);
         }
@@ -66,7 +66,7 @@ public class SplitsNexusIOTest {
         final StringWriter w2 = new StringWriter();
         w2.write("#nexus\n");
         new TaxaNexusOutput().write(w2, taxaBlock);
-        new SplitsNexusOutput().write(w2, taxaBlock, splitsBlock, null);
+        new SplitsNexusOutput().write(w2, taxaBlock, splitsBlock);
 
         assertEquals(w.toString(), w2.toString());
     }

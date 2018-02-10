@@ -20,6 +20,7 @@ package splitstree5.gui.graphtab.base;
 
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.Tooltip;
@@ -52,8 +53,8 @@ public class NodeView2D extends NodeViewBase {
         CircleShape circle = new CircleShape(2);
         shape = circle;
         shapeGroup.getChildren().add(shape);
-        circle.setTranslateX(location.getX());
-        circle.setTranslateY(location.getY());
+        shapeGroup.setTranslateX(location.getX());
+        shapeGroup.setTranslateY(location.getY());
 
         if (text != null && text.length() > 0) {
             circle.setStroke(Color.BLACK);
@@ -74,21 +75,21 @@ public class NodeView2D extends NodeViewBase {
     }
 
     public void setShape(Shape shape) {
-        final Point2D location;
+        // final Point2D location;
         final Color color;
         if (this.shape != null) {
-            location = new Point2D(this.shape.getTranslateX(), this.shape.getTranslateY());
+            //location = new Point2D(this.shape.getTranslateX(), this.shape.getTranslateY());
             color = (Color) this.shape.getFill();
             shapeGroup.getChildren().remove(this.shape);
         } else {
-            location = getLocation();
+            //location = getLocation();
             color = Color.WHITE;
         }
         this.shape = shape;
         updateStuff();
         if (this.shape != null) {
-            shape.setTranslateX(location.getX());
-            shape.setTranslateY(location.getY());
+            //shape.setTranslateX(location.getX());
+            //shape.setTranslateY(location.getY());
             shape.setFill(color);
             shape.setStroke(Color.BLACK);
             shapeGroup.getChildren().add(this.shape);
@@ -98,9 +99,10 @@ public class NodeView2D extends NodeViewBase {
     private void updateStuff() {
         if (label != null || shape != null) {
             EventHandler<MouseEvent> mouseEnteredEventHandler = event -> {
-                if (shape != null) {
-                    shape.setScaleX(2 * shape.getScaleX());
-                    shape.setScaleY(2 * shape.getScaleY());
+                if (shapeGroup != null) {
+                    double factor = (shapeGroup.getBoundsInLocal().getHeight() < 8 ? 5 : 1.2);
+                    shapeGroup.setScaleX(factor * shapeGroup.getScaleX());
+                    shapeGroup.setScaleY(factor * shapeGroup.getScaleY());
                 }
                 if (label != null) {
                     label.setScaleX(1.2 * label.getScaleX());
@@ -109,25 +111,27 @@ public class NodeView2D extends NodeViewBase {
 
             };
             EventHandler<MouseEvent> mouseExitedEventHandler = event -> {
-                if (shape != null) {
-                    shape.setScaleX(0.5 * shape.getScaleX());
-                    shape.setScaleY(0.5 * shape.getScaleY());
+                if (shapeGroup != null) {
+                    double factor = (shapeGroup.getBoundsInLocal().getHeight() < 8 ? 5 : 1.2);
+
+                    shapeGroup.setScaleX(1.0 / factor * shapeGroup.getScaleX());
+                    shapeGroup.setScaleY(1.0 / factor * shapeGroup.getScaleY());
                 }
                 if (label != null) {
                     label.setScaleX(1.0 / 1.2 * label.getScaleX());
                     label.setScaleY(1.0 / 1.2 * label.getScaleY());
                 }
             };
-            if (shape != null) {
-                shape.setOnMouseEntered(mouseEnteredEventHandler);
-                shape.setOnMouseExited(mouseExitedEventHandler);
+            if (shapeGroup != null) {
+                shapeGroup.setOnMouseEntered(mouseEnteredEventHandler);
+                shapeGroup.setOnMouseExited(mouseExitedEventHandler);
             }
             if (label != null) {
                 label.setOnMouseEntered(mouseEnteredEventHandler);
                 label.setOnMouseExited(mouseExitedEventHandler);
             }
-            if (shape != null && label != null)
-                Tooltip.install(shape, new Tooltip(label.getText()));
+            if (shapeGroup != null && label != null)
+                Tooltip.install(shapeGroup, new Tooltip(label.getText()));
         }
     }
 
@@ -170,9 +174,9 @@ public class NodeView2D extends NodeViewBase {
      * @param dy
      */
     public void translateCoordinates(double dx, double dy) {
-        if (shape != null) {
-            shape.setTranslateX(shape.getTranslateX() + dx);
-            shape.setTranslateY(shape.getTranslateY() + dy);
+        if (shapeGroup != null) {
+            shapeGroup.setTranslateX(shapeGroup.getTranslateX() + dx);
+            shapeGroup.setTranslateY(shapeGroup.getTranslateY() + dy);
         }
         final Point2D oldLocation = location;
         location = new Point2D(location.getX() + dx, location.getY() + dy);
@@ -193,10 +197,10 @@ public class NodeView2D extends NodeViewBase {
         final Point2D oldLocation = location;
         location = GeometryUtils.rotate(location, angle);
 
-        if (shape != null) {
-            final Point2D pos = GeometryUtils.rotate(shape.getTranslateX(), shape.getTranslateY(), angle);
-            shape.setTranslateX(pos.getX());
-            shape.setTranslateY(pos.getY());
+        if (shapeGroup != null) {
+            final Point2D pos = GeometryUtils.rotate(shapeGroup.getTranslateX(), shapeGroup.getTranslateY(), angle);
+            shapeGroup.setTranslateX(pos.getX());
+            shapeGroup.setTranslateY(pos.getY());
         }
 
         if (label != null) {
@@ -216,9 +220,9 @@ public class NodeView2D extends NodeViewBase {
         final Point2D oldLocation = location;
         location = new Point2D(location.getX() * factorX, location.getY() * factorY);
 
-        if (shape != null) {
-            shape.setTranslateX(shape.getTranslateX() * factorX);
-            shape.setTranslateY(shape.getTranslateY() * factorY);
+        if (shapeGroup != null) {
+            shapeGroup.setTranslateX(shapeGroup.getTranslateX() * factorX);
+            shapeGroup.setTranslateY(shapeGroup.getTranslateY() * factorY);
         }
 
         if (label != null) {
@@ -283,17 +287,25 @@ public class NodeView2D extends NodeViewBase {
         if (selected) {
             if (label != null)
                 label.setEffect(SelectionEffect.getInstance());
-            if (shape != null)
-                shape.setEffect(SelectionEffect.getInstance());
+            shape.setEffect(SelectionEffect.getInstance());
+            if (false) // todo: how to show selection of other shapes?
+                for (Node node : shapeGroup.getChildren()) {
+                    if (node != shape)
+                        shape.setStyle("-fx-border-width: 2px; -fx-border-color: lightblue");
+                }
         } else {
             if (label != null)
                 label.setEffect(null);
-            if (shape != null)
-                shape.setEffect(null);
+            shape.setEffect(null);
 
+            if (false)
+                for (Node node : shapeGroup.getChildren()) {
+                    if (node != shape)
+                        node.setStyle(null);
+
+                }
         }
     }
-
 
     @Override
     public boolean isShownAsSelected() {

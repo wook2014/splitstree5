@@ -38,7 +38,7 @@ public class PhylipCharactersInTest {
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
         new TaxaNexusOutput().write(w1, taxaBlock);
-        new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock, format);
+        new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock);
         System.err.println(w1.toString());
         String standard = w1.toString();
 
@@ -47,7 +47,7 @@ public class PhylipCharactersInTest {
         final StringWriter w2 = new StringWriter();
         w2.write("#nexus\n");
         new TaxaNexusOutput().write(w2, taxaBlock);
-        new CharactersNexusOutput().write(w2, taxaBlock, charactersBlock, format);
+        new CharactersNexusOutput().write(w2, taxaBlock, charactersBlock);
         System.err.println(w2.toString());
         String standardEOL = w2.toString();
 
@@ -56,7 +56,7 @@ public class PhylipCharactersInTest {
         final StringWriter w3 = new StringWriter();
         w3.write("#nexus\n");
         new TaxaNexusOutput().write(w3, taxaBlock);
-        new CharactersNexusOutput().write(w3, taxaBlock, charactersBlock, format);
+        new CharactersNexusOutput().write(w3, taxaBlock, charactersBlock);
         System.err.println(w3.toString());
         String interleaved = w3.toString();
 
@@ -65,7 +65,7 @@ public class PhylipCharactersInTest {
         final StringWriter w4 = new StringWriter();
         w4.write("#nexus\n");
         new TaxaNexusOutput().write(w4, taxaBlock);
-        new CharactersNexusOutput().write(w4, taxaBlock, charactersBlock, format);
+        new CharactersNexusOutput().write(w4, taxaBlock, charactersBlock);
         System.err.println(w4.toString());
         String interleavedMulti = w4.toString();
 

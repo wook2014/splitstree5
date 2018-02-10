@@ -18,29 +18,32 @@
  */
 package splitstree5.core.algorithms.views;
 
+import com.sun.javafx.charts.Legend;
 import javafx.application.Platform;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
 import javafx.geometry.Point2D;
+import javafx.scene.chart.PieChart;
+import javafx.scene.control.Tooltip;
+import javafx.scene.transform.Scale;
 import jloda.graph.*;
 import jloda.phylo.PhyloGraph;
+import jloda.util.Basic;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.algorithms.characters2network.QuasiMedianBase;
 import splitstree5.core.algorithms.interfaces.IFromNetwork;
 import splitstree5.core.algorithms.interfaces.IToNetworkView;
 import splitstree5.core.datablocks.NetworkBlock;
 import splitstree5.core.datablocks.NetworkViewBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.datablocks.TraitsBlock;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.graphtab.NetworkViewTab;
+import splitstree5.gui.graphtab.base.EdgeView2DWithMutations;
 import splitstree5.gui.graphtab.base.EdgeViewBase;
 import splitstree5.gui.graphtab.base.GraphLayout;
-import splitstree5.gui.graphtab.base.NodeViewBase;
+import splitstree5.gui.graphtab.base.NodeView2D;
 
 import java.util.Arrays;
 import java.util.List;
@@ -54,7 +57,6 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> i
     private final NodeArray<NetworkBlock.NodeData> node2data = new NodeArray<>(graph);
     private final EdgeArray<NetworkBlock.EdgeData> edge2data = new EdgeArray<>(graph);
 
-
     private ChangeListener<UpdateState> changeListener;
 
     public enum Algorithm {SpringEmbedder}
@@ -62,6 +64,10 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> i
     private final ObjectProperty<Algorithm> optionAlgorithm = new SimpleObjectProperty<>(Algorithm.SpringEmbedder);
 
     private final IntegerProperty optionIterations = new SimpleIntegerProperty(1000);
+
+    private final BooleanProperty optionShowPieCharts = new SimpleBooleanProperty();
+
+    private final BooleanProperty optionScaleNodes = new SimpleBooleanProperty();
 
     public List<String> listOptions() {
         return Arrays.asList("optionAlgorithm", "optionIterations");
@@ -82,7 +88,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> i
             child.getTab().setName(child.getName());
         });
 
-        copyData(parent, graph, node2data, edge2data);
+        copyDataFromParent(parent, graph, node2data, edge2data);
 
         networkViewTab.init(graph);
 
@@ -91,31 +97,106 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> i
 
         TreeEmbedder.centerAndScaleToFitTarget(GraphLayout.Radial, networkViewTab.getTargetDimensions(), node2point);
 
-
         progress.setProgress(100);   //set progress to 100%
+
+        final TraitsBlock traitsBlock = taxa.getTraitsBlock();
+
+        int maxCount = -1;
+        if (traitsBlock != null) {
+            for (Node v : graph.nodes()) {
+                for (int trait = 1; trait <= traitsBlock.getNTraits(); trait++) {
+                    int count = 0;
+                    for (Integer taxon : graph.getTaxa(v)) {
+                        count += traitsBlock.getTraitValue(taxon, trait);
+                    }
+                    maxCount = Math.max(count, maxCount);
+                }
+
+            }
+        }
+
+        networkViewTab.setLegend(null);
 
         // compute all views and put their parts into the appropriate groups
         for (Node v : graph.nodes()) {
             String text = graph.getLabel(v);
             //String text = (graph.getLabel(v) != null ? graph.getLabel(v) : "Node " + v.getId());
-            final NodeViewBase nodeView = networkViewTab.createNodeView(v, node2point.getValue(v), text);
+            final NodeView2D nodeView = networkViewTab.createNodeView(v, node2point.getValue(v), text);
             networkViewTab.getNode2view().put(v, nodeView);
             networkViewTab.getNodesGroup().getChildren().addAll(nodeView.getShapeGroup());
             networkViewTab.getNodeLabelsGroup().getChildren().addAll(nodeView.getLabelGroup());
+
+            if (traitsBlock != null && traitsBlock.getNTraits() > 0 && graph.getNumberOfTaxa(v) > 0) {
+                PieChart pieChart = new PieChart();
+                pieChart.setLabelsVisible(false);
+                pieChart.setLegendVisible(false);
+                final StringBuilder buf = new StringBuilder();
+
+                int count = 0;
+                for (int trait = 1; trait <= traitsBlock.getNTraits(); trait++) {
+                    for (Integer taxon : graph.getTaxa(v)) {
+                        count += traitsBlock.getTraitValue(taxon, trait);
+                        if (trait == 1) {
+                            if (buf.length() > 0)
+                                buf.append(", ");
+                            buf.append(taxa.get(taxon));
+                        }
+                    }
+                    pieChart.getData().add(new PieChart.Data(traitsBlock.getTraitLabel(trait), count));
+                    if (trait == 1)
+                        buf.append(": ");
+                    else
+                        buf.append(", ");
+                    buf.append(String.format("%s: %d", traitsBlock.getTraitLabel(trait), count));
+                }
+
+                if (maxCount > 0) {
+
+                    if (getOptionShowPieCharts()) {
+                        double scale = 0.1 * (getOptionScaleNodes() ? (double) count / (double) maxCount : 1);
+                        pieChart.getTransforms().add(new Scale(scale, scale));
+                        pieChart.layoutXProperty().bind(pieChart.widthProperty().multiply(-0.5 * scale));
+                        pieChart.layoutYProperty().bind(pieChart.heightProperty().multiply(-0.5 * scale));
+
+                        nodeView.getShapeGroup().getChildren().add(pieChart);
+                        Tooltip.install(nodeView.getShapeGroup(), new Tooltip(buf.toString()));
+
+                        if (networkViewTab.getLegend() == null) {
+                            final Legend traitsLegend = new Legend();
+                            for (PieChart.Data item : pieChart.getData()) {
+                                Legend.LegendItem legenditem = new Legend.LegendItem(item.getName());
+                                legenditem.getSymbol().getStyleClass().addAll(item.getNode().getStyleClass());
+                                legenditem.getSymbol().getStyleClass().add("pie-legend-symbol");
+                                traitsLegend.getItems().add(legenditem);
+                            }
+                            nodeView.getShapeGroup().getChildren().add(traitsLegend);
+                            networkViewTab.setLegend(traitsLegend);
+                        }
+                    } else {
+                        if (getOptionScaleNodes()) {
+                            double scale = 18 * (double) count / (double) maxCount;
+                            nodeView.setWidth(scale * nodeView.getWidth());
+                            nodeView.setHeight(scale * nodeView.getHeight());
+                            nodeView.setStrokeWidth(1.0 / scale * nodeView.getStrokeWidth());
+                        }
+                    }
+                }
+            }
         }
         for (Edge e : graph.edges()) {
-            final EdgeViewBase edgeView = networkViewTab.createEdgeView(e, node2point.get(e.getSource()), node2point.get(e.getTarget()));
+            final EdgeViewBase edgeView;
+
+            if (Basic.isArrayOfIntegers(edge2data.get(e).get("sites"))) {
+                final int[] mutations = Basic.parseArrayOfIntegers(edge2data.get(e).get("sites"));
+                edgeView = new EdgeView2DWithMutations(e, 1.0, node2point.get(e.getSource()), node2point.get(e.getTarget()), mutations);
+            } else
+                edgeView = networkViewTab.createEdgeView(e, node2point.get(e.getSource()), node2point.get(e.getTarget()));
+
 
             networkViewTab.getEdge2view().put(e, edgeView);
-            networkViewTab.getEdgesGroup().getChildren().addAll(edgeView.getShapeGroup().getChildren());
+            networkViewTab.getEdgesGroup().getChildren().add(edgeView.getShapeGroup());
             if (edgeView.getLabel() != null)
-                networkViewTab.getEdgeLabelsGroup().getChildren().addAll(edgeView.getLabel());
-
-            if (parent.getNetworkType() == NetworkBlock.Type.HaplotypeNetwork && edge2data.get(e) != null) {
-                String label = edge2data.get(e).get(QuasiMedianBase.EDGE_SITES_KEY);
-                if (label != null)
-                    edgeView.setLabel(label);
-            }
+                networkViewTab.getEdgeLabelsGroup().getChildren().add(edgeView.getLabel());
         }
         Platform.runLater(() -> child.updateSelectionModels(graph, taxa, child.getDocument()));
         child.show();
@@ -127,7 +208,6 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> i
 
         changeListener = (c, o, n) -> child.getTab().getCenter().setDisable(n != UpdateState.VALID);
         getConnector().stateProperty().addListener(new WeakChangeListener<>(changeListener));
-
     }
 
     /**
@@ -138,7 +218,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> i
      * @param tarNode2Data
      * @param tarEdge2Data
      */
-    private void copyData(NetworkBlock networkBlock, PhyloGraph tarGraph, NodeArray<NetworkBlock.NodeData> tarNode2Data, EdgeArray<NetworkBlock.EdgeData> tarEdge2Data) {
+    private void copyDataFromParent(NetworkBlock networkBlock, PhyloGraph tarGraph, NodeArray<NetworkBlock.NodeData> tarNode2Data, EdgeArray<NetworkBlock.EdgeData> tarEdge2Data) {
         final PhyloGraph srcGraph = networkBlock.getGraph();
 
         tarGraph.clear();
@@ -296,5 +376,29 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> i
         for (Node v : graph.nodes()) {
             node2view.put(v, new Point2D(xPos.getValue(v), yPos.getValue(v)));
         }
+    }
+
+    public boolean getOptionShowPieCharts() {
+        return optionShowPieCharts.get();
+    }
+
+    public BooleanProperty optionShowPieChartsProperty() {
+        return optionShowPieCharts;
+    }
+
+    public void setOptionShowPieCharts(boolean optionShowPieCharts) {
+        this.optionShowPieCharts.set(optionShowPieCharts);
+    }
+
+    public boolean getOptionScaleNodes() {
+        return optionScaleNodes.get();
+    }
+
+    public BooleanProperty optionScaleNodesProperty() {
+        return optionScaleNodes;
+    }
+
+    public void setOptionScaleNodes(boolean optionScaleNodes) {
+        this.optionScaleNodes.set(optionScaleNodes);
     }
 }

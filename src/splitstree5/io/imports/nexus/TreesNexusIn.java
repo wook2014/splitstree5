@@ -40,6 +40,6 @@ public class TreesNexusIn extends NexusImporter<TreesBlock> implements IImportTr
 
     @Override
     public List<String> parseBlock(NexusStreamParser np, TaxaBlock taxaBlock, TreesBlock dataBlock) throws IOException {
-        return new TreesNexusInput().parse(np, taxaBlock, dataBlock, null);
+        return new TreesNexusInput().parse(np, taxaBlock, dataBlock);
     }
 }

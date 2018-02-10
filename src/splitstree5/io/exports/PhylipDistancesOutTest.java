@@ -25,7 +25,7 @@ public class PhylipDistancesOutTest {
         DistancesBlock distances = new DistancesBlock();
         taxa.addTaxaByNames(new DistancesNexusInput().parse(new NexusStreamParser(
                         new FileReader("test/distances/algaeCod.nex")),
-                taxa, distances, null));
+                taxa, distances));
 
         phylipDistancesOut.export(writer1, taxa, distances);
         writer1.close();

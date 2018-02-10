@@ -38,7 +38,7 @@ import java.util.TreeMap;
  * network block nexus input
  * Daniel Huson, 2.2018
  */
-public class NetworkNexusInput implements INexusInput<NetworkBlock, INexusFormat> {
+public class NetworkNexusInput implements INexusInput<NetworkBlock> {
     public static final String NAME = "NETWORK";
 
     /**
@@ -83,12 +83,11 @@ public class NetworkNexusInput implements INexusInput<NetworkBlock, INexusFormat
      * @param np
      * @param taxaBlock
      * @param networkBlock
-     * @param format
      * @return taxa labels found
      * @throws IOException
      */
     @Override
-    public List<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, NetworkBlock networkBlock, INexusFormat format) throws IOException {
+    public List<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, NetworkBlock networkBlock) throws IOException {
         networkBlock.clear();
 
         final ArrayList<String> taxonNamesFound = new ArrayList<>();

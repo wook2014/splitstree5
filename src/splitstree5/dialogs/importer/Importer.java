@@ -41,6 +41,7 @@ import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.core.workflow.Workflow;
 import splitstree5.io.imports.interfaces.*;
+import splitstree5.io.imports.nexus.TraitsNexusIn;
 import splitstree5.main.MainWindow;
 
 import java.io.IOException;
@@ -76,6 +77,7 @@ public class Importer {
                 if (importer instanceof IImportCharacters) {
                     final CharactersBlock dataBlock = new CharactersBlock();
                     ((IImportCharacters) importer).parse(progress, fileName, taxaBlock, dataBlock);
+                    dataBlock.check();
                     workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
                     final DataNode<DistancesBlock> distances = workflow.createDataNode(new DistancesBlock());
                     workflow.createConnector(workflow.getWorkingDataNode(), distances, new HammingDistances());
@@ -130,6 +132,11 @@ public class Importer {
                     workflow.createConnector(workflow.getWorkingDataNode(), splits, new DimensionFilter());
                     final DataNode<SplitsNetworkViewBlock> splitsView = workflow.createDataNode(new SplitsNetworkViewBlock());
                     workflow.createConnector(splits, splitsView, new SplitsNetworkAlgorithm());
+                }
+                if (new TraitsNexusIn().isApplicable(fileName)) {
+                    final TraitsBlock traitsBlock = new TraitsBlock();
+                    new TraitsNexusIn().parse(progress, fileName, taxaBlock, traitsBlock);
+                    workflow.createTopTraitsAndWorkingTraitsNodes(traitsBlock);
                 }
                 document.setupTaxonSelectionModel();
 

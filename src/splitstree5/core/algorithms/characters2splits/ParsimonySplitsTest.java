@@ -31,14 +31,14 @@ public class ParsimonySplitsTest {
         //NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/small_test.nex"));
         np.matchIgnoreCase("#nexus");
         new TaxaNexusInput().parse(np, taxa);
-        new CharactersNexusInput().parse(np, taxa, characters, null);
+        new CharactersNexusInput().parse(np, taxa, characters);
 
         parsimonySplits.compute(pl, taxa, characters, splits);
 
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
         new TaxaNexusOutput().write(w1, taxa);
-        new SplitsNexusOutput().write(w1, taxa, splits, null);
+        new SplitsNexusOutput().write(w1, taxa, splits);
         System.err.println(w1.toString());
 
         /*TaxaBlock taxaFromST4 = new TaxaBlock();

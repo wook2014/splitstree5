@@ -32,7 +32,7 @@ public class AverageConsensusTest {
         NexusStreamParser np = new NexusStreamParser(new FileReader("test/trees/beesUPGMA.nex"));
         np.matchIgnoreCase("#nexus");
         new TaxaNexusInput().parse(np, taxaBlock);
-        new TreesNexusInput().parse(np, taxaBlock, treesBlock, null);
+        new TreesNexusInput().parse(np, taxaBlock, treesBlock);
 
         final SplitsBlock splitsBlock = new SplitsBlock();
         algorithm.compute(new ProgressPercentage(), taxaBlock, treesBlock, splitsBlock);
@@ -41,8 +41,8 @@ public class AverageConsensusTest {
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
         new TaxaNexusOutput().write(w, taxaBlock);
-        new TreesNexusOutput().write(w, taxaBlock, treesBlock, null);
-        new SplitsNexusOutput().write(w, taxaBlock, splitsBlock, null);
+        new TreesNexusOutput().write(w, taxaBlock, treesBlock);
+        new SplitsNexusOutput().write(w, taxaBlock, splitsBlock);
         System.err.println(w.toString());
 
         // compare splits
@@ -51,7 +51,7 @@ public class AverageConsensusTest {
         NexusStreamParser np4 = new NexusStreamParser(new FileReader("test/splits/bees-AverageConsensus.nex"));
         np4.matchIgnoreCase("#nexus");
         new TaxaNexusInput().parse(np4, taxaFromST4);
-        new SplitsNexusInput().parse(np4, taxaFromST4, splitsFromST4, null);
+        new SplitsNexusInput().parse(np4, taxaFromST4, splitsFromST4);
 
         for (int i = 0; i < splitsBlock.getSplits().size(); i++) {
             ASplit aSplit = splitsBlock.getSplits().get(i);
@@ -69,7 +69,7 @@ public class AverageConsensusTest {
         NexusStreamParser np2 = new NexusStreamParser(new FileReader("test/nexus/trees6-translate.nex"));
         np2.matchIgnoreCase("#nexus");
         new TaxaNexusInput().parse(np2, taxaBlock2);
-        new TreesNexusInput().parse(np2, taxaBlock2, treesBlock2, null);
+        new TreesNexusInput().parse(np2, taxaBlock2, treesBlock2);
 
         final SplitsBlock splitsBlock2 = new SplitsBlock();
         algorithm.compute(new ProgressPercentage(), taxaBlock2, treesBlock2, splitsBlock2);
@@ -78,8 +78,8 @@ public class AverageConsensusTest {
         final StringWriter w2 = new StringWriter();
         w2.write("#nexus\n");
         new TaxaNexusOutput().write(w2, taxaBlock2);
-        new TreesNexusOutput().write(w2, taxaBlock2, treesBlock2, null);
-        new SplitsNexusOutput().write(w2, taxaBlock2, splitsBlock2, null);
+        new TreesNexusOutput().write(w2, taxaBlock2, treesBlock2);
+        new SplitsNexusOutput().write(w2, taxaBlock2, splitsBlock2);
         System.err.println(w2.toString());
 
         // compare splits
@@ -88,7 +88,7 @@ public class AverageConsensusTest {
         NexusStreamParser np42 = new NexusStreamParser(new FileReader("test/splits/trees6-AverageConsensus.nex"));
         np42.matchIgnoreCase("#nexus");
         new TaxaNexusInput().parse(np42, taxaFromST42);
-        new SplitsNexusInput().parse(np42, taxaFromST42, splitsFromST42, null);
+        new SplitsNexusInput().parse(np42, taxaFromST42, splitsFromST42);
 
         for (int i = 0; i < splitsBlock2.getSplits().size(); i++) {
             ASplit aSplit = splitsBlock2.getSplits().get(i);
@@ -106,7 +106,7 @@ public class AverageConsensusTest {
         NexusStreamParser np3 = new NexusStreamParser(new FileReader("test/trees/dolphins-NJ.nex"));
         np3.matchIgnoreCase("#nexus");
         new TaxaNexusInput().parse(np3, taxaBlock3);
-        new TreesNexusInput().parse(np3, taxaBlock3, treesBlock3, null);
+        new TreesNexusInput().parse(np3, taxaBlock3, treesBlock3);
 
         final SplitsBlock splitsBlock3 = new SplitsBlock();
         algorithm.compute(new ProgressPercentage(), taxaBlock3, treesBlock3, splitsBlock3);
@@ -115,8 +115,8 @@ public class AverageConsensusTest {
         final StringWriter w3 = new StringWriter();
         w3.write("#nexus\n");
         new TaxaNexusOutput().write(w3, taxaBlock3);
-        new TreesNexusOutput().write(w3, taxaBlock3, treesBlock3, null);
-        new SplitsNexusOutput().write(w3, taxaBlock3, splitsBlock3, null);
+        new TreesNexusOutput().write(w3, taxaBlock3, treesBlock3);
+        new SplitsNexusOutput().write(w3, taxaBlock3, splitsBlock3);
         System.err.println(w3.toString());
 
         // compare splits
@@ -125,7 +125,7 @@ public class AverageConsensusTest {
         NexusStreamParser np43 = new NexusStreamParser(new FileReader("test/splits/dolphins-AverageConsensus.nex"));
         np43.matchIgnoreCase("#nexus");
         new TaxaNexusInput().parse(np43, taxaFromST43);
-        new SplitsNexusInput().parse(np43, taxaFromST43, splitsFromST43, null);
+        new SplitsNexusInput().parse(np43, taxaFromST43, splitsFromST43);
 
         assertEquals(splitsBlock3.size(), splitsFromST43.size());
         for (int i = 0; i < splitsBlock3.getSplits().size(); i++) {

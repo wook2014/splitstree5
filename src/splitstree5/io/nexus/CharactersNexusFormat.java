@@ -23,12 +23,12 @@ package splitstree5.io.nexus;
  * Daniel Huson, 12/22/16.
  */
 public class CharactersNexusFormat implements INexusFormat {
-    private boolean transpose;
-    private boolean interleave;
-    private boolean labels = true;
-    private boolean tokens;
-    private char matchChar = 0;
-    private int columnsPerBlock = 0;
+    private boolean optionTranspose;
+    private boolean optionInterleave;
+    private boolean optionLabels = true;
+    private boolean optionTokens;
+    private char optionMatchCharacter = 0;
+    private int optionColumnsPerBlock = 0;
 
     /**
      * the Constructor
@@ -36,52 +36,52 @@ public class CharactersNexusFormat implements INexusFormat {
     public CharactersNexusFormat() {
     }
 
-    public boolean isTranspose() {
-        return transpose;
+    public boolean isOptionTranspose() {
+        return optionTranspose;
     }
 
-    public void setTranspose(boolean transpose) {
-        this.transpose = transpose;
+    public void setOptionTranspose(boolean optionTranspose) {
+        this.optionTranspose = optionTranspose;
     }
 
-    public boolean isInterleave() {
-        return interleave;
+    public boolean isOptionInterleave() {
+        return optionInterleave;
     }
 
-    public void setInterleave(boolean interleave) {
-        this.interleave = interleave;
+    public void setOptionInterleave(boolean optionInterleave) {
+        this.optionInterleave = optionInterleave;
     }
 
-    public boolean isLabels() {
-        return labels;
+    public boolean isOptionLabels() {
+        return optionLabels;
     }
 
-    public void setLabels(boolean labels) {
-        this.labels = labels;
+    public void setOptionLabels(boolean optionLabels) {
+        this.optionLabels = optionLabels;
     }
 
 
-    public boolean isTokens() {
-        return tokens;
+    public boolean isOptionTokens() {
+        return optionTokens;
     }
 
-    public void setTokens(boolean tokens) {
-        this.tokens = tokens;
+    public void setOptionTokens(boolean optionTokens) {
+        this.optionTokens = optionTokens;
     }
 
-    public char getMatchChar() {
-        return matchChar;
+    public char getOptionMatchCharacter() {
+        return optionMatchCharacter;
     }
 
-    public void setMatchChar(char matchChar) {
-        this.matchChar = matchChar;
+    public void setOptionMatchCharacter(char optionMatchCharacter) {
+        this.optionMatchCharacter = optionMatchCharacter;
     }
 
-    public int getColumnsPerBlock() {
-        return this.columnsPerBlock;
+    public int getOptionColumnsPerBlock() {
+        return this.optionColumnsPerBlock;
     }
 
-    public void setColumnsPerBlock(int columnsPerBlock) {
-        this.columnsPerBlock = columnsPerBlock;
+    public void setOptionColumnsPerBlock(int optionColumnsPerBlock) {
+        this.optionColumnsPerBlock = optionColumnsPerBlock;
     }
 }

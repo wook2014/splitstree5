@@ -44,8 +44,8 @@ public class NewickTreeInTest {
         w.write("#nexus\n");
         new TaxaNexusOutput().write(w, taxaBlock);
         TreesNexusFormat tnf = new TreesNexusFormat();
-        tnf.setTranslate(false);
-        new TreesNexusOutput().write(w, taxaBlock, treesBlock, tnf);
+        tnf.setOptionTranslate(false);
+        new TreesNexusOutput().write(w, taxaBlock, treesBlock);
         System.err.println(w.toString());
         assertEquals(test1, treesBlock.getTrees().get(0).toString());
     }

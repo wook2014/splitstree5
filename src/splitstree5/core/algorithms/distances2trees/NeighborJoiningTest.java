@@ -119,7 +119,7 @@ public class NeighborJoiningTest {
 
         CharactersNexusFormat format = new CharactersNexusFormat();
         List<String> taxonNames = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile)),
-                taxaBlock3, charactersBlock3, format);
+                taxaBlock3, charactersBlock3);
         taxaBlock3.addTaxaByNames(taxonNames);
 
         DistancesBlock distancesBlock3 = new DistancesBlock();

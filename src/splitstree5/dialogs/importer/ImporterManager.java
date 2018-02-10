@@ -204,7 +204,7 @@ public class ImporterManager {
 
         for (IImporter importer : importers) {
             try {
-                if (importer.isApplicable(fileName)) {
+                if (!(importer instanceof IImportNoAutoDetect) && importer.isApplicable(fileName)) {
                     String type = getDataType(importer);
                     if (!type.equals(UNKNOWN)) {
                         if (dataType == null)
@@ -227,7 +227,7 @@ public class ImporterManager {
 
         for (IImporter importer : importers) {
             try {
-                if (importer.isApplicable(fileName)) {
+                if (!(importer instanceof IImportNoAutoDetect) && importer.isApplicable(fileName)) {
                     String format = getFileFormat(importer);
                     if (fileFormat == null)
                         fileFormat = format;

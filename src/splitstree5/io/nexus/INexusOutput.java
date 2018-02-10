@@ -51,15 +51,14 @@ import java.io.Writer;
  * @param <D>
  * @param <F>
  */
-public interface INexusOutput<D extends DataBlock, F extends INexusFormat> {
+public interface INexusOutput<D extends DataBlock> {
     /**
      * write a datablock
      *
      * @param w
      * @param taxaBlock
      * @param dataBlock
-     * @param format
      * @throws IOException
      */
-    void write(Writer w, TaxaBlock taxaBlock, D dataBlock, F format) throws IOException;
+    void write(Writer w, TaxaBlock taxaBlock, D dataBlock) throws IOException;
 }

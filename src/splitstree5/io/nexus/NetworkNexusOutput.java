@@ -53,18 +53,18 @@ import static splitstree5.io.nexus.NetworkNexusInput.NAME;
  * network nexus output
  * Daniel Huson, 2.2018
  */
-public class NetworkNexusOutput implements INexusOutput<NetworkBlock, INexusFormat> {
+public class NetworkNexusOutput implements INexusOutput<NetworkBlock> {
     /**
      * write the block in nexus format
      *
+     * @param notUsed
      * @param w
      * @param taxaBlock
      * @param networkBlock
-     * @param notUsed
      * @throws IOException
      */
     @Override
-    public void write(Writer w, TaxaBlock taxaBlock, NetworkBlock networkBlock, INexusFormat notUsed) throws IOException {
+    public void write(Writer w, TaxaBlock taxaBlock, NetworkBlock networkBlock) throws IOException {
         w.write("\nBEGIN " + NAME + ";\n");
         UtilitiesNexusIO.writeTitleLinks(w, networkBlock);
         w.write("\tDIMENSIONS nNodes=" + networkBlock.getNumberOfNodes() + " nEdges=" + networkBlock.getNumberOfEdges() + ";\n");

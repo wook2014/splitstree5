@@ -40,7 +40,7 @@ public class NexmlFileParserTest {
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
         //new TaxaNexusOutput().write(w1, taxaBlock);
-        new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock, null);
+        new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock);
         System.err.println(w1.toString());
     }
 
@@ -56,7 +56,7 @@ public class NexmlFileParserTest {
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
         new TaxaNexusOutput().write(w1, taxaBlock);
-        new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock, null);
+        new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock);
         System.err.println(w1.toString());
     }
 
@@ -73,8 +73,8 @@ public class NexmlFileParserTest {
         w1.write("#nexus\n");
         new TaxaNexusOutput().write(w1, taxaBlock);
         TreesNexusFormat treesNexusFormat = new TreesNexusFormat();
-        treesNexusFormat.setTranslate(false);
-        new TreesNexusOutput().write(w1, taxaBlock, treesBlock, treesNexusFormat);
+        treesNexusFormat.setOptionTranslate(false);
+        new TreesNexusOutput().write(w1, taxaBlock, treesBlock);
         System.err.println(w1.toString());
     }
 

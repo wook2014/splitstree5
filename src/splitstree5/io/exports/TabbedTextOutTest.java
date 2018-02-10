@@ -38,7 +38,7 @@ public class TabbedTextOutTest {
         NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/algae_char.nex"));
         np.matchIgnoreCase("#nexus");
         new TaxaNexusInput().parse(np, taxa);
-        new CharactersNexusInput().parse(np, taxa, character, null);
+        new CharactersNexusInput().parse(np, taxa, character);
         /*new DistancesNexusInput().parse(np, taxa, distances, null);
         new SplitsNexusInput().parse(np, taxa, splits, null);*/
 

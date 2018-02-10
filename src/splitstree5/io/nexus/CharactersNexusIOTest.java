@@ -105,7 +105,7 @@ public class CharactersNexusIOTest {
             CharactersBlock charactersBlock1 = new CharactersBlock();
 
             CharactersNexusFormat format = new CharactersNexusFormat();
-            List<String> taxonNames = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock1, format);
+            List<String> taxonNames = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock1);
             taxaBlock.addTaxaByNames(taxonNames);
 
             for (int test = 0; test < 4; test++) {
@@ -116,16 +116,16 @@ public class CharactersNexusIOTest {
                     case 0:
                         break;
                     case 1:
-                        format.setInterleave(false);
-                        format.setTranspose(false);
+                        format.setOptionInterleave(false);
+                        format.setOptionTranspose(false);
                         break;
                     case 2:
-                        format.setInterleave(true);
-                        format.setTranspose(false);
+                        format.setOptionInterleave(true);
+                        format.setOptionTranspose(false);
                         break;
                     case 3:
-                        format.setInterleave(false);
-                        format.setTranspose(true);
+                        format.setOptionInterleave(false);
+                        format.setOptionTranspose(true);
                         break;
 
                     //need list of tokens
@@ -136,17 +136,17 @@ public class CharactersNexusIOTest {
 
                 }
                 StringWriter sw1 = new StringWriter();
-                new CharactersNexusOutput().write(sw1, taxaBlock, charactersBlock1, format);
+                new CharactersNexusOutput().write(sw1, taxaBlock, charactersBlock1);
                 System.err.println(sw1.toString());
 
                 CharactersBlock charactersBlock2 = new CharactersBlock();
-                new CharactersNexusInput().parse(new NexusStreamParser(new StringReader(sw1.toString())), taxaBlock, charactersBlock2, format);
+                new CharactersNexusInput().parse(new NexusStreamParser(new StringReader(sw1.toString())), taxaBlock, charactersBlock2);
 
                 // for (int t = 1; t <= charactersBlock1.getNtax(); t++)
                 //     assertArrayEquals("t=" + t, charactersBlock1.getMatrix()[t - 1], charactersBlock2.getMatrix()[t - 1]);
 
                 StringWriter sw2 = new StringWriter();
-                new CharactersNexusOutput().write(sw2, taxaBlock, charactersBlock2, format);
+                new CharactersNexusOutput().write(sw2, taxaBlock, charactersBlock2);
 
                 System.err.println(sw2.toString());
 

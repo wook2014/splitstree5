@@ -7,7 +7,6 @@ import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.datablocks.characters.CharactersType;
 import splitstree5.core.models.F81model;
 
 /**
@@ -67,10 +66,5 @@ public class F81 extends DNAdistance implements IFromChararacters, IToDistances 
 
     public String getDescription() {
         return DESCRIPTION;
-    }
-
-    @Override
-    public boolean isApplicable(TaxaBlock taxa, CharactersBlock ch) {
-        return ch.getDataType() == CharactersType.DNA || ch.getDataType() == CharactersType.RNA;
     }
 }

@@ -49,18 +49,18 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
                 if (line.startsWith(";") || line.isEmpty())
                     continue;
                 if (line.equals(">"))
-                    throw new IOExceptionWithLineNumber("No taxa label given at line: " + counter, counter);
+                    throw new IOExceptionWithLineNumber("No taxa label given", counter);
 
                 if (line.startsWith(">")) {
                     addTaxaName(line, taxonNamesFound, counter);
                     ntax++;
 
                     if (ntax > 1 && currentSequence.toString().isEmpty())
-                        throw new IOExceptionWithLineNumber("No sequence is given at line " + counter, counter);
+                        throw new IOExceptionWithLineNumber("No sequence", counter);
 
                     if (nchar != 0 && nchar != currentSequenceLength)
                         throw new IOExceptionWithLineNumber("Sequences must be the same length. " +
-                                "Wrong number of chars at the line: " + (counter - 1) + ". Length " + nchar + " expected", counter - 1);
+                                "Wrong number of chars, Length " + nchar + " expected", counter - 1);
 
                     if (!currentSequence.toString().equals("")) matrix.add(currentSequence.toString());
                     nchar = currentSequenceLength;

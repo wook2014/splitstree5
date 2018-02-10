@@ -27,7 +27,7 @@ public class ClustalOutTest {
 
         List<String> taxonNames = new CharactersNexusInput().parse(
                 new NexusStreamParser(new FileReader("test/characters/microsat1.nex")),
-                taxa, characters, format);
+                taxa, characters);
         taxa.addTaxaByNames(taxonNames);
 
         clustalOut.export(writer, taxa, characters);

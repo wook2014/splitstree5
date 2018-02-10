@@ -24,9 +24,9 @@ package splitstree5.io.nexus;
  */
 public class SplitsNexusFormat implements INexusFormat {
 
-    private boolean labels = false;
-    private boolean weights = true;
-    private boolean confidences = false;
+    private boolean optionsLabels = false;
+    private boolean optionWeights = true;
+    private boolean optionConfidences = false;
 
     /**
      * Constructor
@@ -39,8 +39,8 @@ public class SplitsNexusFormat implements INexusFormat {
      *
      * @return true, if labels are to be printed
      */
-    public boolean isLabels() {
-        return labels;
+    public boolean isOptionsLabels() {
+        return optionsLabels;
     }
 
     /**
@@ -48,8 +48,8 @@ public class SplitsNexusFormat implements INexusFormat {
      *
      * @return true, if weights are to be printed
      */
-    public boolean isWeights() {
-        return weights;
+    public boolean isOptionWeights() {
+        return optionWeights;
     }
 
     /**
@@ -57,8 +57,8 @@ public class SplitsNexusFormat implements INexusFormat {
      *
      * @param flag whether labels should be printed
      */
-    public void setLabels(boolean flag) {
-        labels = flag;
+    public void setOptionsLabels(boolean flag) {
+        optionsLabels = flag;
     }
 
     /**
@@ -66,8 +66,8 @@ public class SplitsNexusFormat implements INexusFormat {
      *
      * @param flag whether weights should be printed
      */
-    public void setWeights(boolean flag) {
-        weights = flag;
+    public void setOptionWeights(boolean flag) {
+        optionWeights = flag;
     }
 
     /**
@@ -75,17 +75,17 @@ public class SplitsNexusFormat implements INexusFormat {
      *
      * @return confidence
      */
-    public boolean isConfidences() {
-        return confidences;
+    public boolean isOptionConfidences() {
+        return optionConfidences;
     }
 
     /**
      * show confidences?
      *
-     * @param confidences
+     * @param optionConfidences
      */
-    public void setConfidences(boolean confidences) {
-        this.confidences = confidences;
+    public void setOptionConfidences(boolean optionConfidences) {
+        this.optionConfidences = optionConfidences;
     }
 
 }

@@ -33,8 +33,8 @@ public class MatlabOutTest {
         NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/algae.nex"));
         np.matchIgnoreCase("#nexus");
         new TaxaNexusInput().parse(np, taxa);
-        new DistancesNexusInput().parse(np, taxa, distances, null);
-        new SplitsNexusInput().parse(np, taxa, splits, null);
+        new DistancesNexusInput().parse(np, taxa, distances);
+        new SplitsNexusInput().parse(np, taxa, splits);
 
         matlabOut.export(writer, taxa);
         matlabOut.export(writer, taxa, splits);

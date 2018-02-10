@@ -83,7 +83,7 @@ public class WorkflowTreeItem extends TreeItem<String> {
                     rotateTransition = null;
             } else { // a data node
                 disable.bind(workflowNode.stateProperty().isEqualTo(UpdateState.VALID).not());
-                Image icon = ResourceManager.getIcon(workflowNode.getName().replaceAll("^Orig", "").replaceAll(".*]", "") + "16.gif");
+                Image icon = ResourceManager.getIcon(workflowNode.getName().replaceAll("Input", "").replaceAll(".*]", "") + "16.gif");
                 if (icon != null) {
                     label.setGraphic(new ImageView(icon));
                 }
@@ -165,5 +165,9 @@ public class WorkflowTreeItem extends TreeItem<String> {
         else {
             document.getMainWindow().showAlgorithmView((Connector) workflowNode);
         }
+    }
+
+    public WorkflowNode getWorkflowNode() {
+        return workflowNode;
     }
 }
