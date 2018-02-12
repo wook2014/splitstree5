@@ -30,7 +30,9 @@ import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloGraph;
 import jloda.util.ResourceManager;
+import splitstree5.core.algorithms.views.NetworkEmbedder;
 import splitstree5.gui.graphtab.base.EdgeView2D;
+import splitstree5.gui.graphtab.base.EdgeView2DWithMutations;
 import splitstree5.gui.graphtab.base.Graph2DTab;
 import splitstree5.gui.graphtab.base.NodeView2D;
 import splitstree5.gui.graphtab.commands.MoveNodesCommand;
@@ -138,15 +140,26 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
         return nodeView;
     }
 
-
     /**
      * create an edge view
      */
     public EdgeView2D createEdgeView(final Edge e, final Point2D start, final Point2D end) {
-        final EdgeView2D edgeView = new EdgeView2D(e, 1.0, start, end);
+        return createEdgeView(e, start, end, null, NetworkEmbedder.MutationView.None);
+    }
+
+    /**
+     * create an edge view
+     */
+    public EdgeView2D createEdgeView(final Edge e, final Point2D start, final Point2D end, int[] mutations, NetworkEmbedder.MutationView showMutations) {
+        final EdgeView2D edgeView;
+        if (mutations != null && showMutations != NetworkEmbedder.MutationView.None) {
+            edgeView = new EdgeView2DWithMutations(e, 1.0, start, end, mutations, showMutations);
+
+        } else
+            edgeView = new EdgeView2D(e, 1.0, start, end);
 
         if (edgeView.getShape() != null) {
-            edgeView.getShape().setOnMouseClicked((x) -> {
+            edgeView.getShape().setOnMouseClicked((x) -> { // todo: need to use shape group here
                 if (!x.isShiftDown()) {
                     edgeSelectionModel.clearSelection();
                     nodeSelectionModel.clearSelection();
@@ -176,6 +189,7 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
                 x.consume();
             });
         }
+        addEdgeLabelMovementSupport(edgeView);
 
         return edgeView;
     }

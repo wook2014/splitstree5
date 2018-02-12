@@ -29,7 +29,6 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
 import splitstree5.core.workflow.DataNode;
-import splitstree5.io.nexus.CharactersNexusFormat;
 import splitstree5.io.nexus.CharactersNexusInput;
 import splitstree5.io.nexus.CharactersNexusOutput;
 
@@ -60,7 +59,6 @@ public class CharactersTopFilter extends ATopFilter<CharactersBlock> {
                     progress.setMaximum(modifiedTaxaBlock.size());
                     final StringWriter w = new StringWriter();
                     try {
-                        CharactersNexusFormat charactersNexusFormat = new CharactersNexusFormat();
                         final CharactersNexusOutput charactersNexusOutput = new CharactersNexusOutput();
                         charactersNexusOutput.setIgnoreMatrix(true);
                         charactersNexusOutput.write(w, originalTaxaNode.getDataBlock(), parent);

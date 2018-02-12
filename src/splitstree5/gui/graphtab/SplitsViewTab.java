@@ -39,6 +39,7 @@ import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.Workflow;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.graphtab.base.*;
+import splitstree5.gui.graphtab.commands.MoveNodesCommand;
 import splitstree5.menu.MenuController;
 
 import java.util.*;
@@ -167,9 +168,11 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
             else
                 nodeSelectionModel.select(v);
             if (x.getClickCount() >= 2) {
-                ArrayList<Edge> edges = getAdjacentEdgesSortedByDecreasingWeight(v);
-                int index = Math.min(edges.size() - 1, x.getClickCount() - 2);
-                selectBySplit(edges.get(index));
+                final ArrayList<Edge> edges = getAdjacentEdgesSortedByDecreasingWeight(v);
+                if (edges.size() > 0) {
+                    int index = Math.min(edges.size() - 1, x.getClickCount() - 2);
+                    SplitsViewTab.selectBySplit(graph, edges.get(index), splitsSelectionModel, nodeSelectionModel, x.isControlDown());
+                }
             }
             x.consume();
         });
@@ -188,6 +191,7 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
             });
         }
         addNodeLabelMovementSupport(nodeView);
+
         return nodeView;
     }
 
@@ -210,45 +214,6 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
             result.add(pair.getSecond());
         }
         return result;
-    }
-
-    /**
-     * create an edge view
-     */
-    public EdgeView2D createEdgeView(final SplitsGraph graph, final Edge e, final Double weight, final Point2D start, final Point2D end) {
-        final EdgeView2D edgeView = new EdgeView2D(e, weight, start, end);
-        final int splitId = graph.getSplit(e);
-
-        final EventHandler<? super MouseEvent> handler = (EventHandler<MouseEvent>) x -> {
-            if (!splitsSelectionModel.getSelectedItems().contains(splitId)) {
-                selectBySplit(e);
-            } else if (x.isShiftDown() && splitsSelectionModel.getSelectedItems().contains(splitId)) {
-                splitsSelectionModel.clearSelection();
-                nodeSelectionModel.clearSelection();
-            }
-            x.consume();
-        };
-
-        if (edgeView.getShape() != null) {
-            edgeView.getShape().setOnMouseClicked(handler);
-        }
-
-        if (edgeView.getLabel() != null) {
-            edgeView.getLabel().setOnMouseClicked(handler);
-        }
-        return edgeView;
-    }
-
-    /**
-     * select by split associated with given edge
-     */
-    public void selectBySplit(Edge e) {
-        final int splitId = getGraph().getSplit(e);
-        if (!splitsSelectionModel.getSelectedItems().contains(splitId)) {
-            splitsSelectionModel.clearSelection();
-            selectAllNodesOnSmallerSide(getGraph(), e, nodeSelectionModel);
-            splitsSelectionModel.select((Integer) splitId);
-        }
     }
 
     /**
@@ -297,32 +262,55 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
             Point2D newSelectedPoint = GeometryUtils.rotateAbout(selectedPoint, angle, anchorPoint);
             Point2D translate = newSelectedPoint.subtract(selectedPoint);
 
-            for (Node v : selectedNodes) {
-                if (v.getOwner() == getGraph())
-                    node2view.get(v).translateCoordinates(translate.getX(), translate.getY());
-            }
-            for (Node v : selectedNodes) {
-                if (v.getOwner() == getGraph()) {
-                    for (Edge edge : v.adjacentEdges()) {
-                        if (v == edge.getTarget() || !selectedNodes.contains(edge.getTarget())) {
-                            edge2view.get(edge).setCoordinates(node2view.get(edge.getSource()).getLocation(), node2view.get(edge.getTarget()).getLocation());
-                        }
-                    }
-                }
-            }
+            getUndoManager().doAndAdd(new MoveNodesCommand(node2view, edge2view, selectedNodes, translate.getX(), translate.getY()));
         }
     }
 
     /**
+     * create an edge view
+     */
+    public EdgeView2D createEdgeView(final SplitsGraph graph, final Edge e, final Double weight, final Point2D start, final Point2D end) {
+        final EdgeView2D edgeView = new EdgeView2D(e, weight, start, end);
+
+        final EventHandler<? super MouseEvent> handler = (EventHandler<MouseEvent>) x -> {
+            x.consume();
+            if (!x.isShiftDown()) {
+                splitsSelectionModel.clearSelection();
+                nodeSelectionModel.clearSelection();
+            }
+            selectBySplit(graph, e, splitsSelectionModel, nodeSelectionModel, x.isControlDown());
+        };
+
+        if (edgeView.getShape() != null)
+            edgeView.getShape().setOnMouseClicked(handler); // todo: need to use shape group here
+
+        if (edgeView.getLabel() != null) {
+            edgeView.getLabel().setOnMouseClicked(handler);
+        }
+        addEdgeLabelMovementSupport(edgeView);
+        return edgeView;
+    }
+
+    /**
+     * select by split associated with given edge
+     */
+    public static void selectBySplit(SplitsGraph graph, Edge e, ASelectionModel<Integer> splitsSelectionModel, ASelectionModel<Node> nodeSelectionModel, boolean useLargerSide) {
+        final int splitId = graph.getSplit(e);
+        selectAllNodesOnOneSide(graph, e, nodeSelectionModel, useLargerSide);
+        splitsSelectionModel.select((Integer) splitId);
+    }
+
+
+    /**
      * select all nodes on smaller side of graph separated by e
      */
-    private static void selectAllNodesOnSmallerSide(SplitsGraph graph, Edge e, ASelectionModel<Node> nodeSelectionModel) {
+    private static void selectAllNodesOnOneSide(SplitsGraph graph, Edge e, ASelectionModel<Node> nodeSelectionModel, boolean useLargerSide) {
         nodeSelectionModel.clearSelection();
         final NodeSet visited = new NodeSet(graph);
         visitRec(graph, e.getSource(), null, graph.getSplit(e), visited);
         int sourceSize = visited.size();
         int targetSize = graph.getNumberOfNodes() - sourceSize;
-        if (sourceSize <= targetSize) {
+        if ((sourceSize > targetSize) == useLargerSide) {
             nodeSelectionModel.selectItems(visited);
         } else {
             final NodeSet others = graph.getNodesAsSet();

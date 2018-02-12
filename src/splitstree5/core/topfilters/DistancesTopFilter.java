@@ -20,6 +20,7 @@
 package splitstree5.core.topfilters;
 
 
+import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.DistancesBlock;
@@ -44,12 +45,13 @@ public class DistancesTopFilter extends ATopFilter<DistancesBlock> {
         super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parent, child);
 
         setAlgorithm(new Algorithm<DistancesBlock, DistancesBlock>("TopFilter") {
-            public void compute(ProgressListener progress, TaxaBlock modifiedTaxaBlock, DistancesBlock original, DistancesBlock modified) {
+            public void compute(ProgressListener progress, TaxaBlock modifiedTaxaBlock, DistancesBlock original, DistancesBlock modified) throws CanceledException {
                 if (originalTaxaNode.getDataBlock().getTaxa().equals(modifiedTaxaBlock.getTaxa())) {
                     child.getDataBlock().copy(parent.getDataBlock());
                     setShortDescription("using all " + modifiedTaxaBlock.size() + " taxa");
 
                 } else {
+                    progress.setMaximum(modifiedTaxaBlock.getNtax());
                     modified.setNtax(modifiedTaxaBlock.getNtax());
 
                     for (Taxon a : modifiedTaxaBlock.getTaxa()) {
@@ -62,6 +64,7 @@ public class DistancesTopFilter extends ATopFilter<DistancesBlock> {
                             if (original.isVariances())
                                 modified.setVariance(modifiedI, modifiedJ, original.getVariance(originalI, originalJ));
                         }
+                        progress.incrementProgress();
                     }
                     setShortDescription("using " + modifiedTaxaBlock.size() + " of " + getOriginalTaxaBlock().size() + " taxa");
                 }

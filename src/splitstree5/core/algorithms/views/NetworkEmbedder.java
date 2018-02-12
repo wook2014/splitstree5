@@ -40,7 +40,6 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TraitsBlock;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.graphtab.NetworkViewTab;
-import splitstree5.gui.graphtab.base.EdgeView2DWithMutations;
 import splitstree5.gui.graphtab.base.EdgeViewBase;
 import splitstree5.gui.graphtab.base.GraphLayout;
 import splitstree5.gui.graphtab.base.NodeView2D;
@@ -53,6 +52,8 @@ import java.util.List;
  * Daniel Huson, 2.2018
  */
 public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> implements IFromNetwork, IToNetworkView {
+    public enum MutationView {Hatches, Labels, Count, None}
+
     private final PhyloGraph graph = new PhyloGraph();
     private final NodeArray<NetworkBlock.NodeData> node2data = new NodeArray<>(graph);
     private final EdgeArray<NetworkBlock.EdgeData> edge2data = new EdgeArray<>(graph);
@@ -68,6 +69,8 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> i
     private final BooleanProperty optionShowPieCharts = new SimpleBooleanProperty();
 
     private final BooleanProperty optionScaleNodes = new SimpleBooleanProperty();
+
+    private MutationView optionShowMutations = MutationView.None;
 
     public List<String> listOptions() {
         return Arrays.asList("optionAlgorithm", "optionIterations");
@@ -95,7 +98,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> i
         final NodeArray<Point2D> node2point = new NodeArray<>(graph);
         computeSpringEmbedding(graph, node2point, getOptionIterations(), networkViewTab.getTargetDimensions().getWidth(), networkViewTab.getTargetDimensions().getHeight(), false);
 
-        TreeEmbedder.centerAndScaleToFitTarget(GraphLayout.Radial, networkViewTab.getTargetDimensions(), node2point);
+        TreeEmbedder.scaleAndCenterToFitTarget(GraphLayout.Radial, networkViewTab.getTargetDimensions(), node2point, true);
 
         progress.setProgress(100);   //set progress to 100%
 
@@ -122,6 +125,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> i
             String text = graph.getLabel(v);
             //String text = (graph.getLabel(v) != null ? graph.getLabel(v) : "Node " + v.getId());
             final NodeView2D nodeView = networkViewTab.createNodeView(v, node2point.getValue(v), text);
+
             networkViewTab.getNode2view().put(v, nodeView);
             networkViewTab.getNodesGroup().getChildren().addAll(nodeView.getShapeGroup());
             networkViewTab.getNodeLabelsGroup().getChildren().addAll(nodeView.getLabelGroup());
@@ -158,6 +162,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> i
                         pieChart.layoutXProperty().bind(pieChart.widthProperty().multiply(-0.5 * scale));
                         pieChart.layoutYProperty().bind(pieChart.heightProperty().multiply(-0.5 * scale));
 
+                        nodeView.setShape(null);
                         nodeView.getShapeGroup().getChildren().add(pieChart);
                         Tooltip.install(nodeView.getShapeGroup(), new Tooltip(buf.toString()));
 
@@ -188,10 +193,9 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> i
 
             if (Basic.isArrayOfIntegers(edge2data.get(e).get("sites"))) {
                 final int[] mutations = Basic.parseArrayOfIntegers(edge2data.get(e).get("sites"));
-                edgeView = new EdgeView2DWithMutations(e, 1.0, node2point.get(e.getSource()), node2point.get(e.getTarget()), mutations);
+                edgeView = networkViewTab.createEdgeView(e, node2point.get(e.getSource()), node2point.get(e.getTarget()), mutations, getOptionShowMutations());
             } else
                 edgeView = networkViewTab.createEdgeView(e, node2point.get(e.getSource()), node2point.get(e.getTarget()));
-
 
             networkViewTab.getEdge2view().put(e, edgeView);
             networkViewTab.getEdgesGroup().getChildren().add(edgeView.getShapeGroup());
@@ -400,5 +404,13 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> i
 
     public void setOptionScaleNodes(boolean optionScaleNodes) {
         this.optionScaleNodes.set(optionScaleNodes);
+    }
+
+    public MutationView getOptionShowMutations() {
+        return optionShowMutations;
+    }
+
+    public void setOptionShowMutations(MutationView mutationView) {
+        optionShowMutations = mutationView;
     }
 }

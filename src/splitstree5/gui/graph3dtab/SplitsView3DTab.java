@@ -57,10 +57,10 @@ import jloda.util.Pair;
 import jloda.util.ResourceManager;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.workflow.DataNode;
 import splitstree5.dialogs.ProgressPane;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.graphtab.ISplitsViewTab;
+import splitstree5.gui.graphtab.SplitsViewTab;
 import splitstree5.gui.graphtab.base.GeometryUtils;
 import splitstree5.gui.graphtab.base.GraphLayout;
 import splitstree5.gui.graphtab.base.NodeViewBase;
@@ -78,7 +78,6 @@ import java.util.Set;
 public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsViewTab {
     private final ASelectionModel<Integer> splitsSelectionModel = new ASelectionModel<>();
     private boolean inSelection;
-    private DataNode dataNode;
 
     /**
      * constructor
@@ -179,7 +178,7 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
                 final Point2D delta = new Point2D(mouseX - e.getScreenX(), mouseY - e.getScreenY());
 
                 //noinspection SuspiciousNameCombination
-                final Point3D dragOrthogonalAxis = new Point3D(delta.getY(), -delta.getX(), 0);
+                final Point3D dragOrthogonalAxis = new Point3D(delta.getY(), -delta.getX(), 0).multiply(-1);
                 final Rotate rotate = new Rotate(0.25 * delta.magnitude(), anchor.getX(), anchor.getY(), anchor.getZ(), dragOrthogonalAxis);
                 final Point3D translateVector = rotate.transform(mover).subtract(mover);
 
@@ -194,20 +193,22 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
             mouseX = e.getScreenX();
             mouseY = e.getScreenY();
         });
-        nv.getShapeGroup().setOnMouseClicked((e) -> {
-            e.consume();
+        nv.getShapeGroup().setOnMouseClicked((x) -> {
+            x.consume();
             splitsSelectionModel.clearSelection();
             edgeSelectionModel.clearSelection();
-            if (!e.isShiftDown())
+            if (!x.isShiftDown())
                 nodeSelectionModel.clearSelection();
             if (nodeSelectionModel.getSelectedItems().contains(v))
                 nodeSelectionModel.clearSelection(v);
             else
                 nodeSelectionModel.select(v);
-            if (e.getClickCount() >= 2) {
-                ArrayList<Edge> edges = getAdjacentEdgesSortedByDecreasingWeight(v);
-                int index = Math.min(edges.size() - 1, e.getClickCount() - 2);
-                selectBySplit(edges.get(index));
+            if (x.getClickCount() >= 2) {
+                final ArrayList<Edge> edges = getAdjacentEdgesSortedByDecreasingWeight(v);
+                if (edges.size() > 0) {
+                    int index = Math.min(edges.size() - 1, x.getClickCount() - 2);
+                    SplitsViewTab.selectBySplit(graph, edges.get(index), splitsSelectionModel, nodeSelectionModel, x.isControlDown());
+                }
             }
         });
 
@@ -275,16 +276,14 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
      */
     public EdgeView3D createEdgeView(final SplitsGraph graph, final Edge e, final Double weight, final Point2D start, final Point2D end) {
         final EdgeView3D edgeView = new EdgeView3D(e, weight, GeometryUtils.from2Dto3D(start), GeometryUtils.from2Dto3D(end));
-        final int splitId = graph.getSplit(e);
 
         final EventHandler<? super MouseEvent> handler = (EventHandler<MouseEvent>) x -> {
-            if (!splitsSelectionModel.getSelectedItems().contains(splitId)) {
-                selectBySplit(e);
-            } else if (x.isShiftDown() && splitsSelectionModel.getSelectedItems().contains(splitId)) {
+            x.consume();
+            if (!x.isShiftDown()) {
                 splitsSelectionModel.clearSelection();
                 nodeSelectionModel.clearSelection();
             }
-            x.consume();
+            SplitsViewTab.selectBySplit(graph, e, splitsSelectionModel, nodeSelectionModel, x.isControlDown());
         };
 
         edgeView.getShape().setOnMouseClicked(handler);
@@ -295,35 +294,6 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
         return edgeView;
     }
 
-    /**
-     * select by split associated with given edge
-     */
-    public void selectBySplit(Edge e) {
-        final int splitId = getGraph().getSplit(e);
-        if (!splitsSelectionModel.getSelectedItems().contains(splitId)) {
-            splitsSelectionModel.clearSelection();
-            selectAllNodesOnSmallerSide(getGraph(), e, nodeSelectionModel);
-            splitsSelectionModel.select((Integer) splitId);
-        }
-    }
-
-    /**
-     * select all nodes on smaller side of graph separated by e
-     */
-    private static void selectAllNodesOnSmallerSide(SplitsGraph graph, Edge e, ASelectionModel<Node> nodeSelectionModel) {
-        nodeSelectionModel.clearSelection();
-        final NodeSet visited = new NodeSet(graph);
-        visitRec(graph, e.getSource(), null, graph.getSplit(e), visited);
-        int sourceSize = visited.size();
-        int targetSize = graph.getNumberOfNodes() - sourceSize;
-        if (sourceSize <= targetSize) {
-            nodeSelectionModel.selectItems(visited);
-        } else {
-            final NodeSet others = graph.getNodesAsSet();
-            others.removeAll(visited);
-            nodeSelectionModel.selectItems(others);
-        }
-    }
 
     /**
      * recursively visit all nodes on one side of a given split

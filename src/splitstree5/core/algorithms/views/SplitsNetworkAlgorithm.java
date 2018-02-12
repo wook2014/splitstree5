@@ -129,7 +129,7 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, SplitsNetwork
 
         progress.setProgress(100);   //set progress to 100%
 
-        TreeEmbedder.centerAndScaleToFitTarget(GraphLayout.Radial, splitsViewTab.getTargetDimensions(), node2point);
+        TreeEmbedder.scaleAndCenterToFitTarget(GraphLayout.Radial, splitsViewTab.getTargetDimensions(), node2point, true);
 
         // compute all views and put their parts into the appropriate groups
         final Font labelFont = Font.font(ProgramProperties.getDefaultFont().getFamily(), taxa.getNtax() <= 64 ? 16 : Math.max(4, 12 - Math.log(taxa.getNtax() - 64) / Math.log(2)));

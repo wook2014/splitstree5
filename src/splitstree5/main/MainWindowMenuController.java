@@ -20,17 +20,24 @@
 package splitstree5.main;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.scene.control.Tab;
 import javafx.stage.FileChooser;
 import jloda.util.Basic;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.characters2network.MedianJoining;
+import splitstree5.core.algorithms.characters2splits.ParsimonySplits;
 import splitstree5.core.algorithms.distances2network.MinSpanningNetwork;
+import splitstree5.core.algorithms.distances2splits.BunemanTree;
+import splitstree5.core.algorithms.distances2splits.NeighborNet;
+import splitstree5.core.algorithms.distances2splits.SplitDecomposition;
+import splitstree5.core.algorithms.distances2trees.BioNJ;
+import splitstree5.core.algorithms.distances2trees.NeighborJoining;
+import splitstree5.core.algorithms.distances2trees.UPGMA;
 import splitstree5.core.algorithms.views.NetworkEmbedder;
-import splitstree5.core.datablocks.CharactersBlock;
-import splitstree5.core.datablocks.DistancesBlock;
-import splitstree5.core.datablocks.NetworkBlock;
-import splitstree5.core.datablocks.NetworkViewBlock;
+import splitstree5.core.algorithms.views.SplitsNetworkAlgorithm;
+import splitstree5.core.algorithms.views.TreeEmbedder;
+import splitstree5.core.datablocks.*;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.IHasDataNode;
 import splitstree5.core.workflow.Workflow;
@@ -140,31 +147,117 @@ public class MainWindowMenuController {
         final Workflow workflow = mainWindow.getDocument().getWorkflow();
 
         if (selectedTab instanceof IHasDataNode) {
+            final BooleanBinding disableCharactersBasedMethods = Bindings.createBooleanBinding(() -> workflow.getAncestor(((IHasDataNode) selectedTab).getDataNode(), CharactersBlock.class) == null, workflow.updatingProperty());
+            final BooleanBinding disableDistanceBasedMethods = Bindings.createBooleanBinding(() -> workflow.getAncestor(((IHasDataNode) selectedTab).getDataNode(), DistancesBlock.class) == null, workflow.updatingProperty());
             //System.err.println("Data: " + ((IHasDataNode) selectedTab).getDataNode());
+
+            controller.getBioNJMenuItem().setOnAction((e) -> {
+                final DataNode dataNode = workflow.getAncestor(((IHasDataNode) selectedTab).getDataNode(), DistancesBlock.class);
+                if (dataNode != null) {
+                    try {
+                        mainWindow.show(workflow.findOrCreateView(dataNode, BioNJ.class, TreesBlock.class, TreeEmbedder.class, TreeViewBlock.class));
+                    } catch (Exception ex) {
+                        Basic.caught(ex);
+                    }
+                }
+            });
+            controller.getBioNJMenuItem().disableProperty().bind(disableDistanceBasedMethods);
+
+            controller.getNjMenuItem().setOnAction((e) -> {
+                final DataNode dataNode = workflow.getAncestor(((IHasDataNode) selectedTab).getDataNode(), DistancesBlock.class);
+                if (dataNode != null) {
+                    try {
+                        mainWindow.show(workflow.findOrCreateView(dataNode, NeighborJoining.class, TreesBlock.class, TreeEmbedder.class, TreeViewBlock.class));
+                    } catch (Exception ex) {
+                        Basic.caught(ex);
+                    }
+                }
+            });
+            controller.getNjMenuItem().disableProperty().bind(disableDistanceBasedMethods);
+
+            controller.getUpgmaMenuItem().setOnAction((e) -> {
+                final DataNode dataNode = workflow.getAncestor(((IHasDataNode) selectedTab).getDataNode(), DistancesBlock.class);
+                if (dataNode != null) {
+                    try {
+                        mainWindow.show(workflow.findOrCreateView(dataNode, UPGMA.class, TreesBlock.class, TreeEmbedder.class, TreeViewBlock.class));
+                    } catch (Exception ex) {
+                        Basic.caught(ex);
+                    }
+                }
+            });
+            controller.getUpgmaMenuItem().disableProperty().bind(disableDistanceBasedMethods);
+
+            controller.getBunemanTreeMenuItem().setOnAction((e) -> {
+                final DataNode dataNode = workflow.getAncestor(((IHasDataNode) selectedTab).getDataNode(), DistancesBlock.class);
+                if (dataNode != null) {
+                    try {
+                        mainWindow.show(workflow.findOrCreateView(dataNode, BunemanTree.class, SplitsBlock.class, SplitsNetworkAlgorithm.class, SplitsNetworkViewBlock.class));
+                    } catch (Exception ex) {
+                        Basic.caught(ex);
+                    }
+                }
+            });
+            controller.getBunemanTreeMenuItem().disableProperty().bind(disableDistanceBasedMethods);
+
+            controller.getNeighborNetMenuItem().setOnAction((e) -> {
+                final DataNode dataNode = workflow.getAncestor(((IHasDataNode) selectedTab).getDataNode(), DistancesBlock.class);
+                if (dataNode != null) {
+                    try {
+                        mainWindow.show(workflow.findOrCreateView(dataNode, NeighborNet.class, SplitsBlock.class, SplitsNetworkAlgorithm.class, SplitsNetworkViewBlock.class));
+                    } catch (Exception ex) {
+                        Basic.caught(ex);
+                    }
+                }
+            });
+            controller.getNeighborNetMenuItem().disableProperty().bind(disableDistanceBasedMethods);
+
+            controller.getSplitDecompositionMenuItem().setOnAction((e) -> {
+                final DataNode dataNode = workflow.getAncestor(((IHasDataNode) selectedTab).getDataNode(), DistancesBlock.class);
+                if (dataNode != null) {
+                    try {
+                        mainWindow.show(workflow.findOrCreateView(dataNode, SplitDecomposition.class, SplitsBlock.class, SplitsNetworkAlgorithm.class, SplitsNetworkViewBlock.class));
+                    } catch (Exception ex) {
+                        Basic.caught(ex);
+                    }
+                }
+            });
+            controller.getSplitDecompositionMenuItem().disableProperty().bind(disableDistanceBasedMethods);
+
+            controller.getParsimonySplitsMenuItem().setOnAction((e) -> {
+                final DataNode dataNode = workflow.getAncestor(((IHasDataNode) selectedTab).getDataNode(), DistancesBlock.class);
+                if (dataNode != null) {
+                    try {
+                        mainWindow.show(workflow.findOrCreateView(dataNode, ParsimonySplits.class, SplitsBlock.class, SplitsNetworkAlgorithm.class, SplitsNetworkViewBlock.class));
+                    } catch (Exception ex) {
+                        Basic.caught(ex);
+                    }
+                }
+            });
+            controller.getParsimonySplitsMenuItem().disableProperty().bind(disableCharactersBasedMethods);
 
             controller.getMedianJoiningMenuItem().setOnAction((e) -> {
                 final DataNode dataNode = workflow.getAncestor(((IHasDataNode) selectedTab).getDataNode(), CharactersBlock.class);
                 if (dataNode != null) {
                     try {
-                        mainWindow.show(workflow.createView(dataNode, MedianJoining.class, NetworkBlock.class, NetworkEmbedder.class, NetworkViewBlock.class));
+                        mainWindow.show(workflow.findOrCreateView(dataNode, MedianJoining.class, NetworkBlock.class, NetworkEmbedder.class, NetworkViewBlock.class));
                     } catch (Exception ex) {
                         Basic.caught(ex);
                     }
                 }
             });
-            controller.getMedianJoiningMenuItem().disableProperty().bind(Bindings.createBooleanBinding(() -> workflow.getAncestor(((IHasDataNode) selectedTab).getDataNode(), CharactersBlock.class) == null, workflow.updatingProperty()));
+            controller.getMedianJoiningMenuItem().disableProperty().bind(disableCharactersBasedMethods);
 
             controller.getMinSpanningNetworkMenuItem().setOnAction((e) -> {
                 final DataNode dataNode = workflow.getAncestor(((IHasDataNode) selectedTab).getDataNode(), DistancesBlock.class);
                 if (dataNode != null) {
                     try {
-                        mainWindow.show(workflow.createView(dataNode, MinSpanningNetwork.class, NetworkBlock.class, NetworkEmbedder.class, NetworkViewBlock.class));
+                        mainWindow.show(workflow.findOrCreateView(dataNode, MinSpanningNetwork.class, NetworkBlock.class, NetworkEmbedder.class, NetworkViewBlock.class));
                     } catch (Exception ex) {
                         Basic.caught(ex);
                     }
                 }
             });
-            controller.getMinSpanningNetworkMenuItem().disableProperty().bind(Bindings.createBooleanBinding(() -> workflow.getAncestor(((IHasDataNode) selectedTab).getDataNode(), DistancesBlock.class) == null, workflow.updatingProperty()));
+            controller.getMinSpanningNetworkMenuItem().disableProperty().bind(disableCharactersBasedMethods);
         }
     }
 }

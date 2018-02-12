@@ -82,7 +82,6 @@ public class RubberBandSelection {
     private final BooleanProperty inRubberBand = new SimpleBooleanProperty();
     private final BooleanProperty inDrag = new SimpleBooleanProperty();
 
-
     /**
      * constructor
      *

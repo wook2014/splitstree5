@@ -262,6 +262,9 @@ public class MenuController {
     private MenuItem proteinMLDistanceMenuItem;
 
     @FXML
+    private MenuItem geneContentDistanceMenuItem;
+
+    @FXML
     private MenuItem njMenuItem;
 
     @FXML
@@ -629,6 +632,10 @@ public class MenuController {
 
     public MenuItem getProteinMLDistanceMenuItem() {
         return proteinMLDistanceMenuItem;
+    }
+
+    public MenuItem getGeneContentDistanceMenuItem() {
+        return geneContentDistanceMenuItem;
     }
 
     public MenuItem getNjMenuItem() {

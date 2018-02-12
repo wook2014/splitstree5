@@ -23,6 +23,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
@@ -372,5 +373,12 @@ public class EdgeView2D extends EdgeViewBase {
     @Override
     public Node getEdgeShape() {
         return shape;
+    }
+
+    @Override
+    public void setLabel(Labeled label) {
+        super.setLabel(label);
+        label.setLayoutX(referencePoint.getX());
+        label.setLayoutY(referencePoint.getY());
     }
 }

@@ -294,12 +294,12 @@
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="proteinMLDistanceMenuItem" mnemonicParsing="false" text="Protein ML Dist"/>
                 <SeparatorMenuItem mnemonicParsing="false"/>
-                <MenuItem fx:id="njMenuItem" mnemonicParsing="false" text="Gene Content Distance"/>
+                <MenuItem fx:id="geneContentDistanceMenuItem" mnemonicParsing="false" text="Gene Content Distance"/>
             </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Tree">
             <items>
-                <MenuItem mnemonicParsing="false" text="NJ"/>
+                <MenuItem fx:id="njMenuItem" mnemonicParsing="false" text="NJ"/>
                 <MenuItem fx:id="bioNJMenuItem" mnemonicParsing="false" text="BioNJ"/>
                 <MenuItem fx:id="upgmaMenuItem" mnemonicParsing="false" text="UPGMA"/>
                 <SeparatorMenuItem mnemonicParsing="false"/>

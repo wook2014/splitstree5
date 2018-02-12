@@ -26,12 +26,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import jloda.graph.Edge;
 import jloda.util.Basic;
+import splitstree5.core.algorithms.views.NetworkEmbedder;
 
-
+/**
+ * edge view that can show mutatuons
+ * Daniel Huson, 2.2018
+ */
 public class EdgeView2DWithMutations extends EdgeView2D {
-    public enum MutationStyle {Hatches, Labels, Count}
-
-    private MutationStyle mutationStyle = MutationStyle.Count;
+    private NetworkEmbedder.MutationView mutationView;
 
     private final int[] mutations;
 
@@ -44,9 +46,10 @@ public class EdgeView2DWithMutations extends EdgeView2D {
      * @param end
      * @return edge view
      */
-    public EdgeView2DWithMutations(Edge e, Double weight, final Point2D start, final Point2D end, int[] mutations) {
+    public EdgeView2DWithMutations(Edge e, Double weight, final Point2D start, final Point2D end, int[] mutations, NetworkEmbedder.MutationView mutationView) {
         super(e, weight, start, end);
         this.mutations = mutations;
+        this.mutationView = mutationView;
         setCoordinates(start, end);
     }
 
@@ -105,13 +108,14 @@ public class EdgeView2DWithMutations extends EdgeView2D {
             shapeGroup.getChildren().add(getShape());
 
         if (mutations != null && mutations.length > 0) {
-            switch (mutationStyle) {
+            switch (mutationView) {
+                case None:
+                    break; // do nothing
                 case Labels:
                     if (label == null) {
                         label = new Label();
                     }
                     setLabel(Basic.toString(mutations, ", "));
-                    label.setTextFill(Color.ORANGE);
                     break;
                 case Count:
                     if (label == null) {
@@ -119,7 +123,7 @@ public class EdgeView2DWithMutations extends EdgeView2D {
                     }
                     setLabel("" + mutations.length);
                     label.setTextFill(Color.BLUE);
-                    //break;
+                    break;
                 case Hatches: {
                     final double dist = start.distance(mid);
                     final double angle = GeometryUtils.computeAngle(end.subtract(start));
@@ -153,11 +157,11 @@ public class EdgeView2DWithMutations extends EdgeView2D {
         }
     }
 
-    public MutationStyle getMutationStyle() {
-        return mutationStyle;
+    public NetworkEmbedder.MutationView getMutationView() {
+        return mutationView;
     }
 
-    public void setMutationStyle(MutationStyle mutationStyle) {
-        this.mutationStyle = mutationStyle;
+    public void setMutationView(NetworkEmbedder.MutationView mutationView) {
+        this.mutationView = mutationView;
     }
 }

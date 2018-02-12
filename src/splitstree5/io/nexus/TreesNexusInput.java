@@ -84,7 +84,7 @@ public class TreesNexusInput implements INexusInput<TreesBlock> {
         UtilitiesNexusIO.readTitleLinks(np, treesBlock);
 
         if (np.peekMatchIgnoreCase("PROPERTIES")) {
-            final List<String> tokens = np.getTokensLowerCase("format", ";");
+            final List<String> tokens = np.getTokensLowerCase("PROPERTIES", ";");
             treesBlock.setPartial(np.findIgnoreCase(tokens, "partialTrees=no", false, treesBlock.isPartial()));
             treesBlock.setPartial(np.findIgnoreCase(tokens, "partialTrees=yes", true, treesBlock.isPartial()));
 

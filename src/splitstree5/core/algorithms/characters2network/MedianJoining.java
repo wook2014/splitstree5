@@ -32,9 +32,6 @@ import splitstree5.core.datablocks.TaxaBlock;
  * Daniel Huson, 2.2018
  */
 public class MedianJoining extends Algorithm<CharactersBlock, NetworkBlock> implements IFromChararacters, IToNetwork {
-
-    public final static String DESCRIPTION = "Median Joining algorithm (Bandelt et al, 1999)";
-
     /**
      * Determine whether given method can be applied to given data.
      *
@@ -50,5 +47,10 @@ public class MedianJoining extends Algorithm<CharactersBlock, NetworkBlock> impl
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock parent, NetworkBlock child) throws Exception {
         MedianJoiningCalculator medianJoiningCalculator = new MedianJoiningCalculator();
         medianJoiningCalculator.apply(progress, taxaBlock, parent, child);
+    }
+
+    @Override
+    public String getCitation() {
+        return "Bandelt et al, 1999;H. -J. Bandelt, P. Forster, and A. Röhl. Median-joining networks for inferring intraspecific phylogenies. Molecular Biology and Evolution, 16:37–48, 1999.";
     }
 }

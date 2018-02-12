@@ -19,13 +19,14 @@
 package splitstree5.gui.graphtab.base;
 
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import jloda.fx.shapes.CircleShape;
 import jloda.util.ProgramProperties;
@@ -39,6 +40,11 @@ import splitstree5.gui.utils.SelectionEffect;
 public class NodeView2D extends NodeViewBase {
     private Shape shape;
     private Point2D location;
+
+    private double oldScaleX;
+    private double oldScaleY;
+
+    private Rectangle selectionRectangle;
 
     /**
      * construct a simple node view
@@ -100,9 +106,14 @@ public class NodeView2D extends NodeViewBase {
         if (label != null || shape != null) {
             EventHandler<MouseEvent> mouseEnteredEventHandler = event -> {
                 if (shapeGroup != null) {
-                    double factor = (shapeGroup.getBoundsInLocal().getHeight() < 8 ? 5 : 1.2);
-                    shapeGroup.setScaleX(factor * shapeGroup.getScaleX());
-                    shapeGroup.setScaleY(factor * shapeGroup.getScaleY());
+                    oldScaleX = shapeGroup.getScaleX();
+                    oldScaleY = shapeGroup.getScaleY();
+
+                    final Bounds bounds = shapeGroup.getBoundsInLocal();
+                    final double factorX = (bounds.getWidth() + 10) / bounds.getWidth();
+                    final double factorY = (bounds.getHeight() + 10) / bounds.getHeight();
+                    shapeGroup.setScaleX(factorX * shapeGroup.getScaleX());
+                    shapeGroup.setScaleY(factorY * shapeGroup.getScaleY());
                 }
                 if (label != null) {
                     label.setScaleX(1.2 * label.getScaleX());
@@ -112,10 +123,8 @@ public class NodeView2D extends NodeViewBase {
             };
             EventHandler<MouseEvent> mouseExitedEventHandler = event -> {
                 if (shapeGroup != null) {
-                    double factor = (shapeGroup.getBoundsInLocal().getHeight() < 8 ? 5 : 1.2);
-
-                    shapeGroup.setScaleX(1.0 / factor * shapeGroup.getScaleX());
-                    shapeGroup.setScaleY(1.0 / factor * shapeGroup.getScaleY());
+                    shapeGroup.setScaleX(oldScaleX);
+                    shapeGroup.setScaleY(oldScaleY);
                 }
                 if (label != null) {
                     label.setScaleX(1.0 / 1.2 * label.getScaleX());
@@ -287,23 +296,29 @@ public class NodeView2D extends NodeViewBase {
         if (selected) {
             if (label != null)
                 label.setEffect(SelectionEffect.getInstance());
-            shape.setEffect(SelectionEffect.getInstance());
-            if (false) // todo: how to show selection of other shapes?
-                for (Node node : shapeGroup.getChildren()) {
-                    if (node != shape)
-                        shape.setStyle("-fx-border-width: 2px; -fx-border-color: lightblue");
-                }
+            if (shapeGroup.getChildren().size() == 1 && shape != null && shape.getScaleX() == 1) {
+                shape.setEffect(SelectionEffect.getInstance());
+            } else {
+                selectionRectangle = new Rectangle();
+                selectionRectangle.setFill(Color.TRANSPARENT);
+                final Bounds bounds = shapeGroup.getBoundsInLocal();
+                selectionRectangle.setStroke(SelectionEffect.getInstance().getColor());
+                selectionRectangle.setX(bounds.getMinX());
+                selectionRectangle.setY(bounds.getMinY());
+                selectionRectangle.setWidth(bounds.getWidth());
+                selectionRectangle.setHeight(bounds.getHeight());
+                selectionRectangle.setStrokeWidth(2);
+                shapeGroup.getChildren().add(selectionRectangle);
+            }
         } else {
             if (label != null)
                 label.setEffect(null);
-            shape.setEffect(null);
-
-            if (false)
-                for (Node node : shapeGroup.getChildren()) {
-                    if (node != shape)
-                        node.setStyle(null);
-
-                }
+            if (shape != null)
+                shape.setEffect(null);
+            if (selectionRectangle != null) {
+                shapeGroup.getChildren().remove(selectionRectangle);
+                selectionRectangle = null;
+            }
         }
     }
 

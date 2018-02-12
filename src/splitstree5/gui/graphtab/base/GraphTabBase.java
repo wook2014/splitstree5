@@ -58,7 +58,8 @@ import splitstree5.gui.formattab.FontSizeIncrementCommand;
 import splitstree5.gui.formattab.FormatItem;
 import splitstree5.gui.graphtab.commands.ChangeEdgeLabelCommand;
 import splitstree5.gui.graphtab.commands.ChangeNodeLabelCommand;
-import splitstree5.gui.graphtab.commands.MoveLabelCommand;
+import splitstree5.gui.graphtab.commands.MoveEdgeLabelCommand;
+import splitstree5.gui.graphtab.commands.MoveNodeLabelCommand;
 import splitstree5.main.MainWindowManager;
 import splitstree5.menu.MenuController;
 import splitstree5.utils.Print;
@@ -435,7 +436,44 @@ public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISa
                 if (oldLocation.get() != null) {
                     final Point2D newLocation = new Point2D(label.getLayoutX(), label.getLayoutY());
                     if (!newLocation.equals(oldLocation.get())) {
-                        getUndoManager().doAndAdd(new MoveLabelCommand(label, oldLocation.get(), newLocation, nodeView));
+                        getUndoManager().doAndAdd(new MoveNodeLabelCommand(label, oldLocation.get(), newLocation, nodeView));
+                    }
+                }
+                point.set(null);
+                e.consume();
+            });
+        }
+    }
+
+    public void addEdgeLabelMovementSupport(EdgeView2D edgeView) {
+        final Labeled label = edgeView.getLabel();
+        if (label != null) {
+            final Single<Point2D> oldLocation = new Single<>();
+            final Single<Point2D> point = new Single<>();
+            label.setOnMousePressed((e) -> {
+                if (edgeSelectionModel.getSelectedItems().contains(edgeView.getEdge())) {
+                    point.set(new Point2D(e.getScreenX(), e.getScreenY()));
+                    oldLocation.set(new Point2D(label.getLayoutX(), label.getLayoutY()));
+                }
+                e.consume();
+            });
+            label.setOnMouseDragged((e) -> {
+                if (point.get() != null) {
+                    double deltaX = e.getScreenX() - point.get().getX();
+                    double deltaY = e.getScreenY() - point.get().getY();
+                    point.set(new Point2D(e.getScreenX(), e.getScreenY()));
+                    if (deltaX != 0)
+                        label.setLayoutX(label.getLayoutX() + deltaX);
+                    if (deltaY != 0)
+                        label.setLayoutY(label.getLayoutY() + deltaY);
+                    e.consume();
+                }
+            });
+            label.setOnMouseReleased((e) -> {
+                if (oldLocation.get() != null) {
+                    final Point2D newLocation = new Point2D(label.getLayoutX(), label.getLayoutY());
+                    if (!newLocation.equals(oldLocation.get())) {
+                        getUndoManager().doAndAdd(new MoveEdgeLabelCommand(label, oldLocation.get(), newLocation, edgeView));
                     }
                 }
                 point.set(null);

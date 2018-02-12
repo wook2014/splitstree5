@@ -575,8 +575,8 @@ public class Workflow {
      * @return view node
      * @throws Exception
      */
-    public Pair<Connector, DataNode> createView(DataNode parent, Class<? extends Algorithm> algorithmClass, Class<? extends DataBlock> childClass,
-                                                Class<? extends Algorithm> viewAlgorithmClass, Class<? extends ViewDataBlock> viewerClass) throws Exception {
+    public Pair<Connector, DataNode> findOrCreateView(DataNode parent, Class<? extends Algorithm> algorithmClass, Class<? extends DataBlock> childClass,
+                                                      Class<? extends Algorithm> viewAlgorithmClass, Class<? extends ViewDataBlock> viewerClass) throws Exception {
         Set<WorkflowNode> allBelow = getAllDecendants(parent);
         for (WorkflowNode node : allBelow) {
             if (pathMatches(parent, node, algorithmClass, childClass, viewAlgorithmClass, viewerClass))

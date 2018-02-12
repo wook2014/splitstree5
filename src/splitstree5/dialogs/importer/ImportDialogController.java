@@ -36,7 +36,7 @@ public class ImportDialogController {
     private FlowPane progressBarPane;
 
     @FXML
-    private Button cancelButton;
+    private Button closeButton;
 
     @FXML
     private Button importButton;
@@ -61,7 +61,7 @@ public class ImportDialogController {
     }
 
     public Button getCancelButton() {
-        return cancelButton;
+        return closeButton;
     }
 
     public Button getImportButton() {

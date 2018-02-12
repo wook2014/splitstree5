@@ -146,7 +146,7 @@ public class Importer {
                         mainWindow.getStage().toFront();
                     else // new document
                         mainWindow.show(new Stage(), parentMainWindow.getStage().getX() + 50, parentMainWindow.getStage().getY() + 50);
-                    final String shortDescription = workflow.getTopDataNode().getShortDescription();
+                    final String shortDescription = workflow.getTopTaxaNode() != null ? workflow.getTopDataNode().getShortDescription() : "null";
                     NotificationManager.showInformation("Opened file: " + Basic.getFileNameWithoutPath(fileName) + (shortDescription.length() > 0 ? "\nLoaded " + shortDescription : ""));
                 });
 
@@ -154,8 +154,10 @@ public class Importer {
                     document.getWorkflow().getTopTaxaNode().setState(UpdateState.VALID);
                     RecentFilesManager.getInstance().addRecentFile(fileName);
                 });
-            } catch (IOException | CanceledException ex) {
+            } catch (IOException ex) {
                 NotificationManager.showError("Import failed: " + ex.getMessage());
+            } catch (CanceledException ex) {
+                NotificationManager.showWarning("Import CANCELED");
             }
         }
     }

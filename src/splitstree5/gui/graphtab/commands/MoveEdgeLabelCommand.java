@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -16,29 +16,28 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package splitstree5.gui.graphtab.commands;
 
 import javafx.geometry.Point2D;
 import javafx.scene.control.Labeled;
-import splitstree5.gui.graphtab.base.NodeView2D;
+import splitstree5.gui.graphtab.base.EdgeView2D;
 import splitstree5.undo.UndoableRedoableCommand;
 
 /**
- * move node label command
+ * move edge label command
  */
-public class MoveLabelCommand extends UndoableRedoableCommand {
+public class MoveEdgeLabelCommand extends UndoableRedoableCommand {
     private final Labeled label;
     private final Point2D oldLocation;
     private final Point2D newLocation;
-    private final NodeView2D nv;
+    private final EdgeView2D ev;
 
-    public MoveLabelCommand(Labeled label, Point2D oldLocation, Point2D newLocation, NodeView2D nv) {
+    public MoveEdgeLabelCommand(Labeled label, Point2D oldLocation, Point2D newLocation, EdgeView2D ev) {
         super("Move Label");
         this.label = label;
         this.oldLocation = oldLocation;
         this.newLocation = newLocation;
-        this.nv = nv;
+        this.ev = ev;
     }
 
     @Override
@@ -55,12 +54,12 @@ public class MoveLabelCommand extends UndoableRedoableCommand {
 
     @Override
     public boolean isUndoable() {
-        return nv.getNode().getOwner() != null; // still contained in graph
+        return ev.getEdge().getOwner() != null; // still contained in graph
     }
 
     @Override
     public boolean isRedoable() {
-        return nv.getNode().getOwner() != null; // still contained in graph
+        return ev.getEdge().getOwner() != null; // still contained in graph
     }
 
 }

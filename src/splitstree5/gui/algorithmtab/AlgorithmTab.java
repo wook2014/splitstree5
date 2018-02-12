@@ -139,7 +139,7 @@ public class AlgorithmTab<P extends DataBlock, C extends DataBlock> extends View
 
 
         connector.applicableProperty().addListener((c, o, n) -> {
-            System.err.println(currentAlgorithm.getName() + " is applicable: " + n);
+            // System.err.println(currentAlgorithm.getName() + " is applicable: " + n);
         });
 
         algorithmComboBox.getItems().addAll(algorithms);

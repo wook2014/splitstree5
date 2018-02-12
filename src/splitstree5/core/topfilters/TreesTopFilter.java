@@ -22,6 +22,7 @@ package splitstree5.core.topfilters;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
+import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -33,7 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * splits top taxon filter
+ * tre top taxon filter
  * Daniel Huson, 12/12/16.
  */
 public class TreesTopFilter extends ATopFilter<TreesBlock> {
@@ -50,16 +51,18 @@ public class TreesTopFilter extends ATopFilter<TreesBlock> {
         super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parentBlock, childBlock);
 
         setAlgorithm(new Algorithm<TreesBlock, TreesBlock>("TopFilter") {
-            public void compute(ProgressListener progress, TaxaBlock modifiedTaxaBlock, TreesBlock parent, TreesBlock child) {
+            public void compute(ProgressListener progress, TaxaBlock modifiedTaxaBlock, TreesBlock parent, TreesBlock child) throws CanceledException {
                 if (originalTaxaNode.getDataBlock().getTaxa().equals(modifiedTaxaBlock.getTaxa())) {
                     child.copy(parent);
                     setShortDescription("using all " + modifiedTaxaBlock.size() + " taxa");
                 } else {
+                    progress.setMaximum(parent.getNTrees());
                     for (PhyloTree tree : parent.getTrees()) {
                         PhyloTree induced = computeInducedTree(tree, modifiedTaxaBlock.getLabels());
                         if (induced != null) {
                             child.getTrees().add(induced);
                         }
+                        progress.incrementProgress();
                     }
                     setShortDescription("using " + modifiedTaxaBlock.size() + " of " + getOriginalTaxaBlock().size() + " taxa");
                 }

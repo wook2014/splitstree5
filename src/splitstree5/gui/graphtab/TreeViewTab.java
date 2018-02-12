@@ -123,7 +123,7 @@ public class TreeViewTab extends Graph2DTab<PhyloTree> {
         final EdgeView2D edgeView = new EdgeView2D(e, layout, shape, weight, start, control1, mid, control2, support, end);
 
         if (edgeView.getShape() != null) {
-            edgeView.getShape().setOnMouseClicked((x) -> {
+            edgeView.getShape().setOnMouseClicked((x) -> { // todo: need to use shape group here
                 if (!x.isShiftDown()) {
                     edgeSelectionModel.clearSelection();
                     nodeSelectionModel.clearSelection();
@@ -153,6 +153,7 @@ public class TreeViewTab extends Graph2DTab<PhyloTree> {
                 x.consume();
             });
         }
+        addEdgeLabelMovementSupport(edgeView);
         return edgeView;
     }
 

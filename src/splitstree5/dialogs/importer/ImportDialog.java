@@ -104,7 +104,11 @@ public class ImportDialog {
         controller.getFileTextField().disableProperty().bind(importService.runningProperty());
 
 
-        controller.getCancelButton().setOnAction((e) -> close());
+        controller.getCancelButton().setOnAction((e) -> {
+            if (importService.isRunning())
+                importService.cancel();
+            close();
+        });
 
         controller.getImportButton().setOnAction((e) -> {
             final IImporter importer = ImporterManager.getInstance().getImporterByDataTypeAndFileFormat(controller.getDataTypeComboBox().getSelectionModel().getSelectedItem(),

@@ -19,6 +19,7 @@
 
 package splitstree5.core.topfilters;
 
+import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.SplitsBlock;
@@ -48,18 +49,20 @@ public class SplitsTopFilter extends ATopFilter<SplitsBlock> {
         super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parentNode, childNode);
 
         setAlgorithm(new Algorithm<SplitsBlock, SplitsBlock>("TopFilter") {
-            public void compute(ProgressListener progress, TaxaBlock modifiedTaxaBlock, SplitsBlock parent, SplitsBlock child) {
+            public void compute(ProgressListener progress, TaxaBlock modifiedTaxaBlock, SplitsBlock parent, SplitsBlock child) throws CanceledException {
                 if (originalTaxaNode.getDataBlock().getTaxa().equals(modifiedTaxaBlock.getTaxa())) {
                     child.copy(parent);
                     child.setCycle(parent.getCycle());
                     child.setCompatibility(parent.getCompatibility());
                     setShortDescription("using all " + modifiedTaxaBlock.size() + " taxa");
                 } else {
+                    progress.setMaximum(parent.getNsplits());
                     final Map<Integer, Integer> originalIndex2ModifiedIndex = getOriginalTaxaBlock().computeIndexMap(modifiedTaxaBlock);
                     for (ASplit split : parent.getSplits()) {
                         ASplit induced = computeInducedSplit(split, originalIndex2ModifiedIndex, modifiedTaxaBlock.getNtax());
                         if (induced != null)
                             child.getSplits().add(induced);
+                        progress.incrementProgress();
                     }
                     child.setCycle(computeInducedCycle(parent.getCycle(), originalIndex2ModifiedIndex, modifiedTaxaBlock.getNtax()));
                     child.setCompatibility(Compatibility.compute(modifiedTaxaBlock.getNtax(), child.getSplits(), child.getCycle()));

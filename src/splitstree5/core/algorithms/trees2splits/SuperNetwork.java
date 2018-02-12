@@ -53,7 +53,7 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
 
     @Override
     public String getCitation() {
-        return "Huson et al 2004; " +
+        return "Huson et al 2004;" +
                 "D.H. Huson, T. Dezulian, T. Kloepper, and M. A. Steel. Phylogenetic super-networks from partial trees. " +
                 "IEEE/ACM Transactions in Computational Biology and Bioinformatics, 1(4):151–158, 2004.";
     }
@@ -120,7 +120,7 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
         Map[] pSplitsOfTrees = new Map[treesBlock.getNTrees() + 1];
         // for each tree, identity map on set of splits
         BitSet[] supportSet = new BitSet[treesBlock.getNTrees() + 1];
-        Set allPSplits = new HashSet();
+        Set<PartialSplit> allPSplits = new HashSet<>();
 
         progress.setSubtask("extracting partial splits from trees");
         progress.setMaximum(treesBlock.getNTrees());
@@ -134,7 +134,7 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
                 for (Object o : pSplitsOfTrees[which].keySet()) {
                     PartialSplit ps = (PartialSplit) o;
                     if (ps.isNonTrivial()) {
-                        allPSplits.add(ps.clone());
+                        allPSplits.add((PartialSplit) ps.clone());
                         progress.incrementProgress();
                     }
                 }
@@ -203,8 +203,7 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
         // todo how do we get here ?
         if (getNoOptionLeastSquare()) {
             if (!TreesUtilities.hasAllPairs(taxaBlock, treesBlock)) {
-                new Alert("Partial trees don't have the 'All Pairs' property,\n" +
-                        "can't apply Least Squares");
+                new Alert("Partial trees don't have the 'All Pairs' property, can't apply Least Squares");
                 setNoOptionLeastSquare(false);
             } else {
                 DistancesBlock distances = new DistancesBlock();
@@ -233,8 +232,7 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
      * @param taxa
      * @param splits
      */
-    private void setWeightsConfidences(/*document doc*/ Map[] pSplits,
-                                                        BitSet[] supportSet, TaxaBlock taxa, SplitsBlock splits) throws CanceledException {
+    private void setWeightsConfidences(Map[] pSplits, BitSet[] supportSet, TaxaBlock taxa, SplitsBlock splits) {
         for (int s = 1; s <= splits.getNsplits(); s++) {
             //doc.notifySetProgress(-1);
             PartialSplit current = new PartialSplit(splits.getSplits().get(s - 1).getA(),
@@ -257,8 +255,7 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
                         if (cur < min)
                             min = cur;
                         sum += cur;
-                        confidence += supportSet[t].cardinality() *
-                                ((PartialSplit) pSplits[t].get(projection)).getConfidence();
+                        confidence += supportSet[t].cardinality() * ((PartialSplit) pSplits[t].get(projection)).getConfidence();
                     }
                     total += supportSet[t].cardinality();
                 }
@@ -294,9 +291,7 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
      * @param splits
      * @throws CanceledException
      */
-    private void setWeightAverageReleativeLength(Map[] pSplits,
-                                                 BitSet[] supportSet, TaxaBlock taxa, SplitsBlock splits) throws
-            CanceledException {
+    private void setWeightAverageReleativeLength(Map[] pSplits, BitSet[] supportSet, TaxaBlock taxa, SplitsBlock splits) {
         // compute average of weights and num of edges for each input tree
         float[] averageWeight = new float[pSplits.length];
         int[] numEdges = new int[pSplits.length];

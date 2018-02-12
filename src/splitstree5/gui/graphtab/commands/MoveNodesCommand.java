@@ -39,8 +39,8 @@ import java.util.Set;
  * Daniel Huson, 2.2018
  */
 public class MoveNodesCommand extends UndoableRedoableCommand {
-    private final NodeArray<NodeViewBase> node2view;
-    private final EdgeArray<EdgeViewBase> edge2view;
+    private final NodeArray<? extends NodeViewBase> node2view;
+    private final EdgeArray<? extends EdgeViewBase> edge2view;
     private final Collection<Node> nodes;
     private final double deltaX;
     private final double deltaY;
@@ -54,11 +54,15 @@ public class MoveNodesCommand extends UndoableRedoableCommand {
      * @param deltaX
      * @param deltaY
      */
-    public MoveNodesCommand(NodeArray<NodeViewBase> node2view, EdgeArray<EdgeViewBase> edge2view, Collection<Node> nodes, double deltaX, double deltaY) {
+    public MoveNodesCommand(NodeArray<? extends NodeViewBase> node2view, EdgeArray<? extends EdgeViewBase> edge2view, Collection<Node> nodes, double deltaX, double deltaY) {
         super("Move nodes");
         this.node2view = node2view;
         this.edge2view = edge2view;
-        this.nodes = new HashSet<>(nodes);
+        this.nodes = new HashSet<>();
+        for (Node v : nodes) {
+            if (v.getOwner() != null)
+                this.nodes.add(v);
+        }
         this.deltaX = deltaX;
         this.deltaY = deltaY;
     }
@@ -67,9 +71,11 @@ public class MoveNodesCommand extends UndoableRedoableCommand {
     public void undo() {
         final Set<Edge> edges2Update = new HashSet<>();
         for (Node v : nodes) {
-            ((NodeView2D) node2view.get(v)).translateCoordinates(-deltaX, -deltaY);
-            for (Edge e : v.adjacentEdges()) {
-                edges2Update.add(e);
+            if (v.getOwner() != null) {
+                ((NodeView2D) node2view.get(v)).translateCoordinates(-deltaX, -deltaY);
+                for (Edge e : v.adjacentEdges()) {
+                    edges2Update.add(e);
+                }
             }
         }
         for (Edge e : edges2Update) {
@@ -101,11 +107,11 @@ public class MoveNodesCommand extends UndoableRedoableCommand {
 
     @Override
     public boolean isRedoable() {
-        return deltaX != 0 || deltaY != 0;
+        return nodes.size() > 0 && (deltaX != 0 || deltaY != 0);
     }
 
     @Override
     public boolean isUndoable() {
-        return deltaX != 0 || deltaY != 0;
+        return nodes.size() > 0 && (deltaX != 0 || deltaY != 0);
     }
 }
