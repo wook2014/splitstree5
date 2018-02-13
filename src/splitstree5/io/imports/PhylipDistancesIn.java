@@ -21,24 +21,6 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
 
     public static final List<String> extensions = new ArrayList<>(Arrays.asList("dist", "dst"));
 
-    /*
-    todo :
-    -----------------------------------------
-    final ArrayList<String> taxonNamesFound = new ArrayList<>();
-    final ArrayList<String> matrix = new ArrayList<>();
-    -----------------------------------------
-    try (FileInputIterator it = new FileInputIterator(inputFile))
-    -----------------------------------------
-    progressListener.setMaximum(it.getMaximumProgress());
-    progressListener.setProgress(0);
-            ...
-    progressListener.setProgress(it.getProgress());
-    -----------------------------------------
-    while (it.hasNext()) {
-                final String line = it.next();
-    -----------------------------------------
-     */
-
     @Override
     public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, DistancesBlock distances) throws CanceledException, IOException {
         taxa.clear();
@@ -47,8 +29,10 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
 
         // todo : try upper triangle; diagonal
         final Map<String, Vector<Double>> matrix = new LinkedHashMap<>();
-        boolean square = true;
-        //final double[][] matrix = new double[ntax][ntax];
+        boolean square = false;
+        boolean triangular = false;
+        boolean upperTriangular = false;
+        boolean onlyOneMatrixFormIsFound = false;
 
         try (FileInputIterator it = new FileInputIterator(inputFile)) {
 
@@ -58,14 +42,12 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
 
             final String firstLine = it.next();
             counter++;
-            //StringTokenizer st = new StringTokenizer(line);
-            ntax = Integer.parseInt(firstLine.replaceAll(" ", ""));
+            ntax = Integer.parseInt(firstLine.replaceAll("\\s+", ""));
             System.err.println(ntax);
             distances.setNtax(ntax);
 
             int tokensInPreviousRow = 0;
             int tokensInCurrentRow = 0;
-            boolean newRow = false;
             Vector<Double> row;
             String currentLabel = "";
             boolean foundFirstLabel = false;
@@ -79,10 +61,20 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
                     String token = st.nextToken();
                     if (!isNumeric(token)) {
 
-                        if (tokensInCurrentRow > ntax || tokensInCurrentRow < tokensInPreviousRow)
-                            throw new IOException("line " + counter + ": Wrong number of entries for Taxa " + currentLabel);
-                        if (tokensInCurrentRow != tokensInPreviousRow && matrix.keySet().size() >= 2)
-                            square = false;
+                        if (tokensInCurrentRow > ntax || !(square || triangular || upperTriangular))
+                            throw new IOExceptionWithLineNumber("line " + counter +
+                                    ": Wrong number of entries for Taxa " + currentLabel, counter);
+
+                        if (tokensInCurrentRow == tokensInPreviousRow && matrix.keySet().size() >= 2) // when 2 lines are read
+                            square = true;
+                        if (tokensInCurrentRow == tokensInPreviousRow + 1 && matrix.keySet().size() >= 2) // when 2 lines are read
+                            triangular = true;
+                        if (tokensInCurrentRow == tokensInPreviousRow - 1 && matrix.keySet().size() >= 2) // when 2 lines are read
+                            upperTriangular = true;
+
+                        // only one variable is set to 1
+                        onlyOneMatrixFormIsFound = !(square & triangular & upperTriangular) &
+                                (square ^ triangular ^ upperTriangular);
 
                         foundFirstLabel = true;
                         System.err.println("curr " + tokensInCurrentRow + " pref " + tokensInPreviousRow);
@@ -95,13 +87,13 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
                     } else {
 
                         if (!foundFirstLabel)
-                            throw new IOException("line " + counter + ": Taxa label expected");
+                            throw new IOExceptionWithLineNumber("line " + counter + ": Taxa label expected", counter);
 
                         tokensInCurrentRow++;
                         matrix.get(currentLabel).add(Double.parseDouble(token));
                     }
+                    progressListener.setProgress(it.getProgress());
                 }
-                progressListener.setProgress(it.getProgress());
             }
         }
         System.err.println(square);
@@ -109,59 +101,12 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
             System.err.println("Row " + s + " " + matrix.get(s));
         }
 
+        System.err.println(square+" "+triangular+" "+upperTriangular);
         taxa.addTaxaByNames(matrix.keySet());
         if (square)
             readSquareMatrix(matrix, distances);
         else
             readTriangularMatrix(matrix, distances);
-
-            /*StreamTokenizer st = new StreamTokenizer(in);
-            st.resetSyntax();
-            st.eolIsSignificant(true);
-            st.whitespaceChars(0, 32);
-            st.wordChars(33, 126);
-            st.nextToken();
-            ntax = Integer.parseInt(st.sval);
-            distances.setNtax(ntax);
-            st.nextToken();
-            for (int i = 1; i <= ntax; i++) {
-                int shift = 0;
-                int token = st.nextToken();
-                if (token == StreamTokenizer.TT_EOL)
-                    st.nextToken();
-                Taxon taxon = new Taxon(st.sval);
-                taxa.add(taxon);
-                System.err.println(st.sval);
-                for (int j = 1; j <= ntax; j++) {
-                    token = st.nextToken();
-                    if (token != StreamTokenizer.TT_EOL && token != StreamTokenizer.TT_EOF) {
-                        distances.set(i, j - shift, Double.parseDouble(st.sval));
-                        System.err.println(i + "--" + (j - shift) + "----------" + st.sval);
-                    } else {
-                        if (j >= i) {
-                            st.nextToken();
-                            if (isNumeric(st.sval)) {
-                                st.pushBack();
-                                shift++;
-                                j--;
-                            } else {
-                                st.pushBack();
-                                break;
-                            }
-                        }
-                        if (j < i - 1) shift++;
-                    }
-                }
-            }
-
-            if (st.nextToken() != StreamTokenizer.TT_EOF) {
-                throw new IOException("Unexpected symbol at line " + st.lineno());
-            }
-        }
-
-        // todo make both or set triangular format?
-        if (distances.get(1, ntax) != distances.get(ntax, 1))
-            makeTriangularBoth(distances);*/
     }
 
     @Override
@@ -199,15 +144,6 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
                 distancesBlock.set(j, taxaCounter, matrix.get(taxa).get(j - 1));
             }
             distancesBlock.set(taxaCounter, taxaCounter, 0.0);
-        }
-    }
-
-    private static void makeTriangularBoth(DistancesBlock distances) {
-        int ntax = distances.getNtax();
-        for (int i = 1; i <= ntax; i++) {
-            for (int j = 1; j <= i; j++) {
-                distances.set(j, i, distances.get(i, j));
-            }
         }
     }
 

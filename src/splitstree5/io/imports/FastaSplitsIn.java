@@ -101,6 +101,7 @@ public class FastaSplitsIn extends CharactersFormat implements IToSplits, IImpor
     public boolean isApplicable(String fileName) throws IOException {
         String line = Basic.getFirstLineFromFileIgnoreEmptyLines(new File(fileName), ";", 1000);
         return line != null && line.startsWith(">");
+        // todo check only 1/0
     }
 
     private static void readSplits(int ntax, int nsplits, ArrayList<String> binarySplits, SplitsBlock splitsBlock) {

@@ -23,6 +23,7 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
     @Override
     public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxa, CharactersBlock characters)
             throws CanceledException, IOException {
+
         final ArrayList<String> labels = new ArrayList<>();
         final ArrayList<String> sequences = new ArrayList<>();
 
@@ -51,13 +52,22 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
                         if (Character.isDigit(c)) betweenNumbers = true;
                         if (c == ' ' && betweenNumbers) break;
                     }
-                    ntax = Integer.parseInt(line.substring(0, separateIndex).replace(" ", ""));
-                    nchar = Integer.parseInt(line.substring(separateIndex).replace(" ", ""));
+                    ntax = Integer.parseInt(line.substring(0, separateIndex).replaceAll("\\s+", ""));
+                    nchar = Integer.parseInt(line.substring(separateIndex).replaceAll("\\s+", ""));
                     readDim = false;
                 } else {
                     readLines++;
-                    labels.add(line.substring(0, 10).replace(" ", ""));
-                    sequences.add(line.substring(10).replace(" ", ""));
+
+                    if (line.length() <= 10)
+                        throw new IOExceptionWithLineNumber("Line "+counter+" is shorter then 10 symbols. \n " +
+                                "Phylip characters format : first 10 symbols = taxa label + sequence", counter);
+
+                    String allowedChars = "" + getMissing() + getMatchChar() + getGap();
+                    checkIfCharactersValid(line.substring(10).replaceAll("\\s+", ""), counter, allowedChars);
+
+                    labels.add(cutSpacesAtTheEnd(line.substring(0, 10)));
+                    sequences.add(line.substring(10).replaceAll("\\s+", ""));
+
                     if (readLines == ntax) {
                         int seqLength = sequences.get(0).length();
                         for (String seq : sequences) {
@@ -70,7 +80,7 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
                         if (!sameLengthNtax || seqLength != nchar) standard = false;
                     }
                     if (readLines > ntax && standard)
-                        throw new IOException("Unexpected symbol at the line " + counter);
+                        throw new IOExceptionWithLineNumber("Unexpected symbol at the line " + counter, counter);
                 }
                 progressListener.setProgress(it.getProgress());
             }
@@ -79,6 +89,7 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
         if (sequences.isEmpty())
             throw new IOException("No sequences were found");
 
+        // todo check the length !
         if (standard)
             setCharactersStandard(labels, sequences, ntax, nchar, taxa, characters);
         else if (sameLengthNtax) {
@@ -88,15 +99,6 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
         } else
             setCharactersStandardEOL(labels, sequences, ntax, nchar, taxa, characters);
 
-        //ntax = taxa2seq.size();
-        //nchar = taxa2seq.get(taxa2seq.keySet().iterator().next()).length();
-        /*for(String s : taxa2seq.keySet()){
-            if(nchar != taxa2seq.get(s).length())
-                throw new IOException("Sequences must be the same length." +
-                        "Wrong number of chars at the sequence " + s);
-            else
-                nchar =  taxa2seq.get(s).length();
-        }*/
     }
 
     @Override
@@ -237,6 +239,12 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
         estimateDataType(foundSymbols.toString(), characters, frequency);
         taxa.clear();
         taxa.addTaxaByNames(taxaNames);
+    }
+
+    private static String cutSpacesAtTheEnd(String s){
+        while (s.charAt(s.length()-1) == ' ')
+            s = s.substring(0, s.length()-1);
+        return s;
     }
 }
 

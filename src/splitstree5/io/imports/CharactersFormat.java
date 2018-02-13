@@ -69,6 +69,8 @@ public abstract class CharactersFormat {
     }
 
     void estimateDataType(String foundSymbols, CharactersBlock characters, Map<Character, Integer> frequency) throws IOException {
+
+        String originalFoundSymbols = foundSymbols;
         foundSymbols = foundSymbols.replace(getStringGap(), "");
         foundSymbols = foundSymbols.replace(getStringMissing(), "");
         foundSymbols = foundSymbols.replace(getStringMatchChar(), "");
@@ -107,12 +109,20 @@ public abstract class CharactersFormat {
                     System.err.println("Warning : can not recognize characters type!");
                     System.err.println("Unexpected character: '" + x + "'");
                 }
-
                 // todo set new gap/missing/match chars and try again
                 break;
         }
-        System.err.println("symbols: " + sortedSymbols);
-        System.err.println("frequencies : " + frequency);
+        //System.err.println("symbols: " + sortedSymbols);
+        //System.err.println("frequencies : " + frequency);
+
+        // set 'N' instead '?' as unknown symbol, if needed
+        if (characters.getDataType().equals(CharactersType.DNA) ||
+                characters.getDataType().equals(CharactersType.RNA)){
+            if (!originalFoundSymbols.contains("?") && originalFoundSymbols.contains("n"))
+                characters.setMissingCharacter('N');
+            if (originalFoundSymbols.contains("?") && originalFoundSymbols.contains("n"))
+                throw new IOException("Nucleotide sequences contain 2 designations of missing symbol : '?' and 'N'");
+        }
     }
 
     private static char getUnknownSymbols(String sortedSymbols) {

@@ -51,13 +51,15 @@ public class StockholmIn extends CharactersFormat implements IToCharacters, IImp
                 String seq = line.substring(labelIndex).replaceAll(" ", "");
 
                 taxonNamesFound.add(label);
+                String allowedChars = "" + getMissing() + getMatchChar() + getGap();
+                checkIfCharactersValid(seq, counter, allowedChars);
                 matrix.add(seq);
                 ntax++;
 
                 if (nchar == 0)
                     nchar = seq.length();
                 else if (nchar != seq.length())
-                    throw new IOException("Sequences must be the same length. line: " + counter);
+                    throw new IOExceptionWithLineNumber("Sequences must be the same length. line: " + counter, counter);
 
                 progressListener.setProgress(it.getProgress());
             }

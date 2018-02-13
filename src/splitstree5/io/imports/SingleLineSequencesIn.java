@@ -44,9 +44,12 @@ public class SingleLineSequencesIn extends CharactersFormat implements IToCharac
                     if (nchar == 0)
                         nchar = line.length();
                     else if (nchar != line.length())
-                        throw new IOException("Sequences must be the same length. Wrong number of chars at the line " + counter);
+                        throw new IOExceptionWithLineNumber("Sequences must be the same length. " +
+                                "Wrong number of chars at the line " + counter, counter);
                     ntax++;
                     taxonNames.add("Sequence " + ntax);
+                    String allowedChars = "" + getMissing() + getMatchChar() + getGap();
+                    checkIfCharactersValid(line, counter, allowedChars);
                     matrix.add(line);
                 }
                 progressListener.setProgress(it.getProgress());
@@ -94,6 +97,8 @@ public class SingleLineSequencesIn extends CharactersFormat implements IToCharac
 
     @Override
     public boolean isApplicable(String fileName) throws IOException {
+        // todo : check first 10 line, letter, no special symbols, same length
+        // todo : number of line als static var
         String line = Basic.getFirstLineFromFile(new File(fileName));
         String allowedChars = "" + getMissing() + getMatchChar() + getGap();
         if (line == null) return false;

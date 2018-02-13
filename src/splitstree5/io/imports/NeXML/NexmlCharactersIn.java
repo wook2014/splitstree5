@@ -17,6 +17,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class NexmlCharactersIn extends CharactersFormat implements IToCharacters, IImportCharacters {
+
+    // todo applicable : iterate through the file ; use setSymbols
+
     @Override
     public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxaBlock, CharactersBlock characters) throws CanceledException, IOException {
         try {

@@ -18,7 +18,11 @@ import java.util.*;
  * Daria Evseeva, 07.2017
  */
 public class FastaIn extends CharactersFormat implements IToCharacters, IImportCharacters {
-    private static final String[] possibleIDs = {"gb", "emb", "ena", "dbj", "pir", "prf", "sp", "pdb", "pat", "bbs", "gnl", "ref", "lcl"};
+    private static final String[] possibleIDs =
+            {"gb", "emb", "ena", "dbj", "pir", "prf", "sp", "pdb", "pat", "bbs", "gnl", "ref", "lcl"};
+
+    private boolean optionFullLabels = false;
+    private boolean optionPIRFormat = false;
 
     /**
      * parse a file
@@ -41,6 +45,7 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
             progressListener.setProgress(0);
             int currentSequenceLength = 0;
             StringBuilder currentSequence = new StringBuilder("");
+            boolean ignoreNext = false;
 
             while (it.hasNext()) {
                 final String line = it.next();
@@ -52,7 +57,13 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
                     throw new IOExceptionWithLineNumber("No taxa label given", counter);
 
                 if (line.startsWith(">")) {
-                    addTaxaName(line, taxonNamesFound, counter);
+                    if (optionPIRFormat) ignoreNext = true;
+
+                    if (optionFullLabels)
+                        addTaxaName(line, taxonNamesFound, counter);
+                    else
+                        addTaxaName(cutLabel(line), taxonNamesFound, counter);
+
                     ntax++;
 
                     if (ntax > 1 && currentSequence.toString().isEmpty())
@@ -67,9 +78,18 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
                     currentSequenceLength = 0;
                     currentSequence = new StringBuilder("");
                 } else {
+                    if (ignoreNext) {
+                        ignoreNext = false;
+                        continue;
+                    }
+                    String tmpLine;
+                    if (optionPIRFormat && line.charAt(line.length()-1) == '*')
+                        tmpLine = line.substring(0, line.length()-1); // cut the last symbol
+                    else
+                        tmpLine = line;
                     String allowedChars = "" + getMissing() + getMatchChar() + getGap();
-                    checkIfCharactersValid(line, counter, allowedChars);
-                    String add = line.replaceAll("\\s+", "");
+                    checkIfCharactersValid(tmpLine, counter, allowedChars);
+                    String add = tmpLine.replaceAll("\\s+", "");
                     currentSequenceLength += add.length();
                     currentSequence.append(add);
                 }
@@ -83,13 +103,6 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
                 throw new IOExceptionWithLineNumber("Wrong number of chars at the line: " + counter + ". Length " + nchar + " expected", counter);
 
         }
-        /*System.err.println("ntax: " + ntax + " nchar: " + nchar);
-        for (String s : matrix) {
-            System.err.println(s);
-        }
-        for (String s : taxonNamesFound) {
-            System.err.println(s);
-        }*/
 
         taxa.addTaxaByNames(taxonNamesFound);
         characters.clear();
@@ -116,25 +129,15 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
         estimateDataType(foundSymbols.toString(), characters, frequency);
     }
 
-    /*private static void addTaxaName(String infoLine, ArrayList<String> taxonNamesFound) throws IOException {
+    private static String cutLabel(String infoLine) throws IOException {
 
         if (infoLine.contains("[organism=")) {
             int index1 = infoLine.indexOf("[organism=") + 10;
             int index2 = infoLine.indexOf(']');
-
-            // todo test whole line or only taxon name???
-            if (taxonNamesFound.contains(infoLine.substring(index1, index2))) {
-                throw new IOException("Double taxon name: " + infoLine.substring(index1, index2));
-            }
-            taxonNamesFound.add(infoLine.substring(index1, index2));
-            return;
+            return ">" + infoLine.substring(index1, index2);
         }
 
-        // check SeqID
-        // todo ? boolean doubleID; first ID
-
-        // todo option make names unique
-
+        // check if the info line contains any of databases IDs
         infoLine = infoLine.toLowerCase();
         String foundID = "";
         for (String id : possibleIDs) {
@@ -146,23 +149,22 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
 
         if (!foundID.equals("")) {
             String afterID = infoLine.substring(infoLine.indexOf(foundID) + foundID.length());
-            int index1 = afterID.indexOf('|') + 1;
-            int index2 = afterID.substring(index1 + 1).indexOf('|') + 2;
-
-            if (taxonNamesFound.contains(afterID.substring(index1, index2))) {
-                throw new IOException("Double taxon name: " + afterID.substring(index1, index2));
+            int index1;
+            int index2;
+            if (foundID.equals("pir") || foundID.equals("prf") || foundID.equals("pat") || foundID.equals("gnl")){
+                if (foundID.equals("pir") || foundID.equals("prf"))
+                    index1 = afterID.indexOf('|') + 2;
+                else
+                    index1 = afterID.indexOf('|') + 1;
+                return ">" + afterID.substring(index1).toUpperCase();
+            } else {
+                index1 = afterID.indexOf('|') + 1;
+                index2 = afterID.substring(index1 + 1).indexOf('|') + 2;
+                return ">" + afterID.substring(index1, index2).toUpperCase();
             }
-            System.err.println("name-" + afterID.substring(index1, index2).toUpperCase());
-            taxonNamesFound.add(afterID.substring(index1, index2).toUpperCase());
-            return;
         }
-
-
-        if (taxonNamesFound.contains(infoLine.substring(1))) {
-            throw new IOException("Double taxon name: " + infoLine.substring(1));
-        }
-        taxonNamesFound.add(infoLine.substring(1));
-    }*/
+        return ">" + infoLine.substring(1).toUpperCase();
+    }
 
     @Override
     public List<String> getExtensions() {
@@ -173,5 +175,21 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
     public boolean isApplicable(String fileName) throws IOException {
         String line = Basic.getFirstLineFromFileIgnoreEmptyLines(new File(fileName), ";", 1000);
         return line != null && line.startsWith(">");
+    }
+
+    public boolean isOptionFullLabels() {
+        return optionFullLabels;
+    }
+
+    public void setOptionFullLabels(boolean fullLabels) {
+        this.optionFullLabels = fullLabels;
+    }
+
+    public boolean isOptionPIRFormat() {
+        return optionPIRFormat;
+    }
+
+    public void setOptionPIRFormat(boolean pirFormat) {
+        this.optionPIRFormat = pirFormat;
     }
 }

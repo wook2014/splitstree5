@@ -65,6 +65,47 @@ public class FastaInTest {
     }
 
     @Test
+    public void parseIII() throws Exception {
+
+        TaxaBlock taxaBlock = new TaxaBlock();
+        CharactersBlock charactersBlock = new CharactersBlock();
+        try (ProgressPercentage progress = new ProgressPercentage("Test")) {
+            fastaIn.parse(progress, "test/notNexusFiles/ncbi.fasta", taxaBlock, charactersBlock);
+        }
+
+        // printing
+        final StringWriter w = new StringWriter();
+        w.write("#nexus\n");
+        new TaxaNexusOutput().write(w, taxaBlock);
+        new CharactersNexusOutput().write(w, taxaBlock, charactersBlock);
+        System.err.println(w.toString());
+
+        System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
+
+    }
+
+    @Test
+    public void parseIV() throws Exception {
+
+        TaxaBlock taxaBlock = new TaxaBlock();
+        CharactersBlock charactersBlock = new CharactersBlock();
+        try (ProgressPercentage progress = new ProgressPercentage("Test")) {
+            fastaIn.setOptionPIRFormat(true);
+            fastaIn.parse(progress, "test/notNexusFiles/pir.fasta", taxaBlock, charactersBlock);
+        }
+
+        // printing
+        final StringWriter w = new StringWriter();
+        w.write("#nexus\n");
+        new TaxaNexusOutput().write(w, taxaBlock);
+        new CharactersNexusOutput().write(w, taxaBlock, charactersBlock);
+        System.err.println(w.toString());
+
+        System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
+
+    }
+
+    @Test
     public void isApplicable() throws IOException {
         Set<String> applicableFiles = new HashSet<>();
 
@@ -77,7 +118,8 @@ public class FastaInTest {
             }
         }
         System.err.println(applicableFiles);
-        assertEquals(applicableFiles, new HashSet<>(Arrays.asList("algae.fasta", "algae_splits.fasta", "ncbi.fasta", "smallTest.fasta", "trees49_splits.fasta")));
+        assertEquals(applicableFiles, new HashSet<>(Arrays.asList("algae.fasta", "algae_splits.fasta", "pir.fasta",
+                "ncbi.fasta", "smallTest.fasta", "trees49_splits.fasta")));
     }
 
 }
