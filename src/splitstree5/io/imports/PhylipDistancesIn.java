@@ -21,18 +21,17 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
 
     public static final List<String> extensions = new ArrayList<>(Arrays.asList("dist", "dst"));
 
+    public enum MatrixType {square, triangular, upperTriangular}
+
     @Override
     public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, DistancesBlock distances) throws CanceledException, IOException {
         taxa.clear();
         distances.clear();
         int ntax;
 
-        // todo : try upper triangle; diagonal
         final Map<String, Vector<Double>> matrix = new LinkedHashMap<>();
-        boolean square = false;
-        boolean triangular = false;
-        boolean upperTriangular = false;
-        boolean onlyOneMatrixFormIsFound = false;
+        MatrixType matrixTypeForCurrentRow = null;
+        MatrixType matrixTypeForPreviousRow = null;
 
         try (FileInputIterator it = new FileInputIterator(inputFile)) {
 
@@ -48,7 +47,6 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
 
             int tokensInPreviousRow = 0;
             int tokensInCurrentRow = 0;
-            Vector<Double> row;
             String currentLabel = "";
             boolean foundFirstLabel = false;
 
@@ -60,30 +58,43 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
 
                     String token = st.nextToken();
                     if (!isNumeric(token)) {
+                        foundFirstLabel = true;
 
-                        if (tokensInCurrentRow > ntax || !(square || triangular || upperTriangular))
+                        if (tokensInCurrentRow > ntax)
                             throw new IOExceptionWithLineNumber("line " + counter +
                                     ": Wrong number of entries for Taxa " + currentLabel, counter);
 
-                        if (tokensInCurrentRow == tokensInPreviousRow && matrix.keySet().size() >= 2) // when 2 lines are read
-                            square = true;
-                        if (tokensInCurrentRow == tokensInPreviousRow + 1 && matrix.keySet().size() >= 2) // when 2 lines are read
-                            triangular = true;
-                        if (tokensInCurrentRow == tokensInPreviousRow - 1 && matrix.keySet().size() >= 2) // when 2 lines are read
-                            upperTriangular = true;
+                        // when 2 lines are read
+                        if (matrix.keySet().size() >= 2) {
+                            int differenceOfLines = tokensInCurrentRow - tokensInPreviousRow;
+                            switch (differenceOfLines) {
+                                case 0 :
+                                    matrixTypeForCurrentRow = MatrixType.square;
+                                    break;
+                                case 1 :
+                                    matrixTypeForCurrentRow = MatrixType.triangular;
+                                    break;
+                                case -1 :
+                                    matrixTypeForCurrentRow = MatrixType.upperTriangular;
+                                break;
+                                default:
+                                    throw new IOExceptionWithLineNumber("line " + counter +
+                                        ": Wrong number of entries for Taxa " + currentLabel, counter);
+                            }
+                        }
 
-                        // only one variable is set to 1
-                        onlyOneMatrixFormIsFound = !(square & triangular & upperTriangular) &
-                                (square ^ triangular ^ upperTriangular);
+                        if (matrixTypeForPreviousRow != null && !matrixTypeForCurrentRow.equals(matrixTypeForPreviousRow)) {
+                            throw new IOExceptionWithLineNumber("line " + counter +
+                                    ": Wrong number of entries for Taxa " + currentLabel, counter);
+                        } else {
+                            matrixTypeForPreviousRow = matrixTypeForCurrentRow;
+                        }
 
-                        foundFirstLabel = true;
                         System.err.println("curr " + tokensInCurrentRow + " pref " + tokensInPreviousRow);
                         tokensInPreviousRow = tokensInCurrentRow;
                         tokensInCurrentRow = 0;
 
-                        row = new Vector<>();
-                        matrix.put(token, row);
-                        currentLabel = token;
+                        currentLabel = addTaxaName(matrix, token, counter);
                     } else {
 
                         if (!foundFirstLabel)
@@ -96,17 +107,18 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
                 }
             }
         }
-        System.err.println(square);
+
         for (String s : matrix.keySet()) {
             System.err.println("Row " + s + " " + matrix.get(s));
         }
-
-        System.err.println(square+" "+triangular+" "+upperTriangular);
         taxa.addTaxaByNames(matrix.keySet());
-        if (square)
+        if (matrixTypeForCurrentRow.equals(MatrixType.square))
             readSquareMatrix(matrix, distances);
-        else
+        if (matrixTypeForCurrentRow.equals(MatrixType.triangular))
             readTriangularMatrix(matrix, distances);
+        if (matrixTypeForCurrentRow.equals(MatrixType.upperTriangular))
+            readUpperTriangularMatrix(matrix, distances);
+
     }
 
     @Override
@@ -135,7 +147,6 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
     }
 
     private static void readTriangularMatrix(Map<String, Vector<Double>> matrix, DistancesBlock distancesBlock) {
-        int ntax = distancesBlock.getNtax();
         int taxaCounter = 0;
         for (String taxa : matrix.keySet()) {
             taxaCounter++;
@@ -144,6 +155,40 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
                 distancesBlock.set(j, taxaCounter, matrix.get(taxa).get(j - 1));
             }
             distancesBlock.set(taxaCounter, taxaCounter, 0.0);
+        }
+    }
+
+    private static void readUpperTriangularMatrix(Map<String, Vector<Double>> matrix, DistancesBlock distancesBlock) {
+        int taxaCounter = 0;
+        // length of the first line - ntax
+        int diff = matrix.entrySet().iterator().next().getValue().size() - distancesBlock.getNtax() + 1;
+        for (String taxa : matrix.keySet()) {
+            taxaCounter++;
+            for (int j = matrix.get(taxa).size(); j > 0; j--) {
+                int positionInSquareMatrix = j + taxaCounter - diff;
+                distancesBlock.set(taxaCounter, positionInSquareMatrix, matrix.get(taxa).get(j - 1));
+                distancesBlock.set(positionInSquareMatrix, taxaCounter, matrix.get(taxa).get(j - 1));
+            }
+            distancesBlock.set(taxaCounter, taxaCounter, 0.0);
+        }
+    }
+
+    private static String addTaxaName(Map<String, Vector<Double>> matrix, String label, int linesCounter) {
+        int sameNamesCounter = 0;
+        if (matrix.keySet().contains(label)) {
+            System.err.println("Repeating taxon name in line " + linesCounter);
+            sameNamesCounter++;
+        }
+        while (matrix.keySet().contains(label + "(" + sameNamesCounter + ")")) {
+            sameNamesCounter++;
+        }
+
+        if (sameNamesCounter == 0) {
+            matrix.put(label, new Vector<>());
+            return label;
+        } else {
+            matrix.put(label + "(" + sameNamesCounter + ")", new Vector<>());
+            return label + "(" + sameNamesCounter + ")";
         }
     }
 

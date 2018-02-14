@@ -36,14 +36,14 @@ public abstract class CharactersFormat {
             System.err.println("Repeating taxon name in line " + linesCounter);
             sameNamesCounter++;
         }
-        while (taxonNames.contains(line.substring(1) + sameNamesCounter)) {
+        while (taxonNames.contains(line.substring(1) + "(" + sameNamesCounter + ")")) {
             sameNamesCounter++;
         }
 
         if (sameNamesCounter == 0)
             taxonNames.add(line.substring(1));
         else
-            taxonNames.add(line.substring(1) + sameNamesCounter);
+            taxonNames.add(line.substring(1) + "(" + sameNamesCounter + ")");
     }
 
     /**

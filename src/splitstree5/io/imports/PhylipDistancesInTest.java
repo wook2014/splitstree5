@@ -64,6 +64,14 @@ public class PhylipDistancesInTest {
         new TaxaNexusOutput().write(w4, taxaBlock);
         new DistancesNexusOutput().write(w4, taxaBlock, distancesBlock);
         System.err.println(w4.toString());
+
+        phylipDistancesIn.parse(pl, "test/notNexusFiles/triangular_upper.dist", taxaBlock, distancesBlock);
+        // printing
+        final StringWriter w5 = new StringWriter();
+        w5.write("#nexus\n");
+        new TaxaNexusOutput().write(w5, taxaBlock);
+        new DistancesNexusOutput().write(w5, taxaBlock, distancesBlock);
+        System.err.println(w5.toString());
     }
 
     @Test
@@ -79,7 +87,8 @@ public class PhylipDistancesInTest {
             }
         }
         System.err.println(applicableFiles);
-        assertEquals(applicableFiles, Arrays.asList("square.dist", "squareEOL-bf.dist", "triangular.dist", "triangularEOL.dist"));
+        assertEquals(applicableFiles, Arrays.asList("square.dist", "squareEOL-bf.dist", "triangular.dist",
+                "triangularEOL.dist", "triangular_upper.dist"));
     }
 
 }
