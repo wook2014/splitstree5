@@ -30,11 +30,8 @@ public class StockholmIn extends CharactersFormat implements IToCharacters, IImp
             progressListener.setProgress(0);
 
             counter++;
-            int sequenceLength = 0;
-            String sequence = "";
-            boolean startedNewSequence = false;
 
-            if (!it.next().equals("# STOCKHOLM 1.0"))
+            if (!it.next().toUpperCase().startsWith("# STOCKHOLM"))
                 throw new IOException("STOCKHOLM header expected");
 
             while (it.hasNext()) {
@@ -46,9 +43,13 @@ public class StockholmIn extends CharactersFormat implements IToCharacters, IImp
                 if (line.equals("//"))
                     break;
 
-                int labelIndex = line.indexOf(' '); //todo exceptions here
+                int labelIndex = line.indexOf(' ');
+                if (labelIndex == -1)
+                    throw new IOExceptionWithLineNumber("Line " + counter +
+                            " : no separator between taxa and sequence is found!", counter);
+
                 String label = line.substring(0, labelIndex);
-                String seq = line.substring(labelIndex).replaceAll(" ", "");
+                String seq = line.substring(labelIndex).replaceAll("\\s+", "");
 
                 taxonNamesFound.add(label);
                 String allowedChars = "" + getMissing() + getMatchChar() + getGap();
@@ -59,24 +60,11 @@ public class StockholmIn extends CharactersFormat implements IToCharacters, IImp
                 if (nchar == 0)
                     nchar = seq.length();
                 else if (nchar != seq.length())
-                    throw new IOExceptionWithLineNumber("Sequences must be the same length. line: " + counter, counter);
+                    throw new IOExceptionWithLineNumber("Line " + counter+ " : Sequences must be the same length." +
+                            "Length " + nchar + " expected.", counter);
 
                 progressListener.setProgress(it.getProgress());
             }
-
-            /*if (sequence.length() == 0)
-                throw new IOException("Sequence " + ntax + " is zero");
-            matrix.add(sequence);
-            if (nchar != sequenceLength)
-                throw new IOException("Sequences must be the same length. Wrong number of chars at the sequence " + ntax);*/
-
-        }
-        System.err.println("ntax: " + ntax + " nchar: " + nchar);
-        for (String s : matrix) {
-            System.err.println(s);
-        }
-        for (String s : taxonNamesFound) {
-            System.err.println(s);
         }
 
         taxa.addTaxaByNames(taxonNamesFound);
@@ -97,7 +85,6 @@ public class StockholmIn extends CharactersFormat implements IToCharacters, IImp
     }
 
     private void readMatrix(ArrayList<String> matrix, CharactersBlock characters) throws IOException {
-        // todo check if valid and set parameters here
 
         Map<Character, Integer> frequency = new LinkedHashMap<>();
         StringBuilder foundSymbols = new StringBuilder("");

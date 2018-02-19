@@ -173,7 +173,7 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
 
     @Override
     public boolean isApplicable(String fileName) throws IOException {
-        String line = Basic.getFirstLineFromFileIgnoreEmptyLines(new File(fileName), ";", 1000);
+        String line = Basic.getFirstLineFromFileIgnoreEmptyLines(new File(fileName), ";", 20);
         return line != null && line.startsWith(">");
     }
 

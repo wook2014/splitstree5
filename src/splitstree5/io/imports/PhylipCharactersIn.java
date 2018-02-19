@@ -31,10 +31,10 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
         int nchar = 0;
         int counter = 0;
         int readLines = 0;
+        int interleavedBlockLinesLength=0;
         boolean standard = true;
         boolean sameLengthNtax = true;
-
-        boolean readDim = true;
+        boolean readDimensions = true;
 
         try (FileInputIterator it = new FileInputIterator(fileName)) {
             progressListener.setMaximum(it.getMaximumProgress());
@@ -43,24 +43,27 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
                 final String line = it.next();
                 counter++;
                 if (line.equals("")) continue;
-
-                if (readDim) {
-                    int separateIndex = 0;
-                    boolean betweenNumbers = false;
-                    for (char c : line.toCharArray()) {
-                        separateIndex++;
-                        if (Character.isDigit(c)) betweenNumbers = true;
-                        if (c == ' ' && betweenNumbers) break;
-                    }
-                    ntax = Integer.parseInt(line.substring(0, separateIndex).replaceAll("\\s+", ""));
-                    nchar = Integer.parseInt(line.substring(separateIndex).replaceAll("\\s+", ""));
-                    readDim = false;
+                if (readDimensions) {
+                    StringTokenizer tokens = new StringTokenizer(line);
+                    ntax = Integer.parseInt(tokens.nextToken());
+                    nchar = Integer.parseInt(tokens.nextToken());
+                    readDimensions = false;
                 } else {
                     readLines++;
 
                     if (line.length() <= 10)
-                        throw new IOExceptionWithLineNumber("Line "+counter+" is shorter then 10 symbols. \n " +
+                        throw new IOExceptionWithLineNumber("Line "+counter+" is shorter then 10 symbols. \n" +
                                 "Phylip characters format : first 10 symbols = taxa label + sequence", counter);
+
+                    // interleaved
+                    if (readLines > ntax && sameLengthNtax) {
+                        if (readLines % ntax == 1) interleavedBlockLinesLength = line.length();
+                        else {
+                            if (interleavedBlockLinesLength != 0 && line.length() != interleavedBlockLinesLength)
+                                throw new IOExceptionWithLineNumber( "Error for interleaved format matrix." +
+                                        "\nLine " + counter + " must have the same length as line "+ (counter-1), counter);
+                        }
+                    }
 
                     String allowedChars = "" + getMissing() + getMatchChar() + getGap();
                     checkIfCharactersValid(line.substring(10).replaceAll("\\s+", ""), counter, allowedChars);
@@ -68,6 +71,14 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
                     labels.add(cutSpacesAtTheEnd(line.substring(0, 10)));
                     sequences.add(line.substring(10).replaceAll("\\s+", ""));
 
+                    /*
+                     After reading ntax of lines check :
+                     1. all lines have the same length?
+                     2. this length is nchar?
+                     if 1 and 2 -> standard
+                     if 1 and not 2 -> interleaved
+                     else standard with EOLs
+                     */
                     if (readLines == ntax) {
                         int seqLength = sequences.get(0).length();
                         for (String seq : sequences) {
@@ -79,8 +90,11 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
                         }
                         if (!sameLengthNtax || seqLength != nchar) standard = false;
                     }
+
+                    // no more lines are allowed for standard after reading ntax lines
                     if (readLines > ntax && standard)
-                        throw new IOExceptionWithLineNumber("Unexpected symbol at the line " + counter, counter);
+                        throw new IOExceptionWithLineNumber("Unexpected symbol at the line " + counter +
+                                "\nCan only read " + ntax + " lines " + nchar + " symbols long.", counter);
                 }
                 progressListener.setProgress(it.getProgress());
             }
@@ -89,14 +103,11 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
         if (sequences.isEmpty())
             throw new IOException("No sequences were found");
 
-        // todo check the length !
         if (standard)
             setCharactersStandard(labels, sequences, ntax, nchar, taxa, characters);
-        else if (sameLengthNtax) {
+        else if (sameLengthNtax)
             setCharactersInterleaved(labels, sequences, ntax, nchar, taxa, characters);
-            /*format.setInterleave(true);
-            format.setColumnsPerBlock(sequences.get(0).length());*/
-        } else
+        else
             setCharactersStandardEOL(labels, sequences, ntax, nchar, taxa, characters);
 
     }
@@ -136,7 +147,6 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
 
         for (String seq : sequences) {
             for (int j = 1; j <= nchar; j++) {
-
                 char symbol = Character.toLowerCase(seq.charAt(j - 1));
                 if (foundSymbols.toString().indexOf(symbol) == -1) {
                     foundSymbols.append(symbol);
@@ -149,7 +159,6 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
             labelsCounter++;
         }
         estimateDataType(foundSymbols.toString(), characters, frequency);
-
     }
 
     private void setCharactersInterleaved(ArrayList<String> labels, ArrayList<String> sequences,
@@ -189,13 +198,6 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
                 } else
                     frequency.put(symbol, frequency.get(symbol) + 1);
                 int taxaIndex = (i % ntax) + 1;
-                /*for(int seq=taxaIndex; seq<i; seq=seq+ntax)
-                    charIndex+=sequences.get(seq).length();
-                System.err.println("charIndex " +charIndex);
-                System.err.println("charIndex i " +i);
-                System.err.println("charIndex j " +j);*/
-                /*while (characters.get(taxaIndex, charIndex) != '\u0000')
-                    charIndex+=sequences.get(taxaIndex).length();*/ // todo only if blocks have the same length
                 characters.set(taxaIndex, j + seqLength, Character.toUpperCase(symbol));
             }
             if (i % ntax == ntax - 1)
@@ -240,6 +242,14 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
         taxa.clear();
         taxa.addTaxaByNames(taxaNames);
     }
+
+    /**
+     * If a sting has form : "Label   "
+     * turn into "Label"
+     *
+     * @param s any string
+     * @return string without spaces at the last positions
+     */
 
     private static String cutSpacesAtTheEnd(String s){
         while (s.charAt(s.length()-1) == ' ')

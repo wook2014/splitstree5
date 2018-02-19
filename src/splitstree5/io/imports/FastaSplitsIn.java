@@ -11,7 +11,9 @@ import splitstree5.core.misc.ASplit;
 import splitstree5.io.imports.interfaces.IImportSplits;
 import splitstree5.utils.SplitsUtilities;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +23,7 @@ import java.util.List;
 public class FastaSplitsIn extends CharactersFormat implements IToSplits, IImportSplits {
 
     public static final List<String> extensions = new ArrayList<>(Arrays.asList("fasta", "fas", "fa", "seq", "fsa", "fna"));
+    private static int numberOfLinesToCheckInApplicable = 10;
 
     @Override
     public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxa, SplitsBlock splits) throws CanceledException, IOException {
@@ -99,9 +102,38 @@ public class FastaSplitsIn extends CharactersFormat implements IToSplits, IImpor
 
     @Override
     public boolean isApplicable(String fileName) throws IOException {
-        String line = Basic.getFirstLineFromFileIgnoreEmptyLines(new File(fileName), ";", 1000);
-        return line != null && line.startsWith(">");
-        // todo check only 1/0
+
+        int lineLength = 0;
+        BufferedReader input = new BufferedReader(new FileReader(fileName));
+        String line;
+        int counter = 0;
+        int seqCounter = 0;
+
+        while ((line = input.readLine()) != null && counter <= numberOfLinesToCheckInApplicable) {
+            counter ++;
+
+            // count all non-comment and not empty lines
+            if (line.equals("") || line.startsWith(";"))
+                continue;
+            else
+                seqCounter ++;
+            // even lines = taxa labels
+            if (seqCounter % 2 == 1 && !line.startsWith(">"))
+                return false;
+            // odd lines = sequences
+            if (seqCounter % 2 == 0){
+                // check if the same length
+                if (lineLength == 0)
+                    lineLength = line.length();
+                else if (lineLength != line.length())
+                    return false;
+                // check if only 1/0
+                for (char c : line.toCharArray()) {
+                    if (c != '0' && c!='1') return false;
+                }
+            }
+        }
+        return counter != 0;
     }
 
     private static void readSplits(int ntax, int nsplits, ArrayList<String> binarySplits, SplitsBlock splitsBlock) {

@@ -10,10 +10,7 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.imports.interfaces.IImportCharacters;
 import splitstree5.io.imports.interfaces.IImportNoAutoDetect;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -21,7 +18,7 @@ import java.util.Map;
 
 public class SingleLineSequencesIn extends CharactersFormat implements IToCharacters, IImportCharacters, IImportNoAutoDetect {
 
-    //public static final List<String> extensions = null;
+    private static int numberOfLinesToCheckInApplicable = 10;
 
     @Override
     public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, CharactersBlock characters)
@@ -54,14 +51,6 @@ public class SingleLineSequencesIn extends CharactersFormat implements IToCharac
                 }
                 progressListener.setProgress(it.getProgress());
             }
-        }
-
-        System.err.println("ntax: " + ntax + " nchar: " + nchar);
-        for (String s : matrix) {
-            System.err.println(s);
-        }
-        for (String s : taxonNames) {
-            System.err.println(s);
         }
 
         taxa.addTaxaByNames(taxonNames);
@@ -97,51 +86,32 @@ public class SingleLineSequencesIn extends CharactersFormat implements IToCharac
 
     @Override
     public boolean isApplicable(String fileName) throws IOException {
-        // todo : check first 10 line, letter, no special symbols, same length
-        // todo : number of line als static var
-        String line = Basic.getFirstLineFromFile(new File(fileName));
-        String allowedChars = "" + getMissing() + getMatchChar() + getGap();
-        if (line == null) return false;
-        try {
-            checkIfCharactersValid(line, 1, allowedChars);
-        } catch (IOExceptionWithLineNumber exception) {
+        String firstLine = Basic.getFirstLineFromFile(new File(fileName));
+        int lineLength;
+        if (firstLine == null)
             return false;
+        else
+            lineLength = firstLine.length();
+
+        BufferedReader input = new BufferedReader(new FileReader(fileName));
+        String line;
+        int counter = 0;
+
+        while ((line = input.readLine()) != null && counter <= numberOfLinesToCheckInApplicable) {
+            counter ++;
+            if (line.equals(""))
+                continue;
+            if (lineLength != line.length() || !isLineAcceptable(line))
+                return false;
         }
         return true;
     }
 
-    /**
-     * From ST4 (added "only-letters" check)
-     * todo : can we import this data?
-     *
-     * @param input0
-     * @return true, if can handle this import
-     */
-    public boolean isApplicable(Reader input0) throws IOException {
-        BufferedReader input = new BufferedReader(input0);
-        String aline;
-
-        int length = -1;
-        while ((aline = input.readLine()) != null) {
-            if (aline.length() > 0 && !aline.startsWith("#")) {
-                if (length == -1) {
-                    length = aline.length();
-                    if (aline.charAt(0) == '>')
-                        return false;
-                    if (aline.charAt(0) == '(')
-                        return false;
-                    for (int pos = 0; pos < aline.length(); pos++)
-                        if (Character.isSpaceChar(aline.charAt(pos))
-                                || !isAcceptable(aline.charAt(pos))) // todo throw an exception here?
-                            return false;
-                } else if (aline.length() != length)
-                    return false;
-            }
+    private boolean isLineAcceptable(String s) {
+        for (char c : s.toCharArray()){
+            if (!Character.isLetter(c) && c != getGap() && c != getMissing() && c != getMatchChar())
+                return false;
         }
-        return length > 0;
-    }
-
-    private boolean isAcceptable(char c) {
-        return Character.isLetter(c) || c == getGap() || c == getMissing() || c == getMatchChar();
+        return true;
     }
 }

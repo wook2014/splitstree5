@@ -1,5 +1,6 @@
 package splitstree5.io.imports;
 
+import jloda.util.Basic;
 import jloda.util.ProgressListener;
 import jloda.util.ProgressPercentage;
 import org.junit.Test;
@@ -7,7 +8,12 @@ import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.nexus.SplitsNexusOutput;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
@@ -64,6 +70,22 @@ public class FastaSplitsInTest {
 
         assertEquals(w.toString(), splits);
 
+    }
+
+    @Test
+    public void isApplicable() throws IOException {
+        Set<String> applicableFiles = new HashSet<>();
+
+        File directory = new File("test/notNexusFiles");
+        File[] directoryListing = directory.listFiles();
+        if (directoryListing != null) {
+            for (File file : directoryListing) {
+                if (fastaSplitsIn.isApplicable(file.getPath()))
+                    applicableFiles.add(Basic.getFileNameWithoutPath(file.getName()));
+            }
+        }
+        System.err.println(applicableFiles);
+        assertEquals(applicableFiles, new HashSet<>(Arrays.asList("algae_splits.fasta", "trees49_splits.fasta")));
     }
 
 }

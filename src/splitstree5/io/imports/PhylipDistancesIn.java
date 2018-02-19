@@ -76,7 +76,7 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
                                     break;
                                 case -1 :
                                     matrixTypeForCurrentRow = MatrixType.upperTriangular;
-                                break;
+                                    break;
                                 default:
                                     throw new IOExceptionWithLineNumber("line " + counter +
                                         ": Wrong number of entries for Taxa " + currentLabel, counter);
@@ -112,12 +112,16 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
             System.err.println("Row " + s + " " + matrix.get(s));
         }
         taxa.addTaxaByNames(matrix.keySet());
-        if (matrixTypeForCurrentRow.equals(MatrixType.square))
-            readSquareMatrix(matrix, distances);
-        if (matrixTypeForCurrentRow.equals(MatrixType.triangular))
-            readTriangularMatrix(matrix, distances);
-        if (matrixTypeForCurrentRow.equals(MatrixType.upperTriangular))
-            readUpperTriangularMatrix(matrix, distances);
+        if (matrixTypeForCurrentRow != null) {
+            if (matrixTypeForCurrentRow.equals(MatrixType.square))
+                readSquareMatrix(matrix, distances);
+            if (matrixTypeForCurrentRow.equals(MatrixType.triangular))
+                readTriangularMatrix(matrix, distances);
+            if (matrixTypeForCurrentRow.equals(MatrixType.upperTriangular))
+                readUpperTriangularMatrix(matrix, distances);
+        } else {
+            throw new IOException("Error: Cannot estimate matrix form! (square, triangular or upper-triangular)");
+        }
 
     }
 
