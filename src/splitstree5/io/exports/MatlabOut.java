@@ -86,7 +86,7 @@ public class MatlabOut implements IFromTaxa, IExportTaxa, IFromDistances, IExpor
         w.write("" + nsplits + "\n");
         w.write("%% Split weights\n");
         for (int j = 0; j < nsplits; j++)
-            w.write(" " + (float) splits.getWeight(j)); // todo output format: float - double
+            w.write(" " + splits.getWeight(j));
         w.write("\n");
 
         //int ntax = splits.getNtax();

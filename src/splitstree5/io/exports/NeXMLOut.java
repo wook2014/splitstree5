@@ -12,6 +12,9 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
+import splitstree5.io.exports.interfaces.IExportCharacters;
+import splitstree5.io.exports.interfaces.IExportTaxa;
+import splitstree5.io.exports.interfaces.IExportTrees;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -20,10 +23,10 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
-public class NeXMLOut implements IFromTaxa, /*IExportTaxa,*/ IFromChararacters, /*IExportCharacters,*/ IFromTrees /*IExportTrees*/ {
+public class NeXMLOut implements IFromTaxa, IExportTaxa, IFromChararacters, IExportCharacters, IFromTrees ,IExportTrees {
 
 
-    /*@Override
+    @Override
     public void export(Writer w, TaxaBlock taxa, TreesBlock trees) throws IOException {
 
     }
@@ -31,7 +34,7 @@ public class NeXMLOut implements IFromTaxa, /*IExportTaxa,*/ IFromChararacters, 
     @Override
     public List<String> getExtensions() {
         return null;
-    }*/
+    }
 
     public enum CharactersOutputType {cell, matrix, both}
 
@@ -160,67 +163,76 @@ public class NeXMLOut implements IFromTaxa, /*IExportTaxa,*/ IFromChararacters, 
     //########################################################################################
     //############################## for single block ########################################
     //########################################################################################
-    public void export(Writer w, TaxaBlock taxa) throws IOException, XMLStreamException {
+    public void export(Writer w, TaxaBlock taxa) throws IOException {
 
-        XMLOutputFactory xMLOutputFactory = XMLOutputFactory.newInstance();
-        XMLStreamWriter xmlWriter =
-                xMLOutputFactory.createXMLStreamWriter(w);
+        try {
 
-        xmlWriter.writeStartDocument();
-        xmlWriter.writeCharacters("\n");
-        //xmlWriter.writeStartElement("nex:nexml");
-        //xmlWriter.writeAttribute("version", "0.9");
-        //xmlWriter.writeCharacters("\n\t");
+            XMLOutputFactory xMLOutputFactory = XMLOutputFactory.newInstance();
+            XMLStreamWriter xmlWriter =
+                    xMLOutputFactory.createXMLStreamWriter(w);
 
-        //xmlWriter.writeStartDocument();
-        xmlWriter.writeStartElement("otus");
-        xmlWriter.writeAttribute("id", "taxa1");
+            xmlWriter.writeStartDocument();
+            xmlWriter.writeCharacters("\n");
+            //xmlWriter.writeStartElement("nex:nexml");
+            //xmlWriter.writeAttribute("version", "0.9");
+            //xmlWriter.writeCharacters("\n\t");
 
-        //xmlWriter.writeStartElement("otu");
-        //xmlWriter.writeCharacters("\n\t");
-        for (String label : taxa.getLabels()) {
-            xmlWriter.writeCharacters("\n\t\t");
-            xmlWriter.writeEmptyElement("otu");
-            xmlWriter.writeAttribute("id", label);
+            //xmlWriter.writeStartDocument();
+            xmlWriter.writeStartElement("otus");
+            xmlWriter.writeAttribute("id", "taxa1");
+
+            //xmlWriter.writeStartElement("otu");
+            //xmlWriter.writeCharacters("\n\t");
+            for (String label : taxa.getLabels()) {
+                xmlWriter.writeCharacters("\n\t\t");
+                xmlWriter.writeEmptyElement("otu");
+                xmlWriter.writeAttribute("id", label);
+            }
+            //xmlWriter.writeEndElement();
+            xmlWriter.writeCharacters("\n");
+            xmlWriter.writeEndElement();
+            xmlWriter.writeCharacters("\n");
+            xmlWriter.writeEndDocument();
+
+            xmlWriter.flush();
+        } catch (XMLStreamException xmlEx){
+            xmlEx.printStackTrace();
         }
-        //xmlWriter.writeEndElement();
-        xmlWriter.writeCharacters("\n");
-        xmlWriter.writeEndElement();
-        xmlWriter.writeCharacters("\n");
-        xmlWriter.writeEndDocument();
-
-        xmlWriter.flush();
     }
 
-    public void export(Writer w, TaxaBlock taxa, CharactersBlock characters) throws IOException, XMLStreamException {
-        XMLOutputFactory xMLOutputFactory = XMLOutputFactory.newInstance();
-        XMLStreamWriter xmlWriter =
-                xMLOutputFactory.createXMLStreamWriter(w);
+    public void export(Writer w, TaxaBlock taxa, CharactersBlock characters) throws IOException {
+        try {
+            XMLOutputFactory xMLOutputFactory = XMLOutputFactory.newInstance();
+            XMLStreamWriter xmlWriter =
+                    xMLOutputFactory.createXMLStreamWriter(w);
 
-        xmlWriter.writeCharacters("\n");
-        xmlWriter.writeStartElement("characters");
-        xmlWriter.writeCharacters("\n\t");
-        xmlWriter.writeStartElement("matrix");
+            xmlWriter.writeCharacters("\n");
+            xmlWriter.writeStartElement("characters");
+            xmlWriter.writeCharacters("\n\t");
+            xmlWriter.writeStartElement("matrix");
 
-        int ntax = taxa.getNtax();
-        int nchar = characters.getNchar();
+            int ntax = taxa.getNtax();
+            int nchar = characters.getNchar();
 
-        for (int i = 1; i <= ntax; i++) {
-            xmlWriter.writeCharacters("\n\t\t");
-            xmlWriter.writeStartElement("row");
-            xmlWriter.writeCharacters("\n\t\t\t");
-            xmlWriter.writeStartElement("seq");
-            xmlWriter.writeAttribute("label", taxa.getLabel(i));
-            for (int j = 1; j <= nchar; j++) {
-                xmlWriter.writeCharacters((characters.get(i, j) + "").toUpperCase());
+            for (int i = 1; i <= ntax; i++) {
+                xmlWriter.writeCharacters("\n\t\t");
+                xmlWriter.writeStartElement("row");
+                xmlWriter.writeCharacters("\n\t\t\t");
+                xmlWriter.writeStartElement("seq");
+                xmlWriter.writeAttribute("label", taxa.getLabel(i));
+                for (int j = 1; j <= nchar; j++) {
+                    xmlWriter.writeCharacters((characters.get(i, j) + "").toUpperCase());
+                }
+                xmlWriter.writeEndElement(); // seq
+                xmlWriter.writeCharacters("\n\t\t");
+                xmlWriter.writeEndElement(); //row
             }
-            xmlWriter.writeEndElement(); // seq
-            xmlWriter.writeCharacters("\n\t\t");
-            xmlWriter.writeEndElement(); //row
+            xmlWriter.writeCharacters("\n\t");
+            xmlWriter.writeEndElement(); // matrix
+            xmlWriter.writeCharacters("\n");
+            xmlWriter.writeEndElement(); //characters
+        } catch (XMLStreamException xmlEx) {
+            xmlEx.printStackTrace();
         }
-        xmlWriter.writeCharacters("\n\t");
-        xmlWriter.writeEndElement(); // matrix
-        xmlWriter.writeCharacters("\n");
-        xmlWriter.writeEndElement(); //characters
     }
 }

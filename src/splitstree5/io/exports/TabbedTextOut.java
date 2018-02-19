@@ -55,9 +55,6 @@ public class TabbedTextOut implements
     public void export(Writer w, TaxaBlock taxa, DistancesBlock distances) throws IOException {
 
         int ntax = distances.getNtax();
-        /*DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance();
-        dfs.setDecimalSeparator('.');
-        DecimalFormat dec = new DecimalFormat("#.0#####", dfs);*/
 
         w.write("Distance matrix\n");
         for (int i = 1; i <= ntax; i++) {
@@ -81,7 +78,6 @@ public class TabbedTextOut implements
 
     public void export(Writer w, TaxaBlock taxa, SplitsBlock splits) throws IOException {
 
-        // todo try without trivial splits
         w.write("Splits\n");
         w.write("\tWeights");
 
@@ -110,6 +106,6 @@ public class TabbedTextOut implements
 
     @Override
     public List<String> getExtensions() {
-        return Arrays.asList("txt");
+        return null;
     }
 }

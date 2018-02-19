@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 
 public class NewickTreeOutTest {
 
-    NewickTreeOut newickTreeOut = new NewickTreeOut();
+    private NewickTreeOut newickTreeOut = new NewickTreeOut();
 
     @Test
     public void export() throws Exception {

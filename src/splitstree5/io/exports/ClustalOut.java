@@ -16,7 +16,7 @@ public class ClustalOut implements IExportCharacters {
     public void export(Writer w, TaxaBlock taxa, CharactersBlock characters)
             throws IOException {
 
-        final String description = "CLUSTAL W (1.82) multiple sequence alignment";
+        final String description = "CLUSTAL multiple sequence alignment (Produced by SplitsTree 5)";
         w.write(description + "\n" + "\n" + "\n");
         int ntax = taxa.getNtax();
         int nchar = characters.getNchar();
