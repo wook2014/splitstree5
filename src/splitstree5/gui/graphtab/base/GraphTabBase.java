@@ -296,8 +296,8 @@ public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISa
                     if (c.getAddedSize() > 0) {
                         for (Taxon taxon : c.getAddedSubList()) {
                             String label = taxon.getName();
-                            for (Node v : this.graph.nodes()) {
-                                if (this.graph.getLabel(v) != null) {
+                            for (Node v : graph.nodes()) {
+                                if (graph.getLabel(v) != null) {
                                     if (label.equals(graph.getLabel(v))) {
                                         nodeSelectionModel.select(v);
                                     }
@@ -311,14 +311,14 @@ public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISa
                     if (c.getRemovedSize() > 0) {
                         for (Taxon taxon : c.getRemoved()) {
                             String label = taxon.getName();
-                            for (Node v : this.graph.nodes()) {
-                                if (this.graph.getLabel(v) != null) {
-                                    if (label.equals(this.graph.getLabel(v))) {
+                            for (Node v : graph.nodes()) {
+                                if (graph.getLabel(v) != null) {
+                                    if (label.equals(graph.getLabel(v))) {
                                         nodeSelectionModel.clearSelection(v);
                                     }
                                 }
                             }
-                            final Node v = this.graph.getTaxon2Node(document.getWorkflow().getWorkingTaxaBlock().indexOf(taxon));
+                            final Node v = graph.getTaxon2Node(document.getWorkflow().getWorkingTaxaBlock().indexOf(taxon));
                             if (v != null)
                                 nodeSelectionModel.clearSelection(v);
                         }

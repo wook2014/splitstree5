@@ -18,13 +18,15 @@
  */
 package splitstree5.io.nexus;
 
+import java.util.List;
+
 /**
  * splits format
  * Daniel Huson, 12/29/16.
  */
 public class SplitsNexusFormat implements INexusFormat {
 
-    private boolean optionsLabels = false;
+    private boolean optionLabels = false;
     private boolean optionWeights = true;
     private boolean optionConfidences = false;
 
@@ -39,8 +41,8 @@ public class SplitsNexusFormat implements INexusFormat {
      *
      * @return true, if labels are to be printed
      */
-    public boolean isOptionsLabels() {
-        return optionsLabels;
+    public boolean isOptionLabels() {
+        return optionLabels;
     }
 
     /**
@@ -57,8 +59,8 @@ public class SplitsNexusFormat implements INexusFormat {
      *
      * @param flag whether labels should be printed
      */
-    public void setOptionsLabels(boolean flag) {
-        optionsLabels = flag;
+    public void setOptionLabels(boolean flag) {
+        optionLabels = flag;
     }
 
     /**
@@ -87,5 +89,12 @@ public class SplitsNexusFormat implements INexusFormat {
     public void setOptionConfidences(boolean optionConfidences) {
         this.optionConfidences = optionConfidences;
     }
+
+
+    @Override
+    public List<String> listOptions() {
+        return null;
+    }
+
 
 }

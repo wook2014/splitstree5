@@ -631,6 +631,11 @@ public class Node extends NodeEdge implements Comparable {
     public boolean isLeaf() {
         return outDegree == 0;
     }
+
+    public void deleteAllAdjacentEdges() {
+        for (Edge e : adjacentEdges())
+            e.deleteEdge();
+    }
 }
 
 // EOF

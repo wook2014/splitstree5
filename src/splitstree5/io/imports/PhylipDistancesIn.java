@@ -21,7 +21,7 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
 
     public static final List<String> extensions = new ArrayList<>(Arrays.asList("dist", "dst"));
 
-    public enum MatrixType {square, triangular, upperTriangular}
+    public enum Triangle {Both, Lower, Upper}
 
     @Override
     public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, DistancesBlock distances) throws CanceledException, IOException {
@@ -30,8 +30,8 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
         int ntax;
 
         final Map<String, Vector<Double>> matrix = new LinkedHashMap<>();
-        MatrixType matrixTypeForCurrentRow = null;
-        MatrixType matrixTypeForPreviousRow = null;
+        Triangle triangleForCurrentRow = null;
+        Triangle triangleForPreviousRow = null;
 
         try (FileInputIterator it = new FileInputIterator(inputFile)) {
 
@@ -69,13 +69,13 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
                             int differenceOfLines = tokensInCurrentRow - tokensInPreviousRow;
                             switch (differenceOfLines) {
                                 case 0 :
-                                    matrixTypeForCurrentRow = MatrixType.square;
+                                    triangleForCurrentRow = Triangle.Both;
                                     break;
                                 case 1 :
-                                    matrixTypeForCurrentRow = MatrixType.triangular;
+                                    triangleForCurrentRow = Triangle.Lower;
                                     break;
                                 case -1 :
-                                    matrixTypeForCurrentRow = MatrixType.upperTriangular;
+                                    triangleForCurrentRow = Triangle.Upper;
                                     break;
                                 default:
                                     throw new IOExceptionWithLineNumber("line " + counter +
@@ -83,11 +83,11 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
                             }
                         }
 
-                        if (matrixTypeForPreviousRow != null && !matrixTypeForCurrentRow.equals(matrixTypeForPreviousRow)) {
+                        if (triangleForPreviousRow != null && !triangleForCurrentRow.equals(triangleForPreviousRow)) {
                             throw new IOExceptionWithLineNumber("line " + counter +
                                     ": Wrong number of entries for Taxa " + currentLabel, counter);
                         } else {
-                            matrixTypeForPreviousRow = matrixTypeForCurrentRow;
+                            triangleForPreviousRow = triangleForCurrentRow;
                         }
 
                         System.err.println("curr " + tokensInCurrentRow + " pref " + tokensInPreviousRow);
@@ -112,12 +112,12 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
             System.err.println("Row " + s + " " + matrix.get(s));
         }
         taxa.addTaxaByNames(matrix.keySet());
-        if (matrixTypeForCurrentRow != null) {
-            if (matrixTypeForCurrentRow.equals(MatrixType.square))
+        if (triangleForCurrentRow != null) {
+            if (triangleForCurrentRow.equals(Triangle.Both))
                 readSquareMatrix(matrix, distances);
-            if (matrixTypeForCurrentRow.equals(MatrixType.triangular))
+            if (triangleForCurrentRow.equals(Triangle.Lower))
                 readTriangularMatrix(matrix, distances);
-            if (matrixTypeForCurrentRow.equals(MatrixType.upperTriangular))
+            if (triangleForCurrentRow.equals(Triangle.Upper))
                 readUpperTriangularMatrix(matrix, distances);
         } else {
             throw new IOException("Error: Cannot estimate matrix form! (square, triangular or upper-triangular)");

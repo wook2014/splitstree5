@@ -162,8 +162,9 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                             scaleAndCenterToFitTarget(getOptionLayout(), view.getTargetDimensions(), node2point, false);
                             computeEdgePointsForRectilinearRec(root, node2point, edge2controlPoints);
                         } else {
-                            final NodeFloatArray nodeHeights = new NodeFloatArray(tree); // angle of edge
+                            final NodeFloatArray nodeHeights = new NodeFloatArray(tree); // height of edge
                             setNodeHeightsRec(root, 0, nodeHeights);
+
                             computeNodeLocationsForRectilinearRec(root, 0, edgeLengths, nodeHeights, node2point);
                             scaleAndCenterToFitTarget(getOptionLayout(), view.getTargetDimensions(), node2point, false);
                             computeEdgePointsForRectilinearRec(root, node2point, edge2controlPoints);
@@ -299,21 +300,22 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
     private int setAnglesForCircularLayoutRec(final Node v, final Edge f, int nextLeafNum, final int angleParts, final EdgeFloatArray edgeAngles) {
         if (v.getOutDegree() == 0) {
             if (f != null)
-                edgeAngles.put(f, (float) (360.0 / angleParts * nextLeafNum));
+                edgeAngles.put(f, 360f / angleParts * nextLeafNum);
             return nextLeafNum + 1;
-        } else {
-            if (isAllChildrenAreLeaves(v)) { // treat these separately because we want to place them all slightly closer together
+        } else if (v.getDegree() >= 2 && isAllChildrenAreLeaves(v)) { // treat these separately because we want to place them all slightly closer together
                 final int numberOfChildren = v.getOutDegree();
-                final float firstAngle = (float) ((360.0 / angleParts) * (nextLeafNum + optionLeafGroupGapProperty.get() / 200f));
-                final float deltaAngle = (float) ((360.0 / angleParts) * (nextLeafNum + numberOfChildren - 1.0 - optionLeafGroupGapProperty.get() / 200f)) - firstAngle;
+            final float firstAngle = (360f / angleParts) * (nextLeafNum + optionLeafGroupGapProperty.get() / 200f);
+            final float lastAngle = (360f / angleParts) * (nextLeafNum + numberOfChildren - 1 - optionLeafGroupGapProperty.get() / 200f);
+            final float deltaAngle = (lastAngle - firstAngle) / (numberOfChildren - 1);
                 float angle = firstAngle;
                 for (Edge e : v.outEdges()) {
                     edgeAngles.put(e, angle);
                     angle += deltaAngle;
                 }
-                edgeAngles.put(f, (float) ((360.0 / angleParts) * (nextLeafNum + 0.5 * (numberOfChildren - 1))));
+            edgeAngles.put(f, (360f / angleParts) * (nextLeafNum + 0.5f * (numberOfChildren - 1)));
                 nextLeafNum += numberOfChildren;
                 //edgeAngles.set(f, 0.5f * (firstAngle + lastAngle));
+            return nextLeafNum;
             } else {
                 final float firstLeaf = nextLeafNum;
                 float firstAngle = Float.MIN_VALUE;
@@ -331,10 +333,9 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                     if (optionParentPlacement.getValue() == ParentPlacement.ChildrenAverage)
                         edgeAngles.put(f, 0.5f * (firstAngle + lastAngle));
                     else {
-                        edgeAngles.put(f, (float) (180.0 / angleParts * (firstLeaf + nextLeafNum - 1)));
+                        edgeAngles.put(f, 180f / angleParts * (firstLeaf + nextLeafNum - 1));
                     }
                 }
-            }
             return nextLeafNum;
         }
     }
@@ -431,23 +432,20 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
         if (v.getOutDegree() == 0) {
             nodeHeights.setValue(v, nextLeafRank);
             return nextLeafRank + 1;
-        } else {
-
-            if (isAllChildrenAreLeaves(v)) { // treat these separately because we want to place them all slightly closer together
+        } else if (v.getDegree() >= 2 && isAllChildrenAreLeaves(v)) { // treat these separately because we want to place them all slightly closer together
                 final int numberOfChildren = v.getOutDegree();
                 final float firstHeight = (nextLeafRank + optionLeafGroupGapProperty.get() / 200.0f);
-                final float deltaHeight = (nextLeafRank + numberOfChildren - 1 - optionLeafGroupGapProperty.get() / 200.0f) - firstHeight;
-                float lastHeight = 0;
+            final float lastHeight = (nextLeafRank + (numberOfChildren - 1) - optionLeafGroupGapProperty.get() / 200.0f);
+            final float deltaHeight = (lastHeight - firstHeight) / (numberOfChildren - 1);
                 float height = firstHeight;
                 for (Edge e : v.outEdges()) {
                     nodeHeights.setValue(e.getTarget(), height);
-                    lastHeight = height;
                     height += deltaHeight;
                 }
-                nodeHeights.setValue(v, 0.5f * (firstHeight + lastHeight));
+            nodeHeights.setValue(v, 0.5f * (firstHeight + lastHeight));
                 return nextLeafRank + numberOfChildren;
             } else {
-                final float firstLeafRnak = nextLeafRank;
+            final float firstLeafRank = nextLeafRank;
                 float lastLeaf = 0;
                 float firstHeight = Float.MIN_VALUE;
                 float lastHeight = 0;
@@ -463,10 +461,9 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                 if (optionParentPlacementProperty().getValue() == ParentPlacement.ChildrenAverage)
                     nodeHeights.setValue(v, 0.5f * (firstHeight + lastHeight));
                 else
-                    nodeHeights.setValue(v, 0.5f * (firstLeafRnak + lastLeaf - 1));
+                    nodeHeights.setValue(v, 0.5f * (firstLeafRank + lastLeaf - 1));
                 return nextLeafRank;
             }
-        }
     }
 
     private boolean isAllChildrenAreLeaves(Node v) {

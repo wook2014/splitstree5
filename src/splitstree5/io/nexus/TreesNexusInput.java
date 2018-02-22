@@ -25,7 +25,6 @@ import jloda.util.Basic;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.core.misc.Taxon;
 
 import java.io.IOException;
 import java.util.*;
@@ -112,21 +111,23 @@ public class TreesNexusInput implements INexusInput<TreesBlock> {
                 throw new IOException("line " + np.lineno() + ": '" + tokens + "' unexpected in PROPERTIES");
         }
 
+        final Map<String, Integer> taxName2Id = new HashMap<>();
         final ArrayList<String> taxonNamesFound = new ArrayList<>();
         boolean haveSetKnownTaxonNames = false;
 
         // setup translator:
         final Map<String, String> translator; // maps node labels to taxon labels
 
-        if (np.peekMatchIgnoreCase("translate")) {
+        if (np.peekMatchIgnoreCase("TRANSLATE")) {
             translator = new HashMap<>();
             format.setOptionTranslate(true);
-            np.matchIgnoreCase("translate");
+            np.matchIgnoreCase("TRANSLATE");
             while (!np.peekMatchIgnoreCase(";")) {
-                final String nodelabel = np.getWordRespectCase();
-                final String taxlabel = np.getWordRespectCase();
-                taxonNamesFound.add(taxlabel);
-                translator.put(nodelabel, taxlabel);
+                final String nodeLabel = np.getWordRespectCase();
+                final String taxonLabel = np.getWordRespectCase();
+                taxonNamesFound.add(taxonLabel);
+                taxName2Id.put(taxonLabel, taxonNamesFound.size());
+                translator.put(nodeLabel, taxonLabel);
 
                 if (!np.peekMatchIgnoreCase(";"))
                     np.matchIgnoreCase(",");
@@ -137,15 +138,16 @@ public class TreesNexusInput implements INexusInput<TreesBlock> {
             translator = null;
             format.setOptionTranslate(false);
             if (taxaBlock.getTaxa().size() > 0) {
-                for (Taxon taxon : taxaBlock.getTaxa()) {
-                    taxonNamesFound.add(taxon.getName());
+                for (int t = 1; t <= taxaBlock.getNtax(); t++) {
+                    final String taxonLabel = taxaBlock.get(t).getName();
+                    taxonNamesFound.add(taxonLabel);
+                    taxName2Id.put(taxonLabel, t);
                 }
                 haveSetKnownTaxonNames = true;
             }
         }
 
-        final Set<String> knownTaxonNames = new HashSet<>();
-        knownTaxonNames.addAll(taxonNamesFound);
+        final Set<String> knownTaxonNames = new HashSet<>(taxonNamesFound);
 
         int treeNumber = 1;
         while (np.peekMatchIgnoreCase("tree")) {
@@ -190,13 +192,17 @@ public class TreesNexusInput implements INexusInput<TreesBlock> {
 
             for (Node v : tree.nodes()) {
                 final String label = tree.getLabel(v);
-                if (label != null && label.length() > 0 && !knownTaxonNames.contains(label)) {
-                    if (haveSetKnownTaxonNames) {
-                        throw new IOException("Tree '" + name + "' contains unknown taxon: " + label);
-                    } else {
-                        knownTaxonNames.add(label);
-                        taxonNamesFound.add(label);
+                if (label != null && label.length() > 0) {
+                    if (!knownTaxonNames.contains(label)) {
+                        if (haveSetKnownTaxonNames) {
+                            throw new IOException("Tree '" + name + "' contains unknown taxon: " + label);
+                        } else {
+                            knownTaxonNames.add(label);
+                            taxonNamesFound.add(label);
+                        }
                     }
+                    tree.addTaxon(v, taxName2Id.get(label));
+                    //System.err.println(v+" -> "+label+" -> "+Basic.toString(tree.getTaxa(v)," "));
                 }
             }
             tree.setName(name);

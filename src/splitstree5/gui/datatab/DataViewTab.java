@@ -28,6 +28,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import jloda.util.ResourceManager;
 import splitstree5.core.Document;
+import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.texttab.TextViewTab;
@@ -43,21 +44,33 @@ public class DataViewTab extends TextViewTab {
      * constructor
      *
      * @param document
-     * @param aNode
+     * @param dataNode
      */
-    public DataViewTab(Document document, DataNode aNode) {
-        super(aNode.nameProperty());
-        final StringProperty textProperty = new SimpleStringProperty(aNode.getDataBlock().getDisplayText());
+    public DataViewTab(Document document, DataNode dataNode) {
+        super(dataNode.nameProperty());
+
+        final DataBlock dataBlock = dataNode.getDataBlock();
+        final StringProperty textProperty;
+        if (dataBlock.getFormat() != null) {
+            final GenericDatablockFormatToolBar toolBar = new GenericDatablockFormatToolBar(document.getWorkflow().getWorkingTaxaBlock(), dataBlock);
+            textProperty = toolBar.textProperty();
+            toolBar.setMinHeight(30);
+            setToolBar(toolBar);
+        } else {
+            textProperty = new SimpleStringProperty(dataNode.getDataBlock().getDisplayText());
+        }
+
         stateChangeListener = (c, o, n) -> {
             if (n == UpdateState.VALID) {
-                textProperty.set(aNode.getDataBlock().getDisplayText());
+                textProperty.set(dataNode.getDataBlock().getDisplayText());
             }
         };
-        aNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
+        dataNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
         getTextArea().textProperty().bind(textProperty);
+
         setMainWindow(document.getMainWindow());
         if (getGraphic() instanceof Labeled) {
-            Image icon = ResourceManager.getIcon(aNode.getName().replaceAll("^Input", "").replaceAll(".*]", "") + "16.gif");
+            Image icon = ResourceManager.getIcon(dataNode.getName().replaceAll("^Input", "").replaceAll(".*]", "") + "16.gif");
             if (icon != null) {
                 ((Labeled) getGraphic()).setGraphic(new ImageView(icon));
             }

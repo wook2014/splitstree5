@@ -28,7 +28,7 @@ import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.io.exports.NexusExporter;
 import splitstree5.io.nexus.INexusFormat;
-import splitstree5.utils.OptionableBase;
+import splitstree5.utils.NameableBase;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -38,7 +38,7 @@ import java.util.ArrayList;
  * A data block
  * Daniel Huson, 12/21/16.
  */
-abstract public class DataBlock extends OptionableBase {
+abstract public class DataBlock extends NameableBase {
     private Document document; // the document associated with this datablock
     private DataNode dataNode; // the node associated with this datablock
     protected INexusFormat format; // text display format

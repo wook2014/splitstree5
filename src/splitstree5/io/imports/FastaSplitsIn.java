@@ -1,6 +1,5 @@
 package splitstree5.io.imports;
 
-import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.FileInputIterator;
 import jloda.util.ProgressListener;
@@ -8,11 +7,11 @@ import splitstree5.core.algorithms.interfaces.IToSplits;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ASplit;
+import splitstree5.io.imports.interfaces.IImportNoAutoDetect;
 import splitstree5.io.imports.interfaces.IImportSplits;
 import splitstree5.utils.SplitsUtilities;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 
-public class FastaSplitsIn extends CharactersFormat implements IToSplits, IImportSplits {
+public class FastaSplitsIn extends CharactersFormat implements IToSplits, IImportSplits, IImportNoAutoDetect {
 
     public static final List<String> extensions = new ArrayList<>(Arrays.asList("fasta", "fas", "fa", "seq", "fsa", "fna"));
     private static int numberOfLinesToCheckInApplicable = 10;

@@ -18,6 +18,8 @@
  */
 package splitstree5.io.nexus;
 
+import java.util.List;
+
 /**
  * trees block nexus format
  * Daniel Huson, 12/30/16.
@@ -40,5 +42,11 @@ public class TreesNexusFormat implements INexusFormat {
 
     public void setOptionWeights(boolean optionWeights) {
         this.optionWeights = optionWeights;
+    }
+
+
+    @Override
+    public List<String> listOptions() {
+        return null;
     }
 }

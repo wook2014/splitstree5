@@ -373,7 +373,7 @@ public class PhyloGraph extends Graph {
 
 
     /**
-     * changes the node labels of the network using the mapping old-to-new
+     * changes the node labels of the graph using the mapping old-to-new
      *
      * @param old2new
      */

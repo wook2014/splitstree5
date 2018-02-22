@@ -25,7 +25,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.text.Font;
 import javafx.stage.StageStyle;
 import jloda.find.FindToolBar;
 import jloda.find.TextAreaSearcher;
@@ -66,7 +65,9 @@ public class TextViewTab extends ViewerTab {
         setGraphic(label);
         setText("");
         textArea = new TextArea();
-        textArea.setFont(Font.font("Courier New"));
+        String css = this.getClass().getResource("/resources/css/styles.css").toExternalForm();
+        textArea.getStylesheets().add(css);
+        //textArea.setFont(Font.font("Courier New")); // gets set by style file
         textArea.setEditable(false);
         if (textProperty != null)
             textArea.textProperty().bind(textProperty);

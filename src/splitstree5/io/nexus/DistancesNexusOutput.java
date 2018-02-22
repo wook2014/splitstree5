@@ -52,7 +52,7 @@ public class DistancesNexusOutput implements INexusOutput<DistancesBlock> {
             w.write(" labels=left");
         else
             w.write(" labels=no");
-        if (format.getOptionDiagonal())
+        if (format.isOptionDiagonal())
             w.write(" diagonal");
         else
             w.write(" no diagonal");
@@ -60,46 +60,40 @@ public class DistancesNexusOutput implements INexusOutput<DistancesBlock> {
         w.write(" triangle=" + format.getOptionTriangle());
         w.write(";\n");
 
-        final int diag = format.getOptionDiagonal() ? 0 : 1;
+        final int diag = format.isOptionDiagonal() ? 0 : 1;
 
         // write matrix:
         {
             w.write("MATRIX\n");
 
-            for (int t = 1; t <= distancesBlock.getNtax(); t++) {
+            for (int s = 1; s <= distancesBlock.getNtax(); s++) {
                 if (format.isOptionLabels()) {
-                    w.write("[" + t + "]");
-                    w.write(" '" + taxaBlock.get(t).getName() + "'");
-                    pad(w, taxaBlock, t);
-
-                }
-                int left;
-                int right;
-
-                switch (format.getOptionTriangle()) {
-                    case Lower:
-                        left = 1;//1;
-
-                        right = t - diag;//t-1+diag;
-
-                        break;
-                    case Upper:
-                        left = t + diag;//t-1+diag;
-
-                        right = distancesBlock.getNtax();
-                        for (int i = 1; i < t; i++)
-                            w.write("      ");
-                        break;
-                    default: // both
-                        left = 1;
-                        right = distancesBlock.getNtax();
-                        break;
+                    w.write("[" + s + "]");
+                    w.write(" '" + taxaBlock.get(s).getName() + "'");
+                    pad(w, taxaBlock, s);
                 }
 
-                for (int q = left; q <= right; q++) {
-                    w.write(" " + (float) (distancesBlock.get(t, q)));
+                final StringBuilder buf = new StringBuilder();
+                InnerLoop:
+                for (int t = 1; t <= distancesBlock.getNtax(); t++) {
+                    switch (format.getOptionTriangle()) {
+                        case Lower:
+                            if (t > s || !format.isOptionDiagonal() && t == s)
+                                break InnerLoop; // don't write the upper triangle
+                            break;
+                        case Upper:
+                            if (s == distancesBlock.getNtax() && !format.isOptionDiagonal())
+                                break InnerLoop;
+                            if ((!format.isOptionDiagonal() && t == s + 1) || (format.isOptionDiagonal() && t == s)) {
+                                // replace lower dialog by spaces
+                                buf.replace(0, buf.length(), buf.toString().replaceAll(".", " "));
+                            }
+                        default:
+                        case Both:
+                    }
+                    buf.append(String.format(" %10f", distancesBlock.get(s, t)));
                 }
-                w.write("\n");
+                w.write(buf.toString() + "\n");
             }
             w.write(";\n");
         }

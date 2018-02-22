@@ -64,7 +64,7 @@ public abstract class CharactersFormat {
         boolean found = m.find();
         if (found) {
             String foundSymbol = m.group();
-            throw new IOExceptionWithLineNumber("Unexpected character " + foundSymbol + " in line " + counter, counter);
+            throw new IOExceptionWithLineNumber("Unexpected character: " + foundSymbol, counter);
         }
     }
 
@@ -102,7 +102,7 @@ public abstract class CharactersFormat {
                         if (sortedSymbols.contains("t") && sortedSymbols.contains("u"))
                             throw new IOException("Nucleotide sequence contains Thymine and Uracil at the same time");
                     }
-                    if (hasAAOnlySybols(sortedSymbols))
+                    if (hasAAOnlySymbols(sortedSymbols))
                         characters.setDataType(CharactersType.protein);
                 } else {
                     characters.setDataType(CharactersType.unknown);
@@ -136,7 +136,7 @@ public abstract class CharactersFormat {
         return '\u0000';
     }
 
-    private static boolean hasAAOnlySybols(String foundSymbols) {
+    private static boolean hasAAOnlySymbols(String foundSymbols) {
         final String IUPAC = ("acgtu" + AmbiguityCodes.CODES);
         final String AA = CharactersType.protein.getSymbols();
         for (char c : foundSymbols.toCharArray()) {

@@ -583,7 +583,6 @@ public class Workflow {
                 return new Pair<>((Connector) node.getParent().getParent().getParent(), (DataNode) node);
         }
 
-
         DataNode child = createDataNode(childClass.newInstance());
         Connector connector1 = createConnector(parent, child, (Algorithm) algorithmClass.newInstance());
         DataNode viewerNode = createDataNode(viewerClass.newInstance());

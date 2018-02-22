@@ -73,7 +73,7 @@ public class SplitsNexusOutput implements INexusOutput<SplitsBlock> {
         w.write("\tDIMENSIONS ntax=" + ntax + " nsplits=" + nsplits + ";\n");
 
         w.write("\tFORMAT");
-        if (format.isOptionsLabels())
+        if (format.isOptionLabels())
             w.write(" labels=left");
         else
             w.write(" labels=no");
@@ -119,7 +119,7 @@ public class SplitsNexusOutput implements INexusOutput<SplitsBlock> {
         int t = 1;
         for (ASplit split : splitsBlock.getSplits()) {
             w.write("\t[" + (t++) + ", size=" + split.size() + "]" + " \t");
-            if (format.isOptionsLabels()) {
+            if (format.isOptionLabels()) {
                 String lab = split.getLabel();
                 w.write(" '" + lab + "'" + " \t");
             }

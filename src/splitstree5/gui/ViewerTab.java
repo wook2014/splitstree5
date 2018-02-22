@@ -96,6 +96,10 @@ public abstract class ViewerTab extends Tab {
         borderPane.setTop(toolBar);
     }
 
+    public BorderPane getBorderPane() {
+        return borderPane;
+    }
+
     /**
      * select this tab
      */

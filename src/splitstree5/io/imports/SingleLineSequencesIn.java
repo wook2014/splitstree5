@@ -10,7 +10,10 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.imports.interfaces.IImportCharacters;
 import splitstree5.io.imports.interfaces.IImportNoAutoDetect;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -41,8 +44,7 @@ public class SingleLineSequencesIn extends CharactersFormat implements IToCharac
                     if (nchar == 0)
                         nchar = line.length();
                     else if (nchar != line.length())
-                        throw new IOExceptionWithLineNumber("Sequences must be the same length. " +
-                                "Wrong number of chars at the line " + counter, counter);
+                        throw new IOExceptionWithLineNumber("Sequences must have the same length", counter);
                     ntax++;
                     taxonNames.add("Sequence " + ntax);
                     String allowedChars = "" + getMissing() + getMatchChar() + getGap();

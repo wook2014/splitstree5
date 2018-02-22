@@ -18,17 +18,19 @@
  */
 package splitstree5.io.nexus;
 
+import java.util.List;
+
 /**
  * Characters nexus format
  * Daniel Huson, 12/22/16.
  */
 public class CharactersNexusFormat implements INexusFormat {
     private boolean optionTranspose;
-    private boolean optionInterleave;
+    private boolean optionInterleave = true;
     private boolean optionLabels = true;
     private boolean optionTokens;
     private char optionMatchCharacter = 0;
-    private int optionColumnsPerBlock = 0;
+    private int optionColumnsPerBlock = 80;
 
     /**
      * the Constructor
@@ -83,5 +85,10 @@ public class CharactersNexusFormat implements INexusFormat {
 
     public void setOptionColumnsPerBlock(int optionColumnsPerBlock) {
         this.optionColumnsPerBlock = optionColumnsPerBlock;
+    }
+
+    @Override
+    public List<String> listOptions() {
+        return null;
     }
 }

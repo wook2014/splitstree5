@@ -31,7 +31,8 @@ import java.util.Collection;
  * daniel Huson, 2.2018
  */
 public class TraitsBlock extends DataBlock implements IAdditionalBlock {
-    private int[][] matrix = {}; //
+    private int[][] matrix = {};  // computation is done on values
+    private String[][] matrixOfLabels = null; // values have labels
     private String[] labels = {};
     private float[] traitLatitude = null;
     private float[] traitLongitude = null;
@@ -47,6 +48,7 @@ public class TraitsBlock extends DataBlock implements IAdditionalBlock {
 
     public void clear() {
         setDimensions(0, 0);
+        matrixOfLabels = null;
         traitLongitude = null;
         traitLatitude = null;
     }
@@ -55,8 +57,22 @@ public class TraitsBlock extends DataBlock implements IAdditionalBlock {
         matrix[taxonId - 1][traitId - 1] = value;
     }
 
+    public void setTraitValueLabel(int taxonId, int traitId, String label) {
+        if (matrixOfLabels == null)
+            matrixOfLabels = new String[matrix.length][getNTraits()]; // lazy setup
+
+        matrixOfLabels[taxonId - 1][traitId - 1] = label;
+    }
+
     public int getTraitValue(int taxonId, int traitId) {
         return matrix[taxonId - 1][traitId - 1];
+    }
+
+    public String getTraitValueLabel(int taxonId, int traitId) {
+        if (matrixOfLabels == null || matrixOfLabels[taxonId - 1][traitId - 1] == null)
+            return "" + getTraitValue(taxonId, traitId);
+        else
+            return matrixOfLabels[taxonId - 1][traitId - 1];
     }
 
     public String getTraitLabel(int traitId) {
@@ -136,11 +152,15 @@ public class TraitsBlock extends DataBlock implements IAdditionalBlock {
         traitLongitude = srcTraits.traitLongitude;
         traitLatitude = srcTraits.traitLatitude;
         matrix = new int[enabledTaxa.size()][srcTraits.getNTraits()];
+        matrixOfLabels = null; // will be set in setTraitValueLabel if required
         int tarTaxonIdx = 1;
         for (Taxon taxon : enabledTaxa) {
             final int srcTaxonIdx = srcTaxa.indexOf(taxon);
             for (int traitIdx = 1; traitIdx <= srcTraits.getNTraits(); traitIdx++) {
                 setTraitValue(tarTaxonIdx, traitIdx, srcTraits.getTraitValue(srcTaxonIdx, traitIdx));
+                if (srcTraits.matrixOfLabels != null)
+                    setTraitValueLabel(tarTaxonIdx, traitIdx, srcTraits.getTraitValueLabel(srcTaxonIdx, traitIdx));
+
             }
             tarTaxonIdx++;
         }

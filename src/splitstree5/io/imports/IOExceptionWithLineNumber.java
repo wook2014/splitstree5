@@ -37,6 +37,11 @@ public class IOExceptionWithLineNumber extends IOException {
         setLineNumber(lineNumber);
     }
 
+    @Override
+    public String getMessage() {
+        return "Line " + lineNumber + ": " + super.getMessage();
+    }
+
     private int lineNumber = -1;
 
     public int getLineNumber() {

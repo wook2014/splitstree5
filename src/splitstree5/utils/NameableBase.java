@@ -25,20 +25,20 @@ import splitstree5.gui.algorithmtab.AlgorithmPane;
 import java.util.List;
 
 /**
- * A base class to help implement IOptionable
+ * A base class to help implement INameable
  * Daniel Huson, 8/1/17.
  */
-public class OptionableBase extends ANamed implements IOptionable {
+public class NameableBase extends ANamed implements INameable {
 
-    public OptionableBase() {
+    public NameableBase() {
     }
 
-    public OptionableBase(String name) {
+    public NameableBase(String name) {
         if (name != null)
             setName(name);
     }
 
-    public OptionableBase(String name, String shortDescription) {
+    public NameableBase(String name, String shortDescription) {
         if (name != null)
             setName(name);
         if (shortDescription != null)

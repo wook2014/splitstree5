@@ -94,7 +94,7 @@ public class TraitsNexusOutput implements INexusOutput<TraitsBlock> {
                     if (value == Integer.MAX_VALUE)
                         w.write(format.getOptionMissingCharacter());
                     else
-                        w.write("" + value);
+                        w.write(traitsBlock.getTraitValueLabel(t, j));
                 }
                 w.write("\n");
             }

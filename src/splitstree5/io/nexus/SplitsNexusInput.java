@@ -113,8 +113,8 @@ public class SplitsNexusInput implements INexusInput<SplitsBlock> {
 
         if (np.peekMatchIgnoreCase("FORMAT")) {
             final List<String> formatTokens = np.getTokensLowerCase("format", ";");
-            format.setOptionsLabels(np.findIgnoreCase(formatTokens, "labels=no", false, format.isOptionsLabels()));
-            format.setOptionsLabels(np.findIgnoreCase(formatTokens, "labels=left", true, format.isOptionsLabels()));
+            format.setOptionLabels(np.findIgnoreCase(formatTokens, "labels=no", false, format.isOptionLabels()));
+            format.setOptionLabels(np.findIgnoreCase(formatTokens, "labels=left", true, format.isOptionLabels()));
 
             format.setOptionWeights(np.findIgnoreCase(formatTokens, "weights=no", false, format.isOptionWeights()));
             format.setOptionWeights(np.findIgnoreCase(formatTokens, "weights=yes", true, format.isOptionWeights()));
@@ -127,8 +127,8 @@ public class SplitsNexusInput implements INexusInput<SplitsBlock> {
             np.findIgnoreCase(formatTokens, "intervals=true", true, false);
 
             // for backward compatibility:
-            format.setOptionsLabels(np.findIgnoreCase(formatTokens, "no labels", false, format.isOptionsLabels()));
-            format.setOptionsLabels(np.findIgnoreCase(formatTokens, "labels", true, format.isOptionsLabels()));
+            format.setOptionLabels(np.findIgnoreCase(formatTokens, "no labels", false, format.isOptionLabels()));
+            format.setOptionLabels(np.findIgnoreCase(formatTokens, "labels", true, format.isOptionLabels()));
 
             format.setOptionWeights(np.findIgnoreCase(formatTokens, "no weights", false, format.isOptionWeights()));
             format.setOptionWeights(np.findIgnoreCase(formatTokens, "weights", true, format.isOptionWeights()));
@@ -201,7 +201,7 @@ public class SplitsNexusInput implements INexusInput<SplitsBlock> {
             float confidence = -1;
             String label = null;
 
-            if (splitsNexusFormat.isOptionsLabels()) {
+            if (splitsNexusFormat.isOptionLabels()) {
                 label = np.getWordRespectCase();
                 if (label.equals("null"))
                     label = null;

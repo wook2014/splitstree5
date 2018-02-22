@@ -26,8 +26,10 @@ import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.IAdditionalBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.datablocks.TraitsBlock;
 import splitstree5.core.misc.Taxon;
 import splitstree5.io.nexus.TaxaNexusInput;
+import splitstree5.io.nexus.TraitsNexusInput;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -67,6 +69,11 @@ public abstract class NexusImporter<D extends DataBlock> {
                     new TaxaNexusInput().parse(np, taxaBlock);
                     needToDetectTaxa = (taxaBlock.getTaxa().size() == 0);
                 }
+
+                if (np.peekMatchIgnoreCase("begin traits;") && !(dataBlock instanceof TraitsBlock)) {
+                    new TraitsNexusInput().parse(np, taxaBlock, new TraitsBlock()); // parse and ignore, will reopen file and parse again later...
+                }
+
                 final List<String> namesFound = parseBlock(np, taxaBlock, dataBlock);
                 if (needToDetectTaxa) {
                     if (namesFound.size() == 0)
@@ -114,6 +121,8 @@ public abstract class NexusImporter<D extends DataBlock> {
 
                 if (aLine.startsWith("begin")) {
                     final NexusStreamParser np = new NexusStreamParser(new StringReader(aLine));
+                    if (!blockName.equals("traits") && np.peekMatchIgnoreCase("begin traits;"))
+                        continue; // traits block: ignore
                     if (np.peekMatchIgnoreCase("begin " + blockName + ";"))
                         return true;
                     else if (blockName.equals("characters") && np.peekMatchIgnoreCase("begin data;"))

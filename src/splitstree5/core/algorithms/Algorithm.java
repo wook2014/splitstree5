@@ -26,15 +26,15 @@ import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.Connector;
+import splitstree5.utils.NameableBase;
 import splitstree5.utils.Option;
-import splitstree5.utils.OptionableBase;
 import splitstree5.utils.OptionsAccessor;
 
 /**
  * An algorithm
  * Daniel Huson 12.2016
  */
-abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extends OptionableBase {
+abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extends NameableBase {
     private final BooleanProperty disabled = new SimpleBooleanProperty(true);
     private Connector<P, C> connector;
 

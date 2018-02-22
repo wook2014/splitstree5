@@ -104,19 +104,19 @@ public class DistancesNexusInput implements INexusInput<DistancesBlock> {
                 format.setOptionLabels(np.findIgnoreCase(tokens, "labels=no", false, format.isOptionLabels())); //DJB 14mar03
 
 
-                format.setOptionDiagonal(np.findIgnoreCase(tokens, "diagonal=no", false, format.getOptionDiagonal()));
-                format.setOptionDiagonal(np.findIgnoreCase(tokens, "diagonal=yes", true, format.getOptionDiagonal()));
+                format.setOptionDiagonal(np.findIgnoreCase(tokens, "diagonal=no", false, format.isOptionDiagonal()));
+                format.setOptionDiagonal(np.findIgnoreCase(tokens, "diagonal=yes", true, format.isOptionDiagonal()));
 
-                format.setOptionTriangle(np.findIgnoreCase(tokens, "triangle=", Basic.toString(DistancesNexusFormat.Triangle.values(), " "), format.getOptionTriangle().toString()));
+                format.setOptionTriangleByLabel(np.findIgnoreCase(tokens, "triangle=", Basic.toString(DistancesNexusFormat.Triangle.values(), " "), format.getOptionTriangle().toString()));
 
                 // backward compatibility:
                 format.setOptionLabels(np.findIgnoreCase(tokens, "no labels", false, format.isOptionLabels()));
                 format.setOptionLabels(np.findIgnoreCase(tokens, "nolabels", false, format.isOptionLabels())); //DJB 14mar03
                 format.setOptionLabels(np.findIgnoreCase(tokens, "labels", true, format.isOptionLabels()));
 
-                format.setOptionDiagonal(np.findIgnoreCase(tokens, "no diagonal", false, format.getOptionDiagonal()));
-                format.setOptionDiagonal(np.findIgnoreCase(tokens, "diagonal", true, format.getOptionDiagonal()));
-                format.setOptionDiagonal(np.findIgnoreCase(tokens, "noDiagonal", false, format.getOptionDiagonal())); //DJB 14mar03
+                format.setOptionDiagonal(np.findIgnoreCase(tokens, "no diagonal", false, format.isOptionDiagonal()));
+                format.setOptionDiagonal(np.findIgnoreCase(tokens, "diagonal", true, format.isOptionDiagonal()));
+                format.setOptionDiagonal(np.findIgnoreCase(tokens, "noDiagonal", false, format.isOptionDiagonal())); //DJB 14mar03
 
                 // for compatibilty with splitstree3, swallow missing=?
                 np.findIgnoreCase(tokens, "missing=", null, '?');
@@ -128,7 +128,7 @@ public class DistancesNexusInput implements INexusInput<DistancesBlock> {
             final boolean both = format.getOptionTriangle().equals("both");
             final boolean upper = format.getOptionTriangle().equals("upper");
             final boolean lower = format.getOptionTriangle().equals("lower");
-            final int diag = format.getOptionDiagonal() ? 0 : 1;
+            final int diag = format.isOptionDiagonal() ? 0 : 1;
 
             final ArrayList<String> taxonNamesFound = new ArrayList<>(distancesBlock.getNtax());
 

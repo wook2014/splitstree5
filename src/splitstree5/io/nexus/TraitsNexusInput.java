@@ -27,7 +27,9 @@ import splitstree5.io.imports.IOExceptionWithLineNumber;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * taxa nexus input
@@ -56,7 +58,7 @@ public class TraitsNexusInput implements INexusInput<TraitsBlock> {
             "\t;]\n" +
             "\t[TRAITLATITUDE  latitude-trait-1  latitude-trait-2 ...  latitude-trait-n;\n" +
             "\t TRAITLONGITUDE longitude-trait-1 longitude-trait-2 ... longitude-trait-n;]\n" +
-            "\t TRAITLABELS labe-trait-1 label-trait-2 ... labe-trait-n;\n" +
+            "\t TRAITLABELS label-trait-1 label-trait-2 ... label-trait-n;\n" +
             "\tMATRIX\n" +
             "\t\ttrait data in specified format\n" +
             "\t;\n" +
@@ -138,27 +140,49 @@ public class TraitsNexusInput implements INexusInput<TraitsBlock> {
         np.matchIgnoreCase(";");
 
         np.matchIgnoreCase("MATRIX");
+
+        // need these two to map trait state labels to integer values
+        final Map<String, Integer>[] trait2map = new Map[ntraits + 1];
+        final int[] trait2count = new int[ntraits + 1];
+
         for (int i = 1; i <= ntax; i++) {
-            int t = i;
+            int taxonId = i;
             if (format.isOptionLabel()) {
                 String taxonName = np.getWordRespectCase();
                 if (taxaBlock.getNtax() == ntax) {
-                    t = taxaBlock.indexOf(taxonName);
-                    if (t == -1)
+                    taxonId = taxaBlock.indexOf(taxonName);
+                    if (taxonId == -1)
                         throw new IOExceptionWithLineNumber("Unknown taxon: '" + taxonName, np.lineno());
-
                 }
             }
-            for (int j = 1; j <= ntraits; j++) {
-                if (j > 1) {
+            for (int traitId = 1; traitId <= ntraits; traitId++) {
+                if (traitId > 1) {
                     if (format.getOptionSeparator() != TraitsNexusFormat.Separator.WhiteSpace)
                         np.matchIgnoreCase(format.getSeparatorString());
                 }
                 if (np.peekMatchIgnoreCase("" + format.getOptionMissingCharacter())) {
                     np.peekMatchIgnoreCase("" + format.getOptionMissingCharacter());
-                    traitsBlock.setTraitValue(t, j, Integer.MAX_VALUE);
-                } else
-                    traitsBlock.setTraitValue(t, j, np.getInt());
+                    traitsBlock.setTraitValue(taxonId, traitId, Integer.MAX_VALUE);
+                } else {
+                    final String word = np.getWordRespectCase();
+
+                    if (Basic.isInteger(word))
+                        traitsBlock.setTraitValue(taxonId, traitId, Basic.parseInt(word));
+                    else {
+                        Map<String, Integer> map = trait2map[traitId];
+                        if (map == null) {
+                            map = new HashMap<>();
+                            trait2map[traitId] = map;
+                        }
+                        Integer value = map.get(word);
+                        if (value == null) {
+                            value = (++trait2count[traitId]);
+                            map.put(word, value);
+                        }
+                        traitsBlock.setTraitValue(taxonId, traitId, value);
+                        traitsBlock.setTraitValueLabel(taxonId, traitId, word);
+                    }
+                }
             }
         }
         np.matchIgnoreCase(";");

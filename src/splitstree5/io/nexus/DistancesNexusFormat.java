@@ -20,6 +20,8 @@ package splitstree5.io.nexus;
 
 import jloda.util.Basic;
 
+import java.util.List;
+
 /**
  * Distances format
  * Daniel Huson, 12/22/16.
@@ -30,7 +32,7 @@ public class DistancesNexusFormat implements INexusFormat {
     private Triangle optionTriangle;
     private boolean optionLabels;
     private boolean optionDiagonal;
-    private boolean optionVariancesIO = true;
+    private boolean optionVariancesIO = false;
     private String varType = "ols";
 
     /**
@@ -57,7 +59,7 @@ public class DistancesNexusFormat implements INexusFormat {
      *
      * @param triangleLabel the label of triangle
      */
-    public void setOptionTriangle(String triangleLabel) {
+    public void setOptionTriangleByLabel(String triangleLabel) {
         this.optionTriangle = Basic.valueOfIgnoreCase(Triangle.class, triangleLabel);
     }
 
@@ -88,7 +90,7 @@ public class DistancesNexusFormat implements INexusFormat {
      *
      * @return the value of diagonal
      */
-    public boolean getOptionDiagonal() {
+    public boolean isOptionDiagonal() {
         return optionDiagonal;
     }
 
@@ -131,4 +133,11 @@ public class DistancesNexusFormat implements INexusFormat {
     public void setOptionVariancesIO(boolean optionVariancesIO) {
         this.optionVariancesIO = optionVariancesIO;
     }
+
+
+    @Override
+    public List<String> listOptions() {
+        return null;
+    }
+
 }

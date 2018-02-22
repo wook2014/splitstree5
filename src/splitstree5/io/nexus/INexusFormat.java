@@ -19,9 +19,11 @@
 
 package splitstree5.io.nexus;
 
+import splitstree5.utils.IOptionable;
+
 /**
  * nexus format interface
  * Daniel Huson, 2.2018
  */
-public interface INexusFormat {
+public interface INexusFormat extends IOptionable {
 }

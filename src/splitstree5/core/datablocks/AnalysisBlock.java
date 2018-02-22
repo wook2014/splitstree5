@@ -20,6 +20,8 @@
 package splitstree5.core.datablocks;
 
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import splitstree5.core.algorithms.interfaces.IFromAnalysis;
 import splitstree5.core.algorithms.interfaces.IToAnalysis;
 
@@ -29,6 +31,7 @@ import splitstree5.core.algorithms.interfaces.IToAnalysis;
  * Daniel Huson 12/2016
  */
 public class AnalysisBlock extends DataBlock {
+    private final StringProperty info = new SimpleStringProperty("analysis results");
     @Override
     public void clear() {
         super.clear();
@@ -51,6 +54,14 @@ public class AnalysisBlock extends DataBlock {
 
     @Override
     public String getInfo() {
-        return "analysis results";
+        return info.get();
+    }
+
+    public StringProperty infoProperty() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info.set(info);
     }
 }

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -16,23 +16,40 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package splitstree5.gui.algorithmtab;
+
+/*
+ *  Copyright (C) 2018 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package splitstree5.gui.datatab;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.geometry.Insets;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.GridPane;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.FloatStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import jloda.util.Basic;
-import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.DataBlock;
-import splitstree5.core.workflow.Connector;
-import splitstree5.core.workflow.UpdateState;
+import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.undo.UndoManager;
 import splitstree5.utils.Option;
 import splitstree5.utils.OptionsAccessor;
@@ -40,14 +57,16 @@ import splitstree5.utils.OptionsAccessor;
 import java.util.ArrayList;
 
 /**
- * generates a generic algorithm pane
+ * generates a generic data block format toolbar
  * <p>
- * Daniel Huson, 1/8/17.
+ * Daniel Huson, 2/2018
  */
-public class GenericAlgorithmPane<P extends DataBlock, C extends DataBlock> extends AlgorithmPane {
+public class GenericDatablockFormatToolBar extends ToolBar {
+    private final TaxaBlock taxaBlock;
+    private final DataBlock dataBlock;
     private UndoManager undoManager;
+    private final StringProperty text = new SimpleStringProperty();
 
-    private final Connector<P, C> connector;
     private final ArrayList<Option> options = new ArrayList<>();
 
     private final BooleanProperty applicable = new SimpleBooleanProperty(true);
@@ -55,46 +74,28 @@ public class GenericAlgorithmPane<P extends DataBlock, C extends DataBlock> exte
     /**
      * constructor
      *
-     * @param connector
+     * @param dataBlock
      */
-    public GenericAlgorithmPane(Connector<P, C> connector) {
-        this.connector = connector;
-        options.addAll(OptionsAccessor.getAllOptions(connector.getAlgorithm()));
-    }
-
-    /**
-     * constructor
-     *
-     * @param algorithm
-     */
-    public GenericAlgorithmPane(Connector<P, C> connector, Algorithm<P, C> algorithm) {
-        this.connector = connector;
-        options.addAll(OptionsAccessor.getAllOptions(algorithm));
-    }
-
-    @Override
-    public void setUndoManager(UndoManager undoManager) {
-        this.undoManager = undoManager;
+    public GenericDatablockFormatToolBar(TaxaBlock taxaBlock, DataBlock dataBlock) {
+        this.taxaBlock = taxaBlock;
+        this.dataBlock = dataBlock;
+        undoManager = new UndoManager();
+        if (dataBlock.getFormat() != null)
+            options.addAll(OptionsAccessor.getAllOptions(dataBlock.getFormat()));
+        setup();
+        updateText();
     }
 
     /**
      * setup controller
      */
     public void setup() {
-        final GridPane grid = new GridPane();
-        grid.setPadding(new Insets(10, 5, 10, 5));
-        grid.setHgap(10);
-        grid.setVgap(4);
-
-        getChildren().setAll(grid);
-
-        int row = 1;
         try {
             for (final Option option : options) {
                 final String text = Basic.fromCamelCase(option.getName());
                 final Label label = new Label(text);
                 label.setTooltip(new Tooltip(text));
-                grid.add(label, 0, row);
+                getItems().add(label);
                 switch (option.getType().getTypeName()) {
                     case "boolean": {
                         final CheckBox control = new CheckBox("");
@@ -105,11 +106,11 @@ public class GenericAlgorithmPane<P extends DataBlock, C extends DataBlock> exte
                         });
                         if (option.getInfo() != null)
                             control.setTooltip(new Tooltip(option.getInfo()));
-                        grid.add(control, 1, row);
+                        getItems().add(control);
                         break;
                     }
                     case "int": {
-                        javafx.scene.control.TextField control = new TextField();
+                        TextField control = new TextField();
                         control.setPrefColumnCount(6);
                         control.addEventFilter(KeyEvent.ANY, e -> {
                             if (e.getCode() == KeyCode.Z && e.isShortcutDown()) {
@@ -130,11 +131,11 @@ public class GenericAlgorithmPane<P extends DataBlock, C extends DataBlock> exte
                         });
                         if (option.getInfo() != null)
                             control.setTooltip(new Tooltip(option.getInfo()));
-                        grid.add(control, 1, row);
+                        getItems().add(control);
                         break;
                     }
                     case "double": {
-                        javafx.scene.control.TextField control = new TextField();
+                        TextField control = new TextField();
                         control.setPrefColumnCount(8);
                         control.addEventFilter(KeyEvent.ANY, e -> {
                             if (e.getCode() == KeyCode.Z && e.isShortcutDown()) {
@@ -155,11 +156,11 @@ public class GenericAlgorithmPane<P extends DataBlock, C extends DataBlock> exte
                         });
                         if (option.getInfo() != null)
                             control.setTooltip(new Tooltip(option.getInfo()));
-                        grid.add(control, 1, row);
+                        getItems().add(control);
                         break;
                     }
                     case "float": {
-                        javafx.scene.control.TextField control = new TextField();
+                        TextField control = new TextField();
                         control.setPrefColumnCount(6);
                         control.addEventFilter(KeyEvent.ANY, e -> {
                             if (e.getCode() == KeyCode.Z && e.isShortcutDown()) {
@@ -180,7 +181,7 @@ public class GenericAlgorithmPane<P extends DataBlock, C extends DataBlock> exte
                         });
                         if (option.getInfo() != null)
                             control.setTooltip(new Tooltip(option.getInfo()));
-                        grid.add(control, 1, row);
+                        getItems().add(control);
                         break;
                     }
                     case "java.lang.String": {
@@ -212,27 +213,21 @@ public class GenericAlgorithmPane<P extends DataBlock, C extends DataBlock> exte
                         }
                         if (option.getInfo() != null)
                             control.setTooltip(new Tooltip(option.getInfo()));
-                        grid.add(control, 1, row);
+                        getItems().add(control);
                         break;
                     }
                 }
-                row++;
             }
         } catch (Exception ex) {
             Basic.caught(ex);
         }
-    }
 
-    @Override
-    public BooleanProperty applicableProperty() {
-        return applicable;
-    }
-
-    /**
-     * sync model to controller
-     */
-    public void syncModel2Controller() {
-        // not sure what we must do here...
+        if (getItems().size() > 0) {
+            final Button applyButton = new Button("Apply");
+            applyButton.setOnAction((e) -> syncController2Model());
+            applyButton.disableProperty().bind(undoManager.canUndoProperty().not());
+            getItems().add(applyButton);
+        }
     }
 
     /**
@@ -246,6 +241,19 @@ public class GenericAlgorithmPane<P extends DataBlock, C extends DataBlock> exte
                 Basic.caught(e);
             }
         }
-        connector.setState(UpdateState.INVALID);
+        updateText();
+    }
+
+
+    public BooleanProperty applicableProperty() {
+        return applicable;
+    }
+
+    public StringProperty textProperty() {
+        return text;
+    }
+
+    public void updateText() {
+        text.set(dataBlock.getDisplayText());
     }
 }

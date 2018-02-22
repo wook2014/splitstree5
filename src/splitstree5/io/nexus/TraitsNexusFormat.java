@@ -21,8 +21,10 @@ package splitstree5.io.nexus;
 
 import jloda.util.Basic;
 
+import java.util.List;
+
 /**
- * splits format
+ * traits format
  * Daniel Huson, 2/2018
  */
 public class TraitsNexusFormat implements INexusFormat {
@@ -85,5 +87,11 @@ public class TraitsNexusFormat implements INexusFormat {
 
     public void setOptionMissingCharacter(char optionMissingCharacter) {
         this.optionMissingCharacter = optionMissingCharacter;
+    }
+
+
+    @Override
+    public List<String> listOptions() {
+        return null;
     }
 }
