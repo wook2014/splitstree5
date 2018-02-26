@@ -1,0 +1,36 @@
+#nexus
+
+begin taxa;
+dimensions ntax=9;
+taxlabels
+t1
+t2
+t3
+t4
+t5
+t6
+t7
+t8
+t9
+;
+end;
+
+begin traits;
+dimensions ntraits=1;
+format labels=yes;
+traitlabels figure1;
+matrix
+t1 a
+t2 a
+t3 a
+t4 b
+t5 c
+t6 d
+t7  e
+t8 d
+t9 d;
+end;
+
+begin trees;
+tree tree1= (((t1,(t2,t3)),(t4,t5)),((t6,t7),(t8,t9)));
+end;

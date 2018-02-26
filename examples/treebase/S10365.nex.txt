@@ -1,0 +1,564 @@
+#NEXUS
+
+[!This data set was downloaded from TreeBASE, a relational database of phylogenetic knowledge. TreeBASE has been supported by the NSF, Harvard University, Yale University, SDSC and UC Davis. Please do not remove this acknowledgment from the Nexus file.
+
+
+Generated on February 16, 2017; 7:27 GMT
+
+TreeBASE (cc) 1994-2008
+
+Study reference:
+Magallón S., & Castillo A. 2009. Angiosperm diversification through time. American
+Journal of Botany, 96(1): 349-365.
+
+TreeBASE Study URI:  http://purl.org/phylo/treebase/phylows/study/TB2:S10365]
+
+BEGIN TAXA;
+        [TITLE  Taxa1;]
+        DIMENSIONS NTAX=265;
+        TAXLABELS
+            Abelia_spp.
+            Acorus_gramineus
+            Actinidia_spp.
+            Aesculus_spp.
+            Aextoxicon_punctatum
+            Akebia_quinata
+            Alangium_spp.
+            'Alisma plantago-aquatica'
+            Alnus_spp.
+            Altingia_spp.
+            Amborella_trichopoda
+            Anagallis_spp.
+            Androsace_spp.
+            Androstachys_johnsonii
+            Anemopsis_californica
+            Annona_muricata
+            Apium_graveolens
+            Aristolochia_macrophylla
+            Asarum_spp.
+            Asimina_triloba
+            Asparagus_spp.
+            Asteropeia_micraster
+            Aucuba_japonica
+            Austrobaileya_scandens
+            Averrhoa_carambola
+            Bauera_spp.
+            Begonia_spp.
+            Berberidopsis_corallina
+            Bombax_spp.
+            Boopis_spp.
+            Borago_officinalis
+            Brasenia_schreberi
+            Brexia_madagascariensis
+            Bulbine_spp.
+            Burmannia_spp.
+            Buxus_sempervirens
+            Byblis_spp.
+            Cabomba_caroliniana
+            Calycanthus_spp.
+            Camelia_sinensis
+            Campanula_spp.
+            Camptotheca_acuminata
+            Cananga_odorata
+            Canella_winterana
+            Carica_papaya
+            Carludovica_palmata
+            Casearia_spp.
+            Caulophyllum_thalictroides
+            Ceanothus_spp.
+            Celosia_spp.
+            Celtis_philippensis
+            Celtis_yunnanensis
+            Ceratophyllum_demersum
+            Cercidiphyllum_japonicum
+            Chimonanthus_praecox
+            Chloranthus_spp.
+            Chrysolepis_sempervirens
+            Cinnamodendron_spp.
+            Cinnamomum_spp.
+            Cissampelos_pareira
+            Citrus_spp.
+            Clethra_spp.
+            Cobaea_scandens
+            Cocculus_spp.
+            Colchicum_spp.
+            Coriaria_spp.
+            Cornus_mas
+            Cornus_sericea
+            Corokia_cotoneaster
+            Corylopsis_spp.
+            Corynocarpus_laevigatus
+            Crassula_marnierana
+            Crinodendron_spp.
+            Croomia_spp.
+            Crossosoma_spp.
+            Cryptocarya_spp.
+            Cupaniopsis_anacardioides
+            Cypripedium_spp.
+            Cyrilla_racemiflora
+            Daphniphyllum_spp.
+            Datisca_spp.
+            Davidsonia_pruriensis
+            Degeneria_vitensis
+            Delarbrea_michieana
+            Dicentra_spp.
+            Didymeles_perrieri
+            Dillenia_spp.
+            Dioscorea_spp.
+            Dipsacus_spp.
+            Disanthus_cercidifolius
+            Donatia_spp.
+            Doryphora_spp.
+            Drosera_spp.
+            Drymis_spp.
+            Dudleya_viscida
+            Durio_zibethinus
+            Elaeagnus_spp.
+            Eucnide_spp.
+            Eupomatia_bennettii
+            Euptelea_polyandra
+            Eurya_spp.
+            Exbucklandia_populnea
+            Fagus_spp.
+            Fendlera_rupicola
+            Ficus_spp.
+            Galax_spp.
+            Galbulimima_belgraveana
+            Garrya_elliptica
+            Gilia_spp.
+            Ginkgo_biloba
+            Glaucidium_palmatum
+            Gnetum_gnemon
+            Grevillea_spp.
+            Greyia_radlkoferi
+            Griselinia_spp.
+            Gunnera_spp.
+            Gyrocarpus_spp.
+            Halesia_spp.
+            Haloragis_spp.
+            Hamamelis_spp.
+            Hedera_helix
+            Hedycarya_arborea
+            Hedyosmum_arborescens
+            Helianthus_annuus
+            Hernandia_spp.
+            Heuchera_spp.
+            Hortonia_floribunda
+            Houttuynia_cordata
+            Humiria_balsaminifera
+            Humulus_lupulus
+            Hydrangea_spp.
+            Hydrastis_canadensis
+            Hydrolea_ovata
+            Hydrostachys_spp.
+            Idiospermum_australiense
+            Illicium_spp.
+            Impatiens_spp.
+            Ipomea_spp.
+            Juglans_spp.
+            Juncus_effusus
+            Kadsura_japonica
+            Lacistema_aggregatum
+            Lactoris_fernandeziana
+            Lardizabala_biternata
+            Laurus_nobilis
+            Leea_guineensis
+            Lilium_spp.
+            Liquidambar_styraciflua
+            Liriodendron_spp.
+            Lobelia_spp.
+            Magnolia_spp.
+            Mahonia_spp.
+            Manlikara_zapota
+            Melanophylla_spp.
+            Meliosma_veitchiorum
+            Menyanthes_trifoliata
+            Mollugo_verticillata
+            Montinia_caryophyllacea
+            Morella_cerifera
+            Morus_spp.
+            Musa_spp.
+            Myoporum_spp.
+            Nandina_domestica
+            Nelumbo_spp.
+            Nepenthes_spp.
+            Nerium_oleander
+            Nicotiana_spp.
+            Nolana_spp.
+            Nuphar_spp.
+            Nymphaea_spp.
+            Nyssa_spp.
+            Ochroma_pyramidale
+            Olea_europaea
+            Orontium_aquaticum
+            Osyris_spp.
+            Oxalis_spp.
+            Pachysandra_spp.
+            Paeonia_brownii
+            Paeonia_californica
+            Panax_spp.
+            Parnassia_spp.
+            Paulownia_tomentosa
+            Penthorum_sedoides
+            Peperomia_spp.
+            Pereskia_aculeata
+            Petalonyx_spp.
+            Petunia_spp.
+            Peumus_boldus
+            Phelline_spp.
+            Philadelphus_spp.
+            Phlox_spp.
+            Photinia_spp.
+            Phytolacca_americana
+            Piper_spp.
+            Plantago_spp.
+            Platanus_occidentalis
+            Pleea_tenuifolia
+            Plumbago_spp.
+            Podophyllum_peltatum
+            Polygala_spp.
+            Polygonum_spp.
+            Pontederia_cordata
+            Populus_spp.
+            Portulaca_spp.
+            Potamogeton_spp.
+            Prunus_persica
+            Pterostemon_rotundifolius
+            Quercus_spp.
+            Ranunculus_spp.
+            Reinwardtia_indica
+            Restio_spp.
+            Rhabdodendron_spp.
+            Rhodoleia_spp.
+            Ribes_aureum
+            Roridula_gorgonias
+            Roussea_simplex
+            Santalum_album
+            Sarcandra_spp.
+            Sarracenia_spp.
+            Sassafras_spp.
+            Saururus_spp.
+            Scabiosa_spp.
+            Schisandra_spp.
+            Schoepfia_schreberi
+            Scrophularia_spp.
+            Sedum_spp.
+            Siphonodon_spp.
+            Sloanea_spp.
+            Sollya_heterophylla
+            Spathiphyllum_spp.
+            Spiraea_spp.
+            Stackhousia_spp.
+            Staphylea_spp.
+            Stellaria_spp.
+            Sterculia_spp.
+            Styrax_spp.
+            Sullivantia_oregana
+            Swietenia_macrophylla
+            Tacca_spp.
+            Takhtajania_perrieri
+            Tamarix_spp.
+            Tasmannia_spp.
+            Ternstroemia_spp.
+            Tetracarpaea_tasmanica
+            Tetracera_asiatica
+            Tetrameles_nudiflora
+            Tetramerista_spp.
+            Thottea_tomentosa
+            Tofieldia_calyculata
+            Tragopogon_spp.
+            Trichilia_emetica
+            Triglochin_maritimum
+            Trillium_spp.
+            Triphyophyllum_peltatum
+            Tropaeolum_spp.
+            Typha_spp.
+            Vahlia_capensis
+            Valeriana_spp.
+            Verbascum_thapsus
+            Verbena_spp.
+            Veronica_spp.
+            Vitis_spp.
+            Xanthorhiza_simplicissima
+            Zelkova_spp.
+            Zingiber_spp.
+            ;
+END;
+
+
+
+BEGIN TREES;
+      [TITLE rbcL_atpb_18S_26S_matK;
+      LINK TAXA = Taxa1;]
+         TRANSLATE
+            1    Abelia_spp.,
+            2    Acorus_gramineus,
+            3    Actinidia_spp.,
+            4    Aesculus_spp.,
+            5    Aextoxicon_punctatum,
+            6    Akebia_quinata,
+            7    Alangium_spp.,
+            8    'Alisma plantago-aquatica',
+            9    Alnus_spp.,
+            10   Altingia_spp.,
+            11   Amborella_trichopoda,
+            12   Anagallis_spp.,
+            13   Androsace_spp.,
+            14   Androstachys_johnsonii,
+            15   Anemopsis_californica,
+            16   Annona_muricata,
+            17   Apium_graveolens,
+            18   Aristolochia_macrophylla,
+            19   Asarum_spp.,
+            20   Asimina_triloba,
+            21   Asparagus_spp.,
+            22   Asteropeia_micraster,
+            23   Aucuba_japonica,
+            24   Austrobaileya_scandens,
+            25   Averrhoa_carambola,
+            26   Bauera_spp.,
+            27   Begonia_spp.,
+            28   Berberidopsis_corallina,
+            29   Bombax_spp.,
+            30   Boopis_spp.,
+            31   Borago_officinalis,
+            32   Brasenia_schreberi,
+            33   Brexia_madagascariensis,
+            34   Bulbine_spp.,
+            35   Burmannia_spp.,
+            36   Buxus_sempervirens,
+            37   Byblis_spp.,
+            38   Cabomba_caroliniana,
+            39   Calycanthus_spp.,
+            40   Camelia_sinensis,
+            41   Campanula_spp.,
+            42   Camptotheca_acuminata,
+            43   Cananga_odorata,
+            44   Canella_winterana,
+            45   Carica_papaya,
+            46   Carludovica_palmata,
+            47   Casearia_spp.,
+            48   Caulophyllum_thalictroides,
+            49   Ceanothus_spp.,
+            50   Celosia_spp.,
+            51   Celtis_philippensis,
+            52   Celtis_yunnanensis,
+            53   Ceratophyllum_demersum,
+            54   Cercidiphyllum_japonicum,
+            55   Chimonanthus_praecox,
+            56   Chloranthus_spp.,
+            57   Chrysolepis_sempervirens,
+            58   Cinnamodendron_spp.,
+            59   Cinnamomum_spp.,
+            60   Cissampelos_pareira,
+            61   Citrus_spp.,
+            62   Clethra_spp.,
+            63   Cobaea_scandens,
+            64   Cocculus_spp.,
+            65   Colchicum_spp.,
+            66   Coriaria_spp.,
+            67   Cornus_mas,
+            68   Cornus_sericea,
+            69   Corokia_cotoneaster,
+            70   Corylopsis_spp.,
+            71   Corynocarpus_laevigatus,
+            72   Crassula_marnierana,
+            73   Crinodendron_spp.,
+            74   Croomia_spp.,
+            75   Crossosoma_spp.,
+            76   Cryptocarya_spp.,
+            77   Cupaniopsis_anacardioides,
+            78   Cypripedium_spp.,
+            79   Cyrilla_racemiflora,
+            80   Daphniphyllum_spp.,
+            81   Datisca_spp.,
+            82   Davidsonia_pruriensis,
+            83   Degeneria_vitensis,
+            84   Delarbrea_michieana,
+            85   Dicentra_spp.,
+            86   Didymeles_perrieri,
+            87   Dillenia_spp.,
+            88   Dioscorea_spp.,
+            89   Dipsacus_spp.,
+            90   Disanthus_cercidifolius,
+            91   Donatia_spp.,
+            92   Doryphora_spp.,
+            93   Drymis_spp.,
+            94   Drosera_spp.,
+            95   Dudleya_viscida,
+            96   Durio_zibethinus,
+            97   Elaeagnus_spp.,
+            98   Eucnide_spp.,
+            99   Eupomatia_bennettii,
+            100  Euptelea_polyandra,
+            101  Eurya_spp.,
+            102  Exbucklandia_populnea,
+            103  Fagus_spp.,
+            104  Fendlera_rupicola,
+            105  Ficus_spp.,
+            106  Galax_spp.,
+            107  Galbulimima_belgraveana,
+            108  Garrya_elliptica,
+            109  Gilia_spp.,
+            110  Ginkgo_biloba,
+            111  Glaucidium_palmatum,
+            112  Gnetum_gnemon,
+            113  Grevillea_spp.,
+            114  Greyia_radlkoferi,
+            115  Griselinia_spp.,
+            116  Gunnera_spp.,
+            117  Gyrocarpus_spp.,
+            118  Halesia_spp.,
+            119  Haloragis_spp.,
+            120  Hamamelis_spp.,
+            121  Hedera_helix,
+            122  Hedycarya_arborea,
+            123  Hedyosmum_arborescens,
+            124  Helianthus_annuus,
+            125  Hernandia_spp.,
+            126  Heuchera_spp.,
+            127  Hortonia_floribunda,
+            128  Houttuynia_cordata,
+            129  Humiria_balsaminifera,
+            130  Humulus_lupulus,
+            131  Hydrangea_spp.,
+            132  Hydrastis_canadensis,
+            133  Hydrolea_ovata,
+            134  Hydrostachys_spp.,
+            135  Idiospermum_australiense,
+            136  Illicium_spp.,
+            137  Impatiens_spp.,
+            138  Ipomea_spp.,
+            139  Juglans_spp.,
+            140  Juncus_effusus,
+            141  Kadsura_japonica,
+            142  Lacistema_aggregatum,
+            143  Lactoris_fernandeziana,
+            144  Lardizabala_biternata,
+            145  Laurus_nobilis,
+            146  Leea_guineensis,
+            147  Lilium_spp.,
+            148  Liquidambar_styraciflua,
+            149  Liriodendron_spp.,
+            150  Lobelia_spp.,
+            151  Magnolia_spp.,
+            152  Mahonia_spp.,
+            153  Manlikara_zapota,
+            154  Melanophylla_spp.,
+            155  Meliosma_veitchiorum,
+            156  Menyanthes_trifoliata,
+            157  Mollugo_verticillata,
+            158  Montinia_caryophyllacea,
+            159  Morella_cerifera,
+            160  Morus_spp.,
+            161  Musa_spp.,
+            162  Myoporum_spp.,
+            163  Nandina_domestica,
+            164  Nelumbo_spp.,
+            165  Nepenthes_spp.,
+            166  Nerium_oleander,
+            167  Nicotiana_spp.,
+            168  Nolana_spp.,
+            169  Nuphar_spp.,
+            170  Nymphaea_spp.,
+            171  Nyssa_spp.,
+            172  Ochroma_pyramidale,
+            173  Olea_europaea,
+            174  Orontium_aquaticum,
+            175  Osyris_spp.,
+            176  Oxalis_spp.,
+            177  Pachysandra_spp.,
+            178  Paeonia_brownii,
+            179  Paeonia_californica,
+            180  Panax_spp.,
+            181  Parnassia_spp.,
+            182  Paulownia_tomentosa,
+            183  Penthorum_sedoides,
+            184  Peperomia_spp.,
+            185  Pereskia_aculeata,
+            186  Petalonyx_spp.,
+            187  Petunia_spp.,
+            188  Peumus_boldus,
+            189  Phelline_spp.,
+            190  Philadelphus_spp.,
+            191  Phlox_spp.,
+            192  Photinia_spp.,
+            193  Phytolacca_americana,
+            194  Piper_spp.,
+            195  Plantago_spp.,
+            196  Platanus_occidentalis,
+            197  Pleea_tenuifolia,
+            198  Plumbago_spp.,
+            199  Podophyllum_peltatum,
+            200  Polygala_spp.,
+            201  Polygonum_spp.,
+            202  Pontederia_cordata,
+            203  Populus_spp.,
+            204  Portulaca_spp.,
+            205  Potamogeton_spp.,
+            206  Prunus_persica,
+            207  Pterostemon_rotundifolius,
+            208  Quercus_spp.,
+            209  Ranunculus_spp.,
+            210  Reinwardtia_indica,
+            211  Restio_spp.,
+            212  Rhabdodendron_spp.,
+            213  Rhodoleia_spp.,
+            214  Ribes_aureum,
+            215  Roridula_gorgonias,
+            216  Roussea_simplex,
+            217  Santalum_album,
+            218  Sarcandra_spp.,
+            219  Sarracenia_spp.,
+            220  Sassafras_spp.,
+            221  Saururus_spp.,
+            222  Scabiosa_spp.,
+            223  Schisandra_spp.,
+            224  Schoepfia_schreberi,
+            225  Scrophularia_spp.,
+            226  Sedum_spp.,
+            227  Siphonodon_spp.,
+            228  Sloanea_spp.,
+            229  Sollya_heterophylla,
+            230  Spathiphyllum_spp.,
+            231  Spiraea_spp.,
+            232  Stackhousia_spp.,
+            233  Staphylea_spp.,
+            234  Stellaria_spp.,
+            235  Sterculia_spp.,
+            236  Styrax_spp.,
+            237  Sullivantia_oregana,
+            238  Swietenia_macrophylla,
+            239  Tacca_spp.,
+            240  Takhtajania_perrieri,
+            241  Tamarix_spp.,
+            242  Tasmannia_spp.,
+            243  Ternstroemia_spp.,
+            244  Tetracarpaea_tasmanica,
+            245  Tetracera_asiatica,
+            246  Tetrameles_nudiflora,
+            247  Tetramerista_spp.,
+            248  Thottea_tomentosa,
+            249  Tofieldia_calyculata,
+            250  Tragopogon_spp.,
+            251  Trichilia_emetica,
+            252  Triglochin_maritimum,
+            253  Trillium_spp.,
+            254  Triphyophyllum_peltatum,
+            255  Tropaeolum_spp.,
+            256  Typha_spp.,
+            257  Vahlia_capensis,
+            258  Valeriana_spp.,
+            259  Verbascum_thapsus,
+            260  Verbena_spp.,
+            261  Veronica_spp.,
+            262  Vitis_spp.,
+            263  Xanthorhiza_simplicissima,
+            264  Zelkova_spp.,
+            265  Zingiber_spp.;
+      TREE 265_PP = [&R] (((((((((((((((((((((1,(89,222)),258),((((17,84),((121,180),229)),115),154)),((((((30,(124,250)),156),69),(91,189)),(41,150)),216)),((23,108),((((31,(133,((138,((167,168),187)),158))),((37,(((162,(225,259)),(182,260)),(195,261))),173)),166),257))),(((((((3,215),219),(62,79)),((((12,13),153),(101,243)),(118,236))),(40,106)),(63,(109,191))),(137,247))),((7,(67,68)),((42,171),((98,186),((104,(131,190)),134))))),(((22,((50,234),((157,(185,204)),193))),(((94,165),254),((198,201),241))),212)),(5,28)),((175,217),224)),((((((((4,77),(61,(238,251))),((((29,172),235),96),(45,255))),(75,233)),(((((9,(139,159)),((57,208),103)),(((27,246),81),(66,71))),((((49,97),(((51,264),52),((105,160),130))),((192,206),231)),200)),((((14,(129,210)),((47,203),142)),((33,(227,232)),181)),((25,176),((26,82),(73,228)))))),114),(146,262)),((((10,148),(((70,120),90),(102,213))),(54,80)),((((72,(95,226)),((119,183),244)),(178,179)),(((126,237),214),207))))),((87,245),116)),((36,177),86)),(((113,196),164),155)),((((6,144),(((((48,163),199),152),(111,(132,(209,263)))),(60,64))),100),85)),53),(((2,((((8,(205,252)),(197,249)),(174,230)),(((((21,34),78),(((140,211),256),((161,265),202))),((65,147),253)),((35,(88,239)),(46,74))))),((56,218),123)),((((((15,221),128),(184,194)),((18,248),(19,143))),((44,58),((93,242),240))),(((((16,20),43),99),((83,107),(149,151))),(((39,55),135),((((59,(145,220)),76),((117,125),((122,127),188))),92)))))),(24,(136,(141,223)))),(11,((32,38),(169,170)))),112),110);
+      TREE 265_cons = [&R] (((((((((((((((((((((1,(89,222)),258),((((17,84),((121,180),229)),115),154)),((((((30,(124,250)),156),69),(91,189)),(41,150)),216)),((23,108),((((31,166),((133,158),(138,((167,168),187)))),((37,(((162,(225,259)),(182,260)),(195,261))),173)),257))),(((((((3,215),219),(62,79)),(((12,13),153),(101,243),(118,236))),40,106),(63,(109,191))),(137,247))),((7,(67,68)),((42,171),((98,186),((104,(131,190)),134))))),(((22,((50,234),((157,(185,204)),193))),(((94,165),254),((198,201),241))),212)),(5,28)),((175,217),224)),((((((((4,77),(61,(238,251))),((((29,172),235),96),(45,255))),(75,233)),(((((9,(139,159)),((57,208),103)),(((27,246),81),(66,71))),((((49,97),(((51,264),52),((105,160),130))),((192,206),231)),200)),((((14,(129,210)),((47,203),142)),((33,(227,232)),181)),((25,176),((26,82),(73,228)))))),114),(146,262)),(((10,148),(54,80),(((70,120),90),(102,213))),((((72,(95,226)),((119,183),244)),(178,179)),(((126,237),214),207))))),(87,245),116),((36,177),86)),(((113,196),164),155)),((((6,144),(((((48,163),199),152),(111,(132,(209,263)))),(60,64))),100),85)),53),(((2,(((8,(205,252)),(174,230),(197,249)),(((((21,34),78),(((140,211),256),((161,265),202))),((65,147),253)),((35,(88,239)),(46,74))))),((56,218),123)),((((((15,221),128),(184,194)),((18,248),(19,143))),((44,58),((93,242),240))),((((16,20),43),(((83,107),(149,151)),99)),(((39,55),135),((((59,(145,220)),76),((117,125),((122,127),188))),92)))))),(24,(136,(141,223)))),(11,((32,38),(169,170)))),112),110);
+
+
+
+END;
