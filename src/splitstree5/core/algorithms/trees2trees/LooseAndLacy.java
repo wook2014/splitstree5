@@ -17,49 +17,12 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- *  Copyright (C) 2018 Daniel H. Huson
- *
- *  (Some files contain contributions from other authors, who are then mentioned separately.)
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/*
- *  Copyright (C) 2018 Daniel H. Huson
- *
- *  (Some files contain contributions from other authors, who are then mentioned separately.)
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package splitstree5.core.algorithms.trees2trees;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import jloda.graph.*;
+import javafx.beans.property.*;
+import jloda.graph.Edge;
+import jloda.graph.Node;
+import jloda.graph.NodeArray;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
 import jloda.util.ProgressListener;
@@ -77,52 +40,99 @@ import java.util.*;
  * Daniel Huson, 2.2018
  */
 public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements IFromTrees, IToTrees {
+    public enum SpeciesDefinition {Loose, Lacy, Both}
+
+    private final ObjectProperty<SpeciesDefinition> optionSpeciesDefinition=new SimpleObjectProperty<>(SpeciesDefinition.Both);
     private final IntegerProperty optionTraitNumber = new SimpleIntegerProperty(1);
+    private final BooleanProperty optionUseAllTraits=new SimpleBooleanProperty();
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock parent, TreesBlock child) throws Exception {
         final TraitsBlock traitsBlock = taxaBlock.getTraitsBlock();
 
+        final int[] upper;
+        final int[] lower;
+
+        if(isOptionUseAllTraits()) {
+            upper=computeLeastUpperBound(taxaBlock.getNtax(),traitsBlock);
+            System.err.println("Upper: "+Basic.toString(upper," "));
+            lower=computeGreatestLowerBound(taxaBlock.getNtax(),traitsBlock);
+            System.err.println("Lower: "+Basic.toString(lower," "));
+            System.err.println(String.format("Species definitions based on all %d traits",traitsBlock.getNTraits()));
+        }
+        else {
+            upper=lower= computeTax2ValueForTrait(taxaBlock.getNtax(),getOptionTraitNumber(),traitsBlock);
+            System.err.println(String.format("Species definitions based on trait: [%d] %s", getOptionTraitNumber(), traitsBlock.getTraitLabel(getOptionTraitNumber())));
+        }
+
         final PhyloTree tree = parent.getTrees().get(0);
 
-        final NodeArray<BitSet> traitValuesBelow = new NodeArray<>(tree);
-        final NodeArray<BitSet> taxaBelow = new NodeArray<>(tree);
-
-        computeTaxaAndValuesBelowRec(tree, tree.getRoot(), traitsBlock, getOptionTraitNumber(), taxaBelow, traitValuesBelow);
-
         // compute loose species:
-        final Set<BitSet> looseSpecies = new TreeSet<>(createComparator());
-        computeLooseSpeciesRec(tree.getRoot(), taxaBelow, traitValuesBelow, looseSpecies);
+        if(getOptionSpeciesDefinition()!=SpeciesDefinition.Lacy)
+        {
+            final NodeArray<BitSet> traitValuesBelow = new NodeArray<>(tree);
+            final NodeArray<BitSet> taxaBelow = new NodeArray<>(tree);
 
-        // compute loose species tree:
-        PhyloTree looseTree = treeFromParition(taxaBlock, looseSpecies);
-        looseTree.setName("Loose species");
+            computeTaxaAndValuesBelowRec(tree, tree.getRoot(),upper, taxaBelow, traitValuesBelow);
 
+            // compute loose species:
+            final Set<BitSet> looseSpecies = new TreeSet<>(createComparator());
+            computeLooseSpeciesRec(tree.getRoot(), taxaBelow, traitValuesBelow, looseSpecies);
+
+            // compute loose species tree:
+            PhyloTree looseTree = treeFromParition(taxaBlock, looseSpecies);
+            looseTree.setName("Loose species");
+
+            System.err.println(String.format("Loose species (%d):", looseSpecies.size()));
+            {
+                int count = 0;
+                for (BitSet set : looseSpecies) {
+                    System.err.println(String.format("[%d] %s", ++count, Basic.toString(set, " ")));
+                }
+            }
+
+            child.getTrees().add(looseTree);
+        }
 
         // compute lacy species:
-        final Set<BitSet> lacySpecies = new TreeSet<>(createComparator());
-        computeLacySpeciesRec(tree.getRoot(), taxaBelow, traitValuesBelow, lacySpecies);
-
-        PhyloTree lacyTree = treeFromParition(taxaBlock, lacySpecies);
-        lacyTree.setName("Lacy species");
-
-        System.err.println(String.format("Species definitions based on trait: [%d] %s", getOptionTraitNumber(), traitsBlock.getTraitLabel(getOptionTraitNumber())));
-        System.err.println(String.format("Loose species (%d):", looseSpecies.size()));
+        if(getOptionSpeciesDefinition()!=SpeciesDefinition.Loose)
         {
-            int count = 0;
-            for (BitSet set : looseSpecies) {
-                System.err.println(String.format("[%d] %s", ++count, Basic.toString(set, " ")));
-            }
-        }
-        System.err.println(String.format("Lacy species (%d):", lacySpecies.size()));
-        {
-            int count = 0;
-            for (BitSet set : lacySpecies) {
-                System.err.println(String.format("[%d] %s", ++count, Basic.toString(set, " ")));
-            }
-        }
+            final NodeArray<BitSet> traitValuesBelow = new NodeArray<>(tree);
+            final NodeArray<BitSet> taxaBelow = new NodeArray<>(tree);
 
-        child.getTrees().addAll(looseTree, lacyTree);
+            computeTaxaAndValuesBelowRec(tree, tree.getRoot(),lower, taxaBelow, traitValuesBelow);
+
+            final Set<BitSet> lacySpecies = new TreeSet<>(createComparator());
+            computeLacySpeciesRec(tree.getRoot(), taxaBelow, traitValuesBelow, lacySpecies);
+
+            PhyloTree lacyTree = treeFromParition(taxaBlock, lacySpecies);
+            lacyTree.setName("Tight (lacy) species");
+
+            System.err.println(String.format("Tight (lacy) species (%d):", lacySpecies.size()));
+            {
+                int count = 0;
+                for (BitSet set : lacySpecies) {
+                    System.err.println(String.format("[%d] %s", ++count, Basic.toString(set, " ")));
+                }
+            }
+            child.getTrees().add(lacyTree);
+
+        }
+    }
+
+    /**
+     * compute the tax to value mapping
+     * @param ntax
+     * @param trait
+     * @param traitsBlock
+     * @return taxon to value m,apping
+     */
+    public int[] computeTax2ValueForTrait(int ntax, int trait, TraitsBlock traitsBlock) {
+        final int[] tax2value=new int[ntax+1];
+            for (int tax = 1; tax <= ntax; tax++) {
+                tax2value[tax]=traitsBlock.getTraitValue(tax, trait);
+            }
+            return tax2value;
     }
 
     /**
@@ -130,21 +140,20 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
      *
      * @param tree
      * @param v
-     * @param traitsBlock
-     * @param traitNumber
+     * @param tax2value
      * @param traitValuesBelow
      */
-    private void computeTaxaAndValuesBelowRec(PhyloTree tree, Node v, TraitsBlock traitsBlock, int traitNumber, NodeArray<BitSet> taxaBelow, NodeArray<BitSet> traitValuesBelow) {
+    private void computeTaxaAndValuesBelowRec(PhyloTree tree, Node v, int[] tax2value, NodeArray<BitSet> taxaBelow, NodeArray<BitSet> traitValuesBelow) {
         final BitSet taxa = new BitSet();
         final BitSet values = new BitSet();
         if (tree.getNumberOfTaxa(v) > 0) {
             for (int t : tree.getTaxa(v)) {
                 taxa.set(t);
-                values.set(traitsBlock.getTraitValue(t, traitNumber));
+                values.set(tax2value[t]);
             }
         }
         for (Node w : v.children()) {
-            computeTaxaAndValuesBelowRec(tree, w, traitsBlock, traitNumber, taxaBelow, traitValuesBelow);
+            computeTaxaAndValuesBelowRec(tree, w, tax2value, taxaBelow, traitValuesBelow);
             taxa.or(taxaBelow.get(w));
             values.or(traitValuesBelow.get(w));
         }
@@ -154,79 +163,79 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
 
     /**
      * compute the least upper bound for all traits
+     * Runtime is O(ntax*ntax*nTraits)
      *
      * @param ntax
      * @param traitsBlock
-     * @result lub
+     * @result lub, taxon to part mapping
      */
-    private Set<BitSet> computeLeastUpperBound(int ntax, TraitsBlock traitsBlock) {
-        final Graph graph = new Graph();
-        final Node[] tax2node = new Node[ntax + 1];
-
-        for (int i = 1; i <= ntax; i++) {
-            tax2node[i] = graph.newNode();
-            tax2node[i].setInfo(i);
-        }
-
-        final Map<Integer, Node> state2node = new HashMap<>();
-
+    private int[] computeLeastUpperBound(int ntax, TraitsBlock traitsBlock) {
+        final ArrayList<BitSet> sets = new ArrayList<>(); // all sets defined by all traits
         for (int trait = 1; trait <= traitsBlock.getNTraits(); trait++) {
-            state2node.clear();
+            final Map<Integer, BitSet> state2set = new HashMap<>();
             for (int tax = 1; tax <= ntax; tax++) {
                 final int state = traitsBlock.getTraitValue(tax, trait);
-                final Node v = tax2node[tax];
-                final Node w = state2node.get(state);
-                if (w == null)
-                    state2node.put(state, v);
-                else if (!v.isAdjacent(w))
-                    graph.newEdge(v, w);
+                final BitSet set = state2set.computeIfAbsent(state, k -> new BitSet());
+                set.set(tax);
             }
+            sets.addAll(state2set.values());
         }
 
-        final Set<BitSet> result = new TreeSet<>(createComparator());
-
-        final NodeSet visited = new NodeSet(graph);
+        final int[] tax2part = new int[ntax + 1]; // initially, each taxon is mapped to its own part
         for (int t = 1; t <= ntax; t++) {
-            Node v = tax2node[t];
-            if (!visited.contains(v)) {
-                final BitSet set = new BitSet();
-                final Stack<Node> stack = new Stack<>();
-                stack.push(v);
-                while (stack.size() > 0) {
-                    v = stack.pop();
-                    for (Node w : v.adjacentNodes()) {
-                        if (!visited.contains(w)) {
-                            visited.add(w);
-                            set.set((Integer) w.getInfo());
-                            for (Node u : w.adjacentNodes()) {
-                                if (!visited.contains(u))
-                                    stack.push(u);
-                            }
-                            w.deleteAllAdjacentEdges();
-                        }
-                    }
-                }
-                if (set.cardinality() > 0)
-                    result.add(set);
+            tax2part[t] = t;
+        }
+
+        // any taxa in the same set are mapped to the same part (the part of the smallest taxon in the set)
+        for (BitSet set : sets) {
+            final int part = tax2part[set.nextSetBit(1)];
+            for (int tax = set.nextSetBit(2); tax != -1; tax = set.nextSetBit(tax + 1)) {
+                tax2part[tax] = part;
             }
         }
-        return result;
+        return tax2part;
     }
 
 
     /**
      * compute the greatest lower bound for all traits
+     * Runtime is O(ntax*log(ntax)*nTraits)
      *
      * @param ntax
      * @param traitsBlock
-     * @result glb
+     * @result glb, taxon to part mapping
      */
-    private Set<BitSet> computeGreatestLowerBound(int ntax, TraitsBlock traitsBlock) {
-        final Set<BitSet> result = new TreeSet<>(createComparator());
+    private int[] computeGreatestLowerBound(int ntax, TraitsBlock traitsBlock) {
 
-        System.err.println("Not implemented");
+        // for each trait, map each taxon to the trait-defined set that contains it
+        final Map<Integer,BitSet>[] trait2tax2set=new HashMap[traitsBlock.getNTraits()+1];
+        for (int trait = 1; trait <= traitsBlock.getNTraits(); trait++) {
+            trait2tax2set[trait]=new HashMap<>();
+            final Map<Integer, BitSet> state2set = new HashMap<>();
+            for (int tax = 1; tax <= ntax; tax++) {
+                final int state = traitsBlock.getTraitValue(tax, trait);
+                final BitSet set = state2set.computeIfAbsent(state, k -> new BitSet());
+                set.set(tax);
+                trait2tax2set[trait].put(tax,set);
+            }
+        }
 
-        return result;
+        final int[] tax2part=new int[ntax+1];
+
+        for(int tax=1;tax<=ntax;tax++) {
+            if(tax2part[tax]==0) {
+                final BitSet intersection=new BitSet();
+                intersection.set(1,ntax+1);
+
+                for (int trait = 1; trait <= traitsBlock.getNTraits(); trait++) {
+                    final BitSet set=trait2tax2set[trait].get(tax);
+                    intersection.and(set);
+                }
+                for(int t=intersection.nextSetBit(1);t!=-1;t=intersection.nextSetBit(t+1))
+                    tax2part[t]=tax;
+            }
+        }
+        return tax2part;
     }
 
 
@@ -258,15 +267,15 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
      * @param v
      * @param taxaBelow
      * @param traitValuesBelow
-     * @param lacySplits
+     * @param lacySpecies
      */
-    private void computeLacySpeciesRec(Node v, NodeArray<BitSet> taxaBelow, NodeArray<BitSet> traitValuesBelow, Set<BitSet> lacySplits) {
+    private void computeLacySpeciesRec(Node v, NodeArray<BitSet> taxaBelow, NodeArray<BitSet> traitValuesBelow, Set<BitSet> lacySpecies) {
         final int sizeV = traitValuesBelow.get(v).cardinality();
         if (sizeV == 1)
-            lacySplits.add(taxaBelow.get(v));
+            lacySpecies.add(taxaBelow.get(v));
         else
             for (Node w : v.children())
-                computeLacySpeciesRec(w, taxaBelow, traitValuesBelow, lacySplits);
+                computeLacySpeciesRec(w, taxaBelow, traitValuesBelow, lacySpecies);
     }
 
 
@@ -305,31 +314,6 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
         return tree;
     }
 
-
-    @Override
-    public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent, TreesBlock child) {
-        return taxaBlock.getTraitsBlock() != null && taxaBlock.getTraitsBlock().getNTraits() > 0 && parent.getNTrees() > 0;
-
-    }
-
-    public int getOptionTraitNumber() {
-        return optionTraitNumber.get();
-    }
-
-    public IntegerProperty optionTraitNumberProperty() {
-        return optionTraitNumber;
-    }
-
-    public void setOptionTraitNumber(int optionTraitNumber) {
-        this.optionTraitNumber.set(optionTraitNumber);
-    }
-
-    @Override
-    public String getCitation() {
-        return "Hoppe et al (2018);Anica Hoppe, Sonja Türpitz, Mike Steel. Species notions that combine phylogenetic trees and phenotypic partitions. arXiv:1711.08145v1.";
-
-    }
-
     private static Comparator<BitSet> createComparator() {
         return (s1, s2) -> {
             int a1 = -1;
@@ -346,5 +330,52 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
 
             }
         };
+    }
+
+    @Override
+    public String getCitation() {
+        return "Hoppe et al (2018);Anica Hoppe, Sonja Türpitz, Mike Steel. Species notions that combine phylogenetic trees and phenotypic partitions. arXiv:1711.08145v1.";
+    }
+
+    @Override
+    public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent, TreesBlock child) {
+        return taxaBlock.getTraitsBlock() != null && taxaBlock.getTraitsBlock().getNTraits() > 0 && parent.getNTrees() > 0;
+
+    }
+
+    public SpeciesDefinition getOptionSpeciesDefinition() {
+        return optionSpeciesDefinition.get();
+    }
+
+    public ObjectProperty<SpeciesDefinition> optionSpeciesDefinitionProperty() {
+        return optionSpeciesDefinition;
+    }
+
+    public void setOptionSpeciesDefinition(SpeciesDefinition optionSpeciesDefinition) {
+        this.optionSpeciesDefinition.set(optionSpeciesDefinition);
+    }
+
+    public int getOptionTraitNumber() {
+        return optionTraitNumber.get();
+    }
+
+    public IntegerProperty optionTraitNumberProperty() {
+        return optionTraitNumber;
+    }
+
+    public void setOptionTraitNumber(int optionTraitNumber) {
+        this.optionTraitNumber.set(optionTraitNumber);
+    }
+
+    public boolean isOptionUseAllTraits() {
+        return optionUseAllTraits.get();
+    }
+
+    public BooleanProperty optionUseAllTraitsProperty() {
+        return optionUseAllTraits;
+    }
+
+    public void setOptionUseAllTraits(boolean optionUseAllTraits) {
+        this.optionUseAllTraits.set(optionUseAllTraits);
     }
 }

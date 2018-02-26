@@ -60,7 +60,7 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
                         if (readLines % ntax == 1) interleavedBlockLinesLength = line.length();
                         else {
                             if (interleavedBlockLinesLength != 0 && line.length() != interleavedBlockLinesLength)
-                                throw new IOExceptionWithLineNumber( "Error for interleaved format matrix." +
+                                throw new IOExceptionWithLineNumber("Error for interleaved format matrix." +
                                         "\nLine " + counter + " must have the same length as line "+ (counter-1), counter);
                         }
                     }

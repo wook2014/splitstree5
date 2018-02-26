@@ -20,6 +20,7 @@
 package jloda.util.parse;
 
 import jloda.util.Basic;
+import splitstree5.io.imports.IOExceptionWithLineNumber;
 
 import java.io.*;
 import java.util.*;
@@ -52,7 +53,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
         while (sst.nextToken() != NexusStreamParser.TT_EOF) {
             nextToken();
             if (!toString().equalsIgnoreCase(sst.toString())) {
-                throw new IOException("Line " + lineno() + ": '" + sst.toString() + "' expected, got: '" + toString() + "'");
+                throw new IOExceptionWithLineNumber(sst.toString() + "' expected, got: '" + toString() + "'", lineno());
             }
         }
     }
@@ -69,8 +70,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
         while (sst.nextToken() != NexusStreamParser.TT_EOF) {
             nextToken();
             if (!toString().equals(sst.toString())) {
-                throw new IOException("Line " + lineno() +
-                        ": '" + sst.toString() + "' expected, got: '" + toString() + "'");
+                throw new IOExceptionWithLineNumber(sst.toString() + "' expected, got: '" + toString() + "'", lineno());
             }
         }
     }
@@ -84,8 +84,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
     public void matchWordIgnoreCase(String str) throws IOException {
         nextToken();
         if (!toString().equalsIgnoreCase(str)) {
-            throw new IOException("Line " + lineno() +
-                    ": '" + str + "' expected, got: '" + toString() + "'");
+            throw new IOExceptionWithLineNumber(str + "' expected, got: '" + toString() + "'", lineno());
         }
     }
 
@@ -98,8 +97,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
     public void matchWordRespectCase(String str) throws IOException {
         nextToken();
         if (!toString().equals(str)) {
-            throw new IOException("Line " + lineno() +
-                    ": '" + str + "' expected, got: '" + toString() + "'");
+            throw new IOExceptionWithLineNumber(str + "' expected, got: '" + toString() + "'", lineno());
         }
     }
 
@@ -110,7 +108,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
      * @throws IOException
      */
     public void matchBeginBlock(String blockName) throws IOException {
-        matchAnyTokenIgnoreCase("begin beginblock");
+        matchAnyTokenIgnoreCase("begin beginBlock");
         matchIgnoreCase(blockName + ";");
     }
 
@@ -120,7 +118,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
      * @throws IOException
      */
     public void matchEndBlock() throws IOException {
-        matchAnyTokenIgnoreCase("end endblock");
+        matchAnyTokenIgnoreCase("end endBlock");
         matchRespectCase(";");
     }
 
@@ -135,8 +133,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
         try {
             nextToken();
             if (!toString().equalsIgnoreCase(str)) {
-                throw new IOException("Line " + lineno() +
-                        ": '" + str + "' expected, got: '" + toString() + "'");
+                throw new IOExceptionWithLineNumber(str + "' expected, got: '" + toString() + "'", lineno());
             }
         } finally {
             popPunctuationCharacters();
@@ -154,8 +151,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
         try {
             nextToken();
             if (!toString().equals(str)) {
-                throw new IOException("Line " + lineno() +
-                        ": '" + str + "' expected, got: '" + toString() + "'");
+                throw new IOExceptionWithLineNumber(str + "' expected, got: '" + toString() + "'", lineno());
             }
         } finally {
             popPunctuationCharacters();
@@ -316,8 +312,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
             if (ttype == TT_EOF) {
                 if (last == null)
                     break;
-                throw new IOException("Line " + lineno() + ": '" + last +
-                        "' expected, got EOF");
+                throw new IOExceptionWithLineNumber("'"+last + "' expected, got EOF", lineno());
             }
             list.add(toString().toLowerCase());
             nextToken();
@@ -344,8 +339,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
             if (ttype == TT_EOF) {
                 if (last == null)
                     break;
-                throw new IOException("Line " + lineno() + ": '" + last +
-                        "' expected, got EOF");
+                throw new IOExceptionWithLineNumber("'" + last + "' expected, got EOF", lineno());
             }
             list.add(toString());
             nextToken();
@@ -409,7 +403,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
             while (!toString().equals(last)) {
                 result += " " + toString();
                 if (ttype == TT_EOF)
-                    throw new IOException("Line " + lineno() + ": '" + last + "' expected, got EOF");
+                    throw new IOExceptionWithLineNumber("'" + last + "' expected, got EOF", lineno());
                 nextToken();
             }
 
@@ -440,7 +434,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
         while (!toString().equals(last)) {
             buf.append("'").append(toString()).append("'");
             if (ttype == TT_EOF)
-                throw new IOException("Line " + lineno() + ": '" + last + "' expected, got EOF");
+                throw new IOExceptionWithLineNumber("'" + last + "' expected, got EOF", lineno());
             nextToken();
         }
 
@@ -481,7 +475,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
         while (!toString().equalsIgnoreCase(last)) {
             result += " " + toString().toLowerCase();
             if (ttype == TT_EOF)
-                throw new IOException("Line " + lineno() + ": '" + last + "' expected, got EOF");
+                throw new IOExceptionWithLineNumber("'" + last + "' expected, got EOF", lineno());
             nextToken();
         }
         if (result.equals(""))
@@ -506,8 +500,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
         while (!toString().equals(last)) {
             result += " " + toString();
             if (ttype == TT_EOF)
-                throw new IOException("Line " + lineno() + ": '" + last +
-                        "' expected, got EOF");
+                throw new IOExceptionWithLineNumber("'" + last + "' expected, got EOF", lineno());
             nextToken();
         }
         if (result.equals(""))
@@ -582,7 +575,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                 try {
                     result = Float.parseFloat(str);
                 } catch (NumberFormatException ex) {
-                    throw new IOException("Number expected, got: '" + str + "'");
+                    throw new IOExceptionWithLineNumber("Number expected, got: '" + str + "'", lineno());
                 }
             } else // copy unused tokens back to token list
             {
@@ -670,7 +663,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                 result = s.toString();
                 found = true;
                 if (legalValues != null && !findIgnoreCase(legalValues, result))
-                    throw new IOException("Line " + lineno() + ": " + token + " '" + result + "': illegal value");
+                    throw new IOExceptionWithLineNumber(token + " '" + result + "': illegal value", lineno());
             } else {
                 if (s.nextToken() != NexusStreamParser.TT_EOF)
                     tokens.add(s.toString());
@@ -706,13 +699,11 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                 s.nextToken();
                 String str = s.toString();
                 if (str.length() > 1)
-                    throw new IOException
-                            ("Line " + lineno() + ": " + token + " '" + result + "': char expected");
+                    throw new IOExceptionWithLineNumber(token + " '" + result + "': char expected", lineno());
                 result = str.charAt(0);
                 found = true;
                 if (legalValues != null && legalValues.indexOf((int) result) == -1)
-                    throw new IOException
-                            ("Line " + lineno() + ": " + token + " '" + result + "': illegal value");
+                    throw new IOExceptionWithLineNumber(token + " '" + result + "': illegal value", lineno());
             } else {
                 if (s.nextToken() != NexusStreamParser.TT_EOF)
                     tokens.add(s.toString());
@@ -748,13 +739,11 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                 try {
                     result = Double.parseDouble(s.sval);
                 } catch (Exception e) {
-                    throw new IOException
-                            ("Line " + lineno() + ": " + token + " '" + result + "': number expected");
+                    throw new IOExceptionWithLineNumber(token + " '" + result + "': number expected", lineno());
                 }
                 if (result < minValue || result > maxValue)
-                    throw new IOException
-                            ("Line " + lineno() + ": " + token + " '" + result + "': out of range: "
-                                    + minValue + " - " + maxValue);
+                    throw new IOExceptionWithLineNumber(token + " '" + result + "': out of range: "
+                                    + minValue + " - " + maxValue, lineno());
                 found = true;
             } else {
                 if (s.nextToken() != NexusStreamParser.TT_EOF)
@@ -792,13 +781,10 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                 try {
                     result = Integer.parseInt(s.sval);
                 } catch (Exception e) {
-                    throw new IOException
-                            ("Line " + lineno() + ": " + token + " '" + result + "': number expected");
+                    throw new IOExceptionWithLineNumber(token + " '" + result + "': number expected", lineno());
                 }
                 if (result < minValue || result > maxValue)
-                    throw new IOException
-                            ("Line " + lineno() + ": " + token + " '" + result + "': out of range: "
-                                    + minValue + " - " + maxValue);
+                    throw new IOExceptionWithLineNumber(token + " '" + result + "': out of range: " + minValue + " - " + maxValue, lineno());
                 found = true;
             } else {
                 if (s.nextToken() != NexusStreamParser.TT_EOF)
@@ -861,7 +847,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
      */
     public void checkFindDone(List<String> tokens) throws IOException {
         if (tokens.size() != 0)
-            throw new IOException("Line " + lineno() + ": unexpected tokens: " + tokens);
+            throw new IOExceptionWithLineNumber("unexpected tokens: " + tokens, lineno());
     }
 
     /**
@@ -876,7 +862,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
             nval = Integer.valueOf(sval);
         } catch (Exception ex) {
             popPunctuationCharacters();
-            throw new IOException("Line " + lineno() + ": INTEGER expected, got: '" + sval + "'");
+            throw new IOExceptionWithLineNumber("INTEGER expected, got: '" + sval + "'", lineno());
         }
         popPunctuationCharacters();
         return (int) nval;
@@ -894,11 +880,11 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
 
         if (result < low || result > high) {
             if (low > Integer.MIN_VALUE && high == Integer.MAX_VALUE)
-                throw new IOException("Line " + lineno() + ":  value " + result + " smaller than minimum: " + low);
-            else if (low == Integer.MIN_VALUE && high < Integer.MAX_VALUE)
-                throw new IOException("Line " + lineno() + ":  value " + result + " larger than maximum: " + high);
+                throw new IOExceptionWithLineNumber("value " + result + " smaller than minimum: " + low, lineno());
+            else if (low == Integer.MIN_VALUE )
+                throw new IOExceptionWithLineNumber("value " + result + " larger than maximum: " + high, lineno());
             else
-                throw new IOException("Line " + lineno() + ":  value " + result + " out of range: " + low + " - " + high);
+                throw new IOExceptionWithLineNumber("value " + result + " out of range: " + low + " - " + high, lineno());
         }
         return result;
     }
@@ -916,7 +902,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
             nval = Double.valueOf(sval);
         } catch (Exception ex) {
             popPunctuationCharacters();
-            throw new IOException("Line " + lineno() + ": DOUBLE expected, got: '" + sval + "'");
+            throw new IOExceptionWithLineNumber("DOUBLE expected, got: '" + sval + "'", lineno());
         }
         popPunctuationCharacters();
         return nval;
@@ -926,8 +912,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
         if(nextToken()!=TT_NUMBER)
         {
             setParseNumbers(false);
-            throw new IOException("Line "+lineno()+
-                ": DOUBLE expected, got: '"+toString()+"'");
+            throw new IOExceptionWithLineNumber(lineno(),"DOUBLE expected, got: '"+toString()+"'");
         }
         setParseNumbers(false);
         return nval;
@@ -946,11 +931,11 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
 
         if (result < low || result > high) {
             if (low > Double.MIN_VALUE && high == Double.MAX_VALUE)
-                throw new IOException("Line " + lineno() + ":  value " + result + " smaller than minimum: " + low);
+                throw new IOExceptionWithLineNumber("value " + result + " smaller than minimum: " + low, lineno());
             else if (low == Double.MIN_VALUE && high < Double.MAX_VALUE)
-                throw new IOException("Line " + lineno() + ":  value " + result + " larger than maximum: " + high);
+                throw new IOExceptionWithLineNumber("value " + result + " larger than maximum: " + high, lineno());
             else
-                throw new IOException("Line " + lineno() + ":  value " + result + " out of range: " + low + " - " + high);
+                throw new IOExceptionWithLineNumber("value " + result + " out of range: " + low + " - " + high, lineno());
         }
         return result;
     }
@@ -971,10 +956,10 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
             else if (sval.equalsIgnoreCase("false"))
                 value = false;
             else
-                throw new IOException("Not a boolean: " + sval);
+                throw new IOExceptionWithLineNumber("Not a boolean: " + sval, lineno());
         } catch (Exception ex) {
             popPunctuationCharacters();
-            throw new IOException("Line " + lineno() + ": Boolean expected, got: '" + sval + "'");
+            throw new IOExceptionWithLineNumber("Boolean expected, got: '" + sval + "'", lineno());
         }
         popPunctuationCharacters();
         return value;
@@ -1091,10 +1076,10 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                     return;
                 }
             }
-        } catch (IOException ex) {
+        } catch (IOExceptionWithLineNumber ex) {
             jloda.util.Basic.caught(ex);
         }
-        throw new IOException("Line " + lineno() + ": any of '" + s.toLowerCase() + "' expected");
+        throw new IOExceptionWithLineNumber("any of '" + s.toLowerCase() + "' expected", lineno());
     }
 
 
@@ -1138,10 +1123,10 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
             while (!toString().equals(last)) {
                 list.add(toString());
                 if (ttype == TT_EOF)
-                    throw new IOException("Line " + lineno() + ": '" + last + "' expected, got EOF");
+                    throw new IOExceptionWithLineNumber("'" + last + "' expected, got EOF", lineno());
                 nextToken();
             }
-        } catch (IOException ex) {
+        } catch (IOExceptionWithLineNumber ex) {
             popPunctuationCharacters();
             throw ex;
         }
@@ -1163,7 +1148,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
             for (int i = 0; i < n; i++)
                 list.add(getWordRespectCase());
 
-        } catch (IOException ex) {
+        } catch (IOExceptionWithLineNumber ex) {
             popPunctuationCharacters();
             throw ex;
         }
@@ -1201,7 +1186,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
 
             if (label.equalsIgnoreCase("none")) {
                 if (!it.hasNext())
-                    throw new IOException("line " + lineno() + ": unexcepted: " + label);
+                    throw new IOExceptionWithLineNumber("unexcepted: " + label, lineno());
                 return result; // return empty list
             }
 
@@ -1222,7 +1207,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                         firstNumber = Integer.parseInt(label);
 
                     } catch (Exception ex) {
-                        throw new IOException("line " + lineno() + ": number expected: " + label);
+                        throw new IOExceptionWithLineNumber("number expected: " + label, lineno());
                     }
                     inState = 1;
                     break;
@@ -1230,7 +1215,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                     try {
                         secondNumber = Integer.parseInt(label);
                     } catch (Exception ex) {
-                        throw new IOException("line " + lineno() + ": number expected: " + label);
+                        throw new IOExceptionWithLineNumber("number expected: " + label, lineno());
                     }
 
                     int imin = Math.min(firstNumber, secondNumber);
@@ -1255,7 +1240,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                 }
                 break;
             case 2:
-                throw new IOException("line " + lineno() + ": second number expected");
+                throw new IOExceptionWithLineNumber("second number expected", lineno());
             default:
                 break;
 
@@ -1298,7 +1283,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
             else
                 np.getWordRespectCase();
         }
-        throw new IOException("line " + lineno() + ": input '" + word + "' does not match any of legal tokens: " + legalTokens);
+        throw new IOExceptionWithLineNumber("input '" + word + "' does not match any of legal tokens: " + legalTokens, lineno());
     }
 
     /**
@@ -1317,7 +1302,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
             else
                 np.getWordRespectCase();
         }
-        throw new IOException("line " + lineno() + ": input '" + word + "' does not match any of legal tokens: " + legalTokens);
+        throw new IOExceptionWithLineNumber("input '" + word + "' does not match any of legal tokens: " + legalTokens, lineno());
     }
 
     /**
@@ -1332,7 +1317,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
         for (String legalToken : legalTokens)
             if (word.equals(legalToken))
                 return legalToken;
-        throw new IOException("line " + lineno() + ": input '" + word + "' does not match any of legal tokens: " + Basic.toString(legalTokens, " "));
+        throw new IOExceptionWithLineNumber("input '" + word + "' does not match any of legal tokens: " + Basic.toString(legalTokens, " "), lineno());
     }
 
 
@@ -1348,7 +1333,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
         for (String legalToken : legalTokens)
             if (word.equals(legalToken))
                 return legalToken;
-        throw new IOException("line " + lineno() + ": input '" + word + "' does not match any of legal tokens: " + Basic.toString(legalTokens, " "));
+        throw new IOExceptionWithLineNumber("input '" + word + "' does not match any of legal tokens: " + Basic.toString(legalTokens, " "), lineno());
     }
 
     /**
@@ -1363,7 +1348,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
         for (String legalToken : legalTokens)
             if (word.equalsIgnoreCase(legalToken))
                 return legalToken;
-        throw new IOException("line " + lineno() + ": input '" + word + "' does not match any of legal tokens: " + Basic.toString(legalTokens, ", "));
+        throw new IOExceptionWithLineNumber("input '" + word + "' does not match any of legal tokens: " + Basic.toString(legalTokens, ", "), lineno());
     }
 
     /**
@@ -1378,52 +1363,9 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
         for (String legalToken : legalTokens)
             if (word.equalsIgnoreCase(legalToken))
                 return legalToken;
-        throw new IOException("line " + lineno() + ": input '" + word + "' does not match any of legal tokens: " + Basic.toString(legalTokens, ", "));
+        throw new IOExceptionWithLineNumber("input '" + word + "' does not match any of legal tokens: " + Basic.toString(legalTokens, ", "), lineno());
     }
 
-    public static boolean isBoolean(String value) {
-        return value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false");
-    }
-
-    public static boolean isInteger(String value) {
-        try {
-            if (value.startsWith("0x"))
-                Integer.parseInt(value.substring(2), 16);
-            else
-                Integer.parseInt(value);
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
-    }
-
-    public static boolean isFloat(String value) {
-        try {
-            Float.parseFloat(value);
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
-    }
-
-    public static boolean isHexInt(String value) {
-        try {
-            if (value.startsWith("0x"))
-                Integer.parseInt(value.substring(2), 16);
-            else
-                return false;
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
-    }
-
-    public int parseHexInt(String value) {
-        if (value.startsWith("0x"))
-            return Integer.parseInt(value.substring(2), 16);
-        else
-            throw new NumberFormatException("Not hex: " + value);
-    }
 
     public void close() throws IOException {
         reader.close();
