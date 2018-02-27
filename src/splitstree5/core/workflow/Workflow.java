@@ -438,6 +438,8 @@ public class Workflow {
     public void clear() {
         setTopTaxaNode(null);
         setTopDataNode(null);
+        setWorkingTaxaNode(null);
+        setWorkingDataNode(null);
         final ArrayList<WorkflowNode> toRemove = new ArrayList<>(dataNodes);
         toRemove.addAll(connectorNodes);
         for (WorkflowNode node : toRemove)

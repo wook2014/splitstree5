@@ -19,6 +19,7 @@
 
 package splitstree5.gui.graphtab;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
 import javafx.scene.Node;
@@ -50,7 +51,7 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
     public AlgorithmBreadCrumbsToolBar(Document document, WorkflowNode workflowNode) {
         this.document = document;
         this.workflowNode = workflowNode;
-        document.getWorkflow().getTopologyChanged().addListener((c, o, n) -> update());
+        document.getWorkflow().getTopologyChanged().addListener((c, o, n) -> Platform.runLater(this::update));
     }
 
     /**

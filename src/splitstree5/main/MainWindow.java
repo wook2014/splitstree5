@@ -44,13 +44,14 @@ import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.Workflow;
 import splitstree5.core.workflow.WorkflowNode;
-import splitstree5.dialogs.SaveBeforeClose;
+import splitstree5.dialogs.SaveChangesDialog;
 import splitstree5.gui.ISavesPreviousSelection;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.algorithmtab.AlgorithmTab;
 import splitstree5.gui.auxwindow.AuxWindow;
 import splitstree5.gui.auxwindow.TabPaneDragAndDropSupport;
 import splitstree5.gui.datatab.DataViewTab;
+import splitstree5.gui.enterdata.EnterDataTab;
 import splitstree5.gui.formattab.FormatTab;
 import splitstree5.gui.methodstab.MethodsViewTab;
 import splitstree5.gui.workflowtab.WorkflowViewTab;
@@ -405,18 +406,23 @@ public class MainWindow {
     }
 
     /**
-     * closes the current window.
+     * Clear the current window. Stop any ruinng tasks. Also close, if requested
      *
+     * @param close window after clearing
      * @return true if closed, false if canceled
      */
-    public boolean close() {
-        boolean result = !SaveBeforeClose.apply(this) || MainWindowManager.getInstance().closeMainWindow(this);
+    public boolean clear(boolean close) {
+        boolean result = SaveChangesDialog.apply(this);
         if (result) {
             workflow.cancelAll();
             for (Tab tab : mainTabPane.getTabs()) {
                 if (tab instanceof ViewerTab && ((ViewerTab) tab).getFindToolBar() != null)
                     ((ViewerTab) tab).getFindToolBar().cancel(); // cancel all find jobs
             }
+            workflow.clear();
+            document.setDirty(false);
+            if (close)
+                result = MainWindowManager.getInstance().closeMainWindow(this);
         }
         return result;
     }
@@ -462,5 +468,11 @@ public class MainWindow {
 
     public Workflow getWorkflow() {
         return workflow;
+    }
+
+    public void showEnterDataTab() {
+        EnterDataTab enterDataTab = new EnterDataTab(this);
+        getMainWindowController().getMainTabPane().getTabs().add(enterDataTab);
+        getMainWindowController().getMainTabPane().getSelectionModel().select(enterDataTab);
     }
 }

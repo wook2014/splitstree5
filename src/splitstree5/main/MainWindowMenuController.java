@@ -80,13 +80,18 @@ public class MainWindowMenuController {
         });
 
         controller.getCloseMenuItem().setOnAction((e) -> {
-            mainWindow.close();
+            mainWindow.clear(true);
         });
 
         mainWindow.getStage().setOnCloseRequest((e) -> {
-            mainWindow.close();
+            mainWindow.clear(true);
             e.consume();
         });
+
+        controller.getEnterDataMenuItem().setOnAction((e) -> {
+            mainWindow.showEnterDataTab();
+        });
+        controller.getEnterDataMenuItem().disableProperty().bind(mainWindow.getDocument().dirtyProperty());
 
         controller.getSaveMenuItem().setOnAction((e) -> {
             try {
@@ -105,7 +110,7 @@ public class MainWindowMenuController {
         controller.getQuitMenuItem().setOnAction((e) -> {
             while (MainWindowManager.getInstance().size() > 0) {
                 final MainWindow window = MainWindowManager.getInstance().getMainWindow(MainWindowManager.getInstance().size() - 1);
-                if (!window.close())
+                if (!window.clear(true))
                     break;
             }
         });

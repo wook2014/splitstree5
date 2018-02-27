@@ -26,9 +26,8 @@ import splitstree5.main.MainWindow;
 
 import java.util.Optional;
 
-import static splitstree5.main.MainWindowMenuController.showSaveDialog;
 
-public class SaveBeforeClose {
+public class SaveChangesDialog {
     /**
      * ask whether to save before closing
      *
@@ -45,7 +44,7 @@ public class SaveBeforeClose {
             alert.initOwner(mainWindow.getStage());
             alert.setTitle("Save File Dialog");
             alert.setHeaderText("This document has unsaved changes");
-            alert.setContentText("Save changes before closing?");
+            alert.setContentText("Save changes?");
             ButtonType buttonTypeYes = new ButtonType("Yes", ButtonBar.ButtonData.YES);
             ButtonType buttonTypeNo = new ButtonType("No", ButtonBar.ButtonData.NO);
             ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -54,7 +53,7 @@ public class SaveBeforeClose {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent()) {
                 if (result.get() == buttonTypeYes) {
-                    return showSaveDialog(mainWindow);
+                    return splitstree5.main.MainWindowMenuController.showSaveDialog(mainWindow);
                 } else if (result.get() == buttonTypeNo) {
                     return true;
                 }

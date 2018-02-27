@@ -125,7 +125,10 @@ public class TextViewTab extends ViewerTab {
             controller.getRedoMenuItem().textProperty().bind(getUndoManager().redoNameProperty());
         }
 
-        controller.getCopyMenuItem().setOnAction((e) -> textArea.copy());
+        controller.getCopyMenuItem().setOnAction((e) -> {
+            e.consume();
+            textArea.copy();
+        });
         controller.getCopyMenuItem().disableProperty().bind(textArea.selectedTextProperty().length().isEqualTo(0));
 
         controller.getSelectAllMenuItem().setOnAction((e) -> textArea.selectAll());
@@ -135,13 +138,6 @@ public class TextViewTab extends ViewerTab {
         controller.getFindMenuItem().setOnAction((e) -> findToolBar.setShowFindToolBar(true));
         controller.getFindAgainMenuItem().setOnAction((e) -> findToolBar.findAgain());
         controller.getFindAgainMenuItem().disableProperty().bind(findToolBar.canFindAgainProperty().not());
-        if (false) {
-            controller.getReplaceMenuItem().setOnAction((e) ->
-            {
-                textArea.textProperty().unbind();
-                findToolBar.setShowReplaceToolBar(true);
-            });
-        }
 
         controller.getGotoLineMenuItem().setOnAction((e) -> {
             final TextInputDialog dialog = new TextInputDialog("");
