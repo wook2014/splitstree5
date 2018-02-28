@@ -54,7 +54,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
             while (sst.nextToken() != NexusStreamParser.TT_EOF) {
                 nextToken();
                 if (!toString().equalsIgnoreCase(sst.toString())) {
-                    throw new IOExceptionWithLineNumber(sst.toString() + "' expected, got: '" + toString() + "'", lineno());
+                    throw new IOExceptionWithLineNumber("'" + sst.toString() + "' expected, got: '" + toString() + "'", lineno());
                 }
             }
         } catch (IOException ex) {

@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.gui.enterdata;
+package splitstree5.gui.inputtab;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Button;
@@ -31,18 +31,20 @@ import jloda.fx.NotificationManager;
 import jloda.util.Basic;
 import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.gui.texttab.TextViewTab;
+import splitstree5.io.imports.IOExceptionWithLineNumber;
 import splitstree5.main.MainWindow;
 import splitstree5.menu.MenuController;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.function.Consumer;
 
 /**
  * tab for entering data
  * Daniel Huson, 2.2018
  */
-public class EnterDataTab extends TextViewTab {
+public class InputTab extends TextViewTab {
     private File tmpFile;
 
     /**
@@ -50,11 +52,11 @@ public class EnterDataTab extends TextViewTab {
      *
      * @param mainWindow
      */
-    public EnterDataTab(MainWindow mainWindow) {
-        super(new SimpleStringProperty("Enter Data"));
+    public InputTab(MainWindow mainWindow) {
+        super(new SimpleStringProperty("Input"));
         setMainWindow(mainWindow);
         getTextArea().setEditable(true);
-        getTextArea().setPromptText("Enter data here in Nexus format or any of the importable formats");
+        getTextArea().setPromptText("Input data in Nexus format or any of the importable formats");
 
         getTextArea().focusedProperty().addListener((c, o, n) -> {
             if (n)
@@ -79,9 +81,6 @@ public class EnterDataTab extends TextViewTab {
         applyButton.disableProperty().bind(getTextArea().textProperty().isEmpty());
 
         applyButton.setOnAction((e) -> {
-            if (mainWindow.getDocument().isDirty() && !mainWindow.clear(false))
-                return; // user has canceled
-
             try {
                 if (tmpFile == null) {
                     tmpFile = Basic.getUniqueFileName(System.getProperty("user.home"), "Untitled", "tmp");
@@ -91,7 +90,23 @@ public class EnterDataTab extends TextViewTab {
                 try (BufferedWriter w = new BufferedWriter(new FileWriter(tmpFile))) {
                     w.write(getTextArea().getText());
                 }
-                FileOpener.open(mainWindow, tmpFile.getPath());
+                final Consumer<Throwable> exceptionHandler = throwable -> {
+                    final IOExceptionWithLineNumber ioExceptionWithLineNumber;
+                    if (throwable instanceof IOExceptionWithLineNumber) {
+                        ioExceptionWithLineNumber = (IOExceptionWithLineNumber) throwable;
+                    } else if (throwable.getCause() instanceof IOExceptionWithLineNumber) {
+                        ioExceptionWithLineNumber = (IOExceptionWithLineNumber) throwable.getCause();
+                    } else ioExceptionWithLineNumber = null;
+
+                    // this highlights the line that has the problem
+                    if (ioExceptionWithLineNumber != null) {
+                        getTabPane().getSelectionModel().select(InputTab.this);
+                        getTextArea().requestFocus();
+                        gotoLine(ioExceptionWithLineNumber.getLineNumber());
+                    }
+                };
+
+                FileOpener.open(true, mainWindow, tmpFile.getPath(), exceptionHandler);
             } catch (Exception ex) {
                 NotificationManager.showError("Enter data failed: " + ex.getMessage());
             }

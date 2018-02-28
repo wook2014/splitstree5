@@ -137,7 +137,7 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock> {
             charactersBlock.setGammaParam(np.findIgnoreCase(tokens, "gammaShape=", Float.MAX_VALUE));
             charactersBlock.setPInvar(np.findIgnoreCase(tokens, "PINVAR=", Float.MAX_VALUE));
             if (tokens.size() != 0)
-                throw new IOException("line " + np.lineno() + ": '" + tokens + "' unexpected in PROPERTIES");
+                throw new IOExceptionWithLineNumber(np.lineno(), "'" + tokens + "' unexpected in PROPERTIES");
         } else {
             charactersBlock.setGammaParam(Float.MAX_VALUE);
             charactersBlock.setPInvar(Float.MAX_VALUE);
@@ -266,7 +266,7 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock> {
                 } else if (!format.isOptionTranspose() && format.isOptionInterleave()) {
                     taxonNamesFound = readMatrixInterleaved(np, taxa, charactersBlock, format, unknownStates);
                 } else
-                    throw new IOException("line " + np.lineno() + ": can't read matrix!");
+                    throw new IOExceptionWithLineNumber(np.lineno(), "can't read matrix!");
                 np.matchIgnoreCase(";");
             } else
                 taxonNamesFound = new ArrayList<>();
@@ -334,7 +334,7 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock> {
 
 
             if (str.length() != characters.getNchar())
-                throw new IOException("line " + np.lineno() + ": wrong number of chars: " + str.length() + ", expected: " + characters.getNchar());
+                throw new IOExceptionWithLineNumber(np.lineno(), "wrong number of chars: " + str.length() + ", expected: " + characters.getNchar());
 
             for (int i = 1; i <= str.length(); i++) {
 
@@ -343,14 +343,14 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock> {
 
                 if (ch == format.getOptionMatchCharacter()) {
                     if (t == 1)
-                        throw new IOException("line " + np.lineno() + " matchchar illegal in first sequence");
+                        throw new IOExceptionWithLineNumber(np.lineno(), "matchchar illegal in first sequence");
                     else
                         characters.set(t, i, characters.get(1, i));
                 } else {
                     if (!checkStates || isValidState(characters, format, ch))
                         characters.set(t, i, ch);
                     else if (treatUnknownAsError)
-                        throw new IOException("line " + np.lineno() + " invalid character: " + ch);
+                        throw new IOExceptionWithLineNumber(np.lineno(), "invalid character: " + ch);
                     else  // don't know this, replace by gap
                     {
                         characters.set(t, i, characters.getGapCharacter());
@@ -415,7 +415,7 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock> {
 
 
             if (str.length() != characters.getNtax())
-                throw new IOException("line " + np.lineno() + ": wrong number of chars: " + str.length());
+                throw new IOExceptionWithLineNumber(np.lineno(), "wrong number of chars: " + str.length());
             for (int t = 1; t <= characters.getNtax(); t++) {
                 //char ch = str.getRowSubset(t - 1);
                 // @todo: until we know that respectcase works, fold all characters to lower-case
@@ -427,14 +427,14 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock> {
 
                 if (ch == format.getOptionMatchCharacter()) {
                     if (t == 1)
-                        throw new IOException("line " + np.lineno() + ": matchchar illegal in first col");
+                        throw new IOExceptionWithLineNumber(np.lineno(), "matchchar illegal in first col");
                     else
                         characters.set(t, i, characters.get(1, i));
                 } else {
                     if (!checkStates || isValidState(characters, format, ch))
                         characters.set(t, i, ch);
                     else if (treatUnknownAsError)
-                        throw new IOException("line " + np.lineno() + " invalid character: " + ch);
+                        throw new IOExceptionWithLineNumber(np.lineno(), "invalid character: " + ch);
                     else  // don't know this, replace by gap
                     {
                         characters.set(t, i, characters.getGapCharacter());
@@ -516,7 +516,7 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock> {
                     for (int d = 1; d <= lineLength; d++) {
                         int i = c + d;
                         if (i > characters.getNchar())
-                            throw new IOException("line " + np.lineno() + ": too many chars");
+                            throw new IOExceptionWithLineNumber(np.lineno(), "too many chars");
 
 //char ch = str.getRowSubset(d - 1);
 // @todo: until we now that respectcase works, fold all characters to lower-case

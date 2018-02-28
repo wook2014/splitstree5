@@ -26,6 +26,7 @@ import jloda.util.Basic;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
+import splitstree5.io.imports.IOExceptionWithLineNumber;
 import splitstree5.io.imports.utils.SimpleNewickParser;
 
 import java.io.IOException;
@@ -110,7 +111,7 @@ public class TreesNexusInput implements INexusInput<TreesBlock> {
             }
 
             if (tokens.size() != 0)
-                throw new IOException("line " + np.lineno() + ": '" + tokens + "' unexpected in PROPERTIES");
+                throw new IOExceptionWithLineNumber(np.lineno(), "'" + tokens + "' unexpected in PROPERTIES");
         }
 
         final Map<String, Integer> taxName2Id = new HashMap<>();

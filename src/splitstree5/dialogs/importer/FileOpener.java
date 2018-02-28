@@ -24,6 +24,7 @@ import splitstree5.io.imports.interfaces.IImporter;
 import splitstree5.main.MainWindow;
 
 import java.io.File;
+import java.util.function.Consumer;
 
 import static splitstree5.dialogs.importer.ImporterManager.UNKNOWN;
 
@@ -48,10 +49,11 @@ public class FileOpener {
     /**
      * open the named file
      *
+     * @param reload
      * @param parentMainWindow
      * @param fileName
      */
-    public static void open(MainWindow parentMainWindow, String fileName) {
+    public static void open(boolean reload, MainWindow parentMainWindow, String fileName, Consumer<Throwable> exceptionHandler) {
         if (!(new File(fileName)).canRead())
             NotificationManager.showError("Can't open file '" + fileName + "'\nNot found or unreadable");
         else {
@@ -63,7 +65,13 @@ public class FileOpener {
                     NotificationManager.showError("Can't open file '" + fileName + "'\nUnknown data type or file format");
                 else {
                     final ImportService importService = new ImportService();
-                    importService.setup(parentMainWindow, importer, fileName, "Loading file", parentMainWindow.getMainWindowController().getBottomPane());
+                    importService.setup(reload, parentMainWindow, importer, fileName, "Loading file", parentMainWindow.getMainWindowController().getBottomPane());
+                    importService.setOnCancelled((e) -> NotificationManager.showWarning("User canceled"));
+                    importService.setOnFailed((e) -> {
+                        NotificationManager.showError("Import failed: " + (importService.getException().getCause() != null ? importService.getException().getCause().getMessage() : importService.getException().getMessage()));
+                        if (exceptionHandler != null)
+                            exceptionHandler.accept(importService.getException());
+                    });
                     importService.start();
                 }
             } else {

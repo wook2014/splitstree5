@@ -24,6 +24,7 @@ import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
+import splitstree5.io.imports.IOExceptionWithLineNumber;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -140,7 +141,7 @@ public class SplitsNexusInput implements INexusInput<SplitsBlock> {
             np.findIgnoreCase(formatTokens, "no intervals", false, false);
             np.findIgnoreCase(formatTokens, "intervals", true, false);
             if (formatTokens.size() != 0)
-                throw new IOException("line " + np.lineno() + ": '" + formatTokens + "' unexpected in FORMAT");
+                throw new IOExceptionWithLineNumber(np.lineno(), "'" + formatTokens + "' unexpected in FORMAT");
 
         }
         if (np.peekMatchIgnoreCase("threshold=")) {
@@ -221,7 +222,7 @@ public class SplitsNexusInput implements INexusInput<SplitsBlock> {
             }
             np.matchIgnoreCase(",");
             if (set.cardinality() == 0 || set.cardinality() == ntax)
-                throw new IOException("line " + np.lineno() + ": non-split of size " + set.cardinality());
+                throw new IOExceptionWithLineNumber(np.lineno(), "non-split of size " + set.cardinality());
 
 
             final ASplit split = new ASplit(set, ntax, weight);

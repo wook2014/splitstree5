@@ -22,6 +22,7 @@ package splitstree5.io.nexus;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
+import splitstree5.io.imports.IOExceptionWithLineNumber;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -93,11 +94,11 @@ public class TaxaNexusInput {
                 for (int t = 1; t <= ntax; t++) {
                     final String taxonName = np.getLabelRespectCase();
                     if (taxonName.equals(";"))
-                        throw new IOException((np.lineno() > 1 ? "Line " + np.lineno() + ":" : "") + " expected " + ntax + " taxon names, found: " + (t - 1));
+                        throw new IOExceptionWithLineNumber("expected " + ntax + " taxon names, found: " + (t - 1), np.lineno());
                     final Taxon taxon = new Taxon(taxonName);
 
                     if (taxaBlock.indexOf(taxon) != -1) {
-                        throw new IOException((np.lineno() > 1 ? "Line " + np.lineno() + ":" : "") + " taxon name '" + taxonName + "' appears multiple times, at " + taxaBlock.indexOf(taxon) + " and " + t);
+                        throw new IOExceptionWithLineNumber("taxon name '" + taxonName + "' appears multiple times, at " + taxaBlock.indexOf(taxon) + " and " + t, np.lineno());
                     }
                     taxaBlock.add(taxon);
                     taxonNamesFound.add(taxon.getName());
@@ -110,7 +111,7 @@ public class TaxaNexusInput {
                     np.getWordRespectCase();
                     count++;
                 }
-                throw new IOException((np.lineno() > 1 ? "Line " + np.lineno() + ":" : "") + " expected " + ntax + " taxon names, found: " + count);
+                throw new IOExceptionWithLineNumber(np.lineno(), "expected " + ntax + " taxon names, found: " + count);
 
             }
             np.matchIgnoreCase(";");

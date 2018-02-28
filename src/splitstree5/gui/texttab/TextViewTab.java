@@ -104,6 +104,7 @@ public class TextViewTab extends ViewerTab {
                 end = text.length();
             textArea.selectRange(start, end);
         }
+        // todo: need to scroll to the line
     }
 
     @Override

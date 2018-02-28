@@ -23,6 +23,7 @@ import jloda.util.Basic;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.io.imports.IOExceptionWithLineNumber;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -122,12 +123,12 @@ public class DistancesNexusInput implements INexusInput<DistancesBlock> {
                 np.findIgnoreCase(tokens, "missing=", null, '?');
 
                 if (tokens.size() != 0)
-                    throw new IOException("line " + np.lineno() + ": '" + tokens + "' unexpected in FORMAT");
+                    throw new IOExceptionWithLineNumber(np.lineno(), "'" + tokens + "' unexpected in FORMAT");
             }
 
-            final boolean both = format.getOptionTriangle().equals("both");
-            final boolean upper = format.getOptionTriangle().equals("upper");
-            final boolean lower = format.getOptionTriangle().equals("lower");
+            final boolean both = format.getOptionTriangle().equals(DistancesNexusFormat.Triangle.Both);
+            final boolean upper = format.getOptionTriangle().equals(DistancesNexusFormat.Triangle.Upper);
+            final boolean lower = format.getOptionTriangle().equals(DistancesNexusFormat.Triangle.Lower);
             final int diag = format.isOptionDiagonal() ? 0 : 1;
 
             final ArrayList<String> taxonNamesFound = new ArrayList<>(distancesBlock.getNtax());
@@ -137,7 +138,7 @@ public class DistancesNexusInput implements INexusInput<DistancesBlock> {
                 for (int t = 1; t <= distancesBlock.getNtax(); t++) {
                     String label = np.getLabelRespectCase();
                     if (taxaBlock.getNtax() > 0 && !taxaBlock.get(t).getName().equals(label))
-                        throw new IOException("line " + np.lineno() + ": expected '" + taxaBlock.get(t).getName() + "', found: '" + label + "'");
+                        throw new IOExceptionWithLineNumber(np.lineno(), "expected '" + taxaBlock.get(t).getName() + "', found: '" + label + "'");
                     taxonNamesFound.add(label);
 
                     distancesBlock.set(t, t, 0);
@@ -175,7 +176,7 @@ public class DistancesNexusInput implements INexusInput<DistancesBlock> {
                 for (int t = 1; t <= distancesBlock.getNtax(); t++) {
                     String label = np.getLabelRespectCase();
                     if (taxaBlock.getNtax() > 0 && !taxaBlock.get(t).getName().equals(label))
-                        throw new IOException("line " + np.lineno() + ": expected '" + taxaBlock.get(t).getName() + "', found: '" + label + "'");
+                        throw new IOExceptionWithLineNumber(np.lineno(), "expected '" + taxaBlock.get(t).getName() + "', found: '" + label + "'");
 
                     if (format.isOptionVariancesIO())
                         distancesBlock.setVariance(t, t, 0);

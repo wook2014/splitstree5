@@ -625,4 +625,25 @@ public class Workflow {
         return false;
     }
 
+    /**
+     * can data of this type be loaded into the current workflow?
+     *
+     * @param dataBlock
+     * @return true if can be loaded
+     */
+    public boolean canLoadData(DataBlock dataBlock) {
+        return getTopDataNode() != null && getTopDataNode().getDataBlock() != null && getTopDataNode().getDataBlock().getClass().isAssignableFrom(dataBlock.getClass())
+                && getWorkingDataNode() != null;
+    }
+
+    /**
+     * load the data into the current workflow
+     *
+     * @param taxaBlock
+     * @param dataBlock
+     */
+    public void loadData(TaxaBlock taxaBlock, DataBlock dataBlock) {
+        getTopTaxaNode().getDataBlock().copy(taxaBlock);
+        getTopDataNode().getDataBlock().copy(taxaBlock, dataBlock);
+    }
 }

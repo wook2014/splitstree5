@@ -51,8 +51,8 @@ import splitstree5.gui.algorithmtab.AlgorithmTab;
 import splitstree5.gui.auxwindow.AuxWindow;
 import splitstree5.gui.auxwindow.TabPaneDragAndDropSupport;
 import splitstree5.gui.datatab.DataViewTab;
-import splitstree5.gui.enterdata.EnterDataTab;
 import splitstree5.gui.formattab.FormatTab;
+import splitstree5.gui.inputtab.InputTab;
 import splitstree5.gui.methodstab.MethodsViewTab;
 import splitstree5.gui.workflowtab.WorkflowViewTab;
 import splitstree5.gui.workflowtree.WorkflowTreeSupport;
@@ -92,7 +92,7 @@ public class MainWindow {
 
     private final WorkflowViewTab workflowViewTab;
     private final MethodsViewTab methodsViewTab;
-    private EnterDataTab enterDataTab;
+    private InputTab inputTab;
 
     /**
      * constructor
@@ -354,7 +354,7 @@ public class MainWindow {
     public void showDataView(DataNode workflowNode) {
         // if the data block has a getTab method, then assume that it is present and select it
         try {
-            if (workflowNode.getDataBlock() instanceof ViewDataBlock) {
+            if (workflowNode != null && workflowNode.getDataBlock() instanceof ViewDataBlock) {
                 final ViewerTab viewerTab = ((ViewDataBlock) workflowNode.getDataBlock()).getTab();
                 if (!mainTabPane.getTabs().contains(viewerTab)) {
                     mainTabPane.getTabs().add(viewerTab);
@@ -414,12 +414,14 @@ public class MainWindow {
     }
 
     /**
-     * Clear the current window. Stop any ruinng tasks. Also close, if requested
+     * Clear the current window. Stop any running tasks. Also close, if requested
      *
+     *
+     * @param askToSave
      * @param close window after clearing
      * @return true if closed, false if canceled
      */
-    public boolean clear(boolean close) {
+    public boolean clear(boolean askToSave, boolean close) {
         boolean result = SaveChangesDialog.apply(this);
         if (result) {
             workflow.cancelAll();
@@ -431,8 +433,8 @@ public class MainWindow {
                 result = MainWindowManager.getInstance().closeMainWindow(this);
             workflow.clear();
             document.setDirty(false);
-            // if(enterDataTab!=null && getMainWindowController().getMainTabPane().getTabs().contains(enterDataTab))
-            //     getMainWindowController().getMainTabPane().getTabs().remove(enterDataTab);
+            // if(inputTab!=null && getMainWindowController().getMainTabPane().getTabs().contains(inputTab))
+            //     getMainWindowController().getMainTabPane().getTabs().remove(inputTab);
 
             mainWindowController.getTreeView().getRoot().getChildren().clear();
 
@@ -489,10 +491,10 @@ public class MainWindow {
      * show the enter data tab
      */
     public void showEnterDataTab() {
-        if (enterDataTab == null)
-            enterDataTab = new EnterDataTab(this);
-        if (!getMainWindowController().getMainTabPane().getTabs().contains(enterDataTab))
-            getMainWindowController().getMainTabPane().getTabs().add(enterDataTab);
-        getMainWindowController().getMainTabPane().getSelectionModel().select(enterDataTab);
+        if (inputTab == null)
+            inputTab = new InputTab(this);
+        if (!getMainWindowController().getMainTabPane().getTabs().contains(inputTab))
+            getMainWindowController().getMainTabPane().getTabs().add(inputTab);
+        getMainWindowController().getMainTabPane().getSelectionModel().select(inputTab);
     }
 }

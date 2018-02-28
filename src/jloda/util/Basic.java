@@ -20,6 +20,7 @@
 package jloda.util;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.zip.*;
 
@@ -1121,7 +1122,14 @@ public class Basic {
         try {
             try (InputStream ins = getInputStreamPossiblyZIPorGZIP(file.getPath())) {
                 byte[] bytes = new byte[count];
-                ins.read(bytes, 0, count);
+                int remaining = count;
+                while (remaining > 0) {
+                    int got = ins.read(bytes, (count - remaining), remaining);
+                    if (got == -1)
+                        break;
+                    else
+                        remaining -= got;
+                }
                 return bytes;
             }
         } catch (IOException ex) {
@@ -1170,7 +1178,6 @@ public class Basic {
         for (int i = 0; i < values.size(); i++)
             result[i] = values.get(i);
         return result;
-
     }
 
     /**
@@ -1187,8 +1194,8 @@ public class Basic {
         int i = 1;
         while (file.exists()) {
             file = new File(directory + File.separatorChar + prefix + "-" + (++i) + (suffix.startsWith(".") ? suffix : "." + suffix));
-            if (i == 100000)
-                throw new IOException("Failed to create temporary file");
+            if (i == 10000)
+                return Files.createTempFile(prefix, suffix).toFile(); // too many temporary files in home directory, use tmp dir
         }
         return file;
     }

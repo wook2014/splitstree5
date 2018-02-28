@@ -39,7 +39,7 @@
                 </MenuItem>
                 <Menu fx:id="openRecentMenu" mnemonicParsing="false" text="Open Recent"/>
                 <SeparatorMenuItem mnemonicParsing="false"/>
-                <MenuItem fx:id="enterDataMenuItem" text="Enter Data">
+                <MenuItem fx:id="inputDataMenuItem" text="Input Data">
                     <accelerator>
                         <KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
                     </accelerator>

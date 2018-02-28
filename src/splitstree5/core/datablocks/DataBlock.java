@@ -23,14 +23,17 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
 import jloda.util.Basic;
 import jloda.util.PluginClassLoader;
+import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.Document;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.io.exports.NexusExporter;
 import splitstree5.io.nexus.INexusFormat;
+import splitstree5.io.nexus.NexusParser;
 import splitstree5.utils.NameableBase;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 
@@ -150,5 +153,24 @@ abstract public class DataBlock extends NameableBase {
 
     public INexusFormat getFormat() {
         return format;
+    }
+
+    /**
+     * copy a datablock
+     *
+     * @param taxaBlock
+     * @param dataBlock
+     */
+    public void copy(TaxaBlock taxaBlock, DataBlock dataBlock) {
+        try (StringWriter w = new StringWriter()) {
+            final NexusExporter nexusExporter = new NexusExporter();
+            nexusExporter.setPrependTaxa(false);
+            nexusExporter.export(w, taxaBlock, dataBlock);
+            try (NexusStreamParser np = new NexusStreamParser(new StringReader(w.toString()))) {
+                NexusParser.parse(np, taxaBlock, this);
+            }
+        } catch (IOException e) {
+            Basic.caught(e);
+        }
     }
 }

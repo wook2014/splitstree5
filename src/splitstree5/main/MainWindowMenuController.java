@@ -75,16 +75,16 @@ public class MainWindowMenuController {
             fileChooser.getExtensionFilters().addAll(ImporterManager.getInstance().getAllExtensionFilters());
             final File file = fileChooser.showOpenDialog(mainWindow.getStage());
             if (file != null) {
-                FileOpener.open(mainWindow, file.getPath());
+                FileOpener.open(false, mainWindow, file.getPath(), null);
             }
         });
 
         controller.getCloseMenuItem().setOnAction((e) -> {
-            mainWindow.clear(true);
+            mainWindow.clear(true, true);
         });
 
         mainWindow.getStage().setOnCloseRequest((e) -> {
-            mainWindow.clear(true);
+            mainWindow.clear(true, true);
             e.consume();
         });
 
@@ -110,7 +110,7 @@ public class MainWindowMenuController {
         controller.getQuitMenuItem().setOnAction((e) -> {
             while (MainWindowManager.getInstance().size() > 0) {
                 final MainWindow window = MainWindowManager.getInstance().getMainWindow(MainWindowManager.getInstance().size() - 1);
-                if (!window.clear(true))
+                if (!window.clear(true, true))
                     break;
             }
         });

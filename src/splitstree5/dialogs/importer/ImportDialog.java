@@ -116,7 +116,7 @@ public class ImportDialog {
             if (importer == null)
                 new Alert("Can't import selected data type and file format");
             else {
-                importService.setup(parentMainWindow, importer, controller.getFileTextField().getText(), "Loading file", controller.getProgressBarPane());
+                importService.setup(false, parentMainWindow, importer, controller.getFileTextField().getText(), "Loading file", controller.getProgressBarPane());
                 importService.restart();
             }
         });

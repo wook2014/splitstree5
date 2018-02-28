@@ -73,7 +73,7 @@ public class MenuController {
     private Menu openRecentMenu;
 
     @FXML
-    private MenuItem enterDataMenuItem;
+    private MenuItem inputDataMenuItem;
 
     @FXML
     private MenuItem saveMenuItem;
@@ -383,7 +383,7 @@ public class MenuController {
     }
 
     public MenuItem getEnterDataMenuItem() {
-        return enterDataMenuItem;
+        return inputDataMenuItem;
     }
 
     public MenuItem getSaveMenuItem() {
@@ -865,7 +865,7 @@ public class MenuController {
     public void enableAllUnboundActionMenuItems() {
         if (getOpenRecentMenu().getItems().size() == 0) // can't do this in init because mainWindow not available there
             RecentFilesManager.getInstance().setupMenu(getOpenRecentMenu(), (fileName) -> {
-                FileOpener.open(mainWindow, fileName);
+                FileOpener.open(false, mainWindow, fileName, null);
             });
 
         for (Menu menu : getMenuBar().getMenus()) {

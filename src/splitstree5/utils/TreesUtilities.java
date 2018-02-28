@@ -41,27 +41,6 @@ import java.util.Collection;
  */
 public class TreesUtilities {
     /**
-     * sets the node2taxa and taxon2node maps for a tree
-     *
-     * @param tree
-     * @param taxa
-     */
-    public static void setNode2taxa(PhyloTree tree, TaxaBlock taxa) {
-        tree.clearTaxa();
-        for (Node v = tree.getFirstNode(); v != null; v = v.getNext()) {
-            tree.clearTaxa(v);
-            String label = tree.getLabel(v);
-            if (label != null) {
-                //int id = taxa.indexOf(label);
-                int id = taxa.indexOf(label);
-                if (id > 0) {
-                    tree.addTaxon(v, id);
-                }
-            }
-        }
-    }
-
-    /**
      * gets all taxa in tree, if node to taxa mapping has been set
      *
      * @param tree
@@ -271,7 +250,6 @@ public class TreesUtilities {
      * @return bit set of taxa found in tree
      */
     public static BitSet computeSplits(final TaxaBlock taxaBlock, @Nullable BitSet taxaInTree, final PhyloTree tree, final Collection<ASplit> splits) {
-        setNode2taxa(tree, taxaBlock);
         if (taxaInTree == null)
             taxaInTree = getTaxa(tree);
 

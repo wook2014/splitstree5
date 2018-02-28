@@ -214,7 +214,6 @@ public class TaxaBlock extends DataBlock {
         return labels;
     }
 
-
     public Object clone() {
         TaxaBlock result = new TaxaBlock();
 
@@ -225,6 +224,7 @@ public class TaxaBlock extends DataBlock {
         } catch (Exception ex) {
             Basic.caught(ex);
         }
+        result.traitsBlock.set(traitsBlock.get());
         return result;
     }
 
@@ -264,5 +264,21 @@ public class TaxaBlock extends DataBlock {
 
     public void setTraitsBlock(TraitsBlock traitsBlock) {
         this.traitsBlock.set(traitsBlock);
+    }
+
+    /**
+     * copy a taxon block
+     *
+     * @param src
+     */
+    public void copy(TaxaBlock src) {
+        taxa.clear();
+        taxa.addAll(src.taxa);
+        taxon2index.clear();
+        taxon2index.clear();
+        taxon2index.putAll(src.taxon2index);
+        name2taxon.clear();
+        name2taxon.putAll(src.name2taxon);
+        traitsBlock.set(src.traitsBlock.get());
     }
 }
