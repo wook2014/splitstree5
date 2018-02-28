@@ -19,6 +19,7 @@
 
 package splitstree5.core.workflow;
 
+import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
@@ -436,15 +437,15 @@ public class Workflow {
      * clear the whole Workflow
      */
     public void clear() {
-        setTopTaxaNode(null);
-        setTopDataNode(null);
-        setWorkingTaxaNode(null);
-        setWorkingDataNode(null);
         final ArrayList<WorkflowNode> toRemove = new ArrayList<>(dataNodes);
         toRemove.addAll(connectorNodes);
         for (WorkflowNode node : toRemove)
             delete(node, true, false);
         invalidNodes.clear();
+        setTopTaxaNode(null);
+        setTopDataNode(null);
+        setWorkingTaxaNode(null);
+        setWorkingDataNode(null);
     }
 
     /**
@@ -530,7 +531,7 @@ public class Workflow {
 
 
     public void incrementTopologyChanged() {
-        topologyChanged.set(topologyChanged.get() + 1);
+        Platform.runLater(() -> topologyChanged.set(topologyChanged.get() + 1));
     }
 
     public LongProperty getTopologyChanged() {

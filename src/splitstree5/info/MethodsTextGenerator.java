@@ -110,6 +110,8 @@ public class MethodsTextGenerator {
     public String apply(Document document) {
         final Workflow dag = document.getWorkflow();
 
+        if (dag.getTopTaxaNode() == null || dag.getTopDataNode() == null)
+            return "";
 
         final StringBuilder buf = new StringBuilder();
         buf.append("Methods:\n");
@@ -120,7 +122,6 @@ public class MethodsTextGenerator {
 
         final Set<String> set = new HashSet<>(); // use this to avoid duplicate lines
 
-        if (dag.getTopTaxaNode().getDataBlock() != null && dag.getTopDataNode() != null) {
             buf.append(String.format(inputDataTemplate, dag.getTopTaxaNode().getDataBlock().getInfo(), dag.getTopDataNode().getDataBlock().getInfo()));
             if (dag.getWorkingTaxaBlock() != null && dag.getWorkingTaxaBlock().getNtax() < dag.getTopTaxaNode().getDataBlock().getNtax()) {
                 int removed = (dag.getTopTaxaNode().getDataBlock().getNtax() - dag.getWorkingTaxaBlock().getNtax());
@@ -184,7 +185,7 @@ public class MethodsTextGenerator {
                     buf.append(String.format("%s: %s\n", pair.get1(), pair.get2()));
                 }
             }
-        }
+
         return buf.toString();
     }
 

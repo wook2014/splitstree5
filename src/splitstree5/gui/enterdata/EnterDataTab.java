@@ -27,6 +27,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import jloda.fx.NotificationManager;
 import jloda.util.Basic;
 import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.gui.texttab.TextViewTab;
@@ -42,6 +43,8 @@ import java.io.FileWriter;
  * Daniel Huson, 2.2018
  */
 public class EnterDataTab extends TextViewTab {
+    private File tmpFile;
+
     /**
      * constructor
      *
@@ -80,13 +83,17 @@ public class EnterDataTab extends TextViewTab {
                 return; // user has canceled
 
             try {
-                final File file = File.createTempFile(String.format("tmp%8d", System.currentTimeMillis()), ".sptr5");
-                try (BufferedWriter w = new BufferedWriter(new FileWriter(file))) {
+                if (tmpFile == null) {
+                    tmpFile = Basic.getUniqueFileName(System.getProperty("user.home"), "Untitled", "tmp");
+                    tmpFile.deleteOnExit();
+                }
+
+                try (BufferedWriter w = new BufferedWriter(new FileWriter(tmpFile))) {
                     w.write(getTextArea().getText());
                 }
-                FileOpener.open(mainWindow, file.getPath());
+                FileOpener.open(mainWindow, tmpFile.getPath());
             } catch (Exception ex) {
-                Basic.caught(ex);
+                NotificationManager.showError("Enter data failed: " + ex.getMessage());
             }
         });
     }

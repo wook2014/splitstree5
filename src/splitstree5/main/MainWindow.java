@@ -90,6 +90,10 @@ public class MainWindow {
 
     private final ObjectProperty<UndoManager> undoRedoManager = new SimpleObjectProperty<>();
 
+    private final WorkflowViewTab workflowViewTab;
+    private final MethodsViewTab methodsViewTab;
+    private EnterDataTab enterDataTab;
+
     /**
      * constructor
      *
@@ -148,8 +152,11 @@ public class MainWindow {
         mainWindowController.getTopVBox().getChildren().add(toolBarController.getToolBar());
 
         mainTabPane = mainWindowController.getMainTabPane();
-
         algorithmsTabPane = mainWindowController.getAlgorithmTabPane();
+
+        workflowViewTab = new WorkflowViewTab(document);
+        methodsViewTab = new MethodsViewTab(document);
+
 
         document.dirtyProperty().addListener((c, o, n) -> {
             dirtyStar.set(n ? "*" : "");
@@ -202,6 +209,7 @@ public class MainWindow {
                 Platform.runLater(() -> getMainWindowController().getAlgorithmTabPane().getTabs().remove(aNode2ViewerTab.get(c.getElementRemoved())));
             }
         });
+
     }
 
     /**
@@ -252,8 +260,8 @@ public class MainWindow {
         stage.sizeToScene();
         stage.toFront();
 
-        add(new MethodsViewTab(document));
-        add(new WorkflowViewTab(document));
+        add(methodsViewTab);
+        add(workflowViewTab);
 
         mainWindowController.getSplitPane().widthProperty().addListener((c, o, n) -> {
             if (n.doubleValue() > 0) {
@@ -419,10 +427,17 @@ public class MainWindow {
                 if (tab instanceof ViewerTab && ((ViewerTab) tab).getFindToolBar() != null)
                     ((ViewerTab) tab).getFindToolBar().cancel(); // cancel all find jobs
             }
-            workflow.clear();
-            document.setDirty(false);
             if (close)
                 result = MainWindowManager.getInstance().closeMainWindow(this);
+            workflow.clear();
+            document.setDirty(false);
+            // if(enterDataTab!=null && getMainWindowController().getMainTabPane().getTabs().contains(enterDataTab))
+            //     getMainWindowController().getMainTabPane().getTabs().remove(enterDataTab);
+
+            mainWindowController.getTreeView().getRoot().getChildren().clear();
+
+            workflowViewTab.clear();
+            document.updateMethodsText();
         }
         return result;
     }
@@ -470,9 +485,14 @@ public class MainWindow {
         return workflow;
     }
 
+    /**
+     * show the enter data tab
+     */
     public void showEnterDataTab() {
-        EnterDataTab enterDataTab = new EnterDataTab(this);
-        getMainWindowController().getMainTabPane().getTabs().add(enterDataTab);
+        if (enterDataTab == null)
+            enterDataTab = new EnterDataTab(this);
+        if (!getMainWindowController().getMainTabPane().getTabs().contains(enterDataTab))
+            getMainWindowController().getMainTabPane().getTabs().add(enterDataTab);
         getMainWindowController().getMainTabPane().getSelectionModel().select(enterDataTab);
     }
 }

@@ -157,21 +157,28 @@ public class WorkflowViewTab extends ViewerTab {
             nodeViews.getChildren().add(noDataLabel);
     }
 
-    /**
-     * clear and then recompute the view
-     */
-    public void recompute() {
+
+    public void clear() {
         getUndoManager().clear();
 
         getEdgeViews().getChildren().clear();
         getNodeViews().getChildren().clear();
+        node2NodeView.clear();
+        node2EdgeViews.clear();
+    }
+
+
+    /**
+     * clear and then recompute the view
+     */
+    public void recompute() {
+        clear();
 
         final Workflow workflow = document.getWorkflow();
 
         if (workflow.getTopTaxaNode() == null)
             return; // no data available
 
-        node2NodeView.clear();
         node2NodeView.put(workflow.getTopTaxaNode(), new WorkflowNodeView(this, workflow.getTopTaxaNode()));
         node2NodeView.put(workflow.getTaxaFilter(), new WorkflowNodeView(this, workflow.getTaxaFilter()));
 

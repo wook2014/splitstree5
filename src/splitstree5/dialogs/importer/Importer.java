@@ -152,7 +152,8 @@ public class Importer {
 
                 Platform.runLater(() -> {
                     document.getWorkflow().getTopTaxaNode().setState(UpdateState.VALID);
-                    RecentFilesManager.getInstance().addRecentFile(fileName);
+                    if (!fileName.endsWith(".tmp"))
+                        RecentFilesManager.getInstance().addRecentFile(fileName);
                 });
             } catch (IOException ex) {
                 NotificationManager.showError("Import failed: " + ex.getMessage());

@@ -30,7 +30,6 @@ public class Basic {
     static final PrintStream nullOut = new PrintStream(new NullOutStream());
     static private CollectOutStream collectOut;
 
-
     /**
      * set debug mode. In debug mode, stack traces are printed
      *
@@ -1172,6 +1171,26 @@ public class Basic {
             result[i] = values.get(i);
         return result;
 
+    }
+
+    /**
+     * gets a unique file name for a file in the given directory and with given prefix and suffix
+     *
+     * @param directory
+     * @param prefix
+     * @param suffix
+     * @return file name
+     */
+    public synchronized static File getUniqueFileName(String directory, String prefix, String suffix) throws IOException {
+        File file = new File(directory + File.separatorChar + prefix + (suffix.startsWith(".") ? suffix : "." + suffix));
+
+        int i = 1;
+        while (file.exists()) {
+            file = new File(directory + File.separatorChar + prefix + "-" + (++i) + (suffix.startsWith(".") ? suffix : "." + suffix));
+            if (i == 100000)
+                throw new IOException("Failed to create temporary file");
+        }
+        return file;
     }
 }
 
