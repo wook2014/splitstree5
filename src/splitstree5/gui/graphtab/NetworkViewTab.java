@@ -24,7 +24,6 @@ import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
-import javafx.scene.image.ImageView;
 import jloda.fx.ASelectionModel;
 import jloda.graph.Edge;
 import jloda.graph.Node;
@@ -53,11 +52,8 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
      * constructor
      */
     public NetworkViewTab() {
-        super();
-        label.setText("NetworkView");
-        label.setGraphic(new ImageView(ResourceManager.getIcon("NetworkView16.gif")));
-        setText("");
-        setGraphic(label);
+        setLabel("Network");
+        setIcon(ResourceManager.getIcon("NetworkView16.gif"));
     }
 
 

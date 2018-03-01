@@ -21,6 +21,7 @@ package splitstree5.gui.methodstab;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
 import jloda.util.ProgramProperties;
+import jloda.util.ResourceManager;
 import splitstree5.core.Document;
 import splitstree5.gui.texttab.TextViewTab;
 
@@ -35,6 +36,8 @@ public class MethodsViewTab extends TextViewTab {
      */
     public MethodsViewTab(Document document) {
         super(new ReadOnlyStringWrapper("Methods"), document.methodsTextProperty());
+        setIcon(ResourceManager.getIcon("sun/toolbarButtonGraphics/general/History16.gif"));
+
         getTextArea().setWrapText(true);
         getTextArea().setFont(ProgramProperties.getDefaultFont());
         setClosable(false);

@@ -239,6 +239,11 @@ public class FindToolBar extends VBox {
             }
         });
 
+        controller.getInSelectionOnlyCheckBox().disableProperty().bind(searchManager.disabledProperty().or(controller.getReplaceButton().disabledProperty()).or(searchManager.canReplaceInSelectionProperty().not()));
+        controller.getInSelectionOnlyCheckBox().selectedProperty().addListener((c, o, n) -> {
+            searchManager.setGlobalScope(!n);
+        });
+
         controller.getCloseButton().setOnAction((e) -> setShowFindToolBar(false));
 
         for (ISearcher another : additional) {

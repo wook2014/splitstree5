@@ -69,6 +69,8 @@ public class FindToolBarController {
     @FXML
     private Button replaceAllButton;
 
+    @FXML
+    private CheckBox inSelectionOnlyCheckBox;
 
     public AnchorPane getAnchorPane() {
         return anchorPane;
@@ -128,5 +130,9 @@ public class FindToolBarController {
 
     public Button getReplaceAllButton() {
         return replaceAllButton;
+    }
+
+    public CheckBox getInSelectionOnlyCheckBox() {
+        return inSelectionOnlyCheckBox;
     }
 }

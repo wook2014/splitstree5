@@ -74,6 +74,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import jloda.fx.ASelectionModel;
 import jloda.fx.ZoomableScrollPane;
+import jloda.util.ResourceManager;
 import splitstree5.core.Document;
 import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.Workflow;
@@ -111,6 +112,8 @@ public class WorkflowViewTab extends ViewerTab {
     public WorkflowViewTab(Document document) {
         this.document = document;
         setText("Workflow");
+        setIcon(ResourceManager.getIcon("sun/toolbarButtonGraphics/general/Preferences16.gif"));
+
 
         centerPane = new Pane(new StackPane(edgeViews, nodeViews));
         centerPane.setPadding(new Insets(5, 5, 5, 5));

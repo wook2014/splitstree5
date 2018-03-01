@@ -89,7 +89,7 @@ public class MainWindowMenuController {
         });
 
         controller.getEnterDataMenuItem().setOnAction((e) -> {
-            mainWindow.showEnterDataTab();
+            mainWindow.showInputTab();
         });
         controller.getEnterDataMenuItem().disableProperty().bind(mainWindow.getDocument().dirtyProperty());
 

@@ -75,6 +75,7 @@ public class EdgeView2D extends EdgeViewBase {
 
         if (false && weight != null && start != null && end != null) {
             Label label = new Label("" + weight);
+            label.setStyle("");
             label.setFont(ProgramProperties.getDefaultFont());
             final Point2D m = start.add(end).multiply(0.5);
             label.setTranslateX(m.getX());

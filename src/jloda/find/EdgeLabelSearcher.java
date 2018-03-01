@@ -19,9 +19,8 @@
 package jloda.find;
 
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.*;
 import javafx.scene.control.MultipleSelectionModel;
 import jloda.fx.ASelectionModel;
 import jloda.graph.Edge;
@@ -42,8 +41,10 @@ public class EdgeLabelSearcher implements IObjectSearcher<Edge> {
 
     private final ObjectProperty<Edge> found = new SimpleObjectProperty<>();
 
-    public static final String SEARCHER_NAME = "Edges";
+    private final BooleanProperty globalFindable = new SimpleBooleanProperty();
+    private final BooleanProperty selectionReplaceable = new SimpleBooleanProperty();
 
+    public static final String SEARCHER_NAME = "Edges";
 
     /**
      * constructor
@@ -53,6 +54,9 @@ public class EdgeLabelSearcher implements IObjectSearcher<Edge> {
      */
     public EdgeLabelSearcher(PhyloGraph graph, ASelectionModel<Edge> edgeSelectionModel) {
         this(SEARCHER_NAME, graph, edgeSelectionModel);
+
+        globalFindable.set(true); // todo: should listen for graphs of graph
+        selectionReplaceable.bind(Bindings.isNotEmpty(edgeSelectionModel.getSelectedItems()));
     }
 
     /**
@@ -190,8 +194,8 @@ public class EdgeLabelSearcher implements IObjectSearcher<Edge> {
      *
      * @return true, if there is at least one object
      */
-    public boolean isGlobalFindable() {
-        return graph.getNumberOfEdges() > 0;
+    public ReadOnlyBooleanProperty isGlobalFindable() {
+        return globalFindable;
     }
 
     /**
@@ -199,8 +203,8 @@ public class EdgeLabelSearcher implements IObjectSearcher<Edge> {
      *
      * @return true, if at least one object is selected
      */
-    public boolean isSelectionFindable() {
-        return edgeSelectionModel.getSelectedItems().size() > 0;
+    public ReadOnlyBooleanProperty isSelectionFindable() {
+        return selectionReplaceable;
     }
 
     /**

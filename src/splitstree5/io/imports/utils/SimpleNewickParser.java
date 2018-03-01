@@ -60,6 +60,15 @@ public class SimpleNewickParser {
         if (tree.getNumberOfNodes() > 0)
             tree.setRoot(tree.getFirstNode());
 
+        if (!isHasWeights()) { // set all weights to 1
+            for (Edge e : tree.edges()) {
+                if (e.getSource().getInDegree() == 0 && e.getSource().getOutDegree() == 2 && !tree.getTaxa(e.getSource()).iterator().hasNext()) {
+                    tree.setWeight(e, 0.5);
+                } else
+                    tree.setWeight(e, 1);
+            }
+        }
+
         return tree;
     }
 

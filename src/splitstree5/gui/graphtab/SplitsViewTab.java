@@ -24,7 +24,6 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import jloda.fx.ASelectionModel;
 import jloda.graph.*;
@@ -51,17 +50,13 @@ import java.util.*;
 public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsViewTab {
     private final ASelectionModel<Integer> splitsSelectionModel = new ASelectionModel<>();
     private boolean inSelection;
-    private DataNode dataNode;
 
     /**
      * constructor
      */
     public SplitsViewTab() {
-        super();
-        label.setText("Splits Network");
-        label.setGraphic(new ImageView(ResourceManager.getIcon("SplitsNetworkView16.gif")));
-        setText("");
-        setGraphic(label);
+        setLabel("Splits Network");
+        setIcon(ResourceManager.getIcon("SplitsNetworkView16.gif"));
 
         setLayout(GraphLayout.Radial);
 

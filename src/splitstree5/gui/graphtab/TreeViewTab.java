@@ -20,7 +20,6 @@ package splitstree5.gui.graphtab;
 
 
 import javafx.geometry.Point2D;
-import javafx.scene.image.ImageView;
 import jloda.fx.ASelectionModel;
 import jloda.graph.Edge;
 import jloda.graph.Node;
@@ -45,11 +44,8 @@ public class TreeViewTab extends Graph2DTab<PhyloTree> {
      * constructor
      */
     public TreeViewTab() {
-        super();
-        label.setText("Tree");
-        label.setGraphic(new ImageView(ResourceManager.getIcon("TreeView16.gif")));
-        setText("");
-        setGraphic(label);
+        setLabel("Tree");
+        setIcon(ResourceManager.getIcon("TreeView16.gif"));
     }
 
     /**

@@ -38,6 +38,9 @@ import java.util.ArrayList;
  * Daniel Huson, 1.2018
  */
 public class AlgorithmBreadCrumbsToolBar extends ToolBar {
+    private final String shape = "-fx-shape: \"M 0 0 L 5 9 L 0 18 L 100 18 L 105 9 L 100 0 z\";"; // arrow shape
+    private final String computingColor = "-fx-background-color: LIGHTBLUE;";
+
     private final Document document;
     private final WorkflowNode workflowNode;
     private final ArrayList<ChangeListener<UpdateState>> stateChangeListeners = new ArrayList<>();
@@ -60,6 +63,11 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
     public void update() {
         final Workflow workflow = document.getWorkflow();
         getItems().clear();
+        if (document.getMainWindow().getInputTab() != null) {
+            getItems().add(makeInputTabBreadCrumb());
+
+        }
+
         if (workflow.getTaxaFilter() != null) {
             getItems().add(makeBreadCrumb(document, workflow.getTaxaFilter()));
         }
@@ -100,7 +108,6 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
 
     private Node makeBreadCrumb(Document document, Connector connector) {
         final Button button = new Button();
-        final String shape = "-fx-shape: \"M 0 0 L 5 9 L 0 18 L 100 18 L 105 9 L 100 0 z\";"; // arrow shape
         button.setStyle(shape);
         button.textProperty().bind(connector.nameProperty());
         button.disableProperty().bind(connector.applicableProperty().not().and(connector.stateProperty().isEqualTo(UpdateState.VALID).not()));
@@ -112,7 +119,7 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
             switch (n) {
                 case COMPUTING:
                     button.setTextFill(Color.BLACK);
-                    button.setStyle(shape + "-fx-background-color: LIGHTBLUE;");
+                    button.setStyle(shape + computingColor);
                     break;
                 case FAILED:
                     button.setTextFill(Color.DARKRED);
@@ -134,7 +141,6 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
 
     private Node makeFormatBreadCrumb(DataNode dataNode, Document document) {
         final Button button = new Button();
-        final String shape = "-fx-shape: \"M 0 0 L 5 9 L 0 18 L 100 18 L 105 9 L 100 0 z\";"; // arrow shape
         button.setStyle(shape);
         button.setText("Format");
         button.disableProperty().bind(dataNode.stateProperty().isEqualTo(UpdateState.VALID).not());
@@ -143,7 +149,7 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
         final ChangeListener<UpdateState> stateChangeListener = (c, o, n) -> {
             switch (n) {
                 case COMPUTING:
-                    button.setStyle(shape + "-fx-background-color: LIGHTBLUE;");
+                    button.setStyle(shape + computingColor);
                     break;
                 case FAILED:
                     button.setStyle(shape); // can't fail
@@ -159,4 +165,18 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
         });
         return button;
     }
+
+    private Node makeInputTabBreadCrumb() {
+        final Button button = new Button();
+        button.setStyle(shape);
+        button.setText("Input");
+        button.disableProperty().bind(document.getWorkflow().updatingProperty());
+        final Tooltip tooltip = new Tooltip("Input data");
+        button.setTooltip(tooltip);
+        button.setOnAction((e) -> {
+            document.getMainWindow().showInputTab();
+        });
+        return button;
+    }
+
 }

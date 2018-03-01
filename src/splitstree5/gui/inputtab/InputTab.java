@@ -19,26 +19,31 @@
 
 package splitstree5.gui.inputtab;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.control.Button;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ToolBar;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import jloda.fx.NotificationManager;
 import jloda.util.Basic;
+import jloda.util.ResourceManager;
 import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.gui.texttab.TextViewTab;
 import splitstree5.io.imports.IOExceptionWithLineNumber;
 import splitstree5.main.MainWindow;
+import splitstree5.main.MainWindowManager;
 import splitstree5.menu.MenuController;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * tab for entering data
@@ -54,18 +59,24 @@ public class InputTab extends TextViewTab {
      */
     public InputTab(MainWindow mainWindow) {
         super(new SimpleStringProperty("Input"));
+        setIcon(ResourceManager.getIcon("sun/toolbarButtonGraphics/general/Import16.gif"));
         setMainWindow(mainWindow);
-        getTextArea().setEditable(true);
-        getTextArea().setPromptText("Input data in Nexus format or any of the importable formats");
 
-        getTextArea().focusedProperty().addListener((c, o, n) -> {
+        final TextArea textArea = getTextArea();
+
+        textArea.setEditable(true);
+        textArea.setPromptText("Input data in Nexus format or any of the importable formats");
+
+        textArea.setContextMenu(createContextMenu());
+
+        textArea.focusedProperty().addListener((c, o, n) -> {
             if (n)
                 getMainWindow().getMenuController().getPasteMenuItem().disableProperty().set(!Clipboard.getSystemClipboard().hasString());
         });
 
         // prevent double paste:
         {
-            getTextArea().setOnKeyPressed(event -> {
+            textArea.setOnKeyPressed(event -> {
                 final KeyCombination keyCombCtrZ = new KeyCodeCombination(KeyCode.V, KeyCombination.SHORTCUT_DOWN);
                 if (keyCombCtrZ.match(event)) {
                     event.consume();
@@ -76,14 +87,16 @@ public class InputTab extends TextViewTab {
         final ToolBar toolBar = new ToolBar();
         setToolBar(toolBar);
 
-        final Button applyButton = new Button("Apply");
+        final Button applyButton = new Button("Parse and Load");
+        applyButton.setTooltip(new Tooltip("Save this data to a temporary file, parse the file and then load the data"));
+
         toolBar.getItems().add(applyButton);
         applyButton.disableProperty().bind(getTextArea().textProperty().isEmpty());
 
         applyButton.setOnAction((e) -> {
             try {
                 if (tmpFile == null) {
-                    tmpFile = Basic.getUniqueFileName(System.getProperty("user.home"), "Untitled", "tmp");
+                    tmpFile = Basic.getUniqueFileName(System.getProperty("user.dir"), "Untitled", "tmp");
                     tmpFile.deleteOnExit();
                 }
 
@@ -101,7 +114,7 @@ public class InputTab extends TextViewTab {
                     // this highlights the line that has the problem
                     if (ioExceptionWithLineNumber != null) {
                         getTabPane().getSelectionModel().select(InputTab.this);
-                        getTextArea().requestFocus();
+                        textArea.requestFocus();
                         gotoLine(ioExceptionWithLineNumber.getLineNumber());
                     }
                 };
@@ -113,28 +126,77 @@ public class InputTab extends TextViewTab {
         });
     }
 
+    /**
+     * replaces the built-in context menu
+     *
+     * @return context menu
+     */
+    private ContextMenu createContextMenu() {
+        final TextArea textArea = getTextArea();
+
+        return new ContextMenu(
+                createMenuItem("Undo", (e) -> textArea.undo()),
+                createMenuItem("Redo", (e) -> textArea.redo()),
+                createMenuItem("Cut", (e) -> textArea.cut()),
+                createMenuItem("Copy", (e) -> textArea.copy()),
+                createMenuItem("Paste", (e) -> textArea.paste()),
+                createMenuItem("Delete", (e) -> textArea.deleteText(textArea.getSelection())),
+                new SeparatorMenuItem(),
+                createMenuItem("Select All", (e) -> textArea.selectAll()),
+                createMenuItem("Select Brackets", (e) -> selectBrackets(textArea)));
+    }
+
+    private MenuItem createMenuItem(String name, EventHandler<ActionEvent> eventHandler) {
+        MenuItem menuItem = new MenuItem(name);
+        menuItem.setOnAction(eventHandler);
+        return menuItem;
+    }
+
+
     @Override
     public void updateMenus(MenuController controller) {
         super.updateMenus(controller);
+        final TextArea textArea = getTextArea();
 
         controller.getPasteMenuItem().setOnAction((e) -> {
             if (getTextArea().isFocused()) {
                 e.consume();
-                getTextArea().paste();
+                textArea.paste();
             }
         });
 
+        controller.getSelectFromPreviousMenuItem().setOnAction((e) -> {
+            for (String word : MainWindowManager.getInstance().getPreviousSelection()) {
+                final Pattern pattern = Pattern.compile(word);
+                String source = textArea.getText();
+                Matcher matcher = pattern.matcher(source);
+
+                if (matcher.find(0)) {
+                    textArea.selectRange(matcher.start(), matcher.end());
+                    break;
+                }
+            }
+        });
+        controller.getSelectFromPreviousMenuItem().disableProperty().bind(Bindings.isEmpty(MainWindowManager.getInstance().getPreviousSelection()));
+
         final MenuItem undoMenuItem = controller.getUndoMenuItem();
-        undoMenuItem.setOnAction((e) -> getTextArea().undo());
+        undoMenuItem.setOnAction((e) -> textArea.undo());
         //undoMenuItem.setText("Undo edit");
         undoMenuItem.disableProperty().bind(getTextArea().undoableProperty().not());
 
         final MenuItem redoMenuItem = controller.getRedoMenuItem();
-        redoMenuItem.setOnAction((e) -> getTextArea().redo());
+        redoMenuItem.setOnAction((e) -> textArea.redo());
         //redoMenuItem.setText("Redo edit");
         redoMenuItem.disableProperty().bind(getTextArea().redoableProperty().not());
 
         controller.getReplaceMenuItem().setOnAction((e) -> findToolBar.setShowReplaceToolBar(true));
         controller.getReplaceMenuItem().setDisable(false);
+
+        controller.getCopyMenuItem().setOnAction((e) -> {
+            e.consume();
+            textArea.cut();
+        });
+        controller.getCopyMenuItem().disableProperty().bind(getTextArea().selectedTextProperty().length().isEqualTo(0));
     }
+
 }

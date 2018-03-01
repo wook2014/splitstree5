@@ -19,7 +19,6 @@
 
 package splitstree5.io.nexus;
 
-import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
@@ -190,15 +189,6 @@ public class TreesNexusInput implements INexusInput<TreesBlock> {
 
            // final PhyloTree tree = PhyloTree.valueOf(buf.toString(), isRooted);
             final PhyloTree tree=parser.parse(buf.toString());
-            if(!parser.isHasWeights()) { // set all weights to 1
-                for(Edge e:tree.edges()) {
-                    if(e.getSource().getInDegree()==0 && e.getSource().getOutDegree()==2 && !tree.getTaxa(e.getSource()).iterator().hasNext()) {
-                        tree.setWeight(e,0.5);
-                    }
-                    else
-                        tree.setWeight(e,1);
-                }
-            }
 
             if (translator != null)
                 tree.changeLabels(translator);

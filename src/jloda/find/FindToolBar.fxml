@@ -19,7 +19,6 @@
   ~  along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -118,6 +117,12 @@
                         <Font size="10.0"/>
                     </font>
                 </Button>
+                <CheckBox fx:id="inSelectionOnlyCheckBox" alignment="CENTER" mnemonicParsing="false"
+                          text="In selection only">
+                    <font>
+                        <Font size="10.0"/>
+                    </font>
+                </CheckBox>
             </items>
             <opaqueInsets>
                 <Insets/>

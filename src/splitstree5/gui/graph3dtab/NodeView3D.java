@@ -68,7 +68,8 @@ public class NodeView3D extends NodeViewBase {
         if (text != null && text.length() > 0) {
             color = Color.GOLD;
             setLabel(new Label(text));
-            label.setVisible(false);
+            getLabel().setVisible(false);
+            getLabel().setStyle("");
         } else {
             color = Color.SILVER;
             sphere.setRadius(1);
@@ -144,8 +145,9 @@ public class NodeView3D extends NodeViewBase {
     }
 
     public void setLabel(Labeled label) {
-        if (this.label != null)
+        if (this.label != null) {
             labelGroup.getChildren().remove(this.label);
+        }
         this.label = label;
         if (this.label != null)
             labelGroup.getChildren().add(this.label);

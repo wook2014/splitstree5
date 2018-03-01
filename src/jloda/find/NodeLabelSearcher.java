@@ -20,9 +20,8 @@
 package jloda.find;
 
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.*;
 import javafx.scene.control.MultipleSelectionModel;
 import jloda.fx.ASelectionModel;
 import jloda.graph.Node;
@@ -43,9 +42,10 @@ public class NodeLabelSearcher implements IObjectSearcher<Node> {
 
     private final ObjectProperty<Node> found = new SimpleObjectProperty<>();
 
+    private final BooleanProperty globalFindable = new SimpleBooleanProperty();
+    private final BooleanProperty selectionReplaceable = new SimpleBooleanProperty();
+
     public static final String SEARCHER_NAME = "Nodes";
-
-
 
     /**
      * constructor
@@ -55,6 +55,8 @@ public class NodeLabelSearcher implements IObjectSearcher<Node> {
      */
     public NodeLabelSearcher(PhyloGraph graph, ASelectionModel<Node> nodeSelectionModel) {
         this(SEARCHER_NAME, graph, nodeSelectionModel);
+        globalFindable.set(true); // todo: should listen for graphs of graph
+        selectionReplaceable.bind(Bindings.isNotEmpty(nodeSelectionModel.getSelectedItems()));
     }
 
     /**
@@ -192,8 +194,8 @@ public class NodeLabelSearcher implements IObjectSearcher<Node> {
      *
      * @return true, if there is at least one object
      */
-    public boolean isGlobalFindable() {
-        return graph.getNumberOfNodes() > 0;
+    public ReadOnlyBooleanProperty isGlobalFindable() {
+        return globalFindable;
     }
 
     /**
@@ -201,8 +203,8 @@ public class NodeLabelSearcher implements IObjectSearcher<Node> {
      *
      * @return true, if at least one object is selected
      */
-    public boolean isSelectionFindable() {
-        return nodeSelectionModel.getSelectedItems().size() > 0;
+    public ReadOnlyBooleanProperty isSelectionFindable() {
+        return selectionReplaceable;
     }
 
     /**

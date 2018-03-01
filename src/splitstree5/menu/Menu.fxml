@@ -190,6 +190,12 @@
                     </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="selectBracketsMenuItem" text="Brackets">
+                    <accelerator>
+                        <KeyCodeCombination alt="UP" code="B" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
+                    </accelerator>
+                </MenuItem>
+                <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="invertNodeSelectionMenuItem" mnemonicParsing="false" text="Invert Node Selection"/>
                 <MenuItem fx:id="deselectAllNodesMenuItem" mnemonicParsing="false" text="Deselect Nodes"/>
                 <SeparatorMenuItem mnemonicParsing="false"/>

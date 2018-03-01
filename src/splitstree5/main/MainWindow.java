@@ -490,11 +490,15 @@ public class MainWindow {
     /**
      * show the enter data tab
      */
-    public void showEnterDataTab() {
+    public void showInputTab() {
         if (inputTab == null)
             inputTab = new InputTab(this);
         if (!getMainWindowController().getMainTabPane().getTabs().contains(inputTab))
             getMainWindowController().getMainTabPane().getTabs().add(inputTab);
         getMainWindowController().getMainTabPane().getSelectionModel().select(inputTab);
+    }
+
+    public InputTab getInputTab() {
+        return inputTab;
     }
 }

@@ -20,6 +20,7 @@
 package splitstree5.gui.texttab;
 
 
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -31,6 +32,7 @@ import jloda.find.TextAreaSearcher;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 import splitstree5.gui.ViewerTab;
+import splitstree5.main.MainWindowManager;
 import splitstree5.menu.MenuController;
 import splitstree5.utils.Print;
 
@@ -73,11 +75,15 @@ public class TextViewTab extends ViewerTab {
             textArea.textProperty().bind(textProperty);
         textArea.textProperty().addListener((InvalidationListener) -> getUndoManager().clear());
 
-        // setup find / replace tool bar:
+        textArea.selectionProperty().addListener((c, o, n) -> {
+            MainWindowManager.getInstance().getPreviousSelection().clear();
+            MainWindowManager.getInstance().getPreviousSelection().add(textArea.getText(n.getStart(), n.getEnd()));
+        });
+
+        // setup find tool bar:
         {
             textAreaSearcher = new TextAreaSearcher("Text", textArea);
             findToolBar = new FindToolBar(textAreaSearcher);
-            //findToolBar.setShowReplaceToolBar(true);
         }
 
         final BorderPane borderPane = new BorderPane(textArea);
@@ -102,9 +108,40 @@ public class TextViewTab extends ViewerTab {
             int end = text.indexOf('\n', start);
             if (end == -1)
                 end = text.length();
+            textArea.requestFocus();
             textArea.selectRange(start, end);
         }
-        // todo: need to scroll to the line
+    }
+
+    /**
+     * select matching brackets
+     *
+     * @param textArea
+     */
+    protected void selectBrackets(TextArea textArea) {
+        int pos = textArea.getCaretPosition() - 1;
+        while (pos > 0 && pos < textArea.getText().length()) {
+            final char close = textArea.getText().charAt(pos);
+            if (close == ')' || close == ']' || close == '}') {
+                final int closePos = pos;
+                final int open = (close == ')' ? '(' : (close == ']' ? '[' : '}'));
+
+                int balance = 0;
+                for (; pos >= 0; pos--) {
+                    char ch = textArea.getText().charAt(pos);
+                    if (ch == open)
+                        balance--;
+                    else if (ch == close)
+                        balance++;
+                    if (balance == 0) {
+                        final int fpos = pos;
+                        Platform.runLater(() -> textArea.selectRange(fpos, closePos + 1));
+                        return;
+                    }
+                }
+            }
+            pos++;
+        }
     }
 
     @Override
@@ -130,11 +167,14 @@ public class TextViewTab extends ViewerTab {
             e.consume();
             textArea.copy();
         });
-        controller.getCopyMenuItem().disableProperty().bind(textArea.selectedTextProperty().length().isEqualTo(0));
+        controller.getCopyMenuItem().disableProperty().bind(textArea.selectedTextProperty().isEmpty());
 
         controller.getSelectAllMenuItem().setOnAction((e) -> textArea.selectAll());
         controller.getSelectNoneMenuItem().setOnAction((e) -> textArea.selectHome());
-        controller.getSelectNoneMenuItem().disableProperty().bind(textArea.selectedTextProperty().length().isEqualTo(0));
+        controller.getSelectNoneMenuItem().disableProperty().bind(textArea.selectedTextProperty().isEmpty());
+
+        controller.getSelectBracketsMenuItem().setOnAction((e) -> selectBrackets(textArea));
+        controller.getSelectBracketsMenuItem().disableProperty().bind(textArea.textProperty().isEmpty());
 
         controller.getFindMenuItem().setOnAction((e) -> findToolBar.setShowFindToolBar(true));
         controller.getFindAgainMenuItem().setOnAction((e) -> findToolBar.findAgain());

@@ -19,6 +19,8 @@
 
 package jloda.find;
 
+import javafx.beans.property.ReadOnlyBooleanProperty;
+
 /**
  * Base interface for searchers
  * Daniel Huson, 7.2008
@@ -36,14 +38,14 @@ public interface ISearcher {
      *
      * @return true, if there is at least one object
      */
-    boolean isGlobalFindable();
+    ReadOnlyBooleanProperty isGlobalFindable();
 
     /**
      * is a selection find possible
      *
      * @return true, if at least one object is selected
      */
-    boolean isSelectionFindable();
+    ReadOnlyBooleanProperty isSelectionFindable();
 
     /**
      * something has been changed or selected, update view

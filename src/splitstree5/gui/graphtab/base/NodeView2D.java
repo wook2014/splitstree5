@@ -67,6 +67,7 @@ public class NodeView2D extends NodeViewBase {
             circle.setFill(Color.WHITE);
 
             label = new Label(text);
+            label.setStyle("");
             label.setFont(ProgramProperties.getDefaultFont());
             label.setTranslateX(location.getX() + circle.getRadius() + 2);
             label.setTranslateY(location.getY());

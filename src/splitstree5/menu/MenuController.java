@@ -160,6 +160,9 @@ public class MenuController {
     private MenuItem selectAllBelowMenuItem;
 
     @FXML
+    private MenuItem selectBracketsMenuItem;
+
+    @FXML
     private MenuItem invertNodeSelectionMenuItem;
 
     @FXML
@@ -496,6 +499,10 @@ public class MenuController {
 
     public MenuItem getSelectAllBelowMenuItem() {
         return selectAllBelowMenuItem;
+    }
+
+    public MenuItem getSelectBracketsMenuItem() {
+        return selectBracketsMenuItem;
     }
 
     public MenuItem getInvertNodeSelectionMenuItem() {

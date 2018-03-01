@@ -57,6 +57,9 @@ public class SearchManager {
 
     private final BooleanProperty canFindAll = new SimpleBooleanProperty(false);
 
+    public final BooleanProperty canFindGlobally = new SimpleBooleanProperty(false);
+    public final BooleanProperty canReplaceInSelection = new SimpleBooleanProperty(false);
+
     /**
      * constructor
      */
@@ -83,6 +86,8 @@ public class SearchManager {
             else if (n instanceof IObjectSearcher) // run other searchers in external thread
                 service.setExecutor(Executors.newSingleThreadExecutor());
             canFindAll.set(n.canFindAll());
+            canReplaceInSelection.bind(n.isSelectionFindable());
+            canFindGlobally.bind(n.isGlobalFindable());
         });
     }
 
@@ -624,5 +629,21 @@ public class SearchManager {
 
     public void cancel() {
         service.cancel();
+    }
+
+    public boolean isCanFindGlobally() {
+        return canFindGlobally.get();
+    }
+
+    public BooleanProperty canFindGloballyProperty() {
+        return canFindGlobally;
+    }
+
+    public boolean isCanReplaceInSelection() {
+        return canReplaceInSelection.get();
+    }
+
+    public BooleanProperty canReplaceInSelectionProperty() {
+        return canReplaceInSelection;
     }
 }

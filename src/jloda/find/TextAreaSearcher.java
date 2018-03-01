@@ -19,8 +19,13 @@
 
 package jloda.find;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.control.IndexRange;
 import javafx.scene.control.TextArea;
 
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -30,7 +35,10 @@ import java.util.regex.PatternSyntaxException;
  * Daniel Huson, 7.2008
  */
 public class TextAreaSearcher implements ITextSearcher {
-    final TextArea textArea;
+    private final TextArea textArea;
+
+    private final BooleanProperty globalFindable = new SimpleBooleanProperty(false);
+    private final BooleanProperty selectionReplaceable = new SimpleBooleanProperty(false);
 
     private final String name;
 
@@ -40,6 +48,10 @@ public class TextAreaSearcher implements ITextSearcher {
     public TextAreaSearcher(String name, TextArea textArea) {
         this.name = name;
         this.textArea = textArea;
+        if (textArea != null) {
+            globalFindable.bind(textArea.textProperty().isNotEmpty());
+            selectionReplaceable.bind(textArea.selectedTextProperty().isNotEmpty());
+        }
     }
 
     /**
@@ -107,35 +119,34 @@ public class TextAreaSearcher implements ITextSearcher {
     public int replaceAll(String regularExpression, String replaceText, boolean selectionOnly) {
         if (textArea == null) return 0;
 
+        final ArrayList<IndexRange> occurrences = new ArrayList<>();
+        {
+            final IndexRange indexRange;
+            if (selectionOnly)
+                indexRange = textArea.getSelection();
+            else
+                indexRange = null;
 
-
-        final String source;
-        if (selectionOnly)
-            source = textArea.getSelectedText();
-        else
-            source = textArea.getText();
-
-        int count = 0;
-
-        if (source != null) {
             final Pattern pattern = Pattern.compile(regularExpression);
-            final Matcher matcher = pattern.matcher(source);
-            //We do a manual count of the number of >>non-overlapping<< patterns match.
+            final Matcher matcher = pattern.matcher(textArea.getText());
             int pos = 0;
+
+            int offset = 0; // need to take into account that text length may change during replacement
+
             while (matcher.find(pos)) {
-                count++;
+                if (indexRange == null || matcher.start() >= indexRange.getStart() && matcher.end() <= indexRange.getEnd()) {
+                    occurrences.add(new IndexRange(matcher.start() + offset, matcher.end() + offset));
+                    offset += replaceText.length() - (matcher.end() - matcher.start());
+                }
                 pos = matcher.end();
             }
+        }
 
-            if (selectionOnly)
-                textArea.replaceSelection(matcher.replaceAll(replaceText));
-            else {
-                textArea.setText(matcher.replaceAll(replaceText));
-                textArea.positionCaret(0);
-            }
+        for (IndexRange range : occurrences) {
+            textArea.replaceText(range, replaceText);
 
         }
-        return count;
+        return occurrences.size();
     }
 
     /**
@@ -143,8 +154,8 @@ public class TextAreaSearcher implements ITextSearcher {
      *
      * @return true, if there is at least one object
      */
-    public boolean isGlobalFindable() {
-        return textArea != null && textArea.getText().length() > 0;
+    public ReadOnlyBooleanProperty isGlobalFindable() {
+        return globalFindable;
     }
 
     /**
@@ -152,8 +163,8 @@ public class TextAreaSearcher implements ITextSearcher {
      *
      * @return true, if at least one object is selected
      */
-    public boolean isSelectionFindable() {
-        return textArea != null && textArea.getSelectedText() != null && textArea.getSelectedText().length() > 0;
+    public ReadOnlyBooleanProperty isSelectionFindable() {
+        return selectionReplaceable;
     }
 
     /**
