@@ -62,7 +62,7 @@ public class ClustalIn extends CharactersFormat implements IToCharacters, IImpor
                     String label = "";
                     int labelIndex = tmpLine.indexOf(' ');
                     if (labelIndex == -1 || labelIndex == 0)
-                        throw new IOExceptionWithLineNumber("No taxa label is given at line " + counter, counter);
+                        throw new IOExceptionWithLineNumber("No taxa label is given", counter);
                     else
                         label = tmpLine.substring(0, labelIndex);
 
@@ -83,14 +83,14 @@ public class ClustalIn extends CharactersFormat implements IToCharacters, IImpor
         }
 
         if (taxa2seq.isEmpty())
-            throw new IOException("No sequences were found");
+            throw new IOExceptionWithLineNumber("No sequences were found", counter);
 
         ntax = taxa2seq.size();
         nchar = taxa2seq.get(taxa2seq.keySet().iterator().next()).length();
         for (String s : taxa2seq.keySet()) {
             if (nchar != taxa2seq.get(s).length())
                 throw new IOException("Sequences must be the same length." +
-                        "Wrong number of chars at the sequence " + s);
+                        "Wrong number of chars in the sequence " + s);
             else
                 nchar = taxa2seq.get(s).length();
         }

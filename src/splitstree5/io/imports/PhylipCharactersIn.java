@@ -52,7 +52,7 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
                     readLines++;
 
                     if (line.length() <= 10)
-                        throw new IOExceptionWithLineNumber("Line "+counter+" is shorter then 10 symbols. \n" +
+                        throw new IOExceptionWithLineNumber("Line is shorter then 10 symbols. \n" +
                                 "Phylip characters format : first 10 symbols = taxa label + sequence", counter);
 
                     // interleaved
@@ -61,7 +61,7 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
                         else {
                             if (interleavedBlockLinesLength != 0 && line.length() != interleavedBlockLinesLength)
                                 throw new IOExceptionWithLineNumber("Error for interleaved format matrix." +
-                                        "\nLine " + counter + " must have the same length as line "+ (counter-1), counter);
+                                        "\nLine must have the same length as line "+ (counter-1), counter);
                         }
                     }
 
@@ -93,7 +93,7 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
 
                     // no more lines are allowed for standard after reading ntax lines
                     if (readLines > ntax && standard)
-                        throw new IOExceptionWithLineNumber("Unexpected symbol at the line " + counter +
+                        throw new IOExceptionWithLineNumber("Unexpected symbol"+
                                 "\nCan only read " + ntax + " lines " + nchar + " symbols long.", counter);
                 }
                 progressListener.setProgress(it.getProgress());
@@ -101,7 +101,7 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
         }
 
         if (sequences.isEmpty())
-            throw new IOException("No sequences were found");
+            throw new IOExceptionWithLineNumber("No sequences were found", counter);
 
         if (standard)
             setCharactersStandard(labels, sequences, ntax, nchar, taxa, characters);
