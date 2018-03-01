@@ -26,8 +26,7 @@ public class LeastSquaresWeights extends Algorithm<SplitsBlock, SplitsBlock> imp
     private DistancesBlock distancesBlock = new DistancesBlock();
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, SplitsBlock parent, SplitsBlock child)
-            throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, SplitsBlock parent, SplitsBlock child) throws Exception {
 
         System.err.println("Computing least squares...");
         progress.setMaximum(3);
@@ -42,7 +41,8 @@ public class LeastSquaresWeights extends Algorithm<SplitsBlock, SplitsBlock> imp
         */
         progress.incrementProgress();
         try {
-            LeastSquares.optimizeLS(parent, distancesBlock, getOptionConstrain());
+            child.copy(parent);
+            LeastSquares.optimizeLS(child, distancesBlock, getOptionConstrain());
             SplitsUtilities.computeFits(true, parent, distancesBlock, new ProgressPercentage());
         } catch (Exception ex) {
             Basic.caught(ex);

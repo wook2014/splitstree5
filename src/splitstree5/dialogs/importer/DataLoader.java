@@ -30,7 +30,7 @@ import jloda.util.Basic;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.characters2distances.HammingDistances;
 import splitstree5.core.algorithms.distances2splits.NeighborNet;
-import splitstree5.core.algorithms.filters.DimensionFilter;
+import splitstree5.core.algorithms.filters.SplitsFilter;
 import splitstree5.core.algorithms.filters.TreeSelector;
 import splitstree5.core.algorithms.filters.TreesFilter;
 import splitstree5.core.algorithms.trees2splits.ConsensusNetwork;
@@ -118,7 +118,7 @@ public class DataLoader {
         } else if (dataBlock instanceof SplitsBlock) {
             workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
             final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
-            workflow.createConnector(workflow.getWorkingDataNode(), splits, new DimensionFilter());
+            workflow.createConnector(workflow.getWorkingDataNode(), splits, new SplitsFilter());
             final DataNode<SplitsNetworkViewBlock> splitsView = workflow.createDataNode(new SplitsNetworkViewBlock());
             workflow.createConnector(splits, splitsView, new SplitsNetworkAlgorithm());
         } else if (dataBlock instanceof TreesBlock) {
@@ -138,7 +138,7 @@ public class DataLoader {
                     workflow.createConnector(trees, splits0, new ConsensusNetwork());
                 }
                 final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
-                workflow.createConnector(splits0, splits, new DimensionFilter());
+                workflow.createConnector(splits0, splits, new SplitsFilter());
 
                 final DataNode<SplitsNetworkViewBlock> splitsNetworkViewBlockDataNode = workflow.createDataNode(new SplitsNetworkViewBlock());
                 workflow.createConnector(splits, splitsNetworkViewBlockDataNode, new SplitsNetworkAlgorithm());
@@ -153,6 +153,10 @@ public class DataLoader {
             final DataNode<NetworkViewBlock> networkView = workflow.createDataNode(new NetworkViewBlock());
             workflow.createConnector(workflow.getTopDataNode(), networkView, new NetworkEmbedder());
         }
+
+        if (taxaBlock.getTraitsBlock() != null)
+            workflow.createTopTraitsAndWorkingTraitsNodes(taxaBlock.getTraitsBlock());
+
         document.setupTaxonSelectionModel();
 
         Platform.runLater(() -> {

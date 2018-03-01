@@ -112,7 +112,6 @@ public class SplitsTree5 extends Application {
             System.err.println("NOT IMPLEMENTED: load files from command line");
             // todo: implement
         }
-
     }
 
     public void stop() {

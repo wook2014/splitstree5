@@ -41,8 +41,6 @@ public class MinSpanningTree extends Algorithm<DistancesBlock, NetworkBlock> imp
 
     public final static String DESCRIPTION = "Kruskal's Algorithm";
 
-    private double optionEpsilon = 0;
-
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, DistancesBlock parent, NetworkBlock child) throws Exception {
         final PhyloGraph graph = child.getGraph();
@@ -85,13 +83,5 @@ public class MinSpanningTree extends Algorithm<DistancesBlock, NetworkBlock> imp
                 }
             }
         }
-    }
-
-    public double getOptionEpsilon() {
-        return optionEpsilon;
-    }
-
-    public void setOptionEpsilon(double optionEpsilon) {
-        this.optionEpsilon = optionEpsilon;
     }
 }

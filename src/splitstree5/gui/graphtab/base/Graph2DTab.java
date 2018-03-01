@@ -28,10 +28,7 @@ import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.control.ScrollPane;
 import jloda.fx.ZoomableScrollPane;
-import jloda.graph.Edge;
-import jloda.graph.EdgeArray;
-import jloda.graph.Node;
-import jloda.graph.NodeArray;
+import jloda.graph.*;
 import jloda.phylo.PhyloGraph;
 import jloda.phylo.PhyloTree;
 import splitstree5.gui.graphtab.commands.LayoutLabelsCommand;
@@ -51,7 +48,6 @@ import java.util.concurrent.Executors;
  */
 public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
 
-    private RubberBandSelection rubberBandSelection;
     private DoubleProperty scaleChangeX = new SimpleDoubleProperty(1); // keep track of scale changes, used for reset
     private DoubleProperty scaleChangeY = new SimpleDoubleProperty(1);
     private DoubleProperty angleChange = new SimpleDoubleProperty(0);
@@ -139,7 +135,8 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
                         }
                     }
                 };
-                rubberBandSelection = new RubberBandSelection(centerPane, scrollPane, group, createRubberBandSelectionHandler());
+                new RubberBandSelection(centerPane, scrollPane, group, createRubberBandSelectionHandler());
+
                 scrollPane.lockAspectRatioProperty().bind(layout.isEqualTo(GraphLayout.Radial));
                 centerPane.minWidthProperty().bind(Bindings.createDoubleBinding(() ->
                         scrollPane.getViewportBounds().getWidth(), scrollPane.viewportBoundsProperty()).subtract(20));
@@ -215,8 +212,11 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
         }
     }
 
+    /**
+     * handles a rubber band selection
+     */
     private RubberBandSelection.Handler createRubberBandSelectionHandler() {
-        return (rectangle, extendSelection) -> {
+        return (rectangle, extendSelection, executorService) -> {
             if (!extendSelection) {
                 nodeSelectionModel.clearSelection();
                 edgeSelectionModel.clearSelection();
@@ -224,49 +224,71 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
             final Set<Node> previouslySelectedNodes = new HashSet<>(nodeSelectionModel.getSelectedItems());
             final Set<Edge> previouslySelectedEdges = new HashSet<>(edgeSelectionModel.getSelectedItems());
 
-            for (Node node : graph.nodes()) {
-                final NodeView2D nodeView = (NodeView2D) node2view.get(node);
+            executorService.submit(() -> {
                 {
-                    final Bounds bounds = nodeView.getShapeGroup().localToScene(nodeView.getShapeGroup().getBoundsInLocal());
-                    if (rectangle.contains(bounds.getMinX(), bounds.getMinY()) && rectangle.contains(bounds.getMaxX(), bounds.getMaxY())) {
-                        if (previouslySelectedNodes.contains(node))
-                            nodeSelectionModel.clearSelection(node);
-                        else
-                            nodeSelectionModel.select(node);
+                    final NodeSet toDeselect = new NodeSet(graph);
+                    final NodeSet toSelect = new NodeSet(graph);
+
+                    for (Node node : graph.nodes()) {
+                        final NodeView2D nodeView = (NodeView2D) node2view.get(node);
+                        {
+                            final Bounds bounds = nodeView.getShapeGroup().localToScene(nodeView.getShapeGroup().getBoundsInLocal());
+
+                            if (rectangle.contains(bounds.getMinX(), bounds.getMinY()) && rectangle.contains(bounds.getMaxX(), bounds.getMaxY())) {
+                                if (previouslySelectedNodes.contains(node))
+                                    toDeselect.add(node);
+                                else
+                                    toSelect.add(node);
+                            }
+                        }
+
+                        if (nodeView.getLabel() != null) {
+                            final Bounds bounds = nodeView.getLabel().localToScene(nodeView.getLabel().getBoundsInLocal());
+                            if (rectangle.contains(bounds.getMinX(), bounds.getMinY()) && rectangle.contains(bounds.getMaxX(), bounds.getMaxY())) {
+                                if (previouslySelectedNodes.contains(node))
+                                    toDeselect.add(node);
+                                else
+                                    toSelect.add(node);
+                            }
+                        }
                     }
+                    if (toDeselect.size() > 0)
+                        Platform.runLater(() -> nodeSelectionModel.clearSelection(toDeselect));
+                    if (toSelect.size() > 0)
+                        Platform.runLater(() -> nodeSelectionModel.selectItems(toSelect));
                 }
 
-                if (nodeView.getLabel() != null) {
-                    final Bounds bounds = nodeView.getLabel().localToScene(nodeView.getLabel().getBoundsInLocal());
-                    if (rectangle.contains(bounds.getMinX(), bounds.getMinY()) && rectangle.contains(bounds.getMaxX(), bounds.getMaxY())) {
-                        if (previouslySelectedNodes.contains(node))
-                            nodeSelectionModel.clearSelection(node);
-                        else
-                            nodeSelectionModel.select(node);
-                    }
-                }
-                for (Edge edge : graph.edges()) {
-                    final EdgeView2D edgeView = (EdgeView2D) edge2view.get(edge);
-                    if (edgeView.getShape() != null) {
-                        final Bounds bounds = edgeView.getShape().localToScene(edgeView.getShape().getBoundsInLocal());
-                        if (rectangle.contains(bounds.getMinX(), bounds.getMinY()) && rectangle.contains(bounds.getMaxX(), bounds.getMaxY())) {
-                            if (previouslySelectedEdges.contains(edge))
-                                edgeSelectionModel.clearSelection(edge);
-                            else
-                                edgeSelectionModel.select(edge);
+                {
+                    final EdgeSet toDeselect = new EdgeSet(graph);
+                    final EdgeSet toSelect = new EdgeSet(graph);
+
+                    for (Edge edge : graph.edges()) {
+                        final EdgeView2D edgeView = (EdgeView2D) edge2view.get(edge);
+                        if (edgeView.getShape() != null) {
+                            final Bounds bounds = edgeView.getShape().localToScene(edgeView.getShape().getBoundsInLocal());
+                            if (rectangle.contains(bounds.getMinX(), bounds.getMinY()) && rectangle.contains(bounds.getMaxX(), bounds.getMaxY())) {
+                                if (previouslySelectedEdges.contains(edge))
+                                    toDeselect.add(edge);
+                                else
+                                    toSelect.add(edge);
+                            }
+                        }
+                        if (edgeView.getLabel() != null) {
+                            final Bounds bounds = edgeView.getLabel().localToScene(edgeView.getLabel().getBoundsInLocal());
+                            if (rectangle.contains(bounds.getMinX(), bounds.getMinY()) && rectangle.contains(bounds.getMaxX(), bounds.getMaxY())) {
+                                if (previouslySelectedEdges.contains(edge))
+                                    toDeselect.add(edge);
+                                else
+                                    toSelect.add(edge);
+                            }
                         }
                     }
-                    if (edgeView.getLabel() != null) {
-                        final Bounds bounds = edgeView.getLabel().localToScene(edgeView.getLabel().getBoundsInLocal());
-                        if (rectangle.contains(bounds.getMinX(), bounds.getMinY()) && rectangle.contains(bounds.getMaxX(), bounds.getMaxY())) {
-                            if (previouslySelectedEdges.contains(edge))
-                                edgeSelectionModel.clearSelection(edge);
-                            else
-                                edgeSelectionModel.select(edge);
-                        }
-                    }
+                    if (toDeselect.size() > 0)
+                        Platform.runLater(() -> edgeSelectionModel.clearSelection(toDeselect));
+                    if (toSelect.size() > 0)
+                        Platform.runLater(() -> edgeSelectionModel.selectItems(toSelect));
                 }
-            }
+            });
         };
     }
 

@@ -68,8 +68,9 @@ public class RubberBandSelection {
          *
          * @param rectangle       in scene coordinates
          * @param extendSelection true if shift key down
+         * @param service use this service for computations outside of the FX thread
          */
-        void handle(Rectangle2D rectangle, boolean extendSelection);
+        void handle(Rectangle2D rectangle, boolean extendSelection, ExecutorService service);
     }
 
     private final Rectangle rectangle;
@@ -92,13 +93,13 @@ public class RubberBandSelection {
      */
     public RubberBandSelection(final Pane pane, final ScrollPane scrollPane, final Group group, final Handler handler) {
         if (service == null)
-            service = Executors.newFixedThreadPool(1);
+            service = Executors.newSingleThreadExecutor();
 
         this.handler = handler;
         rectangle = new Rectangle();
 
         rectangle.setFill(Color.TRANSPARENT);
-        rectangle.setStroke(Color.GOLDENROD);
+        rectangle.setStroke(SelectionEffect.getInstance().getColor());
 
         inRubberBand.addListener((c, o, n) -> {
             pane.setCursor(n ? Cursor.CROSSHAIR : Cursor.DEFAULT);
@@ -183,7 +184,7 @@ public class RubberBandSelection {
                     if (this.handler != null && rectangle.getWidth() > 0 && rectangle.getHeight() > 0) {
                         Point2D min = group.localToScene(rectangle.getX(), rectangle.getY());
                         Point2D max = group.localToScene(rectangle.getX() + rectangle.getWidth(), rectangle.getY() + rectangle.getHeight());
-                        this.handler.handle(new Rectangle2D(min.getX(), min.getY(), max.getX() - min.getX(), max.getY() - min.getY()), e.isShiftDown());
+                        this.handler.handle(new Rectangle2D(min.getX(), min.getY(), max.getX() - min.getX(), max.getY() - min.getY()), e.isShiftDown(), service);
                     }
                 }
                 inRubberBand.set(false);

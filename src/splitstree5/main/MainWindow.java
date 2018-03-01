@@ -173,10 +173,10 @@ public class MainWindow {
             final ContextMenu contextMenu = new ContextMenu();
             MenuItem openItem = new MenuItem("Open...");
             openItem.setOnAction((e) -> menuController.getOpenMenuItem().fire());
-            openItem.disableProperty().bind(Bindings.isNotNull(workflow.topTaxaNodeProperty()));
+            openItem.disableProperty().bind(workflow.hasWorkingTaxonNodeForFXThreadProperty());
             MenuItem importItem = new MenuItem("Import...");
             importItem.setOnAction((e) -> menuController.getImportMenuItem().fire());
-            importItem.disableProperty().bind(Bindings.isNotNull(workflow.topTaxaNodeProperty()));
+            importItem.disableProperty().bind(workflow.hasWorkingTaxonNodeForFXThreadProperty());
             MenuItem closeItem = new MenuItem("Close");
             closeItem.setOnAction((e) -> menuController.getCloseMenuItem().fire());
 
@@ -390,27 +390,33 @@ public class MainWindow {
     }
 
     /**
-     * show a data view node
+     * show a connector/algorithm node
      *
-     * @param workflowNode
+     * @param connector
      */
-    public void showAlgorithmView(Connector workflowNode) {
-        ViewerTab viewerTab = aNode2ViewerTab.get(workflowNode);
-        if (viewerTab == null) {
-            viewerTab = new AlgorithmTab<>(document, workflowNode);
-            aNode2ViewerTab.put(workflowNode, viewerTab);
-            algorithmsTabPane.getTabs().add(0, viewerTab);
-        }
-        TabPane tabPane = viewerTab.getTabPane(); // might be in an auxilary window
-        if (tabPane == null)
-            tabPane = mainTabPane;
-        tabPane.getSelectionModel().select(viewerTab);
+    public void showAlgorithmView(Connector connector) {
+        if (connector != null) {
+            ViewerTab viewerTab = aNode2ViewerTab.get(connector);
+            if (viewerTab == null) {
+                viewerTab = new AlgorithmTab<>(document, connector);
+                aNode2ViewerTab.put(connector, viewerTab);
+                algorithmsTabPane.getTabs().add(0, viewerTab);
+            }
+            TabPane tabPane = viewerTab.getTabPane(); // might be in an auxilary window
+            if (tabPane == null) {
+                if (!algorithmsTabPane.getTabs().contains(viewerTab))
+                    algorithmsTabPane.getTabs().add(viewerTab);
+                tabPane = algorithmsTabPane;
+            }
 
-        final Stage stage = (Stage) viewerTab.getTabPane().getScene().getWindow();
-        if (stage != null) {
-            stage.toFront();
+            tabPane.getSelectionModel().select(viewerTab);
+
+            final Stage stage = (Stage) tabPane.getScene().getWindow();
+            if (stage != null) {
+                stage.toFront();
+            }
+            getMainWindowController().ensureAlgorithmsTabPaneIsOpen();
         }
-        getMainWindowController().ensureAlgorithmsTabPaneIsOpen();
     }
 
     /**
@@ -479,8 +485,10 @@ public class MainWindow {
      * @param pair
      */
     public void show(Pair<Connector, DataNode> pair) {
-        showAlgorithmView(pair.getFirst());
-        showDataView(pair.getSecond());
+        if (pair != null) {
+            showAlgorithmView(pair.getFirst());
+            showDataView(pair.getSecond());
+        }
     }
 
     public Workflow getWorkflow() {

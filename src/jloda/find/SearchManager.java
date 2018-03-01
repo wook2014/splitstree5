@@ -332,46 +332,56 @@ public class SearchManager {
         if (isDisabled())
             return false;
 
-        boolean changed = false;
-        if (getSearcher() instanceof IObjectSearcher) {
-            IObjectSearcher searcher = (IObjectSearcher) getSearcher();
+        final boolean saveEquateUnderscoreWithSpace = isEquateUnderscoreWithSpace();
 
-            progressListener.setMaximum(-1);
+        try {
+            if (saveEquateUnderscoreWithSpace && getSearchText().contains("_"))
+                setEquateUnderscoreWithSpace(false);
 
-            boolean ok = searcher.isCurrentSet();
-            if (!ok)
-                ok = isForwardDirection() ? searcher.gotoFirst() : searcher.gotoLast();
+            boolean changed = false;
+            if (getSearcher() instanceof IObjectSearcher) {
+                IObjectSearcher searcher = (IObjectSearcher) getSearcher();
 
-            final String regexp = prepareRegularExpression(isEquateUnderscoreWithSpace() ? getSearchText().replaceAll("_", " ") : getSearchText());
-            final Pattern pattern = Pattern.compile(regexp);
+                progressListener.setMaximum(-1);
 
-            while (ok) {
-                if (isGlobalScope() || searcher.isCurrentSelected()) {
-                    String label = searcher.getCurrentLabel();
-                    if (isEquateUnderscoreWithSpace())
-                        label = label.replaceAll("_", " ");
-                    if (label == null)
-                        label = "";
-                    String replace = getReplacement(pattern, getReplaceText(), label);
-                    if (replace != null && !label.equals(replace)) {
-                        searcher.setCurrentSelected(true);
-                        searcher.setCurrentLabel(replace);
-                        changed = true;
-                        break;
+                boolean ok = searcher.isCurrentSet();
+                if (!ok)
+                    ok = isForwardDirection() ? searcher.gotoFirst() : searcher.gotoLast();
+
+                final String regexp = prepareRegularExpression(isEquateUnderscoreWithSpace() ? getSearchText().replaceAll("_", " ") : getSearchText());
+                final Pattern pattern = Pattern.compile(regexp);
+
+                while (ok) {
+                    if (isGlobalScope() || searcher.isCurrentSelected()) {
+                        String label = searcher.getCurrentLabel();
+                        if (isEquateUnderscoreWithSpace())
+                            label = label.replaceAll("_", " ");
+                        if (label == null)
+                            label = "";
+                        String replace = getReplacement(pattern, getReplaceText(), label);
+                        if (replace != null && !label.equals(replace)) {
+                            searcher.setCurrentSelected(true);
+                            searcher.setCurrentLabel(replace);
+                            changed = true;
+                            break;
+                        }
                     }
+
+                    ok = isForwardDirection() ? searcher.gotoNext() : searcher.gotoPrevious();
+                    progressListener.checkForCancel();
                 }
+            } else if (getSearcher() instanceof ITextSearcher) {
+                ITextSearcher searcher = (ITextSearcher) getSearcher();
+                searcher.setGlobalScope(isGlobalScope());
 
-                ok = isForwardDirection() ? searcher.gotoNext() : searcher.gotoPrevious();
-                progressListener.checkForCancel();
+                final String regexp = prepareRegularExpression(isEquateUnderscoreWithSpace() ? getSearchText().replaceAll("_", " ") : getSearchText());
+                changed = searcher.replaceNext(regexp, getReplaceText());
             }
-        } else if (getSearcher() instanceof ITextSearcher) {
-            ITextSearcher searcher = (ITextSearcher) getSearcher();
-            searcher.setGlobalScope(isGlobalScope());
-
-            final String regexp = prepareRegularExpression(isEquateUnderscoreWithSpace() ? getSearchText().replaceAll("_", " ") : getSearchText());
-            changed = searcher.replaceNext(regexp, getReplaceText());
+            return changed;
+        } finally {
+            if (isEquateUnderscoreWithSpace() != saveEquateUnderscoreWithSpace)
+                setEquateUnderscoreWithSpace(saveEquateUnderscoreWithSpace);
         }
-        return changed;
     }
 
     /**
@@ -382,44 +392,49 @@ public class SearchManager {
             return 0;
 
         int count = 0;
-        boolean changed = false;
+        final boolean saveEquateUnderscoreWithSpace = isEquateUnderscoreWithSpace();
 
-        if (getSearcher() instanceof IObjectSearcher) {
-            IObjectSearcher searcher = (IObjectSearcher) getSearcher();
-            boolean ok = isForwardDirection() ? searcher.gotoFirst() : searcher.gotoLast();
-            progressListener.setMaximum(searcher.numberOfObjects());
+        try {
+            if (saveEquateUnderscoreWithSpace && getSearchText().contains("_"))
+                setEquateUnderscoreWithSpace(false);
 
-            final String regexp = prepareRegularExpression(isEquateUnderscoreWithSpace() ? getSearchText().replaceAll("_", " ") : getSearchText());
-            final Pattern pattern = Pattern.compile(regexp);
+            if (getSearcher() instanceof IObjectSearcher) {
+                IObjectSearcher searcher = (IObjectSearcher) getSearcher();
+                boolean ok = isForwardDirection() ? searcher.gotoFirst() : searcher.gotoLast();
+                progressListener.setMaximum(searcher.numberOfObjects());
 
-            while (ok) {
-                if (isGlobalScope() || searcher.isCurrentSelected()) {
-                    String label = searcher.getCurrentLabel();
-                    if (label == null)
-                        label = "";
-                    if (isEquateUnderscoreWithSpace())
-                        label = label.replaceAll("_", " ");
-                    String replace = getReplacement(pattern, getReplaceText(), label);
-                    if (replace != null && !replace.equals(label)) {
-                        searcher.setCurrentSelected(true);
-                        searcher.setCurrentLabel(replace);
-                        changed = true;
-                        count++;
+                final String regexp = prepareRegularExpression(isEquateUnderscoreWithSpace() ? getSearchText().replaceAll("_", " ") : getSearchText());
+                final Pattern pattern = Pattern.compile(regexp);
+
+                while (ok) {
+                    if (isGlobalScope() || searcher.isCurrentSelected()) {
+                        String label = searcher.getCurrentLabel();
+                        if (label == null)
+                            label = "";
+                        if (isEquateUnderscoreWithSpace())
+                            label = label.replaceAll("_", " ");
+                        String replace = getReplacement(pattern, getReplaceText(), label);
+                        if (replace != null && !replace.equals(label)) {
+                            searcher.setCurrentSelected(true);
+                            searcher.setCurrentLabel(replace);
+                            count++;
+                        }
                     }
+                    ok = isForwardDirection() ? searcher.gotoNext() : searcher.gotoPrevious();
+                    progressListener.incrementProgress();
                 }
-                ok = isForwardDirection() ? searcher.gotoNext() : searcher.gotoPrevious();
-                progressListener.incrementProgress();
-            }
-        } else if (getSearcher() instanceof ITextSearcher) {
-            ITextSearcher searcher = (ITextSearcher) getSearcher();
-            searcher.setGlobalScope(isGlobalScope());
+            } else if (getSearcher() instanceof ITextSearcher) {
+                ITextSearcher searcher = (ITextSearcher) getSearcher();
+                searcher.setGlobalScope(isGlobalScope());
 
-            final String regexp = prepareRegularExpression(isEquateUnderscoreWithSpace() ? getSearchText().replaceAll("_", " ") : getSearchText());
-            count = searcher.replaceAll(regexp, getReplaceText(), !isGlobalScope());
-            if (count > 0)
-                changed = true;
+                final String regexp = prepareRegularExpression(isEquateUnderscoreWithSpace() ? getSearchText().replaceAll("_", " ") : getSearchText());
+                count = searcher.replaceAll(regexp, getReplaceText(), !isGlobalScope());
+            }
+            return count;
+        } finally {
+            if (isEquateUnderscoreWithSpace() != saveEquateUnderscoreWithSpace)
+                setEquateUnderscoreWithSpace(saveEquateUnderscoreWithSpace);
         }
-        return count;
     }
 
     /**

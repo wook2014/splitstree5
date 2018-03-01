@@ -260,13 +260,11 @@ public final class ASplit {
     }
 
     public ASplit clone() {
-        // todo: test this
-        try {
-            return (ASplit) super.clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-            return null;
-        }
+        ASplit result = new ASplit(this.getA(), this.ntax());
+        result.setWeight(this.getWeight());
+        result.setConfidence(this.getConfidence());
+        result.setLabel(this.label);
+        return result;
     }
 
     /**

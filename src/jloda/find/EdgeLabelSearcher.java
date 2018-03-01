@@ -54,9 +54,6 @@ public class EdgeLabelSearcher implements IObjectSearcher<Edge> {
      */
     public EdgeLabelSearcher(PhyloGraph graph, ASelectionModel<Edge> edgeSelectionModel) {
         this(SEARCHER_NAME, graph, edgeSelectionModel);
-
-        globalFindable.set(true); // todo: should listen for graphs of graph
-        selectionReplaceable.bind(Bindings.isNotEmpty(edgeSelectionModel.getSelectedItems()));
     }
 
     /**
@@ -69,6 +66,8 @@ public class EdgeLabelSearcher implements IObjectSearcher<Edge> {
         this.graph = graph;
         this.name = name;
         this.edgeSelectionModel = edgeSelectionModel;
+        globalFindable.set(true); // todo: should listen for graphs of graph
+        selectionReplaceable.bind(Bindings.isNotEmpty(edgeSelectionModel.getSelectedItems()));
     }
 
     /**

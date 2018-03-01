@@ -76,12 +76,13 @@ public class SplitsBlock extends DataBlock {
      */
     public void copy(SplitsBlock that) {
         clear();
-        splits.addAll(that.getSplits());
+        for (ASplit split : that.getSplits())
+            splits.add(split.clone());
         compatibility = that.getCompatibility();
         fit = that.getFit();
         threshold = that.getThreshold();
         partial = that.isPartial();
-        cycle = that.getCycle();
+        cycle = that.getCycle().clone();
     }
 
     @Override

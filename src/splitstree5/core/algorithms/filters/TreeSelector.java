@@ -53,7 +53,7 @@ public class TreeSelector extends Algorithm<TreesBlock, TreesBlock> implements I
 
     @Override
     public String getShortDescription() {
-        return "Selected: " + optionSelected.get();
+        return "using tree " + optionSelected.get();
     }
 
     public int getOptionSelected() {

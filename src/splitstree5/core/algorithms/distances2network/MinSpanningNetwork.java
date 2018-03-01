@@ -97,23 +97,32 @@ public class MinSpanningNetwork extends Algorithm<DistancesBlock, NetworkBlock> 
             if (threshold > maxValue)
                 break;
 
-            boolean changed = false;
+            boolean mustUpdateMSNComponents = false;
 
             // create edges:
             for (Pair<Integer, Integer> pair : distancesToTaxonPairs.get(value)) {
                 final int a = pair.getFirst();
                 final int b = pair.getSecond();
 
-
                 if (!optionMinSpanningTree || component[a] != component[b]) {
                     Edge e = graph.newEdge(node[a], node[b]);
                     graph.setWeight(e, parent.get(a, b));
-                    changed = true;
+
+                    if (!optionMinSpanningTree)
+                        mustUpdateMSNComponents = true;
+                    else { // need to update immediately for tree
+                        numComponentsMSN--;
+                        int oldComponent = component[a];
+                        int newComponent = component[b];
+                        for (int k = 1; k <= ntax; k++)
+                            if (component[k] == oldComponent)
+                                component[k] = newComponent;
+                    }
                 }
             }
 
             // update MSN components
-            if (changed) {
+            if (mustUpdateMSNComponents) {
                 for (Pair<Integer, Integer> pair : distancesToTaxonPairs.get(value)) {
                     final int a = pair.getFirst();
                     final int b = pair.getSecond();

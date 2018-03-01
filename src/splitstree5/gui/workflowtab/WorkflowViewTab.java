@@ -333,6 +333,7 @@ public class WorkflowViewTab extends ViewerTab {
             content.putImage(writableImage);
             clipboard.setContent(content);
         });
+        controller.getCopyImageMenuItem().disableProperty().bind(getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().not());
 
         controller.getSelectAllMenuItem().setOnAction((e) -> selectionModel.selectAll());
         controller.getSelectAllMenuItem().disableProperty().bind(Bindings.size(selectionModel.getSelectedItems()).isEqualTo(getWorkflow().getNumberOfNodes()));
@@ -347,6 +348,7 @@ public class WorkflowViewTab extends ViewerTab {
         controller.getDeselectAllNodesMenuItem().disableProperty().bind(selectionModel.emptyProperty());
 
         controller.getInvertNodeSelectionMenuItem().setOnAction((e) -> selectionModel.invertSelection());
+        controller.getInvertNodeSelectionMenuItem().disableProperty().bind(getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().not());
 
         controller.getSelectAllBelowMenuItem().setOnAction((e) -> {
             final Stack<WorkflowNode> stack = new Stack<>();
@@ -481,11 +483,14 @@ public class WorkflowViewTab extends ViewerTab {
         controller.getZoomInMenuItem().setOnAction((e) -> {
             scrollPane.zoomBy(1.1, 1.1);
         });
+        controller.getZoomInMenuItem().disableProperty().bind(getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().not());
+
         controller.getZoomOutMenuItem().setOnAction((e) -> {
             scrollPane.zoomBy(1.0 / 1.1, 1.0 / 1.1);
         });
+        controller.getZoomOutMenuItem().disableProperty().bind(getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().not());
 
         controller.getResetMenuItem().setOnAction((e) -> scrollPane.resetZoom());
-
+        controller.getResetMenuItem().disableProperty().bind(getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().not());
     }
 }

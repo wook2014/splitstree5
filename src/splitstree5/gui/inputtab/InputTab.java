@@ -28,19 +28,19 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.stage.FileChooser;
 import jloda.fx.NotificationManager;
 import jloda.util.Basic;
 import jloda.util.ResourceManager;
 import splitstree5.dialogs.importer.FileOpener;
+import splitstree5.dialogs.importer.ImporterManager;
 import splitstree5.gui.texttab.TextViewTab;
 import splitstree5.io.imports.IOExceptionWithLineNumber;
 import splitstree5.main.MainWindow;
 import splitstree5.main.MainWindowManager;
 import splitstree5.menu.MenuController;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
+import java.io.*;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -87,10 +87,29 @@ public class InputTab extends TextViewTab {
         final ToolBar toolBar = new ToolBar();
         setToolBar(toolBar);
 
+        final Button openButton = new Button("Open...");
+        openButton.setOnAction((e) -> {
+            final FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Open input file");
+            fileChooser.getExtensionFilters().addAll(ImporterManager.getInstance().getAllExtensionFilters());
+            final File file = fileChooser.showOpenDialog(mainWindow.getStage());
+            if (file != null) {
+                final StringBuilder buf = new StringBuilder();
+                try (BufferedReader r = new BufferedReader(new InputStreamReader(Basic.getInputStreamPossiblyZIPorGZIP(file.getPath())))) {
+                    String aLine;
+                    while ((aLine = r.readLine()) != null)
+                        buf.append(aLine).append("\n");
+                    getTextArea().setText(buf.toString());
+                } catch (IOException ex) {
+                    NotificationManager.showError("Input file failed: " + ex.getMessage());
+                }
+            }
+        });
+
         final Button applyButton = new Button("Parse and Load");
         applyButton.setTooltip(new Tooltip("Save this data to a temporary file, parse the file and then load the data"));
 
-        toolBar.getItems().add(applyButton);
+        toolBar.getItems().addAll(openButton, new Separator(), applyButton);
         applyButton.disableProperty().bind(getTextArea().textProperty().isEmpty());
 
         applyButton.setOnAction((e) -> {

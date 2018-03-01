@@ -55,8 +55,6 @@ public class NodeLabelSearcher implements IObjectSearcher<Node> {
      */
     public NodeLabelSearcher(PhyloGraph graph, ASelectionModel<Node> nodeSelectionModel) {
         this(SEARCHER_NAME, graph, nodeSelectionModel);
-        globalFindable.set(true); // todo: should listen for graphs of graph
-        selectionReplaceable.bind(Bindings.isNotEmpty(nodeSelectionModel.getSelectedItems()));
     }
 
     /**
@@ -69,6 +67,8 @@ public class NodeLabelSearcher implements IObjectSearcher<Node> {
         this.graph = graph;
         this.name = name;
         this.nodeSelectionModel = nodeSelectionModel;
+        globalFindable.set(true); // todo: should listen for graphs of graph
+        selectionReplaceable.bind(Bindings.isNotEmpty(nodeSelectionModel.getSelectedItems()));
     }
 
     /**
@@ -278,14 +278,6 @@ public class NodeLabelSearcher implements IObjectSearcher<Node> {
         return graph.getNumberOfNodes();
     }
 
-    /**
-     * how many selected objects are there?
-     *
-     * @return number of objects or -1
-     */
-    public int numberOfSelectedObjects() {
-        return nodeSelectionModel.getSelectedItems().size();
-    }
 
     public Node getFound() {
         return found.get();

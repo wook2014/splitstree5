@@ -115,7 +115,7 @@ public class Connector<P extends DataBlock, C extends DataBlock> extends Workflo
         service = new ConnectorService<>(this);
         if (connectToGraph)
             parent.stateProperty().addListener(new WeakChangeListener<>(parentStateChangeListener));
-        child.setParent(this);
+        this.child.setParent(this);
     }
 
     /**
