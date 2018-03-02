@@ -97,10 +97,10 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
             }
 
             if (currentSequence.length() == 0)
-                throw new IOExceptionWithLineNumber("Line: "+counter+": Sequence " + ntax + " is zero", counter);
+                throw new IOExceptionWithLineNumber("Sequence " + ntax + " is zero", counter);
             matrix.add(currentSequence.toString());
             if (nchar != currentSequenceLength)
-                throw new IOExceptionWithLineNumber("Wrong number of chars at the line: " + counter + ". Length " + nchar + " expected", counter);
+                throw new IOExceptionWithLineNumber("Wrong number of chars. Length " + nchar + " expected", counter);
 
         }
 

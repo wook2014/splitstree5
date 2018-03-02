@@ -98,7 +98,7 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
                     } else {
 
                         if (!foundFirstLabel)
-                            throw new IOExceptionWithLineNumber("line " + counter + ": Taxa label expected", counter);
+                            throw new IOExceptionWithLineNumber("Taxa label expected", counter);
 
                         tokensInCurrentRow++;
                         matrix.get(currentLabel).add(Double.parseDouble(token));

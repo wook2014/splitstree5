@@ -46,18 +46,18 @@ public class FastaSplitsIn extends CharactersFormat implements IToSplits, IImpor
                 if (line.startsWith(";") || line.isEmpty())
                     continue;
                 if (line.equals(">"))
-                    throw new IOExceptionWithLineNumber("No taxa label given at line: " + counter, counter);
+                    throw new IOExceptionWithLineNumber("No taxa label", counter);
 
                 if (line.startsWith(">")) {
                     addTaxaName(line, taxonNamesFound, counter);
                     ntax++;
 
                     if (ntax > 1 && currentSequence.toString().isEmpty())
-                        throw new IOExceptionWithLineNumber("No sequence is given at line " + counter, counter);
+                        throw new IOExceptionWithLineNumber("No sequence is found", counter);
 
                     if (nsplits != 0 && nsplits != currentSequenceLength)
                         throw new IOExceptionWithLineNumber("Sequences must be the same length. " +
-                                "Wrong number of chars at the line: " + (counter - 1) + ". Length " + nsplits + " expected", counter - 1);
+                                "Wrong number of chars. Length " + nsplits + " expected", counter - 1);
 
                     if (!currentSequence.toString().equals("")) binarySplits.add(currentSequence.toString());
                     nsplits = currentSequenceLength;
@@ -74,10 +74,10 @@ public class FastaSplitsIn extends CharactersFormat implements IToSplits, IImpor
             }
 
             if (currentSequence.length() == 0)
-                throw new IOExceptionWithLineNumber("Line: "+counter+": Sequence " + ntax + " is zero", counter);
+                throw new IOExceptionWithLineNumber("Sequence " + ntax + " is zero", counter);
             binarySplits.add(currentSequence.toString());
             if (nsplits != currentSequenceLength)
-                throw new IOExceptionWithLineNumber("Wrong number of chars at the line: " + counter + ". Length " + nsplits + " expected", counter);
+                throw new IOExceptionWithLineNumber("Wrong number of chars at the line. Length " + nsplits + " expected", counter);
 
         }
         System.err.println("ntax: " + ntax + " nsplits: " + nsplits);

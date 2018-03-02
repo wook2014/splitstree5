@@ -32,7 +32,7 @@ public class StockholmIn extends CharactersFormat implements IToCharacters, IImp
             counter++;
 
             if (!it.next().toUpperCase().startsWith("# STOCKHOLM"))
-                throw new IOException("STOCKHOLM header expected");
+                throw new IOExceptionWithLineNumber("STOCKHOLM header expected", counter);
 
             while (it.hasNext()) {
 
@@ -45,8 +45,7 @@ public class StockholmIn extends CharactersFormat implements IToCharacters, IImp
 
                 int labelIndex = line.indexOf(' ');
                 if (labelIndex == -1)
-                    throw new IOExceptionWithLineNumber("Line " + counter +
-                            " : no separator between taxa and sequence is found!", counter);
+                    throw new IOExceptionWithLineNumber(" No separator between taxa and sequence is found!", counter);
 
                 String label = line.substring(0, labelIndex);
                 String seq = line.substring(labelIndex).replaceAll("\\s+", "");
@@ -60,7 +59,7 @@ public class StockholmIn extends CharactersFormat implements IToCharacters, IImp
                 if (nchar == 0)
                     nchar = seq.length();
                 else if (nchar != seq.length())
-                    throw new IOExceptionWithLineNumber("Line " + counter+ " : Sequences must be the same length." +
+                    throw new IOExceptionWithLineNumber("Sequences must be the same length." +
                             "Length " + nchar + " expected.", counter);
 
                 progressListener.setProgress(it.getProgress());
