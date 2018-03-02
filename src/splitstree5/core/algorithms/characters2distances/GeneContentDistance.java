@@ -19,7 +19,7 @@ import java.util.BitSet;
 public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
 
     public final static String DESCRIPTION = "Compute distances based on shared genes (Snel Bork et al 1999, Huson and Steel 2003)";
-    private boolean useMLDistance = false;
+    private boolean optionUseMLDistance = false;
 
     @Override
     public String getCitation() {
@@ -35,22 +35,10 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
         /*@todo: test this class
          */
         BitSet genes[] = computeGenes(charactersBlock);
-        if (!useMLDistance)
+        if (!optionUseMLDistance)
             computeSnelBorkDistance(distancesBlock, taxaBlock.getNtax(), genes);
         else
             computeMLDistance(distancesBlock, taxaBlock.getNtax(), genes);
-    }
-
-    /**
-     * Determine whether the gene content distance can be computed with given data.
-     *
-     * @param taxa the taxa
-     * @param ch   the characters matrix
-     * @return true, if method applies to given data
-     */
-    public boolean isApplicable(TaxaBlock taxa, CharactersBlock ch) {
-        //return taxa != null && ch != null && ch.getFormat().getDatatype().equalsIgnoreCase(Characters.Datatypes.STANDARD);
-        return taxa != null && ch != null && ch.getDataType().equals(CharactersType.standard);
     }
 
     /**
@@ -136,14 +124,19 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
         return genes;
     }
 
+    @Override
+    public boolean isApplicable(TaxaBlock taxaBlock, CharactersBlock parent) {
+        return parent.getDataType() == CharactersType.standard && parent.getSymbols().contains("1");
+    }
+
     //GETTER AND SETTER
 
     public boolean getOptionUseMLDistance() {
-        return useMLDistance;
+        return optionUseMLDistance;
     }
 
     public void setOptionUseMLDistance(boolean useMLDistance) {
-        this.useMLDistance = useMLDistance;
+        this.optionUseMLDistance = useMLDistance;
     }
 
     public String getDescription() {

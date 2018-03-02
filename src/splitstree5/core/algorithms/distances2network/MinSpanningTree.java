@@ -84,4 +84,10 @@ public class MinSpanningTree extends Algorithm<DistancesBlock, NetworkBlock> imp
             }
         }
     }
+
+
+    @Override
+    public boolean isApplicable(TaxaBlock taxaBlock, DistancesBlock parent) {
+        return parent.getNtax() > 0;
+    }
 }

@@ -65,7 +65,6 @@ public class AlgorithmTab<P extends DataBlock, C extends DataBlock> extends View
     private final ChangeListener<UpdateState> connectorStateChangeListener;
     private final ChangeListener<UpdateState> parentStateChangeListener;
 
-
     /**
      * constructor
      */
@@ -74,6 +73,11 @@ public class AlgorithmTab<P extends DataBlock, C extends DataBlock> extends View
         this.connector = connector;
         this.currentAlgorithm = connector.getAlgorithm();
         setMainWindow(document.getMainWindow());
+
+        final Label label = new Label();
+        setText("");
+        setGraphic(label);
+        label.textProperty().bind(connector.nameProperty());
 
         {
             final ExtendedFXMLLoader<AlgorithmTabController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
@@ -85,7 +89,8 @@ public class AlgorithmTab<P extends DataBlock, C extends DataBlock> extends View
 
         connectorStateChangeListener = (c, o, n) -> {
             if (n == UpdateState.VALID) {
-                algorithmPane.syncModel2Controller();
+                this.currentAlgorithm = connector.getAlgorithm();
+                controller.getAlgorithmComboBox().setValue(currentAlgorithm);
             } else if (n == UpdateState.FAILED)
                 applicableChangeHasBeenMade.set(true);
             // undoManager.clear();
@@ -109,7 +114,7 @@ public class AlgorithmTab<P extends DataBlock, C extends DataBlock> extends View
                                 super.updateItem(item, empty);
                                 if (item != null) {
                                     setText(item.getName());
-                                    if (item.isApplicable(connector.getTaxaBlock(), connector.getParentDataBlock(), connector.getChildDataBlock()))
+                                    if (item.isApplicable(connector.getTaxaBlock(), connector.getParentDataBlock()))
                                         setTextFill(Color.BLACK);
                                     else
                                         setTextFill(Color.LIGHTGRAY);
@@ -137,7 +142,6 @@ public class AlgorithmTab<P extends DataBlock, C extends DataBlock> extends View
             algorithmComboBox.setDisable(true);
         }
 
-
         connector.applicableProperty().addListener((c, o, n) -> {
             // System.err.println(currentAlgorithm.getName() + " is applicable: " + n);
         });
@@ -148,16 +152,11 @@ public class AlgorithmTab<P extends DataBlock, C extends DataBlock> extends View
             getUndoManager().add("Set Algorithm", algorithmComboBox.valueProperty(), oldValue, newValue);
             currentAlgorithm = ((Algorithm) newValue);
             controller.getBorderPane().setCenter(updateAlgorithmPane());
-            algorithmIsApplicable.setValue(currentAlgorithm.isApplicable(connector.getTaxaBlock(), connector.getParentDataBlock(), connector.getChildDataBlock()));
+            algorithmIsApplicable.setValue(currentAlgorithm.isApplicable(connector.getTaxaBlock(), connector.getParentDataBlock()));
         });
-
 
         algorithmPane.syncModel2Controller();
 
-        final Label label = new Label();
-        setText("");
-        setGraphic(label);
-        label.setText(connector.getName());
 
         controller.getApplyButton().setOnAction((e) -> {
             if (connector.getAlgorithm() != currentAlgorithm)
@@ -168,10 +167,9 @@ public class AlgorithmTab<P extends DataBlock, C extends DataBlock> extends View
             getUndoManager().clear(); // clear undo
 
             applicableChangeHasBeenMade.set(false);
-            label.setText(connector.getName());
         });
 
-        algorithmIsApplicable.setValue(currentAlgorithm.isApplicable(connector.getTaxaBlock(), connector.getParentDataBlock(), connector.getChildDataBlock()));
+        algorithmIsApplicable.setValue(currentAlgorithm.isApplicable(connector.getTaxaBlock(), connector.getParentDataBlock()));
         controller.getApplyButton().disableProperty().bind((applicableChangeHasBeenMade.and(algorithmIsApplicable).and(algorithmSettingsIsApplicable)).not());
     }
 

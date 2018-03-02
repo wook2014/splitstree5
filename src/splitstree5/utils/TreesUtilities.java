@@ -22,10 +22,8 @@ package splitstree5.utils;
 import com.sun.istack.internal.Nullable;
 import jloda.graph.Edge;
 import jloda.graph.Node;
-import jloda.graph.NotOwnerException;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
-import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
@@ -47,123 +45,13 @@ public class TreesUtilities {
      * @return all taxa in tree
      */
     public static BitSet getTaxa(PhyloTree tree) {
-        BitSet taxa = new BitSet();
+        final BitSet taxa = new BitSet();
         for (Node v : tree.nodes()) {
-            if (tree.getTaxa(v) != null) {
                 for (Integer t : tree.getTaxa(v)) {
                     taxa.set(t);
                 }
-            }
         }
         return taxa;
-    }
-
-    /**
-     * Converts a PhyloTree in a trees block to splits, given taxa.
-     * <p/>
-     * This code was extracted from TreeSelector.java
-     *
-     * @param trees
-     * @param which
-     * @param taxa
-     * @return splits
-     */
-    public static SplitsBlock convertTreeToSplits(TreesBlock trees, int which, TaxaBlock taxa) {
-        return convertTreeToSplits(trees, which, taxa, false);
-    }
-
-    /**
-     * Converts a PhyloTree in a trees block to splits, given taxa.
-     * <p/>
-     * This code was extracted from TreeSelector.java
-     *
-     * @param trees
-     * @param which
-     * @param taxa
-     * @param skipNegativeSplitIds don't convert edges with negative split ids
-     * @return splits
-     */
-    public static SplitsBlock convertTreeToSplits(TreesBlock trees, int which, TaxaBlock taxa, boolean skipNegativeSplitIds) {
-
-        SplitsBlock splits = new SplitsBlock();
-        PhyloTree tree = trees.getTrees().get(which);
-
-        // choose an arbitrary labeled root
-        Node root = null;
-        for (Node v : tree.nodes()) {
-            BitSet taxaSet = new BitSet();
-            taxaSet.set(v.getId());
-            //if (tree.getNode2Taxa(v).cardinality() > 0
-            if (taxaSet.cardinality() > 0 && v.getDegree() == 1) {
-                root = v;
-                break; //todo
-            }
-        }
-        System.out.println(root);
-
-        if (root == null) // empty tree?
-            return splits;
-
-        tree2splitsRec(root, null, trees, which, taxa, splits, skipNegativeSplitIds);
-
-
-        try {
-            SplitsUtilities.verifySplits(splits.getSplits(), taxa);
-        } catch (SplitsException ex) {
-            //splits = null;
-        }
-
-        // false!!!
-        System.out.println("TU splits");
-        for (int i = 0; i < splits.getSplits().size(); i++) {
-            System.out.println(splits.getSplits().get(i).getA());
-        }
-
-        return splits;
-    }
-
-    /**
-     * recursively extract split froms tree
-     *
-     * @param v
-     * @param e
-     * @param trees
-     * @param which
-     * @param taxa
-     * @param splits
-     * @return
-     * @throws NotOwnerException
-     */
-    private static BitSet tree2splitsRec(Node v, Edge e, TreesBlock trees, int which,
-                                         TaxaBlock taxa, SplitsBlock splits, boolean skipNegativeSplitIds) throws NotOwnerException {
-        PhyloTree tree = trees.getTrees().get(which);
-        //todo
-        //BitSet e_taxa = trees.getTaxaForLabel(taxa, tree.getLabel(v));
-        BitSet e_taxa = new BitSet();
-        //e_taxa.set(tree.getId(v));
-        if (taxa.indexOf(tree.getLabel(v)) != -1) //e_taxa.set(0);
-            e_taxa.set(taxa.indexOf(tree.getLabel(v)));
-
-        System.out.println("e taxa   " + e_taxa); // right!!!
-
-        for (Edge f : v.adjacentEdges()) {
-            if (f != e) {
-                BitSet f_taxa = tree2splitsRec(tree.getOpposite(v, f), f, trees, which, taxa, splits, skipNegativeSplitIds);
-                /*if (tree.getConfidence(f) != 1)
-                    splits.getFormat().setConfidences(true);*/
-
-                if (!skipNegativeSplitIds) {
-                    //splits.getSplitsSet().add(f_taxa, (float) tree.getWeight(f), (float) tree.getConfidence(f));
-                    ASplit split = new ASplit(f_taxa, taxa.getNtax(), tree.getWeight(f), tree.getConfidence(f));
-                    splits.getSplits().add(split);
-                }
-                for (int t = 0; t < f_taxa.length(); t++) {
-                    if (f_taxa.get(t))
-                        e_taxa.set(t);
-                }
-            }
-        }
-        return e_taxa;
     }
 
     /**
@@ -243,30 +131,28 @@ public class TreesUtilities {
     /**
      * compute all the splits in a tree
      *
-     * @param taxaBlock
-     * @param tree
      * @param taxaInTree the taxa in the tree, if null, is computed
+     * @param tree
      * @param splits     the resulting splits are added here
      * @return bit set of taxa found in tree
      */
-    public static BitSet computeSplits(final TaxaBlock taxaBlock, @Nullable BitSet taxaInTree, final PhyloTree tree, final Collection<ASplit> splits) {
+    public static BitSet computeSplits(@Nullable BitSet taxaInTree, final PhyloTree tree, final Collection<ASplit> splits) {
         if (taxaInTree == null)
             taxaInTree = getTaxa(tree);
 
-        Node root = null;
-        if (tree.getRoot() != null)
-            root = tree.getRoot();
-        else {
+        if (tree.getRoot() == null) {
             // choose an arbitrary leaf
             for (Node v : tree.nodes()) {
                 if (tree.hasTaxa(v) && v.getDegree() == 1) {
-                    root = v;
+                    System.err.println("Internal error: tree not rooted, but should be");
+                    tree.setRoot(v);
                     break;
                 }
             }
         }
-        if (root != null) // empty tree?
-            tree2splitsRec(root, null, tree, taxaInTree, splits);
+
+        if (tree.getRoot() != null) // otherwise empty tree
+            tree2splitsRec(tree.getRoot(), null, tree, taxaInTree, splits);
         return taxaInTree;
     }
 

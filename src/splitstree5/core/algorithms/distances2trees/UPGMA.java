@@ -142,4 +142,10 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> implements IFro
         trees.getTrees().addAll(tree);
         progress.close();
     }
+
+
+    @Override
+    public boolean isApplicable(TaxaBlock taxaBlock, DistancesBlock parent) {
+        return parent.getNtax() > 0;
+    }
 }

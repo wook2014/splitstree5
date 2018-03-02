@@ -190,9 +190,11 @@ public class MainWindow {
             if (o instanceof ISavesPreviousSelection) {
                 ((ISavesPreviousSelection) o).saveAsPreviousSelection();
             }
-            setUndoRedoManager(((ViewerTab) n).getUndoManager());
-            if (getStage() != null)
-                updateMenus(n, menuController);
+            if (n != null) {
+                setUndoRedoManager(((ViewerTab) n).getUndoManager());
+                if (getStage() != null)
+                    updateMenus(n, menuController);
+            }
         });
 
         workflow.dataNodes().addListener((SetChangeListener<DataNode>) (c) -> {
@@ -209,7 +211,6 @@ public class MainWindow {
                 Platform.runLater(() -> getMainWindowController().getAlgorithmTabPane().getTabs().remove(aNode2ViewerTab.get(c.getElementRemoved())));
             }
         });
-
     }
 
     /**
@@ -480,14 +481,15 @@ public class MainWindow {
     }
 
     /**
-     * show a pair of algorithm and data
+     * show a pair of algorithm and data, if the data is a view data block
      *
      * @param pair
      */
     public void show(Pair<Connector, DataNode> pair) {
         if (pair != null) {
             showAlgorithmView(pair.getFirst());
-            showDataView(pair.getSecond());
+            if (pair.getSecond().getDataBlock() instanceof ViewDataBlock)
+                showDataView(pair.getSecond());
         }
     }
 

@@ -52,16 +52,14 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
                     readLines++;
 
                     if (line.length() <= 10)
-                        throw new IOExceptionWithLineNumber("Line "+counter+" is shorter then 10 symbols. \n" +
-                                "Phylip characters format : first 10 symbols = taxa label + sequence", counter);
+                        throw new IOExceptionWithLineNumber("Line too short", counter);
 
                     // interleaved
                     if (readLines > ntax && sameLengthNtax) {
                         if (readLines % ntax == 1) interleavedBlockLinesLength = line.length();
                         else {
                             if (interleavedBlockLinesLength != 0 && line.length() != interleavedBlockLinesLength)
-                                throw new IOExceptionWithLineNumber("Error for interleaved format matrix." +
-                                        "\nLine " + counter + " must have the same length as line "+ (counter-1), counter);
+                                throw new IOExceptionWithLineNumber("Lines have different lengths", counter);
                         }
                     }
 
@@ -93,8 +91,7 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
 
                     // no more lines are allowed for standard after reading ntax lines
                     if (readLines > ntax && standard)
-                        throw new IOExceptionWithLineNumber("Unexpected symbol at the line " + counter +
-                                "\nCan only read " + ntax + " lines " + nchar + " symbols long.", counter);
+                        throw new IOExceptionWithLineNumber("Line too long", counter);
                 }
                 progressListener.setProgress(it.getProgress());
             }

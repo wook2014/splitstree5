@@ -27,7 +27,7 @@ public class Jaccard extends Algorithm<CharactersBlock, DistancesBlock> implemen
 
 
     @Override
-    public boolean isApplicable(TaxaBlock taxa, CharactersBlock c, DistancesBlock d) {
+    public boolean isApplicable(TaxaBlock taxa, CharactersBlock c) {
         return c.getDataType().equals(CharactersType.standard);
     }
 

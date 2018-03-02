@@ -22,6 +22,7 @@ package splitstree5.gui.texttab;
 
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputDialog;
@@ -194,6 +195,9 @@ public class TextViewTab extends ViewerTab {
 
         controller.getIncreaseFontSizeMenuItem().setOnAction((x) -> textArea.setStyle(String.format("-fx-font-size: %.0f;", (textArea.getFont().getSize() + 2))));
         controller.getDecreaseFontSizeMenuItem().setOnAction((x) -> textArea.setStyle(String.format("-fx-font-size: %.0f;", (textArea.getFont().getSize() - 2))));
+
+        controller.getWrapTextMenuItem().selectedProperty().bindBidirectional(textArea.wrapTextProperty());
+        controller.getWrapTextMenuItem().disableProperty().bind(new SimpleBooleanProperty(false));
     }
 
     public TextArea getTextArea() {

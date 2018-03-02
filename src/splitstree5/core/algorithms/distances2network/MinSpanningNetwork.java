@@ -161,4 +161,10 @@ public class MinSpanningNetwork extends Algorithm<DistancesBlock, NetworkBlock> 
     public void setOptionMinSpanningTree(boolean optionMinSpanningTree) {
         this.optionMinSpanningTree = optionMinSpanningTree;
     }
+
+
+    @Override
+    public boolean isApplicable(TaxaBlock taxaBlock, DistancesBlock parent) {
+        return parent.getNtax() > 0;
+    }
 }

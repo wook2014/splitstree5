@@ -256,6 +256,9 @@
                 <MenuItem fx:id="flipMenuItem" text="Flip">
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
+                <CheckMenuItem fx:id="wrapTextMenuItem" text="Wrap Text">
+                </CheckMenuItem>
+                <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="formatNodesMenuItem" text="Format...">
                     <accelerator>
                         <KeyCodeCombination alt="UP" code="J" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
@@ -311,6 +314,7 @@
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="bunemanTreeMenuItem" mnemonicParsing="false" text="Buneman Tree"/>
                 <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="selectTreeMenuItem" mnemonicParsing="false" text="Select Tree"/>
                 <MenuItem fx:id="consensusTreeMenuItem" mnemonicParsing="false" text="Consensus Tree"/>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="tanglegramMenuItem" mnemonicParsing="false" text="Tanglegram"/>

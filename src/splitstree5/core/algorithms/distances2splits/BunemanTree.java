@@ -160,4 +160,9 @@ public class BunemanTree extends Algorithm<DistancesBlock, SplitsBlock> implemen
     public String getDescription() {
         return DESCRIPTION;
     }
+
+    @Override
+    public boolean isApplicable(TaxaBlock taxaBlock, DistancesBlock parent) {
+        return parent.getNtax() >= 4;
+    }
 }

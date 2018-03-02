@@ -219,5 +219,9 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> imple
         return distanceMatrix;
     }
 
+    @Override
+    public boolean isApplicable(TaxaBlock taxaBlock, DistancesBlock parent) {
+        return parent.getNtax() > 0;
+    }
 }
 

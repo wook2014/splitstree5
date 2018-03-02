@@ -106,12 +106,10 @@ abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extend
 
     /**
      * determines whether applicable
-     *
-     * @param taxaBlock
+     *  @param taxaBlock
      * @param parent
-     * @param child
      */
-    public boolean isApplicable(TaxaBlock taxaBlock, P parent, C child) {
+    public boolean isApplicable(TaxaBlock taxaBlock, P parent) {
         return true;
     }
 

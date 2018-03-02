@@ -62,7 +62,7 @@ public class LeastSquaresWeights extends Algorithm<SplitsBlock, SplitsBlock> imp
     }
 
     @Override
-    public boolean isApplicable(TaxaBlock taxaBlock, SplitsBlock parent, SplitsBlock child) {
+    public boolean isApplicable(TaxaBlock taxaBlock, SplitsBlock parent) {
         return !parent.isPartial();
     }
 

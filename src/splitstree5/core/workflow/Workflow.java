@@ -19,6 +19,7 @@
 
 package splitstree5.core.workflow;
 
+import com.sun.istack.internal.Nullable;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
@@ -51,6 +52,10 @@ public class Workflow {
 
     private final ObservableSet<Connector> connectorNodes = FXCollections.observableSet();
     private final ObservableSet<DataNode> dataNodes = FXCollections.observableSet();
+
+    private final ObservableSet<DataNode> topNodes = FXCollections.observableSet();
+    private final ObservableSet<DataNode> workingNodes = FXCollections.observableSet();
+
 
     private final ObjectProperty<DataNode<TaxaBlock>> topTaxaNode = new SimpleObjectProperty<>();
     private final ObjectProperty<DataNode<TraitsBlock>> topTraitsNode = new SimpleObjectProperty<>();
@@ -118,8 +123,47 @@ public class Workflow {
             }
         });
 
-        workingTaxaNode.addListener((c, o, n) -> Platform.runLater(() -> hasWorkingTaxonNodeForFXThread.set(n != null)));
-        workingTraitsNode.addListener((c, o, n) -> Platform.runLater(() -> hasWorkingTraitsNodeForFXThread.set(n != null)));
+        topTaxaNode.addListener((c, o, n) -> {
+            if (o != null)
+                topNodes.remove(o);
+            if (n != null)
+                topNodes.add(n);
+        });
+        topTraitsNode.addListener((c, o, n) -> {
+            if (o != null)
+                topNodes.remove(o);
+            if (n != null)
+                topNodes.add(n);
+        });
+
+        topDataNode.addListener((c, o, n) -> {
+            if (o != null)
+                topNodes.remove(o);
+            if (n != null)
+                topNodes.add(n);
+        });
+
+        workingTaxaNode.addListener((c, o, n) -> Platform.runLater(() -> {
+            if (o != null)
+                workingNodes.remove(o);
+            if (n != null)
+                workingNodes.add(n);
+            hasWorkingTaxonNodeForFXThread.set(n != null);
+        }));
+        workingTraitsNode.addListener((c, o, n) -> {
+            if (o != null)
+                workingNodes.remove(o);
+            if (n != null)
+                workingNodes.add(n);
+            Platform.runLater(() -> hasWorkingTraitsNodeForFXThread.set(n != null));
+        });
+        workingDataNode.addListener((c, o, n) -> {
+            if (o != null)
+                workingNodes.remove(o);
+            if (n != null)
+                workingNodes.add(n);
+        });
+
     }
 
     /**
@@ -346,8 +390,9 @@ public class Workflow {
      */
     public void delete(WorkflowNode node, boolean deleteNode, boolean deleteNodesBelow) {
         if (deleteNodesBelow) {
-            for (Object obj : node.getChildren()) {
-                delete((Connector) obj, true, true);
+            final ArrayList<WorkflowNode> children = new ArrayList<>(node.getChildren());
+            for (WorkflowNode child : children) {
+                delete(child, true, true);
             }
         }
         if (deleteNode) {
@@ -355,8 +400,10 @@ public class Workflow {
 
             if (node instanceof DataNode)
                 dataNodes.remove(node);
-            else if (node instanceof Connector)
+            else if (node instanceof Connector) {
                 connectorNodes.remove(node);
+                ((Connector) node).getService().cancel();
+            }
             if (invalidNodes.contains(node))
                 invalidNodes.remove(node);
         }
@@ -367,6 +414,21 @@ public class Workflow {
         for (WorkflowNode node : nodes) {
             delete(node, true, false);
         }
+    }
+
+    /**
+     * delete the unique path to this node, this node and all its descendants
+     *
+     * @param node
+     */
+    public void deleteNodeAndPathAndDescendants(WorkflowNode node) {
+        // find highest node above that only has one child:
+        while (node.getParent() != null && node.getParent() != getWorkingDataNode() && node.getParent().getChildren().size() == 1) {
+            node = node.getParent();
+        }
+        // delete it and everything below:
+        delete(node, true, true);
+
     }
 
     /**
@@ -494,6 +556,14 @@ public class Workflow {
         return nodeSelectionModel;
     }
 
+    public ObservableSet<DataNode> getTopNodes() {
+        return topNodes;
+    }
+
+    public ObservableSet<DataNode> getWorkingNodes() {
+        return workingNodes;
+    }
+
     public void reconnect(WorkflowNode parent, WorkflowNode node, ObservableList<WorkflowNode> children) {
         if (parent != null) {
             if (parent instanceof Connector)
@@ -519,7 +589,7 @@ public class Workflow {
      * @param parent
      * @return node and all below
      */
-    private Set<WorkflowNode> getAllDecendants(DataNode parent) {
+    private Set<WorkflowNode> getAllDescendants(DataNode parent) {
         final Set<WorkflowNode> all = new HashSet<>();
         Stack<WorkflowNode> stack = new Stack<>();
         stack.push(parent);
@@ -551,11 +621,11 @@ public class Workflow {
     }
 
     /**
-     * finds the lowest ancestor whose datablock is of the given class
+     * finds the lowest ancestor whose datablock is of the given class. If no such ancestor found, but a single node of the given class exists, then returns that
      *
      * @param dataNode
      * @param clazz
-     * @return lowest ancestor whose datablock is of the given class or null
+     * @return lowest ancestor whose datablock is of the given class, or any datablock of the given class, if only one such exists, or null
      */
     public DataNode getAncestor(DataNode dataNode, Class<? extends DataBlock> clazz) {
         while (dataNode != null) {
@@ -566,94 +636,108 @@ public class Workflow {
             else
                 dataNode = null;
         }
+        if (dataNode == null) {
+            for (DataNode aNode : dataNodes) {
+                if (aNode != getTopDataNode() && aNode != getTopTaxaNode() && aNode != getTopTraitsNode() && aNode.getDataBlock().getClass().isAssignableFrom(clazz)) {
+                    if (dataNode == null)
+                        dataNode = aNode;
+                    else
+                        return null; // multiple such nodes, can't decide, return null
+                }
+            }
+        }
         return dataNode;
     }
 
     /**
      * creates a short chain of nodes leading to a view. If the type of view is already present, returns the node
      *
-     * @param parent
-     * @param algorithmClass
-     * @param childClass
-     * @param viewAlgorithmClass
-     * @param viewerClass
-     * @return view node
+     * @param currentDataNode
+     * @param desiredParentClass
+     * @param algorithm1class
+     * @param data1class
+     * @param algorithm2class can be null
+     * @param data2class can be null if algorithm2class is also null
+     * @return connector and view node
      * @throws Exception
      */
-    public Pair<Connector, DataNode> findOrCreateView(DataNode parent, Class<? extends Algorithm> algorithmClass, Class<? extends DataBlock> childClass,
-                                                      Class<? extends Algorithm> viewAlgorithmClass, Class<? extends ViewDataBlock> viewerClass) {
-        if (parent == null)
-            return null;
+    public Pair<Connector, DataNode> findOrCreatePath(DataNode currentDataNode, Class<? extends DataBlock> desiredParentClass,
+                                                      Class<? extends Algorithm> algorithm1class, Class<? extends DataBlock> data1class,
+                                                      @Nullable Class<? extends Algorithm> algorithm2class, @Nullable Class<? extends DataBlock> data2class) {
         try {
-            Set<WorkflowNode> allBelow = getAllDecendants(parent);
-            for (WorkflowNode node : allBelow) {
-                if (pathMatches(parent, node, algorithmClass, childClass, viewAlgorithmClass, viewerClass))
-                    return new Pair<>((Connector) node.getParent().getParent().getParent(), (DataNode) node);
-            }
+            final DataNode parent = getAncestor(currentDataNode, desiredParentClass);
+            if (parent != null) {
+                Pair<Connector, DataNode> result = matchPath(parent, desiredParentClass, algorithm1class, data1class, algorithm2class, data2class);
+                if (result != null)
+                    return result;
 
-            DataNode child = createDataNode(childClass.newInstance());
-            Connector connector1 = createConnector(parent, child, (Algorithm) algorithmClass.newInstance());
-            DataNode viewerNode = createDataNode(viewerClass.newInstance());
-            createConnector(child, viewerNode, (Algorithm) viewAlgorithmClass.newInstance());
-            connector1.forceRecompute();
-            return new Pair<>(connector1, viewerNode);
+                final DataNode data1node = createDataNode(data1class.newInstance());
+                final Connector connector1 = createConnector(parent, data1node, (Algorithm) algorithm1class.newInstance());
+                if (algorithm2class == null) {
+                    connector1.forceRecompute();
+                    return new Pair<>(connector1, data1node);
+                } else {
+                    DataNode data2node = createDataNode(data2class.newInstance());
+                    createConnector(data1node, data2node, (Algorithm) algorithm2class.newInstance());
+                    connector1.forceRecompute();
+                    return new Pair<>(connector1, data2node);
+                }
+            }
         } catch (Exception ex) {
             Basic.caught(ex);
-            return null;
         }
+        return null;
     }
 
     /**
-     * attempts to match the path in the existing graph and if can, it sets the algorithm
+     * tries to match a path from data node data1 to data3 using exactly the given types of data nodes and algorithms
      *
-     * @param source
-     * @param target
-     * @param algorithmClass
-     * @param childClass
-     * @param viewAlgorithmClass
-     * @param viewerClass
-     * @return true, if matched
-     * @throws Exception
+     * @param dataNode
+     * @param data1class
+     * @param algorithm1class
+     * @param data2class
+     * @param algorithm2class
+     * @param data3class
+     * @return first connector and last data node, if matched, else null
      */
-    private boolean pathMatches(DataNode source, WorkflowNode target, Class<? extends Algorithm> algorithmClass, Class<? extends DataBlock> childClass,
-                                Class<? extends Algorithm> viewAlgorithmClass, Class<? extends ViewDataBlock> viewerClass) throws Exception {
-        if (target instanceof DataNode && ((DataNode) target).getDataBlock().getClass().isAssignableFrom(viewerClass)) { // is correct view
-            target = target.getParent(); // view algorithm
-            if (target != null && ((Connector) target).getAlgorithm().getClass().isAssignableFrom(viewAlgorithmClass)) { // is correct view algorithm
-                target = target.getParent(); // data
-                if (target != null && ((DataNode) target).getDataBlock().getClass().isAssignableFrom(childClass)) // is correct input data
-                    target = target.getParent();
-                if (target != null) {
-                    Connector connector = (Connector) target;
-                    if (connector.getParent() != null && connector.getParent().getClass().isAssignableFrom(source.getClass())) {
-                        return true;
+    private Pair<Connector, DataNode> matchPath(DataNode dataNode, Class<? extends DataBlock> data1class, Class<? extends Algorithm> algorithm1class, Class<? extends DataBlock> data2class, Class<? extends Algorithm> algorithm2class, Class<? extends DataBlock> data3class) {
+        if (dataNode.getDataBlock().getClass().isAssignableFrom(data1class)) {
+            for (Object c1 : dataNode.getChildren()) {
+                final Connector connector1 = (Connector) c1;
+                final DataNode dataNode2 = connector1.getChild();
+                if (dataNode2.getDataBlock().getClass().isAssignableFrom(data2class)) {
+                    if (algorithm2class == null) {
+                        if (!connector1.getAlgorithm().getClass().isAssignableFrom(algorithm1class)) {
+                            try {
+                                connector1.setAlgorithm(algorithm1class.newInstance());
+                                if (connector1.getAlgorithm().isApplicable(getWorkingTaxaBlock(), dataNode.getDataBlock()))
+                                    connector1.forceRecompute();
+                            } catch (Exception e) {
+                                Basic.caught(e);
+                            }
+                        }
+                        return new Pair<>(connector1, dataNode2);
+                    }
+                    for (Object c2 : dataNode2.getChildren()) {
+                        final Connector connector2 = (Connector) c2;
+                        final DataNode dataNode3 = connector2.getChild();
+                        if (dataNode3.getDataBlock().getClass().isAssignableFrom(data3class)) {
+                            if (!connector1.getAlgorithm().getClass().isAssignableFrom(algorithm1class)) {
+                                try {
+                                    connector2.setAlgorithm(algorithm2class.newInstance());
+                                    if (connector2.getAlgorithm().isApplicable(getWorkingTaxaBlock(), dataNode2.getDataBlock()))
+                                        connector2.forceRecompute();
+                                } catch (Exception e) {
+                                    Basic.caught(e);
+                                }
+                            }
+                            return new Pair<>(connector1, dataNode3);
+                        }
                     }
                 }
             }
         }
-        return false;
-    }
-
-    /**
-     * can data of this type be loaded into the current workflow?
-     *
-     * @param dataBlock
-     * @return true if can be loaded
-     */
-    public boolean canLoadData(DataBlock dataBlock) {
-        return getTopDataNode() != null && getTopDataNode().getDataBlock() != null && getTopDataNode().getDataBlock().getClass().isAssignableFrom(dataBlock.getClass())
-                && getWorkingDataNode() != null;
-    }
-
-    /**
-     * load the data into the current workflow
-     *
-     * @param taxaBlock
-     * @param dataBlock
-     */
-    public void loadData(TaxaBlock taxaBlock, DataBlock dataBlock) {
-        getTopTaxaNode().getDataBlock().copy(taxaBlock);
-        getTopDataNode().getDataBlock().copy(taxaBlock, dataBlock);
+        return null;
     }
 
     /**
@@ -715,5 +799,27 @@ public class Workflow {
             }
         }
         return null;
+    }
+
+    /**
+     * can data of this type be loaded into the current workflow?
+     *
+     * @param dataBlock
+     * @return true if can be loaded
+     */
+    public boolean canLoadData(DataBlock dataBlock) {
+        return getTopDataNode() != null && getTopDataNode().getDataBlock() != null && getTopDataNode().getDataBlock().getClass().isAssignableFrom(dataBlock.getClass())
+                && getWorkingDataNode() != null;
+    }
+
+    /**
+     * load the data into the current workflow
+     *
+     * @param taxaBlock
+     * @param dataBlock
+     */
+    public void loadData(TaxaBlock taxaBlock, DataBlock dataBlock) {
+        getTopTaxaNode().getDataBlock().copy(taxaBlock);
+        getTopDataNode().getDataBlock().copy(taxaBlock, dataBlock);
     }
 }

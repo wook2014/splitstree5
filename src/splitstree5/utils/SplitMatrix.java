@@ -35,49 +35,17 @@ import java.util.Map;
  * <p/>
  * The rows are indexed from 1 to number of splits
  * The blocks are indexed from 1 to nblocks.
+ * Daniel Huson and David Bryant, 2008
  */
-
-
 public class SplitMatrix {
 
-    private int ntax;
+    private final int ntax;
 
     private int nblocks;   //Number of Split sets
-    SparseTable<Double> matrix;     //Split weights, indexed by split and then split set.
+    private final SparseTable<Double> matrix;     //Split weights, indexed by split and then split set.
 
-    private Map splitIndices; // Map from splits to indices
-    private SplitsBlock allSplits; //Splits block containing all splits
-
-    public void print() {
-        System.out.println("print Split matrix:");
-        for (int i = 0; i <= allSplits.getNsplits(); i++) {
-            for (int j = 0; j <= nblocks; j++) {
-                System.out.print(matrix.get(i, j) + " ");
-            }
-            System.out.println();
-        }
-    }
-
-    /*
-    Constructor
-     */
-    public SplitMatrix() {
-        matrix = new SparseTable<>();
-        allSplits = new SplitsBlock();
-        splitIndices = new HashMap();
-    }
-
-
-    /**
-     * Create a new Split matrix with rows (empty) identified with the given set of splits.
-     */
-    public SplitMatrix(SplitsBlock splits) {
-        matrix = new SparseTable<>();
-        allSplits = new SplitsBlock();
-        splitIndices = new HashMap();
-        addSplitsWithoutBlock(splits);
-    }
-
+    private final Map splitIndices; // Map from splits to indices
+    private final SplitsBlock allSplits; //Splits block containing all splits
 
     /**
      * Constructs a SplitMatrix from a set of trees
@@ -85,18 +53,18 @@ public class SplitMatrix {
      * @param trees
      * @param taxa
      */
-    public SplitMatrix(TreesBlock trees, TaxaBlock taxa) {
+    public SplitMatrix(TreesBlock trees, TaxaBlock taxa) throws SplitsException {
         ntax = taxa.getNtax();
         matrix = new SparseTable<>();
         splitIndices = new HashMap();
         allSplits = new SplitsBlock();
 
         for (int i = 0; i < trees.getNTrees(); i++) {
-            add(TreesUtilities.convertTreeToSplits(trees, i, taxa));
+            SplitsBlock splitsBlock = new SplitsBlock();
+            TreesUtilities.computeSplits(null, trees.getTrees().get(i), splitsBlock.getSplits());
+            SplitsUtilities.verifySplits(splitsBlock.getSplits(), taxa);
         }
-
     }
-
 
     /**
      * Searches for a split in the matrix. Returns -1 if the split is not found
@@ -150,7 +118,6 @@ public class SplitMatrix {
      * @param newSplits
      */
     public void add(SplitsBlock newSplits) {
-
         int newBlockId = getNblocks() + 1;
         for (int i = 0; i < newSplits.getNsplits(); i++) {
             BitSet sp = newSplits.getSplits().get(i).getA(); // todo A?
@@ -247,11 +214,22 @@ public class SplitMatrix {
      *
      * @return the set 1..ntax minus this set
      */
-    public BitSet getComplement(BitSet bs, int ntax) {
+    public BitSet getComplement(BitSet bits, int ntax) {
         BitSet result = new BitSet();
         for (int i = 1; i <= ntax; i++)
-            if (!bs.get(i))
+            if (!bits.get(i))
                 result.set(i);
         return result;
+    }
+
+
+    public void print() {
+        System.out.println("print Split matrix:");
+        for (int i = 0; i <= allSplits.getNsplits(); i++) {
+            for (int j = 0; j <= nblocks; j++) {
+                System.out.print(matrix.get(i, j) + " ");
+            }
+            System.out.println();
+        }
     }
 }

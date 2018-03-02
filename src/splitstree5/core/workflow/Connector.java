@@ -79,7 +79,7 @@ public class Connector<P extends DataBlock, C extends DataBlock> extends Workflo
         public void changed(ObservableValue<? extends UpdateState> observable, UpdateState oldValue, UpdateState newValue) {
             if (Connector.this.getAlgorithm() != null) {
                 if (newValue == UpdateState.VALID) {
-                    applicable.set(algorithm != null && algorithm.isApplicable(taxaBlock, parent.getDataBlock(), child.getDataBlock()));
+                    applicable.set(algorithm != null && algorithm.isApplicable(taxaBlock, parent.getDataBlock()));
                 } else {
                     applicable.set(false);
                 }
@@ -115,7 +115,7 @@ public class Connector<P extends DataBlock, C extends DataBlock> extends Workflo
         service = new ConnectorService<>(this);
         if (connectToGraph)
             parent.stateProperty().addListener(new WeakChangeListener<>(parentStateChangeListener));
-        this.child.setParent(this);
+        child.setParent(this);
     }
 
     /**
@@ -177,7 +177,7 @@ public class Connector<P extends DataBlock, C extends DataBlock> extends Workflo
         if (algorithm != null)
             shortDescriptionProperty().bind(algorithm.shortDescriptionProperty());
 
-        applicable.set(algorithm != null && algorithm.isApplicable(taxaBlock, parent.getDataBlock(), child.getDataBlock()));
+        applicable.set(algorithm != null && algorithm.isApplicable(taxaBlock, parent.getDataBlock()));
         if (algorithm != null)
             setName(algorithm.getName());
         else

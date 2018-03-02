@@ -68,7 +68,7 @@ public class FileOpener {
                     importService.setup(reload, parentMainWindow, importer, fileName, "Loading file", parentMainWindow.getMainWindowController().getBottomPane());
                     importService.setOnCancelled((e) -> NotificationManager.showWarning("User canceled"));
                     importService.setOnFailed((e) -> {
-                        NotificationManager.showError("Import failed: " + (importService.getException().getCause() != null ? importService.getException().getCause().getMessage() : importService.getException().getMessage()));
+                        NotificationManager.showError("Import of (" + dataType + "/" + fileFormat + ") failed:\n" + (importService.getException().getCause() != null ? importService.getException().getCause().getMessage() : importService.getException().getMessage()));
                         if (exceptionHandler != null)
                             exceptionHandler.accept(importService.getException());
                     });

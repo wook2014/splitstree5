@@ -24,6 +24,7 @@ import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToSplits;
+import splitstree5.core.algorithms.trees2trees.ConsensusTree;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
@@ -59,12 +60,12 @@ public class ConsensusTreeSplits extends Algorithm<TreesBlock, SplitsBlock> impl
         final TreesBlock trees = new TreesBlock();
         consensusTree.compute(progress, taxaBlock, parent, trees);
 
-        TreesUtilities.computeSplits(taxaBlock, null, trees.getTrees().get(0), child.getSplits());
+        TreesUtilities.computeSplits(null, trees.getTrees().get(0), child.getSplits());
         child.setCycle(SplitsUtilities.computeCycle(taxaBlock.getNtax(), child.getSplits()));
     }
 
     @Override
-    public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent, SplitsBlock child) {
+    public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent) {
         return !parent.isPartial();
     }
 

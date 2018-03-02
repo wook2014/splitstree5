@@ -93,7 +93,7 @@ public class Upholt extends Algorithm<CharactersBlock, DistancesBlock> implement
             return false;
         return c.getFormat().getSymbols().equalsIgnoreCase(Characters.Datatypes.STANDARDSYMBOLS);
         */
-        return taxa != null && c != null && c.getDataType().equals(CharactersType.standard);
+        return c.getDataType() == CharactersType.standard;
     }
 
     final public String getDescription() {

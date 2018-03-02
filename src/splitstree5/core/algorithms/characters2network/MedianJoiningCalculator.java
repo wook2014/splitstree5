@@ -108,6 +108,7 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
                                 }
                             }
                         }
+                        progress.checkForCancel();
                     }
                 }
                 for (Edge e : feasibleLinks) {
@@ -135,6 +136,7 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
                             }
                         }
                     }
+                    progress.checkForCancel();
                 }
             }
         }

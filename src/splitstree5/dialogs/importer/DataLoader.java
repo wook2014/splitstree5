@@ -31,7 +31,6 @@ import splitstree5.core.Document;
 import splitstree5.core.algorithms.characters2distances.HammingDistances;
 import splitstree5.core.algorithms.distances2splits.NeighborNet;
 import splitstree5.core.algorithms.filters.SplitsFilter;
-import splitstree5.core.algorithms.filters.TreeSelector;
 import splitstree5.core.algorithms.filters.TreesFilter;
 import splitstree5.core.algorithms.trees2splits.ConsensusNetwork;
 import splitstree5.core.algorithms.trees2splits.SuperNetwork;
@@ -142,12 +141,6 @@ public class DataLoader {
 
                 final DataNode<SplitsNetworkViewBlock> splitsNetworkViewBlockDataNode = workflow.createDataNode(new SplitsNetworkViewBlock());
                 workflow.createConnector(splits, splitsNetworkViewBlockDataNode, new SplitsNetworkAlgorithm());
-
-                final DataNode<TreesBlock> singleTree = workflow.createDataNode(new TreesBlock());
-                workflow.createConnector(trees, singleTree, new TreeSelector());
-
-                final DataNode<TreeViewBlock> treesView = workflow.createDataNode(new TreeViewBlock());
-                workflow.createConnector(singleTree, treesView, new TreeEmbedder());
             }
         } else if (dataBlock instanceof NetworkBlock) {
             final DataNode<NetworkViewBlock> networkView = workflow.createDataNode(new NetworkViewBlock());

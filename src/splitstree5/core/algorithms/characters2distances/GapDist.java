@@ -34,7 +34,7 @@ public class GapDist extends Algorithm<CharactersBlock, DistancesBlock> implemen
         progress.setTasks("Gap distance", "Init.");
         progress.setMaximum(ntax);
 
-        //todo getrow
+        //todo get row
         for (t = 0; t < ntax; t++) {
             char[] row_t = charactersBlock.getRow0(t);
             //char[] row_t = new char[charactersBlock.getMatrix()[t].length];

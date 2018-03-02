@@ -211,6 +211,10 @@ public class MenuController {
     private MenuItem flipMenuItem;
 
     @FXML
+    private CheckMenuItem wrapTextMenuItem;
+
+
+    @FXML
     private MenuItem formatNodesMenuItem;
 
     @FXML
@@ -278,6 +282,9 @@ public class MenuController {
 
     @FXML
     private MenuItem bunemanTreeMenuItem;
+
+    @FXML
+    private MenuItem selectTreeMenuItem;
 
     @FXML
     private MenuItem consensusTreeMenuItem;
@@ -569,6 +576,10 @@ public class MenuController {
         return flipMenuItem;
     }
 
+    public CheckMenuItem getWrapTextMenuItem() {
+        return wrapTextMenuItem;
+    }
+
     public MenuItem getFormatNodesMenuItem() {
         return formatNodesMenuItem;
     }
@@ -659,6 +670,10 @@ public class MenuController {
 
     public MenuItem getBunemanTreeMenuItem() {
         return bunemanTreeMenuItem;
+    }
+
+    public MenuItem getSelectTreeMenuItem() {
+        return selectTreeMenuItem;
     }
 
     public MenuItem getConsensusTreeMenuItem() {
@@ -864,6 +879,16 @@ public class MenuController {
             redoMenuItem.textProperty().unbind();
             redoMenuItem.setText("Redo");
         }
+
+        RecentFilesManager.getInstance().setFileOpener((fileName) -> {
+            FileOpener.open(false, mainWindow, fileName, null);
+        });
+
+        wrapTextMenuItem.selectedProperty().unbind();
+        wrapTextMenuItem.setSelected(false);
+
+        RecentFilesManager.getInstance().disableProperty().unbind();
+        RecentFilesManager.getInstance().disableProperty().set(false);
     }
 
     /**
@@ -871,9 +896,7 @@ public class MenuController {
      */
     public void enableAllUnboundActionMenuItems() {
         if (getOpenRecentMenu().getItems().size() == 0) // can't do this in init because mainWindow not available there
-            RecentFilesManager.getInstance().setupMenu(getOpenRecentMenu(), (fileName) -> {
-                FileOpener.open(false, mainWindow, fileName, null);
-            });
+            RecentFilesManager.getInstance().setupMenu(getOpenRecentMenu());
 
         for (Menu menu : getMenuBar().getMenus()) {
             for (MenuItem menuItem : menu.getItems()) {
@@ -883,6 +906,10 @@ public class MenuController {
                 }
             }
         }
+
+        if (mainWindow != null) // need to refresh the icon for unknown reasons...
+            mainWindow.getStage().getIcons().setAll(ProgramProperties.getProgramIcons());
+
     }
 
     /**

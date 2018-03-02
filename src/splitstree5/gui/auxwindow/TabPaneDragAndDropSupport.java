@@ -57,6 +57,8 @@
 
 package splitstree5.gui.auxwindow;
 
+import com.sun.javafx.scene.control.behavior.TabPaneBehavior;
+import com.sun.javafx.scene.control.skin.TabPaneSkin;
 import javafx.beans.InvalidationListener;
 import javafx.collections.ListChangeListener.Change;
 import javafx.scene.Node;
@@ -153,7 +155,13 @@ public class TabPaneDragAndDropSupport {
                 final MenuItem closeItem = new MenuItem("Close");
                 closeItem.setOnAction((x) -> {
                     final TabPane theTabPane = tab.getTabPane();
-                    theTabPane.getTabs().remove(tab);
+
+                    final TabPaneBehavior behavior = ((TabPaneSkin) theTabPane.getSkin()).getBehavior();
+                    if (behavior.canCloseTab(tab)) {
+                        behavior.closeTab(tab);
+                    } else
+                        theTabPane.getTabs().remove(tab);
+
                     if (theTabPane != mainTabPane) { // is in auxiliary window
                         if (theTabPane.getTabs().size() == 0)
                             ((Stage) theTabPane.getScene().getWindow()).close();

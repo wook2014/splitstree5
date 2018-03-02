@@ -34,7 +34,7 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
     }
 
     @Override
-    public boolean isApplicable(TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock) {
+    public boolean isApplicable(TaxaBlock taxaBlock, CharactersBlock charactersBlock) {
         return !charactersBlock.isUseCharacterWeights() && charactersBlock.isDiploid();
     }
 

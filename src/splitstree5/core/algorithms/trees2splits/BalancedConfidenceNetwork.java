@@ -54,7 +54,7 @@ public class BalancedConfidenceNetwork extends Algorithm<TreesBlock, SplitsBlock
     }
 
     @Override
-    public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent, SplitsBlock child) {
+    public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent) {
         return !parent.isPartial();
     }
 }

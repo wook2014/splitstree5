@@ -99,8 +99,8 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
     }
 
     @Override
-    public boolean isApplicable(TaxaBlock taxaBlock, DistancesBlock parent, SplitsBlock child) {
-        return taxaBlock.getNtax() >= 4;
+    public boolean isApplicable(TaxaBlock taxaBlock, DistancesBlock parent) {
+        return parent.getNtax() >= 4;
     }
 
     public double getOptionCutOff() {
@@ -563,6 +563,7 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
         } while (a != x);
         return ordering;
     }
+
 }
 
 /* A node in the net */

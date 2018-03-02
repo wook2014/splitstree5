@@ -28,7 +28,7 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
     }
 
     @Override
-    public boolean isApplicable(TaxaBlock taxa, CharactersBlock chars, DistancesBlock distancesBlock) {
+    public boolean isApplicable(TaxaBlock taxa, CharactersBlock chars) {
         /*return taxa != null && chars != null
                 && chars.getFormat().getDatatype().equalsIgnoreCase(Characters.Datatypes.STANDARD)
                 && chars.hasCharweights();*/

@@ -147,8 +147,8 @@ public class WorkflowViewTab extends ViewerTab {
             }
         });
 
-        getWorkflow().updatingProperty().addListener((c) -> {
-            if (getWorkflow().getNumberOfDataNodes() == 0)
+        getWorkflow().getTopologyChanged().addListener((c) -> {
+            if (getWorkflow().getNumberOfDataNodes() == 0 && !nodeViews.getChildren().contains(noDataLabel))
                 nodeViews.getChildren().add(noDataLabel);
             else {
                 recompute();
@@ -156,7 +156,7 @@ public class WorkflowViewTab extends ViewerTab {
         });
 
         noDataLabel.setTextFill(Color.DARKGRAY);
-        if (getWorkflow().getNumberOfDataNodes() == 0)
+        if (getWorkflow().getNumberOfDataNodes() == 0 && !nodeViews.getChildren().contains(noDataLabel))
             nodeViews.getChildren().add(noDataLabel);
     }
 
@@ -311,6 +311,9 @@ public class WorkflowViewTab extends ViewerTab {
      */
     @Override
     public void updateMenus(MenuController controller) {
+        setOnClosed(null);
+        setClosable(false);
+
         controller.getPageSetupMenuItem().setOnAction((e) -> Print.showPageLayout(getMainWindow().getStage()));
         controller.getPrintMenuitem().setOnAction((e) -> Print.print(getMainWindow().getStage(), centerPane));
 
@@ -366,13 +369,11 @@ public class WorkflowViewTab extends ViewerTab {
         controller.getSelectAllBelowMenuItem().disableProperty().bind(selectionModel.emptyProperty());
 
         controller.getDeleteMenuItem().setOnAction((e) -> {
+            controller.getSelectAllBelowMenuItem().fire();
+
             Set<WorkflowNode> deletableSelection = new HashSet<>(selectionModel.getSelectedItems());
-            deletableSelection.remove(getWorkflow().getTopTaxaNode());
-            deletableSelection.remove(getWorkflow().getTopDataNode());
-            deletableSelection.remove(getWorkflow().getTaxaFilter());
-            deletableSelection.remove(getWorkflow().getTopFilter());
-            deletableSelection.remove(getWorkflow().getWorkingTaxaNode());
-            deletableSelection.remove(getWorkflow().getWorkingDataNode());
+            deletableSelection.removeAll(getWorkflow().getTopNodes());
+            deletableSelection.removeAll(getWorkflow().getWorkingNodes());
 
             Set<WorkflowNode> toDelete = new HashSet<>();
             for (Node node : nodeViews.getChildren()) {

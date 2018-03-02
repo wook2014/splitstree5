@@ -20,6 +20,10 @@
 package jloda.fx;
 
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -28,7 +32,9 @@ import javafx.scene.control.MenuItem;
 import jloda.util.ProgramProperties;
 
 import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -41,16 +47,20 @@ public class RecentFilesManager {
     private final int maxNumberRecentFiles;
     private final ObservableList<String> recentFiles;
     private final ArrayList<WeakReference<Menu>> menuReferences = new ArrayList<>();
-    private final Map<WeakReference<Menu>, Consumer<String>> menuRef2FileOpener = new HashMap<>();
 
+    private final ObjectProperty<Consumer<String>> fileOpener = new SimpleObjectProperty<>();
+
+    private final BooleanProperty disable = new SimpleBooleanProperty(false);
+
+    /**
+     * constructor
+     */
     private RecentFilesManager() {
-
         recentFiles = FXCollections.observableArrayList();
 
         maxNumberRecentFiles = ProgramProperties.get("MaxNumberRecentFiles", 40);
         for (String fileName : ProgramProperties.get("RecentFiles", new String[0]))
             addRecentFile(fileName);
-
 
         recentFiles.addListener((ListChangeListener<String>) (c) -> {
             Platform.runLater(() -> {
@@ -77,13 +87,10 @@ public class RecentFilesManager {
                         for (WeakReference<Menu> ref : menuReferences) {
                             final Menu menu = ref.get();
                             if (menu != null) {
-                                final Consumer<String> fileOpen = menuRef2FileOpener.get(ref);
                                 for (String fileName : c.getAddedSubList()) {
                                     final MenuItem openMenuItem = new MenuItem(fileName);
-                                    openMenuItem.setOnAction((e) -> {
-                                                fileOpen.accept(fileName);
-                                            }
-                                    );
+                                    openMenuItem.setOnAction((e) -> fileOpener.get().accept(fileName));
+                                    openMenuItem.disableProperty().bind(disable);
                                     menu.getItems().add(0, openMenuItem);
                                 }
                             } else
@@ -93,7 +100,6 @@ public class RecentFilesManager {
                 }
 
                 if (deadRefs.size() > 0) {
-                    menuRef2FileOpener.keySet().removeAll(deadRefs);
                     menuReferences.removeAll(deadRefs); // purge anything that has been garbage collected
                 }
                 ProgramProperties.put("RecentFiles", recentFiles.toArray(new String[recentFiles.size()]));
@@ -117,25 +123,31 @@ public class RecentFilesManager {
      *
      * @return recent files menuy
      */
-    public void setupMenu(final Menu menu, Consumer<String> fileOpener) {
+    public void setupMenu(final Menu menu) {
         final WeakReference<Menu> ref = new WeakReference<>(menu);
-        menuRef2FileOpener.put(ref, fileOpener);
         menuReferences.add(ref);
 
         for (String fileName : recentFiles) {
             final MenuItem openMenuItem = new MenuItem(fileName);
-            openMenuItem.setOnAction((e) -> {
-                fileOpener.accept(fileName);
-                    }
-            );
+            openMenuItem.setOnAction((e) -> fileOpener.get().accept(fileName));
+            openMenuItem.disableProperty().bind(disable);
             menu.getItems().add(0, openMenuItem);
         }
     }
 
+    /**
+     * get the list of recent files
+     *
+     * @return recent files
+     */
     public ObservableList<String> getRecentFiles() {
         return recentFiles;
     }
 
+    /**
+     * add a recent file
+     * @param fileName
+     */
     public void addRecentFile(String fileName) {
         // remove if already present and then add, this will bring to top of list
         if (recentFiles.contains(fileName))
@@ -145,7 +157,28 @@ public class RecentFilesManager {
             recentFiles.remove(maxNumberRecentFiles - 1);
     }
 
-    public boolean removeRecentFile(String fileName) {
-        return recentFiles.remove(fileName);
+    /**
+     * remove a recent file
+     *
+     * @param fileName
+     */
+    public void removeRecentFile(String fileName) {
+        recentFiles.remove(fileName);
+    }
+
+    public Consumer<String> getFileOpener() {
+        return fileOpener.get();
+    }
+
+    public ObjectProperty<Consumer<String>> fileOpenerProperty() {
+        return fileOpener;
+    }
+
+    public void setFileOpener(Consumer<String> fileOpener) {
+        this.fileOpener.set(fileOpener);
+    }
+
+    public BooleanProperty disableProperty() {
+        return disable;
     }
 }

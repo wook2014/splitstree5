@@ -37,7 +37,7 @@ public class CodominantTest {
         taxaBlock2.addTaxaByNames(taxonNames2);
         DistancesBlock distancesBlock2 = new DistancesBlock();
 
-        assertEquals(false, codominant.isApplicable(taxaBlock2, charactersBlock2, distancesBlock2));
+        assertEquals(false, codominant.isApplicable(taxaBlock2, charactersBlock2));
     }
 
     @Test

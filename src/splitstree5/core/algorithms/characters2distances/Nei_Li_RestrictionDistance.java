@@ -86,7 +86,7 @@ public class Nei_Li_RestrictionDistance extends Algorithm<CharactersBlock, Dista
 
 
     @Override
-    public boolean isApplicable(TaxaBlock taxa, CharactersBlock c, DistancesBlock distancesBlock) {
+    public boolean isApplicable(TaxaBlock taxa, CharactersBlock c) {
         return c.getDataType().equals(CharactersType.standard);
     }
 

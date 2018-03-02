@@ -179,7 +179,7 @@ public class TreesNexusInput implements INexusInput<TreesBlock> {
                 buf.append(s);
             }
 
-            final boolean isRooted;
+            final boolean isRooted; // In SplitsTree5 we ignore this because trees are now always rooted
             if (rootedExplicitySet)
                 isRooted = treesBlock.isRooted();
             else {

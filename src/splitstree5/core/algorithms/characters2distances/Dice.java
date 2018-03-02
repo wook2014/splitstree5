@@ -33,7 +33,7 @@ public class Dice extends Algorithm<CharactersBlock, DistancesBlock> implements 
     }
 
     @Override
-    public boolean isApplicable(TaxaBlock taxaBlock, CharactersBlock parent, DistancesBlock child) {
+    public boolean isApplicable(TaxaBlock taxaBlock, CharactersBlock parent) {
         return parent.getDataType().equals(CharactersType.standard);
     }
 

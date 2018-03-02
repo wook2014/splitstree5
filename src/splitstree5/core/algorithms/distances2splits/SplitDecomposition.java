@@ -199,4 +199,9 @@ public class SplitDecomposition extends Algorithm<DistancesBlock, SplitsBlock> i
             result.set(t);
         return result;
     }
+
+    @Override
+    public boolean isApplicable(TaxaBlock taxaBlock, DistancesBlock parent) {
+        return parent.getNtax() >= 4;
+    }
 }

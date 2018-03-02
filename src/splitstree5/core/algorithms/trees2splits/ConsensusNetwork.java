@@ -101,7 +101,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
                             for (int which = threadNumber; which < trees.size(); which += numberOfThreads) {
                                 final PhyloTree tree = trees.get(which);
                                 final List<ASplit> splits = new ArrayList<>();
-                                TreesUtilities.computeSplits(taxaBlock, taxaInTree, tree, splits);
+                                TreesUtilities.computeSplits(taxaInTree, tree, splits);
                                 for (ASplit split : splits) {
                                     synchronized (sync) {
                                         final Pair<BitSet, WeightStats> pair = splitsAndWeights.computeIfAbsent(split.getPartContaining(1), k -> new Pair<>(k, new WeightStats()));
@@ -225,7 +225,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
     }
 
     @Override
-    public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent, SplitsBlock splitsBlock) {
+    public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent) {
         return parent.size() > 0 && !parent.isPartial();
     }
 

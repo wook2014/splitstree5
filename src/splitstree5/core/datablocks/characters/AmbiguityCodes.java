@@ -68,7 +68,7 @@ public class AmbiguityCodes {
                 return "acgt";
 
             default:
-                return "" + code; // this is not a code, but a nucleotide
+                return "" + Character.toLowerCase(code); // this is not a code, but a nucleotide
         }
     }
 

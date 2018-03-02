@@ -175,7 +175,7 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
     }
 
     @Override
-    public boolean isApplicable(TaxaBlock taxaBlock, SplitsBlock parent, SplitsBlock child) {
+    public boolean isApplicable(TaxaBlock taxaBlock, SplitsBlock parent) {
         return !parent.isPartial();
     }
 

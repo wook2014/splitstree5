@@ -62,7 +62,7 @@ public class AverageConsensus extends Algorithm<TreesBlock, SplitsBlock> impleme
     }
 
     @Override
-    public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent, SplitsBlock child) {
+    public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent) {
         return !parent.isPartial();
     }
 }

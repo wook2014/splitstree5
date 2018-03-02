@@ -484,6 +484,11 @@ public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISa
 
     @Override
     public void updateMenus(MenuController controller) {
+        setOnClosed((e) -> {
+            getMainWindow().getWorkflow().deleteNodeAndPathAndDescendants(getDataNode());
+        });
+        setClosable(true);
+
         controller.getPageSetupMenuItem().setOnAction((e) -> Print.showPageLayout(getMainWindow().getStage()));
         controller.getPrintMenuitem().setOnAction((e) -> Print.print(getMainWindow().getStage(), centerPane));
 

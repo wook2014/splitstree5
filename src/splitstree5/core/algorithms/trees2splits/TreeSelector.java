@@ -48,7 +48,7 @@ public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> implements 
         progress.setTasks("TreeSelector", "Extracting splits");
         progress.incrementProgress();
 
-        final BitSet taxaInTree = TreesUtilities.computeSplits(taxaBlock, null, tree, splits.getSplits());
+        final BitSet taxaInTree = TreesUtilities.computeSplits(null, tree, splits.getSplits());
 
         splits.setPartial(taxaInTree.cardinality() < taxaBlock.getNtax());
         splits.setCompatibility(Compatibility.compatible);
@@ -59,7 +59,7 @@ public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> implements 
     }
 
     @Override
-    public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent, SplitsBlock child) {
+    public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent) {
         return 1 <= optionWhich && optionWhich <= parent.getTrees().size();
     }
 

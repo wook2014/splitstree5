@@ -73,8 +73,8 @@ public abstract class DNAdistance extends SequenceBasedDistance {
     }
 
 
-    public boolean isApplicable(TaxaBlock taxa, CharactersBlock ch) {
-        return ch.getDataType() == CharactersType.DNA || ch.getDataType() == CharactersType.RNA;
+    public boolean isApplicable(TaxaBlock taxa, CharactersBlock charactersBlock) {
+        return charactersBlock.getDataType() == CharactersType.DNA || charactersBlock.getDataType() == CharactersType.RNA;
     }
 
     /**

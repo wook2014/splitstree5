@@ -28,9 +28,7 @@ import splitstree5.core.datablocks.characters.CharactersType;
 import splitstree5.io.nexus.CharactersNexusFormat;
 import splitstree5.io.nexus.stateLabeler.StateLabeler;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A characters block
@@ -477,17 +475,17 @@ public class CharactersBlock extends DataBlock {
     }
 
     public void check() {
-        String missingSymbols = "";
+        Set<Character> missingSymbols = new TreeSet<>();
         for (int t = 1; t <= getNtax(); t++) {
             for (int c = 1; c <= getNchar(); c++) {
-                char ch = get(t, c);
+                char ch = Character.toLowerCase(get(t, c));
 
                 if (symbols.indexOf(ch) == -1 && ch != missingCharacter && ch != gapCharacter) {
-                    missingSymbols += ch;
+                    missingSymbols.add(ch);
                 }
             }
         }
-        if (missingSymbols.length() > 0)
+        if (missingSymbols.size() > 0)
             System.err.println("Missing symbols: " + missingSymbols);
         setSymbols(symbols + missingSymbols);
     }

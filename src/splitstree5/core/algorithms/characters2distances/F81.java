@@ -31,8 +31,7 @@ public class F81 extends DNAdistance implements IFromChararacters, IToDistances 
     }
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
-            throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock) throws Exception {
 
         progress.setTasks("F81 Distance", "computing...");
         F81model model = new F81model(this.getNormedBaseFreq());

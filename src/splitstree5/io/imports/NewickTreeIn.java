@@ -1,5 +1,6 @@
 package splitstree5.io.imports;
 
+import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
@@ -14,10 +15,7 @@ import splitstree5.utils.TreesUtilities;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * Newick tree importer
@@ -47,7 +45,11 @@ public class NewickTreeIn implements IToTrees, IImportTrees {
                 progressListener.setMaximum(it.getMaximumProgress());
                 progressListener.setProgress(0);
 
-                final HashSet<String> leafLabels = new HashSet<>();
+                final Map<String, Integer> taxName2Id = new HashMap<>(); // starts at 1
+                final Set<String> taxonNamesFound = new TreeSet<>();
+
+
+
                 final SimpleNewickParser newickParser = new SimpleNewickParser();
                 boolean partial = false;
                 final ArrayList<String> parts = new ArrayList<>();
@@ -68,15 +70,32 @@ public class NewickTreeIn implements IToTrees, IImportTrees {
                         if (TreesUtilities.hasNumbersOnInternalNodes(tree)) {
                             TreesUtilities.changeNumbersOnInternalNodesToEdgeConfidencies(tree);
                         }
-                        if (leafLabels.size() == 0) {
-                            leafLabels.addAll(newickParser.getLeafLabels());
+                        if (taxonNamesFound.size() == 0) {
+                            for (String name : newickParser.getLeafLabels()) {
+                                taxonNamesFound.add(name);
+                                taxName2Id.put(name, taxonNamesFound.size()); //
+                            }
 
                         } else {
-                            if (!leafLabels.equals(newickParser.getLeafLabels())) {
+                            if (!taxonNamesFound.equals(newickParser.getLeafLabels())) {
                                 partial = true;
-                                leafLabels.addAll(newickParser.getLeafLabels());
+                                for (String name : newickParser.getLeafLabels()) {
+                                    if (!taxonNamesFound.contains(name)) {
+                                        taxonNamesFound.add(name);
+                                        taxName2Id.put(name, taxonNamesFound.size());
+                                    }
+                                }
                             }
                         }
+                        for (Node v : tree.nodes()) {
+                            final String label = tree.getLabel(v);
+                            if (label != null && label.length() > 0) {
+                                if (taxonNamesFound.contains(label)) { // need to check that this is a taxon name, could also be a number placed on the root...
+                                    tree.addTaxon(v, taxName2Id.get(label));
+                                }
+                            }
+                        }
+
                         tree.setName(String.format("Tree-%05d", (++count)));
                         trees.getTrees().add(tree);
                         progressListener.setProgress(it.getProgress());
@@ -84,7 +103,7 @@ public class NewickTreeIn implements IToTrees, IImportTrees {
                 }
                 if (parts.size() > 0)
                     System.err.println("Ignoring trailing lines at end of file:\n" + Basic.abbreviateDotDotDot(Basic.toString(parts, "\n"), 400));
-                taxa.addTaxaByNames(leafLabels);
+                taxa.addTaxaByNames(taxonNamesFound);
                 trees.setPartial(partial);
                 trees.setRooted(true);
             }

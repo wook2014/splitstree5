@@ -30,6 +30,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
 import jloda.fx.NotificationManager;
+import jloda.fx.RecentFilesManager;
 import jloda.util.Basic;
 import jloda.util.ResourceManager;
 import splitstree5.dialogs.importer.FileOpener;
@@ -87,29 +88,11 @@ public class InputTab extends TextViewTab {
         final ToolBar toolBar = new ToolBar();
         setToolBar(toolBar);
 
-        final Button openButton = new Button("Open...");
-        openButton.setOnAction((e) -> {
-            final FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Open input file");
-            fileChooser.getExtensionFilters().addAll(ImporterManager.getInstance().getAllExtensionFilters());
-            final File file = fileChooser.showOpenDialog(mainWindow.getStage());
-            if (file != null) {
-                final StringBuilder buf = new StringBuilder();
-                try (BufferedReader r = new BufferedReader(new InputStreamReader(Basic.getInputStreamPossiblyZIPorGZIP(file.getPath())))) {
-                    String aLine;
-                    while ((aLine = r.readLine()) != null)
-                        buf.append(aLine).append("\n");
-                    getTextArea().setText(buf.toString());
-                } catch (IOException ex) {
-                    NotificationManager.showError("Input file failed: " + ex.getMessage());
-                }
-            }
-        });
 
         final Button applyButton = new Button("Parse and Load");
         applyButton.setTooltip(new Tooltip("Save this data to a temporary file, parse the file and then load the data"));
 
-        toolBar.getItems().addAll(openButton, new Separator(), applyButton);
+        toolBar.getItems().addAll(applyButton);
         applyButton.disableProperty().bind(getTextArea().textProperty().isEmpty());
 
         applyButton.setOnAction((e) -> {
@@ -175,7 +158,21 @@ public class InputTab extends TextViewTab {
     @Override
     public void updateMenus(MenuController controller) {
         super.updateMenus(controller);
+
         final TextArea textArea = getTextArea();
+
+        controller.getOpenMenuItem().setOnAction((e) -> {
+            final FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Open input file");
+            fileChooser.getExtensionFilters().addAll(ImporterManager.getInstance().getAllExtensionFilters());
+            final File file = fileChooser.showOpenDialog(getMainWindow().getStage());
+            if (file != null)
+                loadFile(file.getPath());
+        });
+        controller.getOpenMenuItem().disableProperty().bind(textArea.textProperty().isNotEmpty());
+
+        RecentFilesManager.getInstance().setFileOpener(this::loadFile);
+        RecentFilesManager.getInstance().disableProperty().bind(textArea.textProperty().isNotEmpty());
 
         controller.getPasteMenuItem().setOnAction((e) -> {
             if (getTextArea().isFocused()) {
@@ -211,11 +208,23 @@ public class InputTab extends TextViewTab {
         controller.getReplaceMenuItem().setOnAction((e) -> findToolBar.setShowReplaceToolBar(true));
         controller.getReplaceMenuItem().setDisable(false);
 
-        controller.getCopyMenuItem().setOnAction((e) -> {
+        controller.getCutMenuItem().setOnAction((e) -> {
             e.consume();
             textArea.cut();
         });
-        controller.getCopyMenuItem().disableProperty().bind(getTextArea().selectedTextProperty().length().isEqualTo(0));
+        controller.getCutMenuItem().disableProperty().bind(getTextArea().selectedTextProperty().length().isEqualTo(0));
     }
 
+    private void loadFile(String fileName) {
+        final StringBuilder buf = new StringBuilder();
+        try (BufferedReader r = new BufferedReader(new InputStreamReader(Basic.getInputStreamPossiblyZIPorGZIP(fileName)))) {
+            String aLine;
+            while ((aLine = r.readLine()) != null)
+                buf.append(aLine).append("\n");
+            getTextArea().setText(buf.toString());
+        } catch (IOException ex) {
+            NotificationManager.showError("Input file failed: " + ex.getMessage());
+        }
+
+    }
 }

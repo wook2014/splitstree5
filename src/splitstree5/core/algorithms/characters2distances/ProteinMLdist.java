@@ -107,8 +107,8 @@ public class ProteinMLdist extends SequenceBasedDistance implements IFromCharara
     }
 
     @Override
-    public boolean isApplicable(TaxaBlock taxa, CharactersBlock ch, DistancesBlock distancesBlock) {
-        return ch.getDataType().equals(CharactersType.protein);
+    public boolean isApplicable(TaxaBlock taxa, CharactersBlock ch) {
+        return ch.getDataType() == CharactersType.protein;
 
     }
 

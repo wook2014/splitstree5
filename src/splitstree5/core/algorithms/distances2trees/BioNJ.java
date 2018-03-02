@@ -241,4 +241,10 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
         tree.setWeight(e, 0.5 * (h[i_min][k_min] + h[j_min][k_min] - h[i_min][j_min]));
         return tree;
     }
+
+
+    @Override
+    public boolean isApplicable(TaxaBlock taxaBlock, DistancesBlock parent) {
+        return parent.getNtax() > 0;
+    }
 }

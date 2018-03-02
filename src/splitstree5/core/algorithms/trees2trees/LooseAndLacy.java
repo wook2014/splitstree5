@@ -338,7 +338,7 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
     }
 
     @Override
-    public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent, TreesBlock child) {
+    public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent) {
         return taxaBlock.getTraitsBlock() != null && taxaBlock.getTraitsBlock().getNTraits() > 0 && parent.getNTrees() > 0;
 
     }
