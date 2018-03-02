@@ -51,7 +51,6 @@ import splitstree5.core.Document;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
 import splitstree5.core.workflow.DataNode;
-import splitstree5.core.workflow.IHasDataNode;
 import splitstree5.gui.ISavesPreviousSelection;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.formattab.FontSizeIncrementCommand;
@@ -71,7 +70,7 @@ import java.util.*;
  *
  * @param <G>
  */
-public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISavesPreviousSelection, IHasDataNode {
+public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISavesPreviousSelection {
     protected ZoomableScrollPane scrollPane;
 
     protected final Group group = new Group();
@@ -104,9 +103,6 @@ public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISa
 
     protected ListChangeListener<Node> weakNodeSelectionChangeListener;
     protected ListChangeListener<Taxon> weakDocumentTaxonSelectionChangeListener;
-
-    private DataNode dataNode;
-
 
     /**
      * constructor
@@ -627,12 +623,9 @@ public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISa
         return findToolBar;
     }
 
-    public DataNode getDataNode() {
-        return dataNode;
-    }
 
     public void setDataNode(DataNode dataNode) {
-        this.dataNode = dataNode;
+        super.setDataNode(dataNode);
         if (dataNode != null && dataNode.getDataBlock() != null && dataNode.getDataBlock().getDocument() != null)
             setMainWindow(dataNode.getDataBlock().getDocument().getMainWindow());
     }

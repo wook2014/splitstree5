@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
-public class NeXMLOut implements IFromTaxa, IExportTaxa, IFromChararacters, IExportCharacters, IFromTrees ,IExportTrees {
+public class NeXMLOut implements IFromTaxa, IExportTaxa, IFromChararacters, IExportCharacters, IFromTrees, IExportTrees {
 
 
     @Override
@@ -195,7 +195,7 @@ public class NeXMLOut implements IFromTaxa, IExportTaxa, IFromChararacters, IExp
             xmlWriter.writeEndDocument();
 
             xmlWriter.flush();
-        } catch (XMLStreamException xmlEx){
+        } catch (XMLStreamException xmlEx) {
             xmlEx.printStackTrace();
         }
     }

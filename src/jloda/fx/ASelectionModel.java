@@ -64,38 +64,38 @@ public class ASelectionModel<T> extends MultipleSelectionModel<T> {
         // first setup observable array lists that listen for changes of the selectedIndices
 
         selectedIndices.addListener((ListChangeListener<Integer>) (c) -> {
-                if (!inUpdate) {
-                    try {
-                        inUpdate = true;
-                        if (!suspendListeners) {
-                            while (c.next()) {
-                                if (c.wasAdded()) {
-                                    selectedIndicesAsSet.addAll(c.getAddedSubList());
-                                    ArrayList<T> list = new ArrayList<>(c.getAddedSize());
-                                    for (Integer id : c.getAddedSubList()) {
-                                        list.add(ASelectionModel.this.items[id]);
-                                    }
-                                    selectedItems.addAll(list);
+            if (!inUpdate) {
+                try {
+                    inUpdate = true;
+                    if (!suspendListeners) {
+                        while (c.next()) {
+                            if (c.wasAdded()) {
+                                selectedIndicesAsSet.addAll(c.getAddedSubList());
+                                ArrayList<T> list = new ArrayList<>(c.getAddedSize());
+                                for (Integer id : c.getAddedSubList()) {
+                                    list.add(ASelectionModel.this.items[id]);
                                 }
-                                if (c.wasRemoved()) {
-                                    selectedIndicesAsSet.removeAll(c.getRemoved());
-                                    ArrayList<T> list = new ArrayList<>(c.getRemovedSize());
-                                    for (Integer id : c.getRemoved()) {
-                                        list.add(ASelectionModel.this.items[id]);
-                                    }
-                                    selectedItems.removeAll(list);
-                                }
+                                selectedItems.addAll(list);
                             }
-                            if (selectedItems.size() > 0)
-                                setSelectedItem(selectedItems.get(0));
-                            else
-                                setSelectedItem(null);
+                            if (c.wasRemoved()) {
+                                selectedIndicesAsSet.removeAll(c.getRemoved());
+                                ArrayList<T> list = new ArrayList<>(c.getRemovedSize());
+                                for (Integer id : c.getRemoved()) {
+                                    list.add(ASelectionModel.this.items[id]);
+                                }
+                                selectedItems.removeAll(list);
+                            }
                         }
-                    } finally {
-                        inUpdate = false;
+                        if (selectedItems.size() > 0)
+                            setSelectedItem(selectedItems.get(0));
+                        else
+                            setSelectedItem(null);
                     }
+                } finally {
+                    inUpdate = false;
                 }
-            });
+            }
+        });
 
     }
 

@@ -5,8 +5,6 @@
         xmlns:xml="http://www.w3.org/XML/1998/namespace"
         xsi:schemaLocation="http://www.nexml.org/2009 ../xsd/nexml.xsd"
         xmlns:nex="http://www.nexml.org/2009"
-        xmlns:cdao="http://www.evolutionaryontology.org/cdao/1.0/cdao.owl#"
-        xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
         xmlns="http://www.nexml.org/2009">
 
     <otus id="tax1">
@@ -24,8 +22,8 @@
     &lt;!-- A tree with float edges. --&gt;
     <trees otus="tax1" id="Trees" label="TreesBlockFromXML">
         <tree id="tree1" xsi:type="nex:FloatTree" label="tree1">
-            <node id="n1" label="n1" root="true"/>  &lt;!-- this is the root node --&gt;
-            <node id="n2" label="n2" otu="t1"/>  &lt;!-- this is probably a tip --&gt;
+            <node id="n1" label="n1" root="true"/> &lt;!-- this is the root node --&gt;
+            <node id="n2" label="n2" otu="t1"/> &lt;!-- this is probably a tip --&gt;
             <node id="n3" label="n3"/>
             <node id="n4" label="n4"/>
             <node id="n5" label="n5" otu="t3"/>
@@ -34,8 +32,8 @@
             <node id="n8" label="n8" otu="t5"/>
             <node id="n9" label="n9" otu="t4"/>
             &lt;!-- optional root edge, for coalescent trees.
-            note: only has target  --&gt;
-            <rootedge target="n1" id="re1" length="0.34765" />
+            note: only has target --&gt;
+            <rootedge target="n1" id="re1" length="0.34765"/>
             <edge source="n1" target="n3" id="e1" length="0.34534"/>
             <edge source="n1" target="n2" id="e2" length="0.4353"/>
             <edge source="n3" target="n4" id="e3" length="0.324"/>

@@ -59,18 +59,18 @@ public abstract class NexusImporter<D extends DataBlock> {
         try (NexusStreamParser np = new NexusStreamParser(new FileReader(fileName))) {
             np.matchIgnoreCase("#nexus");
 
-            if (np.peekMatchIgnoreCase("begin splitstree5;")) { // this is a complete file written by splitstree5
+            if (np.peekMatchBeginBlock("splitstree5")) { // this is a complete file written by splitstree5
                 System.err.println("Not implemented");
             } else { // this is a user input file
 
                 boolean needToDetectTaxa = !(dataBlock instanceof IAdditionalBlock);
 
-                if (np.peekMatchIgnoreCase("begin taxa;")) {
+                if (np.peekMatchBeginBlock("taxa")) {
                     new TaxaNexusInput().parse(np, taxaBlock);
                     needToDetectTaxa = (taxaBlock.getTaxa().size() == 0);
                 }
 
-                if (np.peekMatchIgnoreCase("begin traits;") && !(dataBlock instanceof TraitsBlock)) {
+                if (np.peekMatchBeginBlock("traits") && !(dataBlock instanceof TraitsBlock)) {
                     new TraitsNexusInput().parse(np, taxaBlock, new TraitsBlock()); // parse and ignore, will reopen file and parse again later...
                 }
 

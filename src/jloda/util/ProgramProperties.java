@@ -34,7 +34,7 @@ import java.util.LinkedList;
 
 /**
  * track program properties
- *
+ * <p>
  * Daniel Huson,  2004, 2018
  */
 public class ProgramProperties {

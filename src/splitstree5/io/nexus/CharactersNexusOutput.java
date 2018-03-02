@@ -264,8 +264,7 @@ public class CharactersNexusOutput implements INexusOutput<CharactersBlock> {
                             w.write(padLabel(characters.getStateLabeler().char2token(c, characters.get(t, c)), columnWidth));
                         else
                             w.write(padLabel("" + characters.get(t, c), columnWidth));
-                    }
-                    else
+                    } else
                         w.write(padLabel("" + format.getOptionMatchCharacter(), columnWidth));
                 }
                 w.write("\n");
@@ -325,8 +324,7 @@ public class CharactersNexusOutput implements INexusOutput<CharactersBlock> {
                             else
                                 w.write(padLabel("" + characters.get(t, c), columnWidth));
 
-                        }
-                        else
+                        } else
                             w.write(padLabel("" + format.getOptionMatchCharacter(), columnWidth));
                     }
                 }

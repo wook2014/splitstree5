@@ -19,13 +19,12 @@
 
 package splitstree5.core.datablocks;
 
-import splitstree5.gui.IHasTab;
 import splitstree5.gui.ViewerTab;
 
 /**
  * datablock that supports a view
  * Daniel Huson, 2.2018
  */
-public abstract class ViewDataBlock extends DataBlock implements IHasTab {
+public abstract class ViewDataBlock extends DataBlock {
     abstract public ViewerTab getTab();
 }

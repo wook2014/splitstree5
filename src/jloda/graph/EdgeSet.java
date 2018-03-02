@@ -23,6 +23,9 @@
  * <p>
  * Edge set
  * @author Daniel Huson, 2003
+ * <p>
+ * Edge set
+ * @author Daniel Huson, 2003
  */
 /**
  * Edge set

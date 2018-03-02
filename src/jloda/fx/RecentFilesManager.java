@@ -146,6 +146,7 @@ public class RecentFilesManager {
 
     /**
      * add a recent file
+     *
      * @param fileName
      */
     public void addRecentFile(String fileName) {

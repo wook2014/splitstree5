@@ -28,6 +28,7 @@ import java.util.*;
 
 /**
  * Phylogenetic tree
+ *
  * @author Daniel Huson, 2003
  */
 public class PhyloTree extends PhyloGraph {

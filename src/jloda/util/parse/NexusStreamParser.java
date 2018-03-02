@@ -58,7 +58,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                 }
             }
         } catch (IOException ex) {
-            throw new IOExceptionWithLineNumber(ex, lineno());
+            throw new IOExceptionWithLineNumber(lineno(), ex);
         }
     }
 
@@ -81,7 +81,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
         } catch (IOException ex)
 
         {
-            throw new IOExceptionWithLineNumber(ex, lineno());
+            throw new IOExceptionWithLineNumber(lineno(), ex);
         }
     }
 
@@ -95,7 +95,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
         try {
             nextToken();
         } catch (IOException ex) {
-            throw new IOExceptionWithLineNumber(ex, lineno());
+            throw new IOExceptionWithLineNumber(lineno(), ex);
         }
 
         if (!toString().equalsIgnoreCase(str)) {
@@ -113,7 +113,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
         try {
             nextToken();
         } catch (IOException ex) {
-            throw new IOExceptionWithLineNumber(ex, lineno());
+            throw new IOExceptionWithLineNumber(lineno(), ex);
         }
         if (!toString().equals(str)) {
             throw new IOExceptionWithLineNumber(str + "' expected, got: '" + toString() + "'", lineno());
@@ -153,7 +153,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
             try {
                 nextToken();
             } catch (IOException ex) {
-                throw new IOExceptionWithLineNumber(ex, lineno());
+                throw new IOExceptionWithLineNumber(lineno(), ex);
             }
             if (!toString().equalsIgnoreCase(str)) {
                 throw new IOExceptionWithLineNumber(str + "' expected, got: '" + toString() + "'", lineno());
@@ -175,7 +175,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
             try {
                 nextToken();
             } catch (IOException ex) {
-                throw new IOExceptionWithLineNumber(ex, lineno());
+                throw new IOExceptionWithLineNumber(lineno(), ex);
             }
             if (!toString().equals(str)) {
                 throw new IOExceptionWithLineNumber(str + "' expected, got: '" + toString() + "'", lineno());
@@ -345,7 +345,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                 nextToken();
             }
         } catch (IOException ex) {
-            throw new IOExceptionWithLineNumber(ex, lineno());
+            throw new IOExceptionWithLineNumber(lineno(), ex);
         }
         return list;
     }
@@ -376,7 +376,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                 nextToken();
             }
         } catch (IOException ex) {
-            throw new IOExceptionWithLineNumber(ex, lineno());
+            throw new IOExceptionWithLineNumber(lineno(), ex);
         }
         return list;
 
@@ -392,7 +392,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
         try {
             nextToken();
         } catch (IOException ex) {
-            throw new IOExceptionWithLineNumber(ex, lineno());
+            throw new IOExceptionWithLineNumber(lineno(), ex);
         } finally {
             popPunctuationCharacters();
         }
@@ -444,7 +444,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                 nextToken();
             }
         } catch (IOException ex) {
-            throw new IOExceptionWithLineNumber(ex, lineno());
+            throw new IOExceptionWithLineNumber(lineno(), ex);
         } finally {
             popPunctuationCharacters();
         }
@@ -477,7 +477,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                 nextToken();
             }
         } catch (IOException ex) {
-            throw new IOExceptionWithLineNumber(ex, lineno());
+            throw new IOExceptionWithLineNumber(lineno(), ex);
         }
 
         if (buf.length() == 0)
@@ -522,7 +522,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                 nextToken();
             }
         } catch (IOException ex) {
-            throw new IOExceptionWithLineNumber(ex, lineno());
+            throw new IOExceptionWithLineNumber(lineno(), ex);
         }
         if (result.equals(""))
             return null;
@@ -551,7 +551,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                 nextToken();
             }
         } catch (IOException ex) {
-            throw new IOExceptionWithLineNumber(ex, lineno());
+            throw new IOExceptionWithLineNumber(lineno(), ex);
         }
         if (result.equals(""))
             return null;
@@ -592,7 +592,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                 }
             }
         } catch (IOException ex) {
-            throw new IOExceptionWithLineNumber(ex, lineno());
+            throw new IOExceptionWithLineNumber(lineno(), ex);
         }
         return result;
     }
@@ -639,7 +639,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                 }
             }
         } catch (IOException ex) {
-            throw new IOExceptionWithLineNumber(ex, lineno());
+            throw new IOExceptionWithLineNumber(lineno(), ex);
         }
         return result;
     }
@@ -691,7 +691,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                 }
             }
         } catch (IOException ex) {
-            throw new IOExceptionWithLineNumber(ex, lineno());
+            throw new IOExceptionWithLineNumber(lineno(), ex);
         }
         if (result.equals(""))
             result = defaultValue;
@@ -733,7 +733,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                 }
             }
         } catch (IOException ex) {
-            throw new IOExceptionWithLineNumber(ex, lineno());
+            throw new IOExceptionWithLineNumber(lineno(), ex);
         }
         return result;
     }
@@ -777,7 +777,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                 }
             }
         } catch (IOException ex) {
-            throw new IOExceptionWithLineNumber(ex, lineno());
+            throw new IOExceptionWithLineNumber(lineno(), ex);
         }
         return result;
     }
@@ -822,7 +822,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                 }
             }
         } catch (IOException ex) {
-            throw new IOExceptionWithLineNumber(ex, lineno());
+            throw new IOExceptionWithLineNumber(lineno(), ex);
         }
         return result;
     }
@@ -867,7 +867,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                 }
             }
         } catch (IOException ex) {
-            throw new IOExceptionWithLineNumber(ex, lineno());
+            throw new IOExceptionWithLineNumber(lineno(), ex);
         }
         return result;
     }
@@ -898,7 +898,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                 }
             }
         } catch (IOException ex) {
-            throw new IOExceptionWithLineNumber(ex, lineno());
+            throw new IOExceptionWithLineNumber(lineno(), ex);
         }
         return result;
     }
@@ -920,7 +920,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                 s.nextToken();
             }
         } catch (IOException ex) {
-            throw new IOExceptionWithLineNumber(ex, lineno());
+            throw new IOExceptionWithLineNumber(lineno(), ex);
         }
         return false;
     }
@@ -967,7 +967,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
         if (result < low || result > high) {
             if (low > Integer.MIN_VALUE && high == Integer.MAX_VALUE)
                 throw new IOExceptionWithLineNumber("value " + result + " smaller than minimum: " + low, lineno());
-            else if (low == Integer.MIN_VALUE )
+            else if (low == Integer.MIN_VALUE)
                 throw new IOExceptionWithLineNumber("value " + result + " larger than maximum: " + high, lineno());
             else
                 throw new IOExceptionWithLineNumber("value " + result + " out of range: " + low + " - " + high, lineno());
@@ -1060,7 +1060,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
         try {
             nextToken();
         } catch (IOException ex) {
-            throw new IOExceptionWithLineNumber(ex, lineno());
+            throw new IOExceptionWithLineNumber(lineno(), ex);
         }
         return toString();
     }
@@ -1217,7 +1217,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                 nextToken();
             }
         } catch (IOException ex) {
-            throw new IOExceptionWithLineNumber(ex, lineno());
+            throw new IOExceptionWithLineNumber(lineno(), ex);
         } finally {
             popPunctuationCharacters();
         }
@@ -1375,7 +1375,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                     np.getWordRespectCase();
             }
         } catch (IOException ex) {
-            throw new IOExceptionWithLineNumber(ex, lineno());
+            throw new IOExceptionWithLineNumber(lineno(), ex);
         }
         throw new IOExceptionWithLineNumber("input '" + word + "' does not match any of legal tokens: " + legalTokens, lineno());
     }
@@ -1398,7 +1398,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                     np.getWordRespectCase();
             }
         } catch (IOException ex) {
-            throw new IOExceptionWithLineNumber(ex, lineno());
+            throw new IOExceptionWithLineNumber(lineno(), ex);
         }
         throw new IOExceptionWithLineNumber("input '" + word + "' does not match any of legal tokens: " + legalTokens, lineno());
     }
@@ -1487,7 +1487,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
                 nextToken();
             }
         } catch (IOException ex) {
-            throw new IOExceptionWithLineNumber(ex, lineno());
+            throw new IOExceptionWithLineNumber(lineno(), ex);
         }
         return blockName;
     }

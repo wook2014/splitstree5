@@ -151,7 +151,7 @@ public class TreesNexusInput implements INexusInput<TreesBlock> {
 
         final Set<String> knownTaxonNames = new HashSet<>(taxonNamesFound);
 
-        final SimpleNewickParser parser=new SimpleNewickParser();
+        final SimpleNewickParser parser = new SimpleNewickParser();
 
         int treeNumber = 1;
         while (np.peekMatchIgnoreCase("tree")) {
@@ -187,8 +187,8 @@ public class TreesNexusInput implements INexusInput<TreesBlock> {
                 isRooted = (comment != null && comment.equalsIgnoreCase("&R"));
             }
 
-           // final PhyloTree tree = PhyloTree.valueOf(buf.toString(), isRooted);
-            final PhyloTree tree=parser.parse(buf.toString());
+            // final PhyloTree tree = PhyloTree.valueOf(buf.toString(), isRooted);
+            final PhyloTree tree = parser.parse(buf.toString());
 
             if (translator != null)
                 tree.changeLabels(translator);
@@ -205,6 +205,7 @@ public class TreesNexusInput implements INexusInput<TreesBlock> {
                         } else {
                             knownTaxonNames.add(label);
                             taxonNamesFound.add(label);
+                            taxName2Id.put(label, taxonNamesFound.size());
                         }
                     }
                     tree.addTaxon(v, taxName2Id.get(label));

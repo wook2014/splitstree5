@@ -32,6 +32,7 @@ import splitstree5.core.algorithms.interfaces.IToAnalysis;
  */
 public class AnalysisBlock extends DataBlock {
     private final StringProperty info = new SimpleStringProperty("analysis results");
+
     @Override
     public void clear() {
         super.clear();

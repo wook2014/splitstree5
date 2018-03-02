@@ -18,6 +18,8 @@
  */
 package splitstree5.io.imports.nexus;
 
+import jloda.util.CanceledException;
+import jloda.util.ProgressListener;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TraitsBlock;
@@ -25,6 +27,7 @@ import splitstree5.io.imports.interfaces.IImportNoAutoDetect;
 import splitstree5.io.imports.interfaces.IImportTraits;
 import splitstree5.io.nexus.TraitsNexusInput;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
@@ -48,6 +51,14 @@ public class TraitsNexusIn extends NexusImporter<TraitsBlock> implements IImport
             return new TraitsNexusInput().parse(np, taxaBlock, dataBlock);
         } catch (Exception ex) {
             return null;
+        }
+    }
+
+    @Override
+    public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxaBlock, TraitsBlock dataBlock) throws CanceledException, IOException {
+        try (NexusStreamParser np = new NexusStreamParser(new FileReader(fileName))) {
+            np.matchIgnoreCase("#nexus");
+            parseBlock(np, taxaBlock, dataBlock);
         }
     }
 }

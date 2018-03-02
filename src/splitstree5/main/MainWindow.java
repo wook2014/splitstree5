@@ -34,6 +34,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import jloda.fx.ExtendedFXMLLoader;
+import jloda.fx.RecentFilesManager;
 import jloda.util.Basic;
 import jloda.util.Pair;
 import jloda.util.ProgramProperties;
@@ -164,6 +165,7 @@ public class MainWindow {
 
         titleProperty.bind(Bindings.concat("Main Window - ").concat(document.nameProperty()).concat(dirtyStar).concat(" - " + ProgramProperties.getProgramName()));
 
+        // setup work flow tree view:
         {
             final TreeItem<String> rootItem = new TreeItem<>("");
             Label label = new Label();
@@ -180,7 +182,11 @@ public class MainWindow {
             MenuItem closeItem = new MenuItem("Close");
             closeItem.setOnAction((e) -> menuController.getCloseMenuItem().fire());
 
-            contextMenu.getItems().addAll(openItem, importItem, new SeparatorMenuItem(), closeItem);
+            final Menu recentFilesMenu = new Menu("Recent Files");
+            RecentFilesManager.getInstance().setupMenu(recentFilesMenu);
+            contextMenu.getItems().addAll(openItem, recentFilesMenu, importItem, new SeparatorMenuItem(), closeItem);
+            recentFilesMenu.disableProperty().bind(openItem.disableProperty());
+
             label.setContextMenu(contextMenu);
             mainWindowController.getTreeView().setRoot(rootItem);
             workflowTreeSupport = new WorkflowTreeSupport(mainWindowController.getTreeView(), document);
@@ -423,9 +429,8 @@ public class MainWindow {
     /**
      * Clear the current window. Stop any running tasks. Also close, if requested
      *
-     *
      * @param askToSave
-     * @param close window after clearing
+     * @param close     window after clearing
      * @return true if closed, false if canceled
      */
     public boolean clear(boolean askToSave, boolean close) {

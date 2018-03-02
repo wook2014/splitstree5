@@ -28,7 +28,6 @@ import splitstree5.core.Document;
 import splitstree5.core.algorithms.interfaces.IFromSplitsNetworkView;
 import splitstree5.core.algorithms.interfaces.IToSplitsNetworkView;
 import splitstree5.core.workflow.DataNode;
-import splitstree5.gui.IHasTab;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.graphtab.AlgorithmBreadCrumbsToolBar;
 import splitstree5.gui.graphtab.ISplitsViewTab;
@@ -42,7 +41,7 @@ import java.util.Set;
  * This block represents the 3D view of a split network
  * Daniel Huson, 1.2018
  */
-public class SplitsNetworkViewBlock extends ViewDataBlock implements IHasTab {
+public class SplitsNetworkViewBlock extends ViewDataBlock {
     private final ASelectionModel<Integer> splitsSelectionModel = new ASelectionModel<>();
     private final ISplitsViewTab splitsViewTab;
 
@@ -60,7 +59,7 @@ public class SplitsNetworkViewBlock extends ViewDataBlock implements IHasTab {
         super();
         this.splitsViewTab = splitsViewTab;
 
-        setTitle("Split Network Viewer");
+        setTitle("Splits Network Viewer");
         //splitsViewTab = new SplitsViewTab();
 
         splitsViewTab.setLayout(GraphLayout.Radial);
@@ -147,8 +146,8 @@ public class SplitsNetworkViewBlock extends ViewDataBlock implements IHasTab {
     @Override
     public String getInfo() {
         if (splitsViewTab != null && splitsViewTab.getGraph() != null) {
-            return "a split network with " + splitsViewTab.getGraph().getNumberOfNodes() + " nodes and " + splitsViewTab.getGraph().getNumberOfEdges() + " edges";
+            return "a splits network with " + splitsViewTab.getGraph().getNumberOfNodes() + " nodes and " + splitsViewTab.getGraph().getNumberOfEdges() + " edges";
         } else
-            return "a split network";
+            return "a splits network";
     }
 }

@@ -22,12 +22,14 @@ package jloda.graph;
 /**
  * Node map
  * Daniel Huson, 2003
+ *
  * @deprecated use node array instead
  */
 
 public class NodeMap<T> extends NodeArray<T> {
     /**
      * constructor
+     *
      * @param g
      */
     public NodeMap(Graph g) {

@@ -196,6 +196,10 @@ public class TextViewTab extends ViewerTab {
         controller.getIncreaseFontSizeMenuItem().setOnAction((x) -> textArea.setStyle(String.format("-fx-font-size: %.0f;", (textArea.getFont().getSize() + 2))));
         controller.getDecreaseFontSizeMenuItem().setOnAction((x) -> textArea.setStyle(String.format("-fx-font-size: %.0f;", (textArea.getFont().getSize() - 2))));
 
+        controller.getResetMenuItem().setOnAction((x) -> textArea.setStyle("-fx-font-size: 12;"));
+
+        controller.getWrapTextMenuItem().selectedProperty().unbind();
+        controller.getWrapTextMenuItem().setSelected(textArea.isWrapText());
         controller.getWrapTextMenuItem().selectedProperty().bindBidirectional(textArea.wrapTextProperty());
         controller.getWrapTextMenuItem().disableProperty().bind(new SimpleBooleanProperty(false));
     }

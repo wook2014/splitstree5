@@ -49,6 +49,8 @@ public class DataViewTab extends TextViewTab {
     public DataViewTab(Document document, DataNode dataNode) {
         super(dataNode.nameProperty());
 
+        setDataNode(dataNode);
+
         final DataBlock dataBlock = dataNode.getDataBlock();
         final StringProperty textProperty;
         if (dataBlock.getFormat() != null) {

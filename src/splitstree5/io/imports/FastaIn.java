@@ -83,8 +83,8 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
                         continue;
                     }
                     String tmpLine;
-                    if (optionPIRFormat && line.charAt(line.length()-1) == '*')
-                        tmpLine = line.substring(0, line.length()-1); // cut the last symbol
+                    if (optionPIRFormat && line.charAt(line.length() - 1) == '*')
+                        tmpLine = line.substring(0, line.length() - 1); // cut the last symbol
                     else
                         tmpLine = line;
                     String allowedChars = "" + getMissing() + getMatchChar() + getGap();
@@ -151,7 +151,7 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
             String afterID = infoLine.substring(infoLine.indexOf(foundID) + foundID.length());
             int index1;
             int index2;
-            if (foundID.equals("pir") || foundID.equals("prf") || foundID.equals("pat") || foundID.equals("gnl")){
+            if (foundID.equals("pir") || foundID.equals("prf") || foundID.equals("pat") || foundID.equals("gnl")) {
                 if (foundID.equals("pir") || foundID.equals("prf"))
                     index1 = afterID.indexOf('|') + 2;
                 else

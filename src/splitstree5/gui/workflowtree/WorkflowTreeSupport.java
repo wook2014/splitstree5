@@ -45,30 +45,33 @@ public class WorkflowTreeSupport {
                 treeView.getRoot().getChildren().clear();
                 treeView.getRoot().setExpanded(true);
 
-                WorkflowTreeItem topTaxaItem = new WorkflowTreeItem(document, workflow.getTopTaxaNode());
-                treeView.getRoot().getChildren().add(topTaxaItem);
-                if (workflow.getTopTraitsNode() != null)
-                    topTaxaItem.getChildren().add(new WorkflowTreeItem(document, workflow.getTopTraitsNode()));
+                if (workflow.getTopTaxaNode() != null) {
+                    WorkflowTreeItem topTaxaItem = new WorkflowTreeItem(document, workflow.getTopTaxaNode());
+                    treeView.getRoot().getChildren().add(topTaxaItem);
+                    if (workflow.getTopTraitsNode() != null)
+                        topTaxaItem.getChildren().add(new WorkflowTreeItem(document, workflow.getTopTraitsNode()));
 
-                if (workflow.getTopDataNode() != null) {
-                    final WorkflowTreeItem topDataItem = new WorkflowTreeItem(document, workflow.getTopDataNode());
-                    topTaxaItem.getChildren().add(topDataItem);
-                }
 
-                WorkflowTreeItem taxaFilterItem = new WorkflowTreeItem(document, workflow.getTaxaFilter());
-                topTaxaItem.getChildren().add(taxaFilterItem);
+                    if (workflow.getTopDataNode() != null) {
+                        final WorkflowTreeItem topDataItem = new WorkflowTreeItem(document, workflow.getTopDataNode());
+                        topTaxaItem.getChildren().add(topDataItem);
+                    }
 
-                WorkflowTreeItem workingTaxaItem = new WorkflowTreeItem(document, workflow.getWorkingTaxaNode());
-                topTaxaItem.getChildren().add(workingTaxaItem);
+                    WorkflowTreeItem taxaFilterItem = new WorkflowTreeItem(document, workflow.getTaxaFilter());
+                    topTaxaItem.getChildren().add(taxaFilterItem);
 
-                if (workflow.getWorkingTraitsNode() != null)
-                    topTaxaItem.getChildren().add(new WorkflowTreeItem(document, workflow.getWorkingTraitsNode()));
+                    WorkflowTreeItem workingTaxaItem = new WorkflowTreeItem(document, workflow.getWorkingTaxaNode());
+                    topTaxaItem.getChildren().add(workingTaxaItem);
 
-                if (workflow.getWorkingDataNode() != null) {
-                    final WorkflowTreeItem workingDataItem = new WorkflowTreeItem(document, workflow.getWorkingDataNode());
-                    treeView.getRoot().getChildren().add(workingDataItem);
-                    workingDataItem.setExpanded(true);
-                    addToTreeRec(document, workingDataItem, workflow.getWorkingDataNode());
+                    if (workflow.getWorkingTraitsNode() != null)
+                        topTaxaItem.getChildren().add(new WorkflowTreeItem(document, workflow.getWorkingTraitsNode()));
+
+                    if (workflow.getWorkingDataNode() != null) {
+                        final WorkflowTreeItem workingDataItem = new WorkflowTreeItem(document, workflow.getWorkingDataNode());
+                        treeView.getRoot().getChildren().add(workingDataItem);
+                        workingDataItem.setExpanded(true);
+                        addToTreeRec(document, workingDataItem, workflow.getWorkingDataNode());
+                    }
                 }
             });
         });

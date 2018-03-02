@@ -20,6 +20,10 @@
 package splitstree5.gui.formattab;
 
 import javafx.scene.control.Labeled;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import jloda.fx.FontUtils;
 import jloda.graph.Edge;
 import jloda.graph.EdgeArray;
 import jloda.graph.Node;
@@ -70,13 +74,23 @@ public class FontSizeIncrementCommand extends UndoableRedoableCommand {
 
     @Override
     public void undo() {
+        FontWeight fontWeight = null;
+        FontPosture fontPosture = null;
+        Font font = null;
+
         if (nodes != null && node2view != null) {
             for (Node v : nodes) {
                 Labeled label = node2view.get(v).getLabel();
                 if (label != null) {
                     final double size = (label.getFont().getSize() - increment);
-                    if (size >= 0)
-                        label.setStyle("-fx-font-size: " + size + ";");
+                    if (size >= 0) {
+                        if (font == null || !label.getFont().equals(font)) {
+                            font = label.getFont();
+                            fontWeight = FontUtils.getWeight(font);
+                            fontPosture = FontUtils.getPosture(font);
+                        }
+                        label.setFont(Font.font(font.getFamily(), fontWeight, fontPosture, size));
+                    }
                 }
             }
         }
@@ -85,8 +99,14 @@ public class FontSizeIncrementCommand extends UndoableRedoableCommand {
                 Labeled label = edge2view.get(v).getLabel();
                 if (label != null) {
                     final double size = (label.getFont().getSize() - increment);
-                    if (size >= 0)
-                        label.setStyle("-fx-font-size: " + size + ";");
+                    if (size >= 0) {
+                        if (font == null || !label.getFont().equals(font)) {
+                            font = label.getFont();
+                            fontWeight = FontUtils.getWeight(font);
+                            fontPosture = FontUtils.getPosture(font);
+                        }
+                        label.setFont(Font.font(font.getFamily(), fontWeight, fontPosture, size));
+                    }
                 }
             }
         }
@@ -94,12 +114,21 @@ public class FontSizeIncrementCommand extends UndoableRedoableCommand {
 
     @Override
     public void redo() {
+        FontWeight fontWeight = null;
+        FontPosture fontPosture = null;
+        Font font = null;
+
         if (nodes != null && node2view != null) {
             for (Node v : nodes) {
                 Labeled label = node2view.get(v).getLabel();
                 if (label != null) {
                     final double size = (label.getFont().getSize() + increment);
-                    label.setStyle("-fx-font-size: " + size + ";");
+                    if (font == null || !label.getFont().equals(font)) {
+                        font = label.getFont();
+                        fontWeight = FontUtils.getWeight(font);
+                        fontPosture = FontUtils.getPosture(font);
+                    }
+                    label.setFont(Font.font(font.getFamily(), fontWeight, fontPosture, size));
                 }
             }
         }
@@ -108,7 +137,12 @@ public class FontSizeIncrementCommand extends UndoableRedoableCommand {
                 Labeled label = edge2view.get(v).getLabel();
                 if (label != null) {
                     final double size = (label.getFont().getSize() + increment);
-                    label.setStyle("-fx-font-size: " + size + ";");
+                    if (font == null || !label.getFont().equals(font)) {
+                        font = label.getFont();
+                        fontWeight = FontUtils.getWeight(font);
+                        fontPosture = FontUtils.getPosture(font);
+                    }
+                    label.setFont(Font.font(font.getFamily(), fontWeight, fontPosture, size));
                 }
             }
         }

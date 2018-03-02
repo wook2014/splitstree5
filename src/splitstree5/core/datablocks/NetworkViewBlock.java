@@ -25,7 +25,6 @@ import splitstree5.core.Document;
 import splitstree5.core.algorithms.interfaces.IFromNetworkView;
 import splitstree5.core.algorithms.interfaces.IToNetworkView;
 import splitstree5.core.workflow.DataNode;
-import splitstree5.gui.IHasTab;
 import splitstree5.gui.graphtab.AlgorithmBreadCrumbsToolBar;
 import splitstree5.gui.graphtab.NetworkViewTab;
 import splitstree5.gui.graphtab.base.GraphLayout;
@@ -34,7 +33,7 @@ import splitstree5.gui.graphtab.base.GraphLayout;
  * This block represents the view of a general network
  * Daniel Huson, 1.2018
  */
-public class NetworkViewBlock extends ViewDataBlock implements IHasTab {
+public class NetworkViewBlock extends ViewDataBlock {
     private final NetworkViewTab networkViewTab;
 
     public NetworkViewBlock() {

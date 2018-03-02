@@ -248,6 +248,7 @@ public class NodeSet extends GraphBase implements Set<Node> {
             }
         };
     }
+
     /**
      * Returns the size of the set.
      *

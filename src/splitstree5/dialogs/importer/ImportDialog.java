@@ -150,7 +150,7 @@ public class ImportDialog {
     }
 
     public static void show(MainWindow other) {
-        show(other,null);
+        show(other, null);
     }
 
     /**

@@ -71,12 +71,12 @@ public class ProgressPane extends StackPane {
         setVisible(false);
         label = new Label();
         label.textProperty().bind(titleProperty.concat(": "));
-        label.setFont(Font.font("System",10));
+        label.setFont(Font.font("System", 10));
         progressBar = new ProgressBar();
         progressBar.progressProperty().bind(progressProperty);
         progressBar.setPrefHeight(label.getPrefHeight());
         stopButton = new Button("Cancel");
-        stopButton.setFont(Font.font("System",10));
+        stopButton.setFont(Font.font("System", 10));
         stopButton.setMaxHeight(label.getPrefHeight());
         stopButton.disableProperty().bind(isRunning.not());
         stopButton.setOnAction((e) -> cancelRunnable.run());

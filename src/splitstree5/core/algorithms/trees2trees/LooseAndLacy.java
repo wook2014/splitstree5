@@ -42,9 +42,9 @@ import java.util.*;
 public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements IFromTrees, IToTrees {
     public enum SpeciesDefinition {Loose, Lacy, Both}
 
-    private final ObjectProperty<SpeciesDefinition> optionSpeciesDefinition=new SimpleObjectProperty<>(SpeciesDefinition.Both);
+    private final ObjectProperty<SpeciesDefinition> optionSpeciesDefinition = new SimpleObjectProperty<>(SpeciesDefinition.Both);
     private final IntegerProperty optionTraitNumber = new SimpleIntegerProperty(1);
-    private final BooleanProperty optionUseAllTraits=new SimpleBooleanProperty();
+    private final BooleanProperty optionUseAllTraits = new SimpleBooleanProperty();
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock parent, TreesBlock child) throws Exception {
@@ -53,27 +53,25 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
         final int[] upper;
         final int[] lower;
 
-        if(isOptionUseAllTraits()) {
-            upper=computeLeastUpperBound(taxaBlock.getNtax(),traitsBlock);
-            System.err.println("Upper: "+Basic.toString(upper," "));
-            lower=computeGreatestLowerBound(taxaBlock.getNtax(),traitsBlock);
-            System.err.println("Lower: "+Basic.toString(lower," "));
-            System.err.println(String.format("Species definitions based on all %d traits",traitsBlock.getNTraits()));
-        }
-        else {
-            upper=lower= computeTax2ValueForTrait(taxaBlock.getNtax(),getOptionTraitNumber(),traitsBlock);
+        if (isOptionUseAllTraits()) {
+            upper = computeLeastUpperBound(taxaBlock.getNtax(), traitsBlock);
+            System.err.println("Upper: " + Basic.toString(upper, " "));
+            lower = computeGreatestLowerBound(taxaBlock.getNtax(), traitsBlock);
+            System.err.println("Lower: " + Basic.toString(lower, " "));
+            System.err.println(String.format("Species definitions based on all %d traits", traitsBlock.getNTraits()));
+        } else {
+            upper = lower = computeTax2ValueForTrait(taxaBlock.getNtax(), getOptionTraitNumber(), traitsBlock);
             System.err.println(String.format("Species definitions based on trait: [%d] %s", getOptionTraitNumber(), traitsBlock.getTraitLabel(getOptionTraitNumber())));
         }
 
         final PhyloTree tree = parent.getTrees().get(0);
 
         // compute loose species:
-        if(getOptionSpeciesDefinition()!=SpeciesDefinition.Lacy)
-        {
+        if (getOptionSpeciesDefinition() != SpeciesDefinition.Lacy) {
             final NodeArray<BitSet> traitValuesBelow = new NodeArray<>(tree);
             final NodeArray<BitSet> taxaBelow = new NodeArray<>(tree);
 
-            computeTaxaAndValuesBelowRec(tree, tree.getRoot(),upper, taxaBelow, traitValuesBelow);
+            computeTaxaAndValuesBelowRec(tree, tree.getRoot(), upper, taxaBelow, traitValuesBelow);
 
             // compute loose species:
             final Set<BitSet> looseSpecies = new TreeSet<>(createComparator());
@@ -95,12 +93,11 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
         }
 
         // compute lacy species:
-        if(getOptionSpeciesDefinition()!=SpeciesDefinition.Loose)
-        {
+        if (getOptionSpeciesDefinition() != SpeciesDefinition.Loose) {
             final NodeArray<BitSet> traitValuesBelow = new NodeArray<>(tree);
             final NodeArray<BitSet> taxaBelow = new NodeArray<>(tree);
 
-            computeTaxaAndValuesBelowRec(tree, tree.getRoot(),lower, taxaBelow, traitValuesBelow);
+            computeTaxaAndValuesBelowRec(tree, tree.getRoot(), lower, taxaBelow, traitValuesBelow);
 
             final Set<BitSet> lacySpecies = new TreeSet<>(createComparator());
             computeLacySpeciesRec(tree.getRoot(), taxaBelow, traitValuesBelow, lacySpecies);
@@ -122,17 +119,18 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
 
     /**
      * compute the tax to value mapping
+     *
      * @param ntax
      * @param trait
      * @param traitsBlock
      * @return taxon to value m,apping
      */
     public int[] computeTax2ValueForTrait(int ntax, int trait, TraitsBlock traitsBlock) {
-        final int[] tax2value=new int[ntax+1];
-            for (int tax = 1; tax <= ntax; tax++) {
-                tax2value[tax]=traitsBlock.getTraitValue(tax, trait);
-            }
-            return tax2value;
+        final int[] tax2value = new int[ntax + 1];
+        for (int tax = 1; tax <= ntax; tax++) {
+            tax2value[tax] = traitsBlock.getTraitValue(tax, trait);
+        }
+        return tax2value;
     }
 
     /**
@@ -208,31 +206,31 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
     private int[] computeGreatestLowerBound(int ntax, TraitsBlock traitsBlock) {
 
         // for each trait, map each taxon to the trait-defined set that contains it
-        final Map<Integer,BitSet>[] trait2tax2set=new HashMap[traitsBlock.getNTraits()+1];
+        final Map<Integer, BitSet>[] trait2tax2set = new HashMap[traitsBlock.getNTraits() + 1];
         for (int trait = 1; trait <= traitsBlock.getNTraits(); trait++) {
-            trait2tax2set[trait]=new HashMap<>();
+            trait2tax2set[trait] = new HashMap<>();
             final Map<Integer, BitSet> state2set = new HashMap<>();
             for (int tax = 1; tax <= ntax; tax++) {
                 final int state = traitsBlock.getTraitValue(tax, trait);
                 final BitSet set = state2set.computeIfAbsent(state, k -> new BitSet());
                 set.set(tax);
-                trait2tax2set[trait].put(tax,set);
+                trait2tax2set[trait].put(tax, set);
             }
         }
 
-        final int[] tax2part=new int[ntax+1];
+        final int[] tax2part = new int[ntax + 1];
 
-        for(int tax=1;tax<=ntax;tax++) {
-            if(tax2part[tax]==0) {
-                final BitSet intersection=new BitSet();
-                intersection.set(1,ntax+1);
+        for (int tax = 1; tax <= ntax; tax++) {
+            if (tax2part[tax] == 0) {
+                final BitSet intersection = new BitSet();
+                intersection.set(1, ntax + 1);
 
                 for (int trait = 1; trait <= traitsBlock.getNTraits(); trait++) {
-                    final BitSet set=trait2tax2set[trait].get(tax);
+                    final BitSet set = trait2tax2set[trait].get(tax);
                     intersection.and(set);
                 }
-                for(int t=intersection.nextSetBit(1);t!=-1;t=intersection.nextSetBit(t+1))
-                    tax2part[t]=tax;
+                for (int t = intersection.nextSetBit(1); t != -1; t = intersection.nextSetBit(t + 1))
+                    tax2part[t] = tax;
             }
         }
         return tax2part;

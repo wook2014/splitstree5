@@ -122,69 +122,69 @@ public class MethodsTextGenerator {
 
         final Set<String> set = new HashSet<>(); // use this to avoid duplicate lines
 
-            buf.append(String.format(inputDataTemplate, dag.getTopTaxaNode().getDataBlock().getInfo(), dag.getTopDataNode().getDataBlock().getInfo()));
-            if (dag.getWorkingTaxaBlock() != null && dag.getWorkingTaxaBlock().getNtax() < dag.getTopTaxaNode().getDataBlock().getNtax()) {
-                int removed = (dag.getTopTaxaNode().getDataBlock().getNtax() - dag.getWorkingTaxaBlock().getNtax());
-                buf.append(String.format(taxonFilterTemplate, removed, dag.getWorkingTaxaBlock().getInfo(), dag.getWorkingDataNode().getDataBlock().getInfo()));
-            }
-            final DataNode root = dag.getWorkingDataNode();
-            final Set<DataNode> visited = new HashSet<>();
-            final Stack<DataNode> stack = new Stack<>();
-            stack.push(root); // should only contain data nodes
-            while (stack.size() > 0) {
-                final DataNode v = stack.pop();
-                if (!visited.contains(v)) {
-                    visited.add(v);
-                    for (Object obj : v.getChildren()) {
-                        if (obj instanceof Connector) {
-                            final Connector connector = (Connector) obj;
-                            final Algorithm algorithm = connector.getAlgorithm();
-                            final DataNode w = connector.getChild();
+        buf.append(String.format(inputDataTemplate, dag.getTopTaxaNode().getDataBlock().getInfo(), dag.getTopDataNode().getDataBlock().getInfo()));
+        if (dag.getWorkingTaxaBlock() != null && dag.getWorkingTaxaBlock().getNtax() < dag.getTopTaxaNode().getDataBlock().getNtax()) {
+            int removed = (dag.getTopTaxaNode().getDataBlock().getNtax() - dag.getWorkingTaxaBlock().getNtax());
+            buf.append(String.format(taxonFilterTemplate, removed, dag.getWorkingTaxaBlock().getInfo(), dag.getWorkingDataNode().getDataBlock().getInfo()));
+        }
+        final DataNode root = dag.getWorkingDataNode();
+        final Set<DataNode> visited = new HashSet<>();
+        final Stack<DataNode> stack = new Stack<>();
+        stack.push(root); // should only contain data nodes
+        while (stack.size() > 0) {
+            final DataNode v = stack.pop();
+            if (!visited.contains(v)) {
+                visited.add(v);
+                for (Object obj : v.getChildren()) {
+                    if (obj instanceof Connector) {
+                        final Connector connector = (Connector) obj;
+                        final Algorithm algorithm = connector.getAlgorithm();
+                        final DataNode w = connector.getChild();
 
-                            if (algorithm instanceof IFilter) {
-                                if (((IFilter) algorithm).isActive()) {
-                                    final String name = Basic.fromCamelCase(algorithm.getName());
-                                    final String parameters = (algorithm.getParameters().length() > 0 ? " (parameters: " + algorithm.getParameters() + ")" : "");
-                                    final String line = String.format(filterTemplate, name, parameters, algorithm.getShortDescription());
-                                    if (!set.contains(line)) {
-                                        buf.append(line);
-                                        set.add(line);
-                                    }
-                                }
-                            } else {
-                                if (algorithm != null) {
-                                    final String keys = getKeysString(algorithm);
-                                    final Collection<Pair<String, String>> keysAndPapers = getKeysAndPapers(algorithm);
-                                    if (keysAndPapers != null)
-                                        allKeysAndPapers.addAll(keysAndPapers);
-                                    final String name = Basic.fromCamelCase(algorithm.getName());
-
-                                    final String parameters = (algorithm.getParameters().length() > 0 ? " (parameters: " + algorithm.getParameters() + ")" : "");
-                                    final String line;
-                                    if (w != null) {
-                                        line = String.format(methodWithOutputTemplate, name, keys, parameters, w.getDataBlock().getInfo());
-                                    } else {
-                                        line = String.format(methodTemplate, name, keys, parameters);
-                                    }
-                                    if (!set.contains(line)) {
-                                        buf.append(line);
-                                        set.add(line);
-                                    }
+                        if (algorithm instanceof IFilter) {
+                            if (((IFilter) algorithm).isActive()) {
+                                final String name = Basic.fromCamelCase(algorithm.getName());
+                                final String parameters = (algorithm.getParameters().length() > 0 ? " (parameters: " + algorithm.getParameters() + ")" : "");
+                                final String line = String.format(filterTemplate, name, parameters, algorithm.getShortDescription());
+                                if (!set.contains(line)) {
+                                    buf.append(line);
+                                    set.add(line);
                                 }
                             }
-                            stack.push(w);
+                        } else {
+                            if (algorithm != null) {
+                                final String keys = getKeysString(algorithm);
+                                final Collection<Pair<String, String>> keysAndPapers = getKeysAndPapers(algorithm);
+                                if (keysAndPapers != null)
+                                    allKeysAndPapers.addAll(keysAndPapers);
+                                final String name = Basic.fromCamelCase(algorithm.getName());
+
+                                final String parameters = (algorithm.getParameters().length() > 0 ? " (parameters: " + algorithm.getParameters() + ")" : "");
+                                final String line;
+                                if (w != null) {
+                                    line = String.format(methodWithOutputTemplate, name, keys, parameters, w.getDataBlock().getInfo());
+                                } else {
+                                    line = String.format(methodTemplate, name, keys, parameters);
+                                }
+                                if (!set.contains(line)) {
+                                    buf.append(line);
+                                    set.add(line);
+                                }
+                            }
                         }
+                        stack.push(w);
                     }
                 }
             }
-            buf.append("\n");
-            if (allKeysAndPapers.size() > 0) {
-                buf.append("References:\n");
+        }
+        buf.append("\n");
+        if (allKeysAndPapers.size() > 0) {
+            buf.append("References:\n");
 
-                for (Pair<String, String> pair : allKeysAndPapers) {
-                    buf.append(String.format("%s: %s\n", pair.get1(), pair.get2()));
-                }
+            for (Pair<String, String> pair : allKeysAndPapers) {
+                buf.append(String.format("%s: %s\n", pair.get1(), pair.get2()));
             }
+        }
 
         return buf.toString();
     }
@@ -240,7 +240,7 @@ public class MethodsTextGenerator {
 
     public static Collection<Pair<String, String>> getSplitsTreeKeysAndPapers() {
         return Arrays.asList(new Pair<>("Huson and Bryant 2006",
-                        "D.H. Huson and D. Bryant. Application of phylogenetic networks in evolutionary studies. Molecular Biology and Evolution, 23:254–267, 2006."));
+                "D.H. Huson and D. Bryant. Application of phylogenetic networks in evolutionary studies. Molecular Biology and Evolution, 23:254–267, 2006."));
     }
 
 

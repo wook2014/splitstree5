@@ -68,7 +68,7 @@ public class RubberBandSelection {
          *
          * @param rectangle       in scene coordinates
          * @param extendSelection true if shift key down
-         * @param service use this service for computations outside of the FX thread
+         * @param service         use this service for computations outside of the FX thread
          */
         void handle(Rectangle2D rectangle, boolean extendSelection, ExecutorService service);
     }
@@ -86,10 +86,10 @@ public class RubberBandSelection {
     /**
      * constructor
      *
-     * @param pane    node on which mouse can be clicked and dragged to show rubber band
+     * @param pane       node on which mouse can be clicked and dragged to show rubber band
      * @param scrollPane if non-null, will implement panning
-     * @param group   group into which rubber band should be temporarily added so that it appears in the scene
-     * @param handler this is called when rubber band is released
+     * @param group      group into which rubber band should be temporarily added so that it appears in the scene
+     * @param handler    this is called when rubber band is released
      */
     public RubberBandSelection(final Pane pane, final ScrollPane scrollPane, final Group group, final Handler handler) {
         if (service == null)

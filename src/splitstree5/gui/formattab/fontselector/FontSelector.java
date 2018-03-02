@@ -29,12 +29,10 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Popup;
 import javafx.util.converter.IntegerStringConverter;
 import jloda.fx.ExtendedFXMLLoader;
-import jloda.util.Basic;
+import jloda.fx.FontUtils;
 import jloda.util.ProgramProperties;
 
 import java.util.TreeSet;
@@ -171,15 +169,7 @@ public class FontSelector extends ComboBox<String> {
                 if (controller.getFontFamilyComboBox().getItems().contains(family)) {
                     final int size = Math.max(1, controller.getFontSizeComboBox().getValue());
                     final String style = controller.getFontStyleComboBox().getSelectionModel().getSelectedItem();
-                    final FontPosture fontPosture = style.toLowerCase().contains("italic") || style.toLowerCase().contains("oblique") ? FontPosture.ITALIC : FontPosture.REGULAR;
-
-                    FontWeight fontWeight = null; // one of the words should define the weight, find it
-                    for (String word : style.split("\\s+")) {
-                        fontWeight = FontWeight.findByName(Basic.capitalize(word, true));
-                        if (fontWeight != null)
-                            break;
-                    }
-                    final Font font = Font.font(family, fontWeight, fontPosture, size);
+                    final Font font = FontUtils.font(family, style, size);
                     setFontValue(font);
                 }
             } finally {

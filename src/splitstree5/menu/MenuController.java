@@ -16,25 +16,6 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- *  Copyright (C) 2018 Daniel H. Huson
- *
- *  (Some files contain contributions from other authors, who are then mentioned separately.)
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package splitstree5.menu;
 
 import javafx.beans.InvalidationListener;
@@ -290,6 +271,12 @@ public class MenuController {
     private MenuItem consensusTreeMenuItem;
 
     @FXML
+    private MenuItem treeViewMenuItem;
+
+    @FXML
+    private MenuItem treeGridMenuItem;
+
+    @FXML
     private MenuItem tanglegramMenuItem;
 
     @FXML
@@ -321,6 +308,13 @@ public class MenuController {
 
     @FXML
     private MenuItem hybridizationNetworkMenuItem;
+
+    @FXML
+    private MenuItem splitsNetworkViewMenuItem;
+
+    @FXML
+    private MenuItem haplotypeNetworkViewMenuItem;
+
 
     @FXML
     private MenuItem show3DViewerMenuItem;
@@ -680,6 +674,14 @@ public class MenuController {
         return consensusTreeMenuItem;
     }
 
+    public MenuItem getTreeViewMenuItem() {
+        return treeViewMenuItem;
+    }
+
+    public MenuItem getTreeGridMenuItem() {
+        return treeGridMenuItem;
+    }
+
     public MenuItem getTanglegramMenuItem() {
         return tanglegramMenuItem;
     }
@@ -722,6 +724,14 @@ public class MenuController {
 
     public MenuItem getHybridizationNetworkMenuItem() {
         return hybridizationNetworkMenuItem;
+    }
+
+    public MenuItem getSplitsNetworkViewMenuItem() {
+        return splitsNetworkViewMenuItem;
+    }
+
+    public MenuItem getHaplotypeNetworkViewMenuItem() {
+        return haplotypeNetworkViewMenuItem;
     }
 
     public MenuItem getShow3DViewerMenuItem() {
@@ -885,10 +895,9 @@ public class MenuController {
         });
 
         wrapTextMenuItem.selectedProperty().unbind();
-        wrapTextMenuItem.setSelected(false);
 
-        RecentFilesManager.getInstance().disableProperty().unbind();
-        RecentFilesManager.getInstance().disableProperty().set(false);
+        getOpenRecentMenu().disableProperty().unbind();
+        getOpenRecentMenu().setDisable(false);
     }
 
     /**

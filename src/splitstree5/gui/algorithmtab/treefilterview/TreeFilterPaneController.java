@@ -48,6 +48,9 @@ public class TreeFilterPaneController {
     private Button activateSelectedButton;
 
     @FXML
+    private Button activate1SelectedButton;
+
+    @FXML
     private Button activateAllButton;
 
     @FXML
@@ -83,6 +86,10 @@ public class TreeFilterPaneController {
 
     public Button getActivateSelectedButton() {
         return activateSelectedButton;
+    }
+
+    public Button getActivate1SelectedButton() {
+        return activate1SelectedButton;
     }
 
     public Button getActivateAllButton() {

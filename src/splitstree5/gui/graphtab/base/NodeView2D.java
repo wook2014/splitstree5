@@ -357,4 +357,26 @@ public class NodeView2D extends NodeViewBase {
     public javafx.scene.Node getNodeShape() {
         return shape;
     }
+
+    /*
+    public static String toSaveString (NodeView2D nv) {
+        final StringBuilder buf=new StringBuilder();
+
+        buf.append(String.format("id=%d",nv.getNode().getId()));
+        buf.append(String.format(" p=%.4f %.4f",nv.getLocation().getX(),nv.getLocation().getY()));
+        if(nv.getShape()!=null) {
+            buf.append(String.format(" s=%s %f %f %f %f", NodeShape.valueOf(nv.getShape()),nv.getShape().getTranslateX(),nv.getShape().getTranslateY(),nv.getShape().getBoundsInLocal().getWidth(),nv.getShape().getBoundsInLocal().getHeight()));
+        }
+        if(nv.getLabel()!=null) {
+            buf.append(String.format(" t='%s' %f %f '%s'", nv.getLabel().getText(),nv.getLabel().getTranslateX(),nv.getLabel().getTranslateY(),
+                    nv.getLabel().getFont().toString())); // encode font better
+        }
+        buf.append("\n");
+        return buf.toString();
+    }
+
+    public NodeView2D fromSaveString (String string) {
+
+    }
+    */
 }

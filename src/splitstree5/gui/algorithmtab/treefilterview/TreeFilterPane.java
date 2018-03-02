@@ -140,6 +140,15 @@ public class TreeFilterPane extends AlgorithmPane {
         });
         controller.getActivateSelectedButton().disableProperty().bind(Bindings.isEmpty(controller.getInactiveList().getSelectionModel().getSelectedIndices()));
 
+        controller.getActivate1SelectedButton().setOnAction((e) -> {
+            final ArrayList<String> list = new ArrayList<>(controller.getInactiveList().getSelectionModel().getSelectedItems());
+            controller.getInactiveList().getItems().addAll(controller.getActiveList().getItems());
+            controller.getActiveList().getItems().clear();
+            controller.getInactiveList().getItems().removeAll(list);
+            controller.getActiveList().getItems().addAll(list);
+        });
+        controller.getActivateSelectedButton().disableProperty().bind(Bindings.isEmpty(controller.getInactiveList().getSelectionModel().getSelectedIndices()));
+
 
         applicableProperty.bind(Bindings.isEmpty(controller.getActiveList().getItems()).not().and(undoManager.canUndoProperty()));
     }

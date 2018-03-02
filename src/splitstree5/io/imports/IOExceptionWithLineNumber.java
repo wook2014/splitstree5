@@ -50,7 +50,7 @@ public class IOExceptionWithLineNumber extends IOException {
         setLineNumber(lineNumber);
     }
 
-    public IOExceptionWithLineNumber(IOException ioException, int lineNumber) {
+    public IOExceptionWithLineNumber(int lineNumber, IOException ioException) {
         super(ioException.getMessage());
         setLineNumber(lineNumber);
     }

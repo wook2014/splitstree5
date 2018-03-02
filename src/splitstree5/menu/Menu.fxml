@@ -317,6 +317,8 @@
                 <MenuItem fx:id="selectTreeMenuItem" mnemonicParsing="false" text="Select Tree"/>
                 <MenuItem fx:id="consensusTreeMenuItem" mnemonicParsing="false" text="Consensus Tree"/>
                 <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="treeViewMenuItem" mnemonicParsing="false" text="Tree View"/>
+                <MenuItem fx:id="treeGridMenuItem" mnemonicParsing="false" text="Tree Grid"/>
                 <MenuItem fx:id="tanglegramMenuItem" mnemonicParsing="false" text="Tanglegram"/>
             </items>
         </Menu>
@@ -336,6 +338,9 @@
                 <MenuItem fx:id="consensusClusterNetworkMenuItem" mnemonicParsing="false"
                           text="Consensus Cluster Network"/>
                 <MenuItem fx:id="hybridizationNetworkMenuItem" mnemonicParsing="false" text="Hybridization Network"/>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="splitsNetworkViewMenuItem" mnemonicParsing="false" text="Splits Network View"/>
+                <MenuItem fx:id="haplotypeNetworkViewMenuItem" mnemonicParsing="false" text="Haplotype Network View"/>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="show3DViewerMenuItem" mnemonicParsing="false" text="3D Viewer"/>
                 <MenuItem fx:id="relaxMenuItem" text="Relax">

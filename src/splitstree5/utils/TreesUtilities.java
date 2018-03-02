@@ -47,9 +47,9 @@ public class TreesUtilities {
     public static BitSet getTaxa(PhyloTree tree) {
         final BitSet taxa = new BitSet();
         for (Node v : tree.nodes()) {
-                for (Integer t : tree.getTaxa(v)) {
-                    taxa.set(t);
-                }
+            for (Integer t : tree.getTaxa(v)) {
+                taxa.set(t);
+            }
         }
         return taxa;
     }

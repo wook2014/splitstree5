@@ -134,6 +134,8 @@ public class WorkflowViewTab extends ViewerTab {
                 getWorkflow().getNodeSelectionModel().clearSelection();
         });
 
+        scrollPane.allowZoomProperty().bind(Bindings.size(nodeViews.getChildren()).greaterThan(1));
+
         getWorkflow().getNodeSelectionModel().getSelectedItems().addListener((ListChangeListener<WorkflowNode>) c -> {
             while (c.next()) {
                 for (WorkflowNode node : c.getAddedSubList()) {
@@ -148,16 +150,15 @@ public class WorkflowViewTab extends ViewerTab {
         });
 
         getWorkflow().getTopologyChanged().addListener((c) -> {
-            if (getWorkflow().getNumberOfDataNodes() == 0 && !nodeViews.getChildren().contains(noDataLabel))
-                nodeViews.getChildren().add(noDataLabel);
-            else {
+            if (getWorkflow().getNumberOfDataNodes() == 0) {
+                if (!nodeViews.getChildren().contains(noDataLabel))
+                    nodeViews.getChildren().add(noDataLabel);
+            } else {
                 recompute();
             }
         });
 
         noDataLabel.setTextFill(Color.DARKGRAY);
-        if (getWorkflow().getNumberOfDataNodes() == 0 && !nodeViews.getChildren().contains(noDataLabel))
-            nodeViews.getChildren().add(noDataLabel);
     }
 
 

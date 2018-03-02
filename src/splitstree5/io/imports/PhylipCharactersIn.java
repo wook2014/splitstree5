@@ -31,7 +31,7 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
         int nchar = 0;
         int counter = 0;
         int readLines = 0;
-        int interleavedBlockLinesLength=0;
+        int interleavedBlockLinesLength = 0;
         boolean standard = true;
         boolean sameLengthNtax = true;
         boolean readDimensions = true;
@@ -61,7 +61,7 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
                         else {
                             if (interleavedBlockLinesLength != 0 && line.length() != interleavedBlockLinesLength)
                                 throw new IOExceptionWithLineNumber("Error for interleaved format matrix." +
-                                        "\nLine must have the same length as line "+ (counter-1), counter);
+                                        "\nLine must have the same length as line " + (counter - 1), counter);
                         }
                     }
 
@@ -93,7 +93,7 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
 
                     // no more lines are allowed for standard after reading ntax lines
                     if (readLines > ntax && standard)
-                        throw new IOExceptionWithLineNumber("Unexpected symbol"+
+                        throw new IOExceptionWithLineNumber("Unexpected symbol" +
                                 "\nCan only read " + ntax + " lines " + nchar + " symbols long.", counter);
                 }
                 progressListener.setProgress(it.getProgress());
@@ -251,9 +251,9 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
      * @return string without spaces at the last positions
      */
 
-    private static String cutSpacesAtTheEnd(String s){
-        while (s.charAt(s.length()-1) == ' ')
-            s = s.substring(0, s.length()-1);
+    private static String cutSpacesAtTheEnd(String s) {
+        while (s.charAt(s.length() - 1) == ' ')
+            s = s.substring(0, s.length() - 1);
         return s;
     }
 }

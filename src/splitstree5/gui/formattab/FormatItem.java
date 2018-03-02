@@ -367,7 +367,6 @@ public class FormatItem implements Cloneable {
         }
     }
 
-
     public FormatItem clone() {
         try {
             return (FormatItem) super.clone();

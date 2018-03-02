@@ -36,7 +36,7 @@ import java.util.List;
 
 /**
  * implements consensus tree splits
- *
+ * <p>
  * Daniel Huson, 2.2018
  */
 public class ConsensusTreeSplits extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {

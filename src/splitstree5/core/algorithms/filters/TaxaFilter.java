@@ -50,8 +50,7 @@ public class TaxaFilter extends Algorithm<TaxaBlock, TaxaBlock> implements IFrom
         if (enabledTaxa.size() == 0 && disabledTaxa.size() == 0) // nothing has been explicitly set, copy everything
         {
             child.getTaxa().setAll(parent.getTaxa());
-        }
-        else {
+        } else {
             for (Taxon taxon : enabledTaxa) {
                 if (!disabledTaxa.contains(taxon)) {
                     child.getTaxa().add(taxon);

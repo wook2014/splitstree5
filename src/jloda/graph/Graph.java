@@ -369,6 +369,7 @@ public class Graph extends GraphBase {
 
     /**
      * gets the node opposite to v via e
+     *
      * @param v
      * @param e
      * @return opposite node
@@ -379,6 +380,7 @@ public class Graph extends GraphBase {
 
     /**
      * are the two nodes adjacent?
+     *
      * @param v
      * @param w
      * @return
@@ -479,6 +481,7 @@ public class Graph extends GraphBase {
 
     /**
      * iterable over all edges
+     *
      * @return all edges
      */
     public Iterable<Edge> edges() {

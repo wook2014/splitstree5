@@ -19,44 +19,56 @@
  */
 package jloda.graph;
 
-/** Extend this to get a GraphUpdateListener
+/**
+ * Extend this to get a GraphUpdateListener
  * Daniel Huson, 2003
  */
 public class GraphUpdateAdapter implements GraphUpdateListener {
-    /** A node has been created
-     *@param v the new node
+    /**
+     * A node has been created
+     *
+     * @param v the new node
      */
     public void newNode(Node v) {
     }
 
-    /** A node is about to be deleted
-     *@param v the node that will be deleted
+    /**
+     * A node is about to be deleted
+     *
+     * @param v the node that will be deleted
      */
     public void deleteNode(Node v) {
     }
 
-    /** An edge has been created
-     *@param e the new edge
+    /**
+     * An edge has been created
+     *
+     * @param e the new edge
      */
     public void newEdge(Edge e) {
     }
 
-    /** An edge is about to be deleted
-     *@param e the edge that will be deleted
+    /**
+     * An edge is about to be deleted
+     *
+     * @param e the edge that will be deleted
      */
     public void deleteEdge(Edge e) {
     }
 
-    /** The graph has changed.
+    /**
+     * The graph has changed.
      * This method is called after one of the above specific methods has be
      * called
      */
     public void graphHasChanged() {
     }
 
-    /** (Partial) graph was read from Reader
-     *@param nodes the new nodes
-     *@param edges the new edges
+    /**
+     * (Partial) graph was read from Reader
+     *
+     * @param nodes the new nodes
+     * @param edges the new edges
      */
     public void graphWasRead(NodeSet nodes, EdgeSet edges) {
     }

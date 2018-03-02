@@ -22,6 +22,7 @@ package jloda.graph;
 /**
  * Edge map
  * Daniel Huson, 2003
+ *
  * @deprecated use edge array instead
  */
 

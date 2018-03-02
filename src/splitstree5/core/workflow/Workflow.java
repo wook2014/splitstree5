@@ -627,7 +627,7 @@ public class Workflow {
      * @param clazz
      * @return lowest ancestor whose datablock is of the given class, or any datablock of the given class, if only one such exists, or null
      */
-    public DataNode getAncestor(DataNode dataNode, Class<? extends DataBlock> clazz) {
+    public DataNode getAncestorForClass(DataNode dataNode, Class<? extends DataBlock> clazz) {
         while (dataNode != null) {
             if (dataNode.getDataBlock().getClass().isAssignableFrom(clazz))
                 break;
@@ -656,8 +656,23 @@ public class Workflow {
      * @param desiredParentClass
      * @param algorithm1class
      * @param data1class
-     * @param algorithm2class can be null
-     * @param data2class can be null if algorithm2class is also null
+     * @return connector and view node
+     * @throws Exception
+     */
+    public Pair<Connector, DataNode> findOrCreatePath(DataNode currentDataNode, Class<? extends DataBlock> desiredParentClass,
+                                                      Class<? extends Algorithm> algorithm1class, Class<? extends DataBlock> data1class) {
+        return findOrCreatePath(currentDataNode, desiredParentClass, algorithm1class, data1class, null, null);
+    }
+
+    /**
+     * creates a short chain of nodes leading to a view. If the type of view is already present, returns the node
+     *
+     * @param currentDataNode
+     * @param desiredParentClass
+     * @param algorithm1class
+     * @param data1class
+     * @param algorithm2class    can be null
+     * @param data2class         can be null if algorithm2class is also null
      * @return connector and view node
      * @throws Exception
      */
@@ -665,7 +680,7 @@ public class Workflow {
                                                       Class<? extends Algorithm> algorithm1class, Class<? extends DataBlock> data1class,
                                                       @Nullable Class<? extends Algorithm> algorithm2class, @Nullable Class<? extends DataBlock> data2class) {
         try {
-            final DataNode parent = getAncestor(currentDataNode, desiredParentClass);
+            final DataNode parent = getAncestorForClass(currentDataNode, desiredParentClass);
             if (parent != null) {
                 Pair<Connector, DataNode> result = matchPath(parent, desiredParentClass, algorithm1class, data1class, algorithm2class, data2class);
                 if (result != null)

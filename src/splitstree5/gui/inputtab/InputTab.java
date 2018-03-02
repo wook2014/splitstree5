@@ -66,7 +66,7 @@ public class InputTab extends TextViewTab {
         final TextArea textArea = getTextArea();
 
         textArea.setEditable(true);
-        textArea.setPromptText("Input data in Nexus format or any of the importable formats");
+        textArea.setPromptText("Input and edit data in any supported format");
 
         textArea.setContextMenu(createContextMenu());
 
@@ -172,7 +172,7 @@ public class InputTab extends TextViewTab {
         controller.getOpenMenuItem().disableProperty().bind(textArea.textProperty().isNotEmpty());
 
         RecentFilesManager.getInstance().setFileOpener(this::loadFile);
-        RecentFilesManager.getInstance().disableProperty().bind(textArea.textProperty().isNotEmpty());
+        controller.getOpenRecentMenu().disableProperty().bind(textArea.textProperty().isNotEmpty());
 
         controller.getPasteMenuItem().setOnAction((e) -> {
             if (getTextArea().isFocused()) {

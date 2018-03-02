@@ -24,7 +24,6 @@ import splitstree5.core.Document;
 import splitstree5.core.algorithms.interfaces.IFromTreeView;
 import splitstree5.core.algorithms.interfaces.IToTreeView;
 import splitstree5.core.workflow.DataNode;
-import splitstree5.gui.IHasTab;
 import splitstree5.gui.graphtab.AlgorithmBreadCrumbsToolBar;
 import splitstree5.gui.graphtab.TreeViewTab;
 import splitstree5.gui.graphtab.base.GraphLayout;
@@ -33,7 +32,7 @@ import splitstree5.gui.graphtab.base.GraphLayout;
  * This block represents the view of a tree
  * Daniel Huson, 11.2017
  */
-public class TreeViewBlock extends ViewDataBlock implements IHasTab {
+public class TreeViewBlock extends ViewDataBlock {
     private final TreeViewTab treeViewTab;
 
     /**

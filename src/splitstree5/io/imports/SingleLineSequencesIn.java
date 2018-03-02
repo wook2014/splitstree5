@@ -100,7 +100,7 @@ public class SingleLineSequencesIn extends CharactersFormat implements IToCharac
         int counter = 0;
 
         while ((line = input.readLine()) != null && counter <= numberOfLinesToCheckInApplicable) {
-            counter ++;
+            counter++;
             if (line.equals(""))
                 continue;
             if (lineLength != line.length() || !isLineAcceptable(line))
@@ -110,7 +110,7 @@ public class SingleLineSequencesIn extends CharactersFormat implements IToCharac
     }
 
     private boolean isLineAcceptable(String s) {
-        for (char c : s.toCharArray()){
+        for (char c : s.toCharArray()) {
             if (!Character.isLetter(c) && c != getGap() && c != getMissing() && c != getMatchChar())
                 return false;
         }

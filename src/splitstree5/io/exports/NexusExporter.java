@@ -54,6 +54,7 @@ import java.util.List;
  */
 public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportCharacters, IExportDistances, IExportTrees, IExportSplits, IExportNetwork, IExportTraits {
     private boolean prependTaxa = true;
+
     @Override
     public void export(Writer w, TaxaBlock taxa) throws IOException {
         if (prependTaxa)

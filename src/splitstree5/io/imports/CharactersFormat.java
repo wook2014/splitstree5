@@ -56,7 +56,7 @@ public abstract class CharactersFormat {
      */
     static void checkIfCharactersValid(String line, int counter, String allowedChars) throws IOException {
         if (line.isEmpty())
-            throw  new IOExceptionWithLineNumber("No characters sequence is given", counter);
+            throw new IOExceptionWithLineNumber("No characters sequence is given", counter);
 
         String regex = "[^a-z0-9 \t" + allowedChars + "]";
         Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
@@ -117,7 +117,7 @@ public abstract class CharactersFormat {
 
         // set 'N' instead '?' as unknown symbol, if needed
         if (characters.getDataType().equals(CharactersType.DNA) ||
-                characters.getDataType().equals(CharactersType.RNA)){
+                characters.getDataType().equals(CharactersType.RNA)) {
             if (!originalFoundSymbols.contains("?") && originalFoundSymbols.contains("n"))
                 characters.setMissingCharacter('N');
             if (originalFoundSymbols.contains("?") && originalFoundSymbols.contains("n"))

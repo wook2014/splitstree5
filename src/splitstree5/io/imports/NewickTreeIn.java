@@ -41,14 +41,13 @@ public class NewickTreeIn implements IToTrees, IImportTrees {
             taxa.clear();
             trees.clear();
 
+            int lineno = 0;
             try (FileInputIterator it = new FileInputIterator(inputFile)) {
                 progressListener.setMaximum(it.getMaximumProgress());
                 progressListener.setProgress(0);
 
                 final Map<String, Integer> taxName2Id = new HashMap<>(); // starts at 1
                 final Set<String> taxonNamesFound = new TreeSet<>();
-
-
 
                 final SimpleNewickParser newickParser = new SimpleNewickParser();
                 boolean partial = false;
@@ -57,6 +56,7 @@ public class NewickTreeIn implements IToTrees, IImportTrees {
                 // read in the trees
                 int count = 0;
                 while (it.hasNext()) {
+                    lineno++;
                     final String line = Basic.removeComments(it.next(), '[', ']');
                     if (line.endsWith(";")) {
                         final String treeLine;
@@ -66,7 +66,12 @@ public class NewickTreeIn implements IToTrees, IImportTrees {
                             parts.clear();
                         } else
                             treeLine = line;
-                        final PhyloTree tree = newickParser.parse(treeLine);
+                        final PhyloTree tree;
+                        try {
+                            tree = newickParser.parse(treeLine);
+                        } catch (IOException ex) {
+                            throw new IOExceptionWithLineNumber(lineno, ex);
+                        }
                         if (TreesUtilities.hasNumbersOnInternalNodes(tree)) {
                             TreesUtilities.changeNumbersOnInternalNodesToEdgeConfidencies(tree);
                         }

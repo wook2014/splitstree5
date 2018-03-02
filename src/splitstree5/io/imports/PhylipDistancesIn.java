@@ -68,18 +68,18 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
                         if (matrix.keySet().size() >= 2) {
                             int differenceOfLines = tokensInCurrentRow - tokensInPreviousRow;
                             switch (differenceOfLines) {
-                                case 0 :
+                                case 0:
                                     triangleForCurrentRow = Triangle.Both;
                                     break;
-                                case 1 :
+                                case 1:
                                     triangleForCurrentRow = Triangle.Lower;
                                     break;
-                                case -1 :
+                                case -1:
                                     triangleForCurrentRow = Triangle.Upper;
                                     break;
                                 default:
                                     throw new IOExceptionWithLineNumber("line " + counter +
-                                        ": Wrong number of entries for Taxa " + currentLabel, counter);
+                                            ": Wrong number of entries for Taxa " + currentLabel, counter);
                             }
                         }
 

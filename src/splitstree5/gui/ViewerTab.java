@@ -46,6 +46,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import jloda.find.FindToolBar;
+import splitstree5.core.workflow.DataNode;
 import splitstree5.main.MainWindow;
 import splitstree5.menu.MenuController;
 import splitstree5.undo.UndoManager;
@@ -56,6 +57,7 @@ import splitstree5.undo.UndoManager;
  */
 public abstract class ViewerTab extends Tab {
     private MainWindow mainWindow;
+    private DataNode dataNode;
     private final BorderPane borderPane = new BorderPane();
     protected ToolBar toolBar;
     protected FindToolBar findToolBar;
@@ -139,5 +141,13 @@ public abstract class ViewerTab extends Tab {
 
     public FindToolBar getFindToolBar() {
         return findToolBar;
+    }
+
+    public DataNode getDataNode() {
+        return dataNode;
+    }
+
+    public void setDataNode(DataNode dataNode) {
+        this.dataNode = dataNode;
     }
 }

@@ -256,7 +256,7 @@ public class NodeLabelLayouter {
 
                 final javafx.scene.Node shape = nv.getShapeGroup();
                 final Point2D reference = new Point2D(shape.getTranslateX() + shape.getLayoutBounds().getWidth(),
-                            shape.getTranslateY() - 0.5 * shape.getLayoutBounds().getHeight());
+                        shape.getTranslateY() - 0.5 * shape.getLayoutBounds().getHeight());
 
                 if (v.isLeaf()) {
                     label.setTranslateX(reference.getX() + 5);

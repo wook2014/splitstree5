@@ -109,18 +109,18 @@ public class FastaSplitsIn extends CharactersFormat implements IToSplits, IImpor
         int seqCounter = 0;
 
         while ((line = input.readLine()) != null && counter <= numberOfLinesToCheckInApplicable) {
-            counter ++;
+            counter++;
 
             // count all non-comment and not empty lines
             if (line.equals("") || line.startsWith(";"))
                 continue;
             else
-                seqCounter ++;
+                seqCounter++;
             // even lines = taxa labels
             if (seqCounter % 2 == 1 && !line.startsWith(">"))
                 return false;
             // odd lines = sequences
-            if (seqCounter % 2 == 0){
+            if (seqCounter % 2 == 0) {
                 // check if the same length
                 if (lineLength == 0)
                     lineLength = line.length();
@@ -128,7 +128,7 @@ public class FastaSplitsIn extends CharactersFormat implements IToSplits, IImpor
                     return false;
                 // check if only 1/0
                 for (char c : line.toCharArray()) {
-                    if (c != '0' && c!='1') return false;
+                    if (c != '0' && c != '1') return false;
                 }
             }
         }

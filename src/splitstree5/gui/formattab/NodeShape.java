@@ -28,7 +28,7 @@ import jloda.fx.shapes.*;
 import jloda.util.Basic;
 
 public enum NodeShape {
-    Square, Circle, TriangleUp, TriangleDown, Diamond, Hexagon, Rectangle, Oval, Other;
+    Square, Circle, TriangleUp, TriangleDown, Diamond, Hexagon, Rectangle, Oval, Other, None;
 
     /**
      * determines the node shape of a shape
@@ -37,6 +37,8 @@ public enum NodeShape {
      * @return node shape
      */
     public static NodeShape valueOf(Node shape) {
+        if (shape == null)
+            return None;
         if (shape instanceof Circle)
             return Circle;
         else if (shape instanceof SquareShape)
