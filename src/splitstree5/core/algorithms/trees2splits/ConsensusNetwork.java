@@ -102,6 +102,12 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
                                 final PhyloTree tree = trees.get(which);
                                 final List<ASplit> splits = new ArrayList<>();
                                 TreesUtilities.computeSplits(taxaInTree, tree, splits);
+                                try {
+                                    SplitsUtilities.verifySplits(splits, taxaBlock);
+                                } catch (SplitsException e) {
+                                    e.printStackTrace();
+                                }
+
                                 for (ASplit split : splits) {
                                     synchronized (sync) {
                                         final Pair<BitSet, WeightStats> pair = splitsAndWeights.computeIfAbsent(split.getPartContaining(1), k -> new Pair<>(k, new WeightStats()));

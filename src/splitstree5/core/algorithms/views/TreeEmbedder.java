@@ -52,10 +52,10 @@ import jloda.util.ProgramProperties;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
-import splitstree5.core.algorithms.interfaces.IToTreeView;
+import splitstree5.core.algorithms.interfaces.IToView;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.datablocks.TreeViewBlock;
 import splitstree5.core.datablocks.TreesBlock;
+import splitstree5.core.datablocks.ViewBlock;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.formattab.FormatItem;
 import splitstree5.gui.graphtab.TreeViewTab;
@@ -71,7 +71,7 @@ import java.util.Map;
  * Daniel Huson, 11.2017
  * todo: add support for rooted networks (as in Dendroscope)
  */
-public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implements IFromTrees, IToTreeView {
+public class TreeEmbedder extends Algorithm<TreesBlock, ViewBlock> implements IFromTrees, IToView {
 
     public enum EdgeLengths {Weights, Uniform, Cladogram, CladogramEarlyBranching}
 
@@ -93,30 +93,27 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
 
     private ChangeListener<UpdateState> changeListener;
 
-    public TreeEmbedder() {
-    }
-
     @Override
     public String getCitation() {
         return "Huson et al 2012;D.H. Huson, R. Rupp and C. Scornavacca, Phylogenetic Networks, Cambridge, 2012.";
     }
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock parent, TreeViewBlock child) throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock parent, ViewBlock child) throws Exception {
         progress.setTasks("Tree viewer", "Init.");
 
-        final TreeViewTab view = child.getTab();
-        view.setNodeLabel2Style(nodeLabel2Style);
-        view.setDataNode(child.getDataNode());
+        final TreeViewTab viewTab = (TreeViewTab) child.getTab();
+        viewTab.setNodeLabel2Style(nodeLabel2Style);
+        viewTab.setDataNode(child.getDataNode());
 
         Platform.runLater(() -> {
             child.getTab().setName(child.getName());
-            view.setLayout(getOptionLayout());
+            viewTab.setLayout(getOptionLayout());
         });
 
         if (parent.getNTrees() > 0) {
             final PhyloTree tree = parent.getTrees().get(0);
-            view.init(tree);
+            viewTab.init(tree);
 
             if (tree.getRoot() == null && tree.getNumberOfNodes() > 0) {
                 for (Node v : tree.nodes()) {
@@ -150,7 +147,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                             computeNodeLocationsForRadialRec(root, new Point2D(0, 0), edgeLengths, edge2Angle, node2point);
                         else
                             computeNodeLocationsForCircular(root, edgeLengths, edge2Angle, node2point);
-                        scaleAndCenterToFitTarget(getOptionLayout(), view.getTargetDimensions(), node2point, false);
+                        scaleAndCenterToFitTarget(getOptionLayout(), viewTab.getTargetDimensions(), node2point, false);
                         computeEdgePointsForCircularRec(root, 0, edge2Angle, node2point, edge2controlPoints);
                         break;
                     }
@@ -159,14 +156,14 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                         if (getOptionEdgeShape() == EdgeView2D.EdgeShape.Straight) {
                             setOptionEdgeLengths(EdgeLengths.Cladogram);
                             computeEmbeddingForTriangularLayoutRec(root, null, 0, 0, edgeLengths, node2point);
-                            scaleAndCenterToFitTarget(getOptionLayout(), view.getTargetDimensions(), node2point, false);
+                            scaleAndCenterToFitTarget(getOptionLayout(), viewTab.getTargetDimensions(), node2point, false);
                             computeEdgePointsForRectilinearRec(root, node2point, edge2controlPoints);
                         } else {
                             final NodeFloatArray nodeHeights = new NodeFloatArray(tree); // height of edge
                             setNodeHeightsRec(root, 0, nodeHeights);
 
                             computeNodeLocationsForRectilinearRec(root, 0, edgeLengths, nodeHeights, node2point);
-                            scaleAndCenterToFitTarget(getOptionLayout(), view.getTargetDimensions(), node2point, false);
+                            scaleAndCenterToFitTarget(getOptionLayout(), viewTab.getTargetDimensions(), node2point, false);
                             computeEdgePointsForRectilinearRec(root, node2point, edge2controlPoints);
                         }
                         break;
@@ -200,28 +197,28 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
                     } else
                         text = null;
 
-                    final NodeView2D nodeView = view.createNodeView(v, node2point.getValue(v), text);
-                    if (text != null && text.length() > 0 && view.getNodeLabel2Style().containsKey(text)) {
-                        nodeView.setStyling(view.getNodeLabel2Style().get(text));
+                    final NodeView2D nodeView = viewTab.createNodeView(v, node2point.getValue(v), text);
+                    if (text != null && text.length() > 0 && viewTab.getNodeLabel2Style().containsKey(text)) {
+                        nodeView.setStyling(viewTab.getNodeLabel2Style().get(text));
                     }
                     if (nodeView.getLabel() != null) {
                         nodeView.getLabel().setFont(labelFont);
                     }
-                    view.getNode2view().put(v, nodeView);
-                    view.getNodesGroup().getChildren().addAll(nodeView.getShapeGroup());
-                    view.getNodeLabelsGroup().getChildren().addAll(nodeView.getLabelGroup());
+                    viewTab.getNode2view().put(v, nodeView);
+                    viewTab.getNodesGroup().getChildren().addAll(nodeView.getShapeGroup());
+                    viewTab.getNodeLabelsGroup().getChildren().addAll(nodeView.getLabelGroup());
                 }
                 for (Edge e : tree.edges()) {
                     final EdgeControlPoints controlPoints = edge2controlPoints.getValue(e);
-                    final EdgeView2D edgeView = view.createEdgeView(e, getOptionLayout(), getOptionEdgeShape(), tree.getWeight(e),
+                    final EdgeView2D edgeView = viewTab.createEdgeView(e, getOptionLayout(), getOptionEdgeShape(), tree.getWeight(e),
                             node2point.getValue(e.getSource()), controlPoints.getControl1(), controlPoints.getMid(),
                             controlPoints.getControl2(), controlPoints.getSupport(), node2point.getValue(e.getTarget()));
-                    view.getEdge2view().put(e, edgeView);
+                    viewTab.getEdge2view().put(e, edgeView);
 
                     if (edgeView.getShape() != null)
-                        view.getEdgesGroup().getChildren().add(edgeView.getShape());
+                        viewTab.getEdgesGroup().getChildren().add(edgeView.getShape());
                     if (edgeView.getLabel() != null) {
-                        view.getEdgeLabelsGroup().getChildren().addAll(edgeView.getLabel());
+                        viewTab.getEdgeLabelsGroup().getChildren().addAll(edgeView.getLabel());
                         if (edgeView.getLabel() != null) {
                             edgeView.getLabel().setFont(labelFont);
                         }
@@ -229,7 +226,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, TreeViewBlock> implement
 
                 }
             }
-            Platform.runLater(() -> view.updateSelectionModels(tree, taxaBlock, child.getDocument()));
+            Platform.runLater(() -> viewTab.updateSelectionModels(tree, taxaBlock, child.getDocument()));
         }
         child.show();
 

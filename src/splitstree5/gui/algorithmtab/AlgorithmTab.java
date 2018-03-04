@@ -186,7 +186,6 @@ public class AlgorithmTab<P extends DataBlock, C extends DataBlock> extends View
             algorithmPane.setDocument(document);
             algorithmPane.setUndoManager(getUndoManager());
             algorithmPane.setConnector(connector);
-            algorithmSettingsIsApplicable.bind(algorithmPane.applicableProperty());
             /*
             algorithmPane.setPrefWidth(controller.getCenterPane().getWidth());
             algorithmPane.setPrefHeight(controller.getCenterPane().getHeight());
@@ -195,6 +194,7 @@ public class AlgorithmTab<P extends DataBlock, C extends DataBlock> extends View
             */
             algorithmPane.setup();
         }
+        algorithmSettingsIsApplicable.bind(algorithmPane.applicableProperty());
         return algorithmPane;
     }
 

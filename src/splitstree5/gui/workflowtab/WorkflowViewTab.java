@@ -206,7 +206,7 @@ public class WorkflowViewTab extends ViewerTab {
 
         for (WorkflowNodeView a : node2NodeView.values()) {
             for (WorkflowNodeView b : node2NodeView.values()) {
-                if (a.getANode().getChildren().contains(b.getANode())) {
+                if (a.getANode() != null && b.getANode() != null && a.getANode().getChildren().contains(b.getANode())) {
                     final WorkflowEdgeView edgeView = new WorkflowEdgeView(a, b);
                     edgeViews.add(edgeView);
                     {

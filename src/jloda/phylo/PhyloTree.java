@@ -52,6 +52,8 @@ public class PhyloTree extends PhyloGraph {
 
     protected final NodeArray<List<Node>> node2GuideTreeChildren; // keep track of children in LSA tree in network
 
+    private boolean internalNodeLabelsAreEdgeLabels = false;
+
     /**
      * Construct a new empty phylogenetic tree.
      */
@@ -1165,6 +1167,14 @@ public class PhyloTree extends PhyloGraph {
                 return result;
             }
         };
+    }
+
+    public boolean isInternalNodeLabelsAreEdgeLabels() {
+        return internalNodeLabelsAreEdgeLabels;
+    }
+
+    public void setInternalNodeLabelsAreEdgeLabels(boolean internalNodeLabelsAreEdgeLabels) {
+        this.internalNodeLabelsAreEdgeLabels = internalNodeLabelsAreEdgeLabels;
     }
 }
 

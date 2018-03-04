@@ -26,6 +26,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.StageStyle;
 import jloda.find.FindToolBar;
@@ -147,6 +148,15 @@ public class TextViewTab extends ViewerTab {
 
     @Override
     public void updateMenus(MenuController controller) {
+
+        // for some reason minus key is ignored otherwise:
+        getTextArea().setOnKeyPressed((e) -> {
+            if (e.isShortcutDown() && (e.getCode() == KeyCode.MINUS || e.getCode() == KeyCode.UNDERSCORE)) {
+                e.consume();
+                controller.getDecreaseFontSizeMenuItem().fire();
+            }
+        });
+
         controller.getPageSetupMenuItem().setOnAction((e) -> Print.showPageLayout(getMainWindow().getStage()));
         controller.getPrintMenuitem().setOnAction((e) -> Print.print(getMainWindow().getStage(), textArea));
 
@@ -194,7 +204,10 @@ public class TextViewTab extends ViewerTab {
         });
 
         controller.getIncreaseFontSizeMenuItem().setOnAction((x) -> textArea.setStyle(String.format("-fx-font-size: %.0f;", (textArea.getFont().getSize() + 2))));
-        controller.getDecreaseFontSizeMenuItem().setOnAction((x) -> textArea.setStyle(String.format("-fx-font-size: %.0f;", (textArea.getFont().getSize() - 2))));
+        controller.getDecreaseFontSizeMenuItem().setOnAction((x) -> {
+            if (textArea.getFont().getSize() > 2)
+                textArea.setStyle(String.format("-fx-font-size: %.0f;", (textArea.getFont().getSize() - 2)));
+        });
 
         controller.getResetMenuItem().setOnAction((x) -> textArea.setStyle("-fx-font-size: 12;"));
 

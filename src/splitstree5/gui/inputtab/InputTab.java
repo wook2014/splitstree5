@@ -213,6 +213,20 @@ public class InputTab extends TextViewTab {
             textArea.cut();
         });
         controller.getCutMenuItem().disableProperty().bind(getTextArea().selectedTextProperty().length().isEqualTo(0));
+
+        controller.getDeleteMenuItem().setOnAction((e) -> {
+            e.consume();
+            textArea.deleteText(getTextArea().getSelection());
+        });
+        controller.getDeleteMenuItem().disableProperty().bind(getTextArea().selectedTextProperty().length().isEqualTo(0));
+
+        controller.getDuplicateMenuItem().setOnAction((e) -> {
+            e.consume();
+            textArea.replaceSelection(textArea.getSelectedText() + textArea.getSelectedText());
+        });
+        controller.getDuplicateMenuItem().disableProperty().bind(getTextArea().selectedTextProperty().length().isEqualTo(0));
+
+
     }
 
     private void loadFile(String fileName) {

@@ -53,7 +53,7 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
      */
     public NetworkViewTab() {
         setLabel("Network");
-        setIcon(ResourceManager.getIcon("NetworkView16.gif"));
+        setIcon(ResourceManager.getIcon("NetworkViewer16.gif"));
     }
 
 
@@ -251,6 +251,14 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
         });
         controller.getSelectAllEdgesBelowMenuItem().disableProperty().bind(nodeSelectionModel.emptyProperty());
 
+    }
+
+    @Override
+    public String getInfo() {
+        if (getGraph() != null)
+            return "a network with " + getGraph().getNumberOfNodes() + " nodes and " + getGraph().getNumberOfEdges() + " edges";
+        else
+            return "";
     }
 
 

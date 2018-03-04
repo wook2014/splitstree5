@@ -175,7 +175,7 @@
             <graphic>
                 <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image smooth="false" url="/resources/icons/TreesView16.gif"/>
+                        <Image smooth="false" url="/resources/icons/TreeViewer16.gif"/>
                     </image>
                 </ImageView>
             </graphic>
@@ -189,7 +189,7 @@
             <graphic>
                 <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image smooth="false" url="/resources/icons/SplitsNetworkView16.gif"/>
+                        <Image smooth="false" url="/resources/icons/SplitsNetworkViewer16.gif"/>
                     </image>
                 </ImageView>
             </graphic>

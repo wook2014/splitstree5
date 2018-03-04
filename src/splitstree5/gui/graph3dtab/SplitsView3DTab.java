@@ -44,7 +44,6 @@ import javafx.concurrent.Worker;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Rotate;
 import jloda.fx.ASelectionModel;
@@ -58,7 +57,6 @@ import jloda.util.ResourceManager;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.dialogs.ProgressPane;
-import splitstree5.gui.ViewerTab;
 import splitstree5.gui.graphtab.ISplitsViewTab;
 import splitstree5.gui.graphtab.SplitsViewTab;
 import splitstree5.gui.graphtab.base.GeometryUtils;
@@ -84,10 +82,8 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
      */
     public SplitsView3DTab() {
         super();
-        label.setText("Splits Network 3D");
-        label.setGraphic(new ImageView(ResourceManager.getIcon("SplitsNetworkView16.gif")));
-        setText("");
-        setGraphic(label);
+        setLabel("Splits Network 3D");
+        setIcon(ResourceManager.getIcon("SplitsNetworkViewer16.gif"));
 
         splitsSelectionModel.getSelectedItems().addListener((ListChangeListener<Integer>) c -> {
             if (!inSelection) {
@@ -340,7 +336,9 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
     }
 
     @Override
-    public ViewerTab getTab() {
-        return this;
+    public String getInfo() {
+        if (getGraph() != null)
+            return "a splits network with " + getGraph().getNumberOfNodes() + " nodes and " + getGraph().getNumberOfEdges() + " edges";
+        else return "";
     }
 }

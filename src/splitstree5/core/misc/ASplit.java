@@ -106,6 +106,8 @@ public final class ASplit {
      * @param weight
      */
     public ASplit(BitSet A, BitSet B, double weight, double confidence) {
+        if (A.cardinality() == 0 || B.cardinality() == 0)
+            System.err.println("Internal error: A.cardinality()=" + A.cardinality() + ", B.cardinality()=" + B.cardinality());
         this.A = new BitSet();
         this.B = new BitSet();
         if (A.get(1)) {

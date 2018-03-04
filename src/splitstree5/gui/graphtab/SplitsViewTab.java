@@ -32,11 +32,13 @@ import jloda.util.Pair;
 import jloda.util.ResourceManager;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.views.SplitsNetworkAlgorithm;
-import splitstree5.core.datablocks.*;
+import splitstree5.core.datablocks.DataBlock;
+import splitstree5.core.datablocks.SplitsBlock;
+import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.datablocks.ViewBlock;
 import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.Workflow;
-import splitstree5.gui.ViewerTab;
 import splitstree5.gui.graphtab.base.*;
 import splitstree5.gui.graphtab.commands.MoveNodesCommand;
 import splitstree5.menu.MenuController;
@@ -56,9 +58,10 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
      */
     public SplitsViewTab() {
         setLabel("Splits Network");
-        setIcon(ResourceManager.getIcon("SplitsNetworkView16.gif"));
+        setIcon(ResourceManager.getIcon("SplitsNetworkViewer16.gif"));
 
         setLayout(GraphLayout.Radial);
+
 
         splitsSelectionModel.getSelectedItems().addListener((ListChangeListener<Integer>) c -> {
             if (!inSelection) {
@@ -337,14 +340,14 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
                     && dataNode.getParent().getParent().getDataBlock() instanceof SplitsBlock) {
                 final DataNode<SplitsBlock> splitsNode = dataNode.getParent().getParent();
                 for (Connector<SplitsBlock, ? extends DataBlock> child : splitsNode.getChildren()) {
-                    if (child.getChild().getDataBlock() instanceof SplitsNetwork3DViewBlock) {
+                    if (child.getChild().getDataBlock() instanceof ViewBlock.SplitsNetwork3DViewBlock) {
                         getMainWindow().showDataView(child.getChild());
                         return;
                     }
                 }
                 // no 3d viewer found, set one up
                 final Workflow workflow = controller.getMainWindow().getWorkflow();
-                DataNode<SplitsNetworkViewBlock> viewNode = workflow.createDataNode(new SplitsNetwork3DViewBlock());
+                final DataNode<ViewBlock> viewNode = workflow.createDataNode(new ViewBlock(ViewBlock.Type.SplitsNetwork3DViewer));
                 workflow.createConnector(splitsNode, viewNode, new SplitsNetworkAlgorithm()).forceRecompute();
                 controller.getMainWindow().getWorkflowTab().recompute();
             }
@@ -352,7 +355,10 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
     }
 
     @Override
-    public ViewerTab getTab() {
-        return this;
+    public String getInfo() {
+        if (getGraph() != null)
+            return "a splits network with " + getGraph().getNumberOfNodes() + " nodes and " + getGraph().getNumberOfEdges() + " edges";
+        else
+            return "";
     }
 }

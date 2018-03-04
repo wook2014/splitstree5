@@ -864,6 +864,7 @@ public class MenuController {
         alwaysOnMenuItems.add(fullScreenMenuItem);
         alwaysOnMenuItems.add(quitMenuItem);
         alwaysOnMenuItems.add(openRecentMenu);
+        alwaysOnMenuItems.add(showWorkflowMenuItem);
     }
 
     /**

@@ -34,7 +34,7 @@ import java.io.StringWriter;
  * report on the contents of a block
  * Daniel Huson, 1/31/17.
  */
-public class Report extends Algorithm<DataBlock, AnalysisBlock> implements IFromAnalysis, IFromChararacters, IFromTrees, IFromDistances, IFromSplits, IFromTaxa, IFromSplitsNetworkView, IFromTreeView, IToAnalysis {
+public class Report extends Algorithm<DataBlock, AnalysisBlock> implements IFromAnalysis, IFromChararacters, IFromTrees, IFromDistances, IFromSplits, IFromTaxa, IFromView, IToAnalysis {
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, DataBlock parent, AnalysisBlock child) throws Exception {
         try (final StringWriter w = new StringWriter()) {

@@ -28,7 +28,7 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
 import splitstree5.core.Document;
-import splitstree5.core.datablocks.ViewDataBlock;
+import splitstree5.core.datablocks.ViewBlock;
 import splitstree5.core.workflow.*;
 
 import java.util.ArrayList;
@@ -78,7 +78,7 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
                 getItems().add(makeBreadCrumb(document, connector));
             }
         }
-        if (workflowNode instanceof DataNode && (((DataNode) workflowNode).getDataBlock() instanceof ViewDataBlock))
+        if (workflowNode instanceof DataNode && (((DataNode) workflowNode).getDataBlock() instanceof ViewBlock))
             getItems().add(makeFormatBreadCrumb((DataNode) workflowNode, document));
     }
 

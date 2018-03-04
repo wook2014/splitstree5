@@ -19,7 +19,6 @@
 
 package splitstree5.core.workflow;
 
-import com.sun.istack.internal.Nullable;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
@@ -31,6 +30,7 @@ import javafx.collections.SetChangeListener;
 import jloda.fx.ASelectionModel;
 import jloda.util.Basic;
 import jloda.util.Pair;
+import jloda.util.Single;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.ReportConnector;
@@ -398,8 +398,13 @@ public class Workflow {
         if (deleteNode) {
             node.disconnect();
 
-            if (node instanceof DataNode)
+            if (node instanceof DataNode) {
+                if (((DataNode) node).getDataBlock() instanceof ViewBlock)
+                    ((ViewBlock) ((DataNode) node).getDataBlock()).getTab().close();
+
                 dataNodes.remove(node);
+
+            }
             else if (node instanceof Connector) {
                 connectorNodes.remove(node);
                 ((Connector) node).getService().cancel();
@@ -661,7 +666,7 @@ public class Workflow {
      */
     public Pair<Connector, DataNode> findOrCreatePath(DataNode currentDataNode, Class<? extends DataBlock> desiredParentClass,
                                                       Class<? extends Algorithm> algorithm1class, Class<? extends DataBlock> data1class) {
-        return findOrCreatePath(currentDataNode, desiredParentClass, algorithm1class, data1class, null, null);
+        return findOrCreatePath(currentDataNode, desiredParentClass, new Pair<>(algorithm1class, data1class));
     }
 
     /**
@@ -674,86 +679,110 @@ public class Workflow {
      * @param algorithm2class    can be null
      * @param data2class         can be null if algorithm2class is also null
      * @return connector and view node
-     * @throws Exception
      */
     public Pair<Connector, DataNode> findOrCreatePath(DataNode currentDataNode, Class<? extends DataBlock> desiredParentClass,
                                                       Class<? extends Algorithm> algorithm1class, Class<? extends DataBlock> data1class,
-                                                      @Nullable Class<? extends Algorithm> algorithm2class, @Nullable Class<? extends DataBlock> data2class) {
-        try {
-            final DataNode parent = getAncestorForClass(currentDataNode, desiredParentClass);
-            if (parent != null) {
-                Pair<Connector, DataNode> result = matchPath(parent, desiredParentClass, algorithm1class, data1class, algorithm2class, data2class);
-                if (result != null)
-                    return result;
-
-                final DataNode data1node = createDataNode(data1class.newInstance());
-                final Connector connector1 = createConnector(parent, data1node, (Algorithm) algorithm1class.newInstance());
-                if (algorithm2class == null) {
-                    connector1.forceRecompute();
-                    return new Pair<>(connector1, data1node);
-                } else {
-                    DataNode data2node = createDataNode(data2class.newInstance());
-                    createConnector(data1node, data2node, (Algorithm) algorithm2class.newInstance());
-                    connector1.forceRecompute();
-                    return new Pair<>(connector1, data2node);
-                }
-            }
-        } catch (Exception ex) {
-            Basic.caught(ex);
-        }
-        return null;
+                                                      Class<? extends Algorithm> algorithm2class, Class<? extends DataBlock> data2class) {
+        return findOrCreatePath(currentDataNode, desiredParentClass, new Pair<>(algorithm1class, data1class), new Pair<>(algorithm2class, data2class));
     }
 
     /**
-     * tries to match a path from data node data1 to data3 using exactly the given types of data nodes and algorithms
+     * creates a short chain of nodes leading to a view. If the type of view is already present, returns the node
      *
-     * @param dataNode
-     * @param data1class
-     * @param algorithm1class
-     * @param data2class
-     * @param algorithm2class
-     * @param data3class
-     * @return first connector and last data node, if matched, else null
+     * @param currentDataNode
+     * @param desiredParentClass
+     * @param path
+     * @return connector and view node
      */
-    private Pair<Connector, DataNode> matchPath(DataNode dataNode, Class<? extends DataBlock> data1class, Class<? extends Algorithm> algorithm1class, Class<? extends DataBlock> data2class, Class<? extends Algorithm> algorithm2class, Class<? extends DataBlock> data3class) {
-        if (dataNode.getDataBlock().getClass().isAssignableFrom(data1class)) {
-            for (Object c1 : dataNode.getChildren()) {
-                final Connector connector1 = (Connector) c1;
-                final DataNode dataNode2 = connector1.getChild();
-                if (dataNode2.getDataBlock().getClass().isAssignableFrom(data2class)) {
-                    if (algorithm2class == null) {
-                        if (!connector1.getAlgorithm().getClass().isAssignableFrom(algorithm1class)) {
-                            try {
-                                connector1.setAlgorithm(algorithm1class.newInstance());
-                                if (connector1.getAlgorithm().isApplicable(getWorkingTaxaBlock(), dataNode.getDataBlock()))
-                                    connector1.forceRecompute();
-                            } catch (Exception e) {
-                                Basic.caught(e);
-                            }
-                        }
-                        return new Pair<>(connector1, dataNode2);
+    public Pair<Connector, DataNode> findOrCreatePath(DataNode currentDataNode, Class<? extends DataBlock> desiredParentClass, Pair<Class<? extends Algorithm>, Class<? extends DataBlock>>... path) {
+        final DataNode parent = getAncestorForClass(currentDataNode, desiredParentClass);
+        if (parent != null) {
+            try {
+                Pair<Connector, DataNode> result = matchPath(parent, path);
+                if (result != null)
+                    return result;
+                else {
+                    Connector firstConnector = null;
+                    DataNode lastDataNode = parent;
+
+                    for (Pair<Class<? extends Algorithm>, Class<? extends DataBlock>> pair : path) {
+                        final DataNode dataNode = createDataNode(pair.getSecond().newInstance());
+                        final Connector connector = createConnector(lastDataNode, dataNode, (Algorithm) pair.getFirst().newInstance());
+                        if (firstConnector == null)
+                            firstConnector = connector;
+                        lastDataNode = dataNode;
                     }
-                    for (Object c2 : dataNode2.getChildren()) {
-                        final Connector connector2 = (Connector) c2;
-                        final DataNode dataNode3 = connector2.getChild();
-                        if (dataNode3.getDataBlock().getClass().isAssignableFrom(data3class)) {
-                            if (!connector1.getAlgorithm().getClass().isAssignableFrom(algorithm1class)) {
-                                try {
-                                    connector2.setAlgorithm(algorithm2class.newInstance());
-                                    if (connector2.getAlgorithm().isApplicable(getWorkingTaxaBlock(), dataNode2.getDataBlock()))
-                                        connector2.forceRecompute();
-                                } catch (Exception e) {
-                                    Basic.caught(e);
-                                }
-                            }
-                            return new Pair<>(connector1, dataNode3);
-                        }
-                    }
+                    if (firstConnector != null) {
+                        firstConnector.forceRecompute();
+                        return new Pair<>(firstConnector, lastDataNode);
                 }
+                }
+            } catch (Exception ex) {
+                Basic.caught(ex);
             }
         }
         return null;
+
+}
+
+    /**
+     * tries to match a path from data node using exactly the given types of data nodes and algorithms
+     *
+     * @param dataNode
+     * @param path
+     * @return first connector and last data node, if matched, else null
+     */
+    private Pair<Connector, DataNode> matchPath(DataNode dataNode, Pair<Class<? extends Algorithm>, Class<? extends DataBlock>>... path) {
+        final Pair<Connector, DataNode> pair = new Pair<>();
+        final Single<Connector> mustForceRecompute = new Single<>(null);
+        if (matchPathRecursively(dataNode, path, 0, pair, mustForceRecompute)) {
+            if (mustForceRecompute.get() != null)
+                mustForceRecompute.get().forceRecompute();
+            return pair;
+        } else
+            return null;
     }
+
+    /**
+     * recursively does the work
+     *
+     * @param dataNode
+     * @param path
+     * @param pos
+     * @param result
+     * @param mustForceRecompute
+     */
+    private boolean matchPathRecursively(DataNode dataNode, Pair<Class<? extends Algorithm>, Class<? extends DataBlock>>[] path, int pos, Pair<Connector, DataNode> result, Single<Connector> mustForceRecompute) {
+        final Pair<Class<? extends Algorithm>, Class<? extends DataBlock>> pair = path[pos];
+
+        for (Object obj : dataNode.getChildren()) {
+            final Connector connector = (Connector) obj;
+            final DataNode target = connector.getChild();
+
+            if (target.getDataBlock().getClass().isAssignableFrom(pair.getSecond())) {
+                if (!connector.getAlgorithm().getClass().isAssignableFrom(pair.getFirst())) {
+                    try {
+                        connector.setAlgorithm(pair.getFirst().newInstance());
+                        if (connector.getAlgorithm().isApplicable(getWorkingTaxaBlock(), dataNode.getDataBlock()) && mustForceRecompute.get() == null)
+                            mustForceRecompute.set(connector);
+                    } catch (Exception e) {
+                        Basic.caught(e);
+                    }
+                }
+                if (pos == path.length - 1) { // reached the target node
+                    result.setSecond(target);
+                    return true;
+                }
+                if (matchPathRecursively(target, path, pos + 1, result, mustForceRecompute)) {
+                    if (pos == 0)
+                        result.setFirst(connector);
+                    return true;
+                }
+            }
+        }
+        return false; // didn't match, return false
+    }
+
 
     /**
      * find the filter for this node, if it exists, otherwise insert one and return it

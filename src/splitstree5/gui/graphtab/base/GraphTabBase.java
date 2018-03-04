@@ -24,6 +24,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.collections.WeakListChangeListener;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
@@ -70,7 +71,7 @@ import java.util.*;
  *
  * @param <G>
  */
-public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISavesPreviousSelection {
+abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISavesPreviousSelection {
     protected ZoomableScrollPane scrollPane;
 
     protected final Group group = new Group();
@@ -103,6 +104,8 @@ public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISa
 
     protected ListChangeListener<Node> weakNodeSelectionChangeListener;
     protected ListChangeListener<Taxon> weakDocumentTaxonSelectionChangeListener;
+
+    private ObservableList<Taxon> documentTaxonSelectedItems;
 
     /**
      * constructor
@@ -225,10 +228,9 @@ public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISa
         return new Dimension2D(0.6 * centerPane.getWidth(), 0.9 * centerPane.getHeight());
     }
 
-
     private boolean inSelection = false;
 
-    public void updateSelectionModels(G graph, TaxaBlock taxaBlock, Document document) {
+    public void updateSelectionModels(PhyloGraph graph, TaxaBlock taxaBlock, Document document) {
         if (weakNodeSelectionChangeListener != null)
             nodeSelectionModel.getSelectedItems().removeListener(weakNodeSelectionChangeListener);
         if (weakDocumentTaxonSelectionChangeListener != null)
@@ -291,39 +293,44 @@ public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISa
                 while (c.next()) {
                     if (c.getAddedSize() > 0) {
                         for (Taxon taxon : c.getAddedSubList()) {
-                            String label = taxon.getName();
-                            for (Node v : graph.nodes()) {
-                                if (graph.getLabel(v) != null) {
-                                    if (label.equals(graph.getLabel(v))) {
-                                        nodeSelectionModel.select(v);
+                            final Node v = graph.getTaxon2Node(taxaBlock.indexOf(taxon));
+                            if (v != null) {
+                                nodeSelectionModel.select(v);
+                            } else {
+                                final String label = taxon.getName();
+                                for (Node w : graph.nodes()) {
+                                    if (graph.getLabel(w) != null) {
+                                        if (label.equals(graph.getLabel(w))) {
+                                            nodeSelectionModel.select(w);
+                                        }
                                     }
                                 }
                             }
-                            final Node v = graph.getTaxon2Node(document.getWorkflow().getWorkingTaxaBlock().indexOf(taxon));
-                            if (v != null)
-                                nodeSelectionModel.select(v);
                         }
                     }
                     if (c.getRemovedSize() > 0) {
                         for (Taxon taxon : c.getRemoved()) {
-                            String label = taxon.getName();
-                            for (Node v : graph.nodes()) {
-                                if (graph.getLabel(v) != null) {
-                                    if (label.equals(graph.getLabel(v))) {
-                                        nodeSelectionModel.clearSelection(v);
+                            final Node v = graph.getTaxon2Node(taxaBlock.indexOf(taxon));
+                            if (v != null) {
+                                nodeSelectionModel.clearSelection(v);
+                            } else {
+                                String label = taxon.getName();
+                                for (Node w : graph.nodes()) {
+                                    if (graph.getLabel(w) != null) {
+                                        if (label.equals(graph.getLabel(w))) {
+                                            nodeSelectionModel.clearSelection(w);
+                                        }
                                     }
                                 }
                             }
-                            final Node v = graph.getTaxon2Node(document.getWorkflow().getWorkingTaxaBlock().indexOf(taxon));
-                            if (v != null)
-                                nodeSelectionModel.clearSelection(v);
                         }
                     }
                 }
             }
         });
         weakDocumentTaxonSelectionChangeListener = new WeakListChangeListener<>(documentTaxonSelectionChangeListener);
-        document.getTaxaSelectionModel().getSelectedItems().addListener(weakDocumentTaxonSelectionChangeListener);
+        documentTaxonSelectedItems = document.getTaxaSelectionModel().getSelectedItems();
+        documentTaxonSelectedItems.addListener(weakDocumentTaxonSelectionChangeListener);
 
         if (!document.getTaxaSelectionModel().isEmpty()) {
             final Set<String> selectedNames = new HashSet<>();
@@ -403,7 +410,6 @@ public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISa
             }
         }
     }
-
     public void addNodeLabelMovementSupport(NodeView2D nodeView) {
         final Labeled label = nodeView.getLabel();
         if (label != null) {
@@ -629,5 +635,14 @@ public class GraphTabBase<G extends PhyloGraph> extends ViewerTab implements ISa
         if (dataNode != null && dataNode.getDataBlock() != null && dataNode.getDataBlock().getDocument() != null)
             setMainWindow(dataNode.getDataBlock().getDocument().getMainWindow());
     }
+
+    public void close() {
+        if (documentTaxonSelectedItems != null)
+            documentTaxonSelectedItems.removeListener(weakDocumentTaxonSelectionChangeListener);
+    }
+
+    abstract public String getInfo();
+
+    abstract public void show();
 }
 

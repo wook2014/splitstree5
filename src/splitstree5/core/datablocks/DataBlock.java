@@ -86,7 +86,7 @@ abstract public class DataBlock extends NameableBase {
     }
 
     /**
-     * gets instances of all known datablocks
+     * gets instances of all known data blocks
      *
      * @return
      */

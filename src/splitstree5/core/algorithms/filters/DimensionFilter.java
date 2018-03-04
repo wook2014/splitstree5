@@ -40,6 +40,7 @@ package splitstree5.core.algorithms.filters;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import jloda.fx.NotificationManager;
 import jloda.graph.Edge;
 import jloda.graph.Graph;
 import jloda.graph.Node;
@@ -53,11 +54,13 @@ import splitstree5.core.algorithms.interfaces.IFromSplits;
 import splitstree5.core.algorithms.interfaces.IToSplits;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
 import splitstree5.utils.SplitsUtilities;
 
 import java.util.BitSet;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -67,6 +70,8 @@ import java.util.Set;
 public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> implements IFromSplits, IToSplits, IFilter {
     private final IntegerProperty optionMaxDimension = new SimpleIntegerProperty(4);
     private boolean active;
+
+    private final int COMPUTE_DSUBGRAPH_MAXDIMENSION = 5;
 
     /**
      * heuristically remove high-dimension configurations in split graph
@@ -79,40 +84,64 @@ public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> impleme
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, SplitsBlock parent, SplitsBlock child) throws CanceledException {
         active = false;
 
-        final int COMPUTE_DSUBGRAPH_MAXDIMENSION = 5;
-        progress.setTasks("Dimension filter", "optionMaxDimension=" + optionMaxDimension.get());
-        System.err.println("Running Dimension-Filter for d=" + optionMaxDimension.get());
-        BitSet toDelete = new BitSet(); // set of splits to be removed from split set
+        if (parent.getCompatibility() != Compatibility.compatible && parent.getCompatibility() != Compatibility.cyclic && parent.getCompatibility() != Compatibility.weaklyCompatible) {
+            apply(progress, getOptionMaxDimension(), parent.getSplits(), child.getSplits());
+            if (parent.getNsplits() == child.getNsplits()) {
+                child.setCycle(parent.getCycle().clone());
+                child.setCompatibility(parent.getCompatibility());
+                setShortDescription("using all " + parent.getNsplits() + " splits");
+            } else {
+                child.setCycle(SplitsUtilities.computeCycle(taxaBlock.getNtax(), child.getSplits()));
+                child.setFit(-1);
+                child.setCompatibility(Compatibility.compute(taxaBlock.getNtax(), child.getSplits(), child.getCycle()));
+                child.setThreshold(parent.getThreshold());
+                setShortDescription("using " + child.getNsplits() + " of " + parent.getNsplits() + " splits");
+                active = true;
+            }
+        }
+    }
+
+    /**
+     * does the work
+     *
+     * @param progress
+     * @param maxDimension
+     * @param srcSplits
+     * @param targetSplits
+     */
+    public void apply(ProgressListener progress, int maxDimension, List<ASplit> srcSplits, List<ASplit> targetSplits) {
+        final BitSet toDelete = new BitSet(); // set of splits to be removed from split set
 
         try {
+            progress.setTasks("Dimension filter", "optionMaxDimension=" + optionMaxDimension.get());
             // build initial incompatibility graph:
-            final Graph graph = buildIncompatibilityGraph(parent);
+            Graph graph = buildIncompatibilityGraph(srcSplits);
 
             //System.err.println("Init: "+graph);
             int origNumberOfNodes = graph.getNumberOfNodes();
             progress.setMaximum(origNumberOfNodes);    //initialize maximum progress
             progress.setProgress(0);
 
-            if (optionMaxDimension.get() <= COMPUTE_DSUBGRAPH_MAXDIMENSION) {
-                System.err.println("(Small D: using D-subgraph)");
-                computeDSubgraph(progress, graph, optionMaxDimension.get() + 1);
+            if (maxDimension <= COMPUTE_DSUBGRAPH_MAXDIMENSION) {
+                //System.err.println("(Small D: using D-subgraph)");
+                computeDSubgraph(progress, graph, maxDimension + 1);
             } else {
-                System.err.println("(Large D: using maxDegree heuristic)");
-                relaxGraph(progress, graph, optionMaxDimension.get() - 1);
+                //System.err.println("(Large D: using maxDegree heuristic)");
+                relaxGraph(progress, graph, maxDimension - 1);
             }
             //System.err.println("relaxed: "+graph);
 
             while (graph.getNumberOfNodes() > 0) {
                 Node worstNode = getWorstNode(graph);
-                int s = ((Pair<Integer, Integer>) (worstNode.getInfo())).getFirst();
+                int s = ((Pair<Integer, Integer>) worstNode.getInfo()).getFirst();
                 toDelete.set(s);
                 graph.deleteNode(worstNode);
                 //System.err.println("deleted: "+graph);
 
-                if (optionMaxDimension.get() <= COMPUTE_DSUBGRAPH_MAXDIMENSION)
-                    computeDSubgraph(progress, graph, optionMaxDimension.get() + 1);
+                if (maxDimension <= COMPUTE_DSUBGRAPH_MAXDIMENSION)
+                    computeDSubgraph(progress, graph, maxDimension + 1);
                 else
-                    relaxGraph(progress, graph, optionMaxDimension.get() - 1);
+                    relaxGraph(progress, graph, maxDimension - 1);
                 //System.err.println("relaxed: "+graph);
                 progress.setProgress(origNumberOfNodes - graph.getNumberOfNodes());
             }
@@ -120,16 +149,12 @@ public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> impleme
             Basic.caught(ex);
         }
 
-        copySplits(parent, child, toDelete);
-        if (toDelete.cardinality() == 0) {
-            child.copy(parent);
-            setShortDescription("using all " + parent.getNsplits() + " splits");
-        } else {
-            child.setCycle(SplitsUtilities.computeCycle(taxaBlock.getNtax(), child.getSplits()));
-            setShortDescription("using " + child.getNsplits() + " of " + parent.getNsplits() + " splits");
-            active = true;
-        }
-        System.err.println("Splits removed: " + toDelete.cardinality());
+        for (int i = toDelete.nextClearBit(0); i != -1 && i < srcSplits.size(); i = toDelete.nextClearBit(i + 1))
+            targetSplits.add(srcSplits.get(i));
+
+        //System.err.println("Splits removed: " + toDelete.cardinality());
+        if (toDelete.cardinality() > 0)
+            NotificationManager.showInformation("Dimension filter removed " + toDelete.cardinality() + " splits");
     }
 
     /**
@@ -138,17 +163,17 @@ public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> impleme
      * @param splits
      * @return incompatibility graph
      */
-    Graph buildIncompatibilityGraph(SplitsBlock splits) {
-        Node[] split2node = new Node[splits.getNsplits() + 1];
-        Graph graph = new Graph();
+    private Graph buildIncompatibilityGraph(List<ASplit> splits) {
+        final Graph graph = new Graph();
 
-        for (int s = 0; s < splits.getNsplits(); s++) {
-            final Pair<Integer, Integer> pair = new Pair<>(s, (int) (10000 * splits.getWeight(s)));
+        final Node[] split2node = new Node[splits.size()];
+        for (int s = 0; s < splits.size(); s++) {
+            final Pair<Integer, Integer> pair = new Pair<>(s, (int) (10000 * splits.get(s).getWeight()));
             split2node[s] = graph.newNode(pair);
         }
-        for (int s = 0; s < splits.getNsplits(); s++) {
+        for (int s = 0; s < splits.size(); s++) {
 
-            for (int t = s + 1; t < splits.getNsplits(); t++)
+            for (int t = s + 1; t < splits.size(); t++)
                 if (!Compatibility.areCompatible(splits.get(s), splits.get(t))) {
                     graph.newEdge(split2node[s], split2node[t]);
                 }

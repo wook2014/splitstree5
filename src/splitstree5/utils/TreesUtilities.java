@@ -24,6 +24,7 @@ import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
+import jloda.util.BitSetUtils;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
@@ -167,9 +168,9 @@ public class TreesUtilities {
      * @return
      */
     private static BitSet tree2splitsRec(final Node v, final Edge e, final PhyloTree tree, final BitSet taxaInTree, final Collection<ASplit> splits) {
-        final BitSet vAndBelowTaxa = asBitSet(tree.getTaxa(v));
+        final BitSet vAndBelowTaxa = BitSetUtils.asBitSet(tree.getTaxa(v));
 
-        for (Edge f = v.getFirstAdjacentEdge(); f != null; f = v.getNextAdjacentEdge(f)) {
+        for (Edge f : v.adjacentEdges()) {
             if (f != e) {
                 final Node w = tree.getOpposite(v, f);
                 final BitSet wAndBelowTaxa = tree2splitsRec(w, f, tree, taxaInTree, splits);
@@ -211,11 +212,4 @@ public class TreesUtilities {
         return vAndBelowTaxa;
     }
 
-    public static BitSet asBitSet(Iterable<Integer> integers) {
-        final BitSet bitSet = new BitSet();
-        for (Integer i : integers) {
-            bitSet.set(i);
-        }
-        return bitSet;
-    }
 }

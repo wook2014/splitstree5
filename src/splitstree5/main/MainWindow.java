@@ -40,7 +40,7 @@ import jloda.util.Pair;
 import jloda.util.ProgramProperties;
 import jloda.util.ResourceManager;
 import splitstree5.core.Document;
-import splitstree5.core.datablocks.ViewDataBlock;
+import splitstree5.core.datablocks.ViewBlock;
 import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.Workflow;
@@ -207,7 +207,7 @@ public class MainWindow {
             if (c.wasRemoved() && aNode2ViewerTab.get(c.getElementRemoved()) != null) {
                 Platform.runLater(() -> getMainWindowController().getMainTabPane().getTabs().remove(aNode2ViewerTab.get(c.getElementRemoved())));
             }
-            if (c.wasAdded() && c.getElementAdded().getDataBlock() instanceof ViewDataBlock) {
+            if (c.wasAdded() && c.getElementAdded().getDataBlock() instanceof ViewBlock) {
                 Platform.runLater(() -> showDataView(c.getElementAdded()));
             }
         });
@@ -361,8 +361,8 @@ public class MainWindow {
     public void showDataView(DataNode workflowNode) {
         // if the data block has a getTab method, then assume that it is present and select it
         try {
-            if (workflowNode != null && workflowNode.getDataBlock() instanceof ViewDataBlock) {
-                final ViewerTab viewerTab = ((ViewDataBlock) workflowNode.getDataBlock()).getTab();
+            if (workflowNode != null && workflowNode.getDataBlock() instanceof ViewBlock) {
+                final ViewerTab viewerTab = ((ViewBlock) workflowNode.getDataBlock()).getTab();
                 if (!mainTabPane.getTabs().contains(viewerTab)) {
                     mainTabPane.getTabs().add(viewerTab);
                     aNode2ViewerTab.put(workflowNode, viewerTab);
@@ -493,7 +493,7 @@ public class MainWindow {
     public void show(Pair<Connector, DataNode> pair) {
         if (pair != null) {
             showAlgorithmView(pair.getFirst());
-            if (pair.getSecond().getDataBlock() instanceof ViewDataBlock)
+            if (pair.getSecond().getDataBlock() instanceof ViewBlock)
                 showDataView(pair.getSecond());
         }
     }
@@ -515,5 +515,9 @@ public class MainWindow {
 
     public InputTab getInputTab() {
         return inputTab;
+    }
+
+    public void showWorkflow() {
+        mainWindowController.getMainTabPane().getSelectionModel().select(workflowViewTab);
     }
 }

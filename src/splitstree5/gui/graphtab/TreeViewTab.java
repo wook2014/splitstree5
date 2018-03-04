@@ -45,7 +45,7 @@ public class TreeViewTab extends Graph2DTab<PhyloTree> {
      */
     public TreeViewTab() {
         setLabel("Tree");
-        setIcon(ResourceManager.getIcon("TreeView16.gif"));
+        setIcon(ResourceManager.getIcon("TreeViewer16.gif"));
     }
 
     /**
@@ -201,6 +201,15 @@ public class TreeViewTab extends Graph2DTab<PhyloTree> {
             edgeSelectionModel.selectItems(edgesToSelect);
         });
         controller.getSelectAllEdgesBelowMenuItem().disableProperty().bind(nodeSelectionModel.emptyProperty());
-
     }
+
+    @Override
+    public String getInfo() {
+        if (graph != null)
+            return "a " + (getLayout() == GraphLayout.Radial ? "unrooted" : "rooted") + " tree drawing with "
+                    + getGraph().getNumberOfNodes() + " nodes and "
+                    + getGraph().getNumberOfEdges() + " edge";
+        else return "";
+    }
+
 }

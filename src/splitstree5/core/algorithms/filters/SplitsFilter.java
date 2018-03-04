@@ -19,11 +19,11 @@
 
 package splitstree5.core.algorithms.filters;
 
+import jloda.fx.NotificationManager;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.filters.utils.ClosestTree;
-import splitstree5.core.algorithms.filters.utils.DimensionFilter;
 import splitstree5.core.algorithms.filters.utils.GreedyCompatible;
 import splitstree5.core.algorithms.filters.utils.GreedyWeaklyCompatible;
 import splitstree5.core.algorithms.interfaces.IFromSplits;
@@ -43,17 +43,16 @@ import java.util.List;
  * Daniel Huson 12/2016
  */
 public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements IFromSplits, IToSplits, IFilter {
-    public enum FilterAlgorithm {None, GreedyCompatible, ClosestTree, GreedyWeaklyCompatible}
-
-    private final ArrayList<ASplit> enabledSplits = new ArrayList<>();
-    private final ArrayList<ASplit> disabledSplits = new ArrayList<>();
+    public enum FilterAlgorithm {DimensionFilter, ClosestTree, GreedyCompatible, GreedyWeaklyCompatible, None}
 
     private boolean optionModifyWeightsUsingLeastSquares = false;
-    private FilterAlgorithm optionFilterAlgorithm = FilterAlgorithm.None;
+    private FilterAlgorithm optionFilterAlgorithm = FilterAlgorithm.DimensionFilter;
 
     private float optionWeightThreshold = 0;
     private float optionConfidenceThreshold = 0;
     private int optionMaximumDimension = 4;
+
+    private boolean active = false;
 
     public List<String> listOptions() {
         return Arrays.asList("optionFilterAlgorithm", "optionWeightThreshold", "optionConfidenceThreshold", "optionMaximumDimension");
@@ -69,24 +68,16 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
      * @throws CanceledException
      */
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, SplitsBlock parent, SplitsBlock child) throws CanceledException {
-        boolean changed = false;
-        List<ASplit> splits = new ArrayList<>(parent.size());
+        active = false;
 
-        if (enabledSplits.size() == 0 && disabledSplits.size() == 0) // nothing has been explicitly set, copy everything
-            child.getSplits().setAll(parent.getSplits());
-        else {
-            for (ASplit split : enabledSplits) {
-                if (!disabledSplits.contains(split)) {
-                    child.getSplits().add(split);
-                }
-            }
-        }
+        ArrayList<ASplit> splits = new ArrayList<>(parent.getSplits());
 
         if (optionModifyWeightsUsingLeastSquares) {
-            System.err.println("optionModifyWeightsUsingLeastSquares: not implemented");
+            NotificationManager.showWarning("optionModifyWeightsUsingLeastSquares: not implemented");
             // modify weights least squares
-            //changed = true;
+            //active = true;
         }
+
         Compatibility compatibility = Compatibility.unknown;
 
         switch (optionFilterAlgorithm) {
@@ -95,7 +86,7 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
                 splits = GreedyCompatible.apply(progress, splits);
                 compatibility = Compatibility.compatible;
                 if (splits.size() != oldSize)
-                    changed = true;
+                    active = true;
                 break;
             }
             case ClosestTree: {
@@ -103,14 +94,14 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
                 splits = ClosestTree.apply(progress, taxaBlock.getNtax(), splits, parent.getCycle());
                 compatibility = Compatibility.compatible;
                 if (splits.size() != oldSize)
-                    changed = true;
+                    active = true;
                 break;
             }
             case GreedyWeaklyCompatible: {
                 final int oldSize = splits.size();
                 splits = GreedyWeaklyCompatible.apply(progress, splits);
                 if (splits.size() != oldSize)
-                    changed = true;
+                    active = true;
                 break;
             }
         }
@@ -123,32 +114,40 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
             }
             splits = tmp;
             if (splits.size() != oldSize)
-                changed = true;
+                active = true;
         }
+
         if (getOptionConfidenceThreshold() > 0) {
             final int oldSize = splits.size();
-            ArrayList<ASplit> tmp = new ArrayList<>(splits.size());
+            final ArrayList<ASplit> tmp = new ArrayList<>(splits.size());
             for (ASplit split : splits) {
                 if (split.getConfidence() >= optionConfidenceThreshold)
                     tmp.add(split);
             }
             splits = tmp;
             if (splits.size() != oldSize)
-                changed = true;
+                active = true;
         }
-        if (getOptionMaximumDimension() > 0) {
+
+        if (getOptionMaximumDimension() > 0 && optionFilterAlgorithm == FilterAlgorithm.GreedyCompatible && parent.getCompatibility() != Compatibility.compatible && parent.getCompatibility() != Compatibility.cyclic && parent.getCompatibility() != Compatibility.weaklyCompatible) {
             final int oldSize = splits.size();
-            splits = DimensionFilter.apply(progress, optionMaximumDimension, splits);
+
+            final DimensionFilter dimensionFilter = new DimensionFilter();
+            ArrayList<ASplit> existing = new ArrayList<>(splits);
+            splits.clear();
+            dimensionFilter.apply(progress, optionMaximumDimension, existing, splits);
             if (splits.size() != oldSize)
-                changed = true;
+                active = true;
         }
 
         child.getSplits().addAll(splits);
-        if (!changed) {
+
+        if (!active) {
             child.setCycle(parent.getCycle());
             child.setFit(parent.getFit());
             child.setCompatibility(parent.getCompatibility());
             child.setThreshold(parent.getThreshold());
+            setShortDescription("using all " + parent.getNsplits() + " splits");
         } else {
             child.setCycle(SplitsUtilities.computeCycle(taxaBlock.getNtax(), child.getSplits()));
 
@@ -157,21 +156,13 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
                 compatibility = Compatibility.compute(taxaBlock.getNtax(), child.getSplits(), child.getCycle());
             child.setCompatibility(compatibility);
             child.setThreshold(parent.getThreshold());
+            setShortDescription("using " + child.getNsplits() + " of " + parent.getNsplits() + " splits");
         }
-
-        if (enabledSplits.size() == 0 && disabledSplits.size() == 0)
-            setShortDescription(null);
-        else if (disabledSplits.size() == 0)
-            setShortDescription("using all " + enabledSplits.size() + " splits");
-        else
-            setShortDescription("using " + enabledSplits.size() + " of " + parent.getNsplits() + "splits ");
     }
 
     @Override
     public void clear() {
         super.clear();
-        enabledSplits.clear();
-        disabledSplits.clear();
     }
 
     @Override
@@ -179,23 +170,6 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
         return !parent.isPartial();
     }
 
-    /**
-     * get the set of enabledSplits data.
-     *
-     * @return list of explicitly enabledSplits taxa
-     */
-    public ArrayList<ASplit> getEnabledSplits() {
-        return enabledSplits;
-    }
-
-    /**
-     * gets disabledSplits taxa
-     *
-     * @return disabledSplits
-     */
-    public ArrayList<ASplit> getDisabledSplits() {
-        return disabledSplits;
-    }
 
     public boolean isOptionModifyWeightsUsingLeastSquares() {
         return optionModifyWeightsUsingLeastSquares;
@@ -239,6 +213,6 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
 
     @Override
     public boolean isActive() {
-        return disabledSplits.size() > 0;
+        return active;
     }
 }

@@ -33,11 +33,11 @@ import jloda.util.Basic;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromNetwork;
-import splitstree5.core.algorithms.interfaces.IToNetworkView;
+import splitstree5.core.algorithms.interfaces.IToView;
 import splitstree5.core.datablocks.NetworkBlock;
-import splitstree5.core.datablocks.NetworkViewBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TraitsBlock;
+import splitstree5.core.datablocks.ViewBlock;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.graphtab.NetworkViewTab;
 import splitstree5.gui.graphtab.base.EdgeViewBase;
@@ -51,7 +51,7 @@ import java.util.List;
  * Embeds a network
  * Daniel Huson, 2.2018
  */
-public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> implements IFromNetwork, IToNetworkView {
+public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewBlock> implements IFromNetwork, IToView {
     public enum MutationView {Hatches, Labels, Count, None}
 
     private final PhyloGraph graph = new PhyloGraph();
@@ -82,10 +82,9 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> i
     }
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxa, NetworkBlock parent, NetworkViewBlock child) throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxa, NetworkBlock parent, ViewBlock child) throws Exception {
         progress.setTasks("Network embedding", "Init.");
-        final NetworkViewTab networkViewTab = child.getTab();
-        //splitsViewTab.setNodeLabel2Style(nodeLabel2Style);
+        final NetworkViewTab viewTab = (NetworkViewTab) child.getTab();
 
         Platform.runLater(() -> {
             child.getTab().setName(child.getName());
@@ -93,12 +92,12 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> i
 
         copyDataFromParent(parent, graph, node2data, edge2data);
 
-        networkViewTab.init(graph);
+        viewTab.init(graph);
 
         final NodeArray<Point2D> node2point = new NodeArray<>(graph);
-        computeSpringEmbedding(graph, node2point, getOptionIterations(), networkViewTab.getTargetDimensions().getWidth(), networkViewTab.getTargetDimensions().getHeight(), false);
+        computeSpringEmbedding(graph, node2point, getOptionIterations(), viewTab.getTargetDimensions().getWidth(), viewTab.getTargetDimensions().getHeight(), false);
 
-        TreeEmbedder.scaleAndCenterToFitTarget(GraphLayout.Radial, networkViewTab.getTargetDimensions(), node2point, true);
+        TreeEmbedder.scaleAndCenterToFitTarget(GraphLayout.Radial, viewTab.getTargetDimensions(), node2point, true);
 
         progress.setProgress(100);   //set progress to 100%
 
@@ -118,17 +117,17 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> i
             }
         }
 
-        networkViewTab.setLegend(null);
+        viewTab.setLegend(null);
 
         // compute all views and put their parts into the appropriate groups
         for (Node v : graph.nodes()) {
             String text = graph.getLabel(v);
             //String text = (graph.getLabel(v) != null ? graph.getLabel(v) : "Node " + v.getId());
-            final NodeView2D nodeView = networkViewTab.createNodeView(v, node2point.getValue(v), text);
+            final NodeView2D nodeView = viewTab.createNodeView(v, node2point.getValue(v), text);
 
-            networkViewTab.getNode2view().put(v, nodeView);
-            networkViewTab.getNodesGroup().getChildren().addAll(nodeView.getShapeGroup());
-            networkViewTab.getNodeLabelsGroup().getChildren().addAll(nodeView.getLabelGroup());
+            viewTab.getNode2view().put(v, nodeView);
+            viewTab.getNodesGroup().getChildren().addAll(nodeView.getShapeGroup());
+            viewTab.getNodeLabelsGroup().getChildren().addAll(nodeView.getLabelGroup());
 
             if (traitsBlock != null && traitsBlock.getNTraits() > 0 && graph.getNumberOfTaxa(v) > 0) {
                 PieChart pieChart = new PieChart();
@@ -166,7 +165,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> i
                         nodeView.getShapeGroup().getChildren().add(pieChart);
                         Tooltip.install(nodeView.getShapeGroup(), new Tooltip(buf.toString()));
 
-                        if (networkViewTab.getLegend() == null) {
+                        if (viewTab.getLegend() == null) {
                             final Legend traitsLegend = new Legend();
                             for (PieChart.Data item : pieChart.getData()) {
                                 Legend.LegendItem legenditem = new Legend.LegendItem(item.getName());
@@ -175,7 +174,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> i
                                 traitsLegend.getItems().add(legenditem);
                             }
                             nodeView.getShapeGroup().getChildren().add(traitsLegend);
-                            networkViewTab.setLegend(traitsLegend);
+                            viewTab.setLegend(traitsLegend);
                         }
                     } else {
                         if (getOptionScaleNodes()) {
@@ -193,16 +192,16 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, NetworkViewBlock> i
 
             if (Basic.isArrayOfIntegers(edge2data.get(e).get("sites"))) {
                 final int[] mutations = Basic.parseArrayOfIntegers(edge2data.get(e).get("sites"));
-                edgeView = networkViewTab.createEdgeView(e, node2point.get(e.getSource()), node2point.get(e.getTarget()), mutations, getOptionShowMutations());
+                edgeView = viewTab.createEdgeView(e, node2point.get(e.getSource()), node2point.get(e.getTarget()), mutations, getOptionShowMutations());
             } else
-                edgeView = networkViewTab.createEdgeView(e, node2point.get(e.getSource()), node2point.get(e.getTarget()));
+                edgeView = viewTab.createEdgeView(e, node2point.get(e.getSource()), node2point.get(e.getTarget()));
 
-            networkViewTab.getEdge2view().put(e, edgeView);
-            networkViewTab.getEdgesGroup().getChildren().add(edgeView.getShapeGroup());
+            viewTab.getEdge2view().put(e, edgeView);
+            viewTab.getEdgesGroup().getChildren().add(edgeView.getShapeGroup());
             if (edgeView.getLabel() != null)
-                networkViewTab.getEdgeLabelsGroup().getChildren().add(edgeView.getLabel());
+                viewTab.getEdgeLabelsGroup().getChildren().add(edgeView.getLabel());
         }
-        Platform.runLater(() -> child.updateSelectionModels(graph, taxa, child.getDocument()));
+        Platform.runLater(() -> viewTab.updateSelectionModels(graph, taxa, child.getDocument()));
         child.show();
 
         progress.close();

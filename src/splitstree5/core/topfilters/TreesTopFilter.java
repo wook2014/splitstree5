@@ -22,6 +22,7 @@ package splitstree5.core.topfilters;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
+import jloda.util.BitSetUtils;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
@@ -29,12 +30,12 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.workflow.DataNode;
 
-import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * tre top taxon filter
+ * tree top taxon filter
  * Daniel Huson, 12/12/16.
  */
 public class TreesTopFilter extends ATopFilter<TreesBlock> {
@@ -52,18 +53,28 @@ public class TreesTopFilter extends ATopFilter<TreesBlock> {
 
         setAlgorithm(new Algorithm<TreesBlock, TreesBlock>("TopFilter") {
             public void compute(ProgressListener progress, TaxaBlock modifiedTaxaBlock, TreesBlock parent, TreesBlock child) throws CanceledException {
-                if (originalTaxaNode.getDataBlock().getTaxa().equals(modifiedTaxaBlock.getTaxa())) {
+                final TaxaBlock originalTaxa = originalTaxaNode.getDataBlock();
+
+                if (originalTaxa.getTaxa().equals(modifiedTaxaBlock.getTaxa())) {
                     child.copy(parent);
                     setShortDescription("using all " + modifiedTaxaBlock.size() + " taxa");
                 } else {
+                    final int[] oldTaxonId2NewTaxonId = new int[originalTaxa.getNtax() + 1];
+                    for (int t = 1; t <= originalTaxa.getNtax(); t++) {
+                        oldTaxonId2NewTaxonId[t] = modifiedTaxaBlock.indexOf(originalTaxa.get(t).getName());
+                    }
+
                     progress.setMaximum(parent.getNTrees());
+
                     for (PhyloTree tree : parent.getTrees()) {
-                        PhyloTree induced = computeInducedTree(tree, modifiedTaxaBlock.getLabels());
-                        if (induced != null) {
-                            child.getTrees().add(induced);
+                        // PhyloTree inducedTree = computeInducedTree(tree, modifiedTaxaBlock.getLabels());
+                        PhyloTree inducedTree = computeInducedTree(oldTaxonId2NewTaxonId, tree);
+                        if (inducedTree != null) {
+                            child.getTrees().add(inducedTree);
                         }
                         progress.incrementProgress();
                     }
+
                     setShortDescription("using " + modifiedTaxaBlock.size() + " of " + getOriginalTaxaBlock().size() + " taxa");
                 }
                 child.setPartial(parent.isPartial());
@@ -73,82 +84,70 @@ public class TreesTopFilter extends ATopFilter<TreesBlock> {
     }
 
     /**
-     * compute an induced tree
-     *
+     * computes the induced tree
+     * @param oldTaxonId2NewTaxonId - old to new mapping, where removed taxa map to 0
      * @param originalTree
-     * @param keep
-     * @return induced tree or null
+     * @return induced tree
      */
-    private PhyloTree computeInducedTree(PhyloTree originalTree, ArrayList<String> keep) {
+    private PhyloTree computeInducedTree(int[] oldTaxonId2NewTaxonId, PhyloTree originalTree) {
         final PhyloTree inducedTree = new PhyloTree();
         inducedTree.copy(originalTree);
 
-        final List<Node> nakedLeaves = new LinkedList<>();
+        final List<Node> toRemove = new LinkedList<>(); // initially, set to all leaves that have lost their taxa
 
-        for (Node v : inducedTree.getNodesAsSet()) {
-            if (inducedTree.getLabel(v) == null || !keep.contains(inducedTree.getLabel(v))) {
-                if (v.getOwner() != null && inducedTree.getLabel(v) != null) // not yet deleted
-                {
-                    if (v.getOutDegree() > 0) {
-                        inducedTree.setLabel(v, null);
-                    } else {
-                        for (Edge e = v.getFirstInEdge(); e != null; e = v.getNextInEdge(e)) {
-                            Node w = e.getSource();
-                            if (w.getOutDegree() == 1 && inducedTree.getLabel(w) == null) {
-                                nakedLeaves.add(w);
-                            }
-                        }
-                        if (inducedTree.getRoot() == v)
-                            inducedTree.setRoot(null);
-                        inducedTree.deleteNode(v);
+        // change taxa:
+        for (Node v : inducedTree.nodes()) {
+            if (inducedTree.getNumberOfTaxa(v) > 0) {
+                BitSet taxa = new BitSet();
+                for (Integer t : inducedTree.getTaxa(v)) {
+                    if (oldTaxonId2NewTaxonId[t] > 0)
+                        taxa.set(oldTaxonId2NewTaxonId[t]);
+                }
+                inducedTree.clearTaxa(v);
+                if (taxa.cardinality() == 0)
+                    toRemove.add(v);
+                else {
+                    for (Integer t : BitSetUtils.members(taxa)) {
+                        inducedTree.addTaxon(v, t);
                     }
                 }
             }
         }
 
-        while (nakedLeaves.size() > 0) {
-            final Node v = nakedLeaves.remove(0);
-            for (Edge e = v.getFirstInEdge(); e != null; e = v.getNextInEdge(e)) {
+        // delete all nodes that don't belong to the induced tree
+        while (toRemove.size() > 0) {
+            final Node v = toRemove.remove(0);
+            for (Edge e : v.inEdges()) {
                 final Node w = e.getSource();
-                if (w.getOutDegree() == 1 && inducedTree.getLabel(w) == null) {
-                    nakedLeaves.add(w);
+                if (w.getOutDegree() == 1 && inducedTree.getNumberOfTaxa(w) == 0) {
+                    toRemove.add(w);
                 }
             }
-            if (inducedTree.getRoot() == v)
+            if (inducedTree.getRoot() == v) {
+                inducedTree.deleteNode(v);
                 inducedTree.setRoot(null);
+                return null; // tree has completely disappeared...
+            }
             inducedTree.deleteNode(v);
         }
 
+        // remove path from original root to new root:
+
+        Node root = inducedTree.getRoot();
+        while (inducedTree.getNumberOfTaxa(root) == 0 && root.getOutDegree() == 1) {
+            root = root.getFirstOutEdge().getTarget();
+            inducedTree.deleteNode(inducedTree.getRoot());
+            inducedTree.setRoot(root);
+        }
+
+        // remove all divertices
         final List<Node> diVertices = new LinkedList<>();
-        for (Node v = inducedTree.getFirstNode(); v != null; v = v.getNext()) {
+        for (Node v : inducedTree.nodes()) {
             if (v.getInDegree() == 1 && v.getOutDegree() == 1)
                 diVertices.add(v);
         }
         for (Node v : diVertices) {
-            if (inducedTree.getRoot() == v)
-                inducedTree.setRoot(null);
             inducedTree.delDivertex(v);
-        }
-
-        Node root = inducedTree.getRoot();
-
-        if (root == null || root.getOwner() == null) {
-            inducedTree.setRoot((Node) null);
-            for (Node v = inducedTree.getFirstNode(); v != null; v = v.getNext()) {
-                if (v.getInDegree() == 0) {
-                    inducedTree.setRoot(v);
-                    root = v;
-                    break;
-                }
-            }
-        }
-
-        if (root != null) {
-            if (root.getOutDegree() == 1 && inducedTree.getLabel(root) == null) {
-                final Node newRoot = root.getFirstOutEdge().getTarget();
-                inducedTree.deleteNode(root);
-                inducedTree.setRoot(newRoot);
-            }
         }
 
         return inducedTree;

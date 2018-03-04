@@ -23,6 +23,7 @@ import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import jloda.phylo.PhyloTree;
+import jloda.util.BitSetUtils;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
@@ -33,6 +34,7 @@ import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
+import splitstree5.utils.RerootingUtils;
 
 import java.util.*;
 
@@ -48,26 +50,25 @@ public class GreedyTree extends Algorithm<SplitsBlock, TreesBlock> implements IF
     }
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, SplitsBlock splits, TreesBlock trees)
-            throws InterruptedException, CanceledException {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, SplitsBlock splits, TreesBlock trees) throws CanceledException {
 
         progress.setTasks("Greedy Tree", "Extracting compatible splits...");
         final Map<BitSet, Double> cluster2Weight = new HashMap<>();
         for (ASplit split : splits.getSplits()) {
             cluster2Weight.put(split.getPartNotContaining(1), split.getWeight());
         }
-        final ArrayList<ASplit> compatible = GreedyCompatible.apply(progress, splits.getSplits());
 
-        final BitSet[] clusters = new BitSet[compatible.size()];
-        for (int i = 0; i < compatible.size(); i++) {
-            clusters[i] = compatible.get(i).getPartNotContaining(1);
-
+        final BitSet[] clusters;
+        {
+            final ArrayList<ASplit> compatibleSplits = GreedyCompatible.apply(progress, splits.getSplits());
+            clusters = new BitSet[compatibleSplits.size()];
+            for (int i = 0; i < compatibleSplits.size(); i++) {
+                clusters[i] = compatibleSplits.get(i).getPartNotContaining(1);
+            }
         }
         Arrays.sort(clusters, (a, b) -> Integer.compare(b.cardinality(), a.cardinality()));
 
-        compatible.sort(ASplit.comparatorByDecreasingSize());
-
-        final BitSet allTaxa = union(compatible.get(0).getA(), compatible.get(0).getB());
+        final BitSet allTaxa = taxaBlock.getTaxaSet();
 
         final PhyloTree tree = new PhyloTree();
         tree.setRoot(tree.newNode());
@@ -75,13 +76,14 @@ public class GreedyTree extends Algorithm<SplitsBlock, TreesBlock> implements IF
         final NodeArray<BitSet> node2taxa = new NodeArray<>(tree);
         node2taxa.put(tree.getRoot(), allTaxa);
 
+        // create tree:
         for (final BitSet cluster : clusters) {
             Node v = tree.getRoot();
-            while (contains(node2taxa.get(v), cluster)) {
+            while (BitSetUtils.contains(node2taxa.get(v), cluster)) {
                 boolean isBelow = false;
                 for (Edge e : v.outEdges()) {
                     final Node w = e.getTarget();
-                    if (contains(node2taxa.get(w), cluster)) {
+                    if (BitSetUtils.contains(node2taxa.get(w), cluster)) {
                         v = w;
                         isBelow = true;
                         break;
@@ -96,8 +98,9 @@ public class GreedyTree extends Algorithm<SplitsBlock, TreesBlock> implements IF
             node2taxa.put(u, cluster);
         }
 
-        tree.addTaxon(tree.getRoot(), 1);
-        for (int t = allTaxa.nextSetBit(2); t != -1; t = allTaxa.nextSetBit(t + 1)) {
+        // add all labels:
+
+        for (int t : BitSetUtils.members(allTaxa)) {
             Node v = tree.getRoot();
             while (node2taxa.get(v).get(t)) {
                 boolean isBelow = false;
@@ -113,7 +116,7 @@ public class GreedyTree extends Algorithm<SplitsBlock, TreesBlock> implements IF
                     break;
             }
             tree.addTaxon(v, t);
-            String label = tree.getLabel(v);
+            final String label = tree.getLabel(v);
             if (label == null)
                 tree.setLabel(v, "" + t);
             else if (!label.startsWith("<"))
@@ -122,49 +125,10 @@ public class GreedyTree extends Algorithm<SplitsBlock, TreesBlock> implements IF
                 tree.setLabel(v, label.substring(0, label.length() - 1) + "," + t + ">");
         }
 
+        RerootingUtils.rerootByMidpoint(tree);
+
         trees.getTrees().add(tree);
         progress.close();
     }
 
-    /**
-     * get the union of some bit sets
-     *
-     * @param sets
-     * @return union
-     */
-    public static BitSet union(BitSet... sets) {
-        final BitSet result = new BitSet();
-        for (BitSet a : sets)
-            result.or(a);
-        return result;
-    }
-
-    /**
-     * get the intersection of some bit sets
-     *
-     * @param sets
-     * @return union
-     */
-    public static BitSet intersection(BitSet... sets) {
-        final BitSet result = new BitSet();
-        boolean first = true;
-        for (BitSet b : sets)
-            if (first) {
-                result.or(b);
-                first = false;
-            } else
-                result.and(b);
-        return result;
-    }
-
-    /**
-     * does set contain set b?
-     *
-     * @param a
-     * @param b
-     * @return true if b is contained in a
-     */
-    public static boolean contains(BitSet a, BitSet b) {
-        return intersection(a, b).cardinality() == b.cardinality();
-    }
 }

@@ -97,6 +97,9 @@ public class WorkflowNodeView extends Group {
         rectangle = new Rectangle(160, 60);
         this.workflowNode = workflowNode;
 
+        if (workflowNode == null)
+            return;
+
         {
             final ChangeListener<UpdateState> stateChangeListener = (c, o, n) -> {
                 switch (n) {

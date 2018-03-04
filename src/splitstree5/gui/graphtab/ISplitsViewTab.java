@@ -32,7 +32,6 @@ import jloda.phylo.SplitsGraph;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.DataNode;
-import splitstree5.gui.ViewerTab;
 import splitstree5.gui.graphtab.base.EdgeViewBase;
 import splitstree5.gui.graphtab.base.GraphLayout;
 import splitstree5.gui.graphtab.base.NodeViewBase;
@@ -76,8 +75,6 @@ public interface ISplitsViewTab {
     int size();
 
     void setLayout(GraphLayout graphLayout);
-
-    ViewerTab getTab();
 
     void setName(String name);
 
