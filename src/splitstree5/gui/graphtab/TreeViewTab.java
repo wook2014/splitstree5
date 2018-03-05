@@ -44,7 +44,7 @@ public class TreeViewTab extends Graph2DTab<PhyloTree> {
      * constructor
      */
     public TreeViewTab() {
-        setLabel("Tree");
+        setName("TreeViewer");
         setIcon(ResourceManager.getIcon("TreeViewer16.gif"));
     }
 

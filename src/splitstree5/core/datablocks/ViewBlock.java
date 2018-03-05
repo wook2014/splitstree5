@@ -20,7 +20,6 @@
 package splitstree5.core.datablocks;
 
 import javafx.application.Platform;
-import jloda.util.Basic;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.interfaces.IFromView;
 import splitstree5.core.algorithms.interfaces.IToView;
@@ -30,7 +29,6 @@ import splitstree5.gui.graphtab.AlgorithmBreadCrumbsToolBar;
 import splitstree5.gui.graphtab.NetworkViewTab;
 import splitstree5.gui.graphtab.SplitsViewTab;
 import splitstree5.gui.graphtab.TreeViewTab;
-import splitstree5.gui.graphtab.base.GraphLayout;
 import splitstree5.gui.graphtab.base.GraphTabBase;
 
 /**
@@ -40,44 +38,19 @@ import splitstree5.gui.graphtab.base.GraphTabBase;
 public class ViewBlock extends DataBlock {
     public enum Type {TreeViewer, SplitsNetworkViewer, SplitsNetwork3DViewer, NetworkViewer}
 
-    private final Type type;
     private final GraphTabBase viewerTab;
 
     /**
      * constructor
      *
-     * @param type
+     * @param viewerTab
      */
-    private ViewBlock(Type type) {
-        this.type = type;
-        setTitle(Basic.fromCamelCase(type.toString()));
+    private ViewBlock(GraphTabBase viewerTab) {
+        setTitle(viewerTab.getName());
+        setName(viewerTab.getName());
 
-        switch (type) {
-            case TreeViewer: {
-                viewerTab = new TreeViewTab();
-                break;
-            }
-            case SplitsNetworkViewer: {
-                viewerTab = new SplitsViewTab();
-                ((SplitsViewTab) viewerTab).setLayout(GraphLayout.Radial);
-                break;
-            }
-            case SplitsNetwork3DViewer: {
-                viewerTab = new SplitsView3DTab();
-                ((SplitsView3DTab) viewerTab).setLayout(GraphLayout.Radial);
-                break;
-            }
-            case NetworkViewer: {
-                viewerTab = new NetworkViewTab();
-                ((NetworkViewTab) viewerTab).setLayout(GraphLayout.Radial);
-                break;
-
-            }
-            default:
-                throw new RuntimeException("Unknown viewer type: " + type);
-        }
+        this.viewerTab = viewerTab;
         viewerTab.setDataNode(getDataNode()); // todo: do we need this?
-        setName(type.toString());
     }
 
     /**
@@ -114,10 +87,6 @@ public class ViewBlock extends DataBlock {
         super.setDataNode(dataNode);
     }
 
-    public Type getType() {
-        return type;
-    }
-
     public GraphTabBase getTab() {
         return viewerTab;
     }
@@ -148,7 +117,7 @@ public class ViewBlock extends DataBlock {
      */
     public static class SplitsNetwork3DViewerBlock extends ViewBlock {
         public SplitsNetwork3DViewerBlock() {
-            super(Type.SplitsNetwork3DViewer);
+            super(new SplitsView3DTab());
         }
     }
 
@@ -158,7 +127,7 @@ public class ViewBlock extends DataBlock {
      */
     public static class SplitsNetworkViewerBlock extends ViewBlock {
         public SplitsNetworkViewerBlock() {
-            super(Type.SplitsNetworkViewer);
+            super(new SplitsViewTab());
         }
     }
 
@@ -168,7 +137,7 @@ public class ViewBlock extends DataBlock {
      */
     public static class NetworkViewBlock extends ViewBlock {
         public NetworkViewBlock() {
-            super(Type.NetworkViewer);
+            super(new NetworkViewTab());
         }
     }
 
@@ -178,7 +147,7 @@ public class ViewBlock extends DataBlock {
      */
     public static class TreeViewerBlock extends ViewBlock {
         public TreeViewerBlock() {
-            super(Type.TreeViewer);
+            super(new TreeViewTab());
         }
 
     }

@@ -29,7 +29,6 @@ import javafx.collections.WeakListChangeListener;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
-import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.Clipboard;
@@ -83,7 +82,6 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
     protected final ASelectionModel<Edge> edgeSelectionModel = new ASelectionModel<>();
 
     protected final BorderPane borderPane = new BorderPane();
-    protected final Label label = new Label("Graph2DTab");
     protected G graph;
 
     protected final NodeLabelSearcher nodeLabelSearcher;
@@ -343,15 +341,6 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
                 }
             }
         }
-    }
-
-
-    public void setName(String name) {
-        label.setText(name);
-    }
-
-    public String getName() {
-        return label.getText();
     }
 
 

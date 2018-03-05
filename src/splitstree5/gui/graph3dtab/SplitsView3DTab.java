@@ -82,8 +82,9 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
      */
     public SplitsView3DTab() {
         super();
-        setLabel("Splits Network 3D");
+        this.setName("SplitsNetworkViewer");
         setIcon(ResourceManager.getIcon("SplitsNetworkViewer16.gif"));
+        setLayout(GraphLayout.Radial);
 
         splitsSelectionModel.getSelectedItems().addListener((ListChangeListener<Integer>) c -> {
             if (!inSelection) {

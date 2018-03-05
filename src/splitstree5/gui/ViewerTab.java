@@ -40,6 +40,7 @@ package splitstree5.gui;
 
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.Tab;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
@@ -74,12 +75,22 @@ public abstract class ViewerTab extends Tab {
                 setContent(borderPane);
             }
         });
-        //setClosable(true);
     }
 
-    public void setLabel(String text) {
-        super.setText(null);
-        setGraphic(new Label(text));
+    public void setName(String text) {
+        if (getGraphic() != null && getGraphic() instanceof Labeled)
+            ((Labeled) getGraphic()).setText(text);
+        else {
+            super.setText(null);
+            setGraphic(new Label(text));
+        }
+    }
+
+    public String getName() {
+        if (getGraphic() != null && getGraphic() instanceof Labeled)
+            return ((Labeled) getGraphic()).getText();
+        else
+            return getText();
     }
 
     public void setIcon(Image icon) {

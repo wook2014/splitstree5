@@ -30,10 +30,7 @@ import jloda.graph.Node;
 import jloda.phylo.PhyloGraph;
 import jloda.util.ResourceManager;
 import splitstree5.core.algorithms.views.NetworkEmbedder;
-import splitstree5.gui.graphtab.base.EdgeView2D;
-import splitstree5.gui.graphtab.base.EdgeView2DWithMutations;
-import splitstree5.gui.graphtab.base.Graph2DTab;
-import splitstree5.gui.graphtab.base.NodeView2D;
+import splitstree5.gui.graphtab.base.*;
 import splitstree5.gui.graphtab.commands.MoveNodesCommand;
 import splitstree5.menu.MenuController;
 
@@ -52,8 +49,10 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
      * constructor
      */
     public NetworkViewTab() {
-        setLabel("Network");
+        this.setName("NetworkViewer");
         setIcon(ResourceManager.getIcon("NetworkViewer16.gif"));
+
+        setLayout(GraphLayout.Radial);
     }
 
 

@@ -57,11 +57,10 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
      * constructor
      */
     public SplitsViewTab() {
-        setLabel("Splits Network");
+        setName("SplitsNetworkViewer");
         setIcon(ResourceManager.getIcon("SplitsNetworkViewer16.gif"));
 
         setLayout(GraphLayout.Radial);
-
 
         splitsSelectionModel.getSelectedItems().addListener((ListChangeListener<Integer>) c -> {
             if (!inSelection) {
