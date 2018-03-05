@@ -107,14 +107,19 @@ public class TaxaFilterPane extends AlgorithmPane {
         };
         documentTaxonSelectionChangeListener = c -> {
             if (!inSelection) {
-                while (c.next()) {
-                    if (c.getAddedSize() > 0) {
-                        select(c.getAddedSubList(), true);
+                inSelection = true;
+                try {
+                    while (c.next()) {
+                        if (c.getAddedSize() > 0) {
+                            select(c.getAddedSubList(), true);
 
+                        }
+                        if (c.getRemovedSize() > 0) {
+                            select(c.getRemoved(), false);
+                        }
                     }
-                    if (c.getRemovedSize() > 0) {
-                        select(c.getRemoved(), false);
-                    }
+                } finally {
+                    inSelection = false;
                 }
             }
         };
