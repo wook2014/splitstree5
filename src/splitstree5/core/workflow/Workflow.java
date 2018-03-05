@@ -230,6 +230,8 @@ public class Workflow {
      * @return data node
      */
     public <D extends DataBlock> DataNode<D> createDataNode(D dataBlock) {
+        if (dataBlock == null)
+            System.err.println("null");
         dataBlock.setDocument(document);
         return addDataNode(new DataNode<>(dataBlock));
     }

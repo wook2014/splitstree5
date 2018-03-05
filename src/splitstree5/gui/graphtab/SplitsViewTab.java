@@ -340,14 +340,14 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
                     && dataNode.getParent().getParent().getDataBlock() instanceof SplitsBlock) {
                 final DataNode<SplitsBlock> splitsNode = dataNode.getParent().getParent();
                 for (Connector<SplitsBlock, ? extends DataBlock> child : splitsNode.getChildren()) {
-                    if (child.getChild().getDataBlock() instanceof ViewBlock.SplitsNetwork3DViewBlock) {
+                    if (child.getChild().getDataBlock() instanceof ViewBlock.SplitsNetwork3DViewerBlock) {
                         getMainWindow().showDataView(child.getChild());
                         return;
                     }
                 }
                 // no 3d viewer found, set one up
                 final Workflow workflow = controller.getMainWindow().getWorkflow();
-                final DataNode<ViewBlock> viewNode = workflow.createDataNode(new ViewBlock(ViewBlock.Type.SplitsNetwork3DViewer));
+                final DataNode<ViewBlock> viewNode = workflow.createDataNode(new ViewBlock.SplitsNetwork3DViewerBlock());
                 workflow.createConnector(splitsNode, viewNode, new SplitsNetworkAlgorithm()).forceRecompute();
                 controller.getMainWindow().getWorkflowTab().recompute();
             }

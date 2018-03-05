@@ -48,7 +48,7 @@ public class ViewBlock extends DataBlock {
      *
      * @param type
      */
-    public ViewBlock(Type type) {
+    private ViewBlock(Type type) {
         this.type = type;
         setTitle(Basic.fromCamelCase(type.toString()));
 
@@ -146,8 +146,8 @@ public class ViewBlock extends DataBlock {
      * This block represents the 3D view of a split network
      * Daniel Huson, 1.2018
      */
-    public static class SplitsNetwork3DViewBlock extends ViewBlock {
-        public SplitsNetwork3DViewBlock() {
+    public static class SplitsNetwork3DViewerBlock extends ViewBlock {
+        public SplitsNetwork3DViewerBlock() {
             super(Type.SplitsNetwork3DViewer);
         }
     }
@@ -156,8 +156,8 @@ public class ViewBlock extends DataBlock {
      * This block represents the view of a split network
      * Daniel Huson, 1.2018
      */
-    public static class SplitsNetworkViewBlock extends ViewBlock {
-        public SplitsNetworkViewBlock() {
+    public static class SplitsNetworkViewerBlock extends ViewBlock {
+        public SplitsNetworkViewerBlock() {
             super(Type.SplitsNetworkViewer);
         }
     }
@@ -176,8 +176,8 @@ public class ViewBlock extends DataBlock {
      * This block represents the view of a tree
      * Daniel Huson, 11.2017
      */
-    public static class TreeViewBlock extends ViewBlock {
-        public TreeViewBlock() {
+    public static class TreeViewerBlock extends ViewBlock {
+        public TreeViewerBlock() {
             super(Type.TreeViewer);
         }
 

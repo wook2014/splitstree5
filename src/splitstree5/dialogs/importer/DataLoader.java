@@ -98,32 +98,32 @@ public class DataLoader {
             workflow.createConnector(workflow.getWorkingDataNode(), distances, new HammingDistances());
             final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
             workflow.createConnector(distances, splits, new NeighborNet());
-            final DataNode<ViewBlock> viewNode = workflow.createDataNode(new ViewBlock(ViewBlock.Type.SplitsNetworkViewer));
+            final DataNode<ViewBlock> viewNode = workflow.createDataNode(new ViewBlock.SplitsNetworkViewerBlock());
             workflow.createConnector(splits, viewNode, new SplitsNetworkAlgorithm());
 
         } else if (dataBlock instanceof CharactersBlock) {
             workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
             final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
             workflow.createConnector(workflow.getWorkingDataNode(), splits, new NeighborNet());
-            final DataNode<ViewBlock> viewNode = workflow.createDataNode(new ViewBlock(ViewBlock.Type.SplitsNetworkViewer));
+            final DataNode<ViewBlock> viewNode = workflow.createDataNode(new ViewBlock.SplitsNetworkViewerBlock());
             workflow.createConnector(splits, viewNode, new SplitsNetworkAlgorithm());
 
         } else if (dataBlock instanceof DistancesBlock) {
             workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
             final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
             workflow.createConnector(workflow.getWorkingDataNode(), splits, new NeighborNet());
-            final DataNode<ViewBlock> viewNode = workflow.createDataNode(new ViewBlock(ViewBlock.Type.SplitsNetworkViewer));
+            final DataNode<ViewBlock> viewNode = workflow.createDataNode(new ViewBlock.SplitsNetworkViewerBlock());
             workflow.createConnector(splits, viewNode, new SplitsNetworkAlgorithm());
         } else if (dataBlock instanceof SplitsBlock) {
             workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
             final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
             workflow.createConnector(workflow.getWorkingDataNode(), splits, new SplitsFilter());
-            final DataNode<ViewBlock> viewNode = workflow.createDataNode(new ViewBlock(ViewBlock.Type.SplitsNetworkViewer));
+            final DataNode<ViewBlock> viewNode = workflow.createDataNode(new ViewBlock.SplitsNetworkViewerBlock());
             workflow.createConnector(splits, viewNode, new SplitsNetworkAlgorithm());
         } else if (dataBlock instanceof TreesBlock) {
             workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
             if (dataBlock.size() == 1) { // only one tree, don't need a filter
-                final DataNode<ViewBlock> viewNode = workflow.createDataNode(new ViewBlock(ViewBlock.Type.TreeViewer));
+                final DataNode<ViewBlock> viewNode = workflow.createDataNode(new ViewBlock.TreeViewerBlock());
                 workflow.createConnector(workflow.getWorkingDataNode(), viewNode, new TreeEmbedder());
             } else { // more than one tree, need a filter:
                 final DataNode<TreesBlock> trees = workflow.createDataNode(new TreesBlock());
@@ -139,11 +139,11 @@ public class DataLoader {
                 final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
                 workflow.createConnector(splits0, splits, new SplitsFilter());
 
-                final DataNode<ViewBlock> viewNode = workflow.createDataNode(new ViewBlock(ViewBlock.Type.SplitsNetworkViewer));
+                final DataNode<ViewBlock> viewNode = workflow.createDataNode(new ViewBlock.SplitsNetworkViewerBlock());
                 workflow.createConnector(splits, viewNode, new SplitsNetworkAlgorithm());
             }
         } else if (dataBlock instanceof NetworkBlock) {
-            final DataNode<ViewBlock> viewNode = workflow.createDataNode(new ViewBlock(ViewBlock.Type.NetworkViewer));
+            final DataNode<ViewBlock> viewNode = workflow.createDataNode(new ViewBlock.SplitsNetworkViewerBlock());
             workflow.createConnector(workflow.getTopDataNode(), viewNode, new NetworkEmbedder());
         }
 
