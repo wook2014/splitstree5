@@ -128,4 +128,14 @@ public class TreesBlock extends DataBlock {
             return "Number of trees: " + size() + " (too many to list here)\n";
         }
     }
+
+    /**
+     * get t-th tree, starting with 1
+     *
+     * @param t
+     * @return tree
+     */
+    public PhyloTree getTree(int t) {
+        return trees.get(t - 1);
+    }
 }

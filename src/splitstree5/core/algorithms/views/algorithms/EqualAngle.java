@@ -64,7 +64,7 @@ public class EqualAngle {
 
         initGraph(taxa, splits, cycle, graph);
 
-        final List<Integer> interiorSplits = (getNonTrivialSplitsOrdered(splits));
+        final List<Integer> interiorSplits = getNonTrivialSplitsOrdered(splits);
 
         progress.setSubtask("process internal splits");
         progress.setMaximum(interiorSplits.size());    //initialize maximum progress
@@ -72,7 +72,7 @@ public class EqualAngle {
         {
             int count = 0;
             for (Integer s : interiorSplits) {
-                if (SplitsUtilities.isCircular(taxa, cycle, splits.get(s - 1))) {
+                if (SplitsUtilities.isCircular(taxa, cycle, splits.get(s))) {
                     wrapSplit(taxa, splits, s, cycle, graph);
                     usedSplits.set(s, true);
                     progress.setProgress(++count);
@@ -117,7 +117,7 @@ public class EqualAngle {
         final int[] taxon2TrivialSplit = new int[taxa.getNtax() + 1];
 
         for (int s = 1; s <= splits.getNsplits(); s++) {
-            final ASplit split = splits.get(s - 1);
+            final ASplit split = splits.get(s);
             if (split.size() == 1) {
                 final int t = split.getSmallerPart().nextSetBit(1);
                 taxon2TrivialSplit[t] = s;
@@ -136,7 +136,7 @@ public class EqualAngle {
             Edge e = graph.newEdge(center, v);
             if (taxon2TrivialSplit[t] != 0) {
                 int s = taxon2TrivialSplit[t];
-                graph.setWeight(e, splits.get(s - 1).getWeight());
+                graph.setWeight(e, splits.get(s).getWeight());
                 graph.setSplit(e, s);
             } else
                 graph.setSplit(e, -1); // mark as temporary split
@@ -154,7 +154,7 @@ public class EqualAngle {
         final SortedSet<Pair<Integer, Integer>> interiorSplits = new TreeSet<>(new Pair<Integer, Integer>()); // first component is cardinality, second is id
 
         for (int s = 1; s <= splits.getNsplits(); s++) {
-            final ASplit split = splits.get(s - 1);
+            final ASplit split = splits.get(s);
             if (split.size() > 1) {
                 interiorSplits.add(new Pair<>(split.getPartContaining(1).cardinality(), s));
             }
@@ -204,7 +204,7 @@ public class EqualAngle {
      * @param graph
      */
     private static void wrapSplit(TaxaBlock taxa, SplitsBlock splits, int s, int[] cycle, SplitsGraph graph) throws IllegalStateException {
-        final BitSet part = splits.get(s - 1).getPartNotContaining(1);
+        final BitSet part = splits.get(s).getPartNotContaining(1);
 
         int xp = 0; // first member of split part not containing taxon 1
         int xq = 0; // last member of split part not containing taxon 1
@@ -259,7 +259,7 @@ public class EqualAngle {
             // here we make sure that new edge is inserted after f0
 
             graph.setSplit(h, s);
-            graph.setWeight(h, splits.getWeight(s - 1));
+            graph.setWeight(h, splits.get(s).getWeight());
             if (u != null) {
                 h = graph.newEdge(w, u, null);
                 graph.setSplit(h, graph.getSplit(e));
@@ -365,7 +365,7 @@ public class EqualAngle {
      */
     private static void assignAnglesToSplits(int ntaxa, double[] TaxaAngles, double[] split2angle, SplitsBlock splits, int[] cycle) {
         for (int s = 1; s <= splits.getNsplits(); s++) {
-            final BitSet part = splits.get(s - 1).getPartNotContaining(1);
+            final BitSet part = splits.get(s).getPartNotContaining(1);
             int xp = 0; // first position of split part not containing taxon 1
             int xq = 0; // last position of split part not containing taxon 1
             for (int i = 1; i <= ntaxa; i++) {
@@ -377,18 +377,18 @@ public class EqualAngle {
                 }
             }
 
-            int xpneighbour = (xp - 2) % ntaxa + 1;
-            int xqneighbour = (xq) % ntaxa + 1;
+            final int xpNeighbor = (xp - 2) % ntaxa + 1;
+            final int xqNeighbor = (xq) % ntaxa + 1;
             //the split, when represented on the circle of the taxas, is a line which interescts the circle in two
             //places : SplitsByAngle is a sorted list (sorted by the angle of these intersections), where every
             // split thus appears 2 times (once per intersection)
             double TaxaAngleP;
             double TaxaAngleQ;
-            TaxaAngleP = GeometryUtils.midAngle(TaxaAngles[xp], TaxaAngles[xpneighbour]);
-            TaxaAngleQ = GeometryUtils.midAngle(TaxaAngles[xq], TaxaAngles[xqneighbour]);
+            TaxaAngleP = GeometryUtils.midAngle(TaxaAngles[xp], TaxaAngles[xpNeighbor]);
+            TaxaAngleQ = GeometryUtils.midAngle(TaxaAngles[xq], TaxaAngles[xqNeighbor]);
 
             split2angle[s] = GeometryUtils.modulo360((TaxaAngleQ + TaxaAngleP) / 2);
-            if (xqneighbour == 1) {
+            if (xqNeighbor == 1) {
                 split2angle[s] = GeometryUtils.modulo360(split2angle[s] + 180);
             }
             //System.out.println("split from "+xp+","+xpneighbour+" ("+TaxaAngleP+") to "+xq+","+xqneighbour+" ("+TaxaAngleQ+") -> "+split2angle[s]+" $ "+(180 * (xp + xq)) / (double) ntaxa);s

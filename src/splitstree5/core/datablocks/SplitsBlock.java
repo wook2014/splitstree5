@@ -111,7 +111,7 @@ public class SplitsBlock extends DataBlock {
 
     public Iterable<ASplit> splits() {
         return () -> new Iterator<ASplit>() {
-            int i = 0;
+            int i = 0; // 0-based because we do not use get(i) but rather splits.get(i)
 
             @Override
             public boolean hasNext() {
@@ -171,37 +171,30 @@ public class SplitsBlock extends DataBlock {
         return cycle;
     }
 
-    public ASplit get(int s) {
-        return splits.get(s);
-    }
-
-    public double getWeight(int s) {
-        return splits.get(s).getWeight();
-    }
-
-    public BitSet getA(int s) {
-        return splits.get(s).getA();
-    }
-
-    public BitSet getB(int s) {
-        return splits.get(s).getB();
+    /**
+     * get the i-th split, 1-based
+     *
+     * @param i
+     * @return i-th split
+     */
+    public ASplit get(int i) {
+        return splits.get(i - 1);
     }
 
     /**
      * gets  all taxa that are included in one specified side of one split and also one specified side of the other split.
      *
-     * @param splitP the index of split "P"
+     * @param splitP the index of split "P", 1-based
      * @param sideP  the "side" of the split P that should be considered
-     * @param splitQ the index of the other split "Q"
+     * @param splitQ the index of the other split "Q", 1-based
      * @param sideQ  the "side" of the split Q that should be considered
      */
     public BitSet intersect2(int splitP, boolean sideP, int splitQ, boolean sideQ) {
         final BitSet result = new BitSet();
-        result.or(sideP ? getA(splitP) : getB(splitP));
-        result.and(sideQ ? getA(splitQ) : getB(splitQ));
+        result.or(sideP ? get(splitP).getA() : get(splitP).getB());
+        result.and(sideQ ? get(splitQ).getA() : get(splitQ).getB());
         return result;
     }
-
 
     /**
      * set the cycle (and normalize it)
@@ -212,6 +205,8 @@ public class SplitsBlock extends DataBlock {
         if (cycle != null) {
             BitSet set = new BitSet();
             for (int i : cycle) {
+                if (i == 0)
+                    System.err.println("Internal error: setCycle() failed: i==0");
                 set.set(i);
             }
             if (set.cardinality() != cycle.length) {
