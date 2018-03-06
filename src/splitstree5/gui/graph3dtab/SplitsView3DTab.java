@@ -82,7 +82,7 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
      */
     public SplitsView3DTab() {
         super();
-        this.setName("SplitsNetworkViewer");
+        this.setName("SplitsNetwork3DViewer");
         setIcon(ResourceManager.getIcon("SplitsNetworkViewer16.gif"));
         setLayout(GraphLayout.Radial);
 
@@ -223,7 +223,6 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
             });
         }
         addNodeLabelMovementSupport(nv);
-
         return nv;
     }
 

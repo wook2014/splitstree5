@@ -1,0 +1,143 @@
+#nexus
+
+BEGIN Taxa;
+DIMENSIONS ntax=63;
+TAXLABELS
+[1] 'A.smyrnii'
+[2] 'A.brassicae_GB1'
+[3] 'E.pedicellatum'
+[4] 'A.solani_GB2'
+[5] 'L.infectoria'
+[6] 'S.callistephi'
+[7] 'N.scirpicola'
+[8] 'S.vesicarium'
+[9] 'P.herbarum'
+[10] 'A.brassicicola_GB1'
+[11] 'A.cheiranthi'
+[12] 'A.solani_GB1'
+[13] 'S.botryosum_GB1'
+[14] 'S.sarcinaeforme'
+[15] 'A.selini'
+[16] 'P.herbarum_GB4'
+[17] 'A.brassicicola_GB2'
+[18] 'N.caricis'
+[19] 'A.arborescens'
+[20] 'S.botryosum'
+[21] 'A.porri_GB1'
+[22] 'A.destruens'
+[23] 'A.crassa'
+[24] 'A.tenuissima'
+[25] 'E.indefessa'
+[26] 'E.leptinellae'
+[27] 'P.herbarum_GB2'
+[28] 'S.herbarum_GB1'
+[29] 'P.herbrum_GB5'
+[30] 'E.hyacinthi'
+[31] 'A.carotiincultae'
+[32] 'P.herbarum_GB1'
+[33] 'A.solani'
+[34] 'E.proteae'
+[35] 'U.chartarum'
+[36] 'A.alternata'
+[37] 'P.infectoria'
+[38] 'A.infectoria'
+[39] 'U.atrum'
+[40] 'A.infectoria_GB1'
+[41] 'A.solani_GB3'
+[42] 'A.ethzedia'
+[43] 'A.brassicicola'
+[44] 'E.novae-zelandiae'
+[45] 'Bipolaris_tetramera'
+[46] 'U.alternariae'
+[47] 'A.triticina'
+[48] 'A.japonica'
+[49] 'A.macrspora'
+[50] 'A.radicina'
+[51] 'A.petroselini'
+[52] 'A.alternata_GB1'
+[53] 'A.dauci'
+[54] 'U.botrytis'
+[55] 'A.macrospora'
+[56] 'A.porri'
+[57] 'U.consortiale'
+[58] 'A.longipes'
+[59] 'E.pedicillatum'
+[60] 'E.allii'
+[61] 'P.herbrum_GB3'
+[62] 'A.alternata_GB2'
+[63] 'A.brassicae'
+;
+END; [Taxa]
+BEGIN Trees;
+PROPERTIES partialtrees;
+TRANSLATE
+	 'P.herbarum_GB2'	'P.herbarum_GB2',
+	 'U.alternariae'	'U.alternariae',
+	 'A.solani_GB3'	'A.solani_GB3',
+	 'E.proteae'	'E.proteae',
+	 'S.callistephi'	'S.callistephi',
+	 'E.indefessa'	'E.indefessa',
+	 'A.smyrnii'	'A.smyrnii',
+	 'A.brassicae_GB1'	'A.brassicae_GB1',
+	 'A.solani_GB1'	'A.solani_GB1',
+	 'S.sarcinaeforme'	'S.sarcinaeforme',
+	 'A.macrspora'	'A.macrspora',
+	 'U.atrum'	'U.atrum',
+	 'A.porri_GB1'	'A.porri_GB1',
+	 'U.chartarum'	'U.chartarum',
+	 'U.botrytis'	'U.botrytis',
+	 'P.herbrum_GB3'	'P.herbrum_GB3',
+	 'E.pedicellatum'	'E.pedicellatum',
+	 'A.carotiincultae'	'A.carotiincultae',
+	 'S.botryosum_GB1'	'S.botryosum_GB1',
+	 'P.infectoria'	'P.infectoria',
+	 'A.macrospora'	'A.macrospora',
+	 'A.cheiranthi'	'A.cheiranthi',
+	 'S.herbarum_GB1'	'S.herbarum_GB1',
+	 'A.infectoria'	'A.infectoria',
+	 'A.ethzedia'	'A.ethzedia',
+	 'A.alternata'	'A.alternata',
+	 'P.herbarum_GB1'	'P.herbarum_GB1',
+	 'A.solani_GB2'	'A.solani_GB2',
+	 'A.radicina'	'A.radicina',
+	 'S.botryosum'	'S.botryosum',
+	 'A.japonica'	'A.japonica',
+	 'P.herbrum_GB5'	'P.herbrum_GB5',
+	 'A.brassicicola'	'A.brassicicola',
+	 'E.hyacinthi'	'E.hyacinthi',
+	 'N.caricis'	'N.caricis',
+	 'A.arborescens'	'A.arborescens',
+	 'A.tenuissima'	'A.tenuissima',
+	 'A.longipes'	'A.longipes',
+	 'A.alternata_GB2'	'A.alternata_GB2',
+	 'A.destruens'	'A.destruens',
+	 'A.petroselini'	'A.petroselini',
+	 'A.triticina'	'A.triticina',
+	 'E.pedicillatum'	'E.pedicillatum',
+	 'Bipolaris_tetramera'	'Bipolaris_tetramera',
+	 'S.vesicarium'	'S.vesicarium',
+	 'P.herbarum'	'P.herbarum',
+	 'A.alternata_GB1'	'A.alternata_GB1',
+	 'L.infectoria'	'L.infectoria',
+	 'E.leptinellae'	'E.leptinellae',
+	 'A.crassa'	'A.crassa',
+	 'E.allii'	'E.allii',
+	 'E.novae-zelandiae'	'E.novae-zelandiae',
+	 'A.solani'	'A.solani',
+	 'A.selini'	'A.selini',
+	 'A.brassicicola_GB2'	'A.brassicicola_GB2',
+	 'A.dauci'	'A.dauci',
+	 'A.porri'	'A.porri',
+	 'A.brassicicola_GB1'	'A.brassicicola_GB1',
+	 'A.brassicae'	'A.brassicae',
+	 'N.scirpicola'	'N.scirpicola',
+	 'P.herbarum_GB4'	'P.herbarum_GB4',
+	 'U.consortiale'	'U.consortiale',
+	 'A.infectoria_GB1'	'A.infectoria_GB1',
+;
+[1] tree 'pryor03_1_ITS'=((E.allii:1.0,(N.caricis:1.0,(((((E.proteae:1.0,E.hyacinthi:1.0):1.0,E.novae-zelandiae:1.0):1.0,E.leptinellae:1.0):1.0,((A.brassicicola:1.0,(A.japonica:1.0,U.alternariae:1.0):1.0):1.0,((((A.dauci:1.0,A.macrospora:1.0):1.0,A.crassa:1.0):1.0,(A.porri:1.0,A.solani:1.0):1.0):1.0,(((A.radicina:1.0,A.carotiincultae:1.0):1.0,(A.petroselini:1.0,A.selini:1.0):1.0,A.smyrnii:1.0):1.0,((A.alternata:1.0,A.tenuissima:1.0,A.arborescens:1.0,A.longipes:1.0,A.destruens:1.0):1.0,(((U.consortiale:1.0,U.botrytis:1.0,U.atrum:1.0):1.0,U.chartarum:1.0):1.0,(A.cheiranthi:1.0,E.indefessa:1.0):1.0):1.0):1.0):1.0):1.0):1.0):1.0,((E.pedicillatum:1.0,(((S.botryosum:1.0,S.callistephi:1.0):1.0,P.herbarum:1.0):1.0,S.vesicarium:1.0):1.0):1.0,(A.infectoria:1.0,L.infectoria:1.0,A.ethzedia:1.0,A.triticina:1.0):1.0):1.0):1.0):1.0):0.5,N.scirpicola:0.5):0;
+[2] tree 'pryor03_2_SSU'=((N.caricis:1.0,(E.allii:1.0,(((((E.proteae:1.0,E.leptinellae:1.0):1.0,E.novae-zelandiae:1.0):1.0,E.hyacinthi:1.0):1.0,((((A.brassicicola:1.0,(A.japonica:1.0,U.alternariae:1.0):1.0):1.0,((((A.radicina:1.0,A.carotiincultae:1.0):1.0,A.petroselini:1.0):1.0,A.selini:1.0):1.0,A.smyrnii:1.0):1.0):1.0,((A.alternata:1.0,A.tenuissima:1.0,A.arborescens:1.0,A.longipes:1.0,A.destruens:1.0):1.0,(((U.consortiale:1.0,U.botrytis:1.0,U.atrum:1.0,U.chartarum:1.0):1.0,A.cheiranthi:1.0):1.0,E.indefessa:1.0):1.0):1.0):1.0,(A.dauci:1.0,A.crassa:1.0,A.macrospora:1.0,A.porri:1.0,A.solani:1.0):1.0):1.0):1.0,((E.pedicillatum:1.0,(S.botryosum:1.0,S.vesicarium:1.0,S.callistephi:1.0,P.herbarum:1.0):1.0):1.0,(A.infectoria:1.0,L.infectoria:1.0,A.ethzedia:1.0,A.triticina:1.0):1.0):1.0):1.0):1.0):0.5,N.scirpicola:0.5):0;
+[3] tree 'pryor03_3_gpd'=((N.caricis:1.0,(E.allii:1.0,(((E.proteae:1.0,(E.hyacinthi:1.0,E.novae-zelandiae:1.0):1.0):1.0,(E.leptinellae:1.0,(((A.brassicicola:1.0,A.japonica:1.0):1.0,(((((A.dauci:1.0,(A.porri:1.0,A.solani:1.0):1.0):1.0,(A.crassa:1.0,A.macrospora:1.0):1.0):1.0,((A.alternata:1.0,A.tenuissima:1.0,A.arborescens:1.0,A.destruens:1.0):1.0,A.longipes:1.0):1.0):1.0,((A.radicina:1.0,A.carotiincultae:1.0):1.0,((A.petroselini:1.0,A.selini:1.0):1.0,A.smyrnii:1.0):1.0):1.0):1.0,(((U.consortiale:1.0,U.botrytis:1.0,U.atrum:1.0):1.0,(A.cheiranthi:1.0,E.indefessa:1.0):1.0):1.0,U.chartarum:1.0):1.0):1.0):1.0,U.alternariae:1.0):1.0):1.0):1.0,((E.pedicillatum:1.0,(S.botryosum:1.0,(S.vesicarium:1.0,S.callistephi:1.0,P.herbarum:1.0):1.0):1.0):1.0,((A.infectoria:1.0,L.infectoria:1.0):1.0,(A.ethzedia:1.0,A.triticina:1.0):1.0):1.0):1.0):1.0):1.0):0.5,N.scirpicola:0.5):0;
+[4] tree 'pryor00_1_ITS'=(((P.herbarum:1.0,(P.herbrum_GB5:1.0,((P.herbarum_GB1:1.0,S.botryosum:1.0):1.0,(S.botryosum_GB1:1.0,((S.callistephi:1.0,S.sarcinaeforme:1.0):1.0,((((A.infectoria_GB1:1.0,A.infectoria:1.0):1.0,P.infectoria:1.0):1.0,(((((((A.solani_GB1:1.0,A.solani_GB2:1.0):1.0,(A.porri_GB1:1.0,A.porri:1.0):1.0):1.0,A.solani:1.0):1.0,A.solani_GB3:1.0):1.0,(A.dauci:1.0,A.macrospora:1.0):1.0):1.0,A.crassa:1.0):1.0,((((A.brassicicola:1.0,A.brassicicola_GB2:1.0):1.0,A.brassicicola_GB1:1.0):1.0,(A.japonica:1.0,U.alternariae:1.0):1.0):1.0,(((((A.tenuissima:1.0,A.alternata:1.0):1.0,A.alternata_GB1:1.0):1.0,A.alternata_GB2:1.0):1.0,(A.brassicae_GB1:1.0,A.brassicae:1.0):1.0):1.0,((((A.petroselini:1.0,A.selini:1.0):1.0,(A.radicina:1.0,A.carotiincultae:1.0):1.0):1.0,A.smyrnii:1.0):1.0,(A.cheiranthi:1.0,(U.chartarum:1.0,(U.botrytis:1.0,U.atrum:1.0):1.0):1.0):1.0):1.0):1.0):1.0):1.0):1.0,(E.pedicellatum:1.0,Bipolaris_tetramera:1.0):1.0):1.0):1.0):1.0):1.0):1.0):1.0,(((P.herbarum_GB4:1.0,S.herbarum_GB1:1.0):1.0,S.vesicarium:1.0):1.0,P.herbrum_GB3:1.0):1.0):0.5,P.herbarum_GB2:0.5):0;
+[5] tree 'pryor00_2_SSUrDNA'=(((A.macrspora:1.0,((P.infectoria:1.0,A.infectoria:1.0):1.0,((A.tenuissima:1.0,(A.alternata:1.0,(U.atrum:1.0,(U.chartarum:1.0,(A.cheiranthi:1.0,U.botrytis:1.0):1.0):1.0):1.0):1.0):1.0,((A.brassicae:1.0,((((A.selini:1.0,A.smyrnii:1.0):1.0,A.petroselini:1.0):1.0,A.brassicicola:1.0):1.0,(U.alternariae:1.0,(A.radicina:1.0,(A.japonica:1.0,A.carotiincultae:1.0):1.0):1.0):1.0):1.0):1.0,((E.pedicellatum:1.0,(((P.herbarum:1.0,S.sarcinaeforme:1.0):1.0,S.callistephi:1.0):1.0,(S.vesicarium:1.0,S.botryosum:1.0):1.0):1.0):1.0,Bipolaris_tetramera:1.0):1.0):1.0):1.0):1.0):1.0,((A.porri:1.0,A.solani:1.0):1.0,A.dauci:1.0):1.0):0.5,A.crassa:0.5):0;
+END; [Trees]

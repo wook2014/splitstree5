@@ -279,7 +279,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewBlock> implements IF
             for (Node v : node2point.keys()) {
                 final Point2D point = node2point.getValue(v);
                 if (point != null)
-                    node2point.setValue(v, new Point2D(factorX * (point.getX() - (center ? -midX : 0)), factorY * (point.getY() - (center ? -midY : 0))));
+                    node2point.setValue(v, new Point2D(factorX * (point.getX() - (center ? midX : 0)), factorY * (point.getY() - (center ? midY : 0))));
             }
         }
     }
