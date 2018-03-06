@@ -167,6 +167,7 @@ public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> impleme
         final Graph graph = new Graph();
 
         final Node[] split2node = new Node[splits.size()];
+
         for (int s = 0; s < splits.size(); s++) {
             final Pair<Integer, Integer> pair = new Pair<>(s, (int) (10000 * splits.get(s).getWeight()));
             split2node[s] = graph.newNode(pair);
@@ -180,7 +181,6 @@ public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> impleme
         }
         return graph;
     }
-
     /**
      * computes the subgraph in which every node is contained in a d-clique
      *
@@ -328,6 +328,9 @@ public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> impleme
         }
         return score;
     }
+
+
+
 
     /**
      * determines whether the node v has degree==d but  is not contained in a clique of size d+1

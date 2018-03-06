@@ -23,6 +23,8 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
+import jloda.graph.Node;
+import jloda.graph.NodeSet;
 import jloda.phylo.PhyloTree;
 import jloda.util.CanceledException;
 import jloda.util.Pair;
@@ -38,6 +40,10 @@ import splitstree5.core.misc.Compatibility;
 import splitstree5.utils.SplitsException;
 import splitstree5.utils.SplitsUtilities;
 import splitstree5.utils.TreesUtilities;
+import jloda.graph.Graph;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
 
 import java.util.*;
 
@@ -246,5 +252,105 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
             return sum;
         }
     }
+
+    private Graph buildIncompatibilityGraph(List<ASplit> splits) {
+        final Graph graph = new Graph();
+
+        final Node[] split2node = new Node[splits.size()];
+
+        for (int s = 0; s < splits.size(); s++) {
+            final Pair<Integer, Integer> pair = new Pair<>(s, (int) (10000 * splits.get(s).getWeight()));
+            split2node[s] = graph.newNode(pair);
+        }
+        for (int s = 0; s < splits.size(); s++) {
+
+            for (int t = s + 1; t < splits.size(); t++)
+                if (!Compatibility.areCompatible(splits.get(s), splits.get(t))) {
+                    graph.newEdge(split2node[s], split2node[t]);
+                }
+        }
+        return graph;
+    }
+
+    /**
+     * gets the node will the lowest compatibility score
+     *
+     * @param graph
+     * @return worst node
+     */
+    private Node getWorstNode(Graph graph) {
+        float worstCompatibility = 0;
+        Node worstNode = null;
+        for (Node v : graph.nodes()) {
+            float compatibility = getCompatibilityScore(v);
+            if (worstNode == null || compatibility < worstCompatibility) {
+                worstNode = v;
+                worstCompatibility = compatibility;
+            }
+        }
+        return worstNode;
+    }
+
+    /**
+     * gets the compatibility score of a node.
+     * This is the weight of the splits minus the weight of all contradicting splits
+     *
+     * @param v
+     * @return compatibility score
+     */
+    private int getCompatibilityScore(Node v) {
+        int score = ((Pair<Integer, Integer>) v.getInfo()).getSecond();
+        for (Node w : v.adjacentNodes()) {
+            score -= ((Pair<Integer, Integer>) w.getInfo()).getSecond();
+        }
+        return score;
+    }
+
+    /**
+     * gets the incompatibility score of a node.
+     * This is the sum of the  weights of the adyacent nodes to a given node
+     *
+     * @param v
+     * @return get  conflict score
+     */
+    public int getConflictScore(Node v) {
+        int score = 0;
+        for (Node w : v.adjacentNodes()) {
+            score += ((Pair<Integer, Integer>) w.getInfo()).getSecond();
+        }
+        return score;
+    }
+
+    /**
+     * gets the  nodes in decreasing order of conflict score.
+     *
+     * @param aset
+     * @return get a sorted array  of nodes in decreasing conflict score order
+     */
+    private void sortbyDecreasingConflictScore(NodeSet aset)
+    {
+
+        Node[] nodeArray=aset.toArray();
+
+        Arrays.sort(nodeArray, (v1, v2) -> this.getConflictScore(v2)-(this.getConflictScore(v1)));
+    }
+    /**
+     * gets the  p percent of the  least conflicting nodes nodes
+     *
+     * @param aset
+     * @return get a sorted array  of nodes in decreasing conflict score order
+     */
+    private Node[] getPpercentLeastConflictingNodes(NodeSet aset, double p)
+    {
+        if (p < 0.0 || p >1.0)throw new IllegalArgumentException();
+        Node[] nodeArray=aset.toArray();
+
+        Arrays.sort(nodeArray, (v1, v2) -> this.getConflictScore(v2)-(this.getConflictScore(v1)));
+        double d= p * ((double) nodeArray.length);
+        int numberOfNodes = (int) Math.floor(d);
+        return Arrays.copyOf(nodeArray,numberOfNodes );
+
+    }
+
 
 }
