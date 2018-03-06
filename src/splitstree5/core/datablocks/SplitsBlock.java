@@ -205,8 +205,6 @@ public class SplitsBlock extends DataBlock {
         if (cycle != null) {
             BitSet set = new BitSet();
             for (int i : cycle) {
-                if (i == 0)
-                    System.err.println("Internal error: setCycle() failed: i==0");
                 set.set(i);
             }
             if (set.cardinality() != cycle.length) {
