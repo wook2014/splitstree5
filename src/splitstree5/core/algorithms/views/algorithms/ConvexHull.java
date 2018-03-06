@@ -97,7 +97,7 @@ public class ConvexHull {
         for (int z = 0; z < order.length; z++) {
             progress.incrementProgress();
 
-            final BitSet currentSplitPartA = splits.getA(order[z] - 1);
+            final BitSet currentSplitPartA = splits.get(order[z]).getA();
 
             //is 0, if the node is member of convex hull for the "0"-side of the current split,
             //is 1, if the node is member of convex hull for the "1"-side of the current split,
@@ -113,8 +113,8 @@ public class ConvexHull {
             //find splits, where taxa of side "0" of current split are divided
             for (int i = 1; i <= splits.getNsplits(); i++) {
                 if (!usedSplits.get(i)) continue;    //only splits already used must be regarded
-                if (splits.intersect2(order[z] - 1, false, i - 1, true).cardinality() != 0 &&
-                        splits.intersect2(order[z] - 1, false, i - 1, false).cardinality() != 0)
+                if (splits.intersect2(order[z], false, i, true).cardinality() != 0 &&
+                        splits.intersect2(order[z], false, i, false).cardinality() != 0)
                     splits0.set(i);
                 progress.checkForCancel();
             }
@@ -125,8 +125,8 @@ public class ConvexHull {
 
                 if (!usedSplits.get(i)) continue;    //only splits already used must be regarded
 
-                if (splits.intersect2(order[z] - 1, true, i - 1, true).cardinality() != 0 &&
-                        splits.intersect2(order[z] - 1, true, i - 1, false).cardinality() != 0)
+                if (splits.intersect2(order[z], true, i, true).cardinality() != 0 &&
+                        splits.intersect2(order[z], true, i, false).cardinality() != 0)
                     splits1.set(i);
             }
 
@@ -170,7 +170,7 @@ public class ConvexHull {
                 final Edge e = graph.newEdge(v1, v);
 
                 graph.setSplit(e, order[z]);
-                graph.setWeight(e, splits.getWeight(order[z] - 1));
+                graph.setWeight(e, splits.get(order[z]).getWeight());
                 graph.setLabel(e, "" + order[z]);
 
 
@@ -319,7 +319,7 @@ public class ConvexHull {
         final SortedSet<Integer> set = new TreeSet<>();
         for (int s = 1; s <= splits.getNsplits(); s++) {
             if (!usedSplits.get(s)) {
-                Integer pair = 10000 * splits.get(s - 1).size() + s;
+                Integer pair = 10000 * splits.get(s).size() + s;
                 set.add(pair);
             }
         }

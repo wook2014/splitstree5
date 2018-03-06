@@ -35,6 +35,7 @@ import java.util.*;
  */
 
 public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
+    public enum EdgeWeights {AverageRelative, Mean, TreeSizeWeightedMean, Sum, Min, None}
 
     public final static String DESCRIPTION = "Z-closure super-network from partial trees (Huson, Dezulian, Kloepper and Steel 2004)";
     private boolean optionZRule = true;
@@ -43,11 +44,6 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
     private int optionNumberOfRuns = 1;
     private boolean optionApplyRefineHeuristic = false;
     private int optionSeed = 0;
-
-    // edge weight options:
-    public enum EdgeWeights {
-        AverageRelative, Mean, TreeSizeWeightedMean, Sum, Min, None
-    }
 
     private final SimpleObjectProperty<EdgeWeights> optionEdgeWeights = new SimpleObjectProperty<>(EdgeWeights.TreeSizeWeightedMean);
 

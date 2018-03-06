@@ -44,7 +44,7 @@ import java.util.concurrent.Executors;
 
 /**
  * tree and split network two-dimensional graph
- * Daniel Huson,. 12.2017
+ * Daniel Huson, 12.2017
  */
 public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
 

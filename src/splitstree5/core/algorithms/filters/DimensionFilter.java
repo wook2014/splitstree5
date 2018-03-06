@@ -353,20 +353,6 @@ public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> impleme
         return false;
     }
 
-    /**
-     * copy splits from parent to child
-     *
-     * @param parent
-     * @param child
-     * @param toDelete
-     */
-    private void copySplits(SplitsBlock parent, SplitsBlock child, BitSet toDelete) {
-        for (int s = 0; s < parent.size(); s++) {
-            if (!toDelete.get(s))
-                child.getSplits().add(parent.get(s));
-        }
-    }
-
     public int getOptionMaxDimension() {
         return optionMaxDimension.get();
     }

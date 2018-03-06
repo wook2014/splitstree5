@@ -87,12 +87,12 @@ public class TabbedTextOut implements
         //Now we loop through the splits, one split per row.
         int nsplits = splits.getNsplits();
         int ntax = taxa.getNtax();
-        for (int i = 1; i <= nsplits; i++) {
+        for (int s = 1; s <= nsplits; s++) {
 
             //Split number
-            w.write(Integer.toString(i));
-            w.write("\t" + splits.getWeight(i - 1));
-            BitSet A = splits.get(i - 1).getA();
+            w.write(Integer.toString(s));
+            w.write("\t" + splits.get(s).getWeight());
+            BitSet A = splits.get(s).getA();
             for (int j = 1; j <= ntax; j++) {
                 char ch = A.get(j) ? '1' : '0';
                 w.write("\t" + ch);

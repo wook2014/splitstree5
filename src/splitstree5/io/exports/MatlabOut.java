@@ -80,20 +80,20 @@ public class MatlabOut implements IFromTaxa, IExportTaxa, IFromDistances, IExpor
         if (splits.getSplits().isEmpty())
             throw new IOException("SplitsBlock is empty");
         else
-            ntax = splits.get(0).ntax();
+            ntax = splits.get(1).ntax();
         int nsplits = splits.getNsplits();
         w.write("%%Number of splits\n");
         w.write("" + nsplits + "\n");
         w.write("%% Split weights\n");
-        for (int j = 0; j < nsplits; j++)
-            w.write(" " + splits.getWeight(j));
+        for (int s = 1; s <= nsplits; s++)
+            w.write(" " + splits.get(s).getWeight());
         w.write("\n");
 
         //int ntax = splits.getNtax();
         for (int i = 1; i < ntax; i++) {
             for (int j = i + 1; j <= ntax; j++) {
-                for (int k = 0; k < nsplits; k++) {
-                    BitSet S = splits.get(k).getA();
+                for (int s = 1; s <= nsplits; s++) {
+                    final BitSet S = splits.get(s).getA();
                     if (S.get(i) != S.get(j))
                         w.write("\t" + 1);
                     else
