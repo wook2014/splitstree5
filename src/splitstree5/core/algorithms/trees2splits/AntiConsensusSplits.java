@@ -26,6 +26,7 @@ import javafx.collections.ObservableList;
 import jloda.graph.Node;
 import jloda.graph.NodeSet;
 import jloda.phylo.PhyloTree;
+import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.Pair;
 import jloda.util.ProgressListener;
@@ -37,10 +38,13 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
+import splitstree5.core.misc.Distortion;
 import splitstree5.utils.SplitsException;
 import splitstree5.utils.SplitsUtilities;
 import splitstree5.utils.TreesUtilities;
 import jloda.graph.Graph;
+
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -325,9 +329,9 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
      * gets the  nodes in decreasing order of conflict score.
      *
      * @param aset
-     * @return get a sorted array  of nodes in decreasing conflict score order
+     *
      */
-    private void sortbyDecreasingConflictScore(NodeSet aset)
+    private void sortByDecreasingConflictScore(NodeSet aset)
     {
 
         Node[] nodeArray=aset.toArray();
@@ -340,7 +344,7 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
      * @param aset
      * @return get a sorted array  of nodes in decreasing conflict score order
      */
-    private Node[] getPpercentLeastConflictingNodes(NodeSet aset, double p)
+    private Node[] getPercentageLeastConflictingNodes(NodeSet aset, double p)throws Exception
     {
         if (p < 0.0 || p >1.0)throw new IllegalArgumentException();
         Node[] nodeArray=aset.toArray();
@@ -351,6 +355,92 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
         return Arrays.copyOf(nodeArray,numberOfNodes );
 
     }
+    /**
+     * gets the  p percent of the  least conflicting nodes nodes
+     *
+     * @param splits
+     * @return returns all the  splits with a weight  greater than  the value percent
+     */
+    private List<ASplit>  findMajorityRuleSplits(List<ASplit> splits, double percent)throws Exception
+    {
+        if (percent < 0.0 || percent >1.0)throw new IllegalArgumentException();
+        List<ASplit> splits2= new ArrayList<>();
+
+        for (int s = 0; s < splits.size(); s++) {
+            if (splits.get(s).getWeight() >= percent){
+                 splits2.add(splits.get(s));
+
+              }
+
+        }
+        return splits2;
+    }
+
+    /**
+     * gets the  p percent of the  least conflicting nodes nodes
+     *
+     * @param splits
+     * @return returns all the  splits with a weight  greater than  the value percent
+     */
+    private List<ASplit>  findMajorityRuleLowDistortionSplits(List<ASplit> splits,TreesBlock trees, double percent)
+    {
+
+        List<ASplit> splits2= new ArrayList<>();
+        int totalScore;
+        final int maxDistortion=3;
+        int distortion;
+
+
+
+        final BitSet[] tree2taxa = new BitSet[trees.getNTrees() + 1];
+        for (int t = 1; t <= trees.getNTrees(); t++) {
+            tree2taxa[t] = TreesUtilities.getTaxa(trees.getTree(t));
+
+        }
+
+        for (int s = 0; s < splits.size(); s++) {
+            BitSet A = splits.get(s).getA();
+            BitSet B = splits.get(s).getB();
+            totalScore=0;
+            for (int t = 1; t <= trees.getNTrees(); t++) {
+
+                final BitSet treeTaxa = tree2taxa[t];
+                final BitSet treeTaxaAndA = (BitSet) (treeTaxa.clone());
+                treeTaxaAndA.and(A);
+                final BitSet treeTaxaAndB = (BitSet) (treeTaxa.clone());
+                treeTaxaAndB.and(B);
+
+                if (treeTaxaAndA.cardinality() > 1 && treeTaxaAndB.cardinality() > 1) {
+                    try {
+                        PhyloTree tree = trees.getTree(t);
+                        distortion=Distortion.computeDistortionForSplit(tree, A, B);
+                        totalScore +=distortion;
+                    } catch (IOException ex) {
+                        Basic.caught(ex);
+                    }
+                }
+
+
+            }
+            if (totalScore < maxDistortion || splits.get(s).getWeight() >= percent ){
+
+
+                splits2.add(splits.get(s));
+            }
+
+
+        }
+
+        return splits2;
+    }
+
+    private Graph buildIncompatibilityGraphwithMajorityRuleandLowDistortion(List<ASplit> splits, TreesBlock trees,  double percent )
+    {
+
+        return buildIncompatibilityGraph(findMajorityRuleLowDistortionSplits(splits, trees, 0.5));
+    }
+
+
 
 
 }
