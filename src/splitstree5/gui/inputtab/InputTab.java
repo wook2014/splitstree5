@@ -26,8 +26,7 @@ import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import jloda.fx.NotificationManager;
 import jloda.fx.RecentFilesManager;
@@ -77,10 +76,9 @@ public class InputTab extends TextViewTab {
 
         // prevent double paste:
         {
-            textArea.setOnKeyPressed(event -> {
-                final KeyCombination keyCombCtrZ = new KeyCodeCombination(KeyCode.V, KeyCombination.SHORTCUT_DOWN);
-                if (keyCombCtrZ.match(event)) {
-                    event.consume();
+            textArea.addEventFilter(KeyEvent.ANY, e -> {
+                if (e.getCode() == KeyCode.V && e.isShortcutDown()) {
+                    e.consume();
                 }
             });
         }
@@ -175,10 +173,8 @@ public class InputTab extends TextViewTab {
         controller.getOpenRecentMenu().disableProperty().bind(textArea.textProperty().isNotEmpty());
 
         controller.getPasteMenuItem().setOnAction((e) -> {
-            if (getTextArea().isFocused()) {
                 e.consume();
                 textArea.paste();
-            }
         });
 
         controller.getSelectFromPreviousMenuItem().setOnAction((e) -> {

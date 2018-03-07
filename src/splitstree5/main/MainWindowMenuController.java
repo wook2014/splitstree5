@@ -104,7 +104,6 @@ public class MainWindowMenuController {
                 newMainWindow.showInputTab();
             }
         });
-        controller.getEnterDataMenuItem().disableProperty().bind(mainWindow.getDocument().dirtyProperty());
 
         controller.getSaveMenuItem().setOnAction((e) -> {
             try {
