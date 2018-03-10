@@ -104,7 +104,6 @@ public class ImportService extends Service<Boolean> {
         if (importer instanceof IImportCharacters) {
             dataBlock = new CharactersBlock();
             ((IImportCharacters) importer).parse(progress, fileName, taxaBlock, (CharactersBlock) dataBlock);
-            ((CharactersBlock) dataBlock).check();
         } else if (importer instanceof IImportDistances) {
             dataBlock = new DistancesBlock();
             ((IImportDistances) importer).parse(progress, fileName, taxaBlock, (DistancesBlock) dataBlock);

@@ -32,24 +32,35 @@ import splitstree5.gui.graphtab.TreeViewTab;
 import splitstree5.gui.graphtab.base.GraphTabBase;
 
 /**
- * datablock that represents a tree or network view
+ * datablock that represents a tree or network viewer
  * Daniel Huson, 2.2018
  */
-public class ViewBlock extends DataBlock {
+public class ViewerBlock extends DataBlock {
     public enum Type {TreeViewer, SplitsNetworkViewer, SplitsNetwork3DViewer, NetworkViewer}
 
-    private final GraphTabBase viewerTab;
+    private GraphTabBase viewerTab;
+    private Type type;
 
     /**
      * constructor
      *
      * @param viewerTab
      */
-    private ViewBlock(GraphTabBase viewerTab) {
+    private ViewerBlock(GraphTabBase viewerTab, Type type) {
+        setup(viewerTab, type);
+    }
+
+    /**
+     * setup the viewer block
+     *
+     * @param viewerTab
+     * @param type
+     */
+    private void setup(GraphTabBase viewerTab, Type type) {
+        this.viewerTab = viewerTab;
+        this.type = type;
         setTitle(viewerTab.getName());
         setName(viewerTab.getName());
-
-        this.viewerTab = viewerTab;
         viewerTab.setDataNode(getDataNode()); // todo: do we need this?
     }
 
@@ -111,13 +122,17 @@ public class ViewBlock extends DataBlock {
         return viewerTab.getInfo();
     }
 
+    public Type getType() {
+        return type;
+    }
+
     /**
      * This block represents the 3D view of a split network
      * Daniel Huson, 1.2018
      */
-    public static class SplitsNetwork3DViewerBlock extends ViewBlock {
+    public static class SplitsNetwork3DViewerBlock extends ViewerBlock {
         public SplitsNetwork3DViewerBlock() {
-            super(new SplitsView3DTab());
+            super(new SplitsView3DTab(), Type.SplitsNetwork3DViewer);
         }
     }
 
@@ -125,9 +140,9 @@ public class ViewBlock extends DataBlock {
      * This block represents the view of a split network
      * Daniel Huson, 1.2018
      */
-    public static class SplitsNetworkViewerBlock extends ViewBlock {
+    public static class SplitsNetworkViewerBlock extends ViewerBlock {
         public SplitsNetworkViewerBlock() {
-            super(new SplitsViewTab());
+            super(new SplitsViewTab(), Type.SplitsNetworkViewer);
         }
     }
 
@@ -135,9 +150,9 @@ public class ViewBlock extends DataBlock {
      * This block represents the view of a general network
      * Daniel Huson, 1.2018
      */
-    public static class NetworkViewBlock extends ViewBlock {
-        public NetworkViewBlock() {
-            super(new NetworkViewTab());
+    public static class NetworkViewerBlock extends ViewerBlock {
+        public NetworkViewerBlock() {
+            super(new NetworkViewTab(), Type.NetworkViewer);
         }
     }
 
@@ -145,10 +160,33 @@ public class ViewBlock extends DataBlock {
      * This block represents the view of a tree
      * Daniel Huson, 11.2017
      */
-    public static class TreeViewerBlock extends ViewBlock {
+    public static class TreeViewerBlock extends ViewerBlock {
         public TreeViewerBlock() {
-            super(new TreeViewTab());
+            super(new TreeViewTab(), Type.TreeViewer);
         }
+    }
 
+    /**
+     * change the type of a block
+     *
+     * @param type
+     */
+    public void changeType(Type type) {
+        switch (type) {
+            case SplitsNetwork3DViewer:
+                setup(new SplitsView3DTab(), type);
+                break;
+            case SplitsNetworkViewer:
+                setup(new SplitsViewTab(), type);
+                break;
+            case NetworkViewer:
+                setup(new NetworkViewTab(), type);
+                break;
+            case TreeViewer:
+                setup(new TreeViewTab(), type);
+                break;
+            default:
+                throw new RuntimeException("Unknown type: " + type);
+        }
     }
 }

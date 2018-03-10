@@ -33,7 +33,6 @@ import jloda.util.Pair;
 import jloda.util.Single;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.algorithms.ReportConnector;
 import splitstree5.core.algorithms.filters.CharactersFilter;
 import splitstree5.core.algorithms.filters.SplitsFilter;
 import splitstree5.core.algorithms.filters.TreesFilter;
@@ -276,17 +275,6 @@ public class Workflow {
     }
 
     /**
-     * creates a reporter node
-     *
-     * @param parent
-     * @param <P>
-     * @return connector node
-     */
-    public <P extends DataBlock> Connector createReporter(DataNode<P> parent) {
-        return addConnector(new ReportConnector<P>(getWorkingTaxaNode().getDataBlock(), parent));
-    }
-
-    /**
      * Adds a connector created outside of the Workflow
      *
      * @param connector
@@ -383,6 +371,12 @@ public class Workflow {
         return hasWorkingTraitsNodeForFXThread;
     }
 
+    public void delete(Collection<WorkflowNode> nodes) {
+        for (WorkflowNode node : nodes) {
+            delete(node, true, false);
+        }
+    }
+
     /**
      * delete the given node, or only all below, or both node and all below. Note that setting both delete and all below to false doesn't make sense
      *
@@ -401,8 +395,8 @@ public class Workflow {
             node.disconnect();
 
             if (node instanceof DataNode) {
-                if (((DataNode) node).getDataBlock() instanceof ViewBlock)
-                    ((ViewBlock) ((DataNode) node).getDataBlock()).getTab().close();
+                if (((DataNode) node).getDataBlock() instanceof ViewerBlock)
+                    ((ViewerBlock) ((DataNode) node).getDataBlock()).getTab().close();
 
                 dataNodes.remove(node);
 
@@ -417,11 +411,38 @@ public class Workflow {
         topologyChanged.set(topologyChanged.get() + 1);
     }
 
-    public void delete(Collection<WorkflowNode> nodes) {
-        for (WorkflowNode node : nodes) {
-            delete(node, true, false);
+    /**
+     * Reconnect a node that was previously deleted
+     *
+     * @param parent
+     * @param node
+     * @param children
+     */
+    public void reconnect(WorkflowNode parent, WorkflowNode node, ObservableList<WorkflowNode> children) {
+        if (parent != null) {
+            final ObservableList<WorkflowNode> theChildren;
+            if (parent instanceof Connector)
+                theChildren = ((Connector) parent).getChildren();
+            else
+                theChildren = ((DataNode) parent).getChildren();
+            if (!theChildren.contains(node))
+                theChildren.add(node);
         }
+        for (WorkflowNode child : children) {
+            final ObservableList<WorkflowNode> theChildren;
+            if (node instanceof Connector)
+                theChildren = ((Connector) node).getChildren();
+            else
+                theChildren = ((DataNode) node).getChildren();
+            if (!theChildren.contains(child))
+                theChildren.add(child);
+        }
+        if (node instanceof DataNode)
+            dataNodes.add((DataNode) node);
+        else if (node instanceof Connector)
+            connectorNodes.add((Connector) node);
     }
+
 
     /**
      * delete the unique path to this node, this node and all its descendants
@@ -571,24 +592,6 @@ public class Workflow {
         return workingNodes;
     }
 
-    public void reconnect(WorkflowNode parent, WorkflowNode node, ObservableList<WorkflowNode> children) {
-        if (parent != null) {
-            if (parent instanceof Connector)
-                ((Connector) parent).getChildren().add(node);
-            else
-                ((DataNode) parent).getChildren().add(node);
-        }
-        for (WorkflowNode child : children) {
-            if (node instanceof Connector)
-                ((Connector) node).getChildren().add(child);
-            else
-                ((DataNode) node).getChildren().add(child);
-        }
-        if (node instanceof DataNode)
-            dataNodes.add((DataNode) node);
-        else if (node instanceof Connector)
-            connectorNodes.add((Connector) node);
-    }
 
     /**
      * gets node and all its descendants

@@ -50,7 +50,6 @@ import jloda.fx.ASelectionModel;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;
-import jloda.graph.NodeSet;
 import jloda.phylo.SplitsGraph;
 import jloda.util.Pair;
 import jloda.util.ResourceManager;
@@ -159,16 +158,24 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
      * create a node view
      */
     public NodeView3D createNodeView(final Node v, Point2D location, String label) {
-        final NodeView3D nv = new NodeView3D(v, new Point3D(location.getX(), location.getY(), 0), label);
+        return new NodeView3D(v, new Point3D(location.getX(), location.getY(), 0), label);
+    }
 
-        nv.getShapeGroup().setOnMousePressed((e) -> {
+    /**
+     * setup a node view
+     */
+    public void setupNodeView(NodeViewBase nv) {
+        final NodeView3D nodeView = (NodeView3D) nv;
+        final Node v = nodeView.getNode();
+
+        nodeView.getShapeGroup().setOnMousePressed((e) -> {
             mouseX = e.getScreenX();
             mouseY = e.getScreenY();
             e.consume();
         });
-        nv.getShapeGroup().setOnMouseDragged((e) -> {
+        nodeView.getShapeGroup().setOnMouseDragged((e) -> {
             e.consume();
-            if (!edgeSelectionModel.isEmpty() && nodeSelectionModel.getSelectedItems().contains(nv.getNode())) {
+            if (!edgeSelectionModel.isEmpty() && nodeSelectionModel.getSelectedItems().contains(nodeView.getNode())) {
                 final Pair<Point3D, Point3D> pair = getAnchorAndMover(nodeSelectionModel, edgeSelectionModel, node2view);
                 final Point3D anchor = pair.getFirst();
                 final Point3D mover = pair.getSecond();
@@ -190,7 +197,7 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
             mouseX = e.getScreenX();
             mouseY = e.getScreenY();
         });
-        nv.getShapeGroup().setOnMouseClicked((x) -> {
+        nodeView.getShapeGroup().setOnMouseClicked((x) -> {
             x.consume();
             splitsSelectionModel.clearSelection();
             edgeSelectionModel.clearSelection();
@@ -209,8 +216,8 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
             }
         });
 
-        if (nv.getLabelGroup() != null) {
-            nv.getLabelGroup().setOnMouseClicked((e) -> {
+        if (nodeView.getLabelGroup() != null) {
+            nodeView.getLabelGroup().setOnMouseClicked((e) -> {
                 e.consume();
                 splitsSelectionModel.clearSelection();
                 edgeSelectionModel.clearSelection();
@@ -222,8 +229,7 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
                     nodeSelectionModel.select(v);
             });
         }
-        addNodeLabelMovementSupport(nv);
-        return nv;
+        addNodeLabelMovementSupport(nodeView);
     }
 
     /**
@@ -270,8 +276,9 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
     /**
      * create an edge view
      */
-    public EdgeView3D createEdgeView(final SplitsGraph graph, final Edge e, final Double weight, final Point2D start, final Point2D end) {
-        final EdgeView3D edgeView = new EdgeView3D(e, weight, GeometryUtils.from2Dto3D(start), GeometryUtils.from2Dto3D(end));
+    public EdgeView3D createEdgeView(final Edge e, final Point2D start, final Point2D end, String text) {
+        final EdgeView3D edgeView = new EdgeView3D(e, GeometryUtils.from2Dto3D(start), GeometryUtils.from2Dto3D(end));
+        // todo: setLabel(text): not implementyed
 
         final EventHandler<? super MouseEvent> handler = (EventHandler<MouseEvent>) x -> {
             x.consume();
@@ -288,20 +295,6 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
             edgeView.getLabel().setOnMouseClicked(handler);
         }
         return edgeView;
-    }
-
-
-    /**
-     * recursively visit all nodes on one side of a given split
-     */
-    private static void visitRec(SplitsGraph graph, Node v, Edge e, int splitId, NodeSet visited) {
-        if (!visited.contains(v)) {
-            visited.add(v);
-            for (Edge f : v.adjacentEdges()) {
-                if (graph.getSplit(f) != splitId && f != e)
-                    visitRec(graph, f.getOpposite(v), f, splitId, visited);
-            }
-        }
     }
 
     private EmbeddingService service;

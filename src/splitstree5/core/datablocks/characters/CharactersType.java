@@ -24,12 +24,12 @@ package splitstree5.core.datablocks.characters;
  * Daniel Huson, 1/16/17.
  */
 public enum CharactersType {
-    standard("01"),
+    Standard("01"),
     DNA("atgc"),
     RNA("augc"),
-    protein("arndcqeghilkmfpstwyvz"),
-    microsat(""),
-    unknown("");
+    Protein("arndcqeghilkmfpstwyvz"),
+    Microsat(""),
+    Unknown("");
 
     private final String symbols;
 
@@ -51,6 +51,15 @@ public enum CharactersType {
             if (type.toString().equalsIgnoreCase(str))
                 return type;
         }
-        return unknown;
+        return Unknown;
+    }
+
+    /**
+     * is this DNA or RNA
+     *
+     * @return true, if DNA or RNA
+     */
+    public boolean isNucleotides() {
+        return this == DNA || this == RNA;
     }
 }

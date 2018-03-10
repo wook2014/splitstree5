@@ -176,7 +176,11 @@ public class WorkflowViewTab extends ViewerTab {
      * clear and then recompute the view
      */
     public void recompute() {
-        clear();
+
+        getEdgeViews().getChildren().clear();
+        getNodeViews().getChildren().clear();
+        node2NodeView.clear();
+        node2EdgeViews.clear();
 
         final Workflow workflow = document.getWorkflow();
 
@@ -369,30 +373,36 @@ public class WorkflowViewTab extends ViewerTab {
         });
         controller.getSelectAllBelowMenuItem().disableProperty().bind(selectionModel.emptyProperty());
 
+        // delete command:
         controller.getDeleteMenuItem().setOnAction((e) -> {
             controller.getSelectAllBelowMenuItem().fire();
 
-            Set<WorkflowNode> deletableSelection = new HashSet<>(selectionModel.getSelectedItems());
-            deletableSelection.removeAll(getWorkflow().getTopNodes());
-            deletableSelection.removeAll(getWorkflow().getWorkingNodes());
+            final Set<WorkflowNode> deletableSelection = new HashSet<>(selectionModel.getSelectedItems());
+            final Set<WorkflowNode> toDelete = new HashSet<>();
 
-            Set<WorkflowNode> toDelete = new HashSet<>();
-            for (Node node : nodeViews.getChildren()) {
-                if (node instanceof WorkflowNodeView) {
-                    final WorkflowNode workflowNode = ((WorkflowNodeView) node).getANode();
-                    if (workflowNode instanceof Connector) {
-                        WorkflowNode child = ((Connector) workflowNode).getChild();
-                        if (deletableSelection.contains(child))
-                            toDelete.add(workflowNode);
+            {
+                deletableSelection.removeAll(getWorkflow().getTopNodes());
+                deletableSelection.removeAll(getWorkflow().getWorkingNodes());
+
+                for (Node node : nodeViews.getChildren()) {
+                    if (node instanceof WorkflowNodeView) {
+                        final WorkflowNode workflowNode = ((WorkflowNodeView) node).getANode();
+                        if (workflowNode instanceof Connector) {
+                            WorkflowNode child = ((Connector) workflowNode).getChild();
+                            if (deletableSelection.contains(child)) {
+                                toDelete.add(workflowNode);
+                            }
+                        }
                     }
                 }
             }
+
             final ArrayList<UndoableRedoableCommand> list = new ArrayList<>();
             toDelete.addAll(deletableSelection);
-            for (WorkflowNode node : toDelete) {
+            for (final WorkflowNode node : toDelete) {
                 if (node2EdgeViews.keySet().contains(node)) {
                     final ArrayList<WorkflowEdgeView> listOfEdgeView = new ArrayList<>(node2EdgeViews.get(node));
-                    for (WorkflowEdgeView edgeView : listOfEdgeView) {
+                    for (final WorkflowEdgeView edgeView : listOfEdgeView) {
                         edgeViews.getChildren().remove(edgeView);
                         list.add(new UndoableRedoableCommand("Delete") {
                             public void undo() {
@@ -415,20 +425,24 @@ public class WorkflowViewTab extends ViewerTab {
                         }
                     });
                 }
-                final WorkflowNodeView nodeView = node2NodeView.get(node);
-                final ObservableList<WorkflowNode> children = FXCollections.observableArrayList(node.getChildren());
-                final WorkflowNode parent = node.getParent();
                 list.add(new UndoableRedoableCommand("Delete") {
+                    final WorkflowNodeView nodeView = node2NodeView.get(node);
+                    final ObservableList<WorkflowNode> children = FXCollections.observableArrayList(node.getChildren());
+
                     public void undo() {
-                        if (!nodeViews.getChildren().contains(nodeView))
-                            nodeViews.getChildren().add(nodeView);
-                        node2NodeView.put(node, nodeView);
-                        getWorkflow().reconnect(parent, node, children);
+                        if (nodeView != null) {
+                            if (!nodeViews.getChildren().contains(nodeView))
+                                nodeViews.getChildren().add(nodeView);
+                            node2NodeView.put(node, nodeView);
+                        }
+                        getWorkflow().reconnect(node.getParent(), node, children);
                     }
 
                     public void redo() {
-                        nodeViews.getChildren().remove(nodeView);
-                        node2EdgeViews.remove(node);
+                        if (nodeView != null) {
+                            nodeViews.getChildren().remove(nodeView);
+                            node2NodeView.remove(node);
+                        }
                         getWorkflow().delete(node, true, false);
                     }
                 });
@@ -445,24 +459,53 @@ public class WorkflowViewTab extends ViewerTab {
                         }
                     });
                 }
-                selectionModel.clearSelection(node);
-                // here we actually delete stuff:
-                for (UndoableRedoableCommand change : list) {
-                    change.redo();
-                }
-                getUndoManager().add(new UndoableChangeList("Delete", list));
             }
+
+            selectionModel.clearSelection(toDelete);
+            getUndoManager().doAndAdd(new UndoableChangeList("Delete", list));
+
+            /*
+            getUndoManager().doAndAdd(new UndoableRedoableCommand("Delete") {
+                @Override
+                public void undo() {
+                    for (WorkflowNode node : toDelete) {
+                            for (WorkflowEdgeView edgeView : saveNode2EdgeViews.get(node)) {
+                                edgeViews.getChildren().add(edgeView);
+                            }
+                        final WorkflowNodeView nodeView = saveNode2NodeView.get(node);
+                        if (nodeView != null) {
+                            nodeViews.getChildren().add(nodeView);
+                            if (!nodeViews.getChildren().contains(nodeView))
+                                nodeViews.getChildren().add(nodeView);
+                            final ObservableList<WorkflowNode> children = FXCollections.observableArrayList(node.getChildren());
+                            final WorkflowNode parent = node.getParent();
+                            getWorkflow().reconnect(parent, node, children);
+                        }
+                    }
+                }
+
+                @Override
+                public void redo() {
+                    for (WorkflowNode node : toDelete) {
+                            for (WorkflowEdgeView edgeView : saveNode2EdgeViews.get(node)) {
+                                edgeViews.getChildren().remove(edgeView);
+                            }
+                        if(saveNode2NodeView.get(node)!=null)
+                            nodeViews.getChildren().remove(saveNode2NodeView.get(node));
+                        getWorkflow().delete(node, true, false);
+                    }
+                    selectionModel.clearSelection(toDelete);
+                }
+            });
+            */
         });
         controller.getDeleteMenuItem().disableProperty().bind(selectionModel.emptyProperty());
 
         controller.getDuplicateMenuItem().setOnAction((e) -> {
-            final ArrayList<WorkflowNode> selected = new ArrayList<>(selectionModel.getSelectedItems());
-            final Collection<WorkflowNode> newNodes = getWorkflow().duplicate(selected);
-            recompute();
-            getWorkflow().recomputeTop(newNodes);
+            getUndoManager().doAndAdd(new UndoableRedoableCommand("Duplicate") {
+                final ArrayList<WorkflowNode> selected = new ArrayList<>(selectionModel.getSelectedItems());
+                final Collection<WorkflowNode> newNodes = new ArrayList<>();
 
-            if (newNodes.size() > 0) {
-                getUndoManager().add(new UndoableRedoableCommand("Duplicate") {
                     @Override
                     public void undo() {
                         getWorkflow().delete(newNodes);
@@ -477,8 +520,17 @@ public class WorkflowViewTab extends ViewerTab {
                         recompute();
                         getWorkflow().recomputeTop(newNodes);
                     }
+
+                @Override
+                public boolean isUndoable() {
+                    return newNodes.size() > 0;
+                }
+
+                @Override
+                public boolean isRedoable() {
+                    return selected.size() > 0;
+                }
                 });
-            }
         });
         controller.getDuplicateMenuItem().disableProperty().bind(selectionModel.emptyProperty());
 

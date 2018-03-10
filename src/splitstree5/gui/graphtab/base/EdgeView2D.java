@@ -51,12 +51,11 @@ public class EdgeView2D extends EdgeViewBase {
      * create an edge view
      *
      * @param e
-     * @param weight
      * @param start
      * @param end
      * @return edge view
      */
-    public EdgeView2D(Edge e, Double weight, final Point2D start, final Point2D end) {
+    public EdgeView2D(Edge e, final Point2D start, final Point2D end, String text) {
         super(e);
 
         Shape edgeShape = null;
@@ -73,13 +72,15 @@ public class EdgeView2D extends EdgeViewBase {
             setReferencePoint(start.add(end).multiply(0.5));
         }
 
-        if (false && weight != null && start != null && end != null) {
-            Label label = new Label("" + weight);
+        if (text != null) {
+            final Label label = new Label(text);
             label.setStyle("");
             label.setFont(ProgramProperties.getDefaultFont());
-            final Point2D m = start.add(end).multiply(0.5);
-            label.setTranslateX(m.getX());
-            label.setTranslateY(m.getY());
+            if (start != null && end != null) {
+                final Point2D m = start.add(end).multiply(0.5);
+                label.setTranslateX(m.getX());
+                label.setTranslateY(m.getY());
+            }
             setLabel(label);
         }
         getShape().setOnMouseEntered(mouseEnteredHandler);
@@ -89,7 +90,7 @@ public class EdgeView2D extends EdgeViewBase {
     /**
      * create a simple edge view
      */
-    public EdgeView2D(Edge e, GraphLayout layout, EdgeView2D.EdgeShape shape, Double weight, final Point2D start, final Point2D control1, final Point2D mid, final Point2D control2, final Point2D support, final Point2D end) {
+    public EdgeView2D(Edge e, GraphLayout layout, EdgeShape shape, final Point2D start, final Point2D control1, final Point2D mid, final Point2D control2, final Point2D support, final Point2D end, String text) {
         super(e);
 
         Shape edgeShape = null;
@@ -170,11 +171,54 @@ public class EdgeView2D extends EdgeViewBase {
             edgeShape.setOnMouseExited(mouseExitedHandler);
         }
 
-        if (false && weight != null && start != null && end != null) {
-            Label label = new Label("" + weight);
-            final Point2D m = (mid != null ? mid : start.add(end).multiply(0.5));
-            label.setTranslateX(m.getX());
-            label.setTranslateY(m.getY());
+        if (text != null) {
+            Label label = new Label(text);
+            final Point2D m;
+            if (mid != null)
+                m = mid;
+            else if (start != null && end != null)
+                m = start.add(end).multiply(0.5);
+            else
+                m = null;
+            if (m != null) {
+                label.setTranslateX(m.getX());
+                label.setTranslateY(m.getY());
+            }
+            setLabel(label);
+        }
+    }
+
+    /**
+     * create an edge view
+     */
+    public EdgeView2D(Edge e, ArrayList<PathElement> elements, String text) {
+        super(e);
+        if (elements != null && elements.size() >= 2) {
+            Shape path = new Path(elements);
+
+            path.setPickOnBounds(false);
+            path.setFill(Color.TRANSPARENT);
+            path.setStroke(Color.BLACK);
+            path.setStrokeLineCap(StrokeLineCap.ROUND);
+            path.setStrokeWidth(1);
+            setShape(path);
+
+            // todo: may need to use midpoint?
+            final Point2D start = new Point2D(((MoveTo) elements.get(0)).getX(), ((MoveTo) elements.get(0)).getY());
+            final Point2D end = new Point2D(((LineTo) elements.get(elements.size() - 1)).getX(), ((LineTo) elements.get(elements.size() - 1)).getY());
+            setReferencePoint(start.add(end).multiply(0.5));
+
+            path.setOnMouseEntered(mouseEnteredHandler);
+            path.setOnMouseExited(mouseExitedHandler);
+        }
+
+        if (text != null) {
+            Label label = new Label(text);
+            final Point2D m = getReferencePoint();
+            if (m != null) {
+                label.setTranslateX(m.getX());
+                label.setTranslateY(m.getY());
+            }
             setLabel(label);
         }
     }

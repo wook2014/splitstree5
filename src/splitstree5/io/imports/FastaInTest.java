@@ -39,8 +39,6 @@ public class FastaInTest {
         new TaxaNexusOutput().write(w, taxaBlock);
         new CharactersNexusOutput().write(w, taxaBlock, charactersBlock);
         System.err.println(w.toString());
-
-        System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
     }
 
     @Test
@@ -58,8 +56,6 @@ public class FastaInTest {
         new TaxaNexusOutput().write(w, taxaBlock);
         new CharactersNexusOutput().write(w, taxaBlock, charactersBlock);
         System.err.println(w.toString());
-
-        System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
     }
 
     @Test
@@ -77,9 +73,6 @@ public class FastaInTest {
         new TaxaNexusOutput().write(w, taxaBlock);
         new CharactersNexusOutput().write(w, taxaBlock, charactersBlock);
         System.err.println(w.toString());
-
-        System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
-
     }
 
     @Test
@@ -98,9 +91,6 @@ public class FastaInTest {
         new TaxaNexusOutput().write(w, taxaBlock);
         new CharactersNexusOutput().write(w, taxaBlock, charactersBlock);
         System.err.println(w.toString());
-
-        System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
-
     }
 
     @Test

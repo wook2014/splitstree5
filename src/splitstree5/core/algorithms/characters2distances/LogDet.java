@@ -67,9 +67,6 @@ import splitstree5.gui.utils.Alert;
  */
 
 public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-
-    private PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates = PairwiseCompare.HandleAmbiguous.Ignore;
-
     public final static String DESCRIPTION = "Calculates the logdet- distance";
     private boolean fudgeFactor = false;
     private boolean fillZeros = false;
@@ -77,13 +74,11 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
 
     @Override
     public String getCitation() {
-        return "Steel 1994; " +
-                "M.A. Steel.  Recovering a tree from the leaf colorations it generates under a Markov model. Appl. Math. Lett., 7(2):19–24, 1994.";
+        return "Steel 1994; M.A. Steel. Recovering a tree from the leaf colorations it generates under a Markov model. Appl. Math. Lett., 7(2):19–24, 1994.";
     }
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
-            throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock) throws Exception {
 
         int ntax = charactersBlock.getNtax();
         progress.setTasks("logDet distance", "Init.");
@@ -93,8 +88,7 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
 
         for (int t = 1; t <= ntax; t++) {
             for (int s = t + 1; s <= ntax; s++) {
-                String states = charactersBlock.getSymbols();
-                PairwiseCompare seqPair = new PairwiseCompare(charactersBlock, states, s, t, optionHandleAmbiguousStates);
+                PairwiseCompare seqPair = new PairwiseCompare(charactersBlock, s, t);
                 double dist = -1.0;
 
                 int r = seqPair.getNumStates();
@@ -106,7 +100,7 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
                     if (this.fudgeFactor) {
                         /* LDDist 1.2 implements some questionable tricks to avoid singluar matrices. To enable
                    comparisons, I've implemented these here. */
-                        double[][] extF = seqPair.getFcount();
+                        double[][] extF = seqPair.getfCount();
 
                         double[] rowsum = new double[r];
                         double[] colsum = new double[r];
@@ -232,16 +226,6 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
 
         //todo
         return true;
-    }
-
-    // GETTER AND SETTER
-
-    public PairwiseCompare.HandleAmbiguous getOptionHandleAmbiguousStates() {
-        return optionHandleAmbiguousStates;
-    }
-
-    public void setOptionHandleAmbiguousStates(PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates) {
-        this.optionHandleAmbiguousStates = optionHandleAmbiguousStates;
     }
 
     /**

@@ -26,6 +26,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
 import jloda.fx.ASelectionModel;
+import jloda.fx.shapes.NodeShape;
 import jloda.graph.*;
 import jloda.phylo.SplitsGraph;
 import jloda.util.Pair;
@@ -35,7 +36,7 @@ import splitstree5.core.algorithms.views.SplitsNetworkAlgorithm;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.datablocks.ViewBlock;
+import splitstree5.core.datablocks.ViewerBlock;
 import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.Workflow;
@@ -134,8 +135,25 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
     /**
      * create a node view
      */
+    @Override
     public NodeView2D createNodeView(final Node v, Point2D location, String label) {
-        final NodeView2D nodeView = new NodeView2D(v, location, label);
+        return createNodeView(v, location, null, 0, 0, label);
+    }
+
+    @Override
+    public NodeView2D createNodeView(Node v, Point2D location, NodeShape shape, double shapeWidth, double shapeHeight, String label) {
+        return new NodeView2D(v, location, shape, shapeWidth, shapeHeight, label);
+    }
+
+    /**
+     * setup a node view
+     *
+     * @param nv
+     */
+    @Override
+    public void setupNodeView(NodeViewBase nv) {
+        final NodeView2D nodeView = (NodeView2D) nv;
+        final Node v = nodeView.getNode();
 
         nodeView.getShapeGroup().setOnMousePressed((e) -> {
             mouseX = e.getScreenX();
@@ -188,8 +206,6 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
             });
         }
         addNodeLabelMovementSupport(nodeView);
-
-        return nodeView;
     }
 
     /**
@@ -266,8 +282,8 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
     /**
      * create an edge view
      */
-    public EdgeView2D createEdgeView(final SplitsGraph graph, final Edge e, final Double weight, final Point2D start, final Point2D end) {
-        final EdgeView2D edgeView = new EdgeView2D(e, weight, start, end);
+    public EdgeView2D createEdgeView(final Edge e, final Point2D start, final Point2D end, String text) {
+        final EdgeView2D edgeView = new EdgeView2D(e, start, end,text);
 
         final EventHandler<? super MouseEvent> handler = (EventHandler<MouseEvent>) x -> {
             x.consume();
@@ -287,6 +303,12 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
         addEdgeLabelMovementSupport(edgeView);
         return edgeView;
     }
+
+    @Override
+    public EdgeView2D createEdgeView(Edge e, GraphLayout graphLayout, EdgeView2D.EdgeShape shape, Point2D start, Point2D control1, Point2D mid, Point2D control2, Point2D support, Point2D end, String label) {
+        throw new RuntimeException("createEdgeView(): not implemented");
+    }
+
 
     /**
      * select by split associated with given edge
@@ -339,14 +361,14 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
                     && dataNode.getParent().getParent().getDataBlock() instanceof SplitsBlock) {
                 final DataNode<SplitsBlock> splitsNode = dataNode.getParent().getParent();
                 for (Connector<SplitsBlock, ? extends DataBlock> child : splitsNode.getChildren()) {
-                    if (child.getChild().getDataBlock() instanceof ViewBlock.SplitsNetwork3DViewerBlock) {
+                    if (child.getChild().getDataBlock() instanceof ViewerBlock.SplitsNetwork3DViewerBlock) {
                         getMainWindow().showDataView(child.getChild());
                         return;
                     }
                 }
                 // no 3d viewer found, set one up
                 final Workflow workflow = controller.getMainWindow().getWorkflow();
-                final DataNode<ViewBlock> viewNode = workflow.createDataNode(new ViewBlock.SplitsNetwork3DViewerBlock());
+                final DataNode<ViewerBlock> viewNode = workflow.createDataNode(new ViewerBlock.SplitsNetwork3DViewerBlock());
                 workflow.createConnector(splitsNode, viewNode, new SplitsNetworkAlgorithm()).forceRecompute();
                 controller.getMainWindow().getWorkflowTab().recompute();
             }

@@ -19,16 +19,13 @@ import splitstree5.core.datablocks.characters.CharactersType;
  * @author bryant
  */
 public class Jaccard extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-
-    private PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates = PairwiseCompare.HandleAmbiguous.Ignore;
-
     public final static String DESCRIPTION = "Calculates distances using the Jaccard coefficient distance.";
     protected String TASK = "Jaccard Coefficient Distance";
 
 
     @Override
     public boolean isApplicable(TaxaBlock taxa, CharactersBlock c) {
-        return c.getDataType().equals(CharactersType.standard);
+        return c.getDataType().equals(CharactersType.Standard);
     }
 
     @Override
@@ -50,7 +47,7 @@ public class Jaccard extends Algorithm<CharactersBlock, DistancesBlock> implemen
         for (int s = 1; s <= ntax; s++) {
             for (int t = s + 1; t <= ntax; t++) {
                 //System.err.println(s+","+t);
-                PairwiseCompare seqPair = new PairwiseCompare(charactersBlock, "01", s, t, optionHandleAmbiguousStates);
+                PairwiseCompare seqPair = new PairwiseCompare(charactersBlock, s, t);
                 double[][] F = seqPair.getF();
 
                 double dist = -1.0;
@@ -86,14 +83,6 @@ public class Jaccard extends Algorithm<CharactersBlock, DistancesBlock> implemen
 
     final public String getDescription() {
         return DESCRIPTION;
-    }
-
-    public PairwiseCompare.HandleAmbiguous getOptionHandleAmbiguousStates() {
-        return optionHandleAmbiguousStates;
-    }
-
-    public void setOptionHandleAmbiguousStates(PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates) {
-        this.optionHandleAmbiguousStates = optionHandleAmbiguousStates;
     }
 
     public String getTASK() {

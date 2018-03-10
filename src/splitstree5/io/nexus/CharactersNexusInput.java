@@ -146,7 +146,7 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock> {
         if (np.peekMatchIgnoreCase("FORMAT")) {
             final List<String> formatTokens = np.getTokensLowerCase("FORMAT", ";");
             {
-                final String dataType = np.findIgnoreCase(formatTokens, "dataType=", Basic.toString(CharactersType.values(), " "), CharactersType.unknown.toString());
+                final String dataType = np.findIgnoreCase(formatTokens, "dataType=", Basic.toString(CharactersType.values(), " "), CharactersType.Unknown.toString());
                 charactersBlock.setDataType(CharactersType.valueOfIgnoreCase(dataType));
             }
 
@@ -172,7 +172,7 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock> {
 
             {
                 String symbols = np.findIgnoreCase(formatTokens, "symbols=", "\"", "\"", charactersBlock.getSymbols());
-                if (charactersBlock.getDataType() == CharactersType.standard || charactersBlock.getDataType() == CharactersType.microsat || charactersBlock.getDataType() == CharactersType.unknown) {
+                if (charactersBlock.getDataType() == CharactersType.Standard || charactersBlock.getDataType() == CharactersType.Microsat || charactersBlock.getDataType() == CharactersType.Unknown) {
                     charactersBlock.setSymbols(symbols.replaceAll("\\s", "").toLowerCase());
                 }
             }
@@ -234,14 +234,14 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock> {
         if (np.peekMatchIgnoreCase("CharStateLabels")) { // todo: is false for ferment4-diploid (microsat data)
             np.matchIgnoreCase("CharStateLabels");
             switch (charactersBlock.getDataType()) {
-                case protein:
+                case Protein:
                     charactersBlock.setStateLabeler(new ProteinStateLabeler());
                     break;
-                case microsat:
+                case Microsat:
                     charactersBlock.setStateLabeler(new MicrostatStateLabeler());
                     break;
                 default:
-                case unknown:
+                case Unknown:
                     charactersBlock.setStateLabeler(new StandardStateLabeler(nchar, charactersBlock.getMissingCharacter(), format.getOptionMatchCharacter(), charactersBlock.getGapCharacter()));
                     break;
             }
@@ -295,7 +295,7 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock> {
      */
     private ArrayList<String> readMatrix(NexusStreamParser np, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format,
                                          Set<Character> unknownStates) throws IOException {
-        final boolean checkStates = characters.getDataType() == CharactersType.protein ||
+        final boolean checkStates = characters.getDataType() == CharactersType.Protein ||
                 characters.getDataType() == CharactersType.DNA || characters.getDataType() == CharactersType.RNA;
         final ArrayList<String> taxonNamesFound = new ArrayList<>(characters.getNtax());
 
@@ -375,7 +375,7 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock> {
      */
     private ArrayList<String> readMatrixTransposed(NexusStreamParser np, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format,
                                                    Set<Character> unknownStates) throws IOException {
-        final boolean checkStates = characters.getDataType() == CharactersType.protein ||
+        final boolean checkStates = characters.getDataType() == CharactersType.Protein ||
                 characters.getDataType() == CharactersType.DNA || characters.getDataType() == CharactersType.RNA;
         final ArrayList<String> taxonNamesFound = new ArrayList<>(characters.getNtax());
 
@@ -459,7 +459,7 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock> {
      */
     private ArrayList<String> readMatrixInterleaved(NexusStreamParser np, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format,
                                                     Set<Character> unknownStates) throws IOException {
-        final boolean checkStates = characters.getDataType() == CharactersType.protein ||
+        final boolean checkStates = characters.getDataType() == CharactersType.Protein ||
                 characters.getDataType() == CharactersType.DNA || characters.getDataType() == CharactersType.RNA;
         final ArrayList<String> taxonNamesFound = new ArrayList<>(characters.getNtax());
 
@@ -595,7 +595,7 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock> {
      * @return boolean  true if character consistent with the symbol list of the block's datatype
      */
     private boolean isValidState(CharactersBlock characters, CharactersNexusFormat format, char ch) {
-        return characters.getDataType() == CharactersType.unknown || ch == characters.getMissingCharacter() || ch == characters.getGapCharacter() || ch == format.getOptionMatchCharacter()
+        return characters.getDataType() == CharactersType.Unknown || ch == characters.getMissingCharacter() || ch == characters.getGapCharacter() || ch == format.getOptionMatchCharacter()
                 || characters.getSymbols().indexOf(ch) >= 0
                 || (characters.getDataType() == CharactersType.DNA && AmbiguityCodes.isAmbiguityCode(ch));
     }

@@ -126,7 +126,7 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
 
     @Override
     public boolean isApplicable(TaxaBlock taxaBlock, CharactersBlock parent) {
-        return parent.getDataType() == CharactersType.standard && parent.getSymbols().contains("1");
+        return parent.getDataType() == CharactersType.Standard && parent.getSymbols().contains("1");
     }
 
     //GETTER AND SETTER

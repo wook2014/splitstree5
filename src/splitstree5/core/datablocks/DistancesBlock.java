@@ -105,44 +105,44 @@ public class DistancesBlock extends DataBlock {
     }
 
     /**
-     * sets the value distances[row][col]=distances[col][row]=value
+     * sets the value for (s,t) and (t,s), indices 1-based
      *
-     * @param i     in range 1..nTax
-     * @param j     in range 1..nTax
+     * @param s
+     * @param t
      * @param value
      */
-    public void setBoth(int i, int j, double value) {
-        distances[i - 1][j - 1] = distances[j - 1][i - 1] = value;
+    public void setBoth(int s, int t, double value) {
+        distances[s - 1][t - 1] = distances[t - 1][s - 1] = value;
     }
 
     /**
-     * gets the variances
+     * gets the variances,  indices 1-based
      *
-     * @param i
-     * @param j
+     * @param s
+     * @param t
      * @return variances or -1, if not set
      */
-    public double getVariance(int i, int j) {
+    public double getVariance(int s, int t) {
         if (variances != null)
-            return variances[i - 1][j - 1];
+            return variances[s - 1][t - 1];
         else
             return -1;
     }
 
     /**
-     * sets the variances
+     * sets the variances,  indices 1-based
      *
-     * @param i
-     * @param j
+     * @param s
+     * @param t
      * @param value
      */
-    public void setVariance(int i, int j, double value) {
+    public void setVariance(int s, int t, double value) {
         synchronized (this) {
             if (variances == null) {
                 variances = new double[distances.length][distances.length];
             }
         }
-        variances[i][j] = value;
+        variances[s - 1][t - 1] = value;
     }
 
     public void clearVariances() {

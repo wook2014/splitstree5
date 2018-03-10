@@ -22,6 +22,7 @@ package jloda.fx;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
+import jloda.util.Basic;
 
 /**
  * some font utilities
@@ -102,5 +103,29 @@ public class FontUtils {
             return Font.font(font.getFamily(), getWeight(font), getPosture(font), size);
         else
             return font;
+    }
+
+    /**
+     * write font as comma-separated string family,style,size
+     *
+     * @param font
+     * @return font name as string
+     */
+    public static String toString(Font font) {
+        return (font.getFamily() + "," + font.getStyle() + "," + font.getSize() + " ").replaceAll(".0* ", "");
+    }
+
+    /**
+     * get value font from string in format family,style,size
+     *
+     * @param fontString
+     * @return font
+     */
+    public static Font valueOf(String fontString) {
+        final String[] tokens = fontString.split(",");
+        if (tokens.length == 3 && Basic.isDouble(tokens[2]))
+            return font(tokens[0], tokens[1], Basic.parseDouble(tokens[2]));
+        else
+            return null;
     }
 }

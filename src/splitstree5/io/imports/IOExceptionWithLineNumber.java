@@ -35,7 +35,7 @@ public class IOExceptionWithLineNumber extends IOException {
      * @param lineNumber
      */
     public IOExceptionWithLineNumber(String message, int lineNumber) {
-        super(message);
+        super("Line " + lineNumber + ": " + message);
         setLineNumber(lineNumber);
     }
 
@@ -46,20 +46,13 @@ public class IOExceptionWithLineNumber extends IOException {
      * @param lineNumber
      */
     public IOExceptionWithLineNumber(int lineNumber, String message) {
-        super(message);
-        setLineNumber(lineNumber);
+        this(message, lineNumber);
     }
 
     public IOExceptionWithLineNumber(int lineNumber, IOException ioException) {
-        super(ioException.getMessage());
+        super(ioException instanceof IOExceptionWithLineNumber ? ioException.getMessage() : "Line " + lineNumber + ": " + ioException.getMessage());
         setLineNumber(lineNumber);
     }
-
-    @Override
-    public String getMessage() {
-        return "Line " + lineNumber + ": " + super.getMessage();
-    }
-
 
     public int getLineNumber() {
         return lineNumber;

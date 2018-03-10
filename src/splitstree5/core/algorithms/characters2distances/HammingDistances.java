@@ -35,7 +35,6 @@ import splitstree5.gui.utils.Alert;
  * @author Daniel Huson, 2003, 2017
  */
 public class HammingDistances extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-    private PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates = PairwiseCompare.HandleAmbiguous.Ignore;
     private boolean optionNormalize = true;
 
     @Override
@@ -54,7 +53,7 @@ public class HammingDistances extends Algorithm<CharactersBlock, DistancesBlock>
         final int ntax = taxa.getNtax();
         for (int s = 1; s <= ntax; s++) {
             for (int t = s + 1; t <= ntax; t++) {
-                final PairwiseCompare seqPair = new PairwiseCompare(characters, characters.getSymbols(), s, t, optionHandleAmbiguousStates);
+                final PairwiseCompare seqPair = new PairwiseCompare(characters, s, t);
                 double p = 1.0;
 
                 final double[][] F = seqPair.getF();
@@ -77,14 +76,6 @@ public class HammingDistances extends Algorithm<CharactersBlock, DistancesBlock>
         if (numMissing > 0)
             new Alert("Warning: " + numMissing + " saturated or missing entries in the distance matrix - proceed with caution ");
 
-    }
-
-    public PairwiseCompare.HandleAmbiguous getOptionHandleAmbiguousStates() {
-        return optionHandleAmbiguousStates;
-    }
-
-    public void setOptionHandleAmbiguousStates(PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates) {
-        this.optionHandleAmbiguousStates = optionHandleAmbiguousStates;
     }
 
     public boolean isOptionNormalize() {

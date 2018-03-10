@@ -23,12 +23,13 @@ import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
 import splitstree5.core.algorithms.interfaces.IToCharacters;
-import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.datablocks.characters.CharactersType;
 import splitstree5.io.nexus.CharactersNexusFormat;
 import splitstree5.io.nexus.stateLabeler.StateLabeler;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A characters block
@@ -47,12 +48,11 @@ public class CharactersBlock extends DataBlock {
     // array of doubles giving the weights for each site. Set to null means all weights are 1.0
     private double[] characterWeights;
 
-    private boolean hasAmbiguousStates = false;
     private boolean diploid = false;
 
     private boolean respectCase = false; // respectCase==true hasn't been implemented
 
-    private CharactersType dataType = CharactersType.unknown;
+    private CharactersType dataType = CharactersType.Unknown;
 
     private StateLabeler stateLabeler;
     private Map<Integer, String> charLabeler;
@@ -144,28 +144,6 @@ public class CharactersBlock extends DataBlock {
     }
 
     /**
-     * is the letter at this position an ambiguity code?
-     *
-     * @param t
-     * @param pos
-     * @return true if is amb. code
-     */
-    public boolean isAmbiguityCode(int t, int pos) {
-        return isHasAmbiguousStates() && AmbiguityCodes.isAmbiguityCode(matrix[t - 1][pos - 1]);
-    }
-
-    /**
-     * gets all the nucleotides associated with an  ambiguity
-     *
-     * @param t
-     * @param pos
-     * @return all nucleotides or null
-     */
-    public String getNucleotidesForAmbiguityCode(int t, int pos) {
-        return AmbiguityCodes.getNucleotides(matrix[t - 1][pos - 1]);
-    }
-
-    /**
      * sets the value
      *
      * @param t     in range 1-nTax
@@ -238,14 +216,6 @@ public class CharactersBlock extends DataBlock {
         setShortDescription(getInfo());
     }
 
-    public boolean isHasAmbiguousStates() {
-        return hasAmbiguousStates;
-    }
-
-    public void setHasAmbiguousStates(boolean hasAmbiguousStates) {
-        this.hasAmbiguousStates = hasAmbiguousStates;
-    }
-
     public boolean isDiploid() {
         return diploid;
     }
@@ -309,11 +279,7 @@ public class CharactersBlock extends DataBlock {
     }
 
     public void resetSymbols() {
-        if (dataType != null)
-            symbols = dataType.getSymbols();
-        else
-            symbols = "";
-        computeColors();
+        setSymbols(dataType != null ? dataType.getSymbols() : "");
     }
 
     public String getSymbols() {
@@ -468,27 +434,12 @@ public class CharactersBlock extends DataBlock {
 
     @Override
     public String getInfo() {
-        if (getDataType().equals(CharactersType.unknown))
+        if (getDataType().equals(CharactersType.Unknown))
             return getNtax() + " character sequences of length " + getNchar();
         else
             return getNtax() + " " + getDataType().toString() + " character sequences of length " + getNchar();
     }
 
-    public void check() {
-        Set<Character> missingSymbols = new TreeSet<>();
-        for (int t = 1; t <= getNtax(); t++) {
-            for (int c = 1; c <= getNchar(); c++) {
-                char ch = Character.toLowerCase(get(t, c));
-
-                if (symbols.indexOf(ch) == -1 && ch != missingCharacter && ch != gapCharacter) {
-                    missingSymbols.add(ch);
-                }
-            }
-        }
-        if (missingSymbols.size() > 0)
-            System.err.println("Missing symbols: " + missingSymbols);
-        setSymbols(symbols + missingSymbols);
-    }
 }
 
 

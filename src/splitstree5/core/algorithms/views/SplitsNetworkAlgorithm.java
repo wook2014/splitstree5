@@ -31,6 +31,7 @@ import jloda.graph.NodeArray;
 import jloda.phylo.SplitsGraph;
 import jloda.util.ProgramProperties;
 import jloda.util.ProgressListener;
+import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromSplits;
 import splitstree5.core.algorithms.interfaces.IToView;
@@ -40,13 +41,17 @@ import splitstree5.core.algorithms.views.algorithms.DaylightOptimizer;
 import splitstree5.core.algorithms.views.algorithms.EqualAngle;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.datablocks.ViewBlock;
+import splitstree5.core.datablocks.ViewerBlock;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.graphtab.ISplitsViewTab;
 import splitstree5.gui.graphtab.base.EdgeViewBase;
 import splitstree5.gui.graphtab.base.GraphLayout;
 import splitstree5.gui.graphtab.base.NodeViewBase;
+import splitstree5.io.nexus.ViewerNexusInput;
+import splitstree5.io.nexus.ViewerNexusOutput;
 
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
@@ -55,7 +60,7 @@ import java.util.List;
  * compute an implementing of a set of splits using the equal angle algorithm
  * Daniel Huson, 11.2017
  */
-public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewBlock> implements IFromSplits, IToView {
+public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implements IFromSplits, IToView {
     private final SplitsGraph graph = new SplitsGraph();
 
     private ChangeListener<UpdateState> changeListener;
@@ -81,7 +86,7 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewBlock> im
     }
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxa, SplitsBlock parent, ViewBlock child) throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, SplitsBlock parent, ViewerBlock child) throws Exception {
         progress.setTasks("Split network construction", "Init.");
         final ISplitsViewTab viewTab = (ISplitsViewTab) child.getTab();
         //splitsViewTab.setNodeLabel2Style(nodeLabel2Style);
@@ -99,29 +104,29 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewBlock> im
         final BitSet usedSplits = new BitSet();
 
         if (getOptionAlgorithm() != Algorithm.ConvexHullOnly) {
-            EqualAngle.apply(progress, isOptionUseWeights(), taxa, parent, graph, node2point, forbiddenSplits, usedSplits);
+            EqualAngle.apply(progress, isOptionUseWeights(), taxaBlock, parent, graph, node2point, forbiddenSplits, usedSplits);
         }
 
         if (getOptionBoxOpenIterations() > 0) {
             final BoxOptimizer box = new BoxOptimizer();
             box.setOptionIterations(getOptionBoxOpenIterations());
             box.setOptionUseWeights(isOptionUseWeights());
-            box.apply(progress, taxa, parent.getNsplits(), graph, node2point);
+            box.apply(progress, taxaBlock, parent.getNsplits(), graph, node2point);
         }
 
         if (getOptionAlgorithm() != Algorithm.EqualAngleOnly && usedSplits.cardinality() < parent.getNsplits()) {
             progress.setProgress(60);
-            ConvexHull.apply(progress, taxa, parent, graph, usedSplits);
+            ConvexHull.apply(progress, taxaBlock, parent, graph, usedSplits);
         }
 
-        EqualAngle.assignAnglesToEdges(taxa.getNtax(), parent, parent.getCycle(), graph, forbiddenSplits);
+        EqualAngle.assignAnglesToEdges(taxaBlock.getNtax(), parent, parent.getCycle(), graph, forbiddenSplits);
         EqualAngle.assignCoordinatesToNodes(isOptionUseWeights(), graph, node2point); // need coordinates
 
         if (getOptionDaylightIterations() > 0) {
             final DaylightOptimizer daylightOptimizer = new DaylightOptimizer();
             daylightOptimizer.setOptionIterations(getOptionDaylightIterations());
             daylightOptimizer.setOptionUseWeights(isOptionUseWeights());
-            daylightOptimizer.apply(progress, taxa, graph, node2point);
+            daylightOptimizer.apply(progress, taxaBlock, graph, node2point);
             EqualAngle.assignCoordinatesToNodes(isOptionUseWeights(), graph, node2point);
         }
 
@@ -133,10 +138,12 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewBlock> im
         progress.setProgress(100);   //set progress to 100%
 
         // compute all views and put their parts into the appropriate groups
-        final Font labelFont = Font.font(ProgramProperties.getDefaultFont().getFamily(), taxa.getNtax() <= 64 ? 16 : Math.max(4, 12 - Math.log(taxa.getNtax() - 64) / Math.log(2)));
+        final Font labelFont = Font.font(ProgramProperties.getDefaultFont().getFamily(), taxaBlock.getNtax() <= 64 ? 16 : Math.max(4, 12 - Math.log(taxaBlock.getNtax() - 64) / Math.log(2)));
         for (Node v : graph.nodes()) {
             final String text = graph.getLabel(v);
             final NodeViewBase nodeView = viewTab.createNodeView(v, node2point.getValue(v), text);
+            viewTab.setupNodeView(nodeView);
+
             viewTab.getNode2view().put(v, nodeView);
             viewTab.getNodesGroup().getChildren().addAll(nodeView.getShapeGroup());
             viewTab.getNodeLabelsGroup().getChildren().addAll(nodeView.getLabelGroup());
@@ -144,7 +151,7 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewBlock> im
                 nodeView.getLabel().setFont(labelFont);
         }
         for (Edge e : graph.edges()) {
-            final EdgeViewBase edgeView = viewTab.createEdgeView(graph, e, graph.getWeight(e), node2point.get(e.getSource()), node2point.get(e.getTarget()));
+            final EdgeViewBase edgeView = viewTab.createEdgeView(e, node2point.get(e.getSource()), node2point.get(e.getTarget()), null);
             viewTab.getEdge2view().put(e, edgeView);
             viewTab.getEdgesGroup().getChildren().addAll(edgeView.getShapeGroup().getChildren());
             if (edgeView.getLabel() != null) {
@@ -153,7 +160,7 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewBlock> im
             }
         }
 
-        Platform.runLater(() -> viewTab.updateSelectionModels(graph, taxa, child.getDocument()));
+        Platform.runLater(() -> viewTab.updateSelectionModels(graph, taxaBlock, child.getDocument()));
         child.show();
 
         progress.close();
@@ -162,6 +169,18 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewBlock> im
             getConnector().stateProperty().removeListener(changeListener);
         changeListener = (c, o, n) -> child.getTab().getCenter().setDisable(n != UpdateState.VALID);
         getConnector().stateProperty().addListener(new WeakChangeListener<>(changeListener));
+
+
+        if (false) {
+            StringWriter w = new StringWriter();
+            new ViewerNexusOutput().write(w, taxaBlock, child);
+            System.err.println(w.toString());
+            ViewerBlock again = new ViewerBlock.SplitsNetworkViewerBlock();
+            new ViewerNexusInput().parse(new NexusStreamParser(new StringReader(w.toString())), taxaBlock, again);
+            w = new StringWriter();
+            new ViewerNexusOutput().write(w, taxaBlock, again);
+            System.err.println("Again:\n" + w.toString());
+        }
 
     }
 

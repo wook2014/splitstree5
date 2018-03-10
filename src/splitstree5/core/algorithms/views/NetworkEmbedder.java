@@ -37,7 +37,7 @@ import splitstree5.core.algorithms.interfaces.IToView;
 import splitstree5.core.datablocks.NetworkBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TraitsBlock;
-import splitstree5.core.datablocks.ViewBlock;
+import splitstree5.core.datablocks.ViewerBlock;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.graphtab.NetworkViewTab;
 import splitstree5.gui.graphtab.base.EdgeViewBase;
@@ -51,7 +51,7 @@ import java.util.List;
  * Embeds a network
  * Daniel Huson, 2.2018
  */
-public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewBlock> implements IFromNetwork, IToView {
+public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implements IFromNetwork, IToView {
     public enum MutationView {Hatches, Labels, Count, None}
 
     private final PhyloGraph graph = new PhyloGraph();
@@ -82,7 +82,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewBlock> implemen
     }
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxa, NetworkBlock parent, ViewBlock child) throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxa, NetworkBlock parent, ViewerBlock child) throws Exception {
         progress.setTasks("Network embedding", "Init.");
         final NetworkViewTab viewTab = (NetworkViewTab) child.getTab();
 
@@ -115,6 +115,10 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewBlock> implemen
                 }
 
             }
+        } else if (isOptionScaleNodes()) {
+            for (Node v : graph.nodes()) {
+                maxCount = Math.max(maxCount, graph.getNumberOfTaxa(v));
+            }
         }
 
         viewTab.setLegend(null);
@@ -123,7 +127,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewBlock> implemen
         for (Node v : graph.nodes()) {
             String text = graph.getLabel(v);
             //String text = (graph.getLabel(v) != null ? graph.getLabel(v) : "Node " + v.getId());
-            final NodeView2D nodeView = viewTab.createNodeView(v, node2point.getValue(v), text);
+            final NodeView2D nodeView = viewTab.createNodeView(v, node2point.getValue(v), null, 0, 0, text);
 
             viewTab.getNode2view().put(v, nodeView);
             viewTab.getNodesGroup().getChildren().addAll(nodeView.getShapeGroup());
@@ -154,9 +158,8 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewBlock> implemen
                 }
 
                 if (maxCount > 0) {
-
                     if (getOptionShowPieCharts()) {
-                        double scale = 0.1 * (getOptionScaleNodes() ? (double) count / (double) maxCount : 1);
+                        double scale = 0.1 * (isOptionScaleNodes() ? (double) count / (double) maxCount : 1);
                         pieChart.getTransforms().add(new Scale(scale, scale));
                         pieChart.layoutXProperty().bind(pieChart.widthProperty().multiply(-0.5 * scale));
                         pieChart.layoutYProperty().bind(pieChart.heightProperty().multiply(-0.5 * scale));
@@ -176,15 +179,18 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewBlock> implemen
                             nodeView.getShapeGroup().getChildren().add(traitsLegend);
                             viewTab.setLegend(traitsLegend);
                         }
-                    } else {
-                        if (getOptionScaleNodes()) {
-                            double scale = 18 * (double) count / (double) maxCount;
-                            nodeView.setWidth(scale * nodeView.getWidth());
-                            nodeView.setHeight(scale * nodeView.getHeight());
-                            nodeView.setStrokeWidth(1.0 / scale * nodeView.getStrokeWidth());
-                        }
+                    } else if (isOptionScaleNodes()) {
+                        double scale = 18 * (double) count / (double) maxCount;
+                        nodeView.setWidth(scale * nodeView.getWidth());
+                        nodeView.setHeight(scale * nodeView.getHeight());
+                        nodeView.setStrokeWidth(1.0 / scale * nodeView.getStrokeWidth());
                     }
                 }
+            } else if (isOptionScaleNodes()) { // no traits given, scale by number of nodes assigned
+                double scale = 18 * (double) graph.getNumberOfTaxa(v) / maxCount;
+                nodeView.setWidth(scale * nodeView.getWidth());
+                nodeView.setHeight(scale * nodeView.getHeight());
+                nodeView.setStrokeWidth(1.0 / scale * nodeView.getStrokeWidth());
             }
         }
         for (Edge e : graph.edges()) {
@@ -194,7 +200,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewBlock> implemen
                 final int[] mutations = Basic.parseArrayOfIntegers(edge2data.get(e).get("sites"));
                 edgeView = viewTab.createEdgeView(e, node2point.get(e.getSource()), node2point.get(e.getTarget()), mutations, getOptionShowMutations());
             } else
-                edgeView = viewTab.createEdgeView(e, node2point.get(e.getSource()), node2point.get(e.getTarget()));
+                edgeView = viewTab.createEdgeView(e, node2point.get(e.getSource()), node2point.get(e.getTarget()), null);
 
             viewTab.getEdge2view().put(e, edgeView);
             viewTab.getEdgesGroup().getChildren().add(edgeView.getShapeGroup());
@@ -393,7 +399,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewBlock> implemen
         this.optionShowPieCharts.set(optionShowPieCharts);
     }
 
-    public boolean getOptionScaleNodes() {
+    public boolean isOptionScaleNodes() {
         return optionScaleNodes.get();
     }
 

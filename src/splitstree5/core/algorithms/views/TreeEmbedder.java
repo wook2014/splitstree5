@@ -50,17 +50,22 @@ import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 import jloda.util.ProgressListener;
+import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToView;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.core.datablocks.ViewBlock;
+import splitstree5.core.datablocks.ViewerBlock;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.formattab.FormatItem;
 import splitstree5.gui.graphtab.TreeViewTab;
 import splitstree5.gui.graphtab.base.*;
+import splitstree5.io.nexus.ViewerNexusInput;
+import splitstree5.io.nexus.ViewerNexusOutput;
 
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -71,7 +76,7 @@ import java.util.Map;
  * Daniel Huson, 11.2017
  * todo: add support for rooted networks (as in Dendroscope)
  */
-public class TreeEmbedder extends Algorithm<TreesBlock, ViewBlock> implements IFromTrees, IToView {
+public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements IFromTrees, IToView {
 
     public enum EdgeLengths {Weights, Uniform, Cladogram, CladogramEarlyBranching}
 
@@ -99,7 +104,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewBlock> implements IF
     }
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock parent, ViewBlock child) throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock parent, ViewerBlock child) throws Exception {
         progress.setTasks("Tree viewer", "Init.");
 
         final TreeViewTab viewTab = (TreeViewTab) child.getTab();
@@ -197,7 +202,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewBlock> implements IF
                     } else
                         text = null;
 
-                    final NodeView2D nodeView = viewTab.createNodeView(v, node2point.getValue(v), text);
+                    final NodeView2D nodeView = viewTab.createNodeView(v, node2point.getValue(v), null, 0, 0, text);
                     if (text != null && text.length() > 0 && viewTab.getNodeLabel2Style().containsKey(text)) {
                         nodeView.setStyling(viewTab.getNodeLabel2Style().get(text));
                     }
@@ -210,9 +215,9 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewBlock> implements IF
                 }
                 for (Edge e : tree.edges()) {
                     final EdgeControlPoints controlPoints = edge2controlPoints.getValue(e);
-                    final EdgeView2D edgeView = viewTab.createEdgeView(e, getOptionLayout(), getOptionEdgeShape(), tree.getWeight(e),
+                    final EdgeView2D edgeView = viewTab.createEdgeView(e, getOptionLayout(), getOptionEdgeShape(),
                             node2point.getValue(e.getSource()), controlPoints.getControl1(), controlPoints.getMid(),
-                            controlPoints.getControl2(), controlPoints.getSupport(), node2point.getValue(e.getTarget()));
+                            controlPoints.getControl2(), controlPoints.getSupport(), node2point.getValue(e.getTarget()), null);
                     viewTab.getEdge2view().put(e, edgeView);
 
                     if (edgeView.getShape() != null)
@@ -236,6 +241,18 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewBlock> implements IF
         getConnector().stateProperty().addListener(new WeakChangeListener<>(changeListener));
 
         progress.close();
+
+        if (true) {
+            StringWriter w = new StringWriter();
+            new ViewerNexusOutput().write(w, taxaBlock, child);
+            System.err.println(w.toString());
+            ViewerBlock again = new ViewerBlock.SplitsNetworkViewerBlock();
+            new ViewerNexusInput().parse(new NexusStreamParser(new StringReader(w.toString())), taxaBlock, again);
+            w = new StringWriter();
+            new ViewerNexusOutput().write(w, taxaBlock, again);
+            System.err.println("Again:\n" + w.toString());
+        }
+
     }
 
 

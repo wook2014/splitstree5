@@ -41,7 +41,7 @@ public class EdgeView3D extends EdgeViewBase {
     private final Line3D line;
     private Color color;
 
-    public EdgeView3D(Edge e, double weight, Point3D start, Point3D end) {
+    public EdgeView3D(Edge e, Point3D start, Point3D end) {
         super(e);
         color = Color.SILVER;
         line = new Line3D(start, end);

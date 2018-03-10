@@ -699,6 +699,19 @@ public class Basic {
         return buf.toString();
     }
 
+
+    /**
+     * pretty print a double value
+     *
+     * @param value
+     * @param afterCommaDigits
+     * @return value without trailing 0's
+     */
+    public static String toString(double value, int afterCommaDigits) {
+        final String format = "%." + afterCommaDigits + "f";
+        return String.format(format, value).replaceAll("0*$", "").replaceAll("\\.$", "");
+    }
+
     /**
      * returns true, if string can be parsed as int
      *

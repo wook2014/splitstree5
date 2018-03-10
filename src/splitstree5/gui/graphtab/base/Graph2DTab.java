@@ -25,9 +25,12 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.shape.PathElement;
 import jloda.fx.ZoomableScrollPane;
+import jloda.fx.shapes.NodeShape;
 import jloda.graph.*;
 import jloda.phylo.PhyloGraph;
 import jloda.phylo.PhyloTree;
@@ -38,6 +41,7 @@ import splitstree5.gui.utils.RubberBandSelection;
 import splitstree5.menu.MenuController;
 import splitstree5.undo.CompositeCommand;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -210,6 +214,57 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
                 }
             }
         }
+    }
+
+    /**
+     * creates a node view
+     *
+     * @param v
+     * @param location
+     * @param shape
+     * @param shapeWidth
+     * @param shapeHeight
+     * @param label
+     * @return
+     */
+    abstract public NodeView2D createNodeView(Node v, Point2D location, NodeShape shape, double shapeWidth, double shapeHeight, String label);
+
+    /**
+     * creates a simple straight edge
+     *
+     * @param e
+     * @param start
+     * @param end
+     * @param label
+     * @return
+     */
+    abstract public EdgeView2D createEdgeView(Edge e, final Point2D start, final Point2D end, String label);
+
+    /**
+     * create a complex edge view
+     *
+     * @param e
+     * @param shape
+     * @param start
+     * @param control1
+     * @param mid
+     * @param control2
+     * @param support
+     * @param end
+     * @return edge view
+     */
+    abstract public EdgeView2D createEdgeView(Edge e, GraphLayout graphLayout, EdgeView2D.EdgeShape shape, final Point2D start, final Point2D control1, final Point2D mid, final Point2D control2, final Point2D support, final Point2D end, String label);
+
+    /**
+     * create an edge view
+     *
+     * @param e
+     * @param elements
+     * @param label
+     * @return edge view
+     */
+    public EdgeView2D createEdgeView(Edge e, final ArrayList<PathElement> elements, String label) {
+        return new EdgeView2D(e, elements, label);
     }
 
     /**

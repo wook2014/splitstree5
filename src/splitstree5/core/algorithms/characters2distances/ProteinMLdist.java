@@ -22,9 +22,6 @@ import splitstree5.gui.utils.Alert;
  */
 
 public class ProteinMLdist extends SequenceBasedDistance implements IFromChararacters, IToDistances {
-
-    private PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates = PairwiseCompare.HandleAmbiguous.Ignore;
-
     public enum Model {cpREV45, Dayhoff, JTT, mtMAM, mtREV24, pmb, Rhodopsin, WAG}
 
     private final SimpleObjectProperty<Model> optionModel = new SimpleObjectProperty<>(Model.JTT);
@@ -34,7 +31,6 @@ public class ProteinMLdist extends SequenceBasedDistance implements IFromCharara
     private boolean usePinvar = false;
     private boolean useGamma = false;
     private boolean estimateVariance = true;
-    private static final String STATES = "arndcqeghilkmfpstwyv";
 
     public final static String DESCRIPTION = "Calculates maximum likelihood protein distance estimates";
 
@@ -73,10 +69,7 @@ public class ProteinMLdist extends SequenceBasedDistance implements IFromCharara
         int k = 0;
         for (int s = 1; s <= ntax; s++) {
             for (int t = s + 1; t <= ntax; t++) {
-
-
-                PairwiseCompare seqPair =
-                        new PairwiseCompare(charactersBlock, STATES, s, t, optionHandleAmbiguousStates);
+                final PairwiseCompare seqPair = new PairwiseCompare(charactersBlock, s, t);
                 double dist = 100.0;
 
                 //Maximum likelihood distance. Note we want to ignore sites
@@ -91,8 +84,8 @@ public class ProteinMLdist extends SequenceBasedDistance implements IFromCharara
                 distancesBlock.set(t, s, dist);
 
                 double var = seqPair.bulmerVariance(dist, 0.93);
-                distancesBlock.setVariance(s - 1, t - 1, var);
-                distancesBlock.setVariance(t - 1, s - 1, var);
+                distancesBlock.setVariance(s, t, var);
+                distancesBlock.setVariance(t, s, var);
 
                 k++;
                 progress.incrementProgress();
@@ -108,7 +101,7 @@ public class ProteinMLdist extends SequenceBasedDistance implements IFromCharara
 
     @Override
     public boolean isApplicable(TaxaBlock taxa, CharactersBlock ch) {
-        return ch.getDataType() == CharactersType.protein;
+        return ch.getDataType() == CharactersType.Protein;
 
     }
 
@@ -151,14 +144,6 @@ public class ProteinMLdist extends SequenceBasedDistance implements IFromCharara
     }
 
     // GETTER AND SETTER
-
-    public PairwiseCompare.HandleAmbiguous getOptionHandleAmbiguousStates() {
-        return optionHandleAmbiguousStates;
-    }
-
-    public void setOptionHandleAmbiguousStates(PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates) {
-        this.optionHandleAmbiguousStates = optionHandleAmbiguousStates;
-    }
 
     public boolean checkOptions(CharactersBlock characters) {
         return true;
