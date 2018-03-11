@@ -53,11 +53,10 @@ import static splitstree5.io.nexus.NetworkNexusInput.NAME;
  * network nexus output
  * Daniel Huson, 2.2018
  */
-public class NetworkNexusOutput implements INexusOutput<NetworkBlock> {
+public class NetworkNexusOutput extends NexusIOBase implements INexusOutput<NetworkBlock> {
     /**
      * write the block in nexus format
      *
-     * @param notUsed
      * @param w
      * @param taxaBlock
      * @param networkBlock
@@ -66,7 +65,7 @@ public class NetworkNexusOutput implements INexusOutput<NetworkBlock> {
     @Override
     public void write(Writer w, TaxaBlock taxaBlock, NetworkBlock networkBlock) throws IOException {
         w.write("\nBEGIN " + NAME + ";\n");
-        UtilitiesNexusIO.writeTitleLinks(w, networkBlock);
+        writeTitleAndLinks(w);
         w.write("\tDIMENSIONS nNodes=" + networkBlock.getNumberOfNodes() + " nEdges=" + networkBlock.getNumberOfEdges() + ";\n");
 
         w.write("\tTYPE=" + networkBlock.getNetworkType() + ";\n");

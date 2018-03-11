@@ -36,22 +36,15 @@ import splitstree5.io.nexus.graph.EdgeViewIO;
 import splitstree5.io.nexus.graph.NodeViewIO;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  * viewer nexus input parser
  * Daniel Huson, 3.2018
  */
-public class ViewerNexusInput implements INexusInput<ViewerBlock> {
+public class ViewerNexusInput extends NexusIOBase {
     public static final String NAME = "ST5_VIEWER";
-
-    @Override
-    public boolean atBeginOfBlock(NexusStreamParser np) {
-        return np.peekMatchIgnoreCase("begin " + NAME + ";");
-    }
 
     public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
             "\t[TITLE title;]\n" +
@@ -72,7 +65,6 @@ public class ViewerNexusInput implements INexusInput<ViewerBlock> {
             "\t\tL: label x y color font;]\n" +
             "END;\n";
 
-    @Override
     public String getSyntax() {
         return SYNTAX;
     }
@@ -82,16 +74,13 @@ public class ViewerNexusInput implements INexusInput<ViewerBlock> {
      *
      * @param np
      * @param taxaBlock
-     * @param viewerBlock
      * @return taxon names, if found
      * @throws IOException
      */
-    @Override
-    public List<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, ViewerBlock viewerBlock) throws IOException {
-        viewerBlock.clear();
+    public ViewerBlock parse(NexusStreamParser np, TaxaBlock taxaBlock) throws IOException {
 
         np.matchBeginBlock(NAME);
-        UtilitiesNexusIO.readTitleLinks(np, viewerBlock);
+        parseTitleAndLinks(np);
 
         final int nNodes;
         final int nEdges;
@@ -120,10 +109,10 @@ public class ViewerNexusInput implements INexusInput<ViewerBlock> {
         if (type == null)
             throw new IOExceptionWithLineNumber("Unknown type", np.lineno());
 
-        viewerBlock.changeType(type);
+        final ViewerBlock viewerBlock = ViewerBlock.create(type);
+
         if (!(viewerBlock.getTab() instanceof Graph2DTab))
             throw new IOExceptionWithLineNumber("Import of 3D viewer, not implemented", np.lineno());
-
 
         final Map<Integer, Node> id2node = new HashMap<>(); // maps node input ids to current ids
         {
@@ -176,7 +165,6 @@ public class ViewerNexusInput implements INexusInput<ViewerBlock> {
                 throw new IOExceptionWithLineNumber(String.format("Expected %d nodes, got %d", nNodes, countNodes), np.lineno());
         }
 
-
         np.matchIgnoreCase("EDGES");
         int countEdges = 0;
         switch (type) {
@@ -204,6 +192,10 @@ public class ViewerNexusInput implements INexusInput<ViewerBlock> {
 
         np.matchEndBlock();
 
-        return new ArrayList<>();
+        return viewerBlock;
+    }
+
+    public boolean atBeginOfBlock(NexusStreamParser np) {
+        return np.peekMatchIgnoreCase("begin " + NAME + ";");
     }
 }

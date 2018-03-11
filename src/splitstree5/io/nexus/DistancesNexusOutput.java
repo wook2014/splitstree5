@@ -31,7 +31,7 @@ import static splitstree5.io.nexus.DistancesNexusInput.NAME;
  * distances nexus output
  * Daniel Huson, 2.2018
  */
-public class DistancesNexusOutput implements INexusOutput<DistancesBlock> {
+public class DistancesNexusOutput extends NexusIOBase implements INexusOutput<DistancesBlock> {
     /**
      * write a block in nexus format
      *
@@ -45,7 +45,7 @@ public class DistancesNexusOutput implements INexusOutput<DistancesBlock> {
         final DistancesNexusFormat format = (DistancesNexusFormat) distancesBlock.getFormat();
 
         w.write("\nBEGIN " + NAME + ";\n");
-        UtilitiesNexusIO.writeTitleLinks(w, distancesBlock);
+        writeTitleAndLinks(w);
         w.write("DIMENSIONS ntax=" + distancesBlock.getNtax() + ";\n");
         w.write("FORMAT");
         if (format.isOptionLabels())

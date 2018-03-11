@@ -52,7 +52,7 @@ import static splitstree5.io.nexus.SplitsNexusInput.NAME;
  * splits nexus output
  * Daniel Huson, 2.2018
  */
-public class SplitsNexusOutput implements INexusOutput<SplitsBlock> {
+public class SplitsNexusOutput extends NexusIOBase implements INexusOutput<SplitsBlock> {
     /**
      * write a block in nexus format
      *
@@ -69,7 +69,7 @@ public class SplitsNexusOutput implements INexusOutput<SplitsBlock> {
         final int nsplits = splitsBlock.getNsplits();
 
         w.write("\nBEGIN " + NAME + ";\n");
-        UtilitiesNexusIO.writeTitleLinks(w, splitsBlock);
+        writeTitleAndLinks(w);
         w.write("\tDIMENSIONS ntax=" + ntax + " nsplits=" + nsplits + ";\n");
 
         w.write("\tFORMAT");
@@ -118,7 +118,7 @@ public class SplitsNexusOutput implements INexusOutput<SplitsBlock> {
 
         int t = 1;
         for (ASplit split : splitsBlock.getSplits()) {
-            w.write("\t[" + (t++) + ", size=" + split.size() + "]" + " \t");
+            w.write("[" + (t++) + ", size=" + split.size() + "]" + " \t");
             if (format.isOptionLabels()) {
                 String lab = split.getLabel();
                 w.write(" '" + lab + "'" + " \t");

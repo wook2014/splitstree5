@@ -35,13 +35,8 @@ import java.util.*;
  * nexus input parser
  * Daniel Huson, 2.2018
  */
-public class TreesNexusInput implements INexusInput<TreesBlock> {
+public class TreesNexusInput extends NexusIOBase implements INexusInput<TreesBlock> {
     public static final String NAME = "TREES";
-
-    @Override
-    public boolean atBeginOfBlock(NexusStreamParser np) {
-        return np.peekMatchIgnoreCase("begin " + NAME + ";");
-    }
 
     public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
             "\t[TITLE title;]\n" +
@@ -82,7 +77,7 @@ public class TreesNexusInput implements INexusInput<TreesBlock> {
         boolean rootedExplicitySet = false;
 
         np.matchBeginBlock(NAME);
-        UtilitiesNexusIO.readTitleLinks(np, treesBlock);
+        parseTitleAndLinks(np);
 
         if (np.peekMatchIgnoreCase("PROPERTIES")) {
             final List<String> tokens = np.getTokensLowerCase("PROPERTIES", ";");
@@ -261,5 +256,10 @@ public class TreesNexusInput implements INexusInput<TreesBlock> {
                 }
             }
         }
+    }
+
+    @Override
+    public boolean atBeginOfBlock(NexusStreamParser np) {
+        return np.peekMatchIgnoreCase("begin " + NAME + ";");
     }
 }

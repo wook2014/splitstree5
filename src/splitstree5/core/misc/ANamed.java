@@ -19,13 +19,12 @@
 
 package splitstree5.core.misc;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import jloda.util.Basic;
 import jloda.util.Pair;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * a class with name and short description
@@ -36,7 +35,7 @@ public class ANamed {
     private StringProperty shortDescription;
 
     private String title;
-    private ArrayList<Pair<String, String>> links;
+    private final ObjectProperty<Pair<String, String>> link = new SimpleObjectProperty<>();
 
     public ANamed() {
     }
@@ -105,23 +104,11 @@ public class ANamed {
     }
 
     /**
-     * list of parent blocks, each pair consisting of the name and title of a parent block
-     *
-     * @return list of links to parents
+     * link used in parsing a complete SplitsTree5 download
+     * @return link property
      */
-    public List<Pair<String, String>> getLinks() {
-        if (links == null)
-            links = new ArrayList<>();
-        return links;
-    }
-
-    /**
-     * are any links set?
-     *
-     * @return true, if links set
-     */
-    public boolean hasLinks() {
-        return links != null && links.size() > 0;
+    public ObjectProperty<Pair<String, String>> linkProperty() {
+        return link;
     }
 
     /**
@@ -129,7 +116,7 @@ public class ANamed {
      */
     public void clear() {
         title = null;
-        links = null;
+        link.set(null);
         setShortDescription(Basic.fromCamelCase(Basic.getShortName(this.getClass())));
     }
 }

@@ -54,7 +54,7 @@ import static splitstree5.io.nexus.TreesNexusInput.NAME;
  * tree nexus output
  * Daniel Huson, 2.2018
  */
-public class TreesNexusOutput implements INexusOutput<TreesBlock> {
+public class TreesNexusOutput extends NexusIOBase implements INexusOutput<TreesBlock> {
     /**
      * write a block in nexus format
      *
@@ -68,7 +68,7 @@ public class TreesNexusOutput implements INexusOutput<TreesBlock> {
         final TreesNexusFormat format = (TreesNexusFormat) treesBlock.getFormat();
 
         w.write("\nBEGIN " + NAME + ";\n");
-        UtilitiesNexusIO.writeTitleLinks(w, treesBlock);
+        writeTitleAndLinks(w);
         if (treesBlock.isPartial() || treesBlock.isRooted()) {
             w.write("\tPROPERTIES");
             w.write(" partialTrees=" + (treesBlock.isPartial() ? "yes" : "no"));

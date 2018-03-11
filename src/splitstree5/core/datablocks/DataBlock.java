@@ -38,7 +38,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 
 /**
- * A data block
+ * The base datablock class
  * Daniel Huson, 12/21/16.
  */
 abstract public class DataBlock extends NameableBase {

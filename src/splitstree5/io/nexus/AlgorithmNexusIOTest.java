@@ -39,8 +39,6 @@ public class AlgorithmNexusIOTest {
     public void testParse() throws Exception {
         Algorithm neighborNet = new NeighborNet();
 
-        System.err.println("Usage: " + new AlgorithmNexusOutput().getUsage(neighborNet));
-
         StringWriter w = new StringWriter();
         new AlgorithmNexusOutput().write(w, neighborNet);
         String output = w.toString();

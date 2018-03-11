@@ -31,7 +31,7 @@ import static splitstree5.io.nexus.AnalysisNexusInput.NAME;
  * writes an analysi result in nexus format
  * Daniel Huson, 2.2018
  */
-public class AnalysisNexusOutput {
+public class AnalysisNexusOutput extends NexusIOBase {
     /**
      * writes the analysis block in nexus format
      *
@@ -41,7 +41,7 @@ public class AnalysisNexusOutput {
      */
     public void write(Writer w, AnalysisBlock block) throws IOException {
         w.write("\nBEGIN " + NAME + ";\n");
-        UtilitiesNexusIO.writeTitleLinks(w, block);
+        writeTitleAndLinks(w);
         w.write("\tDIMENSIONS nlines=" + Basic.countOccurrences(block.getShortDescription(), '\n') + ";\n");
         w.write("\tRESULT;\n");
         w.write(block.getShortDescription());

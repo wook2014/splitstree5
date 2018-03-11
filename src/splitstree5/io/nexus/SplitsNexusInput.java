@@ -35,18 +35,8 @@ import java.util.List;
  * nexus input parser
  * Daniel Huson, 2.2018
  */
-public class SplitsNexusInput implements INexusInput<SplitsBlock> {
+public class SplitsNexusInput extends NexusIOBase implements INexusInput<SplitsBlock> {
     public static final String NAME = "SPLITS";
-
-    /**
-     * is the parser at the beginning of a block that this class can parse?
-     *
-     * @param np
-     * @return true, if can parse from here
-     */
-    public boolean atBeginOfBlock(NexusStreamParser np) {
-        return np.peekMatchIgnoreCase("begin " + NAME + ";");
-    }
 
     public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
             "\t[TITLE title;]\n" +
@@ -66,12 +56,12 @@ public class SplitsNexusInput implements INexusInput<SplitsBlock> {
             "\t;]\n" +
             "\t[CYCLE [taxon_i_1 taxon_i_2 ... taxon_i_ntax];]\n" +
             "\t[SPLITSLABELS label_1 label_2 ... label_nsplits;]\n" +
-            "\tMATRIX\n" +
-            "\t\t[label_1] [weight_1] [confidence_1] split_1,\n" +
-            "\t\t[label_2] [weight_2] [confidence_2] split_2,\n" +
-            "\t\t ....\n" +
-            "\t \t[label_nsplits] [weight_nsplits] [confidence_nsplits] split_nsplits,\n" +
-            "\t;\n" +
+            "MATRIX\n" +
+            "[label_1] [weight_1] [confidence_1] split_1,\n" +
+            "[label_2] [weight_2] [confidence_2] split_2,\n" +
+            " ....\n" +
+            "[label_nsplits] [weight_nsplits] [confidence_nsplits] split_nsplits,\n" +
+            ";\n" +
             "END;\n";
 
     /**
@@ -101,7 +91,7 @@ public class SplitsNexusInput implements INexusInput<SplitsBlock> {
         final SplitsNexusFormat format = (SplitsNexusFormat) splitsBlock.getFormat();
 
         np.matchBeginBlock(NAME);
-        UtilitiesNexusIO.readTitleLinks(np, splitsBlock);
+        parseTitleAndLinks(np);
 
         final int ntax = taxaBlock.getNtax();
         np.matchIgnoreCase("dimensions ntax=" + ntax);
@@ -232,5 +222,15 @@ public class SplitsNexusInput implements INexusInput<SplitsBlock> {
                 split.setLabel(label);
             splitsBlock.getSplits().add(split);
         }
+    }
+
+    /**
+     * is the parser at the beginning of a block that this class can parse?
+     *
+     * @param np
+     * @return true, if can parse from here
+     */
+    public boolean atBeginOfBlock(NexusStreamParser np) {
+        return np.peekMatchIgnoreCase("begin " + NAME + ";");
     }
 }

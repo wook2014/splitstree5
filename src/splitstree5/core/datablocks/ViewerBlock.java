@@ -38,8 +38,8 @@ import splitstree5.gui.graphtab.base.GraphTabBase;
 public class ViewerBlock extends DataBlock {
     public enum Type {TreeViewer, SplitsNetworkViewer, SplitsNetwork3DViewer, NetworkViewer}
 
-    private GraphTabBase viewerTab;
-    private Type type;
+    private final GraphTabBase viewerTab;
+    private final Type type;
 
     /**
      * constructor
@@ -47,16 +47,6 @@ public class ViewerBlock extends DataBlock {
      * @param viewerTab
      */
     private ViewerBlock(GraphTabBase viewerTab, Type type) {
-        setup(viewerTab, type);
-    }
-
-    /**
-     * setup the viewer block
-     *
-     * @param viewerTab
-     * @param type
-     */
-    private void setup(GraphTabBase viewerTab, Type type) {
         this.viewerTab = viewerTab;
         this.type = type;
         setTitle(viewerTab.getName());
@@ -167,24 +157,20 @@ public class ViewerBlock extends DataBlock {
     }
 
     /**
-     * change the type of a block
+     * create a viewer block of the given type
      *
      * @param type
      */
-    public void changeType(Type type) {
+    public static ViewerBlock create(Type type) {
         switch (type) {
             case SplitsNetwork3DViewer:
-                setup(new SplitsView3DTab(), type);
-                break;
+                return new SplitsNetwork3DViewerBlock();
             case SplitsNetworkViewer:
-                setup(new SplitsViewTab(), type);
-                break;
+                return new SplitsNetworkViewerBlock();
             case NetworkViewer:
-                setup(new NetworkViewTab(), type);
-                break;
+                return new NetworkViewerBlock();
             case TreeViewer:
-                setup(new TreeViewTab(), type);
-                break;
+                return new TreeViewerBlock();
             default:
                 throw new RuntimeException("Unknown type: " + type);
         }

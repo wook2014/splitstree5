@@ -52,7 +52,7 @@ import static splitstree5.io.nexus.CharactersNexusInput.NAME;
  * characters nexus output
  * Daniel Huson, 2.2018
  */
-public class CharactersNexusOutput implements INexusOutput<CharactersBlock> {
+public class CharactersNexusOutput extends NexusIOBase implements INexusOutput<CharactersBlock> {
     private boolean ignoreMatrix = false;
 
     /**
@@ -68,7 +68,7 @@ public class CharactersNexusOutput implements INexusOutput<CharactersBlock> {
         final CharactersNexusFormat format = (CharactersNexusFormat) characters.getFormat();
 
         w.write("\nBEGIN " + NAME + ";\n");
-        UtilitiesNexusIO.writeTitleLinks(w, characters);
+        writeTitleAndLinks(w);
         w.write("DIMENSIONS ntax=" + characters.getNtax() + " nchar=" + characters.getNchar() + ";\n");
         w.write("FORMAT\n");
         w.write("\tdatatype='" + characters.getDataType().toString() + "'");

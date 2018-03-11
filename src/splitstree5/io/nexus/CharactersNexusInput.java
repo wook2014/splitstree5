@@ -40,21 +40,11 @@ import java.util.*;
  * nexus input parser
  * Daniel Huson, 2.2018
  */
-public class CharactersNexusInput implements INexusInput<CharactersBlock> {
+public class CharactersNexusInput extends NexusIOBase implements INexusInput<CharactersBlock> {
     public static final String NAME = "CHARACTERS";
 
     private boolean ignoreMatrix = false;
     private boolean treatUnknownAsError = false;
-
-    /**
-     * is the parser at the beginning of a block that this class can parse?
-     *
-     * @param np
-     * @return true, if can parse from here
-     */
-    public boolean atBeginOfBlock(NexusStreamParser np) {
-        return np.peekMatchIgnoreCase("begin " + NAME + ";");
-    }
 
     public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
             "\t[TITLE title;]\n" +
@@ -108,7 +98,7 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock> {
         else if (np.peekMatchIgnoreCase("begin Data"))
             np.matchBeginBlock("Data");
 
-        UtilitiesNexusIO.readTitleLinks(np, charactersBlock);
+        parseTitleAndLinks(np);
 
         final int ntax;
         final int nchar;
@@ -607,4 +597,15 @@ public class CharactersNexusInput implements INexusInput<CharactersBlock> {
     public void setIgnoreMatrix(boolean ignoreMatrix) {
         this.ignoreMatrix = ignoreMatrix;
     }
+
+    /**
+     * is the parser at the beginning of a block that this class can parse?
+     *
+     * @param np
+     * @return true, if can parse from here
+     */
+    public boolean atBeginOfBlock(NexusStreamParser np) {
+        return np.peekMatchIgnoreCase("begin " + NAME + ";");
+    }
+
 }

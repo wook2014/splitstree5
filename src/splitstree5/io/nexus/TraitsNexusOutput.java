@@ -32,7 +32,7 @@ import static splitstree5.io.nexus.TraitsNexusInput.NAME;
  * traits nexus output
  * Daniel Huson, 2.2018
  */
-public class TraitsNexusOutput implements INexusOutput<TraitsBlock> {
+public class TraitsNexusOutput extends NexusIOBase implements INexusOutput<TraitsBlock> {
     /**
      * write a block in nexus format
      *
@@ -46,7 +46,7 @@ public class TraitsNexusOutput implements INexusOutput<TraitsBlock> {
         final TraitsNexusFormat format = (TraitsNexusFormat) traitsBlock.getFormat();
 
         w.write("\nBEGIN " + NAME + ";\n");
-        UtilitiesNexusIO.writeTitleLinks(w, traitsBlock);
+        writeTitleAndLinks(w);
         w.write("  DIMENSIONS [ntax=" + taxaBlock.getNtax() + "] ntraits=" + traitsBlock.getNTraits() + ";\n");
         w.write("  FORMAT");
         if (format.isOptionLabel())

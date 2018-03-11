@@ -51,7 +51,7 @@ import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.dialogs.importer.ImportDialog;
 import splitstree5.dialogs.importer.ImporterManager;
 import splitstree5.gui.ViewerTab;
-import splitstree5.io.nexus.WorkflowNexusOutput;
+import splitstree5.io.nexus.workflow.WorkflowNexusOutput;
 import splitstree5.menu.MenuController;
 
 import java.io.File;
@@ -113,7 +113,8 @@ public class MainWindowMenuController {
                 Basic.caught(ex);
             }
         });
-        controller.getSaveMenuItem().disableProperty().bind(document.dirtyProperty().not().or(document.nameProperty().isNotEmpty()).or(document.updatingProperty()));
+        //controller.getSaveMenuItem().disableProperty().bind((document.hasSplitsTree5FileProperty().not()).or(document.dirtyProperty().not()).or(document.nameProperty().isEmpty()).or(document.updatingProperty()));
+        controller.getSaveMenuItem().disableProperty().bind((document.hasSplitsTree5FileProperty().not()).or(document.dirtyProperty().not()).or(document.updatingProperty()).or(document.nameProperty().isEmpty()));
 
         controller.getSaveAsMenuItem().setOnAction((e) -> {
             showSaveDialog(mainWindow);
@@ -139,7 +140,7 @@ public class MainWindowMenuController {
     public static boolean showSaveDialog(MainWindow mainWindow) {
         final FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save SplitsTree5 file");
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("SplitsTree5 Files", "*.nxs", "*.nex", "*.nexus"));
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("SplitsTree5 Files", "*.stree5", "*.nxs", "*.nex", "*.stree5"));
         fileChooser.setInitialDirectory((new File(mainWindow.getDocument().getFileName()).getParentFile()));
         fileChooser.setInitialFileName((new File(mainWindow.getDocument().getFileName()).getName()));
         final File file = fileChooser.showSaveDialog(mainWindow.getStage());

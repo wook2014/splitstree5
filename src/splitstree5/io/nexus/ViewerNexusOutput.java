@@ -39,7 +39,7 @@ import static splitstree5.io.nexus.ViewerNexusInput.NAME;
  * viewer nexus output
  * Daniel Huson, 3.2018
  */
-public class ViewerNexusOutput implements INexusOutput<ViewerBlock> {
+public class ViewerNexusOutput extends NexusIOBase implements INexusOutput<ViewerBlock> {
     /**
      * write a block in nexus format
      *
@@ -51,7 +51,7 @@ public class ViewerNexusOutput implements INexusOutput<ViewerBlock> {
     @Override
     public void write(Writer w, TaxaBlock taxaBlock, ViewerBlock viewerBlock) throws IOException {
         w.write("\nBEGIN " + NAME + ";\n");
-        UtilitiesNexusIO.writeTitleLinks(w, viewerBlock);
+        writeTitleAndLinks(w);
 
         final GraphTabBase graphTab = viewerBlock.getTab();
         final PhyloGraph graph = graphTab.getGraph();

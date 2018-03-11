@@ -50,7 +50,6 @@ import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 import jloda.util.ProgressListener;
-import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToViewer;
@@ -61,11 +60,7 @@ import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.formattab.FormatItem;
 import splitstree5.gui.graphtab.TreeViewTab;
 import splitstree5.gui.graphtab.base.*;
-import splitstree5.io.nexus.ViewerNexusInput;
-import splitstree5.io.nexus.ViewerNexusOutput;
 
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -241,18 +236,6 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
         getConnector().stateProperty().addListener(new WeakChangeListener<>(changeListener));
 
         progress.close();
-
-        if (true) {
-            StringWriter w = new StringWriter();
-            new ViewerNexusOutput().write(w, taxaBlock, child);
-            System.err.println(w.toString());
-            ViewerBlock again = new ViewerBlock.SplitsNetworkViewerBlock();
-            new ViewerNexusInput().parse(new NexusStreamParser(new StringReader(w.toString())), taxaBlock, again);
-            w = new StringWriter();
-            new ViewerNexusOutput().write(w, taxaBlock, again);
-            System.err.println("Again:\n" + w.toString());
-        }
-
     }
 
 

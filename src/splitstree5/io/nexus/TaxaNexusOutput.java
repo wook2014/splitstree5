@@ -26,7 +26,7 @@ import java.io.Writer;
 
 import static splitstree5.io.nexus.TaxaNexusInput.NAME;
 
-public class TaxaNexusOutput {
+public class TaxaNexusOutput extends NexusIOBase {
     /**
      * writes the taxa block in nexus format
      *
@@ -36,7 +36,7 @@ public class TaxaNexusOutput {
      */
     public void write(Writer w, TaxaBlock taxaBlock) throws IOException {
         w.write("\nBEGIN " + NAME + ";\n");
-        UtilitiesNexusIO.writeTitleLinks(w, taxaBlock);
+        writeTitleAndLinks(w);
         w.write("\tDIMENSIONS ntax=" + taxaBlock.getNtax() + ";\n");
         w.write("\tTAXLABELS\n");
         for (int i = 1; i <= taxaBlock.getNtax(); i++)

@@ -32,16 +32,6 @@ import java.util.ArrayList;
 public class SplitsTree5NexusInput {
     public static final String NAME = "SplitsTree5";
 
-    /**
-     * is the parser at the beginning of a block that this class can parse?
-     *
-     * @param np
-     * @return true, if can parse from here
-     */
-    public boolean atBeginOfBlock(NexusStreamParser np) {
-        return np.peekMatchIgnoreCase("begin " + NAME + ";");
-    }
-
     public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
             "\tDIMENSIONS nDataNodes=number nAlgorithms=number;\n" +
             "\tPROGRAM version=version-string;\n" +
@@ -80,5 +70,15 @@ public class SplitsTree5NexusInput {
         np.matchIgnoreCase(";");
 
         np.matchEndBlock();
+    }
+
+    /**
+     * is the parser at the beginning of a block that this class can parse?
+     *
+     * @param np
+     * @return true, if can parse from here
+     */
+    public boolean atBeginOfBlock(NexusStreamParser np) {
+        return np.peekMatchIgnoreCase("begin " + NAME + ";");
     }
 }

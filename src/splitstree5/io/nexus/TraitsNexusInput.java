@@ -35,18 +35,8 @@ import java.util.Map;
  * taxa nexus input
  * Daniel Huson, 2.2018
  */
-public class TraitsNexusInput implements INexusInput<TraitsBlock> {
+public class TraitsNexusInput extends NexusIOBase implements INexusInput<TraitsBlock> {
     public static final String NAME = "TRAITS";
-
-    /**
-     * is the parser at the beginning of a block that this class can parse?
-     *
-     * @param np
-     * @return true, if can parse from here
-     */
-    public boolean atBeginOfBlock(NexusStreamParser np) {
-        return np.peekMatchIgnoreCase("begin " + NAME + ";");
-    }
 
     public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
             "\t[TITLE title;]\n" +
@@ -77,8 +67,7 @@ public class TraitsNexusInput implements INexusInput<TraitsBlock> {
         final TraitsNexusFormat format = (TraitsNexusFormat) traitsBlock.getFormat();
 
         np.matchBeginBlock(NAME);
-        UtilitiesNexusIO.readTitleLinks(np, taxaBlock);
-
+        parseTitleAndLinks(np);
 
         np.matchIgnoreCase("DIMENSIONS");
         final int ntax;
@@ -188,5 +177,15 @@ public class TraitsNexusInput implements INexusInput<TraitsBlock> {
         np.matchIgnoreCase(";");
         np.matchEndBlock();
         return taxonNamesFound;
+    }
+
+    /**
+     * is the parser at the beginning of a block that this class can parse?
+     *
+     * @param np
+     * @return true, if can parse from here
+     */
+    public boolean atBeginOfBlock(NexusStreamParser np) {
+        return np.peekMatchIgnoreCase("begin " + NAME + ";");
     }
 }

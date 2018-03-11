@@ -31,7 +31,6 @@ import jloda.graph.NodeArray;
 import jloda.phylo.SplitsGraph;
 import jloda.util.ProgramProperties;
 import jloda.util.ProgressListener;
-import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromSplits;
 import splitstree5.core.algorithms.interfaces.IToViewer;
@@ -47,11 +46,7 @@ import splitstree5.gui.graphtab.ISplitsViewTab;
 import splitstree5.gui.graphtab.base.EdgeViewBase;
 import splitstree5.gui.graphtab.base.GraphLayout;
 import splitstree5.gui.graphtab.base.NodeViewBase;
-import splitstree5.io.nexus.ViewerNexusInput;
-import splitstree5.io.nexus.ViewerNexusOutput;
 
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
@@ -169,19 +164,6 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
             getConnector().stateProperty().removeListener(changeListener);
         changeListener = (c, o, n) -> child.getTab().getCenter().setDisable(n != UpdateState.VALID);
         getConnector().stateProperty().addListener(new WeakChangeListener<>(changeListener));
-
-
-        if (false) {
-            StringWriter w = new StringWriter();
-            new ViewerNexusOutput().write(w, taxaBlock, child);
-            System.err.println(w.toString());
-            ViewerBlock again = new ViewerBlock.SplitsNetworkViewerBlock();
-            new ViewerNexusInput().parse(new NexusStreamParser(new StringReader(w.toString())), taxaBlock, again);
-            w = new StringWriter();
-            new ViewerNexusOutput().write(w, taxaBlock, again);
-            System.err.println("Again:\n" + w.toString());
-        }
-
     }
 
     public Algorithm getOptionAlgorithm() {

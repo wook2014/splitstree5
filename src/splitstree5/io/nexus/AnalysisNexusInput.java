@@ -28,18 +28,8 @@ import java.util.ArrayList;
  * analysis result nexus input
  * Daniel Huson, 2.2018
  */
-public class AnalysisNexusInput {
+public class AnalysisNexusInput extends NexusIOBase {
     public static final String NAME = "ST_ANALYSIS_RESULT";
-
-    /**
-     * is the parser at the beginning of a block that this class can parse?
-     *
-     * @param np
-     * @return true, if can parse from here
-     */
-    public boolean atBeginOfBlock(NexusStreamParser np) {
-        return np.peekMatchIgnoreCase("begin " + NAME + ";");
-    }
 
     public static final String SYNTAX = "BEGIN ST_ANALYSIS;\n" +
             "\t[TITLE title;]\n" +
@@ -71,7 +61,8 @@ public class AnalysisNexusInput {
             np.matchIgnoreCase("#nexus"); // skip header line if it is the first line
 
         np.matchBeginBlock(NAME);
-        UtilitiesNexusIO.readTitleLinks(np, block);
+        parseTitleAndLinks(np);
+
         np.matchIgnoreCase("DIMENSIONS nlines=");
         final int nLines = np.getInt();
         np.matchIgnoreCase(";");
@@ -91,5 +82,15 @@ public class AnalysisNexusInput {
         np.matchIgnoreCase("END;");
 
         return taxonNamesFound;
+    }
+
+    /**
+     * is the parser at the beginning of a block that this class can parse?
+     *
+     * @param np
+     * @return true, if can parse from here
+     */
+    public boolean atBeginOfBlock(NexusStreamParser np) {
+        return np.peekMatchIgnoreCase("begin " + NAME + ";");
     }
 }
