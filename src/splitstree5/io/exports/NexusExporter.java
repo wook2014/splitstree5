@@ -39,6 +39,7 @@
 package splitstree5.io.exports;
 
 import jloda.util.Basic;
+import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.*;
 import splitstree5.io.exports.interfaces.*;
 import splitstree5.io.imports.nexus.NexusImporter;
@@ -52,7 +53,7 @@ import java.util.List;
  * exports in Nexus format
  * Daniel Huson, 2.2018
  */
-public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportCharacters, IExportDistances, IExportTrees, IExportSplits, IExportNetwork, IExportTraits {
+public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportCharacters, IExportDistances, IExportTrees, IExportSplits, IExportNetwork, IExportTraits, IExportViewer {
     private boolean prependTaxa = true;
 
     @Override
@@ -110,6 +111,13 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
     }
 
     @Override
+    public void export(Writer w, TaxaBlock taxa, ViewerBlock viewerBlock) throws IOException {
+        if (prependTaxa)
+            export(w, taxa);
+        new ViewerNexusOutput().write(w, taxa, viewerBlock);
+    }
+
+    @Override
     public List<String> getExtensions() {
         return NexusImporter.extensions;
     }
@@ -127,8 +135,14 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
             export(w, taxaBlock, (NetworkBlock) dataBlock);
         else if (dataBlock instanceof TraitsBlock)
             export(w, taxaBlock, (TraitsBlock) dataBlock);
+        else if (dataBlock instanceof ViewerBlock)
+            export(w, taxaBlock, (ViewerBlock) dataBlock);
         else
             throw new IOException("Export " + Basic.getShortName(dataBlock.getClass()) + ": not implemented");
+    }
+
+    public void export(Writer w, Algorithm algorithm) throws IOException {
+        new AlgorithmNexusOutput().write(w, algorithm);
     }
 
     public boolean isPrependTaxa() {

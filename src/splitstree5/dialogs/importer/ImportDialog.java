@@ -62,10 +62,10 @@ public class ImportDialog {
 
         stage.setScene(new Scene(extendedFXMLLoader.getRoot()));
         stage.sizeToScene();
-        if (parentMainWindow != null) {
-            stage.setX(parentMainWindow.getStage().getX() + 50);
-            stage.setY(parentMainWindow.getStage().getY() + 50);
-        }
+
+        stage.setX(parentMainWindow.getStage().getX() + 50);
+        stage.setY(parentMainWindow.getStage().getY() + 50);
+
         stage.setTitle("Import - " + ProgramProperties.getProgramName());
 
         controller.getDataTypeComboBox().getItems().addAll(ImporterManager.getInstance().getAllDataTypes());

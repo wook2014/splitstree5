@@ -127,7 +127,7 @@ public class ClustalIn extends CharactersFormat implements IToCharacters, IImpor
                 } else
                     frequency.put(symbol, frequency.get(symbol) + 1);
 
-                characters.set(labelsCounter, j, Character.toUpperCase(symbol));
+                characters.set(labelsCounter, j, symbol);
             }
             labelsCounter++;
         }

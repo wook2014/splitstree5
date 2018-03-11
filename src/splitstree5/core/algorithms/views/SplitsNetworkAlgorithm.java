@@ -34,7 +34,7 @@ import jloda.util.ProgressListener;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromSplits;
-import splitstree5.core.algorithms.interfaces.IToView;
+import splitstree5.core.algorithms.interfaces.IToViewer;
 import splitstree5.core.algorithms.views.algorithms.BoxOptimizer;
 import splitstree5.core.algorithms.views.algorithms.ConvexHull;
 import splitstree5.core.algorithms.views.algorithms.DaylightOptimizer;
@@ -60,7 +60,7 @@ import java.util.List;
  * compute an implementing of a set of splits using the equal angle algorithm
  * Daniel Huson, 11.2017
  */
-public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implements IFromSplits, IToView {
+public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implements IFromSplits, IToViewer {
     private final SplitsGraph graph = new SplitsGraph();
 
     private ChangeListener<UpdateState> changeListener;

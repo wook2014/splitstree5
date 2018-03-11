@@ -79,7 +79,7 @@ public class ImportService extends Service<Boolean> {
                     getProgressListener().setProgress(0);
 
                     final Pair<TaxaBlock, DataBlock> pair = apply(getProgressListener(), importer, fileName);
-                    DataLoader.load(reload, fileName, pair.getFirst(), pair.getSecond(), parentMainWindow);
+                    DataLoader.load(reload, fileName, pair.getFirst(), pair.getSecond(), parentMainWindow.getDocument());
                     return true;
                 } catch (Exception ex) {
                     throw ex;
@@ -93,7 +93,7 @@ public class ImportService extends Service<Boolean> {
      *
      * @param importer
      * @param fileName
-     * @return taxa block and datablock, or null
+     * @return taxa block and data block, or null
      */
     public static Pair<TaxaBlock, DataBlock> apply(ProgressListener progress, IImporter importer, String fileName) throws IOException, CanceledException {
         if (importer == null)

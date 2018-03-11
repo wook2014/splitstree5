@@ -53,7 +53,7 @@ import jloda.util.ProgressListener;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
-import splitstree5.core.algorithms.interfaces.IToView;
+import splitstree5.core.algorithms.interfaces.IToViewer;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.datablocks.ViewerBlock;
@@ -76,7 +76,7 @@ import java.util.Map;
  * Daniel Huson, 11.2017
  * todo: add support for rooted networks (as in Dendroscope)
  */
-public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements IFromTrees, IToView {
+public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements IFromTrees, IToViewer {
 
     public enum EdgeLengths {Weights, Uniform, Cladogram, CladogramEarlyBranching}
 

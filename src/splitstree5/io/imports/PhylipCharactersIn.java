@@ -52,16 +52,14 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
                     readLines++;
 
                     if (line.length() <= 10)
-                        throw new IOExceptionWithLineNumber("Line is shorter then 10 symbols. \n" +
-                                "Phylip characters format : first 10 symbols = taxa label + sequence", counter);
+                        throw new IOExceptionWithLineNumber("Line is shorter then 10 symbols. Phylip characters format : first 10 symbols = taxa label + sequence", counter);
 
                     // interleaved
                     if (readLines > ntax && sameLengthNtax) {
                         if (readLines % ntax == 1) interleavedBlockLinesLength = line.length();
                         else {
                             if (interleavedBlockLinesLength != 0 && line.length() != interleavedBlockLinesLength)
-                                throw new IOExceptionWithLineNumber("Error for interleaved format matrix." +
-                                        "\nLine must have the same length as line " + (counter - 1), counter);
+                                throw new IOExceptionWithLineNumber("Error for interleaved format matrix. Line must have the same length as line " + (counter - 1), counter);
                         }
                     }
 
@@ -93,8 +91,7 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
 
                     // no more lines are allowed for standard after reading ntax lines
                     if (readLines > ntax && standard)
-                        throw new IOExceptionWithLineNumber("Unexpected symbol" +
-                                "\nCan only read " + ntax + " lines " + nchar + " symbols long.", counter);
+                        throw new IOExceptionWithLineNumber("Unexpected symbol. Can only read " + ntax + " lines " + nchar + " symbols long", counter);
                 }
                 progressListener.setProgress(it.getProgress());
             }
@@ -134,8 +131,7 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
         return true;
     }
 
-    private void setCharactersStandard(ArrayList<String> labels, ArrayList<String> sequences,
-                                       int ntax, int nchar, TaxaBlock taxa, CharactersBlock characters) throws IOException {
+    private void setCharactersStandard(ArrayList<String> labels, ArrayList<String> sequences, int ntax, int nchar, TaxaBlock taxa, CharactersBlock characters) throws IOException {
         taxa.clear();
         taxa.addTaxaByNames(labels);
         characters.clear();
@@ -154,7 +150,7 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
                 } else
                     frequency.put(symbol, frequency.get(symbol) + 1);
 
-                characters.set(labelsCounter, j, Character.toUpperCase(symbol));
+                characters.set(labelsCounter, j, symbol);
             }
             labelsCounter++;
         }
@@ -198,7 +194,7 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
                 } else
                     frequency.put(symbol, frequency.get(symbol) + 1);
                 int taxaIndex = (i % ntax) + 1;
-                characters.set(taxaIndex, j + seqLength, Character.toUpperCase(symbol));
+                characters.set(taxaIndex, j + seqLength, symbol);
             }
             if (i % ntax == ntax - 1)
                 seqLength = +sequences.get(i).length();
@@ -233,7 +229,7 @@ public class PhylipCharactersIn extends CharactersFormat implements IToCharacter
                 } else
                     frequency.put(symbol, frequency.get(symbol) + 1);
 
-                characters.set(taxaNames.size(), j + 1, Character.toUpperCase(symbol));
+                characters.set(taxaNames.size(), j + 1, symbol);
             }
             iterator++;
         }

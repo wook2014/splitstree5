@@ -19,7 +19,6 @@
 
 package splitstree5.core.datablocks;
 
-import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
 import splitstree5.core.algorithms.interfaces.IToCharacters;
@@ -56,8 +55,6 @@ public class CharactersBlock extends DataBlock {
 
     private StateLabeler stateLabeler;
     private Map<Integer, String> charLabeler;
-
-    // todo: SplitsTree4 uses two tables ambigStates and replacedStates to store replaced ambig
 
     private float gammaParam = Float.MAX_VALUE;
     private float pInvar = Float.MAX_VALUE;
@@ -151,20 +148,7 @@ public class CharactersBlock extends DataBlock {
      * @param value
      */
     public void set(int t, int pos, char value) {
-        matrix[t - 1][pos - 1] = value;
-    }
-
-
-    /**
-     * set characters, change dimensions if necessary.
-     *
-     * @param matrix
-     */
-    public void set(@NotNull char[][] matrix) {
-        setDimension(matrix.length, matrix[0].length);
-        for (int i = 0; i < matrix.length; i++) {
-            System.arraycopy(matrix[i], 0, this.matrix[i], 0, matrix.length);
-        }
+        matrix[t - 1][pos - 1] = Character.toLowerCase(value);
     }
 
     public char[][] getMatrix() {

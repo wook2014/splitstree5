@@ -59,7 +59,7 @@ public class AlgorithmNexusOutput {
      * @param w
      * @throws IOException
      */
-    public void write(Algorithm algorithm, Writer w) throws IOException {
+    public void write(Writer w, Algorithm algorithm) throws IOException {
         w.write("\nBEGIN " + NAME + ";\n");
         UtilitiesNexusIO.writeTitleLinks(w, algorithm);
         w.write("\tALGORITHM = " + algorithm.getName() + ";\n");

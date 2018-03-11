@@ -21,8 +21,8 @@ package splitstree5.core.datablocks;
 
 import javafx.application.Platform;
 import splitstree5.core.Document;
-import splitstree5.core.algorithms.interfaces.IFromView;
-import splitstree5.core.algorithms.interfaces.IToView;
+import splitstree5.core.algorithms.interfaces.IFromViewer;
+import splitstree5.core.algorithms.interfaces.IToViewer;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.gui.graph3dtab.SplitsView3DTab;
 import splitstree5.gui.graphtab.AlgorithmBreadCrumbsToolBar;
@@ -109,12 +109,12 @@ public class ViewerBlock extends DataBlock {
 
     @Override
     public Class getFromInterface() {
-        return IFromView.class;
+        return IFromViewer.class;
     }
 
     @Override
     public Class getToInterface() {
-        return IToView.class;
+        return IToViewer.class;
     }
 
     @Override

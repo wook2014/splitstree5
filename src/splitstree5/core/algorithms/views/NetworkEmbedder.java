@@ -33,7 +33,7 @@ import jloda.util.Basic;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromNetwork;
-import splitstree5.core.algorithms.interfaces.IToView;
+import splitstree5.core.algorithms.interfaces.IToViewer;
 import splitstree5.core.datablocks.NetworkBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TraitsBlock;
@@ -51,7 +51,7 @@ import java.util.List;
  * Embeds a network
  * Daniel Huson, 2.2018
  */
-public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implements IFromNetwork, IToView {
+public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implements IFromNetwork, IToViewer {
     public enum MutationView {Hatches, Labels, Count, None}
 
     private final PhyloGraph graph = new PhyloGraph();

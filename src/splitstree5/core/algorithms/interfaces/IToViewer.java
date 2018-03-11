@@ -16,12 +16,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package splitstree5.core.algorithms.interfaces;
 
 /**
- * from view interface.
+ * to view interface
  * This is used to identify algorithms at runtime
  * Daniel Huson, 3.2018
  */
-public interface IFromView extends IFrom {
+public interface IToViewer {
 }

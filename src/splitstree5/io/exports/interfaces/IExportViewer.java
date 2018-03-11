@@ -16,13 +16,25 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package splitstree5.io.exports.interfaces;
 
-package splitstree5.core.algorithms.interfaces;
+import splitstree5.core.algorithms.interfaces.IFromViewer;
+import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.datablocks.ViewerBlock;
+
+import java.io.IOException;
+import java.io.Writer;
 
 /**
- * to view interface
- * This is used to identify algorithms at runtime
+ * export viewer block
  * Daniel Huson, 3.2018
  */
-public interface IToView {
+public interface IExportViewer extends IExporter, IFromViewer {
+    /**
+     * export taxa
+     *
+     * @param w
+     * @param taxa
+     */
+    void export(Writer w, TaxaBlock taxa, ViewerBlock viewerBlock) throws IOException;
 }

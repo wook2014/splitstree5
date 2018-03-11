@@ -45,23 +45,27 @@ import splitstree5.main.MainWindow;
 
 import java.util.Optional;
 
+/**
+ * loads data in document during import
+ * Daniel Huson, 3.2018
+ */
 public class DataLoader {
 
     /**
-     * load data into window.
+     * loads data into document
      *
-     * @param reload           if true, attempt to reload into current workflow, otherwise open new window
+     * @param reload if true, attempt to reload into current workflow, otherwise open new window
      * @param taxaBlock
      * @param dataBlock
-     * @param parentMainWindow
+     * @param document
      */
-    public static void load(boolean reload, String fileName, TaxaBlock taxaBlock, DataBlock dataBlock, MainWindow parentMainWindow) {
-
+    public static void load(boolean reload, String fileName, TaxaBlock taxaBlock, DataBlock dataBlock, Document document) {
         if (reload) {
-            if (parentMainWindow.getWorkflow().canLoadData(dataBlock)) {
-                parentMainWindow.getWorkflow().loadData(taxaBlock, dataBlock);
+            final Workflow workflow = document.getWorkflow();
+
+            if (workflow.canLoadData(dataBlock)) {
+                workflow.loadData(taxaBlock, dataBlock);
                 Platform.runLater(() -> {
-                    final Workflow workflow = parentMainWindow.getWorkflow();
                     workflow.getTopTaxaNode().setState(UpdateState.VALID);
                     if (!fileName.endsWith(".tmp"))
                         RecentFilesManager.getInstance().addRecentFile(fileName);
@@ -69,9 +73,9 @@ public class DataLoader {
                     NotificationManager.showInformation("Opened file: " + Basic.getFileNameWithoutPath(fileName) + (shortDescription.length() > 0 ? "\nLoaded " + shortDescription : ""));
                 });
                 return;
-            } else if (parentMainWindow.getDocument().getWorkflow().getWorkingDataNode() != null && parentMainWindow.getWorkflow().getWorkingDataNode().getDataBlock() != null) {
+            } else if (workflow.getWorkingDataNode() != null && workflow.getWorkingDataNode().getDataBlock() != null) {
                 Platform.runLater(() -> {
-                    final String oldName = parentMainWindow.getWorkflow().getWorkingDataNode().getDataBlock().getName();
+                    final String oldName = workflow.getWorkingDataNode().getDataBlock().getName();
                     final String newName = dataBlock.getName();
                     NotificationManager.showError("Can't load data, type has changed from " + oldName + " to " + newName);
                 });
@@ -81,12 +85,11 @@ public class DataLoader {
 
         final MainWindow mainWindow;
 
-        if (parentMainWindow.getDocument().getWorkflow().getWorkingDataNode() == null) {
-            mainWindow = parentMainWindow;
+        if (document.getWorkflow().getWorkingDataNode() == null) {
+            mainWindow = document.getMainWindow();
         } else {
             mainWindow = new MainWindow();
         }
-        final Document document = mainWindow.getDocument();
 
         document.setFileName(Basic.replaceFileSuffix(fileName, ".stree5"));
 
@@ -154,10 +157,10 @@ public class DataLoader {
 
         Platform.runLater(() -> {
             document.setDirty(true);
-            if (mainWindow == parentMainWindow) // using existing document
+            if (mainWindow == document.getMainWindow()) // using existing document
                 mainWindow.getStage().toFront();
             else // new document
-                mainWindow.show(new Stage(), parentMainWindow.getStage().getX() + 50, parentMainWindow.getStage().getY() + 50);
+                mainWindow.show(new Stage(), document.getMainWindow().getStage().getX() + 50, document.getMainWindow().getStage().getY() + 50);
             final String shortDescription = workflow.getTopTaxaNode() != null ? workflow.getTopDataNode().getShortDescription() : "null";
             NotificationManager.showInformation("Opened file: " + Basic.getFileNameWithoutPath(fileName) + (shortDescription.length() > 0 ? "\nLoaded " + shortDescription : ""));
         });

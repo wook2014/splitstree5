@@ -975,6 +975,23 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
         return result;
     }
 
+    /**
+     * Get a long from the reader
+     *
+     * @return integer read
+     */
+    public long getLong() throws IOExceptionWithLineNumber {
+        pushPunctuationCharacters(NEGATIVE_INTEGER_PUNCTUATION);
+        try {
+            nextToken();
+            nval = Long.valueOf(sval);
+        } catch (Exception ex) {
+            popPunctuationCharacters();
+            throw new IOExceptionWithLineNumber("LONG expected, got: '" + sval + "'", lineno());
+        }
+        popPunctuationCharacters();
+        return (long) nval;
+    }
 
     /**
      * Get a double from the reader
