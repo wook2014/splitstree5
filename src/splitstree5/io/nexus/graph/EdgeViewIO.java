@@ -89,10 +89,9 @@ public class EdgeViewIO {
                             Basic.toString(to.getRadiusX(), 4),
                             Basic.toString(to.getRadiusY(), 4),
                             Basic.toString(to.getXAxisRotation(), 4),
-                            to.isLargeArcFlag(),
-                            to.isSweepFlag(),
                             Basic.toString(to.getX(), 4),
-                            Basic.toString(to.getY(), 4)));
+                            Basic.toString(to.getY(), 4),
+                            to.isLargeArcFlag(), to.isSweepFlag()));
                 } else if (element instanceof QuadCurveTo) {
                     final QuadCurveTo to = (QuadCurveTo) element;
                     buf.append(String.format("Q %s %s %s %s",
@@ -156,38 +155,42 @@ public class EdgeViewIO {
             throw new IOExceptionWithLineNumber("Empty svg path", np.lineno());
 
         final ArrayList<PathElement> elements = new ArrayList<>();
-        while (svgTokenizer.hasMoreTokens()) {
-            String command = svgTokenizer.nextToken();
-            switch (command) {
-                case "M": {
-                    elements.add(new MoveTo(Double.parseDouble(svgTokenizer.nextToken()), Double.parseDouble(svgTokenizer.nextToken())));
-                    break;
-                }
-                case "L": {
-                    elements.add(new LineTo(Double.parseDouble(svgTokenizer.nextToken()), Double.parseDouble(svgTokenizer.nextToken())));
-                    break;
-                }
-                case "A": {
-                    elements.add(new ArcTo(Double.parseDouble(svgTokenizer.nextToken()),
-                            Double.parseDouble(svgTokenizer.nextToken()), Double.parseDouble(svgTokenizer.nextToken()),
-                            Double.parseDouble(svgTokenizer.nextToken()), Double.parseDouble(svgTokenizer.nextToken()),
-                            Boolean.parseBoolean(svgTokenizer.nextToken()), Boolean.parseBoolean(svgTokenizer.nextToken())));
-                    break;
-                }
-                case "Q": {
-                    elements.add(new QuadCurveTo(
-                            Double.parseDouble(svgTokenizer.nextToken()), Double.parseDouble(svgTokenizer.nextToken()),
-                            Double.parseDouble(svgTokenizer.nextToken()), Double.parseDouble(svgTokenizer.nextToken())));
-                    break;
-                }
-                case "C": {
-                    elements.add(new CubicCurveTo(
-                            Double.parseDouble(svgTokenizer.nextToken()), Double.parseDouble(svgTokenizer.nextToken()),
-                            Double.parseDouble(svgTokenizer.nextToken()), Double.parseDouble(svgTokenizer.nextToken()),
-                            Double.parseDouble(svgTokenizer.nextToken()), Double.parseDouble(svgTokenizer.nextToken())));
-                    break;
+        try {
+            while (svgTokenizer.hasMoreTokens()) {
+                String command = svgTokenizer.nextToken();
+                switch (command) {
+                    case "M": {
+                        elements.add(new MoveTo(Double.parseDouble(svgTokenizer.nextToken()), Double.parseDouble(svgTokenizer.nextToken())));
+                        break;
+                    }
+                    case "L": {
+                        elements.add(new LineTo(Double.parseDouble(svgTokenizer.nextToken()), Double.parseDouble(svgTokenizer.nextToken())));
+                        break;
+                    }
+                    case "A": {
+                        elements.add(new ArcTo(Double.parseDouble(svgTokenizer.nextToken()),
+                                Double.parseDouble(svgTokenizer.nextToken()), Double.parseDouble(svgTokenizer.nextToken()),
+                                Double.parseDouble(svgTokenizer.nextToken()), Double.parseDouble(svgTokenizer.nextToken()),
+                                Boolean.parseBoolean(svgTokenizer.nextToken()), Boolean.parseBoolean(svgTokenizer.nextToken())));
+                        break;
+                    }
+                    case "Q": {
+                        elements.add(new QuadCurveTo(
+                                Double.parseDouble(svgTokenizer.nextToken()), Double.parseDouble(svgTokenizer.nextToken()),
+                                Double.parseDouble(svgTokenizer.nextToken()), Double.parseDouble(svgTokenizer.nextToken())));
+                        break;
+                    }
+                    case "C": {
+                        elements.add(new CubicCurveTo(
+                                Double.parseDouble(svgTokenizer.nextToken()), Double.parseDouble(svgTokenizer.nextToken()),
+                                Double.parseDouble(svgTokenizer.nextToken()), Double.parseDouble(svgTokenizer.nextToken()),
+                                Double.parseDouble(svgTokenizer.nextToken()), Double.parseDouble(svgTokenizer.nextToken())));
+                        break;
+                    }
                 }
             }
+        } catch (Exception ex) {
+            throw new IOExceptionWithLineNumber("Failed to parse line: " + Basic.getShortName(ex.getClass()) + ": " + ex.getMessage(), np.lineno());
         }
 
         double strokeWidth = np.getDouble();

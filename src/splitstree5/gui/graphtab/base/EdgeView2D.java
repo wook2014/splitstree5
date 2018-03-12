@@ -20,6 +20,7 @@
 package splitstree5.gui.graphtab.base;
 
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -203,10 +204,10 @@ public class EdgeView2D extends EdgeViewBase {
             path.setStrokeWidth(1);
             setShape(path);
 
-            // todo: may need to use midpoint?
-            final Point2D start = new Point2D(((MoveTo) elements.get(0)).getX(), ((MoveTo) elements.get(0)).getY());
-            final Point2D end = new Point2D(((LineTo) elements.get(elements.size() - 1)).getX(), ((LineTo) elements.get(elements.size() - 1)).getY());
-            setReferencePoint(start.add(end).multiply(0.5));
+            // todo: debug this:
+            final Bounds bounds = path.getLayoutBounds();
+            final Point2D mid = new Point2D(0.5 * (bounds.getMinX() + bounds.getMaxX()), 0.5 * (bounds.getMinY() + bounds.getMaxY()));
+            setReferencePoint(mid);
 
             path.setOnMouseEntered(mouseEnteredHandler);
             path.setOnMouseExited(mouseExitedHandler);

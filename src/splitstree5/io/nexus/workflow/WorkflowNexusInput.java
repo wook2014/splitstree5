@@ -37,12 +37,10 @@ import splitstree5.core.workflow.Workflow;
 import splitstree5.io.nexus.AlgorithmNexusInput;
 import splitstree5.io.nexus.SplitsTree5NexusInput;
 import splitstree5.io.nexus.TaxaNexusInput;
-import splitstree5.io.nexus.ViewerNexusOutput;
 import splitstree5.main.MainWindow;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -147,30 +145,25 @@ public class WorkflowNexusInput {
             }
 
             Platform.runLater(() -> {
-                if (mainWindow == parentWindow) // are using an existing window
-                    mainWindow.getStage().toFront();
-                else // is new window
-                    mainWindow.show(new Stage(), parentWindow.getStage().getX() + 50, parentWindow.getStage().getY() + 50);
-                final String shortDescription = workflow.getTopTaxaNode() != null ? workflow.getTopDataNode().getShortDescription() : "null";
-                NotificationManager.showInformation("Opened file: " + Basic.getFileNameWithoutPath(fileName) + (shortDescription.length() > 0 ? "\nLoaded " + shortDescription : ""));
-                if (!fileName.endsWith(".tmp"))
-                    RecentFilesManager.getInstance().addRecentFile(fileName);
-
+                try {
+                    if (mainWindow == parentWindow) // are using an existing window
+                        mainWindow.getStage().toFront();
+                    else // is new window
+                        mainWindow.show(new Stage(), parentWindow.getStage().getX() + 50, parentWindow.getStage().getY() + 50);
+                    final String shortDescription = workflow.getTopTaxaNode() != null ? workflow.getTopDataNode().getShortDescription() : "null";
+                    NotificationManager.showInformation("Opened file: " + Basic.getFileNameWithoutPath(fileName) + (shortDescription.length() > 0 ? "\nLoaded " + shortDescription : ""));
+                    if (!fileName.endsWith(".tmp"))
+                        RecentFilesManager.getInstance().addRecentFile(fileName);
+                } catch (Exception ex) {
+                    Basic.caught(ex);
+                }
             });
 
             Platform.runLater(() -> {
                 document.updateMethodsText();
                 for (ViewerBlock viewerBlock : viewerBlocks) {
+                    viewerBlock.getTab().setSkipNextLabelLayout(true);
                     viewerBlock.show();
-                    if (false) {
-                        StringWriter w = new StringWriter();
-                        try {
-                            new ViewerNexusOutput().write(w, workflow.getWorkingTaxaBlock(), viewerBlock);
-                            System.err.println(w.toString());
-                        } catch (IOException e) {
-                            Basic.caught(e);
-                        }
-                    }
                 }
             });
 

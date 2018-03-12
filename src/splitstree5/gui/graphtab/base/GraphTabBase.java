@@ -105,6 +105,8 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
 
     private ObservableList<Taxon> documentTaxonSelectedItems;
 
+    private boolean skipNextLabelLayout = false;
+
     /**
      * constructor
      */
@@ -407,7 +409,7 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
             label.setOnMousePressed((e) -> {
                 if (nodeSelectionModel.getSelectedItems().contains(nodeView.getNode())) {
                     point.set(new Point2D(e.getScreenX(), e.getScreenY()));
-                    oldLocation.set(new Point2D(label.getLayoutX(), label.getLayoutY()));
+                    oldLocation.set(new Point2D(label.getTranslateX(), label.getTranslateY()));
                 }
                 e.consume();
             });
@@ -417,15 +419,15 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
                     double deltaY = e.getScreenY() - point.get().getY();
                     point.set(new Point2D(e.getScreenX(), e.getScreenY()));
                     if (deltaX != 0)
-                        label.setLayoutX(label.getLayoutX() + deltaX);
+                        label.setTranslateX(label.getTranslateX() + deltaX);
                     if (deltaY != 0)
-                        label.setLayoutY(label.getLayoutY() + deltaY);
+                        label.setTranslateY(label.getTranslateY() + deltaY);
                     e.consume();
                 }
             });
             label.setOnMouseReleased((e) -> {
                 if (oldLocation.get() != null) {
-                    final Point2D newLocation = new Point2D(label.getLayoutX(), label.getLayoutY());
+                    final Point2D newLocation = new Point2D(label.getTranslateX(), label.getTranslateY());
                     if (!newLocation.equals(oldLocation.get())) {
                         getUndoManager().doAndAdd(new MoveNodeLabelCommand(label, oldLocation.get(), newLocation, nodeView));
                     }
@@ -444,7 +446,7 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
             label.setOnMousePressed((e) -> {
                 if (edgeSelectionModel.getSelectedItems().contains(edgeView.getEdge())) {
                     point.set(new Point2D(e.getScreenX(), e.getScreenY()));
-                    oldLocation.set(new Point2D(label.getLayoutX(), label.getLayoutY()));
+                    oldLocation.set(new Point2D(label.getTranslateX(), label.getTranslateY()));
                 }
                 e.consume();
             });
@@ -454,15 +456,15 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
                     double deltaY = e.getScreenY() - point.get().getY();
                     point.set(new Point2D(e.getScreenX(), e.getScreenY()));
                     if (deltaX != 0)
-                        label.setLayoutX(label.getLayoutX() + deltaX);
+                        label.setTranslateX(label.getTranslateX() + deltaX);
                     if (deltaY != 0)
-                        label.setLayoutY(label.getLayoutY() + deltaY);
+                        label.setTranslateY(label.getTranslateY() + deltaY);
                     e.consume();
                 }
             });
             label.setOnMouseReleased((e) -> {
                 if (oldLocation.get() != null) {
-                    final Point2D newLocation = new Point2D(label.getLayoutX(), label.getLayoutY());
+                    final Point2D newLocation = new Point2D(label.getTranslateX(), label.getTranslateY());
                     if (!newLocation.equals(oldLocation.get())) {
                         getUndoManager().doAndAdd(new MoveEdgeLabelCommand(label, oldLocation.get(), newLocation, edgeView));
                     }
@@ -633,5 +635,13 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
     abstract public String getInfo();
 
     abstract public void show();
+
+    public boolean isSkipNextLabelLayout() {
+        return skipNextLabelLayout;
+    }
+
+    public void setSkipNextLabelLayout(boolean skipNextLabelLayout) {
+        this.skipNextLabelLayout = skipNextLabelLayout;
+    }
 }
 

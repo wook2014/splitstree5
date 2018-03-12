@@ -53,6 +53,9 @@ public class CharactersTopFilter extends ATopFilter<CharactersBlock> {
         super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parentNode, childNode);
 
         setAlgorithm(new Algorithm<CharactersBlock, CharactersBlock>("TopFilter") {
+            {
+                setShortDescription("Characters top filter");
+            }
             public void compute(ProgressListener progress, TaxaBlock modifiedTaxaBlock, CharactersBlock parent, CharactersBlock child) throws CanceledException {
                 // todo: implement direct copy?
                 {

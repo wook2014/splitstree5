@@ -42,14 +42,14 @@ public class MoveEdgeLabelCommand extends UndoableRedoableCommand {
 
     @Override
     public void undo() {
-        label.setLayoutX(oldLocation.getX());
-        label.setLayoutY(oldLocation.getY());
+        label.setTranslateX(oldLocation.getX());
+        label.setTranslateX(oldLocation.getY());
     }
 
     @Override
     public void redo() {
-        label.setLayoutX(newLocation.getX());
-        label.setLayoutY(newLocation.getY());
+        label.setTranslateX(newLocation.getX());
+        label.setTranslateY(newLocation.getY());
     }
 
     @Override

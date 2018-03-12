@@ -119,13 +119,16 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
                 nodeSelectionModel.clearSelection();
                 edgeSelectionModel.clearSelection();
             } finally {
-                Executors.newSingleThreadExecutor().submit(() -> {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                    }
-                    Platform.runLater(() -> layoutLabels(sparseLabels.get()));
-                });
+                if (!isSkipNextLabelLayout()) {
+                    Executors.newSingleThreadExecutor().submit(() -> {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                        }
+                        Platform.runLater(() -> layoutLabels(sparseLabels.get()));
+                    });
+                } else
+                    setSkipNextLabelLayout(false);
             }
             if (!(borderPane.getCenter() instanceof ScrollPane)) {
                 setContent(borderPane);

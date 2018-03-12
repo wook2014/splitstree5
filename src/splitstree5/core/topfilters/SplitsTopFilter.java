@@ -50,6 +50,9 @@ public class SplitsTopFilter extends ATopFilter<SplitsBlock> {
 
         setAlgorithm(new Algorithm<SplitsBlock, SplitsBlock>("TopFilter") {
             public void compute(ProgressListener progress, TaxaBlock modifiedTaxaBlock, SplitsBlock parent, SplitsBlock child) throws CanceledException {
+                {
+                    setShortDescription("Splits top filter");
+                }
                 if (originalTaxaNode.getDataBlock().getTaxa().equals(modifiedTaxaBlock.getTaxa())) {
                     child.copy(parent);
                     child.setCycle(parent.getCycle());

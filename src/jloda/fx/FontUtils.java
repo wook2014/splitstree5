@@ -112,7 +112,7 @@ public class FontUtils {
      * @return font name as string
      */
     public static String toString(Font font) {
-        return (font.getFamily() + "," + font.getStyle() + "," + font.getSize() + " ").replaceAll(".0* ", "");
+        return (font.getFamily() + "," + font.getStyle() + "," + font.getSize() + " ").replaceAll("\\.0* ", "");
     }
 
     /**

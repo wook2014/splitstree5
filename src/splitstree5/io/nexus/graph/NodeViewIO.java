@@ -52,8 +52,8 @@ public class NodeViewIO {
         buf.append(String.format("N: %d %s %sf", nv.getNode().getId(), Basic.toString(nv.getLocation().getX(), 4), Basic.toString(nv.getLocation().getY(), 4)));
         if (nv.getShape() != null) {
             buf.append(String.format(" S: %s %s %s %s %s %s", NodeShape.valueOf(nv.getShape()),
-                    Basic.toString(nv.getShapeGroup().getTranslateX() - nv.getLocation().getX(), 4),
-                    Basic.toString(nv.getShapeGroup().getTranslateY() - nv.getLocation().getY(), 4),
+                    Basic.toString(nv.getShapeGroup().getTranslateX(), 4),
+                    Basic.toString(nv.getShapeGroup().getTranslateY(), 4),
                     Basic.toString(nv.getShape().getBoundsInLocal().getWidth(), 4),
                     Basic.toString(nv.getShape().getBoundsInLocal().getHeight(), 4), ((Color) nv.getShape().getFill()).toString()));
         }
@@ -138,16 +138,16 @@ public class NodeViewIO {
         id2node.put(id, nv.getNode());
 
         if (shape != null) {
-            nv.getShapeGroup().setTranslateX(nv.getShapeGroup().getTranslateX() + sx);
-            nv.getShapeGroup().setTranslateY(nv.getShapeGroup().getTranslateY() + sy);
+            nv.getShapeGroup().setTranslateX(sx);
+            nv.getShapeGroup().setTranslateY(sy);
             nv.getShape().setFill(shapeColor);
         }
         if (labelText != null && labelFont != null) {
             final Labeled labeled = nv.getLabel();
             labeled.setFont(labelFont);
             labeled.setTextFill(labelColor);
-            labeled.setTranslateX(labeled.getTranslateX() + lx);
-            labeled.setTranslateY(labeled.getTranslateY() + ly);
+            labeled.setTranslateX(lx);
+            labeled.setTranslateY(ly);
         }
         return nv;
     }

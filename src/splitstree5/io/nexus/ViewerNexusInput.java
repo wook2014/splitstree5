@@ -196,6 +196,18 @@ public class ViewerNexusInput extends NexusIOBase {
 
         np.matchEndBlock();
 
+        switch (type) {
+            case TreeViewer: {
+                final TreeViewTab graphTab = (TreeViewTab) viewerBlock.getTab();
+                graphTab.updateSelectionModels(graphTab.getGraph(), taxaBlock, taxaBlock.getDocument());
+                break;
+            }
+            case SplitsNetworkViewer: {
+                final SplitsViewTab graphTab = (SplitsViewTab) viewerBlock.getTab();
+                graphTab.updateSelectionModels(graphTab.getGraph(), taxaBlock, taxaBlock.getDocument());
+                break;
+            }
+        }
 
         return viewerBlock;
     }

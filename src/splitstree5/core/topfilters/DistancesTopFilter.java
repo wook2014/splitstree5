@@ -45,6 +45,9 @@ public class DistancesTopFilter extends ATopFilter<DistancesBlock> {
         super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parent, child);
 
         setAlgorithm(new Algorithm<DistancesBlock, DistancesBlock>("TopFilter") {
+            {
+                setShortDescription("Distances top filter");
+            }
             public void compute(ProgressListener progress, TaxaBlock modifiedTaxaBlock, DistancesBlock original, DistancesBlock modified) throws CanceledException {
                 if (originalTaxaNode.getDataBlock().getTaxa().equals(modifiedTaxaBlock.getTaxa())) {
                     child.getDataBlock().copy(parent.getDataBlock());
