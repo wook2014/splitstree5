@@ -78,10 +78,11 @@ public class NodeView2D extends NodeViewBase {
             label.setTranslateY(location.getY());
             labelGroup.getChildren().add(label);
         } else {
-            if (nodeShape == null)
-                shape.setStroke(Color.BLACK);
+            if (nodeShape == null) {
+                ((Circle) shape).setRadius(0.75);
+            }
+            shape.setStroke(Color.BLACK);
             shape.setFill(Color.WHITE);
-            ((Circle) shape).setRadius(0.75);
             label = null;
         }
         updateStuff();

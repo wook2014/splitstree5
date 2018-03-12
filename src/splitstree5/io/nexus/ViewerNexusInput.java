@@ -137,7 +137,6 @@ public class ViewerNexusInput extends NexusIOBase {
                                 break;
                         }
                     }
-                    System.err.println("Nodes group: " + graphTab.getNodesGroup().getChildren().size());
                     break;
                 }
                 case TreeViewer: {
@@ -188,7 +187,6 @@ public class ViewerNexusInput extends NexusIOBase {
                         else
                             break;
                     }
-                    System.err.println("Edges group: " + graphTab.getEdgesGroup().getChildren().size());
                 }
             }
             np.matchIgnoreCase(";");

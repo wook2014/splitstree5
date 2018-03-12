@@ -159,18 +159,18 @@ public class WorkflowNexusInput {
             });
 
             Platform.runLater(() -> {
-                // todo: set up views here
                 document.updateMethodsText();
                 for (ViewerBlock viewerBlock : viewerBlocks) {
-                    StringWriter w = new StringWriter();
-                    try {
-                        new ViewerNexusOutput().write(w, workflow.getWorkingTaxaBlock(), viewerBlock);
-                        System.err.println(w.toString());
-                        viewerBlock.show();
-                    } catch (IOException e) {
-                        Basic.caught(e);
+                    viewerBlock.show();
+                    if (false) {
+                        StringWriter w = new StringWriter();
+                        try {
+                            new ViewerNexusOutput().write(w, workflow.getWorkingTaxaBlock(), viewerBlock);
+                            System.err.println(w.toString());
+                        } catch (IOException e) {
+                            Basic.caught(e);
+                        }
                     }
-
                 }
             });
 
