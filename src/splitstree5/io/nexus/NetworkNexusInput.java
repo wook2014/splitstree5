@@ -39,9 +39,7 @@ import java.util.TreeMap;
  * Daniel Huson, 2.2018
  */
 public class NetworkNexusInput extends NexusIOBase implements INexusInput<NetworkBlock> {
-    public static final String NAME = "NETWORK";
-
-    public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
+    public static final String SYNTAX = "BEGIN " + NetworkBlock.BLOCK_NAME + ";\n" +
             "\t[TITLE title;]\n" +
             "\t[LINK name = title;]\n" +
             "\t[DIMENSIONS [NNODES=number-of-nodes] [NEDGES=number-of-edges];]\n" +
@@ -82,8 +80,8 @@ public class NetworkNexusInput extends NexusIOBase implements INexusInput<Networ
 
         final ArrayList<String> taxonNamesFound = new ArrayList<>();
 
-        np.matchBeginBlock(NAME);
-        parseTitleAndLinks(np);
+        np.matchBeginBlock(NetworkBlock.BLOCK_NAME);
+        parseTitleAndLink(np);
 
         np.matchIgnoreCase("dimensions nNodes=");
         final int nNodes = np.getInt(0, Integer.MAX_VALUE);
@@ -192,6 +190,6 @@ public class NetworkNexusInput extends NexusIOBase implements INexusInput<Networ
      * @return true, if can parse from here
      */
     public boolean atBeginOfBlock(NexusStreamParser np) {
-        return np.peekMatchIgnoreCase("begin " + NAME + ";");
+        return np.peekMatchIgnoreCase("begin " + NetworkBlock.BLOCK_NAME + ";");
     }
 }

@@ -32,11 +32,14 @@ import splitstree5.io.nexus.TreesNexusFormat;
  * Daniel Huson, 12/21/16.
  */
 public class TreesBlock extends DataBlock {
+    public static final String BLOCK_NAME = "TREES";
+
     private final ObservableList<PhyloTree> trees;
     private boolean partial = false; // are partial trees present?
     private boolean rooted = false; // are the trees explicitly rooted?
 
     public TreesBlock() {
+        super(BLOCK_NAME);
         trees = FXCollections.observableArrayList();
         format = new TreesNexusFormat();
     }

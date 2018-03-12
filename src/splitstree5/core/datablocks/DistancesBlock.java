@@ -29,6 +29,8 @@ import splitstree5.io.nexus.DistancesNexusFormat;
  * Daniel Huson, 12/21/16.
  */
 public class DistancesBlock extends DataBlock {
+    public static final String BLOCK_NAME = "DISTANCES";
+
     private double[][] distances;
     private double[][] variances;
 
@@ -36,6 +38,7 @@ public class DistancesBlock extends DataBlock {
      * constructor
      */
     public DistancesBlock() {
+        super(BLOCK_NAME);
         distances = new double[0][0];
         format = new DistancesNexusFormat();
     }

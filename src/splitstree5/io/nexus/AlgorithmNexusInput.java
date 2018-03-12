@@ -36,9 +36,7 @@ import java.util.Set;
  * Daniel Huson, 2.2018
  */
 public class AlgorithmNexusInput extends NexusIOBase {
-    public static final String NAME = "ALGORITHM";
-
-    public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
+    public static final String SYNTAX = "BEGIN " + Algorithm.BLOCK_NAME + ";\n" +
             "\t[TITLE title;]\n" +
             "\t[LINK name = title;]\n" +
             "\tALGORITHM name;\n" +
@@ -62,8 +60,8 @@ public class AlgorithmNexusInput extends NexusIOBase {
      * @throws IOException
      */
     public Algorithm parse(NexusStreamParser np) throws IOException {
-        np.matchBeginBlock(NAME);
-        parseTitleAndLinks(np);
+        np.matchBeginBlock(Algorithm.BLOCK_NAME);
+        parseTitleAndLink(np);
 
         np.matchIgnoreCase("ALGORITHM ");
         final String algorithmName = np.getWordRespectCase();
@@ -126,6 +124,6 @@ public class AlgorithmNexusInput extends NexusIOBase {
      * @return true, if can parse from here
      */
     public boolean atBeginOfBlock(NexusStreamParser np) {
-        return np.peekMatchIgnoreCase("begin " + NAME + ";");
+        return np.peekMatchIgnoreCase("begin " + Algorithm.BLOCK_NAME + ";");
     }
 }

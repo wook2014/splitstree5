@@ -39,6 +39,8 @@ import java.util.*;
  * Daniel Huson, 12/21/16.
  */
 public class TaxaBlock extends DataBlock {
+    public static final String BLOCK_NAME = "TAXA";
+
     private final ObservableList<Taxon> taxa;
     private final ObservableMap<Taxon, Integer> taxon2index;
     private final ObservableMap<String, Taxon> name2taxon;
@@ -49,6 +51,7 @@ public class TaxaBlock extends DataBlock {
      * constructor
      */
     public TaxaBlock() {
+        super(BLOCK_NAME);
         taxa = FXCollections.observableArrayList();
         taxon2index = FXCollections.observableHashMap();
         name2taxon = FXCollections.observableHashMap();

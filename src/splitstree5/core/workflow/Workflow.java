@@ -162,7 +162,6 @@ public class Workflow {
             if (n != null)
                 workingNodes.add(n);
         });
-
     }
 
     /**
@@ -198,26 +197,34 @@ public class Workflow {
      * @param topDataBlock
      */
     public void setupTopAndWorkingNodes(TaxaBlock topTaxaBlock, DataBlock topDataBlock) {
-        topTaxaBlock.setName("Input" + topTaxaBlock.getName());
         setTopTaxaNode(createDataNode(topTaxaBlock));
         setWorkingTaxaNode(createDataNode((TaxaBlock) topTaxaBlock.newInstance()));
-
         taxaFilter.set(new Connector<>(getTopTaxaNode().getDataBlock(), getTopTaxaNode(), getWorkingTaxaNode(), new splitstree5.core.algorithms.filters.TaxaFilter()));
         register(taxaFilter.get());
-        topDataBlock.setName("Input" + topDataBlock.getName());
         setTopDataNode(createDataNode(topDataBlock));
         setWorkingDataNode(createDataNode(topDataBlock.newInstance()));
 
-        if (topDataBlock instanceof CharactersBlock) {
-            topFilter.set(new CharactersTopFilter(getTopTaxaNode(), getWorkingTaxaNode(), getTopDataNode(), getWorkingDataNode()));
-        } else if (topDataBlock instanceof DistancesBlock) {
-            topFilter.set(new DistancesTopFilter(getTopTaxaNode(), getWorkingTaxaNode(), getTopDataNode(), getWorkingDataNode()));
-        } else if (topDataBlock instanceof SplitsBlock) {
-            topFilter.set(new SplitsTopFilter(getTopTaxaNode(), getWorkingTaxaNode(), getTopDataNode(), getWorkingDataNode()));
-        } else if (topDataBlock instanceof TreesBlock) {
-            topFilter.set(new TreesTopFilter(getTopTaxaNode(), getWorkingTaxaNode(), getTopDataNode(), getWorkingDataNode()));
+        createTopFilter(getTopDataNode(), getWorkingDataNode());
+    }
+
+    /**
+     * creates the top filter
+     *
+     * @param parent
+     * @param child
+     */
+    public void createTopFilter(DataNode parent, DataNode child) {
+        final DataBlock dataBlock = parent.getDataBlock();
+        if (dataBlock instanceof CharactersBlock) {
+            topFilter.set(new CharactersTopFilter(getTopTaxaNode(), getWorkingTaxaNode(), parent, child));
+        } else if (dataBlock instanceof DistancesBlock) {
+            topFilter.set(new DistancesTopFilter(getTopTaxaNode(), getWorkingTaxaNode(), parent, child));
+        } else if (dataBlock instanceof SplitsBlock) {
+            topFilter.set(new SplitsTopFilter(getTopTaxaNode(), getWorkingTaxaNode(), parent, child));
+        } else if (dataBlock instanceof TreesBlock) {
+            topFilter.set(new TreesTopFilter(getTopTaxaNode(), getWorkingTaxaNode(), parent, child));
         } else
-            throw new RuntimeException("No top filter for block of type: " + Basic.getShortName(topDataBlock.getClass()));
+            throw new RuntimeException("No top filter for block of type: " + Basic.getShortName(dataBlock.getClass()));
         register(topFilter.get());
     }
 
@@ -248,8 +255,7 @@ public class Workflow {
     }
 
     public void createTopTraitsAndWorkingTraitsNodes(TraitsBlock topTraitsBlock) {
-        topTraitsBlock.setName("Input" + topTraitsBlock.getName());
-        topTraitsNode.set(createDataNode(topTraitsBlock));
+        setTopTraitsNode(createDataNode(topTraitsBlock));
         topTaxaNode.get().getDataBlock().setTraitsBlock(topTraitsBlock);
         final TraitsBlock workingTraitsBlock = (TraitsBlock) topTraitsBlock.newInstance();
         workingTraitsNode.set(createDataNode(workingTraitsBlock));
@@ -293,6 +299,8 @@ public class Workflow {
     }
 
     public void setTopTaxaNode(DataNode<TaxaBlock> topTaxaNode) {
+        if (topTaxaNode != null)
+            topTaxaNode.getDataBlock().setName("InputTaxa");
         this.topTaxaNode.set(topTaxaNode);
     }
 
@@ -304,7 +312,6 @@ public class Workflow {
         return getWorkingTaxaNode().getDataBlock();
     }
 
-
     public void setWorkingTaxaNode(DataNode<TaxaBlock> workingTaxaNode) {
         this.workingTaxaNode.set(workingTaxaNode);
     }
@@ -312,6 +319,13 @@ public class Workflow {
     public DataNode<TraitsBlock> getTopTraitsNode() {
         return topTraitsNode.get();
     }
+
+    public void setTopTraitsNode(DataNode<TraitsBlock> topTraitsNode) {
+        if (topTraitsNode != null)
+            topTraitsNode.getDataBlock().setName("InputTraits");
+        this.topTraitsNode.set(topTraitsNode);
+    }
+
 
     public DataNode<TraitsBlock> getWorkingTraitsNode() {
         return workingTraitsNode.get();
@@ -321,8 +335,9 @@ public class Workflow {
         return topDataNode.get();
     }
 
-
     public void setTopDataNode(DataNode topDataNode) {
+        if (topDataNode != null && !topDataNode.getDataBlock().getName().startsWith("Input"))
+            topDataNode.getDataBlock().setName("Input" + topDataNode.getName());
         this.topDataNode.set(topDataNode);
     }
 
@@ -340,10 +355,13 @@ public class Workflow {
         return taxaFilter.get();
     }
 
+    public void setTaxaFilter(Connector<TaxaBlock, TaxaBlock> taxaFilter) {
+        this.taxaFilter.set(taxaFilter);
+    }
+
     public ATopFilter<? extends DataBlock> getTopFilter() {
         return topFilter.get();
     }
-
 
     /**
      * is the graph currently being updated?

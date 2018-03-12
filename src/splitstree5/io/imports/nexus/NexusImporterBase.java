@@ -21,6 +21,7 @@ package splitstree5.io.imports.nexus;
 
 import jloda.util.CanceledException;
 import jloda.util.FileInputIterator;
+import jloda.util.Pair;
 import jloda.util.ProgressListener;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.DataBlock;
@@ -38,7 +39,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class NexusImporter<D extends DataBlock> {
+/**
+ * Base class for nexus importers
+ *
+ * @param <D> block to import
+ *            Daniel HUson, 1.2018
+ */
+public abstract class NexusImporterBase<D extends DataBlock> {
+    private String title;
+    private Pair<String, String> link;
     public static final List<String> extensions = new ArrayList<>(Arrays.asList("nex", "nexus", "nxs"));
 
     public List<String> getExtensions() {
@@ -133,5 +142,18 @@ public abstract class NexusImporter<D extends DataBlock> {
             }
         }
         return false;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public Pair<String, String> getLink() {
+        return link;
+    }
+
+    public void setTitleAndLink(String title, Pair<String, String> link) {
+        this.title = title;
+        this.link=link;
     }
 }

@@ -35,11 +35,11 @@ import java.util.List;
  * nexus traits importer
  * daniel huson, 2.2018
  */
-public class TraitsNexusIn extends NexusImporter<TraitsBlock> implements IImportTraits, IImportNoAutoDetect {
+public class TraitsNexusImporter extends NexusImporterBase<TraitsBlock> implements IImportTraits, IImportNoAutoDetect {
 
     @Override
     public boolean isApplicable(String fileName) throws IOException {
-        return isApplicable(fileName, TraitsNexusInput.NAME);
+        return isApplicable(fileName, TraitsBlock.BLOCK_NAME);
     }
 
     @Override
@@ -48,7 +48,10 @@ public class TraitsNexusIn extends NexusImporter<TraitsBlock> implements IImport
             while (!np.peekMatchIgnoreCase("begin traits;")) {
                 np.getWordRespectCase();
             }
-            return new TraitsNexusInput().parse(np, taxaBlock, dataBlock);
+            final TraitsNexusInput input = new TraitsNexusInput();
+            final List<String> taxa = input.parse(np, taxaBlock, dataBlock);
+            setTitleAndLink(input.getTitle(), input.getLink());
+            return taxa;
         } catch (Exception ex) {
             return null;
         }

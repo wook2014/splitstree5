@@ -43,7 +43,6 @@ import jloda.fx.RecentFilesManager;
 import jloda.util.Basic;
 import jloda.util.Pair;
 import splitstree5.core.Document;
-import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.SplitsTree5Block;
 import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.DataNode;
@@ -91,7 +90,8 @@ public class WorkflowNexusOutput {
             w.write("#nexus\n");
             new SplitsTree5NexusOutput().write(w, splitsTree5Block);
 
-            setupExporter(workflow.getTopTaxaNode(), nexusExporter, nodeType2Count, node2title);
+            nexusExporter.setTitle("InputTaxa");
+            node2title.put(workflow.getTopTaxaNode(), "InputTaxa");
             nexusExporter.export(w, workflow.getTopTaxaNode().getDataBlock());
 
             setupExporter(workflow.getTaxaFilter(), nexusExporter, nodeType2Count, node2title);
@@ -100,11 +100,12 @@ public class WorkflowNexusOutput {
             setupExporter(workflow.getWorkingTaxaNode(), nexusExporter, nodeType2Count, node2title);
             nexusExporter.export(w, workflow.getWorkingTaxaNode().getDataBlock());
 
-            setupExporter(workflow.getTopDataNode(), nexusExporter, nodeType2Count, node2title);
+            nexusExporter.setTitle("InputData");
+            node2title.put(workflow.getTopDataNode(), "InputData");
+            nexusExporter.setLink(null);
             nexusExporter.export(w, workflow.getWorkingTaxaBlock(), workflow.getTopDataNode().getDataBlock());
 
             setupExporter(workflow.getTopFilter(), nexusExporter, nodeType2Count, node2title);
-            nexusExporter.getLinks().add(new Pair<>("TAXA", node2title.get(workflow.getWorkingTaxaNode())));
             nexusExporter.export(w, workflow.getTopFilter().getAlgorithm());
 
             final Queue<WorkflowNode> queue = new LinkedList<>();
@@ -147,14 +148,13 @@ public class WorkflowNexusOutput {
      * @param node2title
      */
     private void setupExporter(DataNode dataNode, NexusExporter nexusExporter, Map<String, Integer> nodeType2Count, Map<WorkflowNode, String> node2title) {
-        final String nodeType = getType(dataNode.getDataBlock());
-        final Integer count = nodeType2Count.getOrDefault(nodeType, 1);
-        final String title = Basic.capitalize(nodeType, true) + count;
-        nodeType2Count.put(nodeType, count + 1);
+        final Integer count = nodeType2Count.getOrDefault(dataNode.getDataBlock().getBlockName(), 1);
+        final String title = Basic.capitalize(dataNode.getDataBlock().getBlockName(), true) + count;
+        nodeType2Count.put(dataNode.getDataBlock().getBlockName(), count + 1);
         node2title.put(dataNode, title);
         nexusExporter.setTitle(title);
         if (dataNode.getParent() != null)
-            nexusExporter.setLink(new Pair<>("ALGORITHM", node2title.get(dataNode.getParent())));
+            nexusExporter.setLink(new Pair<>(dataNode.getParent().getAlgorithm().getBlockName(), node2title.get(dataNode.getParent())));
     }
 
     /**
@@ -166,17 +166,13 @@ public class WorkflowNexusOutput {
      * @param node2title
      */
     private void setupExporter(Connector connector, NexusExporter nexusExporter, Map<String, Integer> nodeType2Count, Map<WorkflowNode, String> node2title) {
-        final String nodeType = "ALGORITHM";
+        final String nodeType = connector.getAlgorithm().getBlockName();
         final Integer count = nodeType2Count.getOrDefault(nodeType, 1);
         final String title = "Algorithm" + count;
         nodeType2Count.put(nodeType, count + 1);
         node2title.put(connector, title);
         nexusExporter.setTitle(title);
         if (connector.getParent() != null)
-            nexusExporter.setLink(new Pair<>(getType(connector.getParent().getDataBlock()), node2title.get(connector.getParent())));
-    }
-
-    private String getType(DataBlock dataBlock) {
-        return Basic.getShortName(dataBlock.getClass()).toUpperCase().replaceAll("BLOCK", "");
+            nexusExporter.setLink(new Pair<>(connector.getParent().getDataBlock().getBlockName(), node2title.get(connector.getParent())));
     }
 }

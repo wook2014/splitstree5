@@ -29,8 +29,6 @@ import java.util.ArrayList;
  * Daniel Huson, 2.2018
  */
 public class AnalysisNexusInput extends NexusIOBase {
-    public static final String NAME = "ST_ANALYSIS_RESULT";
-
     public static final String SYNTAX = "BEGIN ST_ANALYSIS;\n" +
             "\t[TITLE title;]\n" +
             "\t[LINK name = title;]\n" +
@@ -60,8 +58,8 @@ public class AnalysisNexusInput extends NexusIOBase {
         if (np.peekMatchIgnoreCase("#nexus"))
             np.matchIgnoreCase("#nexus"); // skip header line if it is the first line
 
-        np.matchBeginBlock(NAME);
-        parseTitleAndLinks(np);
+        np.matchBeginBlock(AnalysisBlock.BLOCK_NAME);
+        parseTitleAndLink(np);
 
         np.matchIgnoreCase("DIMENSIONS nlines=");
         final int nLines = np.getInt();
@@ -91,6 +89,6 @@ public class AnalysisNexusInput extends NexusIOBase {
      * @return true, if can parse from here
      */
     public boolean atBeginOfBlock(NexusStreamParser np) {
-        return np.peekMatchIgnoreCase("begin " + NAME + ";");
+        return np.peekMatchIgnoreCase("begin " + AnalysisBlock.BLOCK_NAME + ";");
     }
 }

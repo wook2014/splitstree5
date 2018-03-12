@@ -30,9 +30,7 @@ import java.util.ArrayList;
  * Daniel Huson, 3.2018
  */
 public class SplitsTree5NexusInput {
-    public static final String NAME = "SplitsTree5";
-
-    public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
+    public static final String SYNTAX = "BEGIN " + SplitsTree5Block.BLOCK_NAME + ";\n" +
             "\tDIMENSIONS nDataNodes=number nAlgorithms=number;\n" +
             "\tPROGRAM version=version-string;\n" +
             "\tWORKFLOW creationDate=long;\n" +
@@ -53,7 +51,7 @@ public class SplitsTree5NexusInput {
         final ArrayList<String> taxonNamesFound = new ArrayList<>();
         splitsTree5Block.clear();
 
-        np.matchBeginBlock(NAME);
+        np.matchBeginBlock(SplitsTree5Block.BLOCK_NAME);
 
         np.matchIgnoreCase("DIMENSIONS nDataNodes=");
         splitsTree5Block.setOptionNumberOfDataNodes(np.getInt());
@@ -79,6 +77,6 @@ public class SplitsTree5NexusInput {
      * @return true, if can parse from here
      */
     public boolean atBeginOfBlock(NexusStreamParser np) {
-        return np.peekMatchIgnoreCase("begin " + NAME + ";");
+        return np.peekMatchIgnoreCase("begin " + SplitsTree5Block.BLOCK_NAME + ";");
     }
 }

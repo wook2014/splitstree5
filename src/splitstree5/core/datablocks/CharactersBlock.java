@@ -35,6 +35,8 @@ import java.util.Map;
  * Daniel Huson, 14/1/2017
  */
 public class CharactersBlock extends DataBlock {
+    public static final String BLOCK_NAME = "CHARACTERS";
+
     // characters matrix
     private char[][] matrix;
 
@@ -74,6 +76,7 @@ public class CharactersBlock extends DataBlock {
      * constructor
      */
     public CharactersBlock() {
+        super(BLOCK_NAME);
         matrix = new char[0][0];
         symbol2color = new HashMap<>();
         color2symbols = new HashMap<>();

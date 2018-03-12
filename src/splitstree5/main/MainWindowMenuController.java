@@ -51,6 +51,7 @@ import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.dialogs.importer.ImportDialog;
 import splitstree5.dialogs.importer.ImporterManager;
 import splitstree5.gui.ViewerTab;
+import splitstree5.io.nexus.workflow.WorkflowNexusInput;
 import splitstree5.io.nexus.workflow.WorkflowNexusOutput;
 import splitstree5.menu.MenuController;
 
@@ -82,7 +83,10 @@ public class MainWindowMenuController {
             fileChooser.getExtensionFilters().addAll(ImporterManager.getInstance().getAllExtensionFilters());
             final File file = fileChooser.showOpenDialog(mainWindow.getStage());
             if (file != null) {
-                FileOpener.open(false, mainWindow, file.getPath(), null);
+                if (WorkflowNexusInput.isApplicable(file.getPath()))
+                    WorkflowNexusInput.open(mainWindow, file.getPath());
+                else
+                    FileOpener.open(false, mainWindow, file.getPath(), null);
             }
         });
 

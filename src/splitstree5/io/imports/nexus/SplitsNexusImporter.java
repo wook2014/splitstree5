@@ -19,27 +19,30 @@
 package splitstree5.io.imports.nexus;
 
 import jloda.util.parse.NexusStreamParser;
+import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.io.imports.interfaces.IImportTrees;
-import splitstree5.io.nexus.TreesNexusInput;
+import splitstree5.io.imports.interfaces.IImportSplits;
+import splitstree5.io.nexus.SplitsNexusInput;
 
 import java.io.IOException;
 import java.util.List;
 
 /**
- * nexus trees importer
+ * nexus splits importer
  * daniel huson, 2.2018
  */
-public class TreesNexusIn extends NexusImporter<TreesBlock> implements IImportTrees {
+public class SplitsNexusImporter extends NexusImporterBase<SplitsBlock> implements IImportSplits {
 
     @Override
     public boolean isApplicable(String fileName) throws IOException {
-        return isApplicable(fileName, TreesNexusInput.NAME);
+        return isApplicable(fileName, SplitsBlock.BLOCK_NAME);
     }
 
     @Override
-    public List<String> parseBlock(NexusStreamParser np, TaxaBlock taxaBlock, TreesBlock dataBlock) throws IOException {
-        return new TreesNexusInput().parse(np, taxaBlock, dataBlock);
+    public List<String> parseBlock(NexusStreamParser np, TaxaBlock taxaBlock, SplitsBlock dataBlock) throws IOException {
+        final SplitsNexusInput input = new SplitsNexusInput();
+        final List<String> taxa = input.parse(np, taxaBlock, dataBlock);
+        setTitleAndLink(input.getTitle(), input.getLink());
+        return taxa;
     }
 }

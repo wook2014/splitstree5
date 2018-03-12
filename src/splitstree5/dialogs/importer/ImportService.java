@@ -30,7 +30,7 @@ import splitstree5.core.datablocks.*;
 import splitstree5.core.workflow.TaskWithProgressListener;
 import splitstree5.dialogs.ProgressPane;
 import splitstree5.io.imports.interfaces.*;
-import splitstree5.io.imports.nexus.TraitsNexusIn;
+import splitstree5.io.imports.nexus.TraitsNexusImporter;
 import splitstree5.main.MainWindow;
 
 import java.io.IOException;
@@ -79,7 +79,7 @@ public class ImportService extends Service<Boolean> {
                     getProgressListener().setProgress(0);
 
                     final Pair<TaxaBlock, DataBlock> pair = apply(getProgressListener(), importer, fileName);
-                    DataLoader.load(reload, fileName, pair.getFirst(), pair.getSecond(), parentMainWindow.getDocument());
+                    DataLoader.load(reload, fileName, pair.getFirst(), pair.getSecond(), parentMainWindow);
                     return true;
                 } catch (Exception ex) {
                     throw ex;
@@ -118,10 +118,10 @@ public class ImportService extends Service<Boolean> {
             ((IImportNetwork) importer).parse(progress, fileName, taxaBlock, (NetworkBlock) dataBlock);
         } else
             throw new IOException("Import not implemented for: " + Basic.getShortName(importer.getClass()));
-        if (new TraitsNexusIn().isApplicable(fileName)) {
+        if (new TraitsNexusImporter().isApplicable(fileName)) {
             final TraitsBlock traitsBlock = new TraitsBlock();
             taxaBlock.setTraitsBlock(traitsBlock);
-            new TraitsNexusIn().parse(progress, fileName, taxaBlock, traitsBlock);
+            new TraitsNexusImporter().parse(progress, fileName, taxaBlock, traitsBlock);
         }
         return new Pair<>(taxaBlock, dataBlock);
     }

@@ -36,9 +36,7 @@ import java.util.*;
  * Daniel Huson, 2.2018
  */
 public class TreesNexusInput extends NexusIOBase implements INexusInput<TreesBlock> {
-    public static final String NAME = "TREES";
-
-    public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
+    public static final String SYNTAX = "BEGIN " + TreesBlock.BLOCK_NAME + ";\n" +
             "\t[TITLE title;]\n" +
             "\t[LINK name = title;]\n" +
             "[PROPERTIES PARTIALTREES={YES|NO} ROOTED={YES|NO};]\n" +
@@ -76,8 +74,8 @@ public class TreesNexusInput extends NexusIOBase implements INexusInput<TreesBlo
 
         boolean rootedExplicitySet = false;
 
-        np.matchBeginBlock(NAME);
-        parseTitleAndLinks(np);
+        np.matchBeginBlock(TreesBlock.BLOCK_NAME);
+        parseTitleAndLink(np);
 
         if (np.peekMatchIgnoreCase("PROPERTIES")) {
             final List<String> tokens = np.getTokensLowerCase("PROPERTIES", ";");
@@ -260,6 +258,6 @@ public class TreesNexusInput extends NexusIOBase implements INexusInput<TreesBlo
 
     @Override
     public boolean atBeginOfBlock(NexusStreamParser np) {
-        return np.peekMatchIgnoreCase("begin " + NAME + ";");
+        return np.peekMatchIgnoreCase("begin " + TreesBlock.BLOCK_NAME + ";");
     }
 }

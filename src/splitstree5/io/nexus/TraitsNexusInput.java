@@ -36,9 +36,7 @@ import java.util.Map;
  * Daniel Huson, 2.2018
  */
 public class TraitsNexusInput extends NexusIOBase implements INexusInput<TraitsBlock> {
-    public static final String NAME = "TRAITS";
-
-    public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
+    public static final String SYNTAX = "BEGIN " + TraitsBlock.BLOCK_NAME + ";\n" +
             "\t[TITLE title;]\n" +
             "\tDIMENSIONS [NTAX=number-of-taxa] NTRAITS=number-of-traits;\n" +
             "\t[FORMAT\n" +
@@ -66,8 +64,8 @@ public class TraitsNexusInput extends NexusIOBase implements INexusInput<TraitsB
 
         final TraitsNexusFormat format = (TraitsNexusFormat) traitsBlock.getFormat();
 
-        np.matchBeginBlock(NAME);
-        parseTitleAndLinks(np);
+        np.matchBeginBlock(TraitsBlock.BLOCK_NAME);
+        parseTitleAndLink(np);
 
         np.matchIgnoreCase("DIMENSIONS");
         final int ntax;
@@ -186,6 +184,6 @@ public class TraitsNexusInput extends NexusIOBase implements INexusInput<TraitsB
      * @return true, if can parse from here
      */
     public boolean atBeginOfBlock(NexusStreamParser np) {
-        return np.peekMatchIgnoreCase("begin " + NAME + ";");
+        return np.peekMatchIgnoreCase("begin " + TraitsBlock.BLOCK_NAME + ";");
     }
 }

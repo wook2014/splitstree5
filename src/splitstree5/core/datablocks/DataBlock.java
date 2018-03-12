@@ -42,6 +42,7 @@ import java.util.ArrayList;
  * Daniel Huson, 12/21/16.
  */
 abstract public class DataBlock extends NameableBase {
+    private final String blockName;
     private Document document; // the document associated with this datablock
     private DataNode dataNode; // the node associated with this datablock
     protected INexusFormat format; // text display format
@@ -51,7 +52,8 @@ abstract public class DataBlock extends NameableBase {
     /**
      * default constructor
      */
-    public DataBlock() {
+    public DataBlock(String blockName) {
+        this.blockName = blockName;
         setName(Basic.getShortName(this.getClass()).replaceAll("Block$", ""));
         stateChangeListener = (c, o, n) -> {
             if (n == UpdateState.VALID) {
@@ -172,5 +174,9 @@ abstract public class DataBlock extends NameableBase {
         } catch (IOException e) {
             Basic.caught(e);
         }
+    }
+
+    public String getBlockName() {
+        return blockName;
     }
 }

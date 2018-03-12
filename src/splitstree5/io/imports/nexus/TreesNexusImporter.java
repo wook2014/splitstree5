@@ -16,30 +16,33 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package splitstree5.io.imports.nexus;
 
 import jloda.util.parse.NexusStreamParser;
-import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.io.imports.interfaces.IImportCharacters;
-import splitstree5.io.nexus.CharactersNexusInput;
+import splitstree5.core.datablocks.TreesBlock;
+import splitstree5.io.imports.interfaces.IImportTrees;
+import splitstree5.io.nexus.TreesNexusInput;
 
 import java.io.IOException;
 import java.util.List;
 
 /**
- * nexus characters importer
+ * nexus trees importer
  * daniel huson, 2.2018
  */
-public class CharactersNexusIn extends NexusImporter<CharactersBlock> implements IImportCharacters {
+public class TreesNexusImporter extends NexusImporterBase<TreesBlock> implements IImportTrees {
+
     @Override
     public boolean isApplicable(String fileName) throws IOException {
-        return isApplicable(fileName, CharactersNexusInput.NAME);
+        return isApplicable(fileName, TreesBlock.BLOCK_NAME);
     }
 
     @Override
-    public List<String> parseBlock(NexusStreamParser np, TaxaBlock taxaBlock, CharactersBlock dataBlock) throws IOException {
-        return (new CharactersNexusInput()).parse(np, taxaBlock, dataBlock);
+    public List<String> parseBlock(NexusStreamParser np, TaxaBlock taxaBlock, TreesBlock dataBlock) throws IOException {
+        final TreesNexusInput input = new TreesNexusInput();
+        final List<String> taxa = input.parse(np, taxaBlock, dataBlock);
+        setTitleAndLink(input.getTitle(), input.getLink());
+        return taxa;
     }
 }

@@ -32,15 +32,18 @@ import java.util.List;
  * nexus distances importer
  * daniel huson, 2.2018
  */
-public class DistancesNexusIn extends NexusImporter<DistancesBlock> implements IImportDistances {
+public class DistancesNexusImporter extends NexusImporterBase<DistancesBlock> implements IImportDistances {
 
     @Override
     public boolean isApplicable(String fileName) throws IOException {
-        return isApplicable(fileName, DistancesNexusInput.NAME);
+        return isApplicable(fileName, DistancesBlock.BLOCK_NAME);
     }
 
     @Override
     public List<String> parseBlock(NexusStreamParser np, TaxaBlock taxaBlock, DistancesBlock dataBlock) throws IOException {
-        return new DistancesNexusInput().parse(np, taxaBlock, dataBlock);
+        final DistancesNexusInput input = new DistancesNexusInput();
+        final List<String> taxa = input.parse(np, taxaBlock, dataBlock);
+        setTitleAndLink(input.getTitle(), input.getLink());
+        return taxa;
     }
 }

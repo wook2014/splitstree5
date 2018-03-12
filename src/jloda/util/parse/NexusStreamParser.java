@@ -193,13 +193,13 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
      * @return true, if all tokens match
      */
     public boolean peekMatchIgnoreCase(String s) {
-        NexusStreamTokenizer sst = new NexusStreamTokenizer(new StringReader(s));
+        final NexusStreamTokenizer sst = new NexusStreamTokenizer(new StringReader(s));
         sst.setSquareBracketsSurroundComments(isSquareBracketsSurroundComments());
 
-        LinkedList<Double> nvals = new LinkedList<>();
-        LinkedList<String> svals = new LinkedList<>();
-        LinkedList<Integer> ttypes = new LinkedList<>();
-        LinkedList<Integer> lines = new LinkedList<>();
+        final ArrayList<Double> nvals = new ArrayList<>();
+        final ArrayList<String> svals = new ArrayList<>();
+        final ArrayList<Integer> ttypes = new ArrayList<>();
+        final ArrayList<Integer> lines = new ArrayList<>();
 
         svals.add(sval);
         nvals.add(nval);
@@ -238,10 +238,10 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
         final NexusStreamTokenizer sst = new NexusStreamTokenizer(new StringReader(s));
         sst.setSquareBracketsSurroundComments(isSquareBracketsSurroundComments());
 
-        final LinkedList<Double> nvals = new LinkedList<>();
-        final LinkedList<String> svals = new LinkedList<>();
-        final LinkedList<Integer> ttypes = new LinkedList<>();
-        final LinkedList<Integer> lines = new LinkedList<>();
+        final ArrayList<Double> nvals = new ArrayList<>();
+        final ArrayList<String> svals = new ArrayList<>();
+        final ArrayList<Integer> ttypes = new ArrayList<>();
+        final ArrayList<Integer> lines = new ArrayList<>();
 
         svals.add(sval);
         nvals.add(nval);
@@ -274,10 +274,10 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
      * @return next word
      */
     public String peekNextWord() {
-        final LinkedList<Double> nvals = new LinkedList<>();
-        final LinkedList<String> svals = new LinkedList<>();
-        final LinkedList<Integer> ttypes = new LinkedList<>();
-        final LinkedList<Integer> lines = new LinkedList<>();
+        final ArrayList<Double> nvals = new ArrayList<>();
+        final ArrayList<String> svals = new ArrayList<>();
+        final ArrayList<Integer> ttypes = new ArrayList<>();
+        final ArrayList<Integer> lines = new ArrayList<>();
 
         svals.add(sval);
         nvals.add(nval);
@@ -1459,7 +1459,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
      * @throws IOExceptionWithLineNumber
      */
     public String getWordMatchesIgnoringCase(Collection<String> legalTokens) throws IOExceptionWithLineNumber {
-        String word = getWordRespectCase();
+        final String word = getWordRespectCase();
         for (String legalToken : legalTokens)
             if (word.equalsIgnoreCase(legalToken))
                 return legalToken;
@@ -1474,7 +1474,7 @@ public class NexusStreamParser extends NexusStreamTokenizer implements Closeable
      * @throws IOExceptionWithLineNumber
      */
     public String getWordMatchesIgnoringCase(String[] legalTokens) throws IOExceptionWithLineNumber {
-        String word = getWordRespectCase();
+        final String word = getWordRespectCase();
         for (String legalToken : legalTokens)
             if (word.equalsIgnoreCase(legalToken))
                 return legalToken;

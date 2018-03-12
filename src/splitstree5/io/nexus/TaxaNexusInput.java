@@ -32,9 +32,7 @@ import java.util.ArrayList;
  * Daniel Huson, 2.2018
  */
 public class TaxaNexusInput extends NexusIOBase {
-    public static final String NAME = "TAXA";
-
-    public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
+    public static final String SYNTAX = "BEGIN " + TaxaBlock.BLOCK_NAME + ";\n" +
             "\t[TITLE title;]\n" +
             "\tDIMENSIONS NTAX=number-of-taxa;\n" +
             "\t[TAXLABELS\n" +
@@ -65,8 +63,8 @@ public class TaxaNexusInput extends NexusIOBase {
         if (np.peekMatchIgnoreCase("#nexus"))
             np.matchIgnoreCase("#nexus"); // skip header line if it is the first line
 
-        np.matchBeginBlock(NAME);
-        parseTitleAndLinks(np);
+        np.matchBeginBlock(TaxaBlock.BLOCK_NAME);
+        parseTitleAndLink(np);
 
         np.matchIgnoreCase("DIMENSIONS ntax=");
         final int ntax = np.getInt();
@@ -129,6 +127,6 @@ public class TaxaNexusInput extends NexusIOBase {
      * @return true, if can parse from here
      */
     public boolean atBeginOfBlock(NexusStreamParser np) {
-        return np.peekMatchIgnoreCase("begin " + NAME + ";");
+        return np.peekMatchIgnoreCase("begin " + TaxaBlock.BLOCK_NAME + ";");
     }
 }

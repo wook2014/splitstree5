@@ -31,15 +31,18 @@ import java.util.List;
  * nexus network importer
  * daniel huson, 2.2018
  */
-public class NetworkNexusIn extends NexusImporter<NetworkBlock> implements IImportNetwork {
+public class NetworkNexusImporter extends NexusImporterBase<NetworkBlock> implements IImportNetwork {
 
     @Override
     public boolean isApplicable(String fileName) throws IOException {
-        return isApplicable(fileName, NetworkNexusInput.NAME);
+        return isApplicable(fileName, NetworkBlock.BLOCK_NAME);
     }
 
     @Override
     public List<String> parseBlock(NexusStreamParser np, TaxaBlock taxaBlock, NetworkBlock dataBlock) throws IOException {
-        return new NetworkNexusInput().parse(np, taxaBlock, dataBlock);
+        final NetworkNexusInput input = new NetworkNexusInput();
+        final List<String> taxa = input.parse(np, taxaBlock, dataBlock);
+        setTitleAndLink(input.getTitle(), input.getLink());
+        return taxa;
     }
 }

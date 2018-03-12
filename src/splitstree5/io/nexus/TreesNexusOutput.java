@@ -17,25 +17,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- *  Copyright (C) 2018 Daniel H. Huson
- *
- *  (Some files contain contributions from other authors, who are then mentioned separately.)
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package splitstree5.io.nexus;
 
 import jloda.phylo.PhyloTree;
@@ -47,8 +28,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-
-import static splitstree5.io.nexus.TreesNexusInput.NAME;
 
 /**
  * tree nexus output
@@ -67,8 +46,8 @@ public class TreesNexusOutput extends NexusIOBase implements INexusOutput<TreesB
     public void write(Writer w, TaxaBlock taxaBlock, TreesBlock treesBlock) throws IOException {
         final TreesNexusFormat format = (TreesNexusFormat) treesBlock.getFormat();
 
-        w.write("\nBEGIN " + NAME + ";\n");
-        writeTitleAndLinks(w);
+        w.write("\nBEGIN " + TreesBlock.BLOCK_NAME + ";\n");
+        writeTitleAndLink(w);
         if (treesBlock.isPartial() || treesBlock.isRooted()) {
             w.write("\tPROPERTIES");
             w.write(" partialTrees=" + (treesBlock.isPartial() ? "yes" : "no"));
@@ -96,7 +75,7 @@ public class TreesNexusOutput extends NexusIOBase implements INexusOutput<TreesB
             tree.write(w, format.isOptionWeights(), translator);
             w.write(";\n");
         }
-        w.write("END; [" + NAME + "]\n");
+        w.write("END; [" + TreesBlock.BLOCK_NAME + "]\n");
     }
 
     /**

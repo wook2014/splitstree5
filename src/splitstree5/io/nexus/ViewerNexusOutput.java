@@ -33,8 +33,6 @@ import splitstree5.io.nexus.graph.NodeViewIO;
 import java.io.IOException;
 import java.io.Writer;
 
-import static splitstree5.io.nexus.ViewerNexusInput.NAME;
-
 /**
  * viewer nexus output
  * Daniel Huson, 3.2018
@@ -50,8 +48,8 @@ public class ViewerNexusOutput extends NexusIOBase implements INexusOutput<Viewe
      */
     @Override
     public void write(Writer w, TaxaBlock taxaBlock, ViewerBlock viewerBlock) throws IOException {
-        w.write("\nBEGIN " + NAME + ";\n");
-        writeTitleAndLinks(w);
+        w.write("\nBEGIN " + ViewerBlock.BLOCK_NAME + ";\n");
+        writeTitleAndLink(w);
 
         final GraphTabBase graphTab = viewerBlock.getTab();
         final PhyloGraph graph = graphTab.getGraph();
@@ -65,7 +63,7 @@ public class ViewerNexusOutput extends NexusIOBase implements INexusOutput<Viewe
         w.write(String.format("\tFORMAT type=%s;\n", viewerBlock.getType().toString()));
 
         // nodes:
-        w.write("\tNODES\n");
+        w.write("NODES\n");
         {
             boolean first = true;
             for (Node node : graph.nodes()) {
@@ -75,7 +73,7 @@ public class ViewerNexusOutput extends NexusIOBase implements INexusOutput<Viewe
                     else
                         w.write(",\n");
                     NodeView2D nodeView2D = (NodeView2D) graphTab.getNode2view().get(node);
-                    w.write("\t\t" + NodeViewIO.toString(nodeView2D));
+                    w.write("\t" + NodeViewIO.toString(nodeView2D));
                 } else {
                     System.err.println("Not implemented");
                     break;
@@ -84,7 +82,7 @@ public class ViewerNexusOutput extends NexusIOBase implements INexusOutput<Viewe
             w.write(";\n");
         }
         // edges
-        w.write("\tEDGES\n");
+        w.write("EDGES\n");
         {
             boolean first = true;
             for (Edge edge : graph.edges()) {
@@ -94,16 +92,15 @@ public class ViewerNexusOutput extends NexusIOBase implements INexusOutput<Viewe
                     else
                         w.write(",\n");
                     EdgeView2D ev = (EdgeView2D) graphTab.getEdge2view().get(edge);
-                    w.write("\t\t" + EdgeViewIO.toString(ev));
+                    w.write("\t" + EdgeViewIO.toString(ev));
                 } else {
                     System.err.println("Not implemented");
                     break;
                 }
             }
             w.write(";\n");
-
         }
 
-        w.write("END; [" + NAME + "]\n");
+        w.write("END; [" + ViewerBlock.BLOCK_NAME + "]\n");
     }
 }

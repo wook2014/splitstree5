@@ -44,9 +44,7 @@ import java.util.Map;
  * Daniel Huson, 3.2018
  */
 public class ViewerNexusInput extends NexusIOBase {
-    public static final String NAME = "ST5_VIEWER";
-
-    public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
+    public static final String SYNTAX = "BEGIN " + ViewerBlock.BLOCK_NAME + ";\n" +
             "\t[TITLE title;]\n" +
             "\t[LINK name = title;]\n" +
             "\t[DIMENSIONS NNODES=number-of-nodes NEDGES=number-of-edges [NLABELS=number-of-labels];]\n" +
@@ -79,8 +77,8 @@ public class ViewerNexusInput extends NexusIOBase {
      */
     public ViewerBlock parse(NexusStreamParser np, TaxaBlock taxaBlock) throws IOException {
 
-        np.matchBeginBlock(NAME);
-        parseTitleAndLinks(np);
+        np.matchBeginBlock(ViewerBlock.BLOCK_NAME);
+        parseTitleAndLink(np);
 
         final int nNodes;
         final int nEdges;
@@ -130,6 +128,8 @@ public class ViewerNexusInput extends NexusIOBase {
                             final NodeView2D nv = NodeViewIO.valueOf(np, graph, graphTab, id2node);
                             graphTab.getNode2view().put(nv.getNode(), nv);
                             graphTab.setupNodeView(nv);
+                            graphTab.getNodesGroup().getChildren().add(nv.getShapeGroup());
+                            graphTab.getNodeLabelsGroup().getChildren().add(nv.getLabelGroup());
                             countNodes++;
                             if (np.peekMatchIgnoreCase(","))
                                 np.matchIgnoreCase(",");
@@ -137,6 +137,7 @@ public class ViewerNexusInput extends NexusIOBase {
                                 break;
                         }
                     }
+                    System.err.println("Nodes group: " + graphTab.getNodesGroup().getChildren().size());
                     break;
                 }
                 case TreeViewer: {
@@ -148,6 +149,8 @@ public class ViewerNexusInput extends NexusIOBase {
                         while (true) {
                             final NodeView2D nv = NodeViewIO.valueOf(np, graph, graphTab, id2node);
                             graphTab.getNode2view().put(nv.getNode(), nv);
+                            graphTab.getNodesGroup().getChildren().add(nv.getShapeGroup());
+                            graphTab.getNodeLabelsGroup().getChildren().add(nv.getLabelGroup());
                             countNodes++;
                             if (np.peekMatchIgnoreCase(","))
                                 np.matchIgnoreCase(",");
@@ -177,12 +180,15 @@ public class ViewerNexusInput extends NexusIOBase {
                     while (true) {
                         final EdgeView2D ev = EdgeViewIO.valueOf(np, graph, graphTab, id2node);
                         graphTab.getEdge2view().put(ev.getEdge(), ev);
+                        graphTab.getEdgesGroup().getChildren().add(ev.getShapeGroup());
+                        graphTab.getEdgeLabelsGroup().getChildren().add(ev.getLabelGroup());
                         countEdges++;
                         if (np.peekMatchIgnoreCase(","))
                             np.matchIgnoreCase(",");
                         else
                             break;
                     }
+                    System.err.println("Edges group: " + graphTab.getEdgesGroup().getChildren().size());
                 }
             }
             np.matchIgnoreCase(";");
@@ -192,10 +198,11 @@ public class ViewerNexusInput extends NexusIOBase {
 
         np.matchEndBlock();
 
+
         return viewerBlock;
     }
 
     public boolean atBeginOfBlock(NexusStreamParser np) {
-        return np.peekMatchIgnoreCase("begin " + NAME + ";");
+        return np.peekMatchIgnoreCase("begin " + ViewerBlock.BLOCK_NAME + ";");
     }
 }

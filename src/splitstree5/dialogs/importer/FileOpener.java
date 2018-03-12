@@ -55,7 +55,7 @@ public class FileOpener {
      */
     public static void open(boolean reload, MainWindow parentMainWindow, String fileName, Consumer<Throwable> exceptionHandler) {
         if (!(new File(fileName)).canRead())
-            NotificationManager.showError("Can't open file '" + fileName + "'\nNot found or unreadable");
+            NotificationManager.showError("File not found or unreadable: " + fileName);
         else {
             final String dataType = ImporterManager.getInstance().getDataType(fileName);
             final String fileFormat = ImporterManager.getInstance().getFileFormat(fileName);

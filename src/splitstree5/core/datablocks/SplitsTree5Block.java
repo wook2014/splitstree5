@@ -27,12 +27,15 @@ import splitstree5.main.Version;
  * daniel Huson, 3.2018
  */
 public class SplitsTree5Block extends DataBlock implements IAdditionalBlock {
+    public static final String BLOCK_NAME = "SPLITSTREE5";
+
     final private IntegerProperty optionNumberOfDataNodes = new SimpleIntegerProperty();
     final private IntegerProperty optionNumberOfAlgorithms = new SimpleIntegerProperty();
     final private StringProperty optionVersion = new SimpleStringProperty();
     final private LongProperty optionCreationDate = new SimpleLongProperty();
 
     public SplitsTree5Block() {
+        super(BLOCK_NAME);
         clear();
     }
 

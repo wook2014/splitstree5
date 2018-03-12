@@ -712,6 +712,10 @@ public class Basic {
         return String.format(format, value).replaceAll("0*$", "").replaceAll("\\.$", "");
     }
 
+    public static String toString(Pair pair, String separator) {
+        return pair.getFirst().toString() + separator + pair.getSecond().toString();
+    }
+
     /**
      * returns true, if string can be parsed as int
      *

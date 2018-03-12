@@ -41,12 +41,10 @@ import java.util.*;
  * Daniel Huson, 2.2018
  */
 public class CharactersNexusInput extends NexusIOBase implements INexusInput<CharactersBlock> {
-    public static final String NAME = "CHARACTERS";
-
     private boolean ignoreMatrix = false;
     private boolean treatUnknownAsError = false;
 
-    public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
+    public static final String SYNTAX = "BEGIN " + CharactersBlock.BLOCK_NAME + ";\n" +
             "\t[TITLE title;]\n" +
             "\t[LINK name = title;]\n" +
             "\tDIMENSIONS [NTAX=number-of-taxa] NCHAR=number-of-characters;\n" +
@@ -93,12 +91,12 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
         if (np.peekMatchIgnoreCase("#nexus"))
             np.matchIgnoreCase("#nexus");
 
-        if (np.peekMatchIgnoreCase("begin " + NAME))
-            np.matchBeginBlock(NAME);
+        if (np.peekMatchIgnoreCase("begin " + CharactersBlock.BLOCK_NAME))
+            np.matchBeginBlock(CharactersBlock.BLOCK_NAME);
         else if (np.peekMatchIgnoreCase("begin Data"))
             np.matchBeginBlock("Data");
 
-        parseTitleAndLinks(np);
+        parseTitleAndLink(np);
 
         final int ntax;
         final int nchar;
@@ -605,7 +603,6 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
      * @return true, if can parse from here
      */
     public boolean atBeginOfBlock(NexusStreamParser np) {
-        return np.peekMatchIgnoreCase("begin " + NAME + ";");
+        return np.peekMatchIgnoreCase("begin " + CharactersBlock.BLOCK_NAME + ";");
     }
-
 }

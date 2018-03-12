@@ -46,8 +46,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 
-import static splitstree5.io.nexus.AlgorithmNexusInput.NAME;
-
 /**
  * algorithm nexus output
  * Daniel Huson, 2.2018
@@ -60,8 +58,8 @@ public class AlgorithmNexusOutput extends NexusIOBase {
      * @throws IOException
      */
     public void write(Writer w, Algorithm algorithm) throws IOException {
-        w.write("\nBEGIN " + NAME + ";\n");
-        writeTitleAndLinks(w);
+        w.write("\nBEGIN " + Algorithm.BLOCK_NAME + ";\n");
+        writeTitleAndLink(w);
         w.write("\tALGORITHM " + algorithm.getName() + ";\n");
 
         final ArrayList<Option> options = OptionsAccessor.getAllOptions(algorithm);
@@ -77,6 +75,6 @@ public class AlgorithmNexusOutput extends NexusIOBase {
             }
             w.write(";\n");
         }
-        w.write("END; [" + NAME + "]\n");
+        w.write("END; [" + Algorithm.BLOCK_NAME + "]\n");
     }
 }

@@ -31,6 +31,12 @@ import splitstree5.core.algorithms.interfaces.IToAnalysis;
  * Daniel Huson 12/2016
  */
 public class AnalysisBlock extends DataBlock {
+    public static final String BLOCK_NAME = "ANALYSIS";
+
+    public AnalysisBlock() {
+        super(BLOCK_NAME);
+    }
+
     private final StringProperty info = new SimpleStringProperty("analysis results");
 
     @Override

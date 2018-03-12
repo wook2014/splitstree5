@@ -43,12 +43,11 @@ import jloda.util.Pair;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.*;
 import splitstree5.io.exports.interfaces.*;
-import splitstree5.io.imports.nexus.NexusImporter;
+import splitstree5.io.imports.nexus.NexusImporterBase;
 import splitstree5.io.nexus.*;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -58,27 +57,21 @@ import java.util.List;
 public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportCharacters, IExportDistances, IExportTrees, IExportSplits, IExportNetwork, IExportTraits, IExportViewer {
     private boolean prependTaxa = true;
     private String title;
-    final private ArrayList<Pair<String, String>> links = new ArrayList<>();
+    private Pair<String, String> link;
 
     @Override
     public void export(Writer w, TaxaBlock taxa) throws IOException {
         if (prependTaxa)
             w.write("#nexus\n");
         final TaxaNexusOutput output = new TaxaNexusOutput();
-        if (getTitle() != null) {
-            output.setTitle(getTitle());
-            output.setAllLinks(getLinks());
-        }
+        output.setTitleAndLink(getTitle(), getLink());
         output.write(w, taxa);
     }
 
     @Override
     public void export(Writer w, AnalysisBlock analysis) throws IOException {
         final AnalysisNexusOutput output = new AnalysisNexusOutput();
-        if (getTitle() != null) {
-            output.setTitle(getTitle());
-            output.setAllLinks(getLinks());
-        }
+        output.setTitleAndLink(getTitle(), getLink());
         output.write(w, analysis);
     }
 
@@ -87,10 +80,7 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
         if (prependTaxa)
             new TaxaNexusOutput().write(w, taxa);
         final CharactersNexusOutput output = new CharactersNexusOutput();
-        if (getTitle() != null) {
-            output.setTitle(getTitle());
-            output.setAllLinks(getLinks());
-        }
+        output.setTitleAndLink(getTitle(), getLink());
         output.write(w, taxa, characters);
     }
 
@@ -99,10 +89,7 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
         if (prependTaxa)
             new TaxaNexusOutput().write(w, taxa);
         final DistancesNexusOutput output = new DistancesNexusOutput();
-        if (getTitle() != null) {
-            output.setTitle(getTitle());
-            output.setAllLinks(getLinks());
-        }
+        output.setTitleAndLink(getTitle(), getLink());
         output.write(w, taxa, distances);
     }
 
@@ -111,10 +98,7 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
         if (prependTaxa)
             new TaxaNexusOutput().write(w, taxa);
         final NetworkNexusOutput output = new NetworkNexusOutput();
-        if (getTitle() != null) {
-            output.setTitle(getTitle());
-            output.setAllLinks(getLinks());
-        }
+        output.setTitleAndLink(getTitle(), getLink());
         output.write(w, taxa, network);
     }
 
@@ -123,10 +107,7 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
         if (prependTaxa)
             new TaxaNexusOutput().write(w, taxa);
         final SplitsNexusOutput output = new SplitsNexusOutput();
-        if (getTitle() != null) {
-            output.setTitle(getTitle());
-            output.setAllLinks(getLinks());
-        }
+        output.setTitleAndLink(getTitle(), getLink());
         output.write(w, taxa, splitsBlock);
     }
 
@@ -135,10 +116,7 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
         if (prependTaxa)
             new TaxaNexusOutput().write(w, taxa);
         final TreesNexusOutput output = new TreesNexusOutput();
-        if (getTitle() != null) {
-            output.setTitle(getTitle());
-            output.setAllLinks(getLinks());
-        }
+        output.setTitleAndLink(getTitle(), getLink());
         output.write(w, taxa, trees);
     }
 
@@ -147,10 +125,7 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
         if (prependTaxa)
             new TaxaNexusOutput().write(w, taxa);
         final TraitsNexusOutput output = new TraitsNexusOutput();
-        if (getTitle() != null) {
-            output.setTitle(getTitle());
-            output.setAllLinks(getLinks());
-        }
+        output.setTitleAndLink(getTitle(), getLink());
         output.write(w, taxa, traitsBlock);
     }
 
@@ -159,10 +134,7 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
         if (prependTaxa)
             new TaxaNexusOutput().write(w, taxa);
         final ViewerNexusOutput output = new ViewerNexusOutput();
-        if (getTitle() != null) {
-            output.setTitle(getTitle());
-            output.setAllLinks(getLinks());
-        }
+        output.setTitleAndLink(getTitle(), getLink());
         output.write(w, taxa, viewerBlock);
     }
 
@@ -175,10 +147,7 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
      */
     public void export(Writer w, Algorithm algorithm) throws IOException {
         final AlgorithmNexusOutput output = new AlgorithmNexusOutput();
-        if (getTitle() != null) {
-            output.setTitle(getTitle());
-            output.setAllLinks(getLinks());
-        }
+        output.setTitleAndLink(getTitle(), getLink());
         output.write(w, algorithm);
     }
 
@@ -210,7 +179,7 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
 
     @Override
     public List<String> getExtensions() {
-        return NexusImporter.extensions;
+        return NexusImporterBase.extensions;
     }
 
 
@@ -241,21 +210,15 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
     }
 
     /**
-     * the list of links to be exported with the  block
+     * the link to be exported with the block
      *
      * @return list of links
      */
-    public ArrayList<Pair<String, String>> getLinks() {
-        return links;
-    }
-
-    public void clearTitleAndLinks() {
-        setTitle(null);
-        links.clear();
+    public Pair<String, String> getLink() {
+        return link;
     }
 
     public void setLink(Pair<String, String> link) {
-        links.clear();
-        links.add(link);
+        this.link = link;
     }
 }

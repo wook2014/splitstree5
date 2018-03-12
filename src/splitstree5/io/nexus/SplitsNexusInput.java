@@ -36,9 +36,7 @@ import java.util.List;
  * Daniel Huson, 2.2018
  */
 public class SplitsNexusInput extends NexusIOBase implements INexusInput<SplitsBlock> {
-    public static final String NAME = "SPLITS";
-
-    public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
+    public static final String SYNTAX = "BEGIN " + SplitsBlock.BLOCK_NAME + ";\n" +
             "\t[TITLE title;]\n" +
             "\t[LINK name = title;]\n" +
             "\t[DIMENSIONS [NTAX=number-of-taxa] [NSPLITS=number-of-splits];]\n" +
@@ -90,8 +88,8 @@ public class SplitsNexusInput extends NexusIOBase implements INexusInput<SplitsB
 
         final SplitsNexusFormat format = (SplitsNexusFormat) splitsBlock.getFormat();
 
-        np.matchBeginBlock(NAME);
-        parseTitleAndLinks(np);
+        np.matchBeginBlock(SplitsBlock.BLOCK_NAME);
+        parseTitleAndLink(np);
 
         final int ntax = taxaBlock.getNtax();
         np.matchIgnoreCase("dimensions ntax=" + ntax);
@@ -231,6 +229,6 @@ public class SplitsNexusInput extends NexusIOBase implements INexusInput<SplitsB
      * @return true, if can parse from here
      */
     public boolean atBeginOfBlock(NexusStreamParser np) {
-        return np.peekMatchIgnoreCase("begin " + NAME + ";");
+        return np.peekMatchIgnoreCase("begin " + SplitsBlock.BLOCK_NAME + ";");
     }
 }

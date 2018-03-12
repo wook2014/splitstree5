@@ -35,6 +35,8 @@ import splitstree5.utils.OptionsAccessor;
  * Daniel Huson 12.2016
  */
 abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extends NameableBase {
+    public static final String BLOCK_NAME = "ALGORITHM";
+
     private final BooleanProperty disabled = new SimpleBooleanProperty(true);
     private Connector<P, C> connector;
 
@@ -42,7 +44,7 @@ abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extend
      * constructor
      */
     public Algorithm() {
-        setName(Basic.getShortName(getClass()).replaceAll("Algorithm$", ""));
+        setName(Basic.getShortName(getClass()));
         if (getName().endsWith("Filter"))
             setShortDescription(Basic.fromCamelCase(getName()).replaceAll("Filter", "filter"));
         else
@@ -176,5 +178,9 @@ abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extend
      */
     public String getCitation() {
         return null;
+    }
+
+    public String getBlockName() {
+        return BLOCK_NAME;
     }
 }

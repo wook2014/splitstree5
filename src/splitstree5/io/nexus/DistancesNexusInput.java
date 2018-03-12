@@ -34,9 +34,7 @@ import java.util.List;
  * Daniel Huson, 2.2018
  */
 public class DistancesNexusInput extends NexusIOBase implements INexusInput<DistancesBlock> {
-    public static final String NAME = "DISTANCES";
-
-    public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
+    public static final String SYNTAX = "BEGIN " + DistancesBlock.BLOCK_NAME + ";\n" +
 
             "\t[TITLE title;]\n" +
             "\t[LINK name = title;]\n" +
@@ -76,8 +74,8 @@ public class DistancesNexusInput extends NexusIOBase implements INexusInput<Dist
 
             final DistancesNexusFormat format = (DistancesNexusFormat) distancesBlock.getFormat();
 
-            np.matchBeginBlock(NAME);
-            parseTitleAndLinks(np);
+            np.matchBeginBlock(DistancesBlock.BLOCK_NAME);
+            parseTitleAndLink(np);
 
             if (taxaBlock.getNtax() == 0) {
                 np.matchIgnoreCase("dimensions ntax=");
@@ -251,6 +249,6 @@ public class DistancesNexusInput extends NexusIOBase implements INexusInput<Dist
      * @return true, if can parse from here
      */
     public boolean atBeginOfBlock(NexusStreamParser np) {
-        return np.peekMatchIgnoreCase("begin " + NAME + ";");
+        return np.peekMatchIgnoreCase("begin " + DistancesBlock.BLOCK_NAME + ";");
     }
 }

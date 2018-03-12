@@ -31,6 +31,8 @@ import java.util.Collection;
  * daniel Huson, 2.2018
  */
 public class TraitsBlock extends DataBlock implements IAdditionalBlock {
+    public static final String BLOCK_NAME = "TRAITS";
+
     private int[][] matrix = {};  // computation is done on values
     private String[][] matrixOfLabels = null; // values have labels
     private String[] labels = {};
@@ -38,6 +40,7 @@ public class TraitsBlock extends DataBlock implements IAdditionalBlock {
     private float[] traitLongitude = null;
 
     public TraitsBlock() {
+        super(BLOCK_NAME);
         format = new TraitsNexusFormat();
     }
 
