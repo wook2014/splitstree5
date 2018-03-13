@@ -57,6 +57,7 @@ import splitstree5.menu.MenuController;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 /**
  * controller class for main window menus
@@ -133,6 +134,14 @@ public class MainWindowMenuController {
         });
 
         controller.getShowWorkflowMenuItem().setOnAction((e) -> mainWindow.showWorkflow());
+
+        controller.getCommunityWebsiteMenuItem().setOnAction((e) -> {
+            try {
+                Basic.openWebPage(new URL("http://splitstree.informatik.uni-tuebingen.de"));
+            } catch (IOException ex) {
+                Basic.caught(ex);
+            }
+        });
     }
 
     /**

@@ -115,7 +115,7 @@ public class InputTab extends TextViewTab {
                     if (ioExceptionWithLineNumber != null) {
                         getTabPane().getSelectionModel().select(InputTab.this);
                         textArea.requestFocus();
-                        gotoLine(ioExceptionWithLineNumber.getLineNumber());
+                        gotoLine(ioExceptionWithLineNumber.getLineNumber(), 0);
                     }
                 };
 

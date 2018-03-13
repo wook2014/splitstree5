@@ -152,7 +152,7 @@
                 <MenuItem fx:id="replaceMenuItem" text="Replace...">
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
-                <MenuItem fx:id="gotoLineMenuItem" text="Goto Line">
+                <MenuItem fx:id="gotoLineMenuItem" text="Goto Line...">
                     <accelerator>
                         <KeyCodeCombination alt="UP" code="G" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
                     </accelerator>
@@ -319,6 +319,7 @@
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="treeViewMenuItem" mnemonicParsing="false" text="Tree View"/>
                 <MenuItem fx:id="treeGridMenuItem" mnemonicParsing="false" text="Tree Grid"/>
+                <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="tanglegramMenuItem" mnemonicParsing="false" text="Tanglegram"/>
             </items>
         </Menu>

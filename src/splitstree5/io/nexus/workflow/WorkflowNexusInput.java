@@ -26,6 +26,7 @@ import jloda.fx.NotificationManager;
 import jloda.fx.RecentFilesManager;
 import jloda.util.Basic;
 import jloda.util.Pair;
+import jloda.util.ProgressListener;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
@@ -34,40 +35,47 @@ import splitstree5.core.algorithms.filters.TopFilter;
 import splitstree5.core.datablocks.*;
 import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.DataNode;
+import splitstree5.core.workflow.TaskWithProgressListener;
 import splitstree5.core.workflow.Workflow;
+import splitstree5.dialogs.ProgressPane;
 import splitstree5.io.nexus.AlgorithmNexusInput;
 import splitstree5.io.nexus.SplitsTree5NexusInput;
 import splitstree5.io.nexus.TaxaNexusInput;
 import splitstree5.main.MainWindow;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 /**
  * read workflow in nexus format
  * Daniel Huson, 2.2018
  */
-public class WorkflowNexusInput implements Callable<Boolean> {
-
+public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
     private final MainWindow parentWindow;
     private final String fileName;
 
     /**
      * parse a workflow in nexus format
      *
-     * @param mainWindow
+     * @param parentWindow
      * @param fileName
      */
-    public static void open(MainWindow mainWindow, String fileName) {
-        final CallableService<Boolean> service = new CallableService<>();
+    public static void open(MainWindow parentWindow, String fileName) {
+        final CallableService<MainWindow> service = new CallableService<>();
         service.setExecutor(Platform::runLater); // todo: make this runnable in a separate thread
-        service.setCallable(new WorkflowNexusInput(mainWindow, fileName));
-        service.setOnCancelled((e) -> NotificationManager.showWarning("User canceled"));
+        service.setCallable(new WorkflowNexusInput(parentWindow, fileName));
+        service.setOnCancelled((e) -> NotificationManager.showWarning("User canceled 'open file'"));
         service.setOnFailed((e) -> NotificationManager.showError("Open file failed:\n" + (service.getException().getMessage())));
+        service.setOnRunning((e) -> parentWindow.getMainWindowController().getBottomPane().getChildren().add(new ProgressPane(service)));
+        service.setOnSucceeded((e) -> {
+            final Workflow workflow = service.getValue().getWorkflow();
+            NotificationManager.showInformation("Opened file: " + Basic.getFileNameWithoutPath(fileName)
+                    + "\nLoaded workflow containing " + workflow.getNumberOfDataNodes() + " data nodes and " + workflow.getNumberOfConnectorNodes() + " algorithms");
+        });
         service.start();
     }
 
@@ -86,8 +94,10 @@ public class WorkflowNexusInput implements Callable<Boolean> {
      * import a workflow
      * @return true
      */
-    public Boolean call() {
-        try {
+    public MainWindow call() throws Exception {
+        final ProgressListener progress = getProgressListener();
+        progress.setTasks("Loading file", Basic.getFileNameWithoutPath(fileName));
+
             final MainWindow mainWindow;
             final boolean usingNewWindow;
             if (parentWindow.getWorkflow().getWorkingDataNode() == null) {
@@ -104,7 +114,8 @@ public class WorkflowNexusInput implements Callable<Boolean> {
 
             final ArrayList<ViewerBlock> viewerBlocks = new ArrayList<>();
 
-            try (NexusStreamParser np = new NexusStreamParser(new FileReader(fileName))) {
+        try (NexusStreamParser np = new NexusStreamParser(Basic.getReaderPossiblyZIPorGZIP(fileName))) {
+            progress.setMaximum((new File(fileName).length() / (Basic.isZIPorGZIPFile(fileName) ? 100 : 20)));
                 np.matchIgnoreCase("#nexus");
                 final SplitsTree5Block splitsTree5Block = new SplitsTree5Block();
                 new SplitsTree5NexusInput().parse(np, splitsTree5Block);
@@ -174,6 +185,7 @@ public class WorkflowNexusInput implements Callable<Boolean> {
                         }
                         title2node.put(dataBlock.getBlockName() + dataInput.getTitle(), dataNode);
                     }
+                    progress.setProgress(np.lineno());
                 }
             }
 
@@ -181,8 +193,6 @@ public class WorkflowNexusInput implements Callable<Boolean> {
                 try {
                     if (usingNewWindow)
                         mainWindow.show(new Stage(), parentWindow.getStage().getX() + 50, parentWindow.getStage().getY() + 50);
-                    final String shortDescription = workflow.getTopTaxaNode() != null ? workflow.getTopDataNode().getShortDescription() : "null";
-                    NotificationManager.showInformation("Opened file: " + Basic.getFileNameWithoutPath(fileName) + (shortDescription.length() > 0 ? "\nLoaded " + shortDescription : ""));
                     if (!fileName.endsWith(".tmp"))
                         RecentFilesManager.getInstance().addRecentFile(fileName);
                     mainWindow.getStage().toFront();
@@ -198,11 +208,7 @@ public class WorkflowNexusInput implements Callable<Boolean> {
                     viewerBlock.show();
                 }
             });
-
-        } catch (IOException ex) {
-            NotificationManager.showError("Open file '" + fileName + "' failed: " + ex.getMessage());
-        }
-        return true;
+        return mainWindow;
     }
 
     /**
