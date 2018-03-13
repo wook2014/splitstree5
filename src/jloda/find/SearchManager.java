@@ -22,11 +22,11 @@ package jloda.find;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import jloda.fx.CallableService;
+import jloda.fx.ProgramExecutorService;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.workflow.TaskWithProgressListener;
 
-import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -82,7 +82,7 @@ public class SearchManager {
             if (n instanceof ITextSearcher)
                 service.setExecutor(Platform::runLater); // must run text searchers in JavaFX application thread
             else if (n instanceof IObjectSearcher) // run other searchers in external thread
-                service.setExecutor(Executors.newSingleThreadExecutor());
+                service.setExecutor(ProgramExecutorService.getInstance());
             canFindAll.set(n.canFindAll());
             canReplaceInSelection.bind(n.isSelectionFindable());
             canFindGlobally.bind(n.isGlobalFindable());

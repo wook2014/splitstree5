@@ -21,6 +21,7 @@ package splitstree5.io.nexus.workflow;
 
 import javafx.application.Platform;
 import javafx.stage.Stage;
+import jloda.fx.CallableService;
 import jloda.fx.NotificationManager;
 import jloda.fx.RecentFilesManager;
 import jloda.util.Basic;
@@ -44,25 +45,57 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 /**
  * read workflow in nexus format
  * Daniel Huson, 2.2018
  */
-public class WorkflowNexusInput {
+public class WorkflowNexusInput implements Callable<Boolean> {
+
+    private final MainWindow parentWindow;
+    private final String fileName;
+
     /**
-     * read the workflow in nexus format
+     * parse a workflow in nexus format
      *
+     * @param mainWindow
      * @param fileName
-     * @throws IOException
      */
-    public static void open(MainWindow parentWindow, String fileName) {
+    public static void open(MainWindow mainWindow, String fileName) {
+        final CallableService<Boolean> service = new CallableService<>();
+        service.setExecutor(Platform::runLater); // todo: make this runnable in a separate thread
+        service.setCallable(new WorkflowNexusInput(mainWindow, fileName));
+        service.setOnCancelled((e) -> NotificationManager.showWarning("User canceled"));
+        service.setOnFailed((e) -> NotificationManager.showError("Open file failed:\n" + (service.getException().getMessage())));
+        service.start();
+    }
+
+    /**
+     * constructor
+     *
+     * @param parentWindow
+     * @param fileName
+     */
+    private WorkflowNexusInput(MainWindow parentWindow, String fileName) {
+        this.parentWindow = parentWindow;
+        this.fileName = fileName;
+    }
+
+    /**
+     * import a workflow
+     * @return true
+     */
+    public Boolean call() {
         try {
             final MainWindow mainWindow;
+            final boolean usingNewWindow;
             if (parentWindow.getWorkflow().getWorkingDataNode() == null) {
                 mainWindow = parentWindow;
+                usingNewWindow=false;
             } else {
                 mainWindow = new MainWindow();
+                usingNewWindow=true;
             }
             final Document document = mainWindow.getDocument();
             document.setFileName(fileName);
@@ -146,14 +179,13 @@ public class WorkflowNexusInput {
 
             Platform.runLater(() -> {
                 try {
-                    if (mainWindow == parentWindow) // are using an existing window
-                        mainWindow.getStage().toFront();
-                    else // is new window
+                    if (usingNewWindow)
                         mainWindow.show(new Stage(), parentWindow.getStage().getX() + 50, parentWindow.getStage().getY() + 50);
                     final String shortDescription = workflow.getTopTaxaNode() != null ? workflow.getTopDataNode().getShortDescription() : "null";
                     NotificationManager.showInformation("Opened file: " + Basic.getFileNameWithoutPath(fileName) + (shortDescription.length() > 0 ? "\nLoaded " + shortDescription : ""));
                     if (!fileName.endsWith(".tmp"))
                         RecentFilesManager.getInstance().addRecentFile(fileName);
+                    mainWindow.getStage().toFront();
                 } catch (Exception ex) {
                     Basic.caught(ex);
                 }
@@ -170,6 +202,7 @@ public class WorkflowNexusInput {
         } catch (IOException ex) {
             NotificationManager.showError("Open file '" + fileName + "' failed: " + ex.getMessage());
         }
+        return true;
     }
 
     /**

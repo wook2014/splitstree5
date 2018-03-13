@@ -22,6 +22,7 @@ package splitstree5.dialogs.importer;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.scene.layout.Pane;
+import jloda.fx.ProgramExecutorService;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.Pair;
@@ -46,6 +47,13 @@ public class ImportService extends Service<Boolean> {
     private String title;
 
     private boolean reload = false;
+
+    /**
+     * constructor
+     */
+    public ImportService() {
+        setExecutor(ProgramExecutorService.getInstance());
+    }
 
     /**
      * setup a task

@@ -22,16 +22,25 @@ package splitstree5.gui.graph3dtab;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.geometry.Point3D;
+import jloda.fx.ProgramExecutorService;
 import jloda.graph.NodeArray;
 import jloda.phylo.SplitsGraph;
 import splitstree5.gui.graphtab.base.NodeViewBase;
 
+/**
+ * computes an embedding
+ * Daniel Huson, 1.2018
+ */
 public class EmbeddingService extends Service<NodeArray<Point3D>> {
     private SplitsGraph splitsGraph;
     private NodeArray<NodeViewBase> node2view;
     private int numOfSteps;
     private boolean linear;
     private boolean withZpush;
+
+    public EmbeddingService() {
+        setExecutor(ProgramExecutorService.getInstance());
+    }
 
     /**
      * setup the task

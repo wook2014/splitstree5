@@ -99,6 +99,7 @@ public class FormatTab extends ViewerTab {
                         formatItem.addFont(controller.getFontComboBox().getFontValue());
                         getMainWindow().getUndoRedoManager().doAndAdd(new FormatChangeCommand(formatItem, graphTab2D.getNodeSelectionModel().getSelectedItems(), graphTab2D.getNode2view(),
                                 graphTab2D.getEdgeSelectionModel().getSelectedItems(), graphTab2D.getEdge2view()));
+                        getMainWindow().getDocument().setDirty(true);
                     } finally {
                         isUpdating = false;
                     }
@@ -115,6 +116,7 @@ public class FormatTab extends ViewerTab {
                             controller.getFontComboBox().setDefaultFont(formatItem.getFont());
                         else
                             controller.getFontComboBox().getSelectionModel().clearSelection();
+                        getMainWindow().getDocument().setDirty(true);
                     } finally {
                         isUpdating = false;
                     }
@@ -131,6 +133,7 @@ public class FormatTab extends ViewerTab {
                         formatItem.addLabelColor(controller.getLabelColorPicker().getValue());
                         getMainWindow().getUndoRedoManager().doAndAdd(new FormatChangeCommand(formatItem, graphTab2D.getNodeSelectionModel().getSelectedItems(), graphTab2D.getNode2view(),
                                 graphTab2D.getEdgeSelectionModel().getSelectedItems(), graphTab2D.getEdge2view()));
+                        getMainWindow().getDocument().setDirty(true);
                     } finally {
                         isUpdating = false;
                     }
@@ -144,6 +147,7 @@ public class FormatTab extends ViewerTab {
                                 graphTab2D.getEdgeSelectionModel().getSelectedItems(), graphTab2D.getEdge2view());
                         if (formatItem.getLabelColor() != null)
                             controller.getLabelColorPicker().setValue(formatItem.getLabelColor());
+                        getMainWindow().getDocument().setDirty(true);
                     } finally {
                         isUpdating = false;
                     }
@@ -158,6 +162,7 @@ public class FormatTab extends ViewerTab {
                         FormatItem formatItem = new FormatItem();
                         formatItem.addNodeShape(controller.getNodeShapeComboBox().getValue());
                         getMainWindow().getUndoRedoManager().doAndAdd(new FormatChangeCommand(formatItem, graphTab2D.getNodeSelectionModel().getSelectedItems(), graphTab2D.getNode2view(), null, null));
+                        getMainWindow().getDocument().setDirty(true);
                     } finally {
                         isUpdating = false;
                     }
@@ -170,6 +175,7 @@ public class FormatTab extends ViewerTab {
                         final FormatItem formatItem = FormatItem.createFromSelection(graphTab2D.getNodeSelectionModel().getSelectedItems(), graphTab2D.getNode2view(), null, null);
                         if (formatItem.getNodeShape() != null)
                             controller.getNodeShapeComboBox().setValue(formatItem.getNodeShape());
+                        getMainWindow().getDocument().setDirty(true);
                     } finally {
                         isUpdating = false;
                     }
@@ -187,6 +193,7 @@ public class FormatTab extends ViewerTab {
                         formatItem.addNodeSize(n, n);
                         controller.getNodeHeightComboBox().setValue(n);
                         getMainWindow().getUndoRedoManager().doAndAdd(new FormatChangeCommand(formatItem, graphTab2D.getNodeSelectionModel().getSelectedItems(), graphTab2D.getNode2view(), null, null));
+                        getMainWindow().getDocument().setDirty(true);
                     } finally {
                         isUpdating = false;
                     }
@@ -199,6 +206,7 @@ public class FormatTab extends ViewerTab {
                         final FormatItem formatItem = FormatItem.createFromSelection(graphTab2D.getNodeSelectionModel().getSelectedItems(), graphTab2D.getNode2view(), null, null);
                         if (formatItem.getNodeWidth() != null) {
                             controller.getNodeWidthComboBox().setValue(formatItem.getNodeWidth());
+                            getMainWindow().getDocument().setDirty(true);
                         }
                     } finally {
                         isUpdating = false;
@@ -215,6 +223,7 @@ public class FormatTab extends ViewerTab {
                         FormatItem formatItem = new FormatItem();
                         formatItem.addNodeSize(null, n);
                         getMainWindow().getUndoRedoManager().doAndAdd(new FormatChangeCommand(formatItem, graphTab2D.getNodeSelectionModel().getSelectedItems(), graphTab2D.getNode2view(), null, null));
+                        getMainWindow().getDocument().setDirty(true);
                     } finally {
                         isUpdating = false;
                     }
@@ -227,6 +236,7 @@ public class FormatTab extends ViewerTab {
                         final FormatItem formatItem = FormatItem.createFromSelection(graphTab2D.getNodeSelectionModel().getSelectedItems(), graphTab2D.getNode2view(), null, null);
                         if (formatItem.getNodeHeight() != null)
                             controller.getNodeHeightComboBox().setValue(formatItem.getNodeHeight());
+                        getMainWindow().getDocument().setDirty(true);
                     } finally {
                         isUpdating = false;
                     }
@@ -241,6 +251,7 @@ public class FormatTab extends ViewerTab {
                         FormatItem formatItem = new FormatItem();
                         formatItem.addNodeColor(controller.getNodeColorPicker().getValue());
                         getMainWindow().getUndoRedoManager().doAndAdd(new FormatChangeCommand(formatItem, graphTab2D.getNodeSelectionModel().getSelectedItems(), graphTab2D.getNode2view(), null, null));
+                        getMainWindow().getDocument().setDirty(true);
                     } finally {
                         isUpdating = false;
                     }
@@ -254,6 +265,7 @@ public class FormatTab extends ViewerTab {
                                 null, null);
                         if (formatItem.getNodeColor() != null)
                             controller.getNodeColorPicker().setValue(formatItem.getNodeColor());
+                        getMainWindow().getDocument().setDirty(true);
                     } finally {
                         isUpdating = false;
                     }
@@ -269,6 +281,7 @@ public class FormatTab extends ViewerTab {
                         FormatItem formatItem = new FormatItem();
                         formatItem.addEdgeWidth(n);
                         getMainWindow().getUndoRedoManager().doAndAdd(new FormatChangeCommand(formatItem, null, null, graphTab2D.getEdgeSelectionModel().getSelectedItems(), graphTab2D.getEdge2view()));
+                        getMainWindow().getDocument().setDirty(true);
                     } finally {
                         isUpdating = false;
                     }
@@ -281,6 +294,7 @@ public class FormatTab extends ViewerTab {
                         final FormatItem formatItem = FormatItem.createFromSelection(null, null, graphTab2D.getEdgeSelectionModel().getSelectedItems(), graphTab2D.getEdge2view());
                         if (formatItem.getEdgeWidth() != null)
                             controller.getEdgeWidthComboBox().setValue(formatItem.getEdgeWidth());
+                        getMainWindow().getDocument().setDirty(true);
                     } finally {
                         isUpdating = false;
                     }
@@ -295,6 +309,7 @@ public class FormatTab extends ViewerTab {
                         FormatItem formatItem = new FormatItem();
                         formatItem.addEdgeColor(controller.getEdgeColorPicker().getValue());
                         getMainWindow().getUndoRedoManager().doAndAdd(new FormatChangeCommand(formatItem, null, null, graphTab2D.getEdgeSelectionModel().getSelectedItems(), graphTab2D.getEdge2view()));
+                        getMainWindow().getDocument().setDirty(true);
                     } finally {
                         isUpdating = false;
                     }
@@ -307,6 +322,7 @@ public class FormatTab extends ViewerTab {
                         final FormatItem formatItem = FormatItem.createFromSelection(null, null, graphTab2D.getEdgeSelectionModel().getSelectedItems(), graphTab2D.getEdge2view());
                         if (formatItem.getEdgeColor() != null)
                             controller.getEdgeColorPicker().setValue(formatItem.getEdgeColor());
+                        getMainWindow().getDocument().setDirty(true);
                     } finally {
                         isUpdating = false;
                     }

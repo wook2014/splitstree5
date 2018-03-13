@@ -629,7 +629,6 @@ public class Workflow {
         return all;
     }
 
-
     public void incrementTopologyChanged() {
         Platform.runLater(() -> topologyChanged.set(topologyChanged.get() + 1));
     }

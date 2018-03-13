@@ -21,6 +21,7 @@ package splitstree5.dialogs.exporter;
 
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import jloda.fx.ProgramExecutorService;
 import jloda.util.CanceledException;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -38,8 +39,14 @@ public class ExportService extends Service<Boolean> {
     private DataBlock dataBlock;
     private String exportFormatName;
 
-
     private ExportDialog exportDialog;
+
+    /**
+     * constructor
+     */
+    public ExportService() {
+        setExecutor(ProgramExecutorService.getInstance());
+    }
 
     public void setup(String fileName, TaxaBlock taxaBlock, DataBlock dataBlock, String exportFormatName, ExportDialog exportDialog) {
         this.fileName = fileName;
