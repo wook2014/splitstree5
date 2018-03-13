@@ -23,6 +23,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
+import jloda.fx.ProgramExecutorService;
 import jloda.phylo.PhyloTree;
 import jloda.util.CanceledException;
 import jloda.util.Pair;
@@ -43,7 +44,6 @@ import splitstree5.utils.TreesUtilities;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * implements consensus network
@@ -89,7 +89,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
 
         {
             final int numberOfThreads = Math.min(trees.size(), 8);
-            final ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
+            final ExecutorService executor = ProgramExecutorService.getInstance();
             try {
                 final CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
                 final Single<CanceledException> exception = new Single<>();
@@ -149,7 +149,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
 
         {
             final int numberOfThreads = Math.min(splitsAndWeights.size(), 8);
-            final ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
+            final ExecutorService executor = ProgramExecutorService.getInstance();
             try {
                 final CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
                 final Single<CanceledException> exception = new Single<>();

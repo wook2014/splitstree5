@@ -29,7 +29,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * monitors the clipboard for availabity of a string
+ * monitors the clipboard for availability of a string
  * Daniel Huson, 2.2018
  */
 public class ClipboardMonitor {
