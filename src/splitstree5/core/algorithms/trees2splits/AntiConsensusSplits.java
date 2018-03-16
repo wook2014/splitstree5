@@ -33,6 +33,8 @@ import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToSplits;
+import splitstree5.core.algorithms.trees2splits.utils.PartialSplit;
+import splitstree5.core.algorithms.trees2trees.ConsensusTree;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
@@ -44,12 +46,16 @@ import splitstree5.utils.SplitsUtilities;
 import splitstree5.utils.TreesUtilities;
 import jloda.graph.Graph;
 
+import java.util.stream.Collectors;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
 import java.util.*;
+import java.util.stream.Stream;
+
+import splitstree5.core.algorithms.splits2trees.GreedyTree;
 
 /**
  * implements the anti-consensus method
@@ -59,6 +65,9 @@ import java.util.*;
 public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
     public enum EdgeWeights {Median, Mean, Count, Sum, None}
 
+    private int optionMaxDistortionScore = 1;
+    private double optionMinimumSplitWeight = 0.5;//10000 *0.5
+    private double percentofSplitsWithLowDistortion = 0.1;
     private final SimpleObjectProperty<EdgeWeights> optionEdgeWeights = new SimpleObjectProperty<>(EdgeWeights.Mean);
     private DoubleProperty optionThreshold = new SimpleDoubleProperty(0.5);
 
@@ -79,80 +88,229 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
      * @param treesBlock
      * @param splitsBlock
      */
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock) throws CanceledException, SplitsException {
+    @Override
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock) throws Exception {
+
 
         final ObservableList<PhyloTree> trees = treesBlock.getTrees();
         final Map<BitSet, Pair<BitSet, WeightStats>> splitsAndWeights = new HashMap<>();
         final BitSet taxaInTree = taxaBlock.getTaxaSet();
 
+        List<ASplit> treeSplits = new ArrayList<ASplit>();
+        ArrayList<ASplit> treeSplits2 = new ArrayList<ASplit>();
+        int count;
+
+        SplitsBlock splits = new SplitsBlock();
+        //super.compute(progress, taxaBlock, treesBlock, splits);
+
+        progress.setSubtask("Processing trees");
+        progress.setMaximum(splits.getNsplits());
+
+
         if (treesBlock.getNTrees() == 1)
             System.err.println("Anti-consensus: only one tree specified");
 
-        progress.setMaximum(100);
+
+        ////incompatibility graph
+        //Graph graph = buildIncompatibilityGraph(splits.getSplits());
+        //Graph g2=buildIncompatibilityGraph(findMajorityRuleLowDistortionSplits(splits, treesBlock, 0.5));
+        //for (Node v : graph.nodes()) {
+        //   float compatibility = getConflictScore(v);
+
+        // }
+
+        ///////////////////////
+        progress.setSubtask("Processing splits");
+        progress.setMaximum(splits.getNsplits() * treesBlock.getNTrees());
         progress.setProgress(0);
 
-        {
-            for (int which = 0; which < trees.size(); which++) {
-                final PhyloTree tree = trees.get(which);
-                final List<ASplit> splits = new ArrayList<>();
-                TreesUtilities.computeSplits(taxaInTree, tree, splits);
+        int totalScore;
+        System.err.println("Filtering splits:");
+
+        /*double[] scores = new double[treesBlock.getNTrees()];
+        for (int s = 1; s <= splits.getNsplits(); s++) {
+             totalScore = 0;
+             BitSet A = splits.get(s).getA();
+             BitSet B = splits.get(s).getB();
+             count=0;
+
+          for (int t = 1; t <= treesBlock.getNTrees(); t++) {
+                treeSplits.clear();
+                treeSplits2.clear();
+                TreesUtilities.computeSplits(null, treesBlock.getTree(t), treeSplits);
                 try {
-                    SplitsUtilities.verifySplits(splits, taxaBlock);
+                    SplitsUtilities.verifySplits(treeSplits, taxaBlock);
                 } catch (SplitsException e) {
                     e.printStackTrace();
                 }
 
-                for (ASplit split : splits) {
-                    synchronized (sync) {
-                        final Pair<BitSet, WeightStats> pair = splitsAndWeights.computeIfAbsent(split.getPartContaining(1), k -> new Pair<>(k, new WeightStats()));
-                        pair.getSecond().add((float) split.getWeight());
+
+
+                if (treeSplits.contains(splits.get(s))) count++;
+
+                final BitSet treeTaxa = taxaBlock.getTaxaSet();
+                final BitSet treeTaxaAndA = (BitSet) (treeTaxa.clone());
+                treeTaxaAndA.and(A);
+                final BitSet treeTaxaAndB = (BitSet) (treeTaxa.clone());
+                treeTaxaAndB.and(B);
+
+                if (treeTaxaAndA.cardinality() > 1 && treeTaxaAndB.cardinality() > 1) {
+                    try {
+                        PhyloTree tree = treesBlock.getTree(t);
+                        totalScore += Distortion.computeDistortionForSplit(tree, A, B);
+                    } catch (IOException ex) {
+                        Basic.caught(ex);
                     }
                 }
-                progress.setProgress((long) (which * 80.0 / trees.size()));
+                progress.incrementProgress();
+            }
+            scores[s]= (double)count/treesBlock.getNTrees();
+            if (totalScore <= getOptionMaxDistortionScore()) {
+                final ASplit aSplit = splits.get(s);
+                splitsBlock.getSplits().add(new ASplit(aSplit.getA(), aSplit.getB(), aSplit.getWeight()));
             }
         }
+*/
+        Object[] pSplitsOfTrees = new Object[treesBlock.getNTrees() + 1];
 
-        {
-            final double threshold = (optionThreshold.getValue() < 1 ? optionThreshold.getValue() : 0.999999);
+        BitSet[] supportSet = new BitSet[treesBlock.getNTrees() + 1];
+        Set<PartialSplit> allPSplits = new HashSet<>();
+        HashSet<ASplit> set = new HashSet<ASplit>();
+        Collection<ASplit> setCopy = new HashSet<ASplit>();
+        Collection<ASplit> tempSet;
 
-            final ArrayList<Pair<BitSet, WeightStats>> array = new ArrayList<>(splitsAndWeights.values());
+        for (int t = 1; t <= treesBlock.getNTrees(); t++) {
+            treeSplits.clear();
+            pSplitsOfTrees[t] = new ArrayList<ASplit>();
+            supportSet[t] = new BitSet();
+            //super.computePartialSplits(taxaBlock, treesBlock,t,  pSplitsOfTrees[t], supportSet[t]);
+            TreesUtilities.computeSplits(taxaBlock.getTaxaSet(), treesBlock.getTree(t), treeSplits);
+            pSplitsOfTrees[t] = new ArrayList<ASplit>(treeSplits);
+            ;
+            if (!set.isEmpty()) {
 
-            for (Pair<BitSet, WeightStats> pair : array) {
-                final BitSet side = pair.getFirst();
-                final WeightStats weightStats = pair.getSecond();
-                final double wgt;
-                if (weightStats.getCount() / (double) trees.size() > threshold) {
-                    switch (getOptionEdgeWeights()) {
-                        case Count:
-                            wgt = weightStats.getCount();
-                            break;
-                        case Mean:
-                            wgt = weightStats.getMean();
-                            break;
-                        case Median:
-                            wgt = weightStats.getMedian();
-                            break;
-                        case Sum:
-                            wgt = weightStats.getSum();
-                            break;
-                        default:
-                            wgt = 1;
-                            break;
-                    }
-                    final float confidence = (float) weightStats.getCount() / (float) trees.size();
-                    synchronized (sync) {
-                        splitsBlock.getSplits().add(new ASplit(side, taxaBlock.getNtax(), wgt, confidence));
+                setCopy = (HashSet<ASplit>) set.clone();
+                setCopy.retainAll(treeSplits);
+                tempSet = treeSplits;
+                //tempSet.removeAll(setCopy);
+                for (ASplit a : setCopy) {
+                    tempSet.remove(a);
+                }
+                set.addAll(tempSet);
+
+            } else {
+                set.addAll(treeSplits);
+
+            }
+
+
+            try {
+                SplitsUtilities.verifySplits(treeSplits, taxaBlock);
+            } catch (SplitsException e) {
+                e.printStackTrace();
+            }
+
+
+        }
+
+        splits.getSplits().addAll(set);
+
+        count = 0;
+        Map<ASplit, Double> splitScores = new HashMap<ASplit, Double>();
+        ArrayList<ASplit> temp;
+        ASplit as;
+
+
+        for (int s = 0; s < splits.getSplits().size(); s++) {
+            as = (ASplit) splits.getSplits().get(s);
+            count = 0;
+            for (int t = 1; t <= treesBlock.getNTrees(); t++) {
+                temp = (ArrayList<ASplit>) pSplitsOfTrees[t];
+                if (temp.contains(as)) count++;
+
+
+            }
+            splitScores.put(as, (double) count / treesBlock.getNTrees());
+        }
+
+        Map<Object, Double> majoritySplits =
+                splitScores.entrySet()
+                        .stream()
+                        .filter(p -> p.getValue() > getOptionMinimumSplitWeight())
+                        .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+
+        Set<ASplit> majoritySplitsList = (Set) majoritySplits.keySet();
+        ArrayList<ASplit> majoritySplitsList2 = new ArrayList<ASplit>();
+        majoritySplitsList2.addAll(majoritySplitsList);
+        splitsBlock.getSplits().addAll(majoritySplitsList2);
+
+        Map<Object, Double> complementSplits =
+                splitScores.entrySet()
+                        .stream()
+                        .filter(p -> p.getValue() <= getOptionMinimumSplitWeight())
+                        .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+
+       /* Stream<Map.Entry<Object, Double>> sortedComplementSplits =
+                complementSplits.entrySet().stream()
+                        .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()));*/
+
+        Map<Object, Double> sortedComplementSplits =
+                complementSplits.entrySet().stream()
+                        .sorted(Map.Entry.comparingByValue(Comparator.naturalOrder()))
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+        // compute a tree from majority splits
+
+        GreedyTree greedyTree = new GreedyTree();
+        TreesBlock majorityTreeBlock = new TreesBlock();
+        greedyTree.compute(progress, taxaBlock, splits, majorityTreeBlock);
+
+        Iterator it = sortedComplementSplits.keySet().iterator();
+        Iterator it1 = majoritySplits.keySet().iterator();
+        count = 0;
+        double[] incompatibilityScores = new double[treesBlock.getNTrees()];
+        int s = 0;
+        ASplit asplit;
+        int numerOfSplitswithLowDistortion=(int) Math.floor(percentofSplitsWithLowDistortion * complementSplits.keySet().size());
+
+        Map<Object, Double> topComplementSplits =
+                complementSplits.entrySet().stream()
+                        .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                        .limit(numerOfSplitswithLowDistortion)
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+        while (it.hasNext()) {
+            totalScore = 0;
+            asplit = (ASplit) it.next();
+            BitSet A = asplit.getA();
+            BitSet B = asplit.getB();
+            for (int t = 1; t <= majorityTreeBlock.getNTrees(); t++) {
+                final BitSet treeTaxa = taxaBlock.getTaxaSet();
+                final BitSet treeTaxaAndA = (BitSet) (treeTaxa.clone());
+                treeTaxaAndA.and(A);
+                final BitSet treeTaxaAndB = (BitSet) (treeTaxa.clone());
+                treeTaxaAndB.and(B);
+
+                if (treeTaxaAndA.cardinality() > 1 && treeTaxaAndB.cardinality() > 1) {
+                    try {
+                        PhyloTree tree = majorityTreeBlock.getTree(t);
+                        totalScore += Distortion.computeDistortionForSplit(tree, A, B);
+                    } catch (IOException ex) {
+                        Basic.caught(ex);
                     }
                 }
-            }
 
+            }
+            if (totalScore > 0 && totalScore <= getOptionMaxDistortionScore() && s<= numerOfSplitswithLowDistortion) {
+                s++;
+                final ASplit aSplit = asplit;
+                splitsBlock.getSplits().add(new ASplit(aSplit.getA(), aSplit.getB(), aSplit.getWeight()));
+            }
+            it.remove();
         }
 
-        SplitsUtilities.verifySplits(splitsBlock.getSplits(), taxaBlock);
 
-        splitsBlock.setCycle(SplitsUtilities.computeCycle(taxaBlock.getNtax(), splitsBlock.getSplits()));
-        splitsBlock.setFit(-1);
-        splitsBlock.setCompatibility(Compatibility.compute(taxaBlock.getNtax(), splitsBlock.getSplits(), splitsBlock.getCycle()));
     }
 
     @Override
@@ -165,13 +323,6 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
         return Arrays.asList("Consensus", "Threshold", "EdgeWeights");
     }
 
-    public EdgeWeights getOptionEdgeWeights() {
-        return optionEdgeWeights.get();
-    }
-
-    public SimpleObjectProperty<EdgeWeights> optionEdgeWeightsProperty() {
-        return optionEdgeWeights;
-    }
 
     public void setOptionEdgeWeights(EdgeWeights optionEdgeWeights) {
         this.optionEdgeWeights.set(optionEdgeWeights);
@@ -180,6 +331,15 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
     public double getOptionThreshold() {
         return optionThreshold.get();
     }
+
+    public int getOptionMaxDistortionScore() {
+        return optionMaxDistortionScore;
+    }
+
+    public double getOptionMinimumSplitWeight() {
+        return optionMinimumSplitWeight;
+    }
+    //optionMinimumSplitWeight
 
     public DoubleProperty optionThresholdProperty() {
         return optionThreshold;
@@ -329,48 +489,46 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
      * gets the  nodes in decreasing order of conflict score.
      *
      * @param aset
-     *
      */
-    private void sortByDecreasingConflictScore(NodeSet aset)
-    {
+    private void sortByDecreasingConflictScore(NodeSet aset) {
 
-        Node[] nodeArray=aset.toArray();
+        Node[] nodeArray = aset.toArray();
 
-        Arrays.sort(nodeArray, (v1, v2) -> this.getConflictScore(v2)-(this.getConflictScore(v1)));
+        Arrays.sort(nodeArray, (v1, v2) -> this.getConflictScore(v2) - (this.getConflictScore(v1)));
     }
+
     /**
      * gets the  p percent of the  least conflicting nodes nodes
      *
      * @param aset
      * @return get a sorted array  of nodes in decreasing conflict score order
      */
-    private Node[] getPercentageLeastConflictingNodes(NodeSet aset, double p)throws Exception
-    {
-        if (p < 0.0 || p >1.0)throw new IllegalArgumentException();
-        Node[] nodeArray=aset.toArray();
+    private Node[] getPercentageLeastConflictingNodes(NodeSet aset, double p) throws Exception {
+        if (p < 0.0 || p > 1.0) throw new IllegalArgumentException();
+        Node[] nodeArray = aset.toArray();
 
-        Arrays.sort(nodeArray, (v1, v2) -> this.getConflictScore(v2)-(this.getConflictScore(v1)));
-        double d= p * ((double) nodeArray.length);
+        Arrays.sort(nodeArray, (v1, v2) -> this.getConflictScore(v2) - (this.getConflictScore(v1)));
+        double d = p * ((double) nodeArray.length);
         int numberOfNodes = (int) Math.floor(d);
-        return Arrays.copyOf(nodeArray,numberOfNodes );
+        return Arrays.copyOf(nodeArray, numberOfNodes);
 
     }
+
     /**
      * gets the  p percent of the  least conflicting nodes nodes
      *
      * @param splits
      * @return returns all the  splits with a weight  greater than  the value percent
      */
-    private List<ASplit>  findMajorityRuleSplits(List<ASplit> splits, double percent)throws Exception
-    {
-        if (percent < 0.0 || percent >1.0)throw new IllegalArgumentException();
-        List<ASplit> splits2= new ArrayList<>();
+    private List<ASplit> findMajorityRuleSplits(List<ASplit> splits, double percent) throws Exception {
+        if (percent < 0.0 || percent > 1.0) throw new IllegalArgumentException();
+        List<ASplit> splits2 = new ArrayList<>();
 
         for (int s = 0; s < splits.size(); s++) {
-            if (splits.get(s).getWeight() >= percent){
-                 splits2.add(splits.get(s));
+            if (splits.get(s).getWeight() >= percent) {
+                splits2.add(splits.get(s));
 
-              }
+            }
 
         }
         return splits2;
@@ -382,14 +540,12 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
      * @param splits
      * @return returns all the  splits with a weight  greater than  the value percent
      */
-    private List<ASplit>  findMajorityRuleLowDistortionSplits(List<ASplit> splits,TreesBlock trees, double percent)
-    {
+    private List<ASplit> findMajorityRuleLowDistortionSplits(SplitsBlock splits, TreesBlock trees, double percent) {
 
-        List<ASplit> splits2= new ArrayList<>();
+        List<ASplit> splits2 = new ArrayList<>();
         int totalScore;
-        final int maxDistortion=3;
         int distortion;
-
+        double[] splitScores = computeSplitScores(splits, trees);
 
 
         final BitSet[] tree2taxa = new BitSet[trees.getNTrees() + 1];
@@ -401,7 +557,7 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
         for (int s = 0; s < splits.size(); s++) {
             BitSet A = splits.get(s).getA();
             BitSet B = splits.get(s).getB();
-            totalScore=0;
+            totalScore = 0;
             for (int t = 1; t <= trees.getNTrees(); t++) {
 
                 final BitSet treeTaxa = tree2taxa[t];
@@ -413,8 +569,8 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
                 if (treeTaxaAndA.cardinality() > 1 && treeTaxaAndB.cardinality() > 1) {
                     try {
                         PhyloTree tree = trees.getTree(t);
-                        distortion=Distortion.computeDistortionForSplit(tree, A, B);
-                        totalScore +=distortion;
+                        distortion = Distortion.computeDistortionForSplit(tree, A, B);
+                        totalScore += distortion;
                     } catch (IOException ex) {
                         Basic.caught(ex);
                     }
@@ -422,8 +578,7 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
 
 
             }
-            if (totalScore < maxDistortion || splits.get(s).getWeight() >= percent ){
-
+            if (totalScore < getOptionMaxDistortionScore() && splitScores[s] >= percent) {
 
                 splits2.add(splits.get(s));
             }
@@ -434,13 +589,101 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
         return splits2;
     }
 
-    private Graph buildIncompatibilityGraphwithMajorityRuleandLowDistortion(List<ASplit> splits, TreesBlock trees,  double percent )
-    {
+    private Graph buildIncompatibilityGraphwithMajorityRuleandLowDistortion(SplitsBlock splits, TreesBlock trees, double percent) {
 
-        return buildIncompatibilityGraph(findMajorityRuleLowDistortionSplits(splits, trees, 0.5));
+        return buildIncompatibilityGraph(findMajorityRuleLowDistortionSplits(splits, trees, percent));
+    }
+
+    private double[] computeSplitScores(SplitsBlock splitsBlock, TreesBlock treesBlock) {
+        double[] scores = new double[splitsBlock.getNsplits()];
+        List<ASplit> treeSplits = new ArrayList<>();
+
+        int count;
+
+        for (int s = 1; s <= splitsBlock.getNsplits(); s++) {
+
+            BitSet A = splitsBlock.get(s).getA();
+            BitSet B = splitsBlock.get(s).getB();
+            count = 0;
+            for (int t = 1; t <= treesBlock.getNTrees(); t++) {
+                treeSplits.clear();
+                TreesUtilities.computeSplits(null, treesBlock.getTree(t), treeSplits);
+                if (treeSplits.contains(splitsBlock.get(s))) {
+                    count++;
+                }
+
+
+            }
+            scores[s] = (double) count / treesBlock.getNTrees();
+        }
+        return scores;
     }
 
 
+    private static class WeightStats1 {
+        private ArrayList<Float> weights;
+        private int totalCount;
+        private double sum;
 
+        /**
+         * construct a new values map
+         */
+        WeightStats1() {
+            weights = new ArrayList<>();
+            totalCount = 0;
+            sum = 0;
+        }
 
+        /**
+         * add the given weight and count
+         *
+         * @param weight
+         */
+        void add(float weight) {
+            weights.add(weight);
+            totalCount++;
+            sum += weight;
+        }
+
+        /**
+         * returns the number of values
+         *
+         * @return number
+         */
+        int getCount() {
+            return totalCount;
+        }
+
+        /**
+         * computes the mean values
+         *
+         * @return mean
+         */
+        double getMean() {
+            return sum / (double) totalCount;
+        }
+
+        /**
+         * computes the median value
+         *
+         * @return median
+         */
+        public double getMedian() {
+            Object[] array = weights.toArray();
+            Arrays.sort(array);
+            return (Float) array[array.length / 2];
+
+        }
+
+        /**
+         * returns the sum of weights
+         *
+         * @return sum
+         */
+        double getSum() {
+            return sum;
+        }
+    }
 }
+
+
