@@ -47,8 +47,7 @@
                         <Font size="10.0"/>
                     </font>
                 </Button>
-                <TextField fx:id="treeIdTextField" alignment="CENTER" maxWidth="80.0" minWidth="80.0" prefWidth="80.0"
-                           promptText="Number">
+                <TextField fx:id="treeIdTextField" alignment="CENTER" minWidth="40.0" prefWidth="75.0" promptText="n">
                     <HBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                     </HBox.margin>
@@ -75,7 +74,7 @@
         </HBox>
         <HBox alignment="CENTER" prefHeight="35.0" prefWidth="599.0" VBox.vgrow="NEVER">
             <children>
-                <Label fx:id="label" layoutX="291.0" layoutY="20.0" style="-fx-text-fill: lightgray;" text="Message">
+                <Label fx:id="label" layoutX="291.0" layoutY="20.0" style="-fx-text-fill: darkgray;" text="Message">
                     <HBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                     </HBox.margin>
