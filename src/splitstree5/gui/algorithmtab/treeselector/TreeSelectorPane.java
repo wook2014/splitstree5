@@ -91,8 +91,7 @@ public class TreeSelectorPane extends AlgorithmPane {
                     inUpdatingText = false;
                 }
             }
-            final String name = connector.getParent().getDataBlock().getTree(n.intValue()).getName();
-            controller.getLabel().setText(" of " + numberOfTrees.get() + ", '" + name + "'");
+            controller.getTreeNameTextField().setText(connector.getParent().getDataBlock().getTree(n.intValue()).getName());
         });
 
 
@@ -168,8 +167,9 @@ public class TreeSelectorPane extends AlgorithmPane {
 
         isApplicable.bind(currentTree.greaterThanOrEqualTo(1).and(currentTree.lessThanOrEqualTo(numberOfTrees)));
 
-        final String name = connector.getParent().getDataBlock().getTree(currentTree.get()).getName();
-        controller.getLabel().setText(" of " + connector.getParent().getDataBlock().getNTrees() + ", '" + name + "'");
+        controller.getNumberOfTreesLabel().setText("Trees: " + numberOfTrees.get());
+        controller.getTreeNameTextField().setText(connector.getParent().getDataBlock().getTree(currentTree.get()).getName());
+
     }
 
     @Override

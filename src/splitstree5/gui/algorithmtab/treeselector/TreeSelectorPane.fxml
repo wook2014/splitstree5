@@ -23,11 +23,16 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="71.0"
-      prefWidth="269.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="90.0" prefWidth="250.0"
+      xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="splitstree5.gui.algorithmtab.treeselector.TreeSelectorPaneController">
     <children>
-        <HBox alignment="CENTER" prefHeight="30.0" prefWidth="367.0">
+        <HBox alignment="CENTER" prefHeight="30.0" VBox.vgrow="NEVER">
+            <children>
+                <Label fx:id="numberOfTreesLabel" text="Label"/>
+            </children>
+        </HBox>
+        <HBox alignment="CENTER" prefHeight="30.0">
             <children>
                 <Button fx:id="gotoFirstButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false"
                         text="&lt;&lt;" HBox.hgrow="NEVER">
@@ -72,22 +77,20 @@
                 </Button>
             </children>
         </HBox>
-        <HBox alignment="CENTER" prefHeight="35.0" prefWidth="599.0" VBox.vgrow="NEVER">
-            <children>
-                <Label fx:id="label" layoutX="291.0" layoutY="20.0" style="-fx-text-fill: darkgray;" text="Message">
-                    <HBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                    </HBox.margin>
-                </Label>
-                <Label alignment="CENTER" layoutX="10.0" layoutY="10.0">
-                    <HBox.margin>
-                        <Insets bottom="5.0" left="15.0" right="5.0" top="5.0"/>
-                    </HBox.margin>
-                </Label>
-            </children>
+        <HBox alignment="CENTER" prefHeight="30.0" VBox.vgrow="NEVER">
             <opaqueInsets>
                 <Insets/>
             </opaqueInsets>
+            <children>
+                <TextField fx:id="treeNameTextField" alignment="CENTER" editable="false" maxHeight="-Infinity"
+                           minHeight="-Infinity" prefHeight="24.0" promptText="Tree name"
+                           style="-fx-background-insets: 0; -fx-background-color: transparent; -fx-background-radius: 0,0,0,0;"
+                           HBox.hgrow="NEVER">
+                    <padding>
+                        <Insets bottom="2.0"/>
+                    </padding>
+                </TextField>
+            </children>
         </HBox>
     </children>
 </VBox>

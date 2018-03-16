@@ -35,7 +35,10 @@ public class TreeSelectorPaneController {
     private TextField treeIdTextField;
 
     @FXML
-    private Label label;
+    private TextField treeNameTextField;
+
+    @FXML
+    private Label numberOfTreesLabel;
 
     @FXML
     private Button gotoFirstButton;
@@ -53,9 +56,14 @@ public class TreeSelectorPaneController {
         return treeIdTextField;
     }
 
-    public Label getLabel() {
-        return label;
+    public TextField getTreeNameTextField() {
+        return treeNameTextField;
     }
+
+    public Label getNumberOfTreesLabel() {
+        return numberOfTreesLabel;
+    }
+
 
     public Button getGotoFirstButton() {
         return gotoFirstButton;
