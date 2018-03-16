@@ -21,6 +21,7 @@ package splitstree5.core.algorithms.filters;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
@@ -28,13 +29,17 @@ import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToTrees;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
+import splitstree5.gui.algorithmtab.AlgorithmPane;
+import splitstree5.gui.algorithmtab.treeselector.TreeSelectorPane;
+
+import java.io.IOException;
 
 /**
  * Tree selector
  * Daniel Huson, 1/2018
  */
 public class TreeSelector extends Algorithm<TreesBlock, TreesBlock> implements IFromTrees, IToTrees, IFilter {
-    private final IntegerProperty optionSelected = new SimpleIntegerProperty(1);
+    private final IntegerProperty optionSelected = new SimpleIntegerProperty(1); // 1-based
     private boolean active;
 
     @Override
@@ -68,7 +73,6 @@ public class TreeSelector extends Algorithm<TreesBlock, TreesBlock> implements I
         this.optionSelected.set(optionSelected);
     }
 
-    /*
     public AlgorithmPane getAlgorithmPane() {
         try {
             return new TreeSelectorPane(this);
@@ -77,7 +81,7 @@ public class TreeSelector extends Algorithm<TreesBlock, TreesBlock> implements I
             return null;
         }
     }
-    */
+
 
     @Override
     public boolean isActive() {

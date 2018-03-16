@@ -362,8 +362,9 @@
         </Menu>
         <Menu mnemonicParsing="false" text="Analysis">
             <items>
-                <MenuItem mnemonicParsing="false" text="Bootstrapping..."/>
-                <MenuItem fx:id="showBootStrapNetworkMenuItem" mnemonicParsing="false" text="Show Bootstrap Network"/>
+                <MenuItem fx:id="showBootStrapTreeMenuItem" mnemonicParsing="false" text="Show Bootstrap Tree..."/>
+                <MenuItem fx:id="showBootStrapNetworkMenuItem" mnemonicParsing="false"
+                          text="Show Bootstrap Network..."/>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="estimateInvariableSitesMenuItem" mnemonicParsing="false"
                           text="Esimate Invariable Sites..."/>
