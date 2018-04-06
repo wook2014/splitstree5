@@ -91,7 +91,7 @@ public class DataLoader {
         }
         final Document document = mainWindow.getDocument();
 
-        document.setFileName(Basic.replaceFileSuffix(fileName, ".stree5"));
+        document.setFileName(Basic.replaceFileSuffix(fileName, ".spt5"));
 
         final Workflow workflow = mainWindow.getWorkflow();
 

@@ -112,7 +112,7 @@ public class NodeView2D extends NodeViewBase {
 
     private void updateStuff() {
         if (label != null || shape != null) {
-            EventHandler<MouseEvent> mouseEnteredEventHandler = event -> {
+            final EventHandler<MouseEvent> mouseEnteredEventHandler = event -> {
                 if (shapeGroup != null) {
                     oldScaleX = shapeGroup.getScaleX();
                     oldScaleY = shapeGroup.getScaleY();
@@ -123,18 +123,18 @@ public class NodeView2D extends NodeViewBase {
                     shapeGroup.setScaleX(factorX * shapeGroup.getScaleX());
                     shapeGroup.setScaleY(factorY * shapeGroup.getScaleY());
                 }
-                if (label != null) {
+                if (false && label != null) {
                     label.setScaleX(1.2 * label.getScaleX());
                     label.setScaleY(1.2 * label.getScaleY());
                 }
 
             };
-            EventHandler<MouseEvent> mouseExitedEventHandler = event -> {
+            final EventHandler<MouseEvent> mouseExitedEventHandler = event -> {
                 if (shapeGroup != null) {
                     shapeGroup.setScaleX(oldScaleX);
                     shapeGroup.setScaleY(oldScaleY);
                 }
-                if (label != null) {
+                if (false && label != null) {
                     label.setScaleX(1.0 / 1.2 * label.getScaleX());
                     label.setScaleY(1.0 / 1.2 * label.getScaleY());
                 }

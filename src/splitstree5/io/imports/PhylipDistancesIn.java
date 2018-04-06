@@ -1,6 +1,6 @@
 package splitstree5.io.imports;
 
-import com.sun.istack.internal.Nullable;
+import jloda.fx.NotificationManager;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.FileInputIterator;
@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
+ * Phylip matrix input
  * Daria Evseeva,02.10.2017.
  */
 public class PhylipDistancesIn implements IToDistances, IImportDistances {
@@ -27,7 +28,6 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
     public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, DistancesBlock distances) throws CanceledException, IOException {
         taxa.clear();
         distances.clear();
-        int ntax;
 
         final Map<String, Vector<Double>> matrix = new LinkedHashMap<>();
         Triangle triangleForCurrentRow = null;
@@ -41,8 +41,8 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
 
             final String firstLine = it.next();
             counter++;
-            ntax = Integer.parseInt(firstLine.replaceAll("\\s+", ""));
-            System.err.println(ntax);
+            final int ntax = Integer.parseInt(firstLine.replaceAll("\\s+", ""));
+            //System.err.println(ntax);
             distances.setNtax(ntax);
 
             int tokensInPreviousRow = 0;
@@ -57,12 +57,11 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
                 while (st.hasMoreTokens()) {
 
                     String token = st.nextToken();
-                    if (!isNumeric(token)) {
+                    if (!Basic.isInteger(token)) {
                         foundFirstLabel = true;
 
                         if (tokensInCurrentRow > ntax)
-                            throw new IOExceptionWithLineNumber("line " + counter +
-                                    ": Wrong number of entries for Taxa " + currentLabel, counter);
+                            throw new IOExceptionWithLineNumber("Wrong number of entries for Taxa " + currentLabel, counter);
 
                         // when 2 lines are read
                         if (matrix.keySet().size() >= 2) {
@@ -78,19 +77,17 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
                                     triangleForCurrentRow = Triangle.Upper;
                                     break;
                                 default:
-                                    throw new IOExceptionWithLineNumber("line " + counter +
-                                            ": Wrong number of entries for Taxa " + currentLabel, counter);
+                                    throw new IOExceptionWithLineNumber("Wrong number of entries for Taxa " + currentLabel, counter);
                             }
                         }
 
                         if (triangleForPreviousRow != null && !triangleForCurrentRow.equals(triangleForPreviousRow)) {
-                            throw new IOExceptionWithLineNumber("line " + counter +
-                                    ": Wrong number of entries for Taxa " + currentLabel, counter);
+                            throw new IOExceptionWithLineNumber("Wrong number of entries for Taxa " + currentLabel, counter);
                         } else {
                             triangleForPreviousRow = triangleForCurrentRow;
                         }
 
-                        System.err.println("curr " + tokensInCurrentRow + " pref " + tokensInPreviousRow);
+                        // System.err.println("curr " + tokensInCurrentRow + " pref " + tokensInPreviousRow);
                         tokensInPreviousRow = tokensInCurrentRow;
                         tokensInCurrentRow = 0;
 
@@ -108,8 +105,10 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
             }
         }
 
-        for (String s : matrix.keySet()) {
-            System.err.println("Row " + s + " " + matrix.get(s));
+        if (false) {
+            for (String s : matrix.keySet()) {
+                System.err.println("Row " + s + " " + Basic.toString(matrix.get(s), " "));
+            }
         }
         taxa.addTaxaByNames(matrix.keySet());
         if (triangleForCurrentRow != null) {
@@ -120,9 +119,8 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
             if (triangleForCurrentRow.equals(Triangle.Upper))
                 readUpperTriangularMatrix(matrix, distances);
         } else {
-            throw new IOException("Error: Cannot estimate matrix form! (square, triangular or upper-triangular)");
+            throw new IOException("Error: Cannot detect shape of matrix (square, triangular or upper-triangular?)");
         }
-
     }
 
     @Override
@@ -135,45 +133,73 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
         String line = Basic.getFirstLineFromFile(new File(fileName));
         if (line == null) return false;
 
-        StringTokenizer tokens = new StringTokenizer(line);
-        return tokens.countTokens() == 1 && isNumeric(tokens.nextToken());
+        final StringTokenizer tokens = new StringTokenizer(line);
+        return tokens.countTokens() == 1 && Basic.isInteger(tokens.nextToken());
     }
 
+    /**
+     * read a square matrix
+     *
+     * @param matrix
+     * @param distancesBlock
+     */
     private static void readSquareMatrix(Map<String, Vector<Double>> matrix, DistancesBlock distancesBlock) {
-        int ntax = distancesBlock.getNtax();
-        int taxaCounter = 0;
+        boolean similarities = false;
+
+        int t1 = 0;
         for (String taxa : matrix.keySet()) {
-            taxaCounter++;
-            for (int j = 1; j <= ntax; j++) {
-                distancesBlock.set(taxaCounter, j, matrix.get(taxa).get(j - 1));
+            t1++;
+            for (int t2 = 1; t2 <= distancesBlock.getNtax(); t2++) {
+                double value = matrix.get(taxa).get(t2 - 1);
+                if (t1 == 1 && t2 == 1 && value == 1) {
+                    NotificationManager.showInformation("First dialog value is 1, assuming input values are similarities, using -log(value)");
+                    similarities = true;
+                }
+                if (!similarities)
+                    distancesBlock.set(t1, t2, value);
+                else {
+                    if (value == 0)
+                        value = 0.00000001; // small number
+                    distancesBlock.set(t1, t2, Math.max(0, -Math.log(value)));
+                }
             }
         }
     }
 
+    /**
+     * read a lower triangular matrix
+     * @param matrix
+     * @param distancesBlock
+     */
     private static void readTriangularMatrix(Map<String, Vector<Double>> matrix, DistancesBlock distancesBlock) {
-        int taxaCounter = 0;
+        int t1 = 0;
         for (String taxa : matrix.keySet()) {
-            taxaCounter++;
-            for (int j = 1; j < taxaCounter; j++) {
-                distancesBlock.set(taxaCounter, j, matrix.get(taxa).get(j - 1));
-                distancesBlock.set(j, taxaCounter, matrix.get(taxa).get(j - 1));
+            t1++;
+            for (int t2 = 1; t2 < t1; t2++) {
+                distancesBlock.set(t1, t2, matrix.get(taxa).get(t2 - 1));
+                distancesBlock.set(t2, t1, matrix.get(taxa).get(t2 - 1));
             }
-            distancesBlock.set(taxaCounter, taxaCounter, 0.0);
+            distancesBlock.set(t1, t1, 0.0);
         }
     }
 
+    /**
+     * read an upper triangular matrix
+     * @param matrix
+     * @param distancesBlock
+     */
     private static void readUpperTriangularMatrix(Map<String, Vector<Double>> matrix, DistancesBlock distancesBlock) {
-        int taxaCounter = 0;
+        int t1 = 0;
         // length of the first line - ntax
         int diff = matrix.entrySet().iterator().next().getValue().size() - distancesBlock.getNtax() + 1;
         for (String taxa : matrix.keySet()) {
-            taxaCounter++;
-            for (int j = matrix.get(taxa).size(); j > 0; j--) {
-                int positionInSquareMatrix = j + taxaCounter - diff;
-                distancesBlock.set(taxaCounter, positionInSquareMatrix, matrix.get(taxa).get(j - 1));
-                distancesBlock.set(positionInSquareMatrix, taxaCounter, matrix.get(taxa).get(j - 1));
+            t1++;
+            for (int t2 = matrix.get(taxa).size(); t2 > 0; t2--) {
+                int positionInSquareMatrix = t2 + t1 - diff;
+                distancesBlock.set(t1, positionInSquareMatrix, matrix.get(taxa).get(t2 - 1));
+                distancesBlock.set(positionInSquareMatrix, t1, matrix.get(taxa).get(t2 - 1));
             }
-            distancesBlock.set(taxaCounter, taxaCounter, 0.0);
+            distancesBlock.set(t1, t1, 0.0);
         }
     }
 
@@ -194,15 +220,5 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
             matrix.put(label + "(" + sameNamesCounter + ")", new Vector<>());
             return label + "(" + sameNamesCounter + ")";
         }
-    }
-
-    private static boolean isNumeric(@Nullable String str) {
-        if (str == null) return false;
-        try {
-            double d = Double.parseDouble(str);
-        } catch (NumberFormatException nfe) {
-            return false;
-        }
-        return true;
     }
 }

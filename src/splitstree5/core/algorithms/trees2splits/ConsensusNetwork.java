@@ -82,6 +82,8 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
         final Map<BitSet, Pair<BitSet, WeightStats>> splitsAndWeights = new HashMap<>();
         final BitSet taxaInTree = taxaBlock.getTaxaSet();
 
+        final ExecutorService executor = ProgramExecutorService.getInstance();
+
         if (treesBlock.getNTrees() == 1) System.err.println("Consensus network: only one tree specified");
 
         progress.setMaximum(100);
@@ -89,137 +91,123 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
 
         {
             final int numberOfThreads = Math.min(trees.size(), 8);
-            final ExecutorService executor = ProgramExecutorService.getInstance();
-            try {
-                final CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
-                final Single<CanceledException> exception = new Single<>();
+            final CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
+            final Single<CanceledException> exception = new Single<>();
 
-                for (int i = 0; i < numberOfThreads; i++) {
-                    final int threadNumber = i;
-                    executor.execute(() -> {
-                        try {
-                            for (int which = threadNumber; which < trees.size(); which += numberOfThreads) {
-                                final PhyloTree tree = trees.get(which);
-                                final List<ASplit> splits = new ArrayList<>();
-                                TreesUtilities.computeSplits(taxaInTree, tree, splits);
-                                try {
-                                    SplitsUtilities.verifySplits(splits, taxaBlock);
-                                } catch (SplitsException e) {
-                                    e.printStackTrace();
-                                }
-
-                                for (ASplit split : splits) {
-                                    synchronized (sync) {
-                                        final Pair<BitSet, WeightStats> pair = splitsAndWeights.computeIfAbsent(split.getPartContaining(1), k -> new Pair<>(k, new WeightStats()));
-                                        pair.getSecond().add((float) split.getWeight());
-                                    }
-                                }
-                                if (threadNumber == 0) {
-                                    try {
-                                        progress.setProgress((long) (which * 80.0 / trees.size()));
-                                    } catch (CanceledException ex) {
-                                        while (countDownLatch.getCount() > 0)
-                                            countDownLatch.countDown(); // flush
-                                        exception.set(ex);
-                                        return;
-                                    }
-                                }
-                                if (executor.isShutdown())
-                                    break;
+            for (int i = 0; i < numberOfThreads; i++) {
+                final int threadNumber = i;
+                executor.execute(() -> {
+                    try {
+                        for (int which = threadNumber; which < trees.size(); which += numberOfThreads) {
+                            final PhyloTree tree = trees.get(which);
+                            final List<ASplit> splits = new ArrayList<>();
+                            TreesUtilities.computeSplits(taxaInTree, tree, splits);
+                            try {
+                                SplitsUtilities.verifySplits(splits, taxaBlock);
+                            } catch (SplitsException e) {
+                                e.printStackTrace();
                             }
-                        } finally {
-                            countDownLatch.countDown();
-                        }
-                    });
-                }
 
-                try {
-                    countDownLatch.await();
-                } catch (InterruptedException e) {
-                    if (exception.get() == null) // must have been canceled
-                        exception.set(new CanceledException());
-                }
-                if (exception.get() != null) {
-                    throw exception.get();
-                }
-            } finally {
-                executor.shutdownNow();
+                            for (ASplit split : splits) {
+                                synchronized (sync) {
+                                    final Pair<BitSet, WeightStats> pair = splitsAndWeights.computeIfAbsent(split.getPartContaining(1), k -> new Pair<>(k, new WeightStats()));
+                                    pair.getSecond().add((float) split.getWeight());
+                                }
+                            }
+                            if (threadNumber == 0) {
+                                try {
+                                    progress.setProgress((long) (which * 80.0 / trees.size()));
+                                } catch (CanceledException ex) {
+                                    while (countDownLatch.getCount() > 0)
+                                        countDownLatch.countDown(); // flush
+                                    exception.set(ex);
+                                    return;
+                                }
+                            }
+                        }
+                    } finally {
+                        countDownLatch.countDown();
+                    }
+                });
+            }
+
+            try {
+                countDownLatch.await();
+            } catch (InterruptedException e) {
+                if (exception.get() == null) // must have been canceled
+                    exception.set(new CanceledException());
+            }
+            if (exception.get() != null) {
+                throw exception.get();
             }
         }
 
         {
             final int numberOfThreads = Math.min(splitsAndWeights.size(), 8);
-            final ExecutorService executor = ProgramExecutorService.getInstance();
-            try {
-                final CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
-                final Single<CanceledException> exception = new Single<>();
+            final CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
+            final Single<CanceledException> exception = new Single<>();
 
-                final double threshold = (optionThreshold.getValue() < 1 ? optionThreshold.getValue() : 0.999999);
+            final double threshold = (optionThreshold.getValue() < 1 ? optionThreshold.getValue() : 0.999999);
 
-                final ArrayList<Pair<BitSet, WeightStats>> array = new ArrayList<>(splitsAndWeights.values());
+            final ArrayList<Pair<BitSet, WeightStats>> array = new ArrayList<>(splitsAndWeights.values());
 
-                for (int i = 0; i < numberOfThreads; i++) {
-                    final int threadNumber = i;
-                    executor.execute(() -> {
-                        try {
-                            for (int which = threadNumber; which < array.size(); which += numberOfThreads) {
-                                final BitSet side = array.get(which).getFirst();
-                                final WeightStats weightStats = array.get(which).getSecond();
-                                final double wgt;
-                                if (weightStats.getCount() / (double) trees.size() > threshold) {
-                                    switch (getOptionEdgeWeights()) {
-                                        case Count:
-                                            wgt = weightStats.getCount();
-                                            break;
-                                        case Mean:
-                                            wgt = weightStats.getMean();
-                                            break;
-                                        case Median:
-                                            wgt = weightStats.getMedian();
-                                            break;
-                                        case Sum:
-                                            wgt = weightStats.getSum();
-                                            break;
-                                        default:
-                                            wgt = 1;
-                                            break;
-                                    }
-                                    final float confidence = (float) weightStats.getCount() / (float) trees.size();
-                                    synchronized (sync) {
-                                        splitsBlock.getSplits().add(new ASplit(side, taxaBlock.getNtax(), wgt, confidence));
-                                    }
+            for (int i = 0; i < numberOfThreads; i++) {
+                final int threadNumber = i;
+                executor.execute(() -> {
+                    try {
+                        for (int which = threadNumber; which < array.size(); which += numberOfThreads) {
+                            final BitSet side = array.get(which).getFirst();
+                            final WeightStats weightStats = array.get(which).getSecond();
+                            final double wgt;
+                            if (weightStats.getCount() / (double) trees.size() > threshold) {
+                                switch (getOptionEdgeWeights()) {
+                                    case Count:
+                                        wgt = weightStats.getCount();
+                                        break;
+                                    case Mean:
+                                        wgt = weightStats.getMean();
+                                        break;
+                                    case Median:
+                                        wgt = weightStats.getMedian();
+                                        break;
+                                    case Sum:
+                                        wgt = weightStats.getSum();
+                                        break;
+                                    default:
+                                        wgt = 1;
+                                        break;
                                 }
-                                if (threadNumber == 0) {
-                                    try {
-                                        progress.setProgress(80 + 20 * (which / array.size()));
-                                    } catch (CanceledException ex) {
-                                        while (countDownLatch.getCount() > 0)
-                                            countDownLatch.countDown(); // flush
-                                        exception.set(ex);
-                                        return;
-                                    }
+                                final float confidence = (float) weightStats.getCount() / (float) trees.size();
+                                synchronized (sync) {
+                                    splitsBlock.getSplits().add(new ASplit(side, taxaBlock.getNtax(), wgt, confidence));
                                 }
-                                if (executor.isShutdown())
-                                    break;
                             }
-
-                        } finally {
-                            countDownLatch.countDown();
+                            if (threadNumber == 0) {
+                                try {
+                                    progress.setProgress(80 + 20 * (which / array.size()));
+                                } catch (CanceledException ex) {
+                                    while (countDownLatch.getCount() > 0)
+                                        countDownLatch.countDown(); // flush
+                                    exception.set(ex);
+                                    return;
+                                }
+                            }
                         }
-                    });
-                }
-                try {
-                    countDownLatch.await();
-                } catch (InterruptedException e) {
-                    // Basic.caught(e);
-                    if (exception.get() == null) // must have been canceled
-                        exception.set(new CanceledException());
-                }
-                if (exception.get() != null) {
-                    throw exception.get();
-                }
-            } finally {
-                executor.shutdownNow();
+
+                    } finally {
+                        countDownLatch.countDown();
+                    }
+                });
+            }
+            try {
+                countDownLatch.await();
+            } catch (InterruptedException e) {
+                // Basic.caught(e);
+                if (exception.get() == null) // must have been canceled
+                    exception.set(new CanceledException());
+            }
+            if (exception.get() != null) {
+                throw exception.get();
             }
         }
 

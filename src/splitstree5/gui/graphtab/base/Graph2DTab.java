@@ -57,11 +57,18 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
     private DoubleProperty angleChange = new SimpleDoubleProperty(0);
     private ObjectProperty<GraphLayout> layout = new SimpleObjectProperty<>(GraphLayout.LeftToRight);
 
+    private final boolean withScrollPane;
+
     /**
      * constructor
      */
     public Graph2DTab() {
+        this(true);
+    }
+
+    public Graph2DTab(boolean withScrollPane) {
         super();
+        this.withScrollPane = withScrollPane;
     }
 
     /**
@@ -130,29 +137,30 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
                 } else
                     setSkipNextLabelLayout(false);
             }
-            if (!(borderPane.getCenter() instanceof ScrollPane)) {
-                setContent(borderPane);
-                scrollPane = new ZoomableScrollPane(centerPane) {
-                    @Override // override node scaling to use coordinate scaling
-                    public void updateScale() {
-                        if (layout.get() == GraphLayout.Radial) {
-                            getUndoManager().doAndAdd(new ZoomCommand(getZoomFactorY(), getZoomFactorY(), Graph2DTab.this));
-                        } else {
-                            getUndoManager().doAndAdd(new ZoomCommand(getZoomFactorX(), getZoomFactorY(), Graph2DTab.this));
+            if (withScrollPane) {
+                if (!(borderPane.getCenter() instanceof ScrollPane)) {
+                    setContent(borderPane);
+                    scrollPane = new ZoomableScrollPane(centerPane) {
+                        @Override // override node scaling to use coordinate scaling
+                        public void updateScale() {
+                            if (layout.get() == GraphLayout.Radial) {
+                                getUndoManager().doAndAdd(new ZoomCommand(getZoomFactorY(), getZoomFactorY(), Graph2DTab.this));
+                            } else {
+                                getUndoManager().doAndAdd(new ZoomCommand(getZoomFactorX(), getZoomFactorY(), Graph2DTab.this));
+                            }
                         }
-                    }
-                };
-                new RubberBandSelection(centerPane, scrollPane, group, createRubberBandSelectionHandler());
+                    };
+                    new RubberBandSelection(centerPane, scrollPane, group, createRubberBandSelectionHandler());
 
-                scrollPane.lockAspectRatioProperty().bind(layout.isEqualTo(GraphLayout.Radial));
-                centerPane.minWidthProperty().bind(Bindings.createDoubleBinding(() ->
-                        scrollPane.getViewportBounds().getWidth(), scrollPane.viewportBoundsProperty()).subtract(20));
-                centerPane.minHeightProperty().bind(Bindings.createDoubleBinding(() ->
-                        scrollPane.getViewportBounds().getHeight(), scrollPane.viewportBoundsProperty()).subtract(20));
+                    scrollPane.lockAspectRatioProperty().bind(layout.isEqualTo(GraphLayout.Radial));
+                    centerPane.minWidthProperty().bind(Bindings.createDoubleBinding(() ->
+                            scrollPane.getViewportBounds().getWidth(), scrollPane.viewportBoundsProperty()).subtract(20));
+                    centerPane.minHeightProperty().bind(Bindings.createDoubleBinding(() ->
+                            scrollPane.getViewportBounds().getHeight(), scrollPane.viewportBoundsProperty()).subtract(20));
 
-                borderPane.setCenter(scrollPane);
-                // need to put this here after putting the center pane in:
-                borderPane.setTop(findToolBar);
+                    borderPane.setCenter(scrollPane);
+                    // need to put this here after putting the center pane in:
+                    borderPane.setTop(findToolBar);
 
                 /* this works once window is open, but not first time around...
                 scrollPane.layout();
@@ -162,6 +170,11 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
 
                 scrollPane.setHvalue(0.5);
                 */
+                }
+            } else { // no scrollpane
+                centerPane.setPrefWidth(100);
+                centerPane.setPrefHeight(100);
+                centerPane.setStyle("-fx-border-color: black");
             }
         });
     }

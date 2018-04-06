@@ -83,6 +83,7 @@ public class ZoomableScrollPane extends ScrollPane {
                 e.consume();
                 final double factorX;
                 final double factorY;
+
                 if ((Math.abs(e.getDeltaX()) > Math.abs(e.getDeltaY()))) {
                     factorX = (e.getDeltaX() > 0 ? ZOOM_FACTOR : 1 / ZOOM_FACTOR);
                     factorY = 1;
@@ -103,7 +104,10 @@ public class ZoomableScrollPane extends ScrollPane {
 
     private void doZoom(double factorX, double factorY, Point2D mousePoint) {
         if (lockAspectRatio.get()) {
-            factorX = factorY;
+            if (factorX != 1.0)
+                factorY = factorX;
+            else
+                factorX = factorY;
         }
 
         zoomFactorX = factorX;

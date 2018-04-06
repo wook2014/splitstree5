@@ -25,10 +25,7 @@ import splitstree5.core.algorithms.interfaces.IFromViewer;
 import splitstree5.core.algorithms.interfaces.IToViewer;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.gui.graph3dtab.SplitsView3DTab;
-import splitstree5.gui.graphtab.AlgorithmBreadCrumbsToolBar;
-import splitstree5.gui.graphtab.NetworkViewTab;
-import splitstree5.gui.graphtab.SplitsViewTab;
-import splitstree5.gui.graphtab.TreeViewTab;
+import splitstree5.gui.graphtab.*;
 import splitstree5.gui.graphtab.base.GraphTabBase;
 
 /**
@@ -38,7 +35,7 @@ import splitstree5.gui.graphtab.base.GraphTabBase;
 public class ViewerBlock extends DataBlock {
     public static final String BLOCK_NAME = "VIEWER";
 
-    public enum Type {TreeViewer, SplitsNetworkViewer, SplitsNetwork3DViewer, NetworkViewer}
+    public enum Type {TreeViewer, TreesGrid, SplitsNetworkViewer, SplitsNetwork3DViewer, NetworkViewer}
 
     private final GraphTabBase viewerTab;
     private final Type type;
@@ -131,7 +128,6 @@ public class ViewerBlock extends DataBlock {
 
     /**
      * This block represents the view of a split network
-     * Daniel Huson, 1.2018
      */
     public static class SplitsNetworkViewerBlock extends ViewerBlock {
         public SplitsNetworkViewerBlock() {
@@ -141,7 +137,6 @@ public class ViewerBlock extends DataBlock {
 
     /**
      * This block represents the view of a general network
-     * Daniel Huson, 1.2018
      */
     public static class NetworkViewerBlock extends ViewerBlock {
         public NetworkViewerBlock() {
@@ -151,11 +146,19 @@ public class ViewerBlock extends DataBlock {
 
     /**
      * This block represents the view of a tree
-     * Daniel Huson, 11.2017
      */
     public static class TreeViewerBlock extends ViewerBlock {
         public TreeViewerBlock() {
             super(new TreeViewTab(), Type.TreeViewer);
+        }
+    }
+
+    /**
+     * This block represents the view of a grid of trees
+     */
+    public static class TreesGridBlock extends ViewerBlock {
+        public TreesGridBlock() {
+            super(new TreesGridTab(), Type.TreesGrid);
         }
     }
 
@@ -174,6 +177,8 @@ public class ViewerBlock extends DataBlock {
                 return new NetworkViewerBlock();
             case TreeViewer:
                 return new TreeViewerBlock();
+            case TreesGrid:
+                return new TreesGridBlock();
             default:
                 throw new RuntimeException("Unknown type: " + type);
         }

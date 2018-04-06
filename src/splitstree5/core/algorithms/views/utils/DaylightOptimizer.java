@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.algorithms.views.algorithms;
+package splitstree5.core.algorithms.views.utils;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;

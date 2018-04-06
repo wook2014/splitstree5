@@ -1,0 +1,82 @@
+%\listfiles
+\documentclass[11pt]{article}
+\usepackage{fullpage}
+\usepackage{amssymb}
+%\usepackage{a4}
+\usepackage{fancyhdr}
+\usepackage{subfigure}
+\usepackage{ifthen}
+\usepackage{version}
+\usepackage{tocbibind}
+\usepackage{makeidx}
+%\usepackage{times}
+\usepackage{booktabs}
+\usepackage[colorlinks=true, pdfstartview=FitV, linkcolor=blue,
+            citecolor=blue, urlcolor=blue]{hyperref}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input versioninfo.tex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{User Manual for \SplitsTree V\VERSION}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\author{Daniel H.~Huson and David J.~Bryant}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\raggedbottom
+\sloppy
+
+\parindent=0pt
+\parskip=5pt
+
+\makeindex
+
+\input definitions.tex
+
+\def\SplitsTree{{\sf SplitsTree5 }}
+\def\kb{{\rm kb }}
+\def\bp{{\rm bp }}
+\def\Gb{{\rm Gb }}
+\def\Mb{{\rm Mb }}
+
+\def\this{.}
+
+\ifx\pdfoutput\undefined
+\usepackage[dvips]{graphicx}
+\else
+\usepackage[pdftex]{graphicx}
+\fi
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\maketitle
+
+\begin{center}
+\includegraphics[height=3cm]{../../src/resources/images/Splitstree5-splash.png}
+\end{center}
+
+\tableofcontents
+
+To be written...
+
+See \cite{HusonBryant2006}.
+
+\mysection{Acknowledgments}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{plain}
+\bibliography{compbio-2012}
+
+\printindex
+
+\end{document}
+
+

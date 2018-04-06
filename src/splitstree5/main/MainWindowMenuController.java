@@ -153,7 +153,7 @@ public class MainWindowMenuController {
     public static boolean showSaveDialog(MainWindow mainWindow) {
         final FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save SplitsTree5 file");
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("SplitsTree5 Files", "*.stree5", "*.nxs", "*.nex", "*.stree5"));
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("SplitsTree5 Files", "*.spt5", "*.nxs", "*.nex", "*.spt5"));
         fileChooser.setInitialDirectory((new File(mainWindow.getDocument().getFileName()).getParentFile()));
         fileChooser.setInitialFileName((new File(mainWindow.getDocument().getFileName()).getName()));
         final File file = fileChooser.showSaveDialog(mainWindow.getStage());
