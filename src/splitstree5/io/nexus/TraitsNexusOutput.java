@@ -25,14 +25,12 @@ import java.io.IOException;
 import java.io.Writer;
 
 import static splitstree5.io.nexus.DistancesNexusOutput.pad;
-import static splitstree5.io.nexus.TraitsNexusInput.NAME;
-
 
 /**
  * traits nexus output
  * Daniel Huson, 2.2018
  */
-public class TraitsNexusOutput implements INexusOutput<TraitsBlock> {
+public class TraitsNexusOutput extends NexusIOBase implements INexusOutput<TraitsBlock> {
     /**
      * write a block in nexus format
      *
@@ -45,8 +43,8 @@ public class TraitsNexusOutput implements INexusOutput<TraitsBlock> {
     public void write(Writer w, TaxaBlock taxaBlock, TraitsBlock traitsBlock) throws IOException {
         final TraitsNexusFormat format = (TraitsNexusFormat) traitsBlock.getFormat();
 
-        w.write("\nBEGIN " + NAME + ";\n");
-        UtilitiesNexusIO.writeTitleLinks(w, traitsBlock);
+        w.write("\nBEGIN " + TraitsBlock.BLOCK_NAME + ";\n");
+        writeTitleAndLink(w);
         w.write("  DIMENSIONS [ntax=" + taxaBlock.getNtax() + "] ntraits=" + traitsBlock.getNTraits() + ";\n");
         w.write("  FORMAT");
         if (format.isOptionLabel())
@@ -100,6 +98,6 @@ public class TraitsNexusOutput implements INexusOutput<TraitsBlock> {
             }
             w.write(";\n");
         }
-        w.write("END; [" + NAME + "]\n");
+        w.write("END; [" + TraitsBlock.BLOCK_NAME + "]\n");
     }
 }

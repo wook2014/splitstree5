@@ -94,7 +94,18 @@ public class TextViewTab extends ViewerTab {
         setClosable(true);
     }
 
-    public void gotoLine(int lineNumber) {
+    /**
+     * go to given line and given col
+     *
+     * @param lineNumber
+     * @param col        if col<=1 or col>line length, will select the whole line, else selects line starting at given col
+     */
+    public void gotoLine(int lineNumber, int col) {
+        if (col < 0)
+            col = 0;
+        else if (col > 0)
+            col--; // because col is 1-based
+
         lineNumber = Math.max(1, lineNumber);
         final String text = textArea.getText();
         int start = 0;
@@ -110,6 +121,8 @@ public class TextViewTab extends ViewerTab {
             int end = text.indexOf('\n', start);
             if (end == -1)
                 end = text.length();
+            if (start + col < end)
+                start=start+col;
             textArea.requestFocus();
             textArea.selectRange(start, end);
         }
@@ -198,9 +211,13 @@ public class TextViewTab extends ViewerTab {
             dialog.setX(getMainWindow().getStage().getX() + 0.5 * getMainWindow().getStage().getWidth());
             dialog.setY(getMainWindow().getStage().getY() + 0.5 * getMainWindow().getStage().getHeight());
             dialog.setHeaderText("Select line by number");
-            dialog.setContentText("Line number:");
+            dialog.setContentText("[line] [:column]:");
             Optional<String> result = dialog.showAndWait();
-            result.ifPresent(name -> gotoLine(Basic.parseInt(result.get())));
+            if (result.isPresent()) {
+                final String[] tokens = result.get().split(":");
+                if (tokens.length > 0 && Basic.isInteger(tokens[0]))
+                    gotoLine(Basic.parseInt(tokens[0]), tokens.length == 2 && Basic.isInteger(tokens[1]) ? Basic.parseInt(tokens[1]) : 0);
+            }
         });
 
         controller.getIncreaseFontSizeMenuItem().setOnAction((x) -> textArea.setStyle(String.format("-fx-font-size: %.0f;", (textArea.getFont().getSize() + 2))));

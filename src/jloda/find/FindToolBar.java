@@ -213,7 +213,7 @@ public class FindToolBar extends VBox {
             }
         });
 
-        controller.getReplaceButton().disableProperty().bind(searchManager.disabledProperty().or(searchManager.searchTextProperty().isEmpty()).or(searchManager.replaceTextProperty().isEmpty()));
+        controller.getReplaceButton().disableProperty().bind(searchManager.disabledProperty().or(searchManager.searchTextProperty().isEmpty()));
         controller.getReplaceButton().setOnAction((e) -> {
             if (!inSearch.get()) {
                 try {
@@ -226,7 +226,7 @@ public class FindToolBar extends VBox {
             }
         });
 
-        controller.getReplaceAllButton().disableProperty().bind(searchManager.disabledProperty().or(searchManager.searchTextProperty().isEmpty()).or(searchManager.replaceTextProperty().isEmpty()));
+        controller.getReplaceAllButton().disableProperty().bind(searchManager.disabledProperty().or(searchManager.searchTextProperty().isEmpty()));
         controller.getReplaceAllButton().setOnAction((e) -> {
             if (!inSearch.get()) {
                 try {

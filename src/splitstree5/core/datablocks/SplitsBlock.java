@@ -39,6 +39,9 @@ import java.util.NoSuchElementException;
  * Daniel Huson, 12/21/16.
  */
 public class SplitsBlock extends DataBlock {
+    public static final String BLOCK_NAME = "SPLITS";
+
+
     private final ObservableList<ASplit> splits;
 
     private Compatibility compatibility = Compatibility.unknown;
@@ -54,6 +57,7 @@ public class SplitsBlock extends DataBlock {
      * default constructor
      */
     public SplitsBlock() {
+        super(BLOCK_NAME);
         splits = FXCollections.observableArrayList();
         format = new SplitsNexusFormat();
     }

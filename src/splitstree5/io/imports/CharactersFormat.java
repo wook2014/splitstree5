@@ -69,7 +69,6 @@ public abstract class CharactersFormat {
     }
 
     void estimateDataType(String foundSymbols, CharactersBlock characters, Map<Character, Integer> frequency) throws IOException {
-
         String originalFoundSymbols = foundSymbols;
         foundSymbols = foundSymbols.replace(getStringGap(), "");
         foundSymbols = foundSymbols.replace(getStringMissing(), "");
@@ -81,7 +80,7 @@ public abstract class CharactersFormat {
 
         switch (sortedSymbols) {
             case "01":
-                characters.setDataType(CharactersType.standard);
+                characters.setDataType(CharactersType.Standard);
                 break;
             case "acgt":
                 characters.setDataType(CharactersType.DNA);
@@ -90,22 +89,21 @@ public abstract class CharactersFormat {
                 characters.setDataType(CharactersType.RNA);
                 break;
             case "acdefghiklmnpqrstvwyz":
-                characters.setDataType(CharactersType.protein);
+                characters.setDataType(CharactersType.Protein);
                 break;
             default:
                 char x = getUnknownSymbols(sortedSymbols);
                 if (x == '\u0000') {
                     if (sortedSymbols.contains("b") || hasMostNucleotide(frequency)) {
-                        characters.setHasAmbiguousStates(true);
                         if (sortedSymbols.contains("t")) characters.setDataType(CharactersType.DNA);
                         if (sortedSymbols.contains("u")) characters.setDataType(CharactersType.RNA);
                         if (sortedSymbols.contains("t") && sortedSymbols.contains("u"))
                             throw new IOException("Nucleotide sequence contains Thymine and Uracil at the same time");
                     }
                     if (hasAAOnlySymbols(sortedSymbols))
-                        characters.setDataType(CharactersType.protein);
+                        characters.setDataType(CharactersType.Protein);
                 } else {
-                    characters.setDataType(CharactersType.unknown);
+                    characters.setDataType(CharactersType.Unknown);
                     System.err.println("Warning : can not recognize characters type!");
                     System.err.println("Unexpected character: '" + x + "'");
                 }
@@ -126,7 +124,7 @@ public abstract class CharactersFormat {
     }
 
     private static char getUnknownSymbols(String sortedSymbols) {
-        String knownSymbols = CharactersType.protein.getSymbols() + CharactersType.DNA.getSymbols() +
+        String knownSymbols = CharactersType.Protein.getSymbols() + CharactersType.DNA.getSymbols() +
                 CharactersType.RNA.getSymbols() + AmbiguityCodes.CODES;
         for (char c : sortedSymbols.toCharArray()) {
             if (knownSymbols.indexOf(c) == -1) {
@@ -138,7 +136,7 @@ public abstract class CharactersFormat {
 
     private static boolean hasAAOnlySymbols(String foundSymbols) {
         final String IUPAC = ("acgtu" + AmbiguityCodes.CODES);
-        final String AA = CharactersType.protein.getSymbols();
+        final String AA = CharactersType.Protein.getSymbols();
         for (char c : foundSymbols.toCharArray()) {
             if (AA.contains(c + "") && !IUPAC.contains(c + "")) return true;
         }

@@ -85,7 +85,7 @@ public enum NodeShape {
      * @param height
      * @return
      */
-    public static Shape create(String name, int width, int height) {
+    public static Shape create(String name, double width, double height) {
         final NodeShape nodeShape = Basic.valueOfIgnoreCase(NodeShape.class, name);
         if (nodeShape != null)
             return create(nodeShape, width, height);
@@ -101,7 +101,7 @@ public enum NodeShape {
      * @param height
      * @return shape
      */
-    public static Shape create(NodeShape nodeShape, int width, int height) {
+    public static Shape create(NodeShape nodeShape, double width, double height) {
         switch (nodeShape) {
             case Square:
                 return new SquareShape(width);

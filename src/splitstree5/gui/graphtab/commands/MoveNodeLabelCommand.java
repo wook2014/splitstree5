@@ -43,14 +43,14 @@ public class MoveNodeLabelCommand extends UndoableRedoableCommand {
 
     @Override
     public void undo() {
-        label.setLayoutX(oldLocation.getX());
-        label.setLayoutY(oldLocation.getY());
+        label.setTranslateY(oldLocation.getX());
+        label.setTranslateY(oldLocation.getY());
     }
 
     @Override
     public void redo() {
-        label.setLayoutX(newLocation.getX());
-        label.setLayoutY(newLocation.getY());
+        label.setTranslateX(newLocation.getX());
+        label.setTranslateY(newLocation.getY());
     }
 
     @Override

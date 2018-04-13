@@ -33,7 +33,7 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
                 && chars.getFormat().getDatatype().equalsIgnoreCase(Characters.Datatypes.STANDARD)
                 && chars.hasCharweights();*/
         return taxa != null && chars != null
-                && chars.getDataType().equals(CharactersType.standard)
+                && chars.getDataType().equals(CharactersType.Standard)
                 && chars.getCharacterWeights() != null;
     }
 

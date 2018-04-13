@@ -21,6 +21,7 @@ package splitstree5.gui.graphtab;
 
 import javafx.geometry.Point2D;
 import jloda.fx.ASelectionModel;
+import jloda.fx.shapes.NodeShape;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
@@ -44,9 +45,15 @@ public class TreeViewTab extends Graph2DTab<PhyloTree> {
      * constructor
      */
     public TreeViewTab() {
+        this(false);
+    }
+
+    public TreeViewTab(boolean withScrollPane) {
+        super(withScrollPane);
         setName("TreeViewer");
         setIcon(ResourceManager.getIcon("TreeViewer16.gif"));
     }
+
 
     /**
      * show the tree
@@ -56,15 +63,18 @@ public class TreeViewTab extends Graph2DTab<PhyloTree> {
     }
 
     /**
-     * create a node view
-     *
+     * creates a node view
      * @param v
      * @param location
+     * @param shape
+     * @param shapeWidth
+     * @param shapeHeight
      * @param text
-     * @return
+     * @return node view
      */
-    public NodeView2D createNodeView(Node v, Point2D location, String text) {
-        final NodeView2D nodeView = new NodeView2D(v, location, text);
+    @Override
+    public NodeView2D createNodeView(Node v, Point2D location, NodeShape shape, double shapeWidth, double shapeHeight, String text) {
+        final NodeView2D nodeView = new NodeView2D(v, location, shape, shapeWidth, shapeHeight, text);
         if (nodeView.getShapeGroup() != null) {
             nodeView.getShapeGroup().setOnMouseClicked((x) -> {
                 edgeSelectionModel.clearSelection();
@@ -101,22 +111,22 @@ public class TreeViewTab extends Graph2DTab<PhyloTree> {
 
     /**
      * create an edge view
-     *
+     * @param e
      * @param layout
      * @param shape
-     * @param weight
      * @param start
      * @param control1
      * @param mid
      * @param control2
      * @param support
      * @param end
-     * @return edge view
+     * @param text
+     * @return node view
      */
-    public EdgeView2D createEdgeView(Edge e, GraphLayout layout, EdgeView2D.EdgeShape shape, Double weight,
-                                     final Point2D start, final Point2D control1, final Point2D mid, final Point2D control2, final Point2D support, final Point2D end) {
+    @Override
+    public EdgeView2D createEdgeView(Edge e, GraphLayout layout, EdgeView2D.EdgeShape shape, Point2D start, Point2D control1, Point2D mid, Point2D control2, Point2D support, Point2D end, String text) {
 
-        final EdgeView2D edgeView = new EdgeView2D(e, layout, shape, weight, start, control1, mid, control2, support, end);
+        final EdgeView2D edgeView = new EdgeView2D(e, layout, shape, start, control1, mid, control2, support, end, text);
 
         if (edgeView.getShape() != null) {
             edgeView.getShape().setOnMouseClicked((x) -> { // todo: need to use shape group here
@@ -152,6 +162,12 @@ public class TreeViewTab extends Graph2DTab<PhyloTree> {
         addEdgeLabelMovementSupport(edgeView);
         return edgeView;
     }
+
+    @Override
+    public EdgeView2D createEdgeView(Edge e, Point2D start, Point2D end, String label) {
+        return new EdgeView2D(e, start, end, label);
+    }
+
 
     /**
      * select all nodes below the given one

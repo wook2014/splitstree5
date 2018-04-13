@@ -41,9 +41,9 @@ public class NexmlFileParser implements IToTaxa, IToCharacters, IToTrees {
             //characters.set(handler.getMatrix());
             char[][] matrix = handler.getMatrix();
             characters.setDimension(matrix.length, matrix[0].length);
-            for (int i = 0; i < matrix.length; i++) {
-                for (int j = 0; j < matrix[0].length; j++) {
-                    characters.set(i + 1, j + 1, matrix[i][j]);
+            for (int i = 1; i <= matrix.length; i++) {
+                for (int j = 1; j <= matrix[0].length; j++) {
+                    characters.set(i, j, matrix[i - 1][j - 1]);
                 }
             }
             characters.setDataType(handler.getDataType());

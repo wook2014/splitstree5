@@ -56,7 +56,9 @@ public interface ISplitsViewTab {
 
     NodeViewBase createNodeView(final Node v, Point2D location, String label);
 
-    EdgeViewBase createEdgeView(final SplitsGraph graph, final Edge e, final Double weight, final Point2D start, final Point2D end);
+    void setupNodeView(NodeViewBase nv);
+
+    EdgeViewBase createEdgeView(final Edge e, final Point2D start, final Point2D end, String text);
 
     SplitsGraph getGraph();
 

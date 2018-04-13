@@ -152,7 +152,7 @@
                 <MenuItem fx:id="replaceMenuItem" text="Replace...">
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
-                <MenuItem fx:id="gotoLineMenuItem" text="Goto Line">
+                <MenuItem fx:id="gotoLineMenuItem" text="Goto Line...">
                     <accelerator>
                         <KeyCodeCombination alt="UP" code="G" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
                     </accelerator>
@@ -319,6 +319,7 @@
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="treeViewMenuItem" mnemonicParsing="false" text="Tree View"/>
                 <MenuItem fx:id="treeGridMenuItem" mnemonicParsing="false" text="Tree Grid"/>
+                <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="tanglegramMenuItem" mnemonicParsing="false" text="Tanglegram"/>
             </items>
         </Menu>
@@ -361,8 +362,9 @@
         </Menu>
         <Menu mnemonicParsing="false" text="Analysis">
             <items>
-                <MenuItem mnemonicParsing="false" text="Bootstrapping..."/>
-                <MenuItem fx:id="showBootStrapNetworkMenuItem" mnemonicParsing="false" text="Show Bootstrap Network"/>
+                <MenuItem fx:id="showBootStrapTreeMenuItem" mnemonicParsing="false" text="Show Bootstrap Tree..."/>
+                <MenuItem fx:id="showBootStrapNetworkMenuItem" mnemonicParsing="false"
+                          text="Show Bootstrap Network..."/>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="estimateInvariableSitesMenuItem" mnemonicParsing="false"
                           text="Esimate Invariable Sites..."/>

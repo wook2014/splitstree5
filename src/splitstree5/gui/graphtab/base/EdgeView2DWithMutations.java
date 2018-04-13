@@ -47,7 +47,7 @@ public class EdgeView2DWithMutations extends EdgeView2D {
      * @return edge view
      */
     public EdgeView2DWithMutations(Edge e, Double weight, final Point2D start, final Point2D end, int[] mutations, NetworkEmbedder.MutationView mutationView) {
-        super(e, weight, start, end);
+        super(e, start, end, null);
         this.mutations = mutations;
         this.mutationView = mutationView;
         setCoordinates(start, end);

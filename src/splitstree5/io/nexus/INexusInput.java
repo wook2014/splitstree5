@@ -31,7 +31,6 @@ import java.util.List;
  * Daniel Huson, 2.2018
  *
  * @param <D>
- * @param <F>
  */
 public interface INexusInput<D extends DataBlock> {
     /**

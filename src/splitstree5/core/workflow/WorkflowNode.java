@@ -44,7 +44,6 @@ abstract public class WorkflowNode extends ANamed {
         synchronized (lock) {
             this.uid = (++created);
         }
-
     }
 
     public UpdateState getState() {
@@ -79,7 +78,6 @@ abstract public class WorkflowNode extends ANamed {
      * @return children
      */
     abstract public ObservableList<? extends WorkflowNode> getChildren();
-
 
     public int getPathId() {
         return pathId;

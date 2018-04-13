@@ -18,8 +18,6 @@ import splitstree5.core.datablocks.characters.CharactersType;
  */
 
 public class Nei_Li_RestrictionDistance extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-
-    private PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates = PairwiseCompare.HandleAmbiguous.Ignore;
     public final boolean EXPERT = false;
     private final String DESCRIPTION = "Calculates the Nei and Li (1979) distance for restriction site data";
     private double optionRestrictionSiteLength = 6.0;
@@ -45,7 +43,7 @@ public class Nei_Li_RestrictionDistance extends Algorithm<CharactersBlock, Dista
         for (int s = 1; s <= ntax; s++) {
             for (int t = s + 1; t <= ntax; t++) {
 
-                PairwiseCompare seqPair = new PairwiseCompare(charactersBlock, "01", s, t, optionHandleAmbiguousStates);
+                PairwiseCompare seqPair = new PairwiseCompare(charactersBlock, s, t);
                 double[][] F = seqPair.getF();
                 double dist = -1.0;
                 if (F == null)
@@ -87,22 +85,14 @@ public class Nei_Li_RestrictionDistance extends Algorithm<CharactersBlock, Dista
 
     @Override
     public boolean isApplicable(TaxaBlock taxa, CharactersBlock c) {
-        return c.getDataType().equals(CharactersType.standard);
+        return c.getDataType().equals(CharactersType.Standard);
     }
 
-    // GETTER AND SETTER
 
     public String getDESCRIPTION() {
         return DESCRIPTION;
     }
 
-    public PairwiseCompare.HandleAmbiguous getOptionHandleAmbiguousStates() {
-        return optionHandleAmbiguousStates;
-    }
-
-    public void setOptionHandleAmbiguousStates(PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates) {
-        this.optionHandleAmbiguousStates = optionHandleAmbiguousStates;
-    }
 
     public double getOptionRestrictionSiteLength() {
         return this.optionRestrictionSiteLength;

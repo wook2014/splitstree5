@@ -265,28 +265,32 @@ public class FormatItem implements Cloneable {
 
         if (nodes != null && node2view != null) {
             for (Node v : nodes) {
-                final NodeViewBase nv = node2view.get(v);
-                if (nv.getLabel() != null) {
-                    formatItem.addFont(nv.getLabel().getFont());
-                    formatItem.addLabelColor((Color) nv.getLabel().getTextFill());
-                }
-                if (nv.getNodeShape() != null) {
-                    formatItem.addNodeShape((NodeShape.valueOf(nv.getNodeShape())));
-                    formatItem.addNodeSize(nv.getWidth(), nv.getHeight());
-                    formatItem.addNodeColor(nv.getFill());
+                if (v.getOwner() != null) {
+                    final NodeViewBase nv = node2view.get(v);
+                    if (nv.getLabel() != null) {
+                        formatItem.addFont(nv.getLabel().getFont());
+                        formatItem.addLabelColor((Color) nv.getLabel().getTextFill());
+                    }
+                    if (nv.getNodeShape() != null) {
+                        formatItem.addNodeShape((NodeShape.valueOf(nv.getNodeShape())));
+                        formatItem.addNodeSize(nv.getWidth(), nv.getHeight());
+                        formatItem.addNodeColor(nv.getFill());
+                    }
                 }
             }
         }
         if (edges != null && edge2view != null) {
             for (Edge e : edges) {
-                final EdgeViewBase ev = edge2view.get(e);
-                if (ev.getLabel() != null) {
-                    formatItem.addFont(ev.getLabel().getFont());
-                    formatItem.addLabelColor((Color) ev.getLabel().getTextFill());
-                }
-                if (ev.getEdge() != null) {
-                    formatItem.addEdgeWidth(ev.getStrokeWidth());
-                    formatItem.addEdgeColor(ev.getStroke());
+                if (e.getOwner() != null) {
+                    final EdgeViewBase ev = edge2view.get(e);
+                    if (ev.getLabel() != null) {
+                        formatItem.addFont(ev.getLabel().getFont());
+                        formatItem.addLabelColor((Color) ev.getLabel().getTextFill());
+                    }
+                    if (ev.getEdge() != null) {
+                        formatItem.addEdgeWidth(ev.getStrokeWidth());
+                        formatItem.addEdgeColor(ev.getStroke());
+                    }
                 }
             }
         }
@@ -307,41 +311,43 @@ public class FormatItem implements Cloneable {
         if ((isLabelFontSet() || isLabelColorSet() || isNodeSizeSet() || isNodeShapeSet() || isNodeColorSet())
                 && nodes != null && node2view != null) {
             for (Node v : nodes) {
-                final NodeViewBase nv = node2view.get(v);
-                if (nv.getLabel() != null) {
-                    if (isLabelFontSet())
-                        nv.getLabel().setFont(font);
-                    if (isLabelColorSet())
-                        nv.getLabel().setTextFill(getLabelColor());
-                }
-
-                if (nv.getNodeShape() != null) {
-                    if (isNodeShapeSet()) {
-                        if (nv instanceof NodeView2D)
-                            ((NodeView2D) nv).setShape(NodeShape.create(getNodeShape(), (int) Math.round(nv.getWidth())));
-                        else if (nv instanceof NodeView3D)
-                            ((NodeView3D) nv).setShape(NodeShape.create3D(nv.getNodeShape(), (int) Math.round(nv.getWidth())));
-
-
+                if (v.getOwner() != null) {
+                    final NodeViewBase nv = node2view.get(v);
+                    if (nv.getLabel() != null) {
+                        if (isLabelFontSet())
+                            nv.getLabel().setFont(font);
+                        if (isLabelColorSet())
+                            nv.getLabel().setTextFill(getLabelColor());
                     }
-                    if (isNodeSizeSet()) {
-                        double width = (getNodeWidth() != null ? getNodeWidth() : -1);
-                        double height = (getNodeHeight() != null ? getNodeHeight() : -1);
-                        if (nv.getNodeShape() instanceof ISized) {
-                            if (width == -1)
-                                width = ((ISized) nv.getNodeShape()).getWidth();
-                            if (height == -1)
-                                height = ((ISized) nv.getNodeShape()).getHeight();
-                            ((ISized) nv.getNodeShape()).setSize(width, height);
-                        } else {
-                            if (height != -1)
-                                nv.setHeight(height);
-                            if (width != -1)
-                                nv.setWidth(width);
+
+                    if (nv.getNodeShape() != null) {
+                        if (isNodeShapeSet()) {
+                            if (nv instanceof NodeView2D)
+                                ((NodeView2D) nv).setShape(NodeShape.create(getNodeShape(), (int) Math.round(nv.getWidth())));
+                            else if (nv instanceof NodeView3D)
+                                ((NodeView3D) nv).setShape(NodeShape.create3D(nv.getNodeShape(), (int) Math.round(nv.getWidth())));
+
+
                         }
-                    }
-                    if (isNodeColorSet()) {
-                        nv.setFill(getNodeColor());
+                        if (isNodeSizeSet()) {
+                            double width = (getNodeWidth() != null ? getNodeWidth() : -1);
+                            double height = (getNodeHeight() != null ? getNodeHeight() : -1);
+                            if (nv.getNodeShape() instanceof ISized) {
+                                if (width == -1)
+                                    width = ((ISized) nv.getNodeShape()).getWidth();
+                                if (height == -1)
+                                    height = ((ISized) nv.getNodeShape()).getHeight();
+                                ((ISized) nv.getNodeShape()).setSize(width, height);
+                            } else {
+                                if (height != -1)
+                                    nv.setHeight(height);
+                                if (width != -1)
+                                    nv.setWidth(width);
+                            }
+                        }
+                        if (isNodeColorSet()) {
+                            nv.setFill(getNodeColor());
+                        }
                     }
                 }
             }
@@ -350,18 +356,20 @@ public class FormatItem implements Cloneable {
         if ((isLabelFontSet() || isLabelColorSet() || isEdgeColorSet() || isEdgeWidthSet())
                 && edges != null && edge2view != null) {
             for (Edge e : edges) {
-                final EdgeViewBase ev = edge2view.get(e);
-                if (ev.getLabel() != null) {
-                    if (isLabelFontSet())
-                        ev.getLabel().setFont(font);
-                    if (isLabelColorSet())
-                        ev.getLabel().setTextFill(getLabelColor());
-                }
-                if (ev.getEdgeShape() != null) {
-                    if (isEdgeWidthSet())
-                        ev.setStrokeWidth(getEdgeWidth());
-                    if (isEdgeColorSet())
-                        ev.setStroke(getEdgeColor());
+                if (e.getOwner() != null) {
+                    final EdgeViewBase ev = edge2view.get(e);
+                    if (ev.getLabel() != null) {
+                        if (isLabelFontSet())
+                            ev.getLabel().setFont(font);
+                        if (isLabelColorSet())
+                            ev.getLabel().setTextFill(getLabelColor());
+                    }
+                    if (ev.getEdgeShape() != null) {
+                        if (isEdgeWidthSet())
+                            ev.setStrokeWidth(getEdgeWidth());
+                        if (isEdgeColorSet())
+                            ev.setStroke(getEdgeColor());
+                    }
                 }
             }
         }

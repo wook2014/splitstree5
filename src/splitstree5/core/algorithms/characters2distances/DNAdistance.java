@@ -14,9 +14,6 @@ import splitstree5.gui.utils.CharactersUtilities;
 import splitstree5.utils.SplitsException;
 
 public abstract class DNAdistance extends SequenceBasedDistance {
-
-    private PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates = PairwiseCompare.HandleAmbiguous.Ignore;
-
     /* These are the parameters used for distance calculation */
     private double optionPInvar;
     private double optionGamma;
@@ -124,19 +121,12 @@ public abstract class DNAdistance extends SequenceBasedDistance {
         final DistancesBlock distances = new DistancesBlock();
         distances.setNtax(ntax);
         //distances.setTriangle("both"); // todo always so?
-        String states;
-        //if (characters.getFormat().getDatatypeID() == Characters.Datatypes.RNAID)
-        if (characters.getDataType().equals(CharactersType.RNA))
-            states = RNASTATES;
-        else
-            states = DNASTATES;
-
 
         int numMissing = 0;
 
         for (int s = 1; s <= ntax; s++) {
             for (int t = s + 1; t <= ntax; t++) {
-                final PairwiseCompare seqPair = new PairwiseCompare(characters, states, s, t, optionHandleAmbiguousStates);
+                final PairwiseCompare seqPair = new PairwiseCompare(characters, s, t);
                 double dist = 100.0;
 
                 if (this.useML) {
@@ -165,8 +155,8 @@ public abstract class DNAdistance extends SequenceBasedDistance {
                 distances.set(t, s, dist);
 
                 double var = seqPair.bulmerVariance(dist, 0.75);
-                distances.setVariance(s - 1, t - 1, var);
-                distances.setVariance(t - 1, s - 1, var);
+                distances.setVariance(s, t, var);
+                distances.setVariance(t, s, var);
             }
             //if (doc != null)
             //  doc.notifySetProgress(s * 100 / ntax);
@@ -182,32 +172,6 @@ public abstract class DNAdistance extends SequenceBasedDistance {
         return distances;
     }
 
-    /*public Distances computeDist(Characters characters) {
-        try {
-            return computeDist(null, characters);
-        } catch (CanceledException | SplitsException e) {
-        }
-        return null;
-    }*/
-
-    //abstract protected Distances computeDist(Document doc, Characters characters)
-    //      throws CanceledException, SplitsException;
-
-    //public Distances apply(Document doc, Taxa taxa, Characters characters) throws SplitsException, CanceledException {
-    //  return computeDist(doc, characters);
-    //}
-
-
-
-    /* Setters and getters. These always return what is currently stored */
-
-    public PairwiseCompare.HandleAmbiguous getOptionHandleAmbiguousStates() {
-        return optionHandleAmbiguousStates;
-    }
-
-    public void setOptionHandleAmbiguousStates(PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates) {
-        this.optionHandleAmbiguousStates = optionHandleAmbiguousStates;
-    }
 
     public double getOptionPInvar() {
         return optionPInvar;

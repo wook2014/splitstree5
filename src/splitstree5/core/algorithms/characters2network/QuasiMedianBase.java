@@ -447,7 +447,6 @@ public abstract class QuasiMedianBase {
         return result;
     }
 
-
     class Translator {
         Map mapOrigPosCondensedPosCondensedCharToOrigChar = new HashMap();
         int maxOrigPos = 0;

@@ -46,13 +46,11 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Arrays;
 
-import static splitstree5.io.nexus.CharactersNexusInput.NAME;
-
 /**
  * characters nexus output
  * Daniel Huson, 2.2018
  */
-public class CharactersNexusOutput implements INexusOutput<CharactersBlock> {
+public class CharactersNexusOutput extends NexusIOBase implements INexusOutput<CharactersBlock> {
     private boolean ignoreMatrix = false;
 
     /**
@@ -67,8 +65,8 @@ public class CharactersNexusOutput implements INexusOutput<CharactersBlock> {
     public void write(Writer w, TaxaBlock taxa, CharactersBlock characters) throws IOException {
         final CharactersNexusFormat format = (CharactersNexusFormat) characters.getFormat();
 
-        w.write("\nBEGIN " + NAME + ";\n");
-        UtilitiesNexusIO.writeTitleLinks(w, characters);
+        w.write("\nBEGIN " + CharactersBlock.BLOCK_NAME + ";\n");
+        writeTitleAndLink(w);
         w.write("DIMENSIONS ntax=" + characters.getNtax() + " nchar=" + characters.getNchar() + ";\n");
         w.write("FORMAT\n");
         w.write("\tdatatype='" + characters.getDataType().toString() + "'");
@@ -159,7 +157,7 @@ public class CharactersNexusOutput implements INexusOutput<CharactersBlock> {
                 writeMatrix(w, taxa, characters, format);
             w.write(";\n");
         }
-        w.write("END; [" + NAME + "]\n");
+        w.write("END; [" + CharactersBlock.BLOCK_NAME + "]\n");
     }
 
     /**

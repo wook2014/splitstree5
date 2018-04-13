@@ -17,25 +17,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- *  Copyright (C) 2018 Daniel H. Huson
- *
- *  (Some files contain contributions from other authors, who are then mentioned separately.)
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package splitstree5.io.nexus;
 
 import jloda.util.Basic;
@@ -46,13 +27,11 @@ import splitstree5.core.misc.ASplit;
 import java.io.IOException;
 import java.io.Writer;
 
-import static splitstree5.io.nexus.SplitsNexusInput.NAME;
-
 /**
  * splits nexus output
  * Daniel Huson, 2.2018
  */
-public class SplitsNexusOutput implements INexusOutput<SplitsBlock> {
+public class SplitsNexusOutput extends NexusIOBase implements INexusOutput<SplitsBlock> {
     /**
      * write a block in nexus format
      *
@@ -68,8 +47,8 @@ public class SplitsNexusOutput implements INexusOutput<SplitsBlock> {
         final int ntax = taxaBlock.getNtax();
         final int nsplits = splitsBlock.getNsplits();
 
-        w.write("\nBEGIN " + NAME + ";\n");
-        UtilitiesNexusIO.writeTitleLinks(w, splitsBlock);
+        w.write("\nBEGIN " + SplitsBlock.BLOCK_NAME + ";\n");
+        writeTitleAndLink(w);
         w.write("\tDIMENSIONS ntax=" + ntax + " nsplits=" + nsplits + ";\n");
 
         w.write("\tFORMAT");
@@ -118,7 +97,7 @@ public class SplitsNexusOutput implements INexusOutput<SplitsBlock> {
 
         int t = 1;
         for (ASplit split : splitsBlock.getSplits()) {
-            w.write("\t[" + (t++) + ", size=" + split.size() + "]" + " \t");
+            w.write("[" + (t++) + ", size=" + split.size() + "]" + " \t");
             if (format.isOptionLabels()) {
                 String lab = split.getLabel();
                 w.write(" '" + lab + "'" + " \t");
@@ -132,6 +111,6 @@ public class SplitsNexusOutput implements INexusOutput<SplitsBlock> {
             w.write(" " + Basic.toString(split.getA(), " ") + ",\n");
         }
         w.write(";\n");
-        w.write("END; [" + NAME + "]\n");
+        w.write("END; [" + SplitsBlock.BLOCK_NAME + "]\n");
     }
 }

@@ -19,9 +19,14 @@
 
 package jloda.util;
 
+import java.awt.*;
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.List;
 import java.util.zip.*;
 
 public class Basic {
@@ -491,7 +496,7 @@ public class Basic {
         return ins;
     }
 
-    public static Reader getReaderPossiblyZIPorGZIP(String fileName) throws IOException {
+    public static InputStreamReader getReaderPossiblyZIPorGZIP(String fileName) throws IOException {
         return new InputStreamReader(getInputStreamPossiblyZIPorGZIP(fileName));
     }
 
@@ -697,6 +702,23 @@ public class Basic {
                 buf.append(ch);
         }
         return buf.toString();
+    }
+
+
+    /**
+     * pretty print a double value
+     *
+     * @param value
+     * @param afterCommaDigits
+     * @return value without trailing 0's
+     */
+    public static String toString(double value, int afterCommaDigits) {
+        final String format = "%." + afterCommaDigits + "f";
+        return String.format(format, value).replaceAll("0*$", "").replaceAll("\\.$", "");
+    }
+
+    public static String toString(Pair pair, String separator) {
+        return pair.getFirst().toString() + separator + pair.getSecond().toString();
     }
 
     /**
@@ -1179,6 +1201,36 @@ public class Basic {
             result[i] = values.get(i);
         return result;
     }
+
+    /**
+     * open the given URI in a web browser
+     *
+     * @param uri
+     */
+    public static void openWebPage(URI uri) {
+        Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+        if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+            try {
+                desktop.browse(uri);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * open the given URL in a web browser
+     *
+     * @param url
+     */
+    public static void openWebPage(URL url) {
+        try {
+            openWebPage(url.toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * gets a unique file name for a file in the given directory and with given prefix and suffix

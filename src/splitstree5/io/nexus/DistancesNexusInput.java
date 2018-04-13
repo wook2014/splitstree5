@@ -33,20 +33,8 @@ import java.util.List;
  * nexus input parser
  * Daniel Huson, 2.2018
  */
-public class DistancesNexusInput implements INexusInput<DistancesBlock> {
-    public static final String NAME = "DISTANCES";
-
-    /**
-     * is the parser at the beginning of a block that this class can parse?
-     *
-     * @param np
-     * @return true, if can parse from here
-     */
-    public boolean atBeginOfBlock(NexusStreamParser np) {
-        return np.peekMatchIgnoreCase("begin " + NAME + ";");
-    }
-
-    public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
+public class DistancesNexusInput extends NexusIOBase implements INexusInput<DistancesBlock> {
+    public static final String SYNTAX = "BEGIN " + DistancesBlock.BLOCK_NAME + ";\n" +
 
             "\t[TITLE title;]\n" +
             "\t[LINK name = title;]\n" +
@@ -86,8 +74,8 @@ public class DistancesNexusInput implements INexusInput<DistancesBlock> {
 
             final DistancesNexusFormat format = (DistancesNexusFormat) distancesBlock.getFormat();
 
-            np.matchBeginBlock(NAME);
-            UtilitiesNexusIO.readTitleLinks(np, distancesBlock);
+            np.matchBeginBlock(DistancesBlock.BLOCK_NAME);
+            parseTitleAndLink(np);
 
             if (taxaBlock.getNtax() == 0) {
                 np.matchIgnoreCase("dimensions ntax=");
@@ -251,5 +239,16 @@ public class DistancesNexusInput implements INexusInput<DistancesBlock> {
                 distancesBlock.set(j, i, d_ij);
             }
         }
+    }
+
+
+    /**
+     * is the parser at the beginning of a block that this class can parse?
+     *
+     * @param np
+     * @return true, if can parse from here
+     */
+    public boolean atBeginOfBlock(NexusStreamParser np) {
+        return np.peekMatchIgnoreCase("begin " + DistancesBlock.BLOCK_NAME + ";");
     }
 }

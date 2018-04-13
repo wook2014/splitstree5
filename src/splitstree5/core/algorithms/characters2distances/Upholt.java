@@ -18,8 +18,6 @@ import splitstree5.core.datablocks.characters.CharactersType;
  */
 
 public class Upholt extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-
-    private PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates = PairwiseCompare.HandleAmbiguous.Ignore;
     private double optionRestrictionSiteLength = 6.0;
 
     public final boolean EXPERT = false;
@@ -46,7 +44,7 @@ public class Upholt extends Algorithm<CharactersBlock, DistancesBlock> implement
         for (int s = 1; s <= ntax; s++) {
             for (int t = s + 1; t <= ntax; t++) {
                 //System.err.println(s+","+t);
-                PairwiseCompare seqPair = new PairwiseCompare(charactersBlock, "01", s, t, optionHandleAmbiguousStates);
+                PairwiseCompare seqPair = new PairwiseCompare(charactersBlock, s, t);
                 double[][] F = seqPair.getF();
                 double dist = -1.0;
 
@@ -93,19 +91,11 @@ public class Upholt extends Algorithm<CharactersBlock, DistancesBlock> implement
             return false;
         return c.getFormat().getSymbols().equalsIgnoreCase(Characters.Datatypes.STANDARDSYMBOLS);
         */
-        return c.getDataType() == CharactersType.standard;
+        return c.getDataType() == CharactersType.Standard;
     }
 
     final public String getDescription() {
         return DESCRIPTION;
-    }
-
-    public PairwiseCompare.HandleAmbiguous getOptionHandleAmbiguousStates() {
-        return optionHandleAmbiguousStates;
-    }
-
-    public void setOptionHandleAmbiguousStates(PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates) {
-        this.optionHandleAmbiguousStates = optionHandleAmbiguousStates;
     }
 
     public double getOptionRestrictionSiteLength() {

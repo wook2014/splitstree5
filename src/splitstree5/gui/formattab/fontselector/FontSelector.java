@@ -35,6 +35,7 @@ import jloda.fx.ExtendedFXMLLoader;
 import jloda.fx.FontUtils;
 import jloda.util.ProgramProperties;
 
+import java.util.Set;
 import java.util.TreeSet;
 
 /**
@@ -62,7 +63,13 @@ public class FontSelector extends ComboBox<String> {
         final ExtendedFXMLLoader<FontSelectorController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         controller = extendedFXMLLoader.getController();
 
-        controller.getFontFamilyComboBox().getItems().addAll(new TreeSet<>(Font.getFamilies()));
+        final Set<String> families = new TreeSet<>();
+        for (String family : Font.getFamilies()) {
+            if (Font.font(family, 12).getFamily().equals(family))
+                families.add(family);
+        }
+
+        controller.getFontFamilyComboBox().getItems().addAll(families);
 
         controller.getFontStyleComboBox().getItems().addAll("Bold", "Italic", "Bold Italic", "Regular");
 

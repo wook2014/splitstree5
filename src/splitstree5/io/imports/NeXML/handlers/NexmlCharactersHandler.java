@@ -19,7 +19,7 @@ public class NexmlCharactersHandler extends DefaultHandler {
 
     private ArrayList<String> taxaLabels = new ArrayList<>();
     private ArrayList<String> matrix = new ArrayList<>();
-    private CharactersType dataType = CharactersType.unknown;
+    private CharactersType dataType = CharactersType.Unknown;
     private StringBuilder tmp;
     private String currentStatesID;
     private int nchar = 0;

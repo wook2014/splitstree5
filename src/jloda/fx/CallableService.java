@@ -52,6 +52,11 @@ import java.util.concurrent.Callable;
 public class CallableService<T> extends Service<T> {
     private Callable<T> callable;
 
+    public CallableService() {
+        super();
+        setExecutor(ProgramExecutorService.getInstance());
+    }
+
     @Override
     protected Task<T> createTask() {
         return new Task<T>() {

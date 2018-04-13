@@ -37,7 +37,7 @@ public class ProteinStateLabeler extends StateLabeler {
      * Constructor
      */
     public ProteinStateLabeler() {
-        final String availableChars = CharactersType.protein.getSymbols();
+        final String availableChars = CharactersType.Protein.getSymbols();
         final String[] codes = {"ala", "arg", "asn", "asp", "cys", "gln", "glu", "gly", "his", "ile", "leu",
                 "lys", "met", "phe", "pro", "ser", "thr", "trp", "tyr", "val"};
 
@@ -72,7 +72,7 @@ public class ProteinStateLabeler extends StateLabeler {
 
     @Override
     public String getSymbolsUsed() {
-        return CharactersType.protein.getSymbols();
+        return CharactersType.Protein.getSymbols();
     }
 
     @Override

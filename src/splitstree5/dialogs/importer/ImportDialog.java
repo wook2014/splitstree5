@@ -27,9 +27,9 @@ import javafx.scene.Scene;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import jloda.fx.ExtendedFXMLLoader;
+import jloda.fx.NotificationManager;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
-import splitstree5.gui.utils.Alert;
 import splitstree5.io.imports.interfaces.IImporter;
 import splitstree5.main.MainWindow;
 
@@ -62,10 +62,10 @@ public class ImportDialog {
 
         stage.setScene(new Scene(extendedFXMLLoader.getRoot()));
         stage.sizeToScene();
-        if (parentMainWindow != null) {
-            stage.setX(parentMainWindow.getStage().getX() + 50);
-            stage.setY(parentMainWindow.getStage().getY() + 50);
-        }
+
+        stage.setX(parentMainWindow.getStage().getX() + 50);
+        stage.setY(parentMainWindow.getStage().getY() + 50);
+
         stage.setTitle("Import - " + ProgramProperties.getProgramName());
 
         controller.getDataTypeComboBox().getItems().addAll(ImporterManager.getInstance().getAllDataTypes());
@@ -114,7 +114,7 @@ public class ImportDialog {
             final IImporter importer = ImporterManager.getInstance().getImporterByDataTypeAndFileFormat(controller.getDataTypeComboBox().getSelectionModel().getSelectedItem(),
                     controller.getFileFormatComboBox().getSelectionModel().getSelectedItem());
             if (importer == null)
-                new Alert("Can't import selected data type and file format");
+                NotificationManager.showWarning("Can't import selected data type and file format");
             else {
                 importService.setup(false, parentMainWindow, importer, controller.getFileTextField().getText(), "Loading file", controller.getProgressBarPane());
                 importService.restart();

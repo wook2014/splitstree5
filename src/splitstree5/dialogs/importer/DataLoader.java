@@ -45,23 +45,27 @@ import splitstree5.main.MainWindow;
 
 import java.util.Optional;
 
+/**
+ * loads data in document during import
+ * Daniel Huson, 3.2018
+ */
 public class DataLoader {
 
     /**
-     * load data into window.
+     * loads data into document
      *
-     * @param reload           if true, attempt to reload into current workflow, otherwise open new window
+     * @param reload if true, attempt to reload into current workflow, otherwise open new window
      * @param taxaBlock
      * @param dataBlock
-     * @param parentMainWindow
+     * @param parentWindow
      */
-    public static void load(boolean reload, String fileName, TaxaBlock taxaBlock, DataBlock dataBlock, MainWindow parentMainWindow) {
-
+    public static void load(boolean reload, String fileName, TaxaBlock taxaBlock, DataBlock dataBlock, MainWindow parentWindow) {
         if (reload) {
-            if (parentMainWindow.getWorkflow().canLoadData(dataBlock)) {
-                parentMainWindow.getWorkflow().loadData(taxaBlock, dataBlock);
+            final Workflow workflow = parentWindow.getWorkflow();
+
+            if (workflow.canLoadData(dataBlock)) {
+                workflow.loadData(taxaBlock, dataBlock);
                 Platform.runLater(() -> {
-                    final Workflow workflow = parentMainWindow.getWorkflow();
                     workflow.getTopTaxaNode().setState(UpdateState.VALID);
                     if (!fileName.endsWith(".tmp"))
                         RecentFilesManager.getInstance().addRecentFile(fileName);
@@ -69,9 +73,9 @@ public class DataLoader {
                     NotificationManager.showInformation("Opened file: " + Basic.getFileNameWithoutPath(fileName) + (shortDescription.length() > 0 ? "\nLoaded " + shortDescription : ""));
                 });
                 return;
-            } else if (parentMainWindow.getDocument().getWorkflow().getWorkingDataNode() != null && parentMainWindow.getWorkflow().getWorkingDataNode().getDataBlock() != null) {
+            } else if (workflow.getWorkingDataNode() != null && workflow.getWorkingDataNode().getDataBlock() != null) {
                 Platform.runLater(() -> {
-                    final String oldName = parentMainWindow.getWorkflow().getWorkingDataNode().getDataBlock().getName();
+                    final String oldName = workflow.getWorkingDataNode().getDataBlock().getName();
                     final String newName = dataBlock.getName();
                     NotificationManager.showError("Can't load data, type has changed from " + oldName + " to " + newName);
                 });
@@ -80,17 +84,16 @@ public class DataLoader {
         }
 
         final MainWindow mainWindow;
-
-        if (parentMainWindow.getDocument().getWorkflow().getWorkingDataNode() == null) {
-            mainWindow = parentMainWindow;
+        if (parentWindow.getWorkflow().getWorkingDataNode() == null) {
+            mainWindow = parentWindow;
         } else {
             mainWindow = new MainWindow();
         }
         final Document document = mainWindow.getDocument();
 
-        document.setFileName(Basic.replaceFileSuffix(fileName, ".stree5"));
+        document.setFileName(Basic.replaceFileSuffix(fileName, ".spt5"));
 
-        final Workflow workflow = document.getWorkflow();
+        final Workflow workflow = mainWindow.getWorkflow();
 
         if (dataBlock instanceof CharactersBlock) {
             workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
@@ -98,32 +101,32 @@ public class DataLoader {
             workflow.createConnector(workflow.getWorkingDataNode(), distances, new HammingDistances());
             final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
             workflow.createConnector(distances, splits, new NeighborNet());
-            final DataNode<ViewBlock> viewNode = workflow.createDataNode(new ViewBlock.SplitsNetworkViewerBlock());
+            final DataNode<ViewerBlock> viewNode = workflow.createDataNode(new ViewerBlock.SplitsNetworkViewerBlock());
             workflow.createConnector(splits, viewNode, new SplitsNetworkAlgorithm());
 
         } else if (dataBlock instanceof CharactersBlock) {
             workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
             final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
             workflow.createConnector(workflow.getWorkingDataNode(), splits, new NeighborNet());
-            final DataNode<ViewBlock> viewNode = workflow.createDataNode(new ViewBlock.SplitsNetworkViewerBlock());
+            final DataNode<ViewerBlock> viewNode = workflow.createDataNode(new ViewerBlock.SplitsNetworkViewerBlock());
             workflow.createConnector(splits, viewNode, new SplitsNetworkAlgorithm());
 
         } else if (dataBlock instanceof DistancesBlock) {
             workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
             final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
             workflow.createConnector(workflow.getWorkingDataNode(), splits, new NeighborNet());
-            final DataNode<ViewBlock> viewNode = workflow.createDataNode(new ViewBlock.SplitsNetworkViewerBlock());
+            final DataNode<ViewerBlock> viewNode = workflow.createDataNode(new ViewerBlock.SplitsNetworkViewerBlock());
             workflow.createConnector(splits, viewNode, new SplitsNetworkAlgorithm());
         } else if (dataBlock instanceof SplitsBlock) {
             workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
             final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
             workflow.createConnector(workflow.getWorkingDataNode(), splits, new SplitsFilter());
-            final DataNode<ViewBlock> viewNode = workflow.createDataNode(new ViewBlock.SplitsNetworkViewerBlock());
+            final DataNode<ViewerBlock> viewNode = workflow.createDataNode(new ViewerBlock.SplitsNetworkViewerBlock());
             workflow.createConnector(splits, viewNode, new SplitsNetworkAlgorithm());
         } else if (dataBlock instanceof TreesBlock) {
             workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
             if (dataBlock.size() == 1) { // only one tree, don't need a filter
-                final DataNode<ViewBlock> viewNode = workflow.createDataNode(new ViewBlock.TreeViewerBlock());
+                final DataNode<ViewerBlock> viewNode = workflow.createDataNode(new ViewerBlock.TreeViewerBlock());
                 workflow.createConnector(workflow.getWorkingDataNode(), viewNode, new TreeEmbedder());
             } else { // more than one tree, need a filter:
                 final DataNode<TreesBlock> trees = workflow.createDataNode(new TreesBlock());
@@ -139,11 +142,11 @@ public class DataLoader {
                 final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
                 workflow.createConnector(splits0, splits, new SplitsFilter());
 
-                final DataNode<ViewBlock> viewNode = workflow.createDataNode(new ViewBlock.SplitsNetworkViewerBlock());
+                final DataNode<ViewerBlock> viewNode = workflow.createDataNode(new ViewerBlock.SplitsNetworkViewerBlock());
                 workflow.createConnector(splits, viewNode, new SplitsNetworkAlgorithm());
             }
         } else if (dataBlock instanceof NetworkBlock) {
-            final DataNode<ViewBlock> viewNode = workflow.createDataNode(new ViewBlock.SplitsNetworkViewerBlock());
+            final DataNode<ViewerBlock> viewNode = workflow.createDataNode(new ViewerBlock.SplitsNetworkViewerBlock());
             workflow.createConnector(workflow.getTopDataNode(), viewNode, new NetworkEmbedder());
         }
 
@@ -154,16 +157,16 @@ public class DataLoader {
 
         Platform.runLater(() -> {
             document.setDirty(true);
-            if (mainWindow == parentMainWindow) // using existing document
+            if (mainWindow == parentWindow) // are using an existing window
                 mainWindow.getStage().toFront();
-            else // new document
-                mainWindow.show(new Stage(), parentMainWindow.getStage().getX() + 50, parentMainWindow.getStage().getY() + 50);
+            else // is new window
+                mainWindow.show(new Stage(), parentWindow.getStage().getX() + 50, parentWindow.getStage().getY() + 50);
             final String shortDescription = workflow.getTopTaxaNode() != null ? workflow.getTopDataNode().getShortDescription() : "null";
             NotificationManager.showInformation("Opened file: " + Basic.getFileNameWithoutPath(fileName) + (shortDescription.length() > 0 ? "\nLoaded " + shortDescription : ""));
         });
 
         Platform.runLater(() -> {
-            document.getWorkflow().getTopTaxaNode().setState(UpdateState.VALID);
+            workflow.getTopTaxaNode().setState(UpdateState.VALID);
             if (!fileName.endsWith(".tmp"))
                 RecentFilesManager.getInstance().addRecentFile(fileName);
         });

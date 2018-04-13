@@ -31,6 +31,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import jloda.util.ProgramProperties;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -59,8 +60,11 @@ public class RecentFilesManager {
         recentFiles = FXCollections.observableArrayList();
 
         maxNumberRecentFiles = ProgramProperties.get("MaxNumberRecentFiles", 40);
-        for (String fileName : ProgramProperties.get("RecentFiles", new String[0]))
-            addRecentFile(fileName);
+
+        for (String fileName : ProgramProperties.get("RecentFiles", new String[0])) {
+            if (new File(fileName).exists())
+                addRecentFile(fileName);
+        }
 
         recentFiles.addListener((ListChangeListener<String>) (c) -> {
             Platform.runLater(() -> {

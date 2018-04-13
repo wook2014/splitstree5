@@ -101,7 +101,6 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
             matrix.add(currentSequence.toString());
             if (nchar != currentSequenceLength)
                 throw new IOExceptionWithLineNumber("Wrong number of chars. Length " + nchar + " expected", counter);
-
         }
 
         taxa.addTaxaByNames(taxonNamesFound);
@@ -111,7 +110,6 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
     }
 
     private void readMatrix(ArrayList<String> matrix, CharactersBlock characters) throws IOException {
-
         Map<Character, Integer> frequency = new LinkedHashMap<>();
         StringBuilder foundSymbols = new StringBuilder("");
         for (int i = 1; i <= characters.getNtax(); i++) {
@@ -122,10 +120,9 @@ public class FastaIn extends CharactersFormat implements IToCharacters, IImportC
                     frequency.put(symbol, 1);
                 } else
                     frequency.put(symbol, frequency.get(symbol) + 1);
-                characters.set(i, j, matrix.get(i - 1).charAt(j - 1));
+                characters.set(i, j, symbol);
             }
         }
-
         estimateDataType(foundSymbols.toString(), characters, frequency);
     }
 

@@ -90,7 +90,6 @@ public class NexusStreamTokenizer extends StreamTokenizer {
         setSyntax();
     }
 
-
     /**
      * Get the next token and returns its type.
      *

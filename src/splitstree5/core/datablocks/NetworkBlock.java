@@ -34,6 +34,8 @@ import java.util.HashMap;
  * Daniel Huson, 2.2018
  */
 public class NetworkBlock extends DataBlock {
+    public static final String BLOCK_NAME = "NETWORK";
+
     public enum Type {HaplotypeNetwork, Other}
 
     private final PhyloGraph graph;
@@ -43,6 +45,7 @@ public class NetworkBlock extends DataBlock {
     private Type networkType;
 
     public NetworkBlock() {
+        super(BLOCK_NAME);
         this.graph = new PhyloGraph();
         node2data = new NodeArray<>(graph);
         edge2data = new EdgeArray<>(graph);

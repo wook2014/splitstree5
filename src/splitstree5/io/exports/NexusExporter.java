@@ -39,9 +39,11 @@
 package splitstree5.io.exports;
 
 import jloda.util.Basic;
+import jloda.util.Pair;
+import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.*;
 import splitstree5.io.exports.interfaces.*;
-import splitstree5.io.imports.nexus.NexusImporter;
+import splitstree5.io.imports.nexus.NexusImporterBase;
 import splitstree5.io.nexus.*;
 
 import java.io.IOException;
@@ -52,68 +54,110 @@ import java.util.List;
  * exports in Nexus format
  * Daniel Huson, 2.2018
  */
-public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportCharacters, IExportDistances, IExportTrees, IExportSplits, IExportNetwork, IExportTraits {
+public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportCharacters, IExportDistances, IExportTrees, IExportSplits, IExportNetwork, IExportTraits, IExportViewer {
     private boolean prependTaxa = true;
+    private String title;
+    private Pair<String, String> link;
 
     @Override
     public void export(Writer w, TaxaBlock taxa) throws IOException {
         if (prependTaxa)
             w.write("#nexus\n");
-        new TaxaNexusOutput().write(w, taxa);
+        final TaxaNexusOutput output = new TaxaNexusOutput();
+        output.setTitleAndLink(getTitle(), getLink());
+        output.write(w, taxa);
     }
 
     @Override
     public void export(Writer w, AnalysisBlock analysis) throws IOException {
-        new AnalysisNexusOutput().write(w, analysis);
+        final AnalysisNexusOutput output = new AnalysisNexusOutput();
+        output.setTitleAndLink(getTitle(), getLink());
+        output.write(w, analysis);
     }
 
     @Override
     public void export(Writer w, TaxaBlock taxa, CharactersBlock characters) throws IOException {
         if (prependTaxa)
-            export(w, taxa);
-        new CharactersNexusOutput().write(w, taxa, characters);
+            new TaxaNexusOutput().write(w, taxa);
+        final CharactersNexusOutput output = new CharactersNexusOutput();
+        output.setTitleAndLink(getTitle(), getLink());
+        output.write(w, taxa, characters);
     }
 
     @Override
     public void export(Writer w, TaxaBlock taxa, DistancesBlock distances) throws IOException {
         if (prependTaxa)
-            export(w, taxa);
-        new DistancesNexusOutput().write(w, taxa, distances);
+            new TaxaNexusOutput().write(w, taxa);
+        final DistancesNexusOutput output = new DistancesNexusOutput();
+        output.setTitleAndLink(getTitle(), getLink());
+        output.write(w, taxa, distances);
     }
 
     @Override
     public void export(Writer w, TaxaBlock taxa, NetworkBlock network) throws IOException {
         if (prependTaxa)
-            export(w, taxa);
-        new NetworkNexusOutput().write(w, taxa, network);
+            new TaxaNexusOutput().write(w, taxa);
+        final NetworkNexusOutput output = new NetworkNexusOutput();
+        output.setTitleAndLink(getTitle(), getLink());
+        output.write(w, taxa, network);
     }
 
     @Override
     public void export(Writer w, TaxaBlock taxa, SplitsBlock splitsBlock) throws IOException {
         if (prependTaxa)
-            export(w, taxa);
-        new SplitsNexusOutput().write(w, taxa, splitsBlock);
+            new TaxaNexusOutput().write(w, taxa);
+        final SplitsNexusOutput output = new SplitsNexusOutput();
+        output.setTitleAndLink(getTitle(), getLink());
+        output.write(w, taxa, splitsBlock);
     }
 
     @Override
     public void export(Writer w, TaxaBlock taxa, TreesBlock trees) throws IOException {
         if (prependTaxa)
-            export(w, taxa);
-        new TreesNexusOutput().write(w, taxa, trees);
+            new TaxaNexusOutput().write(w, taxa);
+        final TreesNexusOutput output = new TreesNexusOutput();
+        output.setTitleAndLink(getTitle(), getLink());
+        output.write(w, taxa, trees);
     }
 
     @Override
     public void export(Writer w, TaxaBlock taxa, TraitsBlock traitsBlock) throws IOException {
         if (prependTaxa)
-            export(w, taxa);
-        new TraitsNexusOutput().write(w, taxa, traitsBlock);
+            new TaxaNexusOutput().write(w, taxa);
+        final TraitsNexusOutput output = new TraitsNexusOutput();
+        output.setTitleAndLink(getTitle(), getLink());
+        output.write(w, taxa, traitsBlock);
     }
 
     @Override
-    public List<String> getExtensions() {
-        return NexusImporter.extensions;
+    public void export(Writer w, TaxaBlock taxa, ViewerBlock viewerBlock) throws IOException {
+        if (prependTaxa)
+            new TaxaNexusOutput().write(w, taxa);
+        final ViewerNexusOutput output = new ViewerNexusOutput();
+        output.setTitleAndLink(getTitle(), getLink());
+        output.write(w, taxa, viewerBlock);
     }
 
+    /**
+     * export an algorithms block
+     *
+     * @param w
+     * @param algorithm
+     * @throws IOException
+     */
+    public void export(Writer w, Algorithm algorithm) throws IOException {
+        final AlgorithmNexusOutput output = new AlgorithmNexusOutput();
+        output.setTitleAndLink(getTitle(), getLink());
+        output.write(w, algorithm);
+    }
+
+    /**
+     * export a datablock
+     * @param w
+     * @param taxaBlock
+     * @param dataBlock
+     * @throws IOException
+     */
     public void export(Writer w, TaxaBlock taxaBlock, DataBlock dataBlock) throws IOException {
         if (dataBlock instanceof CharactersBlock)
             export(w, taxaBlock, (CharactersBlock) dataBlock);
@@ -127,9 +171,17 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
             export(w, taxaBlock, (NetworkBlock) dataBlock);
         else if (dataBlock instanceof TraitsBlock)
             export(w, taxaBlock, (TraitsBlock) dataBlock);
+        else if (dataBlock instanceof ViewerBlock)
+            export(w, taxaBlock, (ViewerBlock) dataBlock);
         else
             throw new IOException("Export " + Basic.getShortName(dataBlock.getClass()) + ": not implemented");
     }
+
+    @Override
+    public List<String> getExtensions() {
+        return NexusImporterBase.extensions;
+    }
+
 
     public boolean isPrependTaxa() {
         return prependTaxa;
@@ -137,5 +189,36 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
 
     public void setPrependTaxa(boolean prependTaxa) {
         this.prependTaxa = prependTaxa;
+    }
+
+    /**
+     * get the title of the block to be exported.
+     *
+     * @return
+     */
+    public String getTitle() {
+        return title;
+    }
+
+    /**
+     * set the title of the block to be exported.
+     *
+     * @param title
+     */
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    /**
+     * the link to be exported with the block
+     *
+     * @return list of links
+     */
+    public Pair<String, String> getLink() {
+        return link;
+    }
+
+    public void setLink(Pair<String, String> link) {
+        this.link = link;
     }
 }

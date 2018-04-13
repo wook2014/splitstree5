@@ -19,7 +19,6 @@
 
 package splitstree5.io.nexus;
 
-import jloda.util.Pair;
 import jloda.util.PluginClassLoader;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.algorithms.Algorithm;
@@ -28,7 +27,6 @@ import splitstree5.utils.Option;
 import splitstree5.utils.OptionsAccessor;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,26 +35,15 @@ import java.util.Set;
  * algorithm nexus input
  * Daniel Huson, 2.2018
  */
-public class AlgorithmNexusInput {
-    public static final String NAME = "ALGORITHM";
-
-    /**
-     * is the parser at the beginning of a block that this class can parse?
-     *
-     * @param np
-     * @return true, if can parse from here
-     */
-    public boolean atBeginOfBlock(NexusStreamParser np) {
-        return np.peekMatchIgnoreCase("begin " + NAME + ";");
-    }
-
-    public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
+public class AlgorithmNexusInput extends NexusIOBase {
+    public static final String SYNTAX = "BEGIN " + Algorithm.BLOCK_NAME + ";\n" +
             "\t[TITLE title;]\n" +
             "\t[LINK name = title;]\n" +
-            "\t[ALGORITHM=name]\n" +
-            "\t[OPTION name=value]\n" +
-            "\t[OPTION name=value]\n" +
-            "\t...\n" +
+            "\tALGORITHM name;\n" +
+            "\t\t[OPTIONS name=value," +
+            "\t\t ..." +
+            "\t\tname=value\n" +
+            "\t;\n" +
             "END;\n";
 
     /**
@@ -73,52 +60,44 @@ public class AlgorithmNexusInput {
      * @throws IOException
      */
     public Algorithm parse(NexusStreamParser np) throws IOException {
-        np.matchBeginBlock(NAME);
+        np.matchBeginBlock(Algorithm.BLOCK_NAME);
+        parseTitleAndLink(np);
 
-        final String title;
-        if (np.peekMatchIgnoreCase("TITLE")) {
-            np.matchIgnoreCase("TITLE");
-            title = np.getLabelRespectCase();
-            np.matchIgnoreCase(";");
-        } else
-            title = null;
-        final ArrayList<Pair<String, String>> links = new ArrayList<>();
-        while (np.peekMatchIgnoreCase("LINK")) {
-            String key = np.getLabelRespectCase();
-            np.matchIgnoreCase("=");
-            String value = np.getLabelRespectCase();
-            np.matchIgnoreCase(";");
-            links.add(new Pair<>(key, value));
-        }
-
-        np.matchIgnoreCase("ALGORITHM=");
-        String algorithmName = np.getWordRespectCase();
+        np.matchIgnoreCase("ALGORITHM ");
+        final String algorithmName = np.getWordRespectCase();
         np.matchIgnoreCase(";");
 
         final Algorithm algorithm = createAlgorithmFromName(algorithmName);
         if (algorithm == null)
             throw new IOExceptionWithLineNumber("Unknown algorithmm: " + algorithmName, np.lineno());
-        algorithm.setTitle(title);
-        algorithm.getLinks().addAll(links);
 
-        final List<Option> options = OptionsAccessor.getAllOptions(algorithm);
+        if (np.peekMatchIgnoreCase("OPTIONS")) {
+            np.matchIgnoreCase("OPTIONS");
 
-        Set<String> legalOptions = new HashSet<>();
-        for (Option option : options) {
-            legalOptions.add(option.getName());
-        }
+            if (!np.peekMatchIgnoreCase(";")) {
+                final List<Option> options = OptionsAccessor.getAllOptions(algorithm);
+                Set<String> legalOptions = new HashSet<>();
+                for (Option option : options) {
+                    legalOptions.add(option.getName());
+                }
 
-        while (np.peekMatchIgnoreCase("OPTION")) {
-            np.matchIgnoreCase("OPTION");
-            final String name = np.getWordRespectCase();
-            np.matchIgnoreCase("=");
-            final String value = np.getWordFileNamePunctuation();
+                while (true) {
+                    final String name = np.getWordRespectCase();
+                    np.matchIgnoreCase("=");
+                    final String value = np.getWordRespectCase();
+
+                    if (legalOptions.contains(name))
+                        OptionsAccessor.setOptionValue(options, name, value);
+                    else
+                        System.err.println("WARNING: skipped unknown option for algorithm '" + algorithmName + "': '" + name + "' in line " + np.lineno());
+
+                    if (np.peekMatchIgnoreCase(";"))
+                        break;
+                    else
+                        np.matchIgnoreCase(",");
+                }
+            }
             np.matchIgnoreCase(";");
-
-            if (legalOptions.contains(name))
-                OptionsAccessor.setOptionValue(options, name, value);
-            else
-                System.err.println("WARNING: skipped unknown option for '" + algorithm.getName() + "': '" + name + "'");
         }
         np.matchEndBlock();
         return algorithm;
@@ -136,5 +115,15 @@ public class AlgorithmNexusInput {
             return algorithms.get(0);
         else
             return null;
+    }
+
+    /**
+     * is the parser at the beginning of a block that this class can parse?
+     *
+     * @param np
+     * @return true, if can parse from here
+     */
+    public boolean atBeginOfBlock(NexusStreamParser np) {
+        return np.peekMatchIgnoreCase("begin " + Algorithm.BLOCK_NAME + ";");
     }
 }

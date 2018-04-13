@@ -39,10 +39,8 @@ public class AlgorithmNexusIOTest {
     public void testParse() throws Exception {
         Algorithm neighborNet = new NeighborNet();
 
-        System.err.println("Usage: " + new AlgorithmNexusOutput().getUsage(neighborNet));
-
         StringWriter w = new StringWriter();
-        new AlgorithmNexusOutput().write(neighborNet, w);
+        new AlgorithmNexusOutput().write(w, neighborNet);
         String output = w.toString();
         System.err.println(output);
 
@@ -55,7 +53,7 @@ public class AlgorithmNexusIOTest {
         neighborNet = new AlgorithmNexusInput().parse(new NexusStreamParser(reader));
 
         StringWriter w2 = new StringWriter();
-        new AlgorithmNexusOutput().write(neighborNet, w2);
+        new AlgorithmNexusOutput().write(w2, neighborNet);
         String output2 = w2.toString();
         System.err.println(output2);
 

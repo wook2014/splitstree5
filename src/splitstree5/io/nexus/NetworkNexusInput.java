@@ -38,20 +38,8 @@ import java.util.TreeMap;
  * network block nexus input
  * Daniel Huson, 2.2018
  */
-public class NetworkNexusInput implements INexusInput<NetworkBlock> {
-    public static final String NAME = "NETWORK";
-
-    /**
-     * is the parser at the beginning of a block that this class can parse?
-     *
-     * @param np
-     * @return true, if can parse from here
-     */
-    public boolean atBeginOfBlock(NexusStreamParser np) {
-        return np.peekMatchIgnoreCase("begin " + NAME + ";");
-    }
-
-    public static final String SYNTAX = "BEGIN " + NAME + ";\n" +
+public class NetworkNexusInput extends NexusIOBase implements INexusInput<NetworkBlock> {
+    public static final String SYNTAX = "BEGIN " + NetworkBlock.BLOCK_NAME + ";\n" +
             "\t[TITLE title;]\n" +
             "\t[LINK name = title;]\n" +
             "\t[DIMENSIONS [NNODES=number-of-nodes] [NEDGES=number-of-edges];]\n" +
@@ -92,8 +80,8 @@ public class NetworkNexusInput implements INexusInput<NetworkBlock> {
 
         final ArrayList<String> taxonNamesFound = new ArrayList<>();
 
-        np.matchBeginBlock(NAME);
-        UtilitiesNexusIO.readTitleLinks(np, networkBlock);
+        np.matchBeginBlock(NetworkBlock.BLOCK_NAME);
+        parseTitleAndLink(np);
 
         np.matchIgnoreCase("dimensions nNodes=");
         final int nNodes = np.getInt(0, Integer.MAX_VALUE);
@@ -193,5 +181,15 @@ public class NetworkNexusInput implements INexusInput<NetworkBlock> {
         np.matchEndBlock();
 
         return taxonNamesFound;
+    }
+
+    /**
+     * is the parser at the beginning of a block that this class can parse?
+     *
+     * @param np
+     * @return true, if can parse from here
+     */
+    public boolean atBeginOfBlock(NexusStreamParser np) {
+        return np.peekMatchIgnoreCase("begin " + NetworkBlock.BLOCK_NAME + ";");
     }
 }

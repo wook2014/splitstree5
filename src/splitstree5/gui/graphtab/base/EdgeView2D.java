@@ -20,6 +20,7 @@
 package splitstree5.gui.graphtab.base;
 
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -51,12 +52,11 @@ public class EdgeView2D extends EdgeViewBase {
      * create an edge view
      *
      * @param e
-     * @param weight
      * @param start
      * @param end
      * @return edge view
      */
-    public EdgeView2D(Edge e, Double weight, final Point2D start, final Point2D end) {
+    public EdgeView2D(Edge e, final Point2D start, final Point2D end, String text) {
         super(e);
 
         Shape edgeShape = null;
@@ -73,13 +73,15 @@ public class EdgeView2D extends EdgeViewBase {
             setReferencePoint(start.add(end).multiply(0.5));
         }
 
-        if (false && weight != null && start != null && end != null) {
-            Label label = new Label("" + weight);
+        if (text != null) {
+            final Label label = new Label(text);
             label.setStyle("");
             label.setFont(ProgramProperties.getDefaultFont());
-            final Point2D m = start.add(end).multiply(0.5);
-            label.setTranslateX(m.getX());
-            label.setTranslateY(m.getY());
+            if (start != null && end != null) {
+                final Point2D m = start.add(end).multiply(0.5);
+                label.setTranslateX(m.getX());
+                label.setTranslateY(m.getY());
+            }
             setLabel(label);
         }
         getShape().setOnMouseEntered(mouseEnteredHandler);
@@ -89,7 +91,7 @@ public class EdgeView2D extends EdgeViewBase {
     /**
      * create a simple edge view
      */
-    public EdgeView2D(Edge e, GraphLayout layout, EdgeView2D.EdgeShape shape, Double weight, final Point2D start, final Point2D control1, final Point2D mid, final Point2D control2, final Point2D support, final Point2D end) {
+    public EdgeView2D(Edge e, GraphLayout layout, EdgeShape shape, final Point2D start, final Point2D control1, final Point2D mid, final Point2D control2, final Point2D support, final Point2D end, String text) {
         super(e);
 
         Shape edgeShape = null;
@@ -170,11 +172,54 @@ public class EdgeView2D extends EdgeViewBase {
             edgeShape.setOnMouseExited(mouseExitedHandler);
         }
 
-        if (false && weight != null && start != null && end != null) {
-            Label label = new Label("" + weight);
-            final Point2D m = (mid != null ? mid : start.add(end).multiply(0.5));
-            label.setTranslateX(m.getX());
-            label.setTranslateY(m.getY());
+        if (text != null) {
+            Label label = new Label(text);
+            final Point2D m;
+            if (mid != null)
+                m = mid;
+            else if (start != null && end != null)
+                m = start.add(end).multiply(0.5);
+            else
+                m = null;
+            if (m != null) {
+                label.setTranslateX(m.getX());
+                label.setTranslateY(m.getY());
+            }
+            setLabel(label);
+        }
+    }
+
+    /**
+     * create an edge view
+     */
+    public EdgeView2D(Edge e, ArrayList<PathElement> elements, String text) {
+        super(e);
+        if (elements != null && elements.size() >= 2) {
+            Shape path = new Path(elements);
+
+            path.setPickOnBounds(false);
+            path.setFill(Color.TRANSPARENT);
+            path.setStroke(Color.BLACK);
+            path.setStrokeLineCap(StrokeLineCap.ROUND);
+            path.setStrokeWidth(1);
+            setShape(path);
+
+            // todo: debug this:
+            final Bounds bounds = path.getLayoutBounds();
+            final Point2D mid = new Point2D(0.5 * (bounds.getMinX() + bounds.getMaxX()), 0.5 * (bounds.getMinY() + bounds.getMaxY()));
+            setReferencePoint(mid);
+
+            path.setOnMouseEntered(mouseEnteredHandler);
+            path.setOnMouseExited(mouseExitedHandler);
+        }
+
+        if (text != null) {
+            Label label = new Label(text);
+            final Point2D m = getReferencePoint();
+            if (m != null) {
+                label.setTranslateX(m.getX());
+                label.setTranslateY(m.getY());
+            }
             setLabel(label);
         }
     }

@@ -22,6 +22,7 @@ package splitstree5.dialogs.importer;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.scene.layout.Pane;
+import jloda.fx.ProgramExecutorService;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.Pair;
@@ -30,7 +31,7 @@ import splitstree5.core.datablocks.*;
 import splitstree5.core.workflow.TaskWithProgressListener;
 import splitstree5.dialogs.ProgressPane;
 import splitstree5.io.imports.interfaces.*;
-import splitstree5.io.imports.nexus.TraitsNexusIn;
+import splitstree5.io.imports.nexus.TraitsNexusImporter;
 import splitstree5.main.MainWindow;
 
 import java.io.IOException;
@@ -46,6 +47,13 @@ public class ImportService extends Service<Boolean> {
     private String title;
 
     private boolean reload = false;
+
+    /**
+     * constructor
+     */
+    public ImportService() {
+        setExecutor(ProgramExecutorService.getInstance());
+    }
 
     /**
      * setup a task
@@ -93,7 +101,7 @@ public class ImportService extends Service<Boolean> {
      *
      * @param importer
      * @param fileName
-     * @return taxa block and datablock, or null
+     * @return taxa block and data block, or null
      */
     public static Pair<TaxaBlock, DataBlock> apply(ProgressListener progress, IImporter importer, String fileName) throws IOException, CanceledException {
         if (importer == null)
@@ -104,7 +112,6 @@ public class ImportService extends Service<Boolean> {
         if (importer instanceof IImportCharacters) {
             dataBlock = new CharactersBlock();
             ((IImportCharacters) importer).parse(progress, fileName, taxaBlock, (CharactersBlock) dataBlock);
-            ((CharactersBlock) dataBlock).check();
         } else if (importer instanceof IImportDistances) {
             dataBlock = new DistancesBlock();
             ((IImportDistances) importer).parse(progress, fileName, taxaBlock, (DistancesBlock) dataBlock);
@@ -119,10 +126,10 @@ public class ImportService extends Service<Boolean> {
             ((IImportNetwork) importer).parse(progress, fileName, taxaBlock, (NetworkBlock) dataBlock);
         } else
             throw new IOException("Import not implemented for: " + Basic.getShortName(importer.getClass()));
-        if (new TraitsNexusIn().isApplicable(fileName)) {
+        if (new TraitsNexusImporter().isApplicable(fileName)) {
             final TraitsBlock traitsBlock = new TraitsBlock();
             taxaBlock.setTraitsBlock(traitsBlock);
-            new TraitsNexusIn().parse(progress, fileName, taxaBlock, traitsBlock);
+            new TraitsNexusImporter().parse(progress, fileName, taxaBlock, traitsBlock);
         }
         return new Pair<>(taxaBlock, dataBlock);
     }

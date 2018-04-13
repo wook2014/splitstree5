@@ -20,6 +20,7 @@
 package splitstree5.core.algorithms.characters2distances.utils;
 
 import splitstree5.core.datablocks.CharactersBlock;
+import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.models.SubstitutionModel;
 import splitstree5.utils.SplitsException;
 
@@ -27,136 +28,113 @@ import splitstree5.utils.SplitsException;
 /**
  * Computes pairwise distances
  *
- * @author bryant
+ * @author David Bryant and Daniel Huson, 2005, 2018
  */
 
-//ToDo: Add support for CharWeights
-
-public class PairwiseCompare {
-    public enum HandleAmbiguous {Ignore, Average, Match}
-
+public class PairwiseCompare { // todo: add support for character weights
     private final int numStates;
     private int numNotMissing;
-    private int numActive;
-    private final double[][] Fcount; /* Stored as doubles, to handle ambiguities and character weights*/
+    private final double[][] fCount; /* Stored as doubles, to handle ambiguities and character weights*/
 
     /**
      * constructor
      *
      * @param characters
-     * @param states
      * @param i
      * @param j
-     * @param handleAmbig
      * @throws SplitsException
      */
-    public PairwiseCompare(final CharactersBlock characters, final String states, final int i, final int j, final HandleAmbiguous handleAmbig) throws SplitsException {
-        final char gapchar = characters.getGapCharacter();
-        final char missingchar = characters.getMissingCharacter();
+    public PairwiseCompare(final CharactersBlock characters, final int i, final int j) throws SplitsException {
+        final String states = characters.getSymbols();
+        final char gapChar = characters.getGapCharacter();
+        final char missingChar = characters.getMissingCharacter();
+        final boolean isNucleotides = characters.getDataType().isNucleotides();
 
         numStates = states.length();
 
-        /* The Fcount matrix has rows and columns for missing and gap states as well */
-        Fcount = new double[numStates + 2][numStates + 2];
+        /* The fCount matrix has rows and columns for missing and gap states as well */
+        fCount = new double[numStates + 2][numStates + 2];
 
-        int gapindex = numStates;
-        int missingindex = numStates + 1;
+        final int gapIndex = numStates;
+        final int missingIndex = numStates + 1;
 
         numNotMissing = 0;
-        numActive = characters.getNchar();
 
         for (int k = 1; k <= characters.getNchar(); k++) {
             final char ci = characters.get(i, k);
             final char cj = characters.get(j, k);
             final double charWeight = characters.getCharacterWeight(k);
 
-            if (ci != missingchar && ci != gapchar && cj != missingchar && cj != gapchar)
+            if (ci != missingChar && ci != gapChar && cj != missingChar && cj != gapChar)
                 numNotMissing++;
 
-            //Handle ambiguouos states?
-            final boolean ambigi, ambigj;
-            if (characters.isHasAmbiguousStates() && (handleAmbig != HandleAmbiguous.Ignore)) {
-                ambigi = characters.isAmbiguityCode(i, k);
-                ambigj = characters.isAmbiguityCode(j, k);
+            //Handle ambiguous states?
+            final boolean ambigI, ambigJ;
+            if (isNucleotides) {
+                ambigI = AmbiguityCodes.isAmbiguityCode(ci);
+                ambigJ = AmbiguityCodes.isAmbiguityCode(cj);
             } else {
-                ambigi = ambigj = false;
+                ambigI = ambigJ = false;
             }
 
-            if (ambigi || ambigj) {
-                //ToDo: store a map from the ambig codes to the difference to avoid these computations.
-
-                final String si = characters.getNucleotidesForAmbiguityCode(i, k);
-                final String sj = characters.getNucleotidesForAmbiguityCode(j, k);
+            if (ambigI || ambigJ) {
+                final String si = AmbiguityCodes.getNucleotides(ci);
+                final String sj = AmbiguityCodes.getNucleotides(cj);
 
                 //Two cases... if they are the same states, then this needs to be distributed
                 //down the diagonal of F. Otherwise, average.
 
-                if (si.equalsIgnoreCase(sj)) {
+                if (si.equals(sj)) {
                     double weight = 1.0 / si.length();
                     for (int pos = 0; pos < si.length(); pos++) {
                         int statei = states.indexOf(si.charAt(pos));
-                        Fcount[statei][statei] += weight * charWeight;
+                        fCount[statei][statei] += weight * charWeight;
                     }
-                } else if (handleAmbig == HandleAmbiguous.Average) {
+                } else {
                     double weight = 1.0 / (si.length() * sj.length());
 
                     for (int x = 0; x < si.length(); x++) {
                         for (int y = 0; y < sj.length(); y++) {
                             final int cx = si.charAt(x);
                             final int cy = sj.charAt(y);
-                            int statex = states.indexOf(cx);
-                            int statey = states.indexOf(cy);
-                            if (cx == gapchar) statex = gapindex;
-                            if (cx == missingchar) statex = missingindex;
-                            if (cy == gapchar) statey = gapindex;
-                            if (cy == missingchar) statey = missingindex;
-                            if (statex >= 0 && statey >= 0)
-                                Fcount[statex][statey] += weight * charWeight;
+                            int stateX = states.indexOf(cx);
+                            int stateY = states.indexOf(cy);
+                            if (cx == gapChar) stateX = gapIndex;
+                            if (cx == missingChar) stateX = missingIndex;
+                            if (cy == gapChar) stateY = gapIndex;
+                            if (cy == missingChar) stateY = missingIndex;
+                            if (stateX >= 0 && stateY >= 0)
+                                fCount[stateX][stateY] += weight * charWeight;
                             else {
-                                if (statex < 0)
+                                if (stateX < 0)
                                     throw new SplitsException("Position " + k + " for taxa " + i + ": invalid character '" + cx + "'");
-                                else if (statey < 0)
+                                else if (stateY < 0)
                                     throw new SplitsException("Position " + k + " for taxa " + j + ": invalid character '" + cy + "'");
                             }
                         }
                     }
                 }
             } else {
-                int statei = states.indexOf(ci);
-                int statej = states.indexOf(cj);
-                if (ci == gapchar) statei = gapindex;
-                if (ci == missingchar) statei = missingindex;
-                if (cj == gapchar) statej = gapindex;
-                if (cj == missingchar) statej = missingindex;
-                if (statei >= 0 && statej >= 0)
-                    Fcount[statei][statej] += charWeight;
+                int stateI = states.indexOf(ci);
+                int stateJ = states.indexOf(cj);
+                if (ci == gapChar)
+                    stateI = gapIndex;
+                if (ci == missingChar)
+                    stateI = missingIndex;
+                if (cj == gapChar)
+                    stateJ = gapIndex;
+                if (cj == missingChar)
+                    stateJ = missingIndex;
+                if (stateI >= 0 && stateJ >= 0)
+                    fCount[stateI][stateJ] += charWeight;
                 else {
-                    if (statei < 0)
+                    if (stateI < 0)
                         throw new SplitsException("Position " + k + " for taxa " + i + ": invalid character '" + ci + "'");
-                    else if (statej < 0)
+                    else if (stateJ < 0)
                         throw new SplitsException("Position " + k + " for taxa " + j + ": invalid character '" + cj + "'");
                 }
             }
         }
-    }
-
-
-    /**
-     * Number of sites that are not masked
-     *
-     * @return numActive
-     */
-    public int getNumActive() {
-        return numActive;
-    }
-
-    /**
-     * Number of active sites with gaps or missing states in one or both sequences
-     *
-     * @return numActive - numNotMissing
-     */
-    public int getNumGaps() {
-        return getNumActive() - getNumNotMissing();
     }
 
     /**
@@ -185,8 +163,8 @@ public class PairwiseCompare {
      *
      * @return Fcound
      */
-    public double[][] getFcount() {
-        return Fcount;
+    public double[][] getfCount() {
+        return fCount;
     }
 
     /**
@@ -200,34 +178,18 @@ public class PairwiseCompare {
         if (getNumNotMissing() > 0) {
             for (int i = 0; i < getNumStates(); i++)
                 for (int j = 0; j < getNumStates(); j++)
-                    Fsum += Fcount[i][j];
+                    Fsum += fCount[i][j];
 
 
             for (int i = 0; i < getNumStates(); i++) {
                 for (int j = 0; j < getNumStates(); j++) {
                     F[i][j] =
-                            Fcount[i][j] / Fsum;
+                            fCount[i][j] / Fsum;
                 }
             }
         } else {
             F = null;
             //TODO: This should probably throw an 'undefinedDistance' exception.
-            //System.err.println("Missing distance");
-        }
-        return F;
-    }
-
-    public double[][] getExtendedF() {
-        double[][] F = new double[getNumStates() + 2][getNumStates() + 2];
-        if (getNumActive() > 0) {
-            for (int i = 0; i < getNumStates() + 2; i++) {
-                for (int j = 0; j < getNumStates() + 2; j++) {
-                    F[i][j] =
-                            Fcount[i][j] / (double) getNumActive();
-                }
-            }
-        } else {
-            F = null;
             //System.err.println("Missing distance");
         }
         return F;
@@ -252,33 +214,29 @@ public class PairwiseCompare {
             }
         }
         return -logL;
-
     }
 
-    private double goldenSection(
-            SubstitutionModel model,
-            double[][] F,
-            double tmin,
-            double tmax) {
+    /**
+     * golden section
+     *
+     * @param model
+     * @param F
+     * @param tmin
+     * @param tmax
+     * @return
+     */
+    private double goldenSection(SubstitutionModel model, double[][] F, double tmin, double tmax) {
+        final double GS_EPSILON = 0.000001;
+        final double tau = 2.0 / (1.0 + Math.sqrt(5.0)); //Golden ratio
 
-        double a, b, tau, aa, bb, faa, fbb;
-        tau = 2.0 / (1.0 + Math.sqrt(5.0)); //Golden ratio
-        double GS_EPSILON = 0.000001;
-        int nSteps;
-
-        nSteps = 0;
-
-        a = tmin;
-        b = tmax;
-        aa = a + (1.0 - tau) * (b - a);
-        bb = a + tau * (b - a);
-        faa = evalL(model, F, aa);
-        fbb = evalL(model, F, bb);
+        double a = tmin;
+        double b = tmax;
+        double aa = a + (1.0 - tau) * (b - a);
+        double bb = a + tau * (b - a);
+        double faa = evalL(model, F, aa);
+        double fbb = evalL(model, F, bb);
 
         while ((b - a) > GS_EPSILON) {
-            nSteps++;
-            // cout<<"["<<a<<","<<aa<<","<<bb<<","<<b<<"] \t \t ("<<faa<<","<<fbb<<")"<<endl;
-
             if (faa < fbb) {
                 b = bb;
                 bb = aa;
@@ -308,31 +266,27 @@ public class PairwiseCompare {
      * @throws SaturatedDistancesException distance undefined if saturated (distance more than 10 substitutions per site)
      */
     public double mlDistance(SubstitutionModel model) throws SaturatedDistancesException {
-        double t;
-        double dist = 0.0;
 
         //TODO: Replace the golden arc method with Brent's algorithm
-        double[][] fullF = getF();
-        double[][] F;
-        int nstates = model.getNstates();
-
-        F = new double[nstates][nstates];
+        final int nStates = model.getNstates();
+        final double[][] fullF = getF();
+        final double[][] F = new double[nStates][nStates];
 
         double k = 0.0;
-        for (int i = 0; i < nstates; i++) {
-            for (int j = 0; j < nstates; j++) {
+        for (int i = 0; i < nStates; i++) {
+            for (int j = 0; j < nStates; j++) {
                 double Fij = fullF[i][j];
                 F[i][j] = Fij;
                 k += Fij;
             }
         }
-        for (int i = 0; i < nstates; i++) {
-            for (int j = 0; j < nstates; j++) {
+        for (int i = 0; i < nStates; i++) {
+            for (int j = 0; j < nStates; j++) {
                 F[i][j] /= k; /* Rescale so the entries sum to 1.0 */
             }
         }
 
-        t = goldenSection(model, F, 0.00000001, 2.0);
+        double t = goldenSection(model, F, 0.00000001, 2.0);
         if (t == 2.0) {
             t = goldenSection(model, F, 2.0, 10.0);
             if (t == 10.0) {
@@ -343,7 +297,6 @@ public class PairwiseCompare {
     }
 
     public double bulmerVariance(double dist, double b) {
-
         return (Math.exp(2 * dist / b) * b * (1 - Math.exp(-dist / b)) * (1 - b + b * Math.exp(-dist / b))) / ((double) this.getNumNotMissing());
     }
 }

@@ -24,14 +24,11 @@ import splitstree5.core.datablocks.TaxaBlock;
 import java.io.IOException;
 import java.io.Writer;
 
-import static splitstree5.io.nexus.DistancesNexusInput.NAME;
-
-
 /**
  * distances nexus output
  * Daniel Huson, 2.2018
  */
-public class DistancesNexusOutput implements INexusOutput<DistancesBlock> {
+public class DistancesNexusOutput extends NexusIOBase implements INexusOutput<DistancesBlock> {
     /**
      * write a block in nexus format
      *
@@ -44,8 +41,8 @@ public class DistancesNexusOutput implements INexusOutput<DistancesBlock> {
     public void write(Writer w, TaxaBlock taxaBlock, DistancesBlock distancesBlock) throws IOException {
         final DistancesNexusFormat format = (DistancesNexusFormat) distancesBlock.getFormat();
 
-        w.write("\nBEGIN " + NAME + ";\n");
-        UtilitiesNexusIO.writeTitleLinks(w, distancesBlock);
+        w.write("\nBEGIN " + DistancesBlock.BLOCK_NAME + ";\n");
+        writeTitleAndLink(w);
         w.write("DIMENSIONS ntax=" + distancesBlock.getNtax() + ";\n");
         w.write("FORMAT");
         if (format.isOptionLabels())
@@ -139,7 +136,7 @@ public class DistancesNexusOutput implements INexusOutput<DistancesBlock> {
             }
             w.write(";\n");
         }
-        w.write("END; [" + NAME + "]\n");
+        w.write("END; [" + DistancesBlock.BLOCK_NAME + "]\n");
     }
 
     /**

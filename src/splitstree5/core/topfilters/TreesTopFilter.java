@@ -53,6 +53,9 @@ public class TreesTopFilter extends ATopFilter<TreesBlock> {
 
         setAlgorithm(new Algorithm<TreesBlock, TreesBlock>("TopFilter") {
             public void compute(ProgressListener progress, TaxaBlock modifiedTaxaBlock, TreesBlock parent, TreesBlock child) throws CanceledException {
+                {
+                    setShortDescription("Trees top filter");
+                }
                 final TaxaBlock originalTaxa = originalTaxaNode.getDataBlock();
 
                 if (originalTaxa.getTaxa().equals(modifiedTaxaBlock.getTaxa())) {

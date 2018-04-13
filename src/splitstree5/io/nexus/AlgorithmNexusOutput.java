@@ -38,55 +38,43 @@
 
 package splitstree5.io.nexus;
 
-import jloda.util.Basic;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.utils.Option;
 import splitstree5.utils.OptionsAccessor;
 
 import java.io.IOException;
 import java.io.Writer;
-
-import static splitstree5.io.nexus.AlgorithmNexusInput.NAME;
+import java.util.ArrayList;
 
 /**
  * algorithm nexus output
  * Daniel Huson, 2.2018
  */
-public class AlgorithmNexusOutput {
+public class AlgorithmNexusOutput extends NexusIOBase {
     /**
      * write a description of the algorithm
      *
      * @param w
      * @throws IOException
      */
-    public void write(Algorithm algorithm, Writer w) throws IOException {
-        w.write("\nBEGIN " + NAME + ";\n");
-        UtilitiesNexusIO.writeTitleLinks(w, algorithm);
-        w.write("\tALGORITHM = " + algorithm.getName() + ";\n");
-        for (Option option : OptionsAccessor.getAllOptions(algorithm)) {
-            w.write("\t\tOPTION " + option.getName() + " = " + option.getValue().toString() + ";\n");
-        }
-        w.write("END; [" + NAME + "]\n");
-    }
+    public void write(Writer w, Algorithm algorithm) throws IOException {
+        w.write("\nBEGIN " + Algorithm.BLOCK_NAME + ";\n");
+        writeTitleAndLink(w);
+        w.write("\tALGORITHM " + algorithm.getName() + ";\n");
 
-    /**
-     * get the usage string for this particular algorithm
-     *
-     * @param algorithm
-     * @return usage for this algorithm
-     */
-    public String getUsage(Algorithm algorithm) {
-        final StringBuilder buf = new StringBuilder();
-        buf.append("BEGIN " + NAME + ";\n");
-        buf.append("\t[TITLE title;]\n");
-        buf.append("\t[LINK name = title;]\n");
-        buf.append("ALGORITHM = ").append(algorithm.getName()).append(";\n");
-        for (Option option : OptionsAccessor.getAllOptions(algorithm)) {
-            final String[] choice = option.getLegalValues();
-            final String possibleValues = (choice != null ? "{ " + Basic.toString(choice, " | ") + " }" : "<" + option.getType().toString() + ">");
-            buf.append("\t\tOPTION ").append(option.getName()).append(" = ").append(possibleValues).append(";\n");
+        final ArrayList<Option> options = OptionsAccessor.getAllOptions(algorithm);
+        if (options.size() > 0) {
+            w.write("\tOPTIONS\n");
+            boolean first = true;
+            for (Option option : options) {
+                if (first)
+                    first = false;
+                else
+                    w.write(",\n");
+                w.write("\t\t" + option.getName() + " = " + option.getValue().toString());
+            }
+            w.write(";\n");
         }
-        buf.append("END; [" + NAME + "]\n");
-        return buf.toString();
+        w.write("END; [" + Algorithm.BLOCK_NAME + "]\n");
     }
 }

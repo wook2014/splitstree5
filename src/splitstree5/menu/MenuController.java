@@ -28,6 +28,7 @@ import jloda.fx.RecentFilesManager;
 import jloda.util.AppleStuff;
 import jloda.util.ProgramProperties;
 import splitstree5.dialogs.importer.FileOpener;
+import splitstree5.io.nexus.workflow.WorkflowNexusInput;
 import splitstree5.main.MainWindow;
 import splitstree5.main.MainWindowManager;
 
@@ -892,7 +893,10 @@ public class MenuController {
         }
 
         RecentFilesManager.getInstance().setFileOpener((fileName) -> {
-            FileOpener.open(false, mainWindow, fileName, null);
+            if (WorkflowNexusInput.isApplicable(fileName))
+                WorkflowNexusInput.open(mainWindow, fileName);
+            else
+                FileOpener.open(false, mainWindow, fileName, null);
         });
 
         wrapTextMenuItem.selectedProperty().unbind();

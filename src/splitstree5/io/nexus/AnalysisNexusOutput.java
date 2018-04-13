@@ -25,13 +25,11 @@ import splitstree5.core.datablocks.AnalysisBlock;
 import java.io.IOException;
 import java.io.Writer;
 
-import static splitstree5.io.nexus.AnalysisNexusInput.NAME;
-
 /**
  * writes an analysi result in nexus format
  * Daniel Huson, 2.2018
  */
-public class AnalysisNexusOutput {
+public class AnalysisNexusOutput extends NexusIOBase {
     /**
      * writes the analysis block in nexus format
      *
@@ -40,13 +38,13 @@ public class AnalysisNexusOutput {
      * @throws IOException
      */
     public void write(Writer w, AnalysisBlock block) throws IOException {
-        w.write("\nBEGIN " + NAME + ";\n");
-        UtilitiesNexusIO.writeTitleLinks(w, block);
+        w.write("\nBEGIN " + AnalysisBlock.BLOCK_NAME + ";\n");
+        writeTitleAndLink(w);
         w.write("\tDIMENSIONS nlines=" + Basic.countOccurrences(block.getShortDescription(), '\n') + ";\n");
         w.write("\tRESULT;\n");
         w.write(block.getShortDescription());
         if (!block.getShortDescription().endsWith("\n"))
             w.write("\n");
-        w.write("END; [" + NAME + "]\n");
+        w.write("END; [" + AnalysisBlock.BLOCK_NAME + "]\n");
     }
 }

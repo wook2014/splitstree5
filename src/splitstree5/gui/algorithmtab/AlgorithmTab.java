@@ -91,6 +91,7 @@ public class AlgorithmTab<P extends DataBlock, C extends DataBlock> extends View
             if (n == UpdateState.VALID) {
                 this.currentAlgorithm = connector.getAlgorithm();
                 controller.getAlgorithmComboBox().setValue(currentAlgorithm);
+                algorithmPane.syncModel2Controller();
             } else if (n == UpdateState.FAILED)
                 applicableChangeHasBeenMade.set(true);
             // undoManager.clear();
@@ -156,7 +157,6 @@ public class AlgorithmTab<P extends DataBlock, C extends DataBlock> extends View
         });
 
         algorithmPane.syncModel2Controller();
-
 
         controller.getApplyButton().setOnAction((e) -> {
             if (connector.getAlgorithm() != currentAlgorithm)

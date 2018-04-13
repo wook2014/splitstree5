@@ -20,9 +20,6 @@ import splitstree5.core.datablocks.characters.CharactersType;
  */
 
 public class Dice extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-
-    private PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates = PairwiseCompare.HandleAmbiguous.Ignore;
-
     public final static String DESCRIPTION = "Calculates distances using the Dice coefficient distance.";
 
     @Override
@@ -34,12 +31,11 @@ public class Dice extends Algorithm<CharactersBlock, DistancesBlock> implements 
 
     @Override
     public boolean isApplicable(TaxaBlock taxaBlock, CharactersBlock parent) {
-        return parent.getDataType().equals(CharactersType.standard);
+        return parent.getDataType().equals(CharactersType.Standard);
     }
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
-            throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock) throws Exception {
 
         int ntax = taxaBlock.getNtax();
         distancesBlock.setNtax(ntax);
@@ -52,7 +48,7 @@ public class Dice extends Algorithm<CharactersBlock, DistancesBlock> implements 
 
         for (int s = 1; s <= ntax; s++) {
             for (int t = s + 1; t <= ntax; t++) {
-                PairwiseCompare seqPair = new PairwiseCompare(charactersBlock, "01", s, t, optionHandleAmbiguousStates);
+                PairwiseCompare seqPair = new PairwiseCompare(charactersBlock, s, t);
                 double dist;
 
                 double[][] F = seqPair.getF();
@@ -89,14 +85,6 @@ public class Dice extends Algorithm<CharactersBlock, DistancesBlock> implements 
 
     final public String getDescription() {
         return DESCRIPTION;
-    }
-
-    public PairwiseCompare.HandleAmbiguous getOptionHandleAmbiguousStates() {
-        return optionHandleAmbiguousStates;
-    }
-
-    public void setOptionHandleAmbiguousStates(PairwiseCompare.HandleAmbiguous optionHandleAmbiguousStates) {
-        this.optionHandleAmbiguousStates = optionHandleAmbiguousStates;
     }
 }
 

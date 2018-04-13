@@ -20,6 +20,7 @@
 package splitstree5.core;
 
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
 import javafx.collections.ListChangeListener;
 import jloda.fx.ASelectionModel;
@@ -49,6 +50,8 @@ public class Document {
 
     private final BooleanProperty dirty = new SimpleBooleanProperty();
 
+    private final BooleanProperty hasSplitsTree5File = new SimpleBooleanProperty(false);
+
     /**
      * constructor
      */
@@ -61,6 +64,8 @@ public class Document {
         fileName.addListener((c, o, n) -> {
             Platform.runLater(() -> name.set(Basic.getFileNameWithoutPath(fileName.get())));
         });
+
+        workflow.updatingProperty().addListener((InvalidationListener) (c) -> setDirty(true));
     }
 
     /**
@@ -137,5 +142,17 @@ public class Document {
 
     public ReadOnlyStringProperty nameProperty() {
         return name;
+    }
+
+    public boolean isHasSplitsTree5File() {
+        return hasSplitsTree5File.get();
+    }
+
+    public BooleanProperty hasSplitsTree5FileProperty() {
+        return hasSplitsTree5File;
+    }
+
+    public void setHasSplitsTree5File(boolean hasSplitsTree5File) {
+        this.hasSplitsTree5File.set(hasSplitsTree5File);
     }
 }

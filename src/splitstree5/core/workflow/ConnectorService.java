@@ -41,10 +41,10 @@ package splitstree5.core.workflow;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import jloda.fx.NotificationManager;
+import jloda.fx.ProgramExecutorService;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
 import splitstree5.core.datablocks.DataBlock;
-import splitstree5.core.misc.ProgramExecutorService;
 import splitstree5.dialogs.ProgressPane;
 
 /**
@@ -57,7 +57,7 @@ public class ConnectorService<P extends DataBlock, C extends DataBlock> extends 
 
     public ConnectorService(Connector<P, C> connector) {
         this.connector = connector;
-        executorProperty().set(ProgramExecutorService.getExecutorService());
+        executorProperty().set(ProgramExecutorService.getInstance());
     }
 
     @Override

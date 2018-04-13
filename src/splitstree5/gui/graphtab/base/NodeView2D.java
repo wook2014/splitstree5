@@ -26,9 +26,10 @@ import javafx.scene.control.Labeled;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
-import jloda.fx.shapes.CircleShape;
+import jloda.fx.shapes.NodeShape;
 import jloda.util.ProgramProperties;
 import splitstree5.gui.formattab.FormatItem;
 import splitstree5.gui.utils.SelectionEffect;
@@ -53,29 +54,35 @@ public class NodeView2D extends NodeViewBase {
      * @param text
      * @return
      */
-    public NodeView2D(jloda.graph.Node v, Point2D location, String text) {
+    public NodeView2D(jloda.graph.Node v, Point2D location, NodeShape nodeShape, double shapeWidth, double shapeHeight, String text) {
         super(v);
         setLocation(location);
-        CircleShape circle = new CircleShape(2);
-        shape = circle;
+        if (nodeShape == null)
+            shape = NodeShape.create(NodeShape.Circle, 2);
+        else {
+            shape = NodeShape.create(nodeShape, shapeWidth, shapeHeight);
+            shapeWidth = 1;
+        }
         shapeGroup.getChildren().add(shape);
         shapeGroup.setTranslateX(location.getX());
         shapeGroup.setTranslateY(location.getY());
 
         if (text != null && text.length() > 0) {
-            circle.setStroke(Color.BLACK);
-            circle.setFill(Color.WHITE);
+            shape.setStroke(Color.BLACK);
+            shape.setFill(Color.WHITE);
 
             label = new Label(text);
             label.setStyle("");
             label.setFont(ProgramProperties.getDefaultFont());
-            label.setTranslateX(location.getX() + circle.getRadius() + 2);
+            label.setTranslateX(location.getX() + shapeWidth + 2);
             label.setTranslateY(location.getY());
             labelGroup.getChildren().add(label);
         } else {
-            circle.setStroke(Color.BLACK);
-            circle.setFill(Color.WHITE);
-            circle.setRadius(0.75);
+            if (nodeShape == null) {
+                ((Circle) shape).setRadius(0.75);
+            }
+            shape.setStroke(Color.BLACK);
+            shape.setFill(Color.WHITE);
             label = null;
         }
         updateStuff();
@@ -105,7 +112,7 @@ public class NodeView2D extends NodeViewBase {
 
     private void updateStuff() {
         if (label != null || shape != null) {
-            EventHandler<MouseEvent> mouseEnteredEventHandler = event -> {
+            final EventHandler<MouseEvent> mouseEnteredEventHandler = event -> {
                 if (shapeGroup != null) {
                     oldScaleX = shapeGroup.getScaleX();
                     oldScaleY = shapeGroup.getScaleY();
@@ -116,18 +123,18 @@ public class NodeView2D extends NodeViewBase {
                     shapeGroup.setScaleX(factorX * shapeGroup.getScaleX());
                     shapeGroup.setScaleY(factorY * shapeGroup.getScaleY());
                 }
-                if (label != null) {
+                if (false && label != null) {
                     label.setScaleX(1.2 * label.getScaleX());
                     label.setScaleY(1.2 * label.getScaleY());
                 }
 
             };
-            EventHandler<MouseEvent> mouseExitedEventHandler = event -> {
+            final EventHandler<MouseEvent> mouseExitedEventHandler = event -> {
                 if (shapeGroup != null) {
                     shapeGroup.setScaleX(oldScaleX);
                     shapeGroup.setScaleY(oldScaleY);
                 }
-                if (label != null) {
+                if (false && label != null) {
                     label.setScaleX(1.0 / 1.2 * label.getScaleX());
                     label.setScaleY(1.0 / 1.2 * label.getScaleY());
                 }
@@ -357,26 +364,4 @@ public class NodeView2D extends NodeViewBase {
     public javafx.scene.Node getNodeShape() {
         return shape;
     }
-
-    /*
-    public static String toSaveString (NodeView2D nv) {
-        final StringBuilder buf=new StringBuilder();
-
-        buf.append(String.format("id=%d",nv.getNode().getId()));
-        buf.append(String.format(" p=%.4f %.4f",nv.getLocation().getX(),nv.getLocation().getY()));
-        if(nv.getShape()!=null) {
-            buf.append(String.format(" s=%s %f %f %f %f", NodeShape.valueOf(nv.getShape()),nv.getShape().getTranslateX(),nv.getShape().getTranslateY(),nv.getShape().getBoundsInLocal().getWidth(),nv.getShape().getBoundsInLocal().getHeight()));
-        }
-        if(nv.getLabel()!=null) {
-            buf.append(String.format(" t='%s' %f %f '%s'", nv.getLabel().getText(),nv.getLabel().getTranslateX(),nv.getLabel().getTranslateY(),
-                    nv.getLabel().getFont().toString())); // encode font better
-        }
-        buf.append("\n");
-        return buf.toString();
-    }
-
-    public NodeView2D fromSaveString (String string) {
-
-    }
-    */
 }

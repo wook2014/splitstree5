@@ -25,9 +25,12 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.shape.PathElement;
 import jloda.fx.ZoomableScrollPane;
+import jloda.fx.shapes.NodeShape;
 import jloda.graph.*;
 import jloda.phylo.PhyloGraph;
 import jloda.phylo.PhyloTree;
@@ -38,6 +41,7 @@ import splitstree5.gui.utils.RubberBandSelection;
 import splitstree5.menu.MenuController;
 import splitstree5.undo.CompositeCommand;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -53,11 +57,18 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
     private DoubleProperty angleChange = new SimpleDoubleProperty(0);
     private ObjectProperty<GraphLayout> layout = new SimpleObjectProperty<>(GraphLayout.LeftToRight);
 
+    private final boolean withScrollPane;
+
     /**
      * constructor
      */
     public Graph2DTab() {
+        this(true);
+    }
+
+    public Graph2DTab(boolean withScrollPane) {
         super();
+        this.withScrollPane = withScrollPane;
     }
 
     /**
@@ -115,37 +126,41 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
                 nodeSelectionModel.clearSelection();
                 edgeSelectionModel.clearSelection();
             } finally {
-                Executors.newSingleThreadExecutor().submit(() -> {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                    }
-                    Platform.runLater(() -> layoutLabels(sparseLabels.get()));
-                });
-            }
-            if (!(borderPane.getCenter() instanceof ScrollPane)) {
-                setContent(borderPane);
-                scrollPane = new ZoomableScrollPane(centerPane) {
-                    @Override // override node scaling to use coordinate scaling
-                    public void updateScale() {
-                        if (layout.get() == GraphLayout.Radial) {
-                            getUndoManager().doAndAdd(new ZoomCommand(getZoomFactorY(), getZoomFactorY(), Graph2DTab.this));
-                        } else {
-                            getUndoManager().doAndAdd(new ZoomCommand(getZoomFactorX(), getZoomFactorY(), Graph2DTab.this));
+                if (!isSkipNextLabelLayout()) {
+                    Executors.newSingleThreadExecutor().submit(() -> {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
                         }
-                    }
-                };
-                new RubberBandSelection(centerPane, scrollPane, group, createRubberBandSelectionHandler());
+                        Platform.runLater(() -> layoutLabels(sparseLabels.get()));
+                    });
+                } else
+                    setSkipNextLabelLayout(false);
+            }
+            if (withScrollPane) {
+                if (!(borderPane.getCenter() instanceof ScrollPane)) {
+                    setContent(borderPane);
+                    scrollPane = new ZoomableScrollPane(centerPane) {
+                        @Override // override node scaling to use coordinate scaling
+                        public void updateScale() {
+                            if (layout.get() == GraphLayout.Radial) {
+                                getUndoManager().doAndAdd(new ZoomCommand(getZoomFactorY(), getZoomFactorY(), Graph2DTab.this));
+                            } else {
+                                getUndoManager().doAndAdd(new ZoomCommand(getZoomFactorX(), getZoomFactorY(), Graph2DTab.this));
+                            }
+                        }
+                    };
+                    new RubberBandSelection(centerPane, scrollPane, group, createRubberBandSelectionHandler());
 
-                scrollPane.lockAspectRatioProperty().bind(layout.isEqualTo(GraphLayout.Radial));
-                centerPane.minWidthProperty().bind(Bindings.createDoubleBinding(() ->
-                        scrollPane.getViewportBounds().getWidth(), scrollPane.viewportBoundsProperty()).subtract(20));
-                centerPane.minHeightProperty().bind(Bindings.createDoubleBinding(() ->
-                        scrollPane.getViewportBounds().getHeight(), scrollPane.viewportBoundsProperty()).subtract(20));
+                    scrollPane.lockAspectRatioProperty().bind(layout.isEqualTo(GraphLayout.Radial));
+                    centerPane.minWidthProperty().bind(Bindings.createDoubleBinding(() ->
+                            scrollPane.getViewportBounds().getWidth(), scrollPane.viewportBoundsProperty()).subtract(20));
+                    centerPane.minHeightProperty().bind(Bindings.createDoubleBinding(() ->
+                            scrollPane.getViewportBounds().getHeight(), scrollPane.viewportBoundsProperty()).subtract(20));
 
-                borderPane.setCenter(scrollPane);
-                // need to put this here after putting the center pane in:
-                borderPane.setTop(findToolBar);
+                    borderPane.setCenter(scrollPane);
+                    // need to put this here after putting the center pane in:
+                    borderPane.setTop(findToolBar);
 
                 /* this works once window is open, but not first time around...
                 scrollPane.layout();
@@ -155,6 +170,11 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
 
                 scrollPane.setHvalue(0.5);
                 */
+                }
+            } else { // no scrollpane
+                centerPane.setPrefWidth(100);
+                centerPane.setPrefHeight(100);
+                centerPane.setStyle("-fx-border-color: black");
             }
         });
     }
@@ -210,6 +230,57 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
                 }
             }
         }
+    }
+
+    /**
+     * creates a node view
+     *
+     * @param v
+     * @param location
+     * @param shape
+     * @param shapeWidth
+     * @param shapeHeight
+     * @param label
+     * @return
+     */
+    abstract public NodeView2D createNodeView(Node v, Point2D location, NodeShape shape, double shapeWidth, double shapeHeight, String label);
+
+    /**
+     * creates a simple straight edge
+     *
+     * @param e
+     * @param start
+     * @param end
+     * @param label
+     * @return
+     */
+    abstract public EdgeView2D createEdgeView(Edge e, final Point2D start, final Point2D end, String label);
+
+    /**
+     * create a complex edge view
+     *
+     * @param e
+     * @param shape
+     * @param start
+     * @param control1
+     * @param mid
+     * @param control2
+     * @param support
+     * @param end
+     * @return edge view
+     */
+    abstract public EdgeView2D createEdgeView(Edge e, GraphLayout graphLayout, EdgeView2D.EdgeShape shape, final Point2D start, final Point2D control1, final Point2D mid, final Point2D control2, final Point2D support, final Point2D end, String label);
+
+    /**
+     * create an edge view
+     *
+     * @param e
+     * @param elements
+     * @param label
+     * @return edge view
+     */
+    public EdgeView2D createEdgeView(Edge e, final ArrayList<PathElement> elements, String label) {
+        return new EdgeView2D(e, elements, label);
     }
 
     /**
