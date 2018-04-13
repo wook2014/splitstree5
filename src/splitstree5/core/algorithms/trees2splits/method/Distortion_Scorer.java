@@ -14,7 +14,7 @@ public class Distortion_Scorer {
 
     public int run(MyTree t, BitSet A, BitSet B, ArrayList<String> taxaOrdering) {
 
-       // computeScoreNodeConflictingSet(t,  A,  B, taxaOrdering);
+      // computeScoreNodeConflictingSet(t,  A,  B, t.getTaxa());
 
         ArrayList<MyNode> nodes = t.getNodes();
         HashMap<MyNode, Integer> scoreA = new HashMap<MyNode, Integer>();
@@ -138,13 +138,19 @@ public class Distortion_Scorer {
         HashMap<MyNode, BitSet> leftConflictingSet = new HashMap<MyNode, BitSet>();
         HashMap<MyNode, BitSet> rightConflictingSet = new HashMap<MyNode, BitSet>();
         BitSet cluster;
+
+
         BitSet Ac = (BitSet) A.clone();
         BitSet Bc = (BitSet) B.clone();
         BitSet temp;
+        // try wtith t.getLCA
+
+
         for (MyNode node : t.getNodes()) {
+
             Ac = (BitSet) A.clone();
             Bc = (BitSet) B.clone();
-            cluster = t.getCluster(node, t.getTaxa()); //indexes of the splits are wrong
+            cluster = t.getCluster(node, t.getTaxa()); //indexes of the Bit sets of the splits does not correspond to indexes in the taxa
             nodeCluster.put(node, cluster);
             if (cluster.intersects(A)) {
                 Ac.intersects(cluster);
@@ -168,7 +174,8 @@ public class Distortion_Scorer {
 
 
         }
-        //  t.getLCA(, taxaOrdering);
+
+
 
 
     }

@@ -33,6 +33,8 @@ import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToSplits;
+import splitstree5.core.algorithms.trees2splits.util.MyNewickParser;
+import splitstree5.core.algorithms.trees2splits.util.MyNode;
 import splitstree5.core.algorithms.trees2splits.utils.PartialSplit;
 import splitstree5.core.algorithms.trees2trees.ConsensusTree;
 import splitstree5.core.datablocks.SplitsBlock;
@@ -41,10 +43,13 @@ import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
 import splitstree5.core.misc.Distortion;
+import splitstree5.io.imports.utils.SimpleNewickParser;
 import splitstree5.utils.SplitsException;
 import splitstree5.utils.SplitsUtilities;
 import splitstree5.utils.TreesUtilities;
 import jloda.graph.Graph;
+import splitstree5.core.algorithms.trees2splits.method.Distortion_Scorer;
+
 
 import java.util.stream.Collectors;
 import java.io.IOException;
@@ -52,7 +57,11 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import splitstree5.core.algorithms.trees2splits.simulation.Simulation_Manager;
+import splitstree5.core.algorithms.trees2splits.util.MyTree;
+
 import java.util.*;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import splitstree5.core.algorithms.splits2trees.GreedyTree;
@@ -67,7 +76,7 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
 
     private int optionMaxDistortionScore = 1;
     private double optionMinimumSplitWeight = 0.5;//10000 *0.5
-    private double percentofSplitsWithLowDistortion = 0.1;
+    private double percentofSplitsWithLowDistortion = 0.2;
     private final SimpleObjectProperty<EdgeWeights> optionEdgeWeights = new SimpleObjectProperty<>(EdgeWeights.Mean);
     private DoubleProperty optionThreshold = new SimpleDoubleProperty(0.5);
 
@@ -75,6 +84,11 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
 
     public final static String DESCRIPTION = "Computes the anti-consensus splits of trees";
 
+    private static ProgressListener progress = null;
+    private static SplitsBlock splitsBlock = null;
+    private static TreesBlock treesBlock = null;
+    private static TaxaBlock taxaBlock = null;
+    private static TreesBlock majorityTreeBlock = null;
     @Override
     public String getCitation() {
         return null;
@@ -92,13 +106,27 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock) throws Exception {
 
 
+
+       //for tests
+     /*   if (AntiConsensusSplits.progress == null)
+            AntiConsensusSplits.progress = progress;
+
+        if (AntiConsensusSplits.splitsBlock == null)
+            AntiConsensusSplits.splitsBlock = splitsBlock;
+
+        if (AntiConsensusSplits.treesBlock == null)
+            AntiConsensusSplits.treesBlock = treesBlock;
+
+        if (AntiConsensusSplits.taxaBlock == null)
+            AntiConsensusSplits.taxaBlock = taxaBlock;*/
+
         final ObservableList<PhyloTree> trees = treesBlock.getTrees();
         final Map<BitSet, Pair<BitSet, WeightStats>> splitsAndWeights = new HashMap<>();
         final BitSet taxaInTree = taxaBlock.getTaxaSet();
 
         List<ASplit> treeSplits = new ArrayList<ASplit>();
         ArrayList<ASplit> treeSplits2 = new ArrayList<ASplit>();
-        int count;
+
 
         SplitsBlock splits = new SplitsBlock();
         //super.compute(progress, taxaBlock, treesBlock, splits);
@@ -110,16 +138,6 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
         if (treesBlock.getNTrees() == 1)
             System.err.println("Anti-consensus: only one tree specified");
 
-
-        ////incompatibility graph
-        //Graph graph = buildIncompatibilityGraph(splits.getSplits());
-        //Graph g2=buildIncompatibilityGraph(findMajorityRuleLowDistortionSplits(splits, treesBlock, 0.5));
-        //for (Node v : graph.nodes()) {
-        //   float compatibility = getConflictScore(v);
-
-        // }
-
-        ///////////////////////
         progress.setSubtask("Processing splits");
         progress.setMaximum(splits.getNsplits() * treesBlock.getNTrees());
         progress.setProgress(0);
@@ -127,51 +145,116 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
         int totalScore;
         System.err.println("Filtering splits:");
 
-        /*double[] scores = new double[treesBlock.getNTrees()];
-        for (int s = 1; s <= splits.getNsplits(); s++) {
-             totalScore = 0;
-             BitSet A = splits.get(s).getA();
-             BitSet B = splits.get(s).getB();
-             count=0;
-
-          for (int t = 1; t <= treesBlock.getNTrees(); t++) {
-                treeSplits.clear();
-                treeSplits2.clear();
-                TreesUtilities.computeSplits(null, treesBlock.getTree(t), treeSplits);
-                try {
-                    SplitsUtilities.verifySplits(treeSplits, taxaBlock);
-                } catch (SplitsException e) {
-                    e.printStackTrace();
-                }
-
-
-
-                if (treeSplits.contains(splits.get(s))) count++;
-
-                final BitSet treeTaxa = taxaBlock.getTaxaSet();
-                final BitSet treeTaxaAndA = (BitSet) (treeTaxa.clone());
-                treeTaxaAndA.and(A);
-                final BitSet treeTaxaAndB = (BitSet) (treeTaxa.clone());
-                treeTaxaAndB.and(B);
-
-                if (treeTaxaAndA.cardinality() > 1 && treeTaxaAndB.cardinality() > 1) {
-                    try {
-                        PhyloTree tree = treesBlock.getTree(t);
-                        totalScore += Distortion.computeDistortionForSplit(tree, A, B);
-                    } catch (IOException ex) {
-                        Basic.caught(ex);
-                    }
-                }
-                progress.incrementProgress();
-            }
-            scores[s]= (double)count/treesBlock.getNTrees();
-            if (totalScore <= getOptionMaxDistortionScore()) {
-                final ASplit aSplit = splits.get(s);
-                splitsBlock.getSplits().add(new ASplit(aSplit.getA(), aSplit.getB(), aSplit.getWeight()));
-            }
+        Map<ASplit, Double> splitScores = new HashMap<ASplit, Double>();
+      computeSplits(progress,  treesBlock, taxaBlock, splitsBlock, splitScores );
+        TreesBlock majorityTreeBlock= new TreesBlock();
+        GreedyTree greedyTree = new GreedyTree();
+        try {
+            greedyTree.compute(progress, taxaBlock, splitsBlock, majorityTreeBlock);
+        } catch (CanceledException e) {
+            e.printStackTrace();
         }
-*/
+        ArrayList<String> taxaNames= new ArrayList<String>();
+
+        Node firstLeaf = majorityTreeBlock.getTrees().get(0).leaves().iterator().next();
+        majorityTreeBlock.getTrees().get(0).setRoot(firstLeaf.getFirstInEdge().getOpposite(firstLeaf));
+        MyTree majorityMyTree = converToMyTree(majorityTreeBlock.getTrees().get(0));
+
+        scoreSplitsbyDistortionRespectToTreesBlock(majorityTreeBlock, splitsBlock, taxaBlock, splitScores);
+        //for tests
+        //main(new String[]{"arg1", "arg2", "arg3"});
+
+
+    }
+
+    public void main(String[] args) throws IOException {
+        Simulation_Manager simulationManager = new Simulation_Manager();
+        int numberOfTaxa = 20;
+        Object[] objects = simulationManager.run(numberOfTaxa, 50, 500, 10, 1, 1, 0.015);
+        ArrayList<PhyloTree> phyloTrees = (ArrayList<PhyloTree>) objects[1];
+        ArrayList<MyTree> myTrees = (ArrayList<MyTree>) objects[3];
+        ArrayList<String> taxaNames = (ArrayList<String>) objects[2];
+        Distortion_Scorer distortionScorer = new Distortion_Scorer();
+        AntiConsensusSplits.treesBlock.clear();
+
+        AntiConsensusSplits.splitsBlock.clear();
+        AntiConsensusSplits.taxaBlock.clear();
+
+        AntiConsensusSplits.taxaBlock.addTaxaByNames(taxaNames);
+        AntiConsensusSplits.treesBlock.getTrees().addAll(phyloTrees);
+        Map<ASplit, Double> splitScores = new HashMap<ASplit, Double>();
+
+        (new AntiConsensusSplits()).computeSplits(AntiConsensusSplits.progress, AntiConsensusSplits.treesBlock, AntiConsensusSplits.taxaBlock, AntiConsensusSplits.splitsBlock, splitScores);
+
+        Map<Object, Double> complementSplits =
+                splitScores.entrySet()
+                        .stream()
+                        .filter(p -> p.getValue() <= 0.5)
+                        .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+
+
+
+        Map<Object, Double> sortedComplementSplits =
+                complementSplits.entrySet().stream()
+                        .sorted(Map.Entry.comparingByValue(Comparator.naturalOrder()))
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+        GreedyTree greedyTree = new GreedyTree();
+        TreesBlock majorityTreeBlock = new TreesBlock();
+        try {
+            greedyTree.compute(progress, taxaBlock, splitsBlock, majorityTreeBlock);
+        } catch (CanceledException e) {
+            e.printStackTrace();
+        }
+
+
+        Node firstLeaf = majorityTreeBlock.getTrees().get(0).leaves().iterator().next();
+        majorityTreeBlock.getTrees().get(0).setRoot(firstLeaf.getFirstInEdge().getOpposite(firstLeaf));
+        MyTree majorityMyTree = converToMyTree(majorityTreeBlock.getTrees().get(0));
+
+        scoreSplitsbyDistortionRespectToTreesBlock(majorityTreeBlock, splitsBlock, taxaBlock, splitScores);
+        int distortionScore;
+        PhyloTree pt;
+        final Iterator it = sortedComplementSplits.keySet().iterator();
+        ASplit asplit;
+        pt = (new Simulation_Manager()).converToPhyloTree(majorityMyTree);
+        while (it.hasNext()) {
+            asplit = (ASplit) it.next();
+            BitSet A = asplit.getA();
+            BitSet B = asplit.getB();
+
+            distortionScore = distortionScorer.run(majorityMyTree, A, B, majorityMyTree.getTaxa());
+            it.remove();
+        }
+    }
+
+    public MyTree converToMyTree(PhyloTree phyloTree) {
+        return new MyNewickParser().run(phyloTree.toBracketString());
+    }
+    public PhyloTree converToPhyloTree(MyTree myTree) {
+
+        PhyloTree result=null;
+        try{
+            result=  new SimpleNewickParser().parse(myTree.toNewickString());
+
+        }
+        catch(Exception ex){
+
+            ex.printStackTrace();
+
+        }
+
+        return result;
+
+    }
+    private void computeSplits(ProgressListener progress, TreesBlock treesBlock, TaxaBlock taxaBlock, SplitsBlock splitsBlock, Map<ASplit, Double> splitScores) {
+
+
+        SplitsBlock splits = new SplitsBlock();
         Object[] pSplitsOfTrees = new Object[treesBlock.getNTrees() + 1];
+
+        ArrayList<ASplit> treeSplits = new ArrayList<ASplit>();
 
         BitSet[] supportSet = new BitSet[treesBlock.getNTrees() + 1];
         Set<PartialSplit> allPSplits = new HashSet<>();
@@ -183,10 +266,10 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
             treeSplits.clear();
             pSplitsOfTrees[t] = new ArrayList<ASplit>();
             supportSet[t] = new BitSet();
-            //super.computePartialSplits(taxaBlock, treesBlock,t,  pSplitsOfTrees[t], supportSet[t]);
+
             TreesUtilities.computeSplits(taxaBlock.getTaxaSet(), treesBlock.getTree(t), treeSplits);
             pSplitsOfTrees[t] = new ArrayList<ASplit>(treeSplits);
-            ;
+
             if (!set.isEmpty()) {
 
                 setCopy = (HashSet<ASplit>) set.clone();
@@ -215,8 +298,8 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
 
         splits.getSplits().addAll(set);
 
-        count = 0;
-        Map<ASplit, Double> splitScores = new HashMap<ASplit, Double>();
+        int count = 0;
+        //Map<ASplit, Double> splitScores = new HashMap<ASplit, Double>();
         ArrayList<ASplit> temp;
         ASplit as;
 
@@ -262,17 +345,53 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
 
         // compute a tree from majority splits
 
-        GreedyTree greedyTree = new GreedyTree();
-        TreesBlock majorityTreeBlock = new TreesBlock();
-        greedyTree.compute(progress, taxaBlock, splits, majorityTreeBlock);
+ /*   GreedyTree greedyTree = new GreedyTree();
+    TreesBlock majorityTreeBlock = new TreesBlock();
+    try {
+        greedyTree.compute(progress, taxaBlock, splitsBlock, majorityTreeBlock);
+    } catch (CanceledException e) {
+        e.printStackTrace();
+    }
+*/
+
+    }
+
+    public void scoreSplitsbyDistortionRespectToTreesBlock(TreesBlock majorityTreeBlock, SplitsBlock splitsBlock,TaxaBlock taxaBlock, Map<ASplit, Double> splitScores) {
+
+        Map<Object, Double> majoritySplits =
+                splitScores.entrySet()
+                        .stream()
+                        .filter(p -> p.getValue() > getOptionMinimumSplitWeight())
+                        .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+
+        Set<ASplit> majoritySplitsList = (Set) majoritySplits.keySet();
+        ArrayList<ASplit> majoritySplitsList2 = new ArrayList<ASplit>();
+        majoritySplitsList2.addAll(majoritySplitsList);
+        //splitsBlock.getSplits().addAll(majoritySplitsList2);
+
+        Map<Object, Double> complementSplits =
+                splitScores.entrySet()
+                        .stream()
+                        .filter(p -> p.getValue() <= getOptionMinimumSplitWeight())
+                        .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+
+       /* Stream<Map.Entry<Object, Double>> sortedComplementSplits =
+                complementSplits.entrySet().stream()
+                        .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()));*/
+
+        Map<Object, Double> sortedComplementSplits =
+                complementSplits.entrySet().stream()
+                        .sorted(Map.Entry.comparingByValue(Comparator.naturalOrder()))
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
         Iterator it = sortedComplementSplits.keySet().iterator();
         Iterator it1 = majoritySplits.keySet().iterator();
-        count = 0;
-        double[] incompatibilityScores = new double[treesBlock.getNTrees()];
+        int count = 0;
+        double[] incompatibilityScores = new double[sortedComplementSplits.keySet().size()];
         int s = 0;
         ASplit asplit;
-        int numerOfSplitswithLowDistortion=(int) Math.floor(percentofSplitsWithLowDistortion * complementSplits.keySet().size());
+        int numerOfSplitswithLowDistortion = (int) Math.floor(percentofSplitsWithLowDistortion * complementSplits.keySet().size());
 
         Map<Object, Double> topComplementSplits =
                 complementSplits.entrySet().stream()
@@ -280,12 +399,15 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
                         .limit(numerOfSplitswithLowDistortion)
                         .collect(Collectors.toMap(
                                 Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+        int index = 0;
+        int totalScore;
+        Distortion_Scorer distortionScorer = new Distortion_Scorer();
         while (it.hasNext()) {
             totalScore = 0;
             asplit = (ASplit) it.next();
             BitSet A = asplit.getA();
             BitSet B = asplit.getB();
-            for (int t = 1; t <= majorityTreeBlock.getNTrees(); t++) {
+            for (int t = 1; t <= majorityTreeBlock.getNTrees(); t++) {//only one tree: 50 % majority tree
                 final BitSet treeTaxa = taxaBlock.getTaxaSet();
                 final BitSet treeTaxaAndA = (BitSet) (treeTaxa.clone());
                 treeTaxaAndA.and(A);
@@ -293,16 +415,18 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
                 treeTaxaAndB.and(B);
 
                 if (treeTaxaAndA.cardinality() > 1 && treeTaxaAndB.cardinality() > 1) {
-                    try {
-                        PhyloTree tree = majorityTreeBlock.getTree(t);
-                        totalScore += Distortion.computeDistortionForSplit(tree, A, B);
-                    } catch (IOException ex) {
-                        Basic.caught(ex);
-                    }
+
+                    PhyloTree tree = majorityTreeBlock.getTree(t);
+                    MyTree myTree = converToMyTree(tree);
+                    //totalScore += Distortion.computeDistortionForSplit(tree, A, B);
+                    totalScore += distortionScorer.run(myTree, A, B, myTree.getTaxa());
+
                 }
 
             }
-            if (totalScore > 0 && totalScore <= getOptionMaxDistortionScore() && s<= numerOfSplitswithLowDistortion) {
+            incompatibilityScores[index] = totalScore;
+            index++;
+            if (totalScore > 0 && totalScore <= getOptionMaxDistortionScore() && s <= numerOfSplitswithLowDistortion) {
                 s++;
                 final ASplit aSplit = asplit;
                 splitsBlock.getSplits().add(new ASplit(aSplit.getA(), aSplit.getB(), aSplit.getWeight()));
@@ -312,6 +436,7 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
 
 
     }
+
 
     @Override
     public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent) {
