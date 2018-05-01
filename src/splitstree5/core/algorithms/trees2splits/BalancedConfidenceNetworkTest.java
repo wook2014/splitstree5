@@ -60,9 +60,9 @@ public class BalancedConfidenceNetworkTest {
             ASplit aSplitST4 = splitsFromST4.getSplits().get(i);
             assertEquals(aSplit.getA(), aSplitST4.getA());
             assertEquals(aSplit.getB(), aSplitST4.getB());
-            assertEquals(aSplit.getWeight(), aSplitST4.getWeight());
+            assertEquals(aSplit.getWeight(), aSplitST4.getWeight(), 0.0);
             //assertEquals(aSplit.getConfidence(), aSplitST4.getConfidence());
-            assertEquals(aSplit.getConfidence(), confidence[i]);
+            assertEquals(aSplit.getConfidence(), confidence[i], 0.0);
 
             assertEquals(aSplit.getLabel(), aSplitST4.getLabel());
         }

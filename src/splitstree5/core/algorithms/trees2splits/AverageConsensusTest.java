@@ -58,8 +58,8 @@ public class AverageConsensusTest {
             ASplit aSplitST4 = splitsFromST4.getSplits().get(i);
             assertEquals(aSplit.getA(), aSplitST4.getA());
             assertEquals(aSplit.getB(), aSplitST4.getB());
-            assertEquals(aSplit.getWeight(), aSplitST4.getWeight());
-            assertEquals(aSplit.getConfidence(), aSplitST4.getConfidence());
+            assertEquals(aSplit.getWeight(), aSplitST4.getWeight(), 0.0);
+            assertEquals(aSplit.getConfidence(), aSplitST4.getConfidence(), 0.0);
             assertEquals(aSplit.getLabel(), aSplitST4.getLabel());
         }
 
@@ -95,8 +95,8 @@ public class AverageConsensusTest {
             ASplit aSplitST4 = splitsFromST42.getSplits().get(i);
             assertEquals(aSplit.getA(), aSplitST4.getA());
             assertEquals(aSplit.getB(), aSplitST4.getB());
-            assertEquals(aSplit.getWeight(), aSplitST4.getWeight());
-            assertEquals(aSplit.getConfidence(), aSplitST4.getConfidence());
+            assertEquals(aSplit.getWeight(), aSplitST4.getWeight(), 0.0);
+            assertEquals(aSplit.getConfidence(), aSplitST4.getConfidence(), 0.0);
             assertEquals(aSplit.getLabel(), aSplitST4.getLabel());
         }
 
@@ -136,7 +136,7 @@ public class AverageConsensusTest {
                 assertEquals(aSplit.getA(), aSplitST4.getA());
                 assertEquals(aSplit.getB(), aSplitST4.getB());
                 assertEquals(aSplit.getWeight(), aSplitST4.getWeight(), 0.0000001);
-                assertEquals(aSplit.getConfidence(), aSplitST4.getConfidence());
+                assertEquals(aSplit.getConfidence(), aSplitST4.getConfidence(), 0.0);
                 assertEquals(aSplit.getLabel(), aSplitST4.getLabel());
             }
             splitsFromST43.getSplits().remove(aSplit);

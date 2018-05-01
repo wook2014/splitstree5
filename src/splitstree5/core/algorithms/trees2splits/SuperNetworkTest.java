@@ -64,10 +64,10 @@ public class SuperNetworkTest {
             ASplit aSplitST4 = splitsFromST4.getSplits().get(i);
             assertEquals(aSplit.getA(), aSplitST4.getA());
             assertEquals(aSplit.getB(), aSplitST4.getB());
-            assertEquals(aSplit.getWeight(), aSplitST4.getWeight());
+            assertEquals(aSplit.getWeight(), aSplitST4.getWeight(), 0.0);
 
             //assertEquals(aSplit.getConfidence(), aSplitST4.getConfidence());
-            assertEquals(aSplit.getConfidence(), confidences[i]);
+            assertEquals(aSplit.getConfidence(), confidences[i], 0.0);
 
             assertEquals(aSplit.getLabel(), aSplitST4.getLabel());
         }
@@ -115,10 +115,10 @@ public class SuperNetworkTest {
                 ASplit aSplitST4 = splitsFromST41.getSplits().get(index);
                 assertEquals(aSplit.getA(), aSplitST4.getA());
                 assertEquals(aSplit.getB(), aSplitST4.getB());
-                assertEquals(aSplit.getWeight(), aSplitST4.getWeight());
+                assertEquals(aSplit.getWeight(), aSplitST4.getWeight(), 0.0);
 
                 //assertEquals(aSplit.getConfidence(), aSplitST4.getConfidence());
-                assertEquals(aSplit.getConfidence(), confidences1[i]);
+                assertEquals(aSplit.getConfidence(), confidences1[i], 0.0);
 
                 assertEquals(aSplit.getLabel(), aSplitST4.getLabel());
             }
@@ -163,9 +163,9 @@ public class SuperNetworkTest {
             ASplit aSplitST4 = splitsFromST42.getSplits().get(i);
             assertEquals(aSplit.getA(), aSplitST4.getA());
             assertEquals(aSplit.getB(), aSplitST4.getB());
-            assertEquals(aSplit.getWeight(), aSplitST4.getWeight());
+            assertEquals(aSplit.getWeight(), aSplitST4.getWeight(), 0.0);
             //assertEquals(aSplit.getConfidence(), aSplitST4.getConfidence());
-            assertEquals(aSplit.getConfidence(), confidences2[i]);
+            assertEquals(aSplit.getConfidence(), confidences2[i], 0.0);
 
             assertEquals(aSplit.getLabel(), aSplitST4.getLabel());
         }
@@ -209,9 +209,9 @@ public class SuperNetworkTest {
             ASplit aSplitST4 = splitsFromST43.getSplits().get(i);
             assertEquals(aSplit.getA(), aSplitST4.getA());
             assertEquals(aSplit.getB(), aSplitST4.getB());
-            assertEquals(aSplit.getWeight(), aSplitST4.getWeight());
+            assertEquals(aSplit.getWeight(), aSplitST4.getWeight(), 0.0);
             //assertEquals(aSplit.getConfidence(), aSplitST4.getConfidence());
-            assertEquals(aSplit.getConfidence(), confidences3[i]);
+            assertEquals(aSplit.getConfidence(), confidences3[i], 0.0);
 
             assertEquals(aSplit.getLabel(), aSplitST4.getLabel());
         }
@@ -255,9 +255,9 @@ public class SuperNetworkTest {
             ASplit aSplitST4 = splitsFromST44.getSplits().get(i);
             assertEquals(aSplit.getA(), aSplitST4.getA());
             assertEquals(aSplit.getB(), aSplitST4.getB());
-            assertEquals(aSplit.getWeight(), aSplitST4.getWeight());
+            assertEquals(aSplit.getWeight(), aSplitST4.getWeight(), 0.0);
             //assertEquals(aSplit.getConfidence(), aSplitST4.getConfidence());
-            assertEquals(aSplit.getConfidence(), confidences4[i]);
+            assertEquals(aSplit.getConfidence(), confidences4[i], 0.0);
 
             assertEquals(aSplit.getLabel(), aSplitST4.getLabel());
         }
