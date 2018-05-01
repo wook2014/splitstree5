@@ -14,6 +14,7 @@ import javax.xml.parsers.SAXParserFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class NexmlTreesIn implements IToTrees, IImportTrees {
@@ -36,7 +37,7 @@ public class NexmlTreesIn implements IToTrees, IImportTrees {
 
     @Override
     public List<String> getExtensions() {
-        return Arrays.asList("xml");
+        return Collections.singletonList("xml");
     }
 
     @Override

@@ -41,8 +41,10 @@ public class NeXMLOutTest {
         list.add(characters);
 
         neXMLOut.export(writer, list);
+        neXMLOut.writeStart(writer2);
         neXMLOut.export(writer2, taxa);
         neXMLOut.export(writer2, taxa, characters);
+        neXMLOut.writeEnd();
         writer.close();
         writer2.close();
 
@@ -59,7 +61,11 @@ public class NeXMLOutTest {
         List<DataBlock> trees_list = new ArrayList<>();
         trees_list.add(taxaBlock);
         trees_list.add(treesBlock);
-        neXMLOut.export(writer_trees, trees_list);
+        //neXMLOut.export(writer_trees, trees_list);
+        neXMLOut.writeStart(writer_trees);
+        neXMLOut.export(writer_trees, taxaBlock, treesBlock);
+        neXMLOut.writeEnd();
+        writer_trees.close();
     }
 
 }
