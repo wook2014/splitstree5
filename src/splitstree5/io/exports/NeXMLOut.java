@@ -31,8 +31,9 @@ public class NeXMLOut implements IFromTaxa, IExportTaxa, IFromChararacters, IExp
     private CharactersOutputType charactersOutputType = CharactersOutputType.matrix;
     private boolean exportSingleBlock = true;
 
-    public XMLStreamWriter startWriter;
+    private XMLStreamWriter startWriter;
 
+    // todo use fileName as block label
     @Override
     public void export(Writer w, TaxaBlock taxa) throws IOException {
 
@@ -42,24 +43,23 @@ public class NeXMLOut implements IFromTaxa, IExportTaxa, IFromChararacters, IExp
             XMLStreamWriter xmlWriter =
                     xMLOutputFactory.createXMLStreamWriter(w);
 
-            //xmlWriter.writeStartDocument();
             writeNewLineWithTabs(xmlWriter, 1);
             xmlWriter.writeStartElement("otus");
-            xmlWriter.writeAttribute("id", "taxa1");
+            xmlWriter.writeAttribute("id", "otus1");
+            xmlWriter.writeAttribute("label", "taxaBlock");
 
-            //xmlWriter.writeStartElement("otu");
-            //xmlWriter.writeCharacters("\n\t");
+            int i = 0;
             for (String label : taxa.getLabels()) {
-                xmlWriter.writeCharacters("\n\t\t");
+                i++;
+                writeNewLineWithTabs(xmlWriter, 2);
                 xmlWriter.writeEmptyElement("otu");
-                xmlWriter.writeAttribute("id", label);
+                xmlWriter.writeAttribute("id", "otu"+i);
+                xmlWriter.writeAttribute("label", label);
             }
-            //xmlWriter.writeEndElement();
             writeNewLineWithTabs(xmlWriter, 1);
             xmlWriter.writeEndElement();
             writeNewLineWithTabs(xmlWriter, 1);
             xmlWriter.writeEndDocument();
-
             xmlWriter.flush();
         } catch (XMLStreamException xmlEx) {
             xmlEx.printStackTrace();
@@ -76,25 +76,77 @@ public class NeXMLOut implements IFromTaxa, IExportTaxa, IFromChararacters, IExp
 
             writeNewLineWithTabs(xmlWriter, 1);
             xmlWriter.writeStartElement("characters");
-            writeNewLineWithTabs(xmlWriter, 2);
-            xmlWriter.writeStartElement("matrix");
+            xmlWriter.writeAttribute("id", "characters1");
+            xmlWriter.writeAttribute("label", "charactersBlock");
+            xmlWriter.writeAttribute("otus", "otus1");
 
-            int ntax = taxa.getNtax();
-            int nchar = characters.getNchar();
+            if (charactersOutputType.equals(CharactersOutputType.matrix))
+            {
+                String dataType = "nex:" + characters.getDataType().name() + "Seqs";
+                xmlWriter.writeAttribute("xsi:type", dataType);
 
-            for (int i = 1; i <= ntax; i++) {
+                /////////// format todo: char elements? as option?
+                writeNewLineWithTabs(xmlWriter, 2);
+                xmlWriter.writeStartElement("format");
                 writeNewLineWithTabs(xmlWriter, 3);
-                xmlWriter.writeStartElement("row");
-                writeNewLineWithTabs(xmlWriter, 4);
-                xmlWriter.writeStartElement("seq");
-                xmlWriter.writeAttribute("label", taxa.getLabel(i));
-                for (int j = 1; j <= nchar; j++) {
-                    xmlWriter.writeCharacters((characters.get(i, j) + "").toUpperCase());
+                xmlWriter.writeStartElement("states");
+                xmlWriter.writeAttribute("id", "states1");
+
+                int x = 0;
+                for (char c : characters.getDataType().getSymbols().toCharArray()){
+                    x ++;
+                    writeNewLineWithTabs(xmlWriter, 4);
+                    xmlWriter.writeEmptyElement("state");
+                    xmlWriter.writeAttribute("id", "s"+x);
+                    xmlWriter.writeAttribute("symbol", c+"");
                 }
-                xmlWriter.writeEndElement(); // seq
                 writeNewLineWithTabs(xmlWriter, 3);
-                xmlWriter.writeEndElement(); //row
+                xmlWriter.writeEndElement();
+
+                for (int c = 0; c < characters.getNchar(); c++){
+                    writeNewLineWithTabs(xmlWriter, 3);
+                    xmlWriter.writeEmptyElement("char");
+                    xmlWriter.writeAttribute("id", "c"+c);
+                    xmlWriter.writeAttribute("states", "states1");
+                }
+
+                writeNewLineWithTabs(xmlWriter, 2);
+                xmlWriter.writeEndElement();
+                ////////////////
+
+                writeNewLineWithTabs(xmlWriter, 2);
+                xmlWriter.writeStartElement("matrix");
+                xmlWriter.writeAttribute("aligned", "1");
+
+                int ntax = taxa.getNtax();
+                int nchar = characters.getNchar();
+
+                for (int i = 1; i <= ntax; i++) {
+                    writeNewLineWithTabs(xmlWriter, 3);
+                    xmlWriter.writeStartElement("row");
+                    xmlWriter.writeAttribute("id", "row"+i);
+                    xmlWriter.writeAttribute("label", taxa.getLabel(i));
+                    xmlWriter.writeAttribute("otus", "otu"+i);
+
+                    writeNewLineWithTabs(xmlWriter, 4);
+                    xmlWriter.writeStartElement("seq");
+                    xmlWriter.writeAttribute("label", taxa.getLabel(i));
+                    for (int j = 1; j <= nchar; j++) {
+                        xmlWriter.writeCharacters((characters.get(i, j) + "").toUpperCase());
+                    }
+                    xmlWriter.writeEndElement(); // seq
+                    writeNewLineWithTabs(xmlWriter, 3);
+                    xmlWriter.writeEndElement(); //row
+                }
             }
+
+            if (charactersOutputType.equals(CharactersOutputType.cell) ||
+                    charactersOutputType.equals(CharactersOutputType.both))
+            {
+                String dataType = "nex:" + characters.getDataType().name() + "Cells";
+                xmlWriter.writeAttribute("xsi:type", dataType);
+            }
+
             writeNewLineWithTabs(xmlWriter, 2);
             xmlWriter.writeEndElement(); // matrix
             writeNewLineWithTabs(xmlWriter, 1);
@@ -161,6 +213,7 @@ public class NeXMLOut implements IFromTaxa, IExportTaxa, IFromChararacters, IExp
         xmlStreamWriter.writeCharacters("\n");
 
         xmlStreamWriter.writeStartElement("nex:nexml");
+        w.write("\n\t");
         xmlStreamWriter.writeAttribute("generator", "SplitsTree5");
         w.write("\n\t");
         xmlStreamWriter.writeAttribute("version", "0.9");

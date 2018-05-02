@@ -50,7 +50,7 @@ public class NeXMLOutTest {
 
 
         // test trees block
-        File file_trees = new File("test/exports/TEST_NeXML_trees.xml");
+        /*File file_trees = new File("test/exports/TEST_NeXML_trees.xml");
         Writer writer_trees = new BufferedWriter(new FileWriter(file_trees));
 
         TaxaBlock taxaBlock = new TaxaBlock();
@@ -65,7 +65,7 @@ public class NeXMLOutTest {
         neXMLOut.writeStart(writer_trees);
         neXMLOut.export(writer_trees, taxaBlock, treesBlock);
         neXMLOut.writeEnd();
-        writer_trees.close();
+        writer_trees.close();*/
     }
 
 }
