@@ -31,6 +31,7 @@ import javafx.stage.FileChooser;
 import jloda.fx.NotificationManager;
 import jloda.fx.RecentFilesManager;
 import jloda.util.Basic;
+import jloda.util.ProgramProperties;
 import jloda.util.ResourceManager;
 import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.dialogs.importer.ImporterManager;
@@ -160,12 +161,19 @@ public class InputTab extends TextViewTab {
         final TextArea textArea = getTextArea();
 
         controller.getOpenMenuItem().setOnAction((e) -> {
+            final File previousDir = new File(ProgramProperties.get("InputDir", ""));
+
             final FileChooser fileChooser = new FileChooser();
+            if (previousDir.isDirectory())
+                fileChooser.setInitialDirectory(previousDir);
             fileChooser.setTitle("Open input file");
             fileChooser.getExtensionFilters().addAll(ImporterManager.getInstance().getAllExtensionFilters());
-            final File file = fileChooser.showOpenDialog(getMainWindow().getStage());
-            if (file != null)
-                loadFile(file.getPath());
+            final File selectedFile = fileChooser.showOpenDialog(getMainWindow().getStage());
+            if (selectedFile != null) {
+                if (selectedFile.getParentFile().isDirectory())
+                    ProgramProperties.put("InputDir", selectedFile.getParent());
+                loadFile(selectedFile.getPath());
+            }
         });
         controller.getOpenMenuItem().disableProperty().bind(textArea.textProperty().isNotEmpty());
 

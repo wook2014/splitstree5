@@ -233,7 +233,7 @@ public class PhyloGraph extends Graph {
 
 
     /**
-     * Sets the taxon label of a node.
+     * Sets the label of a node.
      *
      * @param v   Node
      * @param str String

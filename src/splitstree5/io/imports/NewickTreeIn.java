@@ -80,7 +80,6 @@ public class NewickTreeIn implements IToTrees, IImportTrees {
                                 taxonNamesFound.add(name);
                                 taxName2Id.put(name, taxonNamesFound.size()); //
                             }
-
                         } else {
                             if (!taxonNamesFound.equals(newickParser.getLeafLabels())) {
                                 partial = true;

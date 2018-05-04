@@ -25,6 +25,7 @@ import javafx.scene.control.Tab;
 import javafx.stage.FileChooser;
 import jloda.util.Basic;
 import jloda.util.Pair;
+import jloda.util.ProgramProperties;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.characters2distances.*;
 import splitstree5.core.algorithms.characters2network.MedianJoining;
@@ -79,15 +80,20 @@ public class MainWindowMenuController {
         controller.getImportMenuItem().setOnAction((e) -> ImportDialog.show(mainWindow));
 
         controller.getOpenMenuItem().setOnAction((e) -> {
+            final File previousDir = new File(ProgramProperties.get("InputDir", ""));
             final FileChooser fileChooser = new FileChooser();
+            if (previousDir.isDirectory())
+                fileChooser.setInitialDirectory(previousDir);
             fileChooser.setTitle("Open input file");
             fileChooser.getExtensionFilters().addAll(ImporterManager.getInstance().getAllExtensionFilters());
-            final File file = fileChooser.showOpenDialog(mainWindow.getStage());
-            if (file != null) {
-                if (WorkflowNexusInput.isApplicable(file.getPath()))
-                    WorkflowNexusInput.open(mainWindow, file.getPath());
+            final File selectedFile = fileChooser.showOpenDialog(mainWindow.getStage());
+            if (selectedFile != null) {
+                if (selectedFile.getParentFile().isDirectory())
+                    ProgramProperties.put("InputDir", selectedFile.getParent());
+                if (WorkflowNexusInput.isApplicable(selectedFile.getPath()))
+                    WorkflowNexusInput.open(mainWindow, selectedFile.getPath());
                 else
-                    FileOpener.open(false, mainWindow, file.getPath(), null);
+                    FileOpener.open(false, mainWindow, selectedFile.getPath(), null);
             }
         });
 

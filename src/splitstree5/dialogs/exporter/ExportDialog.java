@@ -84,11 +84,16 @@ public class ExportDialog {
         controller.getExportButton().setOnAction((e) -> {
             fileDialogShowing.set(true);
             try {
+                final File previousDir = new File(ProgramProperties.get("ExportDir", ""));
                 final FileChooser fileChooser = new FileChooser();
+                if (previousDir.isDirectory())
+                    fileChooser.setInitialDirectory(previousDir);
                 fileChooser.setTitle("Export File");
                 File selectedFile = fileChooser.showSaveDialog(stage);
                 if (selectedFile != null) {
                     selectedFile = ExportManager.getInstance().ensureFileSuffix(selectedFile, controller.getFileFormatComboBox().getValue());
+                    if (selectedFile.getParentFile().isDirectory())
+                        ProgramProperties.put("ExportDir", selectedFile.getParent());
                     exportService.setup(selectedFile.getPath(), workingTaxa, dataBlock, controller.getFileFormatComboBox().getValue(), this);
                     exportService.restart();
                     exportService.runningProperty().addListener((c, o, n) -> {

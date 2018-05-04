@@ -79,7 +79,10 @@ public class ImportDialog {
 
         final ObjectProperty<FileChooser.ExtensionFilter> selectedExtensionFilter = new SimpleObjectProperty<>();
         controller.getBrowseButton().setOnAction((e) -> {
+            final File previousDir = new File(ProgramProperties.get("ImportDir", ""));
             final FileChooser fileChooser = new FileChooser();
+            if (previousDir.isDirectory())
+                fileChooser.setInitialDirectory(previousDir);
             fileChooser.setTitle("Open Import File");
             fileChooser.getExtensionFilters().addAll(ImporterManager.getInstance().getAllExtensionFilters());
             if (selectedExtensionFilter.get() != null)
@@ -87,6 +90,8 @@ public class ImportDialog {
             // show file browser
             final File selectedFile = fileChooser.showOpenDialog(stage);
             if (selectedFile != null) {
+                if (selectedFile.getParentFile().isDirectory())
+                    ProgramProperties.put("ImportDir", selectedFile.getParent());
                 controller.getFileTextField().setText(selectedFile.getPath());
                 selectedExtensionFilter.set(fileChooser.getSelectedExtensionFilter());
 
