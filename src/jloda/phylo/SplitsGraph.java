@@ -1,4 +1,4 @@
-/**
+/*
  * SplitsGraph.java
  * Copyright (C) 2018 Daniel H. Huson
  * <p>
@@ -51,9 +51,9 @@ public class SplitsGraph extends PhyloGraph {
     }
 
     /**
-     * copies a phylogenetic tree
+     * copies a graph
      *
-     * @param src original tree
+     * @param src original graph
      * @return mapping of old nodes to new nodes
      */
     public NodeArray<Node> copy(SplitsGraph src) {
@@ -65,7 +65,7 @@ public class SplitsGraph extends PhyloGraph {
     }
 
     /**
-     * copies a phylogenetic tree
+     * copies a graph
      *
      * @param src
      * @param oldNode2NewNode
@@ -112,7 +112,7 @@ public class SplitsGraph extends PhyloGraph {
         for (Edge e : edges()) {
             ids.add(splits.getValue(e));
         }
-        return ids.toArray(new Integer[ids.size()]);
+        return ids.toArray(new Integer[0]);
     }
 
     /**
@@ -279,7 +279,7 @@ public class SplitsGraph extends PhyloGraph {
      * @return labeling of all nodes by 01 strings
      */
     public NodeArray labelNodesBySequences(Map split2chars, char[] firstChars) {
-        final NodeArray labels = new NodeArray(this);
+        final NodeArray<String> labels = new NodeArray<>(this);
         System.err.println("base-line= " + (new String(firstChars)));
         Node v = getTaxon2Node(1);
         BitSet used = new BitSet(); // set of splits used in current path

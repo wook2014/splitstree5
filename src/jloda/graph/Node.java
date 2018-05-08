@@ -29,7 +29,7 @@ import java.util.List;
  * Node class used by Graph class
  * Daniel Huson, 2003
  */
-public class Node extends NodeEdge implements Comparable {
+public class Node extends NodeEdge implements Comparable<Node> {
     private Edge firstAdjacentEdge;
     private Edge lastAdjacentEdge;
     private int inDegree = 0;
@@ -478,11 +478,10 @@ public class Node extends NodeEdge implements Comparable {
     /**
      * compares with another node of the same graph
      *
-     * @param o
+     * @param v
      * @return -1, 1 or 0
      */
-    public int compareTo(Object o) {
-        final Node v = (Node) o;
+    public int compareTo(Node v) {
         checkOwner(v);
         return Integer.compare(this.getId(), v.getId());
     }

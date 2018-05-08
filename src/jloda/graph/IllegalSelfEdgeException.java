@@ -19,5 +19,9 @@
 
 package jloda.graph;
 
+/**
+ * exception when attempt is made to create an edge from a node v to the same node v
+ * Daniel Huson, 2003
+ */
 public class IllegalSelfEdgeException extends RuntimeException {
 }

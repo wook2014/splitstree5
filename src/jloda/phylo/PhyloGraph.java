@@ -1,4 +1,4 @@
-/**
+/*
  * PhyloGraph.java
  * Copyright (C) 2018 Daniel H. Huson
  * <p>
@@ -19,17 +19,18 @@
  */
 package jloda.phylo;
 
-/**
- * Phylogenetic graph
- *
- * @author Daniel Huson, 2005, 2018
- */
+
 
 import jloda.graph.*;
 import jloda.util.EmptyIterator;
 
 import java.util.*;
 
+/**
+ * Phylogenetic graph
+ *
+ * @author Daniel Huson, 2005, 2018
+ */
 public class PhyloGraph extends Graph {
     protected final NodeArray<String> nodeLabels;
     protected final EdgeDoubleArray edgeWeights;
@@ -408,17 +409,6 @@ public class PhyloGraph extends Graph {
             }
         } catch (IllegalSelfEdgeException e1) {
             throw new RuntimeException(e1);
-        }
-    }
-
-    /**
-     * scales all edge weights by the given factor
-     *
-     * @param factor
-     */
-    public void scaleEdgeWeights(float factor) {
-        for (Edge e : edges()) {
-            setWeight(e, factor * getWeight(e));
         }
     }
 }

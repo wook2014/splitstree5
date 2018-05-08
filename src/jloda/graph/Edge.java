@@ -25,7 +25,7 @@ package jloda.graph;
  *
  * @author Daniel Huson, 2003
  */
-public class Edge extends NodeEdge implements Comparable {
+public class Edge extends NodeEdge implements Comparable<Edge> {
     /**
      * insert before reference edge
      */
@@ -360,18 +360,12 @@ public class Edge extends NodeEdge implements Comparable {
     /**
      * compares with another edge of the same graph
      *
-     * @param o
+     * @param e
      * @return -1, 1 or 0
      */
-    public int compareTo(Object o) {
-        final Edge e = (Edge) o;
+    public int compareTo(Edge e) {
         checkOwner(e);
-        if (this.getId() < e.getId())
-            return -1;
-        else if (this.getId() > e.getId())
-            return 1;
-        else
-            return 0;
+        return Integer.compare(this.getId(), e.getId());
     }
 
     /**

@@ -19,5 +19,9 @@
 
 package jloda.graph;
 
+/**
+ * not owner exception: this node or edge does not belong to the given graph
+ * Daniel Huson, 2003
+ */
 public class NotOwnerException extends RuntimeException {
 }

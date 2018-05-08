@@ -89,7 +89,7 @@ public class ExperimentalSplitsNetworkAlgorithm extends Algorithm<SplitsBlock, V
             EqualAngle.assignCoordinatesToNodes(isOptionUseWeights(), graph, node2point); // need coordinates
         }
 
-        // Your improvement of embedding goes here:
+        // Mario Wassmer: Your improvement of embedding goes here:
         {
             // to illustrate, jiggle all points by small random amount:
             if (isOptionRandomJiggle()) {

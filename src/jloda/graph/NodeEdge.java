@@ -1,4 +1,4 @@
-/**
+/*
  * NodeEdge.java
  * Copyright (C) 2018 Daniel H. Huson
  * <p>
@@ -20,10 +20,9 @@
 package jloda.graph;
 
 /**
- * NodeEdge: util class for both Node and Edge
+ * NodeEdge: base class class for both Node and Edge
  * Daniel Huson, 2003
  */
-
 class NodeEdge extends GraphBase {
     protected Object info;
     private int id;

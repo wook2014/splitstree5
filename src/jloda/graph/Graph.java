@@ -1,4 +1,4 @@
-/**
+/*
  * Graph.java
  * Copyright (C) 2018 Daniel H. Huson
  * <p>

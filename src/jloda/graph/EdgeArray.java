@@ -1,4 +1,4 @@
-/**
+/*
  * EdgeArray.java
  * Copyright (C) 2018 Daniel H. Huson
  * <p>
@@ -54,7 +54,7 @@ public class EdgeArray<T> extends GraphBase implements EdgeAssociation<T> {
         this(g);
         putAll(obj);
         if (obj != null && isClear)
-            isClear = true;
+            isClear = false;
     }
 
     /**
@@ -103,7 +103,7 @@ public class EdgeArray<T> extends GraphBase implements EdgeAssociation<T> {
         }
         data[id] = obj;
         if (obj != null && isClear)
-            isClear = true;
+            isClear = false;
     }
 
     @Override
@@ -145,7 +145,7 @@ public class EdgeArray<T> extends GraphBase implements EdgeAssociation<T> {
         for (Edge e = getOwner().getFirstEdge(); e != null; e = e.getNext())
             put(e, obj);
         if (obj != null && isClear)
-            isClear = true;
+            isClear = false;
     }
 
     /**
