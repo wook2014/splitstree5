@@ -51,6 +51,8 @@ import java.util.Random;
 
 /**
  * new experimental code for computing the embedding of a split network
+ * Daniel Huson, 5.2018
+ *
  */
 public class ExperimentalSplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implements IFromSplits, IToViewer {
     private final SplitsGraph graph = new SplitsGraph();
@@ -77,15 +79,13 @@ public class ExperimentalSplitsNetworkAlgorithm extends Algorithm<SplitsBlock, V
         // this code creates the graph and computes initial coordinates for the the graph:
         final NodeArray<Point2D> node2point = new NodeArray<>(graph);
         {
-            final BitSet forbiddenSplits = new BitSet();
-
             final BitSet usedSplits = new BitSet();
 
-            EqualAngle.apply(progress, isOptionUseWeights(), taxaBlock, parent, graph, node2point, forbiddenSplits, usedSplits);
+            EqualAngle.apply(progress, isOptionUseWeights(), taxaBlock, parent, graph, node2point, new BitSet(), usedSplits);
             progress.setProgress(60);
             ConvexHull.apply(progress, taxaBlock, parent, graph, usedSplits);
 
-            EqualAngle.assignAnglesToEdges(taxaBlock.getNtax(), parent, parent.getCycle(), graph, forbiddenSplits);
+            EqualAngle.assignAnglesToEdges(taxaBlock.getNtax(), parent, parent.getCycle(), graph, new BitSet());
             EqualAngle.assignCoordinatesToNodes(isOptionUseWeights(), graph, node2point); // need coordinates
         }
 

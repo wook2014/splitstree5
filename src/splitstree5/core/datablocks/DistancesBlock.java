@@ -19,7 +19,6 @@
 
 package splitstree5.core.datablocks;
 
-import com.sun.istack.internal.NotNull;
 import splitstree5.core.algorithms.interfaces.IFromDistances;
 import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.io.nexus.DistancesNexusFormat;
@@ -178,7 +177,7 @@ public class DistancesBlock extends DataBlock {
      * @param distances
      * @param variances
      */
-    public void set(@NotNull double[][] distances, @NotNull double[][] variances) {
+    public void set(double[][] distances, double[][] variances) {
         if (this.distances == null || this.distances.length != distances.length)
             this.distances = new double[distances.length][distances.length];
 
