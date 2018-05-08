@@ -21,7 +21,9 @@ package splitstree5.core.algorithms.views;
 
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.FloatProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
 import javafx.geometry.Point2D;
@@ -43,16 +45,18 @@ import splitstree5.core.datablocks.ViewerBlock;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.graphtab.ISplitsViewTab;
 import splitstree5.gui.graphtab.base.EdgeViewBase;
+import splitstree5.gui.graphtab.base.GeometryUtils;
 import splitstree5.gui.graphtab.base.GraphLayout;
 import splitstree5.gui.graphtab.base.NodeViewBase;
 
 import java.util.BitSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 /**
  * new experimental code for computing the embedding of a split network
  * Daniel Huson, 5.2018
- *
  */
 public class ExperimentalSplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implements IFromSplits, IToViewer {
     private final SplitsGraph graph = new SplitsGraph();
@@ -62,6 +66,7 @@ public class ExperimentalSplitsNetworkAlgorithm extends Algorithm<SplitsBlock, V
 
     private final BooleanProperty optionUseWeights = new SimpleBooleanProperty(true);
     private final BooleanProperty optionRandomJiggle = new SimpleBooleanProperty(true);
+    private final FloatProperty optionSize = new SimpleFloatProperty(0.1f);
 
 
     @Override
@@ -90,14 +95,29 @@ public class ExperimentalSplitsNetworkAlgorithm extends Algorithm<SplitsBlock, V
         }
 
         // Mario Wassmer: Your improvement of embedding goes here:
-        {
+        if (true) {
+            for (Node v : graph.nodes()) {
+                node2point.put(v, new Point2D(0, 0));
+            }
+            Random random = new Random();
+            Node v = graph.getFirstNode();
+            BitSet splitsUsed = new BitSet();
+            Map<Integer, Float> split2angle = new HashMap<>();
+
+            visitRec(graph, v, new Point2D(0, 0), splitsUsed, split2angle, random, node2point);
+
+        } else {
             // to illustrate, jiggle all points by small random amount:
             if (isOptionRandomJiggle()) {
                 final Random random = new Random();
                 for (Node v : graph.nodes()) {
                     final Point2D point = node2point.get(v);
 
-                    node2point.put(v, new Point2D(point.getX() * (1 + 0.1 * (random.nextFloat() - 0.5)), point.getY() * (1 + 0.1 * (random.nextFloat() - 0.5))));
+                    // node2point.put(v, new Point2D(point.getX() * (1 + getOptionSize() * (random.nextFloat() - 0.5)), point.getY() * (1 + getOptionSize() * (random.nextFloat() - 0.5))));
+
+                    node2point.put(v, new Point2D(getOptionSize() * (random.nextFloat() - 0.5), 1 + getOptionSize() * (random.nextFloat() - 0.5)));
+
+
                 }
             }
         }
@@ -145,6 +165,25 @@ public class ExperimentalSplitsNetworkAlgorithm extends Algorithm<SplitsBlock, V
         getConnector().stateProperty().addListener(new WeakChangeListener<>(changeListener));
     }
 
+    private void visitRec(SplitsGraph graph, Node v, Point2D point2D, BitSet splitsUsed, Map<Integer, Float> split2angle, Random random, NodeArray<Point2D> node2point) {
+        node2point.put(v, point2D);
+
+        for (Edge e : v.adjacentEdges()) {
+            int splitId = graph.getSplit(e);
+            if (!splitsUsed.get(splitId)) {
+                splitsUsed.set(splitId);
+                Float angle = split2angle.get(splitId);
+                if (angle == null) {
+                    angle = (float) random.nextInt(360);
+                    split2angle.put(splitId, angle);
+                }
+                Point2D next = GeometryUtils.translateByAngle(point2D, angle, graph.getWeight(e));
+                visitRec(graph, e.getOpposite(v), next, splitsUsed, split2angle, random, node2point);
+                splitsUsed.set(splitId, false);
+            }
+        }
+    }
+
     public boolean isOptionUseWeights() {
         return optionUseWeights.get();
     }
@@ -167,5 +206,17 @@ public class ExperimentalSplitsNetworkAlgorithm extends Algorithm<SplitsBlock, V
 
     public void setOptionRandomJiggle(boolean optionRandomJiggle) {
         this.optionRandomJiggle.set(optionRandomJiggle);
+    }
+
+    public float getOptionSize() {
+        return optionSize.get();
+    }
+
+    public FloatProperty optionSizeProperty() {
+        return optionSize;
+    }
+
+    public void setOptionSize(float optionSize) {
+        this.optionSize.set(optionSize);
     }
 }
