@@ -57,10 +57,10 @@ public class ViewerNexusOutput extends NexusIOBase implements INexusOutput<Viewe
         int nLabels = 0; // if we ever implement floating labels, then this must be set to their number
 
         if (nLabels > 0)
-            w.write(String.format("\tDIMENSIONS nnodes=%d nedges=%d nlabels=%d;\n", graph.getNumberOfNodes(), graph.getNumberOfEdges(), nLabels));
+            w.write(String.format("DIMENSIONS nNodes=%d nEdges=%d nLabels=%d;\n", graph.getNumberOfNodes(), graph.getNumberOfEdges(), nLabels));
         else
-            w.write(String.format("\tDIMENSIONS nnodes=%d nedges=%d;\n", graph.getNumberOfNodes(), graph.getNumberOfEdges()));
-        w.write(String.format("\tFORMAT type=%s;\n", viewerBlock.getType().toString()));
+            w.write(String.format("DIMENSIONS nNodes=%d nEdges=%d;\n", graph.getNumberOfNodes(), graph.getNumberOfEdges()));
+        w.write(String.format("FORMAT type=%s;\n", viewerBlock.getType().toString()));
 
         // nodes:
         w.write("NODES\n");

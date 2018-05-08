@@ -42,6 +42,7 @@ import jloda.fx.NotificationManager;
 import jloda.fx.RecentFilesManager;
 import jloda.util.Basic;
 import jloda.util.Pair;
+import jloda.util.ProgramProperties;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.SplitsTree5Block;
 import splitstree5.core.workflow.Connector;
@@ -51,10 +52,7 @@ import splitstree5.core.workflow.WorkflowNode;
 import splitstree5.io.exports.NexusExporter;
 import splitstree5.io.nexus.SplitsTree5NexusOutput;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -84,27 +82,45 @@ public class WorkflowNexusOutput {
         final Map<String, Integer> nodeType2Count = new HashMap<>();
         final Map<WorkflowNode, String> node2title = new HashMap<>();
 
-        final String fileName = document.getFileName();
+        final File selectedFile = new File(document.getFileName());
 
-        try (Writer w = new BufferedWriter(new FileWriter(document.getFileName()))) {
+        if (selectedFile.getParentFile().isDirectory())
+            ProgramProperties.put("SaveDir", selectedFile.getParent());
+
+        try (Writer w = new BufferedWriter(new FileWriter(selectedFile))) {
             w.write("#nexus\n");
             new SplitsTree5NexusOutput().write(w, splitsTree5Block);
 
-            nexusExporter.setTitle("InputTaxa");
-            node2title.put(workflow.getTopTaxaNode(), "InputTaxa");
+            nexusExporter.setTitle("TopTaxa");
+            node2title.put(workflow.getTopTaxaNode(), "TopTaxa");
             nexusExporter.export(w, workflow.getTopTaxaNode().getDataBlock());
 
+            if (workflow.getTopTraitsNode() != null) {
+                workflow.getTopTraitsNode().setTitle("TopTraits");
+                node2title.put(workflow.getTopTraitsNode(), "TopTraits");
+                setupExporter(workflow.getTopTraitsNode(), nexusExporter, nodeType2Count, node2title);
+                nexusExporter.export(w, workflow.getTopTaxaNode().getDataBlock(), workflow.getTopTraitsNode().getDataBlock());
+            }
+
+            node2title.put(workflow.getTaxaFilter(), "TaxaFilter");
             setupExporter(workflow.getTaxaFilter(), nexusExporter, nodeType2Count, node2title);
             nexusExporter.export(w, workflow.getTaxaFilter().getAlgorithm());
 
+            node2title.put(workflow.getWorkingTaxaNode(), "WorkingTaxa");
             setupExporter(workflow.getWorkingTaxaNode(), nexusExporter, nodeType2Count, node2title);
             nexusExporter.export(w, workflow.getWorkingTaxaNode().getDataBlock());
 
-            nexusExporter.setTitle("InputData");
-            node2title.put(workflow.getTopDataNode(), "InputData");
-            nexusExporter.setLink(null);
-            nexusExporter.export(w, workflow.getWorkingTaxaBlock(), workflow.getTopDataNode().getDataBlock());
+            if (workflow.getWorkingTraitsNode() != null) {
+                node2title.put(workflow.getWorkingTraitsNode(), "Traits");
+                setupExporter(workflow.getWorkingTraitsNode(), nexusExporter, nodeType2Count, node2title);
+                nexusExporter.export(w, workflow.getWorkingTaxaBlock(), workflow.getWorkingTraitsNode().getDataBlock());
+            }
 
+            node2title.put(workflow.getTopDataNode(), "TopData");
+            setupExporter(workflow.getTopDataNode(), nexusExporter, nodeType2Count, node2title);
+            nexusExporter.export(w, workflow.getTopTaxaNode().getDataBlock(), workflow.getTopDataNode().getDataBlock());
+
+            node2title.put(workflow.getTopFilter(), "TopFilter");
             setupExporter(workflow.getTopFilter(), nexusExporter, nodeType2Count, node2title);
             nexusExporter.export(w, workflow.getTopFilter().getAlgorithm());
 
@@ -132,11 +148,11 @@ public class WorkflowNexusOutput {
             node.setTitle(null);
         }
 
-        NotificationManager.showInformation("Saved " + splitsTree5Block.size() + " blocks to file: " + fileName);
+        NotificationManager.showInformation("Saved " + splitsTree5Block.size() + " blocks to file: " + selectedFile.getPath());
         document.setDirty(false);
         document.setHasSplitsTree5File(true);
         if (!document.getFileName().endsWith(".tmp"))
-            RecentFilesManager.getInstance().addRecentFile(fileName);
+            RecentFilesManager.getInstance().addRecentFile(selectedFile.getPath());
     }
 
     /**
@@ -149,9 +165,15 @@ public class WorkflowNexusOutput {
      */
     private void setupExporter(DataNode dataNode, NexusExporter nexusExporter, Map<String, Integer> nodeType2Count, Map<WorkflowNode, String> node2title) {
         final Integer count = nodeType2Count.getOrDefault(dataNode.getDataBlock().getBlockName(), 1);
-        final String title = Basic.capitalize(dataNode.getDataBlock().getBlockName(), true) + count;
-        nodeType2Count.put(dataNode.getDataBlock().getBlockName(), count + 1);
-        node2title.put(dataNode, title);
+        final String title;
+        if (node2title.get(dataNode) != null)
+            title = node2title.get(dataNode);
+        else {
+            title = Basic.capitalize(dataNode.getDataBlock().getBlockName(), true) + count;
+            nodeType2Count.put(dataNode.getDataBlock().getBlockName(), count + 1);
+            node2title.put(dataNode, title);
+        }
+
         nexusExporter.setTitle(title);
         if (dataNode.getParent() != null)
             nexusExporter.setLink(new Pair<>(dataNode.getParent().getAlgorithm().getBlockName(), node2title.get(dataNode.getParent())));
@@ -168,9 +190,14 @@ public class WorkflowNexusOutput {
     private void setupExporter(Connector connector, NexusExporter nexusExporter, Map<String, Integer> nodeType2Count, Map<WorkflowNode, String> node2title) {
         final String nodeType = connector.getAlgorithm().getBlockName();
         final Integer count = nodeType2Count.getOrDefault(nodeType, 1);
-        final String title = "Algorithm" + count;
-        nodeType2Count.put(nodeType, count + 1);
-        node2title.put(connector, title);
+        final String title;
+        if (node2title.get(connector) != null)
+            title = node2title.get(connector);
+        else {
+            title = "Algorithm" + count;
+            nodeType2Count.put(nodeType, count + 1);
+            node2title.put(connector, title);
+        }
         nexusExporter.setTitle(title);
         if (connector.getParent() != null)
             nexusExporter.setLink(new Pair<>(connector.getParent().getDataBlock().getBlockName(), node2title.get(connector.getParent())));

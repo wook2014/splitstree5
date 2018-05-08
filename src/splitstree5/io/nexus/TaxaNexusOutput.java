@@ -35,15 +35,15 @@ public class TaxaNexusOutput extends NexusIOBase {
     public void write(Writer w, TaxaBlock taxaBlock) throws IOException {
         w.write("\nBEGIN " + TaxaBlock.BLOCK_NAME + ";\n");
         writeTitleAndLink(w);
-        w.write("\tDIMENSIONS ntax=" + taxaBlock.getNtax() + ";\n");
-        w.write("\tTAXLABELS\n");
+        w.write("DIMENSIONS ntax=" + taxaBlock.getNtax() + ";\n");
+        w.write("TAXLABELS\n");
         for (int i = 1; i <= taxaBlock.getNtax(); i++)
-            w.write("\t\t[" + i + "] '" + taxaBlock.get(i).getName() + "'\n");
-        w.write("\t;\n");
+            w.write("\t[" + i + "] '" + taxaBlock.get(i).getName() + "'\n");
+        w.write(";\n");
         if (hasInfos(taxaBlock)) {
-            w.write("\tTAXINFO\n");
+            w.write("TAXINFO\n");
             for (int i = 1; i <= taxaBlock.getNtax(); i++)
-                w.write("\t\t[" + i + "] '" + taxaBlock.get(i).getInfo() + "'\n");
+                w.write("\t[" + i + "] '" + taxaBlock.get(i).getInfo() + "'\n");
             w.write(";\n");
         }
         w.write("END; [" + TaxaBlock.BLOCK_NAME + "]\n");

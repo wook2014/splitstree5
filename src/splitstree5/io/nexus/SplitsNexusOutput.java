@@ -49,9 +49,9 @@ public class SplitsNexusOutput extends NexusIOBase implements INexusOutput<Split
 
         w.write("\nBEGIN " + SplitsBlock.BLOCK_NAME + ";\n");
         writeTitleAndLink(w);
-        w.write("\tDIMENSIONS ntax=" + ntax + " nsplits=" + nsplits + ";\n");
+        w.write("DIMENSIONS ntax=" + ntax + " nsplits=" + nsplits + ";\n");
 
-        w.write("\tFORMAT");
+        w.write("FORMAT");
         if (format.isOptionLabels())
             w.write(" labels=left");
         else
@@ -66,8 +66,8 @@ public class SplitsNexusOutput extends NexusIOBase implements INexusOutput<Split
             w.write(" confidences=no");
         w.write(";\n");
         if (splitsBlock.getThreshold() != 0)
-            w.write("\tTHRESHOLD=" + splitsBlock.getThreshold() + "; \n");
-        w.write(String.format("\tPROPERTIES fit=%.2f", splitsBlock.getFit()));
+            w.write("THRESHOLD=" + splitsBlock.getThreshold() + "; \n");
+        w.write(String.format("PROPERTIES fit=%.2f", splitsBlock.getFit()));
         switch (splitsBlock.getCompatibility()) {
             case compatible:
                 w.write(" compatible");
@@ -86,7 +86,7 @@ public class SplitsNexusOutput extends NexusIOBase implements INexusOutput<Split
         w.write(";\n");
 
         if (splitsBlock.getCycle() != null) {
-            w.write("\tCYCLE");
+            w.write("CYCLE");
             int[] cycle = splitsBlock.getCycle();
             for (int i = 1; i < cycle.length; i++)
                 w.write(" " + cycle[i]);

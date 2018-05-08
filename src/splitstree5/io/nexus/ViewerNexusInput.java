@@ -26,6 +26,7 @@ import jloda.util.Basic;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.ViewerBlock;
+import splitstree5.gui.graphtab.NetworkViewTab;
 import splitstree5.gui.graphtab.SplitsViewTab;
 import splitstree5.gui.graphtab.TreeViewTab;
 import splitstree5.gui.graphtab.base.EdgeView2D;
@@ -159,6 +160,26 @@ public class ViewerNexusInput extends NexusIOBase {
                     }
                     break;
                 }
+                case NetworkViewer: {
+                    final NetworkViewTab graphTab = (NetworkViewTab) viewerBlock.getTab();
+                    graphTab.init(new PhyloGraph());
+                    final PhyloGraph graph = graphTab.getGraph();
+
+                    if (!np.peekMatchIgnoreCase(";")) {
+                        while (true) {
+                            final NodeView2D nv = NodeViewIO.valueOf(np, graph, graphTab, id2node);
+                            graphTab.getNode2view().put(nv.getNode(), nv);
+                            graphTab.getNodesGroup().getChildren().add(nv.getShapeGroup());
+                            graphTab.getNodeLabelsGroup().getChildren().add(nv.getLabelGroup());
+                            countNodes++;
+                            if (np.peekMatchIgnoreCase(","))
+                                np.matchIgnoreCase(",");
+                            else
+                                break;
+                        }
+                    }
+                    break;
+                }
                 default:
                     throw new IOExceptionWithLineNumber("Not implemented: " + type, np.lineno());
             }
@@ -171,7 +192,8 @@ public class ViewerNexusInput extends NexusIOBase {
         int countEdges = 0;
         switch (type) {
             case TreeViewer:
-            case SplitsNetworkViewer: {
+            case SplitsNetworkViewer:
+            case NetworkViewer: {
                 final Graph2DTab graphTab = (Graph2DTab) viewerBlock.getTab();
                 final PhyloGraph graph = graphTab.getGraph();
 

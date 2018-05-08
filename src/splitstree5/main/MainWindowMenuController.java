@@ -107,8 +107,9 @@ public class MainWindowMenuController {
         });
 
         controller.getEnterDataMenuItem().setOnAction((e) -> {
-            if (!mainWindow.getDocument().isDirty())
+            if (!mainWindow.getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().get() || mainWindow.getInputTab() != null) {
                 mainWindow.showInputTab();
+            }
             else {
                 final MainWindow newMainWindow = new MainWindow();
                 newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50);
@@ -157,22 +158,31 @@ public class MainWindowMenuController {
      * @return true if save
      */
     public static boolean showSaveDialog(MainWindow mainWindow) {
+
         final FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save SplitsTree5 file");
+
+        final File previousDir = new File(ProgramProperties.get("SaveDir", ""));
+        if (previousDir.isDirectory()) {
+            fileChooser.setInitialDirectory(previousDir);
+        } else
+            fileChooser.setInitialDirectory((new File(mainWindow.getDocument().getFileName()).getParentFile()));
+
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("SplitsTree5 Files", "*.spt5", "*.nxs", "*.nex", "*.spt5"));
-        fileChooser.setInitialDirectory((new File(mainWindow.getDocument().getFileName()).getParentFile()));
         fileChooser.setInitialFileName((new File(mainWindow.getDocument().getFileName()).getName()));
-        final File file = fileChooser.showSaveDialog(mainWindow.getStage());
-        if (file != null) {
+        final File selectedFile = fileChooser.showSaveDialog(mainWindow.getStage());
+        if (selectedFile != null) {
+            if (selectedFile.getParentFile().isDirectory())
+                ProgramProperties.put("SaveDir", selectedFile.getParent());
             try {
-                mainWindow.getDocument().setFileName(file.getPath());
+                mainWindow.getDocument().setFileName(selectedFile.getPath());
                 new WorkflowNexusOutput().save(mainWindow.getDocument());
                 mainWindow.getDocument().setDirty(false);
             } catch (IOException e) {
                 Basic.caught(e);
             }
         }
-        return file != null;
+        return selectedFile != null;
     }
 
     /**

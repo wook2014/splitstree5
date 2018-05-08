@@ -48,7 +48,6 @@ abstract public class DataBlock extends NameableBase {
     protected INexusFormat format; // text display format
     private final ChangeListener<UpdateState> stateChangeListener;
 
-
     /**
      * default constructor
      */
@@ -144,8 +143,14 @@ abstract public class DataBlock extends NameableBase {
                 nexusExporter.export(w, (TaxaBlock) this);
             } else if (this instanceof AnalysisBlock) {
                 nexusExporter.export(w, (AnalysisBlock) this);
-            } else
-                nexusExporter.export(w, document.getWorkflow().getWorkingTaxaNode().getDataBlock(), this);
+            } else {
+                final TaxaBlock taxaBlock;
+                if (document.getWorkflow().getTopNodes().contains(dataNode))
+                    taxaBlock = document.getWorkflow().getTopTaxaNode().getDataBlock();
+                else
+                    taxaBlock = document.getWorkflow().getWorkingTaxaBlock();
+                nexusExporter.export(w, taxaBlock, this);
+            }
         } catch (IOException ex) {
             Basic.caught(ex);
         }

@@ -506,8 +506,14 @@ public class MainWindow {
      * show the enter data tab
      */
     public void showInputTab() {
-        if (inputTab == null)
+        if (inputTab == null) {
             inputTab = new InputTab(this);
+            getDocument().dirtyProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue) {
+                    removeInputTab();
+                }
+            });
+        }
         if (!getMainWindowController().getMainTabPane().getTabs().contains(inputTab))
             getMainWindowController().getMainTabPane().getTabs().add(inputTab);
         getMainWindowController().getMainTabPane().getSelectionModel().select(inputTab);
@@ -519,5 +525,12 @@ public class MainWindow {
 
     public void showWorkflow() {
         mainWindowController.getMainTabPane().getSelectionModel().select(workflowViewTab);
+    }
+
+    public void removeInputTab() {
+        if (inputTab != null) {
+            mainTabPane.getTabs().remove(inputTab);
+            inputTab = null;
+        }
     }
 }

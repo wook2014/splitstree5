@@ -161,7 +161,19 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
                         }
                         title2node.put(dataBlock.getBlockName() + taxaInput.getTitle(), dataNode);
                     } else {
-                        final DataBlock dataBlock = dataInput.parse(np, workingTaxaNode.getDataBlock());
+                        final TaxaBlock taxaBlock;
+                        if (workingTaxaNode == null) {
+                            taxaBlock = topTaxaNode.getDataBlock();
+                            // should only ever happen in the data block to be read is the top traits block
+                            if (!np.peekMatchBeginBlock("traits"))
+                                System.err.println("Unexpected top block...");
+                        } else
+                            taxaBlock = workingTaxaNode.getDataBlock();
+
+                        final DataBlock dataBlock = dataInput.parse(np, taxaBlock);
+                        if (dataBlock instanceof TraitsBlock)
+                            taxaBlock.setTraitsBlock((TraitsBlock) dataBlock);
+
                         final DataNode dataNode = workflow.createDataNode(dataBlock);
                         if (topDataNode == null && !(dataBlock instanceof IAdditionalBlock)) {
                             topDataNode = dataNode;
@@ -171,15 +183,17 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
                                 workingDataNode = dataNode;
                                 workflow.setWorkingDataNode(dataNode);
                             }
-                            final Pair<Algorithm, String> algorithmAndLink = title2algorithmAndLink.get(dataInput.getLink().getSecond());
-                            final Algorithm algorithm = algorithmAndLink.getFirst();
-                            final DataNode parent = title2node.get(algorithmAndLink.getSecond());
-                            if (algorithm instanceof TopFilter) {
-                                workflow.createTopFilter(parent, dataNode);
-                            } else {
-                                workflow.createConnector(parent, dataNode, algorithmAndLink.getFirst());
-                                if (dataBlock instanceof ViewerBlock) {
-                                    viewerBlocks.add((ViewerBlock) dataBlock);
+                            if (dataInput.getLink() != null) {
+                                final Pair<Algorithm, String> algorithmAndLink = title2algorithmAndLink.get(dataInput.getLink().getSecond());
+                                final Algorithm algorithm = algorithmAndLink.getFirst();
+                                final DataNode parent = title2node.get(algorithmAndLink.getSecond());
+                                if (algorithm instanceof TopFilter) {
+                                    workflow.createTopFilter(parent, dataNode);
+                                } else {
+                                    workflow.createConnector(parent, dataNode, algorithmAndLink.getFirst());
+                                    if (dataBlock instanceof ViewerBlock) {
+                                        viewerBlocks.add((ViewerBlock) dataBlock);
+                                    }
                                 }
                             }
                         }

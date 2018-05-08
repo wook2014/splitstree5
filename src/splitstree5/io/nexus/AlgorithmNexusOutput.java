@@ -60,18 +60,18 @@ public class AlgorithmNexusOutput extends NexusIOBase {
     public void write(Writer w, Algorithm algorithm) throws IOException {
         w.write("\nBEGIN " + Algorithm.BLOCK_NAME + ";\n");
         writeTitleAndLink(w);
-        w.write("\tALGORITHM " + algorithm.getName() + ";\n");
+        w.write("ALGORITHM " + algorithm.getName() + ";\n");
 
         final ArrayList<Option> options = OptionsAccessor.getAllOptions(algorithm);
         if (options.size() > 0) {
-            w.write("\tOPTIONS\n");
+            w.write("OPTIONS\n");
             boolean first = true;
             for (Option option : options) {
                 if (first)
                     first = false;
                 else
                     w.write(",\n");
-                w.write("\t\t" + option.getName() + " = " + option.getValue().toString());
+                w.write("\t" + option.getName() + " = " + option.getValue().toString());
             }
             w.write(";\n");
         }

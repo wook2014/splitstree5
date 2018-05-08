@@ -45,8 +45,8 @@ public class TraitsNexusOutput extends NexusIOBase implements INexusOutput<Trait
 
         w.write("\nBEGIN " + TraitsBlock.BLOCK_NAME + ";\n");
         writeTitleAndLink(w);
-        w.write("  DIMENSIONS [ntax=" + taxaBlock.getNtax() + "] ntraits=" + traitsBlock.getNTraits() + ";\n");
-        w.write("  FORMAT");
+        w.write("DIMENSIONS [nTax=" + taxaBlock.getNtax() + "] nTraits=" + traitsBlock.getNTraits() + ";\n");
+        w.write("FORMAT");
         if (format.isOptionLabel())
             w.write(" labels=yes");
         else
@@ -56,19 +56,19 @@ public class TraitsNexusOutput extends NexusIOBase implements INexusOutput<Trait
         w.write(";\n");
 
         if (traitsBlock.isSetLatitudeLongitude()) {
-            w.write("  TRAITLATITUDE");
+            w.write("TRAITLATITUDE");
             for (int i = 1; i <= traitsBlock.getNTraits(); i++) {
                 w.write(" " + traitsBlock.getTraitLatitude(i));
             }
             w.write(";\n");
-            w.write("  TRAITLONGITUDE");
+            w.write("TRAITLONGITUDE");
             for (int i = 1; i <= traitsBlock.getNTraits(); i++) {
                 w.write(" " + traitsBlock.getTraitLongitude(i));
             }
             w.write(";\n");
         }
         {
-            w.write("  TRAITLABELS\n");
+            w.write("TRAITLABELS\n");
             for (int i = 1; i <= traitsBlock.getNTraits(); i++) {
                 w.write("\t" + traitsBlock.getTraitLabel(i) + "\n");
             }

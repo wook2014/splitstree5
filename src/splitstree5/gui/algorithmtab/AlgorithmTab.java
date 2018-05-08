@@ -152,6 +152,7 @@ public class AlgorithmTab<P extends DataBlock, C extends DataBlock> extends View
         algorithmComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             getUndoManager().add("Set Algorithm", algorithmComboBox.valueProperty(), oldValue, newValue);
             currentAlgorithm = ((Algorithm) newValue);
+            currentAlgorithm.setConnector(oldValue.getConnector());
             controller.getBorderPane().setCenter(updateAlgorithmPane());
             algorithmIsApplicable.setValue(currentAlgorithm.isApplicable(connector.getTaxaBlock(), connector.getParentDataBlock()));
         });

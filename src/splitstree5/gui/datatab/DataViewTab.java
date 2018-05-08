@@ -29,6 +29,7 @@ import javafx.scene.image.ImageView;
 import jloda.util.ResourceManager;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.DataBlock;
+import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.texttab.TextViewTab;
@@ -54,7 +55,12 @@ public class DataViewTab extends TextViewTab {
         final DataBlock dataBlock = dataNode.getDataBlock();
         final StringProperty textProperty;
         if (dataBlock.getFormat() != null) {
-            final GenericDatablockFormatToolBar toolBar = new GenericDatablockFormatToolBar(document.getWorkflow().getWorkingTaxaBlock(), dataBlock);
+            final TaxaBlock taxaBlock;
+            if (document.getWorkflow().getTopNodes().contains(dataNode))
+                taxaBlock = document.getWorkflow().getTopTaxaNode().getDataBlock();
+            else
+                taxaBlock = document.getWorkflow().getWorkingTaxaBlock();
+            final GenericDatablockFormatToolBar toolBar = new GenericDatablockFormatToolBar(taxaBlock, dataBlock);
             textProperty = toolBar.textProperty();
             toolBar.setMinHeight(30);
             setToolBar(toolBar);

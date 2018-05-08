@@ -49,7 +49,7 @@ public class TreesNexusOutput extends NexusIOBase implements INexusOutput<TreesB
         w.write("\nBEGIN " + TreesBlock.BLOCK_NAME + ";\n");
         writeTitleAndLink(w);
         if (treesBlock.isPartial() || treesBlock.isRooted()) {
-            w.write("\tPROPERTIES");
+            w.write("PROPERTIES");
             w.write(" partialTrees=" + (treesBlock.isPartial() ? "yes" : "no"));
             w.write(" rooted=" + (treesBlock.isRooted() ? "yes" : "no"));
             w.write(";\n");
@@ -58,16 +58,16 @@ public class TreesNexusOutput extends NexusIOBase implements INexusOutput<TreesB
         final Map<String, String> translator;
         if (format.isOptionTranslate()) {
             translator = computeTranslationName2Number(taxaBlock);
-            w.write("\tTRANSLATE\n");
+            w.write("TRANSLATE\n");
 
             for (int t = 1; t <= taxaBlock.getNtax(); t++) {
-                w.write("\t\t" + t + " '" + taxaBlock.getLabel(t) + "',\n");
+                w.write("\t" + t + " '" + taxaBlock.getLabel(t) + "',\n");
             }
             w.write(";\n");
         } else
             translator = null;
 
-        w.write("\t[TREES]\n");
+        w.write("[TREES]\n");
         int t = 1;
         for (PhyloTree tree : treesBlock.getTrees()) {
             final String name = (tree.getName() != null && tree.getName().length() > 0 ? tree.getName() : "t" + t);

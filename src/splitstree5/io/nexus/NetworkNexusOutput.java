@@ -45,7 +45,7 @@ public class NetworkNexusOutput extends NexusIOBase implements INexusOutput<Netw
     public void write(Writer w, TaxaBlock taxaBlock, NetworkBlock networkBlock) throws IOException {
         w.write("\nBEGIN " + NetworkBlock.BLOCK_NAME + ";\n");
         writeTitleAndLink(w);
-        w.write("\tDIMENSIONS nNodes=" + networkBlock.getNumberOfNodes() + " nEdges=" + networkBlock.getNumberOfEdges() + ";\n");
+        w.write("DIMENSIONS nNodes=" + networkBlock.getNumberOfNodes() + " nEdges=" + networkBlock.getNumberOfEdges() + ";\n");
 
         w.write("\tTYPE=" + networkBlock.getNetworkType() + ";\n");
 
@@ -55,14 +55,14 @@ public class NetworkNexusOutput extends NexusIOBase implements INexusOutput<Netw
         // properties?
 
         {
-            w.write("\tNODES\n");
+            w.write("NODES\n");
             boolean first = true;
             for (Node v : graph.nodes()) {
                 if (first)
                     first = false;
                 else
                     w.write(",\n");
-                w.write("\t\tid=" + v.getId());
+                w.write("\tid=" + v.getId());
                 if (graph.getLabel(v) != null && graph.getLabel(v).trim().length() > 0) {
                     w.write(" label='" + graph.getLabel(v).trim() + "'");
                 }
@@ -70,18 +70,18 @@ public class NetworkNexusOutput extends NexusIOBase implements INexusOutput<Netw
                     w.write(" " + key + "='" + networkBlock.getNodeData(v).get(key) + "'");
                 }
             }
-            w.write("\n\t;\n");
+            w.write("\n;\n");
         }
 
         {
-            w.write("\tEDGES\n");
+            w.write("EDGES\n");
             boolean first = true;
             for (Edge e : graph.edges()) {
                 if (first)
                     first = false;
                 else
                     w.write(",\n");
-                w.write("\t\tid=" + e.getId());
+                w.write("\tid=" + e.getId());
                 w.write(" sid=" + e.getSource().getId());
                 w.write(" tid=" + e.getTarget().getId());
 
@@ -92,7 +92,7 @@ public class NetworkNexusOutput extends NexusIOBase implements INexusOutput<Netw
                     w.write(" " + key + "='" + networkBlock.getEdgeData(e).get(key) + "'");
                 }
             }
-            w.write("\n\t;\n");
+            w.write("\n;\n");
         }
         w.write("END; [" + NetworkBlock.BLOCK_NAME + "]\n");
     }

@@ -114,27 +114,35 @@ public class NetworkNexusInput extends NexusIOBase implements INexusInput<Networ
         final Map<Integer, Node> id2node = new TreeMap<>();
 
         np.matchIgnoreCase("NODES");
-        for (int i = 0; i < nNodes; i++) {
-            Node v = graph.newNode();
+        {
+            boolean first = true;
+            for (int i = 0; i < nNodes; i++) {
+                if (first)
+                    first = false;
+                else
+                    np.matchIgnoreCase(",");
 
-            np.matchIgnoreCase("id=");
-            final int id = np.getInt();
-            if (id2node.containsKey(id))
-                throw new IOExceptionWithLineNumber("Multiple occurrence of node id: " + id, np.lineno());
-            id2node.put(id, v);
+                np.matchIgnoreCase("id=");
+                final int id = np.getInt();
+                if (id2node.containsKey(id))
+                    throw new IOExceptionWithLineNumber("Multiple occurrence of node id: " + id, np.lineno());
 
-            if (np.peekMatchIgnoreCase("label")) {
-                np.matchIgnoreCase("label=");
-                graph.setLabel(v, np.getWordRespectCase());
-                if (taxaBlock.getLabels().size() == 0) {
-                    taxonNamesFound.add(graph.getLabel(v));
+                final Node v = graph.newNode();
+                id2node.put(id, v);
+
+                if (np.peekMatchIgnoreCase("label")) {
+                    np.matchIgnoreCase("label=");
+                    graph.setLabel(v, np.getWordRespectCase());
+                    if (taxaBlock.getLabels().size() == 0) {
+                        taxonNamesFound.add(graph.getLabel(v));
+                    }
                 }
-            }
-            while (!np.peekMatchAnyTokenIgnoreCase(", ;")) {
-                String key = np.getWordRespectCase();
-                np.matchIgnoreCase("=");
-                String value = np.getWordRespectCase();
-                networkBlock.getNodeData(v).put(key, value);
+                while (!np.peekMatchAnyTokenIgnoreCase(", ;")) {
+                    String key = np.getWordRespectCase();
+                    np.matchIgnoreCase("=");
+                    String value = np.getWordRespectCase();
+                    networkBlock.getNodeData(v).put(key, value);
+                }
             }
         }
         np.matchIgnoreCase(";");
@@ -142,39 +150,46 @@ public class NetworkNexusInput extends NexusIOBase implements INexusInput<Networ
         final Map<Integer, Edge> id2edge = new TreeMap<>();
 
         np.matchIgnoreCase("EDGES");
-        for (int i = 0; i < nEdges; i++) {
+        {
+            boolean first = true;
+            for (int i = 0; i < nEdges; i++) {
+                if (first)
+                    first = false;
+                else
+                    np.matchIgnoreCase(",");
 
-            np.matchIgnoreCase("id=");
-            final int id = np.getInt();
-            if (id2edge.containsKey(id))
-                throw new IOExceptionWithLineNumber("Multiple occurrence of edge id: " + id, np.lineno());
+                np.matchIgnoreCase("id=");
+                final int id = np.getInt();
+                if (id2edge.containsKey(id))
+                    throw new IOExceptionWithLineNumber("Multiple occurrence of edge id: " + id, np.lineno());
 
-            np.matchIgnoreCase("sid=");
-            final int sid = np.getInt();
-            if (!id2node.containsKey(sid))
-                throw new IOExceptionWithLineNumber("Unknown node id: " + sid, np.lineno());
+                np.matchIgnoreCase("sid=");
+                final int sid = np.getInt();
+                if (!id2node.containsKey(sid))
+                    throw new IOExceptionWithLineNumber("Unknown node id: " + sid, np.lineno());
 
 
-            np.matchIgnoreCase("tid=");
-            final int tid = np.getInt();
-            if (!id2node.containsKey(tid))
-                throw new IOExceptionWithLineNumber("Unknown node id: " + tid, np.lineno());
+                np.matchIgnoreCase("tid=");
+                final int tid = np.getInt();
+                if (!id2node.containsKey(tid))
+                    throw new IOExceptionWithLineNumber("Unknown node id: " + tid, np.lineno());
 
-            final Node source = id2node.get(sid);
-            final Node target = id2node.get(tid);
+                final Node source = id2node.get(sid);
+                final Node target = id2node.get(tid);
 
-            final Edge e = graph.newEdge(source, target);
-            id2edge.put(id, e);
+                final Edge e = graph.newEdge(source, target);
+                id2edge.put(id, e);
 
-            if (np.peekMatchIgnoreCase("label")) {
-                np.matchIgnoreCase("label=");
-                graph.setLabel(e, np.getWordRespectCase());
-            }
-            while (!np.peekMatchAnyTokenIgnoreCase(", ;")) {
-                String key = np.getWordRespectCase();
-                np.matchIgnoreCase("=");
-                String value = np.getWordRespectCase();
-                networkBlock.getEdgeData(e).put(key, value);
+                if (np.peekMatchIgnoreCase("label")) {
+                    np.matchIgnoreCase("label=");
+                    graph.setLabel(e, np.getWordRespectCase());
+                }
+                while (!np.peekMatchAnyTokenIgnoreCase(", ;")) {
+                    String key = np.getWordRespectCase();
+                    np.matchIgnoreCase("=");
+                    String value = np.getWordRespectCase();
+                    networkBlock.getEdgeData(e).put(key, value);
+                }
             }
         }
         np.matchIgnoreCase(";");

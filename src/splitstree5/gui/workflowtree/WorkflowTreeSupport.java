@@ -51,7 +51,6 @@ public class WorkflowTreeSupport {
                     if (workflow.getTopTraitsNode() != null)
                         topTaxaItem.getChildren().add(new WorkflowTreeItem(document, workflow.getTopTraitsNode()));
 
-
                     if (workflow.getTopDataNode() != null) {
                         final WorkflowTreeItem topDataItem = new WorkflowTreeItem(document, workflow.getTopDataNode());
                         topTaxaItem.getChildren().add(topDataItem);

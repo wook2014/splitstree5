@@ -38,10 +38,10 @@ public class SplitsTree5NexusOutput {
      */
     public void write(Writer w, SplitsTree5Block splitsTree5Block) throws IOException {
         w.write("\nBEGIN " + SplitsTree5Block.BLOCK_NAME + ";\n");
-        w.write("\tDIMENSIONS nDataNodes=" + splitsTree5Block.getOptionNumberOfDataNodes()
+        w.write("DIMENSIONS nDataNodes=" + splitsTree5Block.getOptionNumberOfDataNodes()
                 + " nAlgorithms=" + splitsTree5Block.getOptionNumberOfAlgorithms() + ";\n");
-        w.write("\tPROGRAM version='" + splitsTree5Block.getOptionVersion() + "';\n");
-        w.write(String.format("\tWORKFLOW creationDate='%s'; [%s]\n", splitsTree5Block.getOptionCreationDate(),
+        w.write("PROGRAM version='" + splitsTree5Block.getOptionVersion() + "';\n");
+        w.write(String.format("WORKFLOW creationDate='%s'; [%s]\n", splitsTree5Block.getOptionCreationDate(),
                 new Date(splitsTree5Block.getOptionCreationDate())));
         w.write("END; [" + SplitsTree5Block.BLOCK_NAME + "]\n");
     }

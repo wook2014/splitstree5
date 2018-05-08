@@ -19,6 +19,7 @@
 
 package splitstree5.core.algorithms.filters;
 
+import javafx.application.Platform;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
@@ -63,8 +64,13 @@ public class TaxaFilter extends Algorithm<TaxaBlock, TaxaBlock> implements IFrom
 
         if (parentTraits != null && childTraits != null) {
             childTraits.copySubset(parent, parentTraits, child.getTaxa());
-            if (childTraits.getDataNode() != null)
-                childTraits.getDataNode().setState(UpdateState.VALID);
+            if (childTraits.getDataNode() != null) {
+                Platform.runLater(() ->
+                {
+                    childTraits.getDataNode().setState(UpdateState.INVALID); // need to set to invalid for change
+                    childTraits.getDataNode().setState(UpdateState.VALID);
+                });
+            }
         }
 
         if (enabledTaxa.size() == 0 && disabledTaxa.size() == 0)
