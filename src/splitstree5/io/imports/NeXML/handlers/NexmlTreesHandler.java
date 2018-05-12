@@ -10,6 +10,9 @@ import java.util.ArrayList;
 
 public class NexmlTreesHandler extends DefaultHandler {
 
+
+    // todo use addTaxon function
+
     private boolean bReadingTree = false;
 
     private PhyloTree tree;
@@ -57,14 +60,14 @@ public class NexmlTreesHandler extends DefaultHandler {
             if (otu != null)
                 tree.setLabel(node, otu);
             else if (label != null)
-                tree.setLabel(node, label);
+                tree.setLabel(node, label); // todo not use labels and ids here
             else
                 tree.setLabel(node, id);
 
         } else if (qName.equalsIgnoreCase("rootedge") && bReadingTree) {
             Double weight = Double.parseDouble(attributes.getValue("length")); // todo : check if possible
             //tree.setWeight(tree.newEdge(tree.getRoot(), weight);
-            tree.setWeight(weight); // todo what should i do here?
+            tree.setWeight(weight); // todo what should i do here? add extra edge
         } else if (qName.equalsIgnoreCase("edge") && bReadingTree) {
             String source = attributes.getValue("source");
             String target = attributes.getValue("target");

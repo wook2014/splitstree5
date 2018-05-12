@@ -13,9 +13,10 @@ import java.util.Map;
 
 public class NexmlCharactersHandler extends DefaultHandler {
 
-    boolean otu = false;
-    boolean bSeq = false;
-    boolean bCells = false;
+    // todo multiple symbols like (01), use Statelabeler?
+    private boolean otu = false;
+    private boolean bSeq = false;
+    private boolean bCells = false;
 
     private ArrayList<String> taxaLabels = new ArrayList<>();
     private ArrayList<String> matrix = new ArrayList<>();
@@ -25,6 +26,9 @@ public class NexmlCharactersHandler extends DefaultHandler {
     private int nchar = 0;
 
     private HashMap<String, Character> states2symbols;
+    private ArrayList<String> uncertain_state_set_IDs;
+    private ArrayList<String> polymorphic_state_set_IDs;
+
     private HashMap<String, HashMap<String, Character>> id2states;
     private HashMap<String, HashMap<String, Character>> column2state;
 
@@ -69,6 +73,8 @@ public class NexmlCharactersHandler extends DefaultHandler {
             id2states = new HashMap<>();
         } else if (qName.equalsIgnoreCase("states") && bCells) {
             states2symbols = new HashMap<>();
+            uncertain_state_set_IDs = new ArrayList<>();
+            polymorphic_state_set_IDs = new ArrayList<>();
             currentStatesID = attributes.getValue("id");
             //column2state.keySet().add(id);
             /*switch (dataType) {
@@ -89,6 +95,10 @@ public class NexmlCharactersHandler extends DefaultHandler {
             String id = attributes.getValue("id");
             Character symbol = attributes.getValue("symbol").charAt(0);
             states2symbols.put(id, symbol);
+            if (qName.equalsIgnoreCase("uncertain_state_set"))
+                uncertain_state_set_IDs.add(id);
+            if (qName.equalsIgnoreCase("polymorphic_state_set"))
+                polymorphic_state_set_IDs.add(id);
         } else if (qName.equalsIgnoreCase("char") && bCells) {
             String id = attributes.getValue("id");
             String states = attributes.getValue("states");
@@ -137,6 +147,8 @@ public class NexmlCharactersHandler extends DefaultHandler {
         }
     }
 
+    //////////// GETTERS ///////////////
+
     public ArrayList<String> getTaxaLabels() {
         return this.taxaLabels;
     }
@@ -165,4 +177,15 @@ public class NexmlCharactersHandler extends DefaultHandler {
         return this.dataType;
     }
 
+    public HashMap<String, Character> getStates2symbols() {
+        return this.states2symbols;
+    }
+
+    public ArrayList<String> getPolymorphic_state_set_IDs() {
+        return this.polymorphic_state_set_IDs;
+    }
+
+    public ArrayList<String> getUncertain_state_set_IDs() {
+        return this.uncertain_state_set_IDs;
+    }
 }
