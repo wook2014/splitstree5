@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class NexmlCharactersIn extends CharactersFormat implements IToCharacters, IImportCharacters {
+public class NexmlCharactersImporter extends CharactersFormat implements IToCharacters, IImportCharacters {
 
     // todo applicable : iterate through the file ; use setSymbols
 
@@ -29,7 +29,6 @@ public class NexmlCharactersIn extends CharactersFormat implements IToCharacters
     public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxaBlock, CharactersBlock characters) throws CanceledException, IOException {
         try {
             progressListener.setProgress(-1);
-            // todo somehow use progressListener : progressListener.set(-1)
 
             File file = new File(fileName);
             SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -71,8 +70,6 @@ public class NexmlCharactersIn extends CharactersFormat implements IToCharacters
 
     @Override
     public boolean isApplicable(String fileName) throws IOException {
-
-        // todo change by export "<?xml version="
 
         String firstLine = Basic.getFirstLineFromFile(new File(fileName));
         if (firstLine == null || !firstLine.equals("<nex:nexml") && !firstLine.startsWith("<?xml version="))

@@ -5,8 +5,10 @@ import jloda.phylo.PhyloTree;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+import splitstree5.core.datablocks.NetworkBlock;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class NexmlTreesHandler extends DefaultHandler {
 
@@ -55,6 +57,14 @@ public class NexmlTreesHandler extends DefaultHandler {
             node.setData(id);
             System.out.println("-----" + node.getData());
             //tree.setLabel(node, label);
+
+            ///////////////////////
+            /*NetworkBlock.NodeData nodeData=new NetworkBlock.NodeData();
+            nodeData.put("id","n1");
+            nodeData.put("label","n1");
+            Node n=graph.newNode();
+            node2data.put(n,nodeData);*/
+            ////////////////////////
 
             if (root) tree.setRoot(node);
             if (otu != null)

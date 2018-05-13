@@ -11,9 +11,9 @@ import splitstree5.io.nexus.TreesNexusOutput;
 
 import java.io.StringWriter;
 
-public class NexmlTreesInTest {
+public class NexmlTreesImporterTest {
 
-    private NexmlTreesIn nexmlTreesIn = new NexmlTreesIn();
+    private NexmlTreesImporter nexmlTreesImporter = new NexmlTreesImporter();
 
     @Test
     public void parse() throws Exception {
@@ -22,7 +22,7 @@ public class NexmlTreesInTest {
         TreesBlock treesBlock = new TreesBlock();
         ProgressListener pl = new ProgressPercentage();
 
-        nexmlTreesIn.parse(pl, "test/neXML/simple.xml", taxaBlock, treesBlock);
+        nexmlTreesImporter.parse(pl, "test/neXML/simple.xml", taxaBlock, treesBlock);
         // printing
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
