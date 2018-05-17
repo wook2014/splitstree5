@@ -22,7 +22,7 @@ public class NexmlTreesImporterTest {
         TreesBlock treesBlock = new TreesBlock();
         ProgressListener pl = new ProgressPercentage();
 
-        nexmlTreesImporter.parse(pl, "test/neXML/simple.xml", taxaBlock, treesBlock);
+        nexmlTreesImporter.parse(pl, "test/neXML/trees.xml", taxaBlock, treesBlock);
         // printing
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
@@ -31,6 +31,7 @@ public class NexmlTreesImporterTest {
         treesNexusFormat.setOptionTranslate(false);
         new TreesNexusOutput().write(w1, taxaBlock, treesBlock);
         System.err.println(w1.toString());
+        System.err.println("Partial: "+treesBlock.isPartial());
 
     }
 
