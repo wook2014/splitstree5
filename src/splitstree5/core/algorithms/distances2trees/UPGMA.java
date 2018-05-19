@@ -30,17 +30,16 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> implements IFro
     }
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees)
-            throws InterruptedException, CanceledException {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees) throws CanceledException {
 
         progress.setTasks("UPGMA", "Creating nodes...");
         progress.setMaximum(taxaBlock.getNtax());
 
-        PhyloTree tree = new PhyloTree();
-        int ntax = distances.getNtax();
+        final PhyloTree tree = new PhyloTree();
+        final int ntax = distances.getNtax();
 
-        Node[] subtrees = new Node[ntax + 1];
-        int[] sizes = new int[ntax + 1];
+        final Node[] subtrees = new Node[ntax + 1];
+        final int[] sizes = new int[ntax + 1];
         double[] heights = new double[ntax + 1];
 
         for (int i = 1; i <= ntax; i++) {
@@ -56,7 +55,7 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> implements IFro
         for (int i = 1; i <= ntax; i++) {
             for (int j = i + 1; j <= ntax; j++) {
                 //d[i][j] = d[j][i] = (distances.get(i, j) + distances.get(j, i)) / 2.0;
-                double sum = distances.get(i, j) + distances.get(j, i);
+                final double sum = distances.get(i, j) + distances.get(j, i);
                 if (sum == distances.get(i, j) || sum == distances.get(j, i)) {
                     d[i][j] = d[j][i] = sum;
                 } else {
@@ -65,13 +64,12 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> implements IFro
             }
         }
 
-        for (int actual = ntax; actual > 2; actual--) {
-
+        for (int clusters = ntax; clusters > 2; clusters--) {
             int i_min = 0, j_min = 0;
             //Find closest pair.
             double d_min = Double.MAX_VALUE;
-            for (int i = 1; i <= actual; i++) {
-                for (int j = i + 1; j <= actual; j++) {
+            for (int i = 1; i <= clusters; i++) {
+                for (int j = i + 1; j <= clusters; j++) {
                     double dij = d[i][j];
                     if (i_min == 0 || dij < d_min) {
                         i_min = i;
@@ -81,12 +79,12 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> implements IFro
                 }
             }
 
-            double height = d_min / 2.0;
+            final double height = d_min / 2.0;
 
-            Node v = tree.newNode();
-            Edge e = tree.newEdge(v, subtrees[i_min]);
+            final Node v = tree.newNode();
+            final Edge e = tree.newEdge(v, subtrees[i_min]);
             tree.setWeight(e, Math.max(height - heights[i_min], 0.0));
-            Edge f = tree.newEdge(v, subtrees[j_min]);
+            final Edge f = tree.newEdge(v, subtrees[j_min]);
             tree.setWeight(f, Math.max(height - heights[j_min], 0.0));
 
             subtrees[i_min] = v;
@@ -94,31 +92,31 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> implements IFro
             heights[i_min] = height;
 
 
-            int size_i = sizes[i_min];
-            int size_j = sizes[j_min];
+            final int size_i = sizes[i_min];
+            final int size_j = sizes[j_min];
             sizes[i_min] = size_i + size_j;
 
             for (int k = 1; k <= ntax; k++) {
                 if ((k == i_min) || k == j_min) continue;
-                double dki = (d[k][i_min] * size_i + d[k][j_min] * size_j) / ((double) (size_i + size_j));
+                final double dki = (d[k][i_min] * size_i + d[k][j_min] * size_j) / ((double) (size_i + size_j));
                 d[k][i_min] = d[i_min][k] = dki;
             }
 
             //Copy the top row of the matrix and arrays into the empty j_min row/column.
-            if (j_min < actual) {
-                for (int k = 1; k <= actual; k++) {
-                    d[j_min][k] = d[k][j_min] = d[actual][k];
+            if (j_min < clusters) {
+                for (int k = 1; k <= clusters; k++) {
+                    d[j_min][k] = d[k][j_min] = d[clusters][k];
                 }
                 d[j_min][j_min] = 0.0;
-                subtrees[j_min] = subtrees[actual];
-                sizes[j_min] = sizes[actual];
-                heights[j_min] = heights[actual];
+                subtrees[j_min] = subtrees[clusters];
+                sizes[j_min] = sizes[clusters];
+                heights[j_min] = heights[clusters];
             }
 
             progress.incrementProgress();
         }
 
-        int brother = 1;
+        final int brother = 1;
 
         int sister = brother + 1;
         while (subtrees[sister] == null)
@@ -128,14 +126,9 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> implements IFro
         final Edge left = tree.newEdge(root, subtrees[brother]);
         final Edge right = tree.newEdge(root, subtrees[sister]);
 
-        final double diff = (heights[brother] - heights[sister]);
-        if (diff >= 0) {
-            tree.setWeight(left, (d[brother][sister] - diff) / 2.0);
-            tree.setWeight(right, (d[brother][sister] + diff) / 2.0);
-        } else {
-            tree.setWeight(left, (d[brother][sister] + diff) / 2.0);
-            tree.setWeight(right, (d[brother][sister] - diff) / 2.0);
-        }
+        final double halfTotal = 0.5 * (d[brother][sister] + heights[brother] + heights[sister]);
+        tree.setWeight(left, halfTotal - heights[brother]);
+        tree.setWeight(right, halfTotal - heights[sister]);
 
         tree.setRoot(root);
 

@@ -124,10 +124,12 @@ public class DistancesNexusInput extends NexusIOBase implements INexusInput<Dist
             {
                 np.matchIgnoreCase("MATRIX");
                 for (int t = 1; t <= distancesBlock.getNtax(); t++) {
-                    String label = np.getLabelRespectCase();
-                    if (taxaBlock.getNtax() > 0 && !taxaBlock.get(t).getName().equals(label))
-                        throw new IOExceptionWithLineNumber(np.lineno(), "expected '" + taxaBlock.get(t).getName() + "', found: '" + label + "'");
-                    taxonNamesFound.add(label);
+                    if (format.isOptionLabels()) {
+                        String label = np.getLabelRespectCase();
+                        if (taxaBlock.getNtax() > 0 && !taxaBlock.get(t).getName().equals(label))
+                            throw new IOExceptionWithLineNumber(np.lineno(), "expected '" + taxaBlock.get(t).getName() + "', found: '" + label + "'");
+                        taxonNamesFound.add(label);
+                    }
 
                     distancesBlock.set(t, t, 0);
 
@@ -162,9 +164,11 @@ public class DistancesNexusInput extends NexusIOBase implements INexusInput<Dist
             if (np.peekMatchIgnoreCase("VARMATRIX")) {
                 np.matchIgnoreCase("VARMATRIX");
                 for (int t = 1; t <= distancesBlock.getNtax(); t++) {
-                    String label = np.getLabelRespectCase();
-                    if (taxaBlock.getNtax() > 0 && !taxaBlock.get(t).getName().equals(label))
-                        throw new IOExceptionWithLineNumber(np.lineno(), "expected '" + taxaBlock.get(t).getName() + "', found: '" + label + "'");
+                    if (format.isOptionLabels()) {
+                        String label = np.getLabelRespectCase();
+                        if (taxaBlock.getNtax() > 0 && !taxaBlock.get(t).getName().equals(label))
+                            throw new IOExceptionWithLineNumber(np.lineno(), "expected '" + taxaBlock.get(t).getName() + "', found: '" + label + "'");
+                    }
 
                     if (format.isOptionVariancesIO())
                         distancesBlock.setVariance(t, t, 0);
