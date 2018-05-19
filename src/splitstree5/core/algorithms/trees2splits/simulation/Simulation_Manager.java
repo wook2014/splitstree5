@@ -1,8 +1,5 @@
 package splitstree5.core.algorithms.trees2splits.simulation;
 
-import java.io.IOException;
-import java.util.*;
-
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
 import splitstree5.core.algorithms.trees2splits.util.MyNewickParser;
@@ -11,9 +8,12 @@ import splitstree5.core.algorithms.trees2splits.util.MyTree;
 import splitstree5.core.algorithms.trees2splits.util.RandomBinaryTree_Generator;
 import splitstree5.io.imports.utils.SimpleNewickParser;
 
+import java.io.IOException;
+import java.util.*;
+
 public class Simulation_Manager {
 
-    private final static char[] SIGMA = { 'A', 'G', 'T', 'C' };
+    private final static char[] SIGMA = {'A', 'G', 'T', 'C'};
     private double maxPE = 0., minPE = Double.POSITIVE_INFINITY, avgPE = 0, peCounter = 0;
 
     public Object[] run(int numberOfTaxa, int maxBranchLength, int seqLength, int numOfTrees, int numOfSPRTrees, int numOfSPRs, double u) throws IOException {
@@ -48,9 +48,8 @@ public class Simulation_Manager {
             System.out.println("SPR-Clusters: " + spr[0] + " " + spr[1]);
         System.out.println(numOfSPRs + "x" + numOfSPRTrees + " tree(s) modified.");
 
-         Map<String, Integer> taxName2Id = new HashMap<>(); // starts at 1
+        Map<String, Integer> taxName2Id = new HashMap<>(); // starts at 1
         Set<String> taxonNamesFound = new TreeSet<>();
-
 
 
         for (String name : taxaOrdering) {
@@ -60,12 +59,12 @@ public class Simulation_Manager {
 
         // reporting output
         System.out.println(">Output ");
-        ArrayList<PhyloTree> phyloTrees= new ArrayList<PhyloTree> ();
+        ArrayList<PhyloTree> phyloTrees = new ArrayList<PhyloTree>();
         for (MyTree t : geneTrees) {
             System.out.println(t.toNewickString());
-            PhyloTree pt= converToPhyloTree(t);
+            PhyloTree pt = converToPhyloTree(t);
 
-            for (Node v :pt.nodes()) {
+            for (Node v : pt.nodes()) {
                 final String label = pt.getLabel(v);
                 if (label != null && label.length() > 0) {
                     if (taxonNamesFound.contains(label)) {
@@ -79,18 +78,18 @@ public class Simulation_Manager {
 
         }
 
-        Object[] result = { converToPhyloTree(speciesTree), phyloTrees, taxaOrdering, geneTrees };
+        Object[] result = {converToPhyloTree(speciesTree), phyloTrees, taxaOrdering, geneTrees};
         return result;
 
     }
-public PhyloTree converToPhyloTree(MyTree myTree) {
 
-        PhyloTree result=null;
-        try{
-          result=  new SimpleNewickParser().parse(myTree.toNewickString());
+    public PhyloTree converToPhyloTree(MyTree myTree) {
 
-        }
-        catch(Exception ex){
+        PhyloTree result = null;
+        try {
+            result = new SimpleNewickParser().parse(myTree.toNewickString());
+
+        } catch (Exception ex) {
 
             ex.printStackTrace();
 
@@ -99,16 +98,11 @@ public PhyloTree converToPhyloTree(MyTree myTree) {
         return result;
 
     }
+
     public MyTree converToMyTree(PhyloTree phyloTree) {
 
 
-
-
-            return new MyNewickParser().run(phyloTree.toBracketString());
-
-
-
-
+        return new MyNewickParser().run(phyloTree.toBracketString());
 
 
     }

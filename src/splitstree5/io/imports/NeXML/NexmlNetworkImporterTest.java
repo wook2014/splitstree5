@@ -5,15 +5,10 @@ import jloda.util.ProgressPercentage;
 import org.junit.Test;
 import splitstree5.core.datablocks.NetworkBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.io.nexus.NetworkNexusOutput;
 import splitstree5.io.nexus.TaxaNexusOutput;
-import splitstree5.io.nexus.TreesNexusFormat;
-import splitstree5.io.nexus.TreesNexusOutput;
 
 import java.io.StringWriter;
-
-import static org.junit.Assert.*;
 
 public class NexmlNetworkImporterTest {
 

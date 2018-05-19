@@ -19,7 +19,6 @@
 
 package splitstree5.core.datablocks;
 
-import com.sun.istack.internal.Nullable;
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
 import splitstree5.core.algorithms.interfaces.IToCharacters;
 import splitstree5.core.datablocks.characters.CharactersType;
@@ -171,7 +170,7 @@ public class CharactersBlock extends DataBlock {
         }
     }
 
-    public void setCharacterWeights(@Nullable double[] characterWeights) {
+    public void setCharacterWeights(double[] characterWeights) {
         if (characterWeights == null)
             this.characterWeights = null;
         else {

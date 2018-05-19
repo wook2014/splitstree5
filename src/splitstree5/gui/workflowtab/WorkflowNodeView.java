@@ -57,7 +57,6 @@
 
 package splitstree5.gui.workflowtab;
 
-import com.sun.istack.internal.NotNull;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ChangeListener;
@@ -93,7 +92,7 @@ public class WorkflowNodeView extends Group {
      * @param workflowView
      * @param workflowNode
      */
-    public WorkflowNodeView(WorkflowViewTab workflowView, @NotNull WorkflowNode workflowNode) {
+    public WorkflowNodeView(WorkflowViewTab workflowView, WorkflowNode workflowNode) {
         rectangle = new Rectangle(160, 60);
         this.workflowNode = workflowNode;
 

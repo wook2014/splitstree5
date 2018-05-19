@@ -19,7 +19,6 @@
 
 package splitstree5.core.algorithms.filters.utils;
 
-import com.sun.istack.internal.NotNull;
 import splitstree5.core.misc.ASplit;
 
 import java.util.ArrayList;
@@ -34,7 +33,7 @@ import java.util.List;
  */
 public class CircularMaxClique {
 
-    static public ArrayList<ASplit> getMaxClique(int ntax, List<ASplit> splits, double[] weights, @NotNull int[] ordering) {
+    static public ArrayList<ASplit> getMaxClique(int ntax, List<ASplit> splits, double[] weights, int[] ordering) {
         /* First step - read the splits back into an array */
         //Save the splits onto a hashmap
         final HashMap<BitSet, Integer> map = new HashMap<>();

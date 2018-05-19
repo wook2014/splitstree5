@@ -77,7 +77,6 @@ public class SplashScreen {
             anchorPane.getChildren().add(label);
             AnchorPane.setTopAnchor(label, 20.0);
             AnchorPane.setLeftAnchor(label, 20.0);
-            AnchorPane.setRightAnchor(label, 20.0);
             stackPane.getChildren().add(anchorPane);
         }
 

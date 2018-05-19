@@ -401,6 +401,7 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
             }
         }
     }
+
     public void addNodeLabelMovementSupport(NodeView2D nodeView) {
         final Labeled label = nodeView.getLabel();
         if (label != null) {

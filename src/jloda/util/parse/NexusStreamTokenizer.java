@@ -26,6 +26,9 @@
  * <p>
  * tokenizer for nexus streams and similar input
  * @author Daniel Huson, 2002
+ * <p>
+ * tokenizer for nexus streams and similar input
+ * @author Daniel Huson, 2002
  */
 /**
  * tokenizer for nexus streams and similar input
@@ -75,12 +78,14 @@ public class NexusStreamTokenizer extends StreamTokenizer {
 
     private boolean collectAllComments = false;
     private String comment = null;
+    private boolean echoCommentsWithExclamationMark = true;
 
     // we need these so that we can peek ahead as far as we like
     private final LinkedList<Double> nvals = new LinkedList<>();
     private final LinkedList<String> svals = new LinkedList<>();
     private final LinkedList<Integer> ttypes = new LinkedList<>();
     private final LinkedList<Integer> lines = new LinkedList<>();
+
 
     /**
      * Construct a new NexusBlock object for the specified reader
@@ -130,9 +135,9 @@ public class NexusStreamTokenizer extends StreamTokenizer {
 // Set the comment String
 
                 if (sval != null) {
-                    if (collectAllComments && comment != null)
+                    if (collectAllComments && comment != null) {
                         comment += "\n" + (sval.startsWith("!") ? sval.substring(1) : sval);
-                    else
+                    } else
                         comment = (sval.startsWith("!") ? sval.substring(1) : sval);
                 }
                 nval = super.nval;
@@ -140,16 +145,18 @@ public class NexusStreamTokenizer extends StreamTokenizer {
                 line = super.lineno();
                 if (ttype == TT_WORD && sval.charAt(0) == '!') {
                     verbose = true;
-                    System.err.print("[");
+                    if (echoCommentsWithExclamationMark)
+                        System.err.print("[");
                 }
                 while (tt != (int) ']') {
                     if (tt == TT_EOF) {
                         setSyntax();
-                        throw new java.io.IOException
-                                ("Line " + cline + ": start of unterminated comment");
+                        throw new java.io.IOException("Line " + cline + ": start of unterminated comment");
                     }
-                    if (verbose && ttype == TT_WORD)
-                        System.err.println(sval);
+                    if (verbose && ttype == TT_WORD) {
+                        if (echoCommentsWithExclamationMark)
+                            System.err.println(sval);
+                    }
                     tt = super.nextToken();
                     sval = super.sval;
                     if (sval != null) {
@@ -162,7 +169,7 @@ public class NexusStreamTokenizer extends StreamTokenizer {
                     ttype = super.ttype;
                     line = super.lineno();
                 }
-                if (verbose)
+                if (verbose && echoCommentsWithExclamationMark)
                     System.err.println("]");
                 setSyntax();
                 tt = super.nextToken();
@@ -450,6 +457,14 @@ public class NexusStreamTokenizer extends StreamTokenizer {
 
     public void setSquareBracketsSurroundComments(boolean squareBracketsSurroundComments) {
         this.squareBracketsSurroundComments = squareBracketsSurroundComments;
+    }
+
+    public boolean isEchoCommentsWithExclamationMark() {
+        return echoCommentsWithExclamationMark;
+    }
+
+    public void setEchoCommentsWithExclamationMark(boolean echoCommentsWithExclamationMark) {
+        this.echoCommentsWithExclamationMark = echoCommentsWithExclamationMark;
     }
 }
 

@@ -21,13 +21,13 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class NeXMLOut implements IFromTaxa, IExportTaxa, IFromChararacters, IExportCharacters, IFromTrees, IExportTrees {
 
     public enum CharactersOutputType {cell, matrix, both}
+
     private CharactersOutputType charactersOutputType = CharactersOutputType.matrix;
     private boolean exportSingleBlock = true;
 
@@ -53,7 +53,7 @@ public class NeXMLOut implements IFromTaxa, IExportTaxa, IFromChararacters, IExp
                 i++;
                 writeNewLineWithTabs(xmlWriter, 2);
                 xmlWriter.writeEmptyElement("otu");
-                xmlWriter.writeAttribute("id", "otu"+i);
+                xmlWriter.writeAttribute("id", "otu" + i);
                 xmlWriter.writeAttribute("label", label);
             }
             writeNewLineWithTabs(xmlWriter, 1);
@@ -80,8 +80,7 @@ public class NeXMLOut implements IFromTaxa, IExportTaxa, IFromChararacters, IExp
             xmlWriter.writeAttribute("label", "charactersBlock");
             xmlWriter.writeAttribute("otus", "otus1");
 
-            if (charactersOutputType.equals(CharactersOutputType.matrix))
-            {
+            if (charactersOutputType.equals(CharactersOutputType.matrix)) {
                 String dataType = "nex:" + characters.getDataType().name() + "Seqs";
                 xmlWriter.writeAttribute("xsi:type", dataType);
 
@@ -93,20 +92,20 @@ public class NeXMLOut implements IFromTaxa, IExportTaxa, IFromChararacters, IExp
                 xmlWriter.writeAttribute("id", "states1");
 
                 int x = 0;
-                for (char c : characters.getDataType().getSymbols().toCharArray()){
-                    x ++;
+                for (char c : characters.getDataType().getSymbols().toCharArray()) {
+                    x++;
                     writeNewLineWithTabs(xmlWriter, 4);
                     xmlWriter.writeEmptyElement("state");
-                    xmlWriter.writeAttribute("id", "s"+x);
-                    xmlWriter.writeAttribute("symbol", c+"");
+                    xmlWriter.writeAttribute("id", "s" + x);
+                    xmlWriter.writeAttribute("symbol", c + "");
                 }
                 writeNewLineWithTabs(xmlWriter, 3);
                 xmlWriter.writeEndElement();
 
-                for (int c = 0; c < characters.getNchar(); c++){
+                for (int c = 0; c < characters.getNchar(); c++) {
                     writeNewLineWithTabs(xmlWriter, 3);
                     xmlWriter.writeEmptyElement("char");
-                    xmlWriter.writeAttribute("id", "c"+c);
+                    xmlWriter.writeAttribute("id", "c" + c);
                     xmlWriter.writeAttribute("states", "states1");
                 }
 
@@ -124,9 +123,9 @@ public class NeXMLOut implements IFromTaxa, IExportTaxa, IFromChararacters, IExp
                 for (int i = 1; i <= ntax; i++) {
                     writeNewLineWithTabs(xmlWriter, 3);
                     xmlWriter.writeStartElement("row");
-                    xmlWriter.writeAttribute("id", "row"+i);
+                    xmlWriter.writeAttribute("id", "row" + i);
                     xmlWriter.writeAttribute("label", taxa.getLabel(i));
-                    xmlWriter.writeAttribute("otus", "otu"+i);
+                    xmlWriter.writeAttribute("otus", "otu" + i);
 
                     writeNewLineWithTabs(xmlWriter, 4);
                     xmlWriter.writeStartElement("seq");
@@ -141,8 +140,7 @@ public class NeXMLOut implements IFromTaxa, IExportTaxa, IFromChararacters, IExp
             }
 
             if (charactersOutputType.equals(CharactersOutputType.cell) ||
-                    charactersOutputType.equals(CharactersOutputType.both))
-            {
+                    charactersOutputType.equals(CharactersOutputType.both)) {
                 String dataType = "nex:" + characters.getDataType().name() + "Cells";
                 xmlWriter.writeAttribute("xsi:type", dataType);
             }

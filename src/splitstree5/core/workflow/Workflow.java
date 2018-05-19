@@ -418,8 +418,7 @@ public class Workflow {
 
                 dataNodes.remove(node);
 
-            }
-            else if (node instanceof Connector) {
+            } else if (node instanceof Connector) {
                 connectorNodes.remove(node);
                 ((Connector) node).getService().cancel();
             }
@@ -737,7 +736,7 @@ public class Workflow {
                     if (firstConnector != null) {
                         firstConnector.forceRecompute();
                         return new Pair<>(firstConnector, lastDataNode);
-                }
+                    }
                 }
             } catch (Exception ex) {
                 Basic.caught(ex);
@@ -745,7 +744,7 @@ public class Workflow {
         }
         return null;
 
-}
+    }
 
     /**
      * tries to match a path from data node using exactly the given types of data nodes and algorithms

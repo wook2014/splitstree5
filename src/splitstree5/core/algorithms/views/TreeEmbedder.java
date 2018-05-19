@@ -403,6 +403,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
 
     /**
      * compute all edge points and setup edge views
+     *
      * @param v
      * @param vAngle
      * @param angles

@@ -14,7 +14,7 @@ public class RandomBinaryTree_Generator {
             taxaOrdering.add(taxon);
         }
         createInnerNodes(nodes, idCounter);
-        Object[] res = { new MyTree(nodes.get(0)), taxaOrdering };
+        Object[] res = {new MyTree(nodes.get(0)), taxaOrdering};
         return res;
     }
 

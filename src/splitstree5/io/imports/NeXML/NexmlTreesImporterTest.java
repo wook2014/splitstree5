@@ -31,7 +31,7 @@ public class NexmlTreesImporterTest {
         treesNexusFormat.setOptionTranslate(false);
         new TreesNexusOutput().write(w1, taxaBlock, treesBlock);
         System.err.println(w1.toString());
-        System.err.println("Partial: "+treesBlock.isPartial());
+        System.err.println("Partial: " + treesBlock.isPartial());
 
     }
 

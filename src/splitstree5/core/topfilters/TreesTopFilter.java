@@ -88,6 +88,7 @@ public class TreesTopFilter extends ATopFilter<TreesBlock> {
 
     /**
      * computes the induced tree
+     *
      * @param oldTaxonId2NewTaxonId - old to new mapping, where removed taxa map to 0
      * @param originalTree
      * @return induced tree

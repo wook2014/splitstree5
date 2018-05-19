@@ -154,6 +154,6 @@ public abstract class NexusImporterBase<D extends DataBlock> {
 
     public void setTitleAndLink(String title, Pair<String, String> link) {
         this.title = title;
-        this.link=link;
+        this.link = link;
     }
 }

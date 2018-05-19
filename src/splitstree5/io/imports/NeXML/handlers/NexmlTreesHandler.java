@@ -7,7 +7,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -91,7 +90,7 @@ public class NexmlTreesHandler extends DefaultHandler {
             Node sourceNode = null;
             Node targetNode = null;
 
-            for (String key : id2node.keySet()){
+            for (String key : id2node.keySet()) {
                 if (key.equals(source))
                     sourceNode = id2node.get(key);
                 if (key.equals(target))
@@ -99,9 +98,9 @@ public class NexmlTreesHandler extends DefaultHandler {
             }
 
             if (sourceNode == null)
-                throw new SAXException("Edge "+id+" contains not defined source node id="+source);
+                throw new SAXException("Edge " + id + " contains not defined source node id=" + source);
             else if (targetNode == null)
-                throw new SAXException("Edge "+id+" contains not defined target node id="+target);
+                throw new SAXException("Edge " + id + " contains not defined target node id=" + target);
             else
                 tree.setWeight(tree.newEdge(sourceNode, targetNode), weight);
         }
@@ -118,7 +117,7 @@ public class NexmlTreesHandler extends DefaultHandler {
 
             // if a tree already set as partial, no further check
             //if (partial || !treeContainsAllTaxa(tree))
-              //  partial = true;
+            //  partial = true;
         }
     }
 
@@ -145,12 +144,12 @@ public class NexmlTreesHandler extends DefaultHandler {
         //System.err.println(tree.nodeLabels().iterator().next());
         Iterator<String> iterator = tree.nodeLabels().iterator();
         System.err.println(iterator.next());
-        while (iterator.hasNext()){
+        while (iterator.hasNext()) {
             //iterator.next();
             System.err.println(iterator.next());
             numOfLabelsInTree++;
         }
-        System.err.println("üüüüüüüüü"+numOfLabelsInTree);
+        System.err.println("üüüüüüüüü" + numOfLabelsInTree);
         return numOfLabelsInTree == taxaLabels.size();
 
         // todo : how to use iterator?

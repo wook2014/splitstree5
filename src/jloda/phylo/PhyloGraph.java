@@ -20,7 +20,6 @@
 package jloda.phylo;
 
 
-
 import jloda.graph.*;
 import jloda.util.EmptyIterator;
 

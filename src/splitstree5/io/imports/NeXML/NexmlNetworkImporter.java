@@ -18,7 +18,7 @@ import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.List;
 
-public class NexmlNetworkImporter implements IToNetwork, IImportNetwork{
+public class NexmlNetworkImporter implements IToNetwork, IImportNetwork {
 
     @Override
     public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxaBlock, NetworkBlock dataBlock)

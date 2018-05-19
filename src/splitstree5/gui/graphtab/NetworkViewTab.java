@@ -74,6 +74,7 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
 
     /**
      * create a node  view
+     *
      * @param v
      * @param location
      * @param shape

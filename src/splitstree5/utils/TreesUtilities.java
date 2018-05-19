@@ -19,7 +19,6 @@
 
 package splitstree5.utils;
 
-import com.sun.istack.internal.Nullable;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
@@ -137,7 +136,7 @@ public class TreesUtilities {
      * @param splits     the resulting splits are added here
      * @return bit set of taxa found in tree
      */
-    public static BitSet computeSplits(@Nullable BitSet taxaInTree, final PhyloTree tree, final Collection<ASplit> splits) {
+    public static BitSet computeSplits(BitSet taxaInTree, final PhyloTree tree, final Collection<ASplit> splits) {
         if (taxaInTree == null)
             taxaInTree = getTaxa(tree);
 

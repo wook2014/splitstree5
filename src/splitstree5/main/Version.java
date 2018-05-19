@@ -25,7 +25,7 @@ package splitstree5.main;
  */
 public class Version {
     static public final String NAME = "SplitsTree5";
-    static public final String SHORT_DESCRIPTION = "SplitsTree5 Community Edition (version 5.0.0alpha, built 23 June 2017)";
+    static public final String SHORT_DESCRIPTION = "SplitsTree5 Community Edition (version 5.0.0alpha, 2018)";
     static public final String VERSION = "5.0.0_alpha";
 
 }

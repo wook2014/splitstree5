@@ -181,6 +181,7 @@ public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> impleme
         }
         return graph;
     }
+
     /**
      * computes the subgraph in which every node is contained in a d-clique
      *
@@ -328,8 +329,6 @@ public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> impleme
         }
         return score;
     }
-
-
 
 
     /**

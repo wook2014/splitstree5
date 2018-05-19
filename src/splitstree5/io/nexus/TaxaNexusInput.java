@@ -19,6 +19,7 @@
 
 package splitstree5.io.nexus;
 
+import jloda.fx.NotificationManager;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
@@ -60,8 +61,16 @@ public class TaxaNexusInput extends NexusIOBase {
 
         taxaBlock.getTaxa().clear();
 
+        np.setCollectAllComments(true);
+
         if (np.peekMatchIgnoreCase("#nexus"))
             np.matchIgnoreCase("#nexus"); // skip header line if it is the first line
+
+        final String comment = np.getComment();
+        if (comment != null) {
+            NotificationManager.showInformation(comment);
+        }
+        np.setCollectAllComments(false);
 
         np.matchBeginBlock(TaxaBlock.BLOCK_NAME);
         parseTitleAndLink(np);

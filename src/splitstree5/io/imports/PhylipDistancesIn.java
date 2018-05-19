@@ -168,6 +168,7 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
 
     /**
      * read a lower triangular matrix
+     *
      * @param matrix
      * @param distancesBlock
      */
@@ -185,6 +186,7 @@ public class PhylipDistancesIn implements IToDistances, IImportDistances {
 
     /**
      * read an upper triangular matrix
+     *
      * @param matrix
      * @param distancesBlock
      */

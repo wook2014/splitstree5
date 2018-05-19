@@ -109,8 +109,7 @@ public class MainWindowMenuController {
         controller.getEnterDataMenuItem().setOnAction((e) -> {
             if (!mainWindow.getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().get() || mainWindow.getInputTab() != null) {
                 mainWindow.showInputTab();
-            }
-            else {
+            } else {
                 final MainWindow newMainWindow = new MainWindow();
                 newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50);
                 newMainWindow.showInputTab();

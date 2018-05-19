@@ -181,8 +181,8 @@ public class InputTab extends TextViewTab {
         controller.getOpenRecentMenu().disableProperty().bind(textArea.textProperty().isNotEmpty());
 
         controller.getPasteMenuItem().setOnAction((e) -> {
-                e.consume();
-                textArea.paste();
+            e.consume();
+            textArea.paste();
         });
 
         controller.getSelectFromPreviousMenuItem().setOnAction((e) -> {

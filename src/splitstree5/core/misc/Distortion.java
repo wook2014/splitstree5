@@ -78,7 +78,7 @@ public class Distortion {
             else if (!hasA && hasB)
                 aValue = Integer.MAX_VALUE;
             //else if (hasA && hasB)
-             //   aValue = bValue = 1; // TODOt: is this really correct?
+            //   aValue = bValue = 1; // TODOt: is this really correct?
             scoreA.set(v, aValue);
             scoreB.set(v, bValue);
         }
@@ -120,7 +120,7 @@ public class Distortion {
      * @param scoreB
      */
     private static void computeScoreRec(Node v, Edge e, NodeIntegerArray scoreA, NodeIntegerArray scoreB) {
-        System.out.println("Entering with v="+v);
+        System.out.println("Entering with v=" + v);
         //printScores(tree,scoreA,scoreB);
         boolean hasAMuchBetterThanB = false;
         boolean hasBMuchBetterThanA = false;

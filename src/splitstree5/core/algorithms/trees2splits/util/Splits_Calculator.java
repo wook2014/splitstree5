@@ -30,7 +30,7 @@ public class Splits_Calculator {
         BitSet b2 = new BitSet(taxaOrdering.size());
         b2.set(0, taxaOrdering.size());
         b2.xor(b1);
-        BitSet[] split = { b1, b2 };
+        BitSet[] split = {b1, b2};
         return split;
     }
 

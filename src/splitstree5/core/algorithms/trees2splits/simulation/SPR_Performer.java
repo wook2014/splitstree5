@@ -1,14 +1,9 @@
 package splitstree5.core.algorithms.trees2splits.simulation;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Random;
-
 import splitstree5.core.algorithms.trees2splits.util.MyNode;
 import splitstree5.core.algorithms.trees2splits.util.MyTree;
+
+import java.util.*;
 
 public class SPR_Performer {
 
@@ -47,7 +42,7 @@ public class SPR_Performer {
                             MyNode v2 = modelTree.getNode(b2, taxaOrdering);
                             if (v1 != null && v2 != null) {
                                 double d = cmpDistance(v1, v2);
-                                Object[] sprMove = { b1, b2, d };
+                                Object[] sprMove = {b1, b2, d};
                                 allSPRMoves.add(sprMove);
                             }
                         }
@@ -83,7 +78,7 @@ public class SPR_Performer {
                     t.pruneAndRegraft(v1, v2, taxaOrdering);
                     counter++;
                     System.out.println(t.toNewickString());
-                    BitSet[] sprClusters = { (BitSet) spr[0], (BitSet) spr[1] };
+                    BitSet[] sprClusters = {(BitSet) spr[0], (BitSet) spr[1]};
                     appliedSPRClusters.add(sprClusters);
                 } else
                     treeSet.remove(t);

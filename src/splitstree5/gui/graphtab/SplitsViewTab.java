@@ -283,7 +283,7 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
      * create an edge view
      */
     public EdgeView2D createEdgeView(final Edge e, final Point2D start, final Point2D end, String text) {
-        final EdgeView2D edgeView = new EdgeView2D(e, start, end,text);
+        final EdgeView2D edgeView = new EdgeView2D(e, start, end, text);
 
         final EventHandler<? super MouseEvent> handler = (EventHandler<MouseEvent>) x -> {
             x.consume();

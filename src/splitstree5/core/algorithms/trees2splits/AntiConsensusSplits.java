@@ -23,6 +23,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
+import jloda.graph.Graph;
 import jloda.graph.Node;
 import jloda.graph.NodeSet;
 import jloda.phylo.PhyloTree;
@@ -33,10 +34,12 @@ import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToSplits;
+import splitstree5.core.algorithms.splits2trees.GreedyTree;
+import splitstree5.core.algorithms.trees2splits.method.Distortion_Scorer;
+import splitstree5.core.algorithms.trees2splits.simulation.Simulation_Manager;
 import splitstree5.core.algorithms.trees2splits.util.MyNewickParser;
-import splitstree5.core.algorithms.trees2splits.util.MyNode;
+import splitstree5.core.algorithms.trees2splits.util.MyTree;
 import splitstree5.core.algorithms.trees2splits.utils.PartialSplit;
-import splitstree5.core.algorithms.trees2trees.ConsensusTree;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
@@ -47,24 +50,10 @@ import splitstree5.io.imports.utils.SimpleNewickParser;
 import splitstree5.utils.SplitsException;
 import splitstree5.utils.SplitsUtilities;
 import splitstree5.utils.TreesUtilities;
-import jloda.graph.Graph;
-import splitstree5.core.algorithms.trees2splits.method.Distortion_Scorer;
 
-
-import java.util.stream.Collectors;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
-
-import splitstree5.core.algorithms.trees2splits.simulation.Simulation_Manager;
-import splitstree5.core.algorithms.trees2splits.util.MyTree;
-
 import java.util.*;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
-import splitstree5.core.algorithms.splits2trees.GreedyTree;
+import java.util.stream.Collectors;
 
 /**
  * implements the anti-consensus method
@@ -89,6 +78,7 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
     private static TreesBlock treesBlock = null;
     private static TaxaBlock taxaBlock = null;
     private static TreesBlock majorityTreeBlock = null;
+
     @Override
     public String getCitation() {
         return null;
@@ -106,8 +96,7 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock) throws Exception {
 
 
-
-       //for tests
+        //for tests
      /*   if (AntiConsensusSplits.progress == null)
             AntiConsensusSplits.progress = progress;
 
@@ -146,15 +135,15 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
         System.err.println("Filtering splits:");
 
         Map<ASplit, Double> splitScores = new HashMap<ASplit, Double>();
-      computeSplits(progress,  treesBlock, taxaBlock, splitsBlock, splitScores );
-        TreesBlock majorityTreeBlock= new TreesBlock();
+        computeSplits(progress, treesBlock, taxaBlock, splitsBlock, splitScores);
+        TreesBlock majorityTreeBlock = new TreesBlock();
         GreedyTree greedyTree = new GreedyTree();
         try {
             greedyTree.compute(progress, taxaBlock, splitsBlock, majorityTreeBlock);
         } catch (CanceledException e) {
             e.printStackTrace();
         }
-        ArrayList<String> taxaNames= new ArrayList<String>();
+        ArrayList<String> taxaNames = new ArrayList<String>();
 
         Node firstLeaf = majorityTreeBlock.getTrees().get(0).leaves().iterator().next();
         majorityTreeBlock.getTrees().get(0).setRoot(firstLeaf.getFirstInEdge().getOpposite(firstLeaf));
@@ -191,7 +180,6 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
                         .stream()
                         .filter(p -> p.getValue() <= 0.5)
                         .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
-
 
 
         Map<Object, Double> sortedComplementSplits =
@@ -232,14 +220,14 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
     public MyTree converToMyTree(PhyloTree phyloTree) {
         return new MyNewickParser().run(phyloTree.toBracketString());
     }
+
     public PhyloTree converToPhyloTree(MyTree myTree) {
 
-        PhyloTree result=null;
-        try{
-            result=  new SimpleNewickParser().parse(myTree.toNewickString());
+        PhyloTree result = null;
+        try {
+            result = new SimpleNewickParser().parse(myTree.toNewickString());
 
-        }
-        catch(Exception ex){
+        } catch (Exception ex) {
 
             ex.printStackTrace();
 
@@ -248,6 +236,7 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
         return result;
 
     }
+
     private void computeSplits(ProgressListener progress, TreesBlock treesBlock, TaxaBlock taxaBlock, SplitsBlock splitsBlock, Map<ASplit, Double> splitScores) {
 
 
@@ -356,7 +345,7 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
 
     }
 
-    public void scoreSplitsbyDistortionRespectToTreesBlock(TreesBlock majorityTreeBlock, SplitsBlock splitsBlock,TaxaBlock taxaBlock, Map<ASplit, Double> splitScores) {
+    public void scoreSplitsbyDistortionRespectToTreesBlock(TreesBlock majorityTreeBlock, SplitsBlock splitsBlock, TaxaBlock taxaBlock, Map<ASplit, Double> splitScores) {
 
         Map<Object, Double> majoritySplits =
                 splitScores.entrySet()

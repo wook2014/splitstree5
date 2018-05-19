@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 public class NexmlCharactersImporter extends CharactersFormat implements IToCharacters, IImportCharacters {
 
@@ -47,8 +46,8 @@ public class NexmlCharactersImporter extends CharactersFormat implements IToChar
             characters.setDataType(handler.getDataType());
 
             // add new characters
-            if (characters.getDataType().equals(CharactersType.Standard)){
-                for (String state : handler.getStates2symbols().keySet()){
+            if (characters.getDataType().equals(CharactersType.Standard)) {
+                for (String state : handler.getStates2symbols().keySet()) {
                     Character symbol = handler.getStates2symbols().get(state);
                     if (!symbol.equals('0') && !symbol.equals('1')
                             && !symbol.equals(characters.getGapCharacter())

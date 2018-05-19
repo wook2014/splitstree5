@@ -3,7 +3,6 @@ package splitstree5.core.algorithms.trees2splits.util;
 
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -238,7 +237,7 @@ public class MyTree {
                 MyNode link = node2copy.get(v.getDistortionOperation()[0]);
                 int order = (int) v.getDistortionOperation()[1];
                 Double distance = v.getDistortionOperation()[2] == null ? null : (Double) v.getDistortionOperation()[2];
-                Object[] distortionOperation = { link, order, distance };
+                Object[] distortionOperation = {link, order, distance};
                 vCopy.setDistortionOperation(distortionOperation);
             }
         }

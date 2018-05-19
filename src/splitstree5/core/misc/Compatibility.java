@@ -19,7 +19,6 @@
 
 package splitstree5.core.misc;
 
-import com.sun.istack.internal.Nullable;
 import splitstree5.utils.SplitsUtilities;
 
 import java.util.BitSet;
@@ -51,7 +50,7 @@ public enum Compatibility {
      * @param cycle
      * @return compatibility
      */
-    public static Compatibility compute(int ntax, List<ASplit> splits, @Nullable int[] cycle) {
+    public static Compatibility compute(int ntax, List<ASplit> splits, int[] cycle) {
         if (isCompatible(splits))
             return compatible;
         else if (isCyclic(ntax, splits, cycle))
@@ -152,7 +151,7 @@ public enum Compatibility {
      * @param splits the splits object
      * @return true, if the given splits are cyclic
      */
-    public static boolean isCyclic(int ntax, List<ASplit> splits, @Nullable int[] cycle) {
+    public static boolean isCyclic(int ntax, List<ASplit> splits, int[] cycle) {
         if (cycle == null)
             cycle = SplitsUtilities.computeCycle(ntax, splits);
 

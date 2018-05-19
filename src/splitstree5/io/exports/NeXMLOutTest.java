@@ -5,8 +5,6 @@ import org.junit.Test;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.io.imports.NeXML.NexmlFileParser;
 import splitstree5.io.nexus.CharactersNexusInput;
 import splitstree5.io.nexus.TaxaNexusInput;
 

@@ -1,7 +1,5 @@
 package splitstree5.core.algorithms.trees2splits.method;
 
-import jloda.graph.Node;
-import jloda.phylo.PhyloTree;
 import splitstree5.core.algorithms.trees2splits.util.MyNode;
 import splitstree5.core.algorithms.trees2splits.util.MyTree;
 
@@ -14,7 +12,7 @@ public class Distortion_Scorer {
 
     public int run(MyTree t, BitSet A, BitSet B, ArrayList<String> taxaOrdering) {
 
-      // computeScoreNodeConflictingSet(t,  A,  B, t.getTaxa());
+        // computeScoreNodeConflictingSet(t,  A,  B, t.getTaxa());
 
         ArrayList<MyNode> nodes = t.getNodes();
         HashMap<MyNode, Integer> scoreA = new HashMap<MyNode, Integer>();
@@ -154,28 +152,23 @@ public class Distortion_Scorer {
             nodeCluster.put(node, cluster);
             if (cluster.intersects(A)) {
                 Ac.intersects(cluster);
-                if (cluster.cardinality() < A.cardinality()  && Ac.equals(cluster))
-                   leftConflictingSet.put(node, difference(A, cluster));
-                else if (cluster.cardinality() > A.cardinality()  )
-                    leftConflictingSet.put(node,difference(cluster, A) );
-            }
-            else
-                leftConflictingSet.put(node, new BitSet(t.getTaxa().size()) );
+                if (cluster.cardinality() < A.cardinality() && Ac.equals(cluster))
+                    leftConflictingSet.put(node, difference(A, cluster));
+                else if (cluster.cardinality() > A.cardinality())
+                    leftConflictingSet.put(node, difference(cluster, A));
+            } else
+                leftConflictingSet.put(node, new BitSet(t.getTaxa().size()));
             if (cluster.intersects(B)) {
                 Bc.intersects(cluster);
-                if (cluster.cardinality() < B.cardinality()  && Bc.equals(cluster))
+                if (cluster.cardinality() < B.cardinality() && Bc.equals(cluster))
                     rightConflictingSet.put(node, difference(B, cluster));
-                else if (cluster.cardinality() > B.cardinality() )
-                    rightConflictingSet.put(node,difference(cluster, B)  );
-            }
-            else
-                rightConflictingSet.put(node, new BitSet(t.getTaxa().size()) );
-
+                else if (cluster.cardinality() > B.cardinality())
+                    rightConflictingSet.put(node, difference(cluster, B));
+            } else
+                rightConflictingSet.put(node, new BitSet(t.getTaxa().size()));
 
 
         }
-
-
 
 
     }

@@ -19,7 +19,6 @@
 
 package splitstree5.core.algorithms.filters.utils;
 
-import com.sun.istack.internal.Nullable;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.misc.ASplit;
@@ -40,7 +39,7 @@ public class ClosestTree {
      * @param splits
      * @return closest tree
      */
-    public static ArrayList<ASplit> apply(ProgressListener progress, final int ntax, final List<ASplit> splits, @Nullable int[] cycle) throws CanceledException {
+    public static ArrayList<ASplit> apply(ProgressListener progress, final int ntax, final List<ASplit> splits, int[] cycle) throws CanceledException {
         progress.setSubtask("Closest tree");
         progress.setMaximum(100);
 

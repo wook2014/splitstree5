@@ -1,20 +1,13 @@
 package splitstree5.core.algorithms.trees2splits.simulation;
 
 
-import java.io.BufferedReader;
-        import java.io.File;
-        import java.io.FileReader;
-        import java.io.FileWriter;
-        import java.io.IOException;
-        import java.io.InputStream;
-        import java.io.InputStreamReader;
-        import java.util.ArrayList;
-        import java.util.HashMap;
-
-import jloda.util.parse.NexusStreamParser;
+import splitstree5.core.algorithms.trees2splits.util.MyNewickParser;
 import splitstree5.core.algorithms.trees2splits.util.MyNode;
-        import splitstree5.core.algorithms.trees2splits.util.MyTree;
-        import splitstree5.core.algorithms.trees2splits.util.MyNewickParser;
+import splitstree5.core.algorithms.trees2splits.util.MyTree;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class RAxML_TreeGenerator {
 
@@ -51,7 +44,7 @@ public class RAxML_TreeGenerator {
 
             // deleting files
             inputFile.delete();
-            String[] suffices = { "bestTree", "info", "log", "parsimonyTree", "result" };
+            String[] suffices = {"bestTree", "info", "log", "parsimonyTree", "result"};
             for (String s : suffices)
                 new File("RAxML_" + s + ".txt").delete();
 
@@ -97,7 +90,7 @@ public class RAxML_TreeGenerator {
             System.out.println(exitVal);
 
             return exitVal;
-           // return 0;
+            // return 0;
 
         } catch (Exception e) {
             e.printStackTrace();

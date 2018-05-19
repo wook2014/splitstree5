@@ -34,7 +34,7 @@ public class MyNewickParser {
             pos--;
         }
         MyTree t = new MyTree(new MyNode());
-        PhyloTree t1= new PhyloTree();
+        PhyloTree t1 = new PhyloTree();
         Node n = new Node(t1);
         t1.setRoot(n);
         if (pos > 0)
@@ -88,7 +88,6 @@ public class MyNewickParser {
     }
 
 
-
     private Hashtable<String, Vector<Integer>> splitBracket(int pos) {
         Hashtable<String, Vector<Integer>> labelToStartpos = new Hashtable<String, Vector<Integer>>();
         int i = pos - 1;
@@ -122,7 +121,7 @@ public class MyNewickParser {
         String[] content = new String[4];
         if (l.contains("[")) {
             int index = l.indexOf("[");
-            String a[] = { l.substring(0, index), l.substring(index + 1) };
+            String a[] = {l.substring(0, index), l.substring(index + 1)};
             content[3] = a.length == 2 ? a[1] : "";
             if (a.length > 1) {
                 if (a[0].contains(":")) {

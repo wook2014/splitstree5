@@ -122,7 +122,7 @@ public class TextViewTab extends ViewerTab {
             if (end == -1)
                 end = text.length();
             if (start + col < end)
-                start=start+col;
+                start = start + col;
             textArea.requestFocus();
             textArea.selectRange(start, end);
         }

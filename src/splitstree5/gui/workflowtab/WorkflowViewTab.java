@@ -506,20 +506,20 @@ public class WorkflowViewTab extends ViewerTab {
                 final ArrayList<WorkflowNode> selected = new ArrayList<>(selectionModel.getSelectedItems());
                 final Collection<WorkflowNode> newNodes = new ArrayList<>();
 
-                    @Override
-                    public void undo() {
-                        getWorkflow().delete(newNodes);
-                        newNodes.clear();
-                        recompute();
-                    }
+                @Override
+                public void undo() {
+                    getWorkflow().delete(newNodes);
+                    newNodes.clear();
+                    recompute();
+                }
 
-                    @Override
-                    public void redo() {
-                        newNodes.clear();
-                        newNodes.addAll(getWorkflow().duplicate(selected));
-                        recompute();
-                        getWorkflow().recomputeTop(newNodes);
-                    }
+                @Override
+                public void redo() {
+                    newNodes.clear();
+                    newNodes.addAll(getWorkflow().duplicate(selected));
+                    recompute();
+                    getWorkflow().recomputeTop(newNodes);
+                }
 
                 @Override
                 public boolean isUndoable() {
@@ -530,7 +530,7 @@ public class WorkflowViewTab extends ViewerTab {
                 public boolean isRedoable() {
                     return selected.size() > 0;
                 }
-                });
+            });
         });
         controller.getDuplicateMenuItem().disableProperty().bind(selectionModel.emptyProperty());
 

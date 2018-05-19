@@ -64,6 +64,7 @@ public class TreeViewTab extends Graph2DTab<PhyloTree> {
 
     /**
      * creates a node view
+     *
      * @param v
      * @param location
      * @param shape
@@ -111,6 +112,7 @@ public class TreeViewTab extends Graph2DTab<PhyloTree> {
 
     /**
      * create an edge view
+     *
      * @param e
      * @param layout
      * @param shape

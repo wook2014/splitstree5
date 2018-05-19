@@ -105,6 +105,7 @@ public class ANamed {
 
     /**
      * link used in parsing a complete SplitsTree5 download
+     *
      * @return link property
      */
     public ObjectProperty<Pair<String, String>> linkProperty() {
