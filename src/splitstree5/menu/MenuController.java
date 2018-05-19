@@ -25,15 +25,14 @@ import javafx.scene.input.KeyCharacterCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 import jloda.fx.RecentFilesManager;
-import jloda.util.AppleStuff;
+import jloda.fx.SplashScreen;
 import jloda.util.ProgramProperties;
 import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.io.nexus.workflow.WorkflowNexusInput;
 import splitstree5.main.MainWindow;
 import splitstree5.main.MainWindowManager;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -801,36 +800,17 @@ public class MenuController {
 
     private final Set<MenuItem> alwaysOnMenuItems = new HashSet<>();
 
+
     @FXML
     void initialize() {
         // if we are running on MacOS, put the specific menu items in the right places
         if (ProgramProperties.isMacOS()) {
             getMenuBar().setUseSystemMenuBar(true);
-
-            final AppleStuff appleStuff = AppleStuff.getInstance();
-            appleStuff.setQuitAction(new AbstractAction("Quit") {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    getQuitMenuItem().fire();
-                }
-            });
             fileMenu.getItems().remove(getQuitMenuItem());
-
-            appleStuff.setAboutAction(new AbstractAction("About...") {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    getAboutMenuItem().fire();
-                }
-            });
             windowMenu.getItems().remove(getAboutMenuItem());
-
-            appleStuff.setPreferencesAction(new AbstractAction("Preferences...") {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    getPreferencesMenuItem().fire();
-                }
-            });
             editMenu.getItems().remove(getPreferencesMenuItem());
+        } else {
+            getAboutMenuItem().setOnAction((e) -> SplashScreen.getInstance().showSplash(Duration.ofMinutes(1)));
         }
 
         increaseFontSizeMenuItem.setAccelerator(new KeyCharacterCombination("+", KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_ANY));

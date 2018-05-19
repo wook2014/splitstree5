@@ -19,14 +19,18 @@
 
 package splitstree5.main;
 
+import com.briksoftware.javafx.platform.osx.OSXIntegration;
 import javafx.application.Application;
 import javafx.stage.Stage;
+import jloda.fx.SplashScreen;
 import jloda.util.ArgsOptions;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 import jloda.util.ResourceManager;
+import splitstree5.dialogs.importer.FileOpener;
 
 import java.io.File;
+import java.time.Duration;
 
 public class SplitsTree5 extends Application {
     private static String[] inputFilesAtStartup;
@@ -99,6 +103,10 @@ public class SplitsTree5 extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        // setup and show splash screen:
+        SplashScreen.setVersionString(ProgramProperties.getProgramVersion());
+        SplashScreen.setImageResourceName("SplitsTree5-splash.png");
+        SplashScreen.getInstance().showSplash(Duration.ofSeconds(5));
 
         final MainWindow mainWindow = new MainWindow();
 
@@ -112,6 +120,18 @@ public class SplitsTree5 extends Application {
             System.err.println("NOT IMPLEMENTED: load files from command line");
             // todo: implement
         }
+
+        // setup about and preferences menu for apple:
+        OSXIntegration.init();
+        OSXIntegration.populateAppleMenu(() -> SplashScreen.getInstance().showSplash(Duration.ofMinutes(1)), () -> System.err.println("Preferences"));
+
+        // open files by double-click under Mac OS: // untested
+        OSXIntegration.setOpenFilesHandler(files -> {
+            for (File file : files) {
+                if (FileOpener.isOpenable(file.getPath()))
+                    FileOpener.open(false, MainWindowManager.getInstance().getLastFocusedMainWindow(), file.getPath(), null);
+            }
+        });
     }
 
     public void stop() {

@@ -58,6 +58,7 @@ import java.util.Map;
 public class MainWindowManager {
     private final ArrayList<MainWindow> mainWindows;
     private final Map<MainWindow, ArrayList<Stage>> mainWindows2AdditionalWindows;
+    private MainWindow lastFocusedMainWindow;
 
     private final LongProperty changed = new SimpleLongProperty(0);
 
@@ -125,6 +126,10 @@ public class MainWindowManager {
         if (mainWindows.size() == 0) {
             Platform.exit();
         }
+
+        if (lastFocusedMainWindow == mainWindow)
+            lastFocusedMainWindow = mainWindows.get(0);
+
         return true;
     }
 
@@ -162,5 +167,13 @@ public class MainWindowManager {
 
     public ArrayList<Stage> getAuxiliaryWindows(MainWindow mainWindow) {
         return mainWindows2AdditionalWindows.get(mainWindow);
+    }
+
+    public MainWindow getLastFocusedMainWindow() {
+        return lastFocusedMainWindow;
+    }
+
+    public void setLastFocusedMainWindow(MainWindow lastFocusedMainWindow) {
+        this.lastFocusedMainWindow = lastFocusedMainWindow;
     }
 }

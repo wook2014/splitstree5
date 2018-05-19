@@ -68,13 +68,13 @@ public class ResourceManager {
     }
 
     /**
-     * gets the named icon
+     * gets the named image
      */
     public static Image getImage(String name) {
         if (!imageMap.containsKey(name)) {
             Image image = getImageResource(imagePackagePath, name);
             if (image != null) {
-                iconMap.put(name, image);
+                imageMap.put(name, image);
             } else {
                 if (Basic.getDebugMode() && warnMissing)
                     System.err.println("IMAGE NOT FOUND: " + name + ", path: " + imagePackagePath);
@@ -85,7 +85,7 @@ public class ResourceManager {
                     return null;
             }
         }
-        return iconMap.get(name);
+        return imageMap.get(name);
     }
 
     /**

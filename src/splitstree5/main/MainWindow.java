@@ -232,6 +232,8 @@ public class MainWindow {
             stage.focusedProperty().addListener((c, o, n) -> {
                 if (!n && mainTabPane.getSelectionModel().getSelectedItem() instanceof ISavesPreviousSelection)
                     ((ISavesPreviousSelection) mainTabPane.getSelectionModel().getSelectedItem()).saveAsPreviousSelection();
+                if (n)
+                    MainWindowManager.getInstance().setLastFocusedMainWindow(this);
             });
 
             Platform.runLater(() ->
