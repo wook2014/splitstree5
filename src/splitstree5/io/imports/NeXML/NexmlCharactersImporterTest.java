@@ -12,9 +12,9 @@ import splitstree5.io.nexus.TaxaNexusOutput;
 import java.io.IOException;
 import java.io.StringWriter;
 
-public class NexmlCharactersInTest {
+public class NexmlCharactersImporterTest {
 
-    private NexmlCharactersIn nexmlCharactersIn = new NexmlCharactersIn();
+    private NexmlCharactersImporter nexmlCharactersIn = new NexmlCharactersImporter();
 
     @Test
     public void parseSeq() throws IOException, CanceledException {

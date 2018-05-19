@@ -7,14 +7,20 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 
 public class NexmlTreesHandler extends DefaultHandler {
 
+    // tree 't1'=[&R] (((3:0.234,2:0.3243):0.324,(5:0.32443,4:0.2342):0.3247):0.34534,1:0.4353);
     private boolean bReadingTree = false;
+    private boolean partial = false;
 
     private PhyloTree tree;
     private ArrayList<String> taxaLabels = new ArrayList<>();
     private ArrayList<PhyloTree> trees = new ArrayList<>();
+    private HashMap<String, Node> id2node = new HashMap<>();
 
     @Override
     public void startElement(String uri,
@@ -40,46 +46,65 @@ public class NexmlTreesHandler extends DefaultHandler {
         // TREES INFO
         else if (qName.equalsIgnoreCase("tree")) {
             tree = new PhyloTree();
+            id2node = new HashMap<>();
             bReadingTree = true;
         } else if (qName.equalsIgnoreCase("node") && bReadingTree) {
             String label = attributes.getValue("label");
             String id = attributes.getValue("id");
             String otu = attributes.getValue("otu");
-            System.out.println("node " + id + " has label " + otu);
             boolean root = Boolean.parseBoolean(attributes.getValue("root"));
 
-            Node node = new Node(tree);
-            node.setData(id);
-            System.out.println("-----" + node.getData());
-            //tree.setLabel(node, label);
-
+            Node node = tree.newNode();
             if (root) tree.setRoot(node);
-            if (otu != null)
+            id2node.put(id, node);
+
+            if (otu != null) {
                 tree.setLabel(node, otu);
-            else if (label != null)
-                tree.setLabel(node, label);
-            else
-                tree.setLabel(node, id);
-
-        } else if (qName.equalsIgnoreCase("rootedge") && bReadingTree) {
-            Double weight = Double.parseDouble(attributes.getValue("length")); // todo : check if possible
-            //tree.setWeight(tree.newEdge(tree.getRoot(), weight);
-            tree.setWeight(weight); // todo what should i do here?
-        } else if (qName.equalsIgnoreCase("edge") && bReadingTree) {
-            String source = attributes.getValue("source");
-            String target = attributes.getValue("target");
-            Double weight = Double.parseDouble(attributes.getValue("length")); // todo : check if possible
-
-            Node sourceNode = tree.getLastNode();
-            Node targetNode = tree.getFirstNode();
-            for (Node n : tree.getNodesAsSet()) {
-                if (n.getData().equals(source)) sourceNode = n; // todo : can I use data parameter here?
-                if (n.getData().equals(target)) targetNode = n;
+                tree.addTaxon(node, taxaLabels.indexOf(otu));
             }
 
-            tree.setWeight(tree.newEdge(sourceNode, targetNode), weight);
-        }
+        } else if (qName.equalsIgnoreCase("rootedge") && bReadingTree) {
+            String sWeight = attributes.getValue("length");
+            Double weight;
+            if (sWeight == null)
+                weight = 1.0;
+            else
+                weight = Double.parseDouble(attributes.getValue("length"));
 
+            Node sourceNode = tree.newNode();
+            Node targetNode = tree.getRoot();
+            tree.setRoot(sourceNode);
+            tree.setWeight(tree.newEdge(sourceNode, targetNode), weight);
+
+        } else if (qName.equalsIgnoreCase("edge") && bReadingTree) {
+            String id = attributes.getValue("id");
+            String source = attributes.getValue("source");
+            String target = attributes.getValue("target");
+
+            String sWeight = attributes.getValue("length");
+            Double weight;
+            if (sWeight == null)
+                weight = 1.0;
+            else
+                weight = Double.parseDouble(attributes.getValue("length"));
+
+            Node sourceNode = null;
+            Node targetNode = null;
+
+            for (String key : id2node.keySet()){
+                if (key.equals(source))
+                    sourceNode = id2node.get(key);
+                if (key.equals(target))
+                    targetNode = id2node.get(key);
+            }
+
+            if (sourceNode == null)
+                throw new SAXException("Edge "+id+" contains not defined source node id="+source);
+            else if (targetNode == null)
+                throw new SAXException("Edge "+id+" contains not defined target node id="+target);
+            else
+                tree.setWeight(tree.newEdge(sourceNode, targetNode), weight);
+        }
     }
 
     @Override
@@ -90,6 +115,10 @@ public class NexmlTreesHandler extends DefaultHandler {
         } else if (qName.equalsIgnoreCase("tree")) {
             bReadingTree = false;
             trees.add(tree);
+
+            // if a tree already set as partial, no further check
+            //if (partial || !treeContainsAllTaxa(tree))
+              //  partial = true;
         }
     }
 
@@ -99,5 +128,31 @@ public class NexmlTreesHandler extends DefaultHandler {
 
     public ArrayList<PhyloTree> getTrees() {
         return this.trees;
+    }
+
+    public boolean isPartial() {
+        return this.partial;
+    }
+
+    private boolean treeContainsAllTaxa(PhyloTree tree) {
+
+        int numOfLabelsInTree = 0;
+        /*for (String s : tree.nodeLabels()) {
+            numOfLabelsInTree++;
+            System.err.println("üüüüüüüüü"+s);
+        }
+        System.err.println("üüüüüüüüü"+numOfLabelsInTree);*/
+        //System.err.println(tree.nodeLabels().iterator().next());
+        Iterator<String> iterator = tree.nodeLabels().iterator();
+        System.err.println(iterator.next());
+        while (iterator.hasNext()){
+            //iterator.next();
+            System.err.println(iterator.next());
+            numOfLabelsInTree++;
+        }
+        System.err.println("üüüüüüüüü"+numOfLabelsInTree);
+        return numOfLabelsInTree == taxaLabels.size();
+
+        // todo : how to use iterator?
     }
 }
