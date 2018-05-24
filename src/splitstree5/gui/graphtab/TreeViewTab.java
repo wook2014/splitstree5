@@ -45,7 +45,7 @@ public class TreeViewTab extends Graph2DTab<PhyloTree> {
      * constructor
      */
     public TreeViewTab() {
-        this(false);
+        this(true);
     }
 
     public TreeViewTab(boolean withScrollPane) {

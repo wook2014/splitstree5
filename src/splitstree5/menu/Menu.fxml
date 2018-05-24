@@ -317,6 +317,9 @@
                 <MenuItem fx:id="selectTreeMenuItem" mnemonicParsing="false" text="Select Tree"/>
                 <MenuItem fx:id="consensusTreeMenuItem" mnemonicParsing="false" text="Consensus Tree"/>
                 <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="rootByOutgroupMenuItem" mnemonicParsing="false" text="Root By Outgroup"/>
+                <MenuItem fx:id="rootByMidpointMenuItem" mnemonicParsing="false" text="Root By Midpoint"/>
+                <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="treeViewMenuItem" mnemonicParsing="false" text="Tree View"/>
                 <MenuItem fx:id="treeGridMenuItem" mnemonicParsing="false" text="Tree Grid"/>
                 <SeparatorMenuItem mnemonicParsing="false"/>

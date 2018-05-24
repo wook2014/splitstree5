@@ -42,6 +42,8 @@ import splitstree5.core.algorithms.filters.TreeSelector;
 import splitstree5.core.algorithms.trees2splits.ConsensusNetwork;
 import splitstree5.core.algorithms.trees2splits.SuperNetwork;
 import splitstree5.core.algorithms.trees2trees.ConsensusTree;
+import splitstree5.core.algorithms.trees2trees.RootByMidpointAlgorithm;
+import splitstree5.core.algorithms.trees2trees.RootByOutGroupAlgorithm;
 import splitstree5.core.algorithms.views.NetworkEmbedder;
 import splitstree5.core.algorithms.views.SplitsNetworkAlgorithm;
 import splitstree5.core.algorithms.views.TreeEmbedder;
@@ -293,6 +295,12 @@ public class MainWindowMenuController {
 
         controller.getTreeViewMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, TreesBlock.class, TreeEmbedder.class, ViewerBlock.TreeViewerBlock.class)));
         controller.getConsensusTreeMenuItem().disableProperty().bind(disableTreesMethods);
+
+        controller.getRootByOutgroupMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrInsertTreeRootAlgorithm(viewDataNode, new RootByOutGroupAlgorithm())));
+        controller.getRootByOutgroupMenuItem().disableProperty().bind(disableTreesMethods);
+
+        controller.getRootByMidpointMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrInsertTreeRootAlgorithm(viewDataNode, new RootByMidpointAlgorithm())));
+        controller.getRootByMidpointMenuItem().disableProperty().bind(disableTreesMethods);
 
         // networks:
 

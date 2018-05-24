@@ -26,7 +26,7 @@ import java.io.IOException;
  * Daniel Huson, 1.2018
  */
 public class IOExceptionWithLineNumber extends IOException {
-    private int lineNumber = -1;
+    private long lineNumber = -1;
 
     /**
      * constructor
@@ -34,7 +34,7 @@ public class IOExceptionWithLineNumber extends IOException {
      * @param message
      * @param lineNumber
      */
-    public IOExceptionWithLineNumber(String message, int lineNumber) {
+    public IOExceptionWithLineNumber(String message, long lineNumber) {
         super("Line " + lineNumber + ": " + message);
         setLineNumber(lineNumber);
     }
@@ -45,7 +45,7 @@ public class IOExceptionWithLineNumber extends IOException {
      * @param message
      * @param lineNumber
      */
-    public IOExceptionWithLineNumber(int lineNumber, String message) {
+    public IOExceptionWithLineNumber(long lineNumber, String message) {
         this(message, lineNumber);
     }
 
@@ -54,11 +54,11 @@ public class IOExceptionWithLineNumber extends IOException {
         setLineNumber(lineNumber);
     }
 
-    public int getLineNumber() {
+    public long getLineNumber() {
         return lineNumber;
     }
 
-    public void setLineNumber(int lineNumber) {
+    public void setLineNumber(long lineNumber) {
         this.lineNumber = lineNumber;
     }
 }

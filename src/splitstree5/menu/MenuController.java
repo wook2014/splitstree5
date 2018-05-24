@@ -271,6 +271,13 @@ public class MenuController {
     private MenuItem consensusTreeMenuItem;
 
     @FXML
+    private MenuItem rootByOutgroupMenuItem;
+
+    @FXML
+    private MenuItem rootByMidpointMenuItem;
+
+
+    @FXML
     private MenuItem treeViewMenuItem;
 
     @FXML
@@ -672,6 +679,14 @@ public class MenuController {
 
     public MenuItem getConsensusTreeMenuItem() {
         return consensusTreeMenuItem;
+    }
+
+    public MenuItem getRootByOutgroupMenuItem() {
+        return rootByOutgroupMenuItem;
+    }
+
+    public MenuItem getRootByMidpointMenuItem() {
+        return rootByMidpointMenuItem;
     }
 
     public MenuItem getTreeViewMenuItem() {

@@ -1,7 +1,7 @@
-package splitstree5.core.algorithms.trees2splits.method;
+package splitstree5.xtra.crespo.method;
 
-import splitstree5.core.algorithms.trees2splits.util.MyNode;
-import splitstree5.core.algorithms.trees2splits.util.MyTree;
+import splitstree5.xtra.crespo.util.MyNode;
+import splitstree5.xtra.crespo.util.MyTree;
 
 import java.util.ArrayList;
 import java.util.BitSet;

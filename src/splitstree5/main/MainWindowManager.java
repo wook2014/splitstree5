@@ -127,8 +127,12 @@ public class MainWindowManager {
             Platform.exit();
         }
 
-        if (lastFocusedMainWindow == mainWindow)
-            lastFocusedMainWindow = mainWindows.get(0);
+        if (lastFocusedMainWindow == mainWindow) {
+            if (mainWindows.size() > 0)
+                lastFocusedMainWindow = mainWindows.get(0);
+            else
+                lastFocusedMainWindow = null;
+        }
 
         return true;
     }

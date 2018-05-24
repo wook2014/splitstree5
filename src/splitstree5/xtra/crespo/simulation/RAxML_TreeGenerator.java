@@ -1,9 +1,9 @@
-package splitstree5.core.algorithms.trees2splits.simulation;
+package splitstree5.xtra.crespo.simulation;
 
 
-import splitstree5.core.algorithms.trees2splits.util.MyNewickParser;
-import splitstree5.core.algorithms.trees2splits.util.MyNode;
-import splitstree5.core.algorithms.trees2splits.util.MyTree;
+import splitstree5.xtra.crespo.util.MyNewickParser;
+import splitstree5.xtra.crespo.util.MyNode;
+import splitstree5.xtra.crespo.util.MyTree;
 
 import java.io.*;
 import java.util.ArrayList;

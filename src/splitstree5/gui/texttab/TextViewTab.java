@@ -100,7 +100,7 @@ public class TextViewTab extends ViewerTab {
      * @param lineNumber
      * @param col        if col<=1 or col>line length, will select the whole line, else selects line starting at given col
      */
-    public void gotoLine(int lineNumber, int col) {
+    public void gotoLine(long lineNumber, int col) {
         if (col < 0)
             col = 0;
         else if (col > 0)

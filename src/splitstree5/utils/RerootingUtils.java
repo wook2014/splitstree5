@@ -24,8 +24,8 @@ import jloda.phylo.PhyloTree;
 import jloda.util.Pair;
 import jloda.util.Triplet;
 
+import java.util.BitSet;
 import java.util.Comparator;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -39,10 +39,9 @@ public class RerootingUtils {
      *
      * @return true, if rerooted
      */
-    public static boolean rerootByEdge(PhyloTree tree, Edge e) {
+    public static void rerootByEdge(PhyloTree tree, Edge e) {
         if ((e.getSource() == tree.getRoot() || e.getTarget() == tree.getRoot()) && tree.getRoot().getDegree() == 2)
-            return false; // no need to reroot
-
+            return; // no need to reroot
 
         final EdgeArray<String> edgeLabels;
         if (tree.isInternalNodeLabelsAreEdgeLabels())
@@ -75,8 +74,6 @@ public class RerootingUtils {
             tree.setWeight(ea, na);
             tree.setWeight(eb, nb);
         }
-
-        return true;
     }
 
     /**
@@ -84,9 +81,9 @@ public class RerootingUtils {
      *
      * @return true, if rerooted
      */
-    public static boolean rerootByNode(PhyloTree tree, Node v) {
+    public static void rerootByNode(PhyloTree tree, Node v) {
         if (v == tree.getRoot())
-            return false;
+            return;
 
         final Node root = tree.getRoot();
         if (root.getDegree() == 2 && tree.getLabel(root) == null) {
@@ -105,8 +102,6 @@ public class RerootingUtils {
 
         if (tree.isInternalNodeLabelsAreEdgeLabels())
             SupportValueUtils.setInternalNodeLabelsFromEdgeLabels(tree, edgeLabels);
-
-        return true;
     }
 
 
@@ -116,32 +111,42 @@ public class RerootingUtils {
      *
      * @param tree
      * @param outgroupTaxa
-     * @return true, if tree was rerooted
      */
-    public static boolean rerootByOutgroup(PhyloTree tree, Set outgroupTaxa) {
+    public static void rerootByOutGroup(PhyloTree tree, BitSet outgroupTaxa) {
         if (tree.getRoot() == null)
-            return false;
+            return;
 
-        int totalOutgroup = 0;
+        int totalOutgroupTaxa = 0;
+        int totalIngroupNodes = 0;
         int totalNodes = tree.getNumberOfNodes();
 
         // compute number of outgroup taxa for each node
         NodeIntegerArray node2NumberOutgroup = new NodeIntegerArray(tree);
-        for (Node v : tree.nodes()) {
-            if (tree.getLabel(v) != null && outgroupTaxa.contains(tree.getLabel(v))) {
-                node2NumberOutgroup.set(v, node2NumberOutgroup.getValue(v) + 1);
-                totalOutgroup++;
+        for (Node v = tree.getFirstNode(); v != null; v = v.getNext()) {
+            if (tree.getNumberOfTaxa(v) > 0) {
+                boolean isOutgroupNode = false;
+                for (Integer t : tree.getTaxa(v)) {
+                    if (outgroupTaxa.get(t)) {
+                        isOutgroupNode = true;
+                        node2NumberOutgroup.set(v, node2NumberOutgroup.getValue(v) + 1);
+                        totalOutgroupTaxa++;
+                        break;
+                    }
+                }
+                if (!isOutgroupNode)
+                    totalIngroupNodes++;
             }
         }
 
-        System.err.println("total outgroup " + totalOutgroup + " total nodes " + totalNodes);
+        if (totalOutgroupTaxa == 0 || totalIngroupNodes == 0)
+            return;
 
         EdgeIntegerArray edge2OutgroupBelow = new EdgeIntegerArray(tree); // how many outgroup taxa below this edge?
         EdgeIntegerArray edge2NodesBelow = new EdgeIntegerArray(tree);  // how many nodes below this edge?
         NodeIntegerArray node2OutgroupBelow = new NodeIntegerArray(tree); // how many outgroup taxa below this multifurcation?
         NodeIntegerArray node2NodesBelow = new NodeIntegerArray(tree);     // how many nodes below this multifurcation (including this?)
 
-        rerootByOutgroupRec(tree.getRoot(), null, node2NumberOutgroup, edge2OutgroupBelow, edge2NodesBelow, node2OutgroupBelow, node2NodesBelow, totalNodes, totalOutgroup);
+        rerootByOutgroupRec(tree.getRoot(), null, node2NumberOutgroup, edge2OutgroupBelow, edge2NodesBelow, node2OutgroupBelow, node2NodesBelow, totalNodes, totalOutgroupTaxa);
 
         // find best edge for rooting
 
@@ -152,8 +157,8 @@ public class RerootingUtils {
         for (Edge e : tree.edges()) {
             int outgroupBelowE = edge2OutgroupBelow.getValue(e);
             int nodesBelowE = edge2NodesBelow.getValue(e);
-            if (outgroupBelowE < 0.5 * totalOutgroup) {
-                outgroupBelowE = totalOutgroup - outgroupBelowE;
+            if (outgroupBelowE < 0.5 * totalOutgroupTaxa) {
+                outgroupBelowE = totalOutgroupTaxa - outgroupBelowE;
                 nodesBelowE = totalNodes - nodesBelowE;
             }
             if (bestEdge == null || outgroupBelowE > outgroupBelowBestEdge || (outgroupBelowE == outgroupBelowBestEdge && nodesBelowE < nodesBelowBestEdge)) {
@@ -184,8 +189,7 @@ public class RerootingUtils {
             rerootByNode(tree, bestNode);
         } else if (bestEdge != null) {
             rerootByEdge(tree, bestEdge);
-        } else return false;
-        return true;
+        }
     }
 
     /**
@@ -258,7 +262,7 @@ public class RerootingUtils {
      * @param tree
      * @return true, if tree rerooted
      */
-    public static boolean rerootByMidpoint(PhyloTree tree) {
+    public static void rerootByMidpoint(PhyloTree tree) {
         final SortedSet<Triplet<Edge, Float, Float>> rankedMidpointRootings = getRankedMidpointRootings(tree);
 
         final Triplet<Edge, Float, Float> best = rankedMidpointRootings.first();
@@ -272,16 +276,15 @@ public class RerootingUtils {
 
         if (halfOfTotal <= a) {
             if (tree.getRoot() == v)
-                return false;
+                return;
             rerootByNode(tree, v);
         } else if (halfOfTotal >= a + weight) {
             if (tree.getRoot() == w)
-                return false;
+                return;
             rerootByNode(tree, w);
         } else {
             rerootByEdge(tree, e);
         }
-        return true;
     }
 
     /**
@@ -474,5 +477,4 @@ public class RerootingUtils {
             }
         }
     }
-
 }

@@ -157,7 +157,7 @@ public class AlignmentView extends Pane {
      * @param <S>
      * @param <T>
      */
-    public static <S, T> void columnReorder(TableView table, TableColumn<S, T>... columns) {
+    public static <S, T> void columnReorder(TableView table, TableColumn<S, T>[] columns) {
         table.getColumns().addListener(new ListChangeListener() {
             public boolean suspended;
 

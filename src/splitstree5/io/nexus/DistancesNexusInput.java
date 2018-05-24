@@ -128,6 +128,8 @@ public class DistancesNexusInput extends NexusIOBase implements INexusInput<Dist
                         String label = np.getLabelRespectCase();
                         if (taxaBlock.getNtax() > 0 && !taxaBlock.get(t).getName().equals(label))
                             throw new IOExceptionWithLineNumber(np.lineno(), "expected '" + taxaBlock.get(t).getName() + "', found: '" + label + "'");
+                        else if (Basic.isDouble(label))
+                            throw new IOExceptionWithLineNumber(np.lineno(), "Expected taxon label, got number: '" + label + "'");
                         taxonNamesFound.add(label);
                     }
 

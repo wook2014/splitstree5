@@ -1,4 +1,4 @@
-package splitstree5.core.algorithms.trees2splits.util;
+package splitstree5.xtra.crespo.util;
 
 import java.util.ArrayList;
 import java.util.BitSet;

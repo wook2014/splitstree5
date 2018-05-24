@@ -1,12 +1,12 @@
-package splitstree5.core.algorithms.trees2splits.simulation;
+package splitstree5.xtra.crespo.simulation;
 
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
-import splitstree5.core.algorithms.trees2splits.util.MyNewickParser;
-import splitstree5.core.algorithms.trees2splits.util.MyNode;
-import splitstree5.core.algorithms.trees2splits.util.MyTree;
-import splitstree5.core.algorithms.trees2splits.util.RandomBinaryTree_Generator;
 import splitstree5.io.imports.utils.SimpleNewickParser;
+import splitstree5.xtra.crespo.util.MyNewickParser;
+import splitstree5.xtra.crespo.util.MyNode;
+import splitstree5.xtra.crespo.util.MyTree;
+import splitstree5.xtra.crespo.util.RandomBinaryTree_Generator;
 
 import java.io.IOException;
 import java.util.*;

@@ -34,8 +34,11 @@ import jloda.util.Single;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.filters.CharactersFilter;
+import splitstree5.core.algorithms.filters.IFilter;
 import splitstree5.core.algorithms.filters.SplitsFilter;
 import splitstree5.core.algorithms.filters.TreesFilter;
+import splitstree5.core.algorithms.trees2trees.RootByMidpointAlgorithm;
+import splitstree5.core.algorithms.trees2trees.RootByOutGroupAlgorithm;
 import splitstree5.core.datablocks.*;
 import splitstree5.core.topfilters.*;
 
@@ -653,7 +656,7 @@ public class Workflow {
      * @param clazz
      * @return lowest ancestor whose datablock is of the given class, or any datablock of the given class, if only one such exists, or null
      */
-    public DataNode getAncestorForClass(DataNode dataNode, Class<? extends DataBlock> clazz) {
+    public <T extends DataBlock> DataNode<T> getAncestorForClass(DataNode dataNode, Class<T> clazz) {
         while (dataNode != null) {
             if (dataNode.getDataBlock().getClass().isAssignableFrom(clazz))
                 break;
@@ -865,6 +868,35 @@ public class Workflow {
         }
         return null;
     }
+
+    /**
+     * finds tree trees block above this node and then finds or add tree-rooting algorithm
+     *
+     * @param dataNode
+     * @return tree rooting algorithm node or null
+     */
+    public Pair<Connector, DataNode> findOrInsertTreeRootAlgorithm(DataNode dataNode, Algorithm<TreesBlock, TreesBlock> algorithm) {
+        final DataNode<TreesBlock> treesNode = getAncestorForClass(dataNode, TreesBlock.class);
+
+        if (treesNode != null) {
+            for (Connector<TreesBlock, ? extends DataBlock> child : treesNode.getChildren()) {
+                if (child.getAlgorithm() instanceof RootByOutGroupAlgorithm || child.getAlgorithm() instanceof RootByMidpointAlgorithm) {
+                    child.setAlgorithm((Algorithm) algorithm);
+                    return new Pair<>(child, child.getChild());
+                }
+            }
+            for (Connector<TreesBlock, ? extends DataBlock> child : treesNode.getChildren()) {
+                if (true || child.getAlgorithm() instanceof IFilter) {
+                    final DataNode<TreesBlock> treeNode = document.getWorkflow().createDataNode(new TreesBlock());
+                    final Connector<TreesBlock, TreesBlock> rerootConnector = document.getWorkflow().createConnector(treesNode, treeNode, algorithm);
+                    child.changeParent(treeNode);
+                    return new Pair<>(rerootConnector, rerootConnector.getChild());
+                }
+            }
+        }
+        return null;
+    }
+
 
     /**
      * can data of this type be loaded into the current workflow?

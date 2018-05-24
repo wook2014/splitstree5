@@ -66,7 +66,7 @@ public class Connector<P extends DataBlock, C extends DataBlock> extends Workflo
     private final ConnectorService<P, C> service;
 
     private final TaxaBlock taxaBlock;
-    private final DataNode<P> parent;
+    private DataNode<P> parent;
     private final DataNode<C> child;
     private final ObservableList<DataNode> children;
 
@@ -183,6 +183,12 @@ public class Connector<P extends DataBlock, C extends DataBlock> extends Workflo
         else
             setName("Connector");
         setPathId(getPathId());
+    }
+
+    public void changeParent(DataNode<P> newParent) {
+        parent.getChildren().remove(this);
+        newParent.getChildren().add(this);
+        parent = newParent;
     }
 
     @Override

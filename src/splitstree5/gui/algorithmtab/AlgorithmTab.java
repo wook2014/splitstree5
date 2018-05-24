@@ -155,6 +155,7 @@ public class AlgorithmTab<P extends DataBlock, C extends DataBlock> extends View
             currentAlgorithm.setConnector(oldValue.getConnector());
             controller.getBorderPane().setCenter(updateAlgorithmPane());
             algorithmIsApplicable.setValue(currentAlgorithm.isApplicable(connector.getTaxaBlock(), connector.getParentDataBlock()));
+            algorithmPane.syncModel2Controller();
         });
 
         algorithmPane.syncModel2Controller();
