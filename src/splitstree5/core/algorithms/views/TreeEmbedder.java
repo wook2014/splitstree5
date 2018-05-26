@@ -82,7 +82,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
 
     private final Property<EdgeView2D.EdgeShape> optionEdgeShape = new SimpleObjectProperty<>(EdgeView2D.EdgeShape.Angular);
 
-    public static final ParentPlacement PARENT_PLACEMENT_DEFAULT = ParentPlacement.ChildrenAverage;
+    public static final ParentPlacement PARENT_PLACEMENT_DEFAULT = ParentPlacement.LeafAverage;
     private final Property<ParentPlacement> optionParentPlacement = new SimpleObjectProperty<>(PARENT_PLACEMENT_DEFAULT);
 
     public static final int CUBIC_CURVE_PARENT_CONTROL_DEFAULT = 20;
@@ -99,6 +99,14 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
     private final Map<String, FormatItem> nodeLabel2Style = new HashMap<>();
 
     private ChangeListener<UpdateState> changeListener;
+
+
+    public TreeEmbedder() {
+        optionLayout.addListener((c, o, n) -> {
+            if (n == GraphLayout.Radial)
+                setOptionParentPlacement(ParentPlacement.LeafAverage);
+        });
+    }
 
     @Override
     public String getCitation() {
