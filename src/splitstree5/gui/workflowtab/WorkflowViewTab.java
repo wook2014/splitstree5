@@ -359,17 +359,7 @@ public class WorkflowViewTab extends ViewerTab {
         controller.getInvertNodeSelectionMenuItem().disableProperty().bind(getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().not());
 
         controller.getSelectAllBelowMenuItem().setOnAction((e) -> {
-            final Stack<WorkflowNode> stack = new Stack<>();
-            final Set<WorkflowNode> nodesToSelect = new HashSet<>();
-            stack.addAll(selectionModel.getSelectedItems());
-            while (stack.size() > 0) {
-                final WorkflowNode v = stack.pop();
-                for (WorkflowNode w : v.getChildren()) {
-                    stack.push(w);
-                    nodesToSelect.add(w);
-                }
-            }
-            selectionModel.selectItems(nodesToSelect);
+            getWorkflow().selectAllBelow(selectionModel.getSelectedItems(), true);
         });
         controller.getSelectAllBelowMenuItem().disableProperty().bind(selectionModel.emptyProperty());
 
@@ -501,37 +491,7 @@ public class WorkflowViewTab extends ViewerTab {
         });
         controller.getDeleteMenuItem().disableProperty().bind(selectionModel.emptyProperty());
 
-        controller.getDuplicateMenuItem().setOnAction((e) -> {
-            getUndoManager().doAndAdd(new UndoableRedoableCommand("Duplicate") {
-                final ArrayList<WorkflowNode> selected = new ArrayList<>(selectionModel.getSelectedItems());
-                final Collection<WorkflowNode> newNodes = new ArrayList<>();
-
-                @Override
-                public void undo() {
-                    getWorkflow().delete(newNodes);
-                    newNodes.clear();
-                    recompute();
-                }
-
-                @Override
-                public void redo() {
-                    newNodes.clear();
-                    newNodes.addAll(getWorkflow().duplicate(selected));
-                    recompute();
-                    getWorkflow().recomputeTop(newNodes);
-                }
-
-                @Override
-                public boolean isUndoable() {
-                    return newNodes.size() > 0;
-                }
-
-                @Override
-                public boolean isRedoable() {
-                    return selected.size() > 0;
-                }
-            });
-        });
+        controller.getDuplicateMenuItem().setOnAction((e) -> callDuplicateCommand());
         controller.getDuplicateMenuItem().disableProperty().bind(selectionModel.emptyProperty());
 
         controller.getZoomInMenuItem().setOnAction((e) -> {
@@ -546,5 +506,40 @@ public class WorkflowViewTab extends ViewerTab {
 
         controller.getResetMenuItem().setOnAction((e) -> scrollPane.resetZoom());
         controller.getResetMenuItem().disableProperty().bind(getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().not());
+    }
+
+    /**
+     * duplicate all selected nodes
+     */
+    public void callDuplicateCommand() {
+        getUndoManager().doAndAdd(new UndoableRedoableCommand("Duplicate") {
+            final ArrayList<WorkflowNode> selected = new ArrayList<>(getWorkflow().getNodeSelectionModel().getSelectedItems());
+            final Collection<WorkflowNode> newNodes = new ArrayList<>();
+
+            @Override
+            public void undo() {
+                getWorkflow().delete(newNodes);
+                newNodes.clear();
+                recompute();
+            }
+
+            @Override
+            public void redo() {
+                newNodes.clear();
+                newNodes.addAll(getWorkflow().duplicate(selected));
+                recompute();
+                getWorkflow().recomputeTop(newNodes);
+            }
+
+            @Override
+            public boolean isUndoable() {
+                return newNodes.size() > 0;
+            }
+
+            @Override
+            public boolean isRedoable() {
+                return selected.size() > 0;
+            }
+        });
     }
 }

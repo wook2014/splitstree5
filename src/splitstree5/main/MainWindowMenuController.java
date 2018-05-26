@@ -50,6 +50,7 @@ import splitstree5.core.algorithms.views.TreeEmbedder;
 import splitstree5.core.datablocks.*;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.Workflow;
+import splitstree5.core.workflow.WorkflowEditing;
 import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.dialogs.importer.ImportDialog;
 import splitstree5.dialogs.importer.ImporterManager;
@@ -210,19 +211,19 @@ public class MainWindowMenuController {
         // filters:
         controller.getFilterCharactersMenuItem().setOnAction((e) -> {
             final DataNode dataNode = workflow.getAncestorForClass(viewDataNode, CharactersBlock.class);
-            mainWindow.showAlgorithmView(workflow.findOrInsertFilter(dataNode));
+            mainWindow.showAlgorithmView(WorkflowEditing.findOrInsertFilter(workflow, dataNode));
         });
         controller.getFilterCharactersMenuItem().disableProperty().bind(disableCharactersMethods);
 
         controller.getFilterSplitsMenuItem().setOnAction((e) -> {
             final DataNode dataNode = workflow.getAncestorForClass(viewDataNode, SplitsBlock.class);
-            mainWindow.showAlgorithmView(workflow.findOrInsertFilter(dataNode));
+            mainWindow.showAlgorithmView(WorkflowEditing.findOrInsertFilter(workflow, dataNode));
         });
         controller.getFilterSplitsMenuItem().disableProperty().bind(disableSplitsMethods);
 
         controller.getFilterTreesMenuItem().setOnAction((e) -> {
             final DataNode dataNode = workflow.getAncestorForClass(viewDataNode, TreesBlock.class);
-            mainWindow.showAlgorithmView(workflow.findOrInsertFilter(dataNode));
+            mainWindow.showAlgorithmView(WorkflowEditing.findOrInsertFilter(workflow, dataNode));
         });
         controller.getFilterTreesMenuItem().disableProperty().bind(disableTreesMethods);
 
@@ -236,108 +237,108 @@ public class MainWindowMenuController {
 
         // distances:
 
-        controller.getUncorrectedPMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, CharactersBlock.class, Uncorrected_P.class, DistancesBlock.class)));
+        controller.getUncorrectedPMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, CharactersBlock.class, Uncorrected_P.class, DistancesBlock.class)));
         controller.getUncorrectedPMenuItem().disableProperty().bind(disableCharactersMethods);
 
-        controller.getLogDetMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, CharactersBlock.class, LogDet.class, DistancesBlock.class)));
+        controller.getLogDetMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, CharactersBlock.class, LogDet.class, DistancesBlock.class)));
         controller.getLogDetMenuItem().disableProperty().bind(disableCharactersMethods);
 
-        controller.getHky85MenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, CharactersBlock.class, HKY85.class, DistancesBlock.class)));
+        controller.getHky85MenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, CharactersBlock.class, HKY85.class, DistancesBlock.class)));
         controller.getHky85MenuItem().disableProperty().bind(disableCharactersMethods);
 
-        controller.getJukesCantorMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, CharactersBlock.class, JukesCantor.class, DistancesBlock.class)));
+        controller.getJukesCantorMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, CharactersBlock.class, JukesCantor.class, DistancesBlock.class)));
         controller.getJukesCantorMenuItem().disableProperty().bind(disableCharactersMethods);
 
-        controller.getK2pMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, CharactersBlock.class, K2P.class, DistancesBlock.class)));
+        controller.getK2pMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, CharactersBlock.class, K2P.class, DistancesBlock.class)));
         controller.getK2pMenuItem().disableProperty().bind(disableCharactersMethods);
 
-        controller.getK3stMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, CharactersBlock.class, K3ST.class, DistancesBlock.class)));
+        controller.getK3stMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, CharactersBlock.class, K3ST.class, DistancesBlock.class)));
         controller.getK3stMenuItem().disableProperty().bind(disableCharactersMethods);
 
-        controller.getF81MenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, CharactersBlock.class, F81.class, DistancesBlock.class)));
+        controller.getF81MenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, CharactersBlock.class, F81.class, DistancesBlock.class)));
         controller.getF81MenuItem().disableProperty().bind(disableCharactersMethods);
 
-        controller.getF84MenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, CharactersBlock.class, F84.class, DistancesBlock.class)));
+        controller.getF84MenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, CharactersBlock.class, F84.class, DistancesBlock.class)));
         controller.getF84MenuItem().disableProperty().bind(disableCharactersMethods);
 
-        controller.getProteinMLDistanceMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, CharactersBlock.class, ProteinMLdist.class, DistancesBlock.class)));
+        controller.getProteinMLDistanceMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, CharactersBlock.class, ProteinMLdist.class, DistancesBlock.class)));
         controller.getProteinMLDistanceMenuItem().disableProperty().bind(disableCharactersMethods);
 
-        controller.getGeneContentDistanceMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, CharactersBlock.class, GeneContentDistance.class, DistancesBlock.class)));
+        controller.getGeneContentDistanceMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, CharactersBlock.class, GeneContentDistance.class, DistancesBlock.class)));
         controller.getGeneContentDistanceMenuItem().disableProperty().bind(disableCharactersMethods);
 
 
         // trees:
 
-        controller.getBioNJMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, DistancesBlock.class,
+        controller.getBioNJMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, DistancesBlock.class,
                 BioNJ.class, TreesBlock.class, TreeEmbedder.class, ViewerBlock.TreeViewerBlock.class)));
         controller.getBioNJMenuItem().disableProperty().bind(disableDistancesMethods);
 
-        controller.getNjMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, DistancesBlock.class,
+        controller.getNjMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, DistancesBlock.class,
                 NeighborJoining.class, TreesBlock.class, TreeEmbedder.class, ViewerBlock.TreeViewerBlock.class)));
         controller.getNjMenuItem().disableProperty().bind(disableDistancesMethods);
 
-        controller.getUpgmaMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, DistancesBlock.class,
+        controller.getUpgmaMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, DistancesBlock.class,
                 UPGMA.class, TreesBlock.class, TreeEmbedder.class, ViewerBlock.TreeViewerBlock.class)));
         controller.getUpgmaMenuItem().disableProperty().bind(disableDistancesMethods);
 
-        controller.getBunemanTreeMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, DistancesBlock.class,
+        controller.getBunemanTreeMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, DistancesBlock.class,
                 BunemanTree.class, SplitsBlock.class, SplitsNetworkAlgorithm.class, ViewerBlock.SplitsNetworkViewerBlock.class)));
         controller.getBunemanTreeMenuItem().disableProperty().bind(disableDistancesMethods);
 
-        controller.getSelectTreeMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, TreesBlock.class,
+        controller.getSelectTreeMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, TreesBlock.class,
                 TreeSelector.class, TreesBlock.class, TreeEmbedder.class, ViewerBlock.TreeViewerBlock.class)));
         controller.getSelectTreeMenuItem().disableProperty().bind(disableTreesMethods);
 
-        controller.getConsensusTreeMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, TreesBlock.class,
+        controller.getConsensusTreeMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, TreesBlock.class,
                 ConsensusTree.class, TreesBlock.class, TreeEmbedder.class, ViewerBlock.TreeViewerBlock.class)));
         controller.getConsensusTreeMenuItem().disableProperty().bind(disableTreesMethods);
 
-        controller.getTreeViewMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, TreesBlock.class, TreeEmbedder.class, ViewerBlock.TreeViewerBlock.class)));
+        controller.getTreeViewMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, TreesBlock.class, TreeEmbedder.class, ViewerBlock.TreeViewerBlock.class)));
         controller.getConsensusTreeMenuItem().disableProperty().bind(disableTreesMethods);
 
-        controller.getRootByOutgroupMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrInsertTreeRootAlgorithm(viewDataNode, new RootByOutGroupAlgorithm())));
+        controller.getRootByOutgroupMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrInsertTreeRootAlgorithm(workflow, viewDataNode, new RootByOutGroupAlgorithm())));
         controller.getRootByOutgroupMenuItem().disableProperty().bind(disableTreesMethods);
 
-        controller.getRootByMidpointMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrInsertTreeRootAlgorithm(viewDataNode, new RootByMidpointAlgorithm())));
+        controller.getRootByMidpointMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrInsertTreeRootAlgorithm(workflow, viewDataNode, new RootByMidpointAlgorithm())));
         controller.getRootByMidpointMenuItem().disableProperty().bind(disableTreesMethods);
 
         // networks:
 
-        controller.getNeighborNetMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, DistancesBlock.class,
+        controller.getNeighborNetMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, DistancesBlock.class,
                 NeighborNet.class, SplitsBlock.class, SplitsNetworkAlgorithm.class, ViewerBlock.SplitsNetworkViewerBlock.class)));
         controller.getNeighborNetMenuItem().disableProperty().bind(disableDistancesMethods);
 
-        controller.getSplitDecompositionMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, DistancesBlock.class,
+        controller.getSplitDecompositionMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, DistancesBlock.class,
 
                 SplitDecomposition.class, SplitsBlock.class, SplitsNetworkAlgorithm.class, ViewerBlock.SplitsNetworkViewerBlock.class)));
         controller.getSplitDecompositionMenuItem().disableProperty().bind(disableDistancesMethods);
 
-        controller.getParsimonySplitsMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, CharactersBlock.class,
+        controller.getParsimonySplitsMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, CharactersBlock.class,
                 ParsimonySplits.class, SplitsBlock.class, SplitsNetworkAlgorithm.class, ViewerBlock.SplitsNetworkViewerBlock.class)));
         controller.getParsimonySplitsMenuItem().disableProperty().bind(disableCharactersMethods);
 
-        controller.getConsensusNetworkMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, TreesBlock.class,
+        controller.getConsensusNetworkMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, TreesBlock.class,
                 new Pair<>(ConsensusNetwork.class, SplitsBlock.class), new Pair<>(SplitsFilter.class, SplitsBlock.class), new Pair<>(SplitsNetworkAlgorithm.class, ViewerBlock.SplitsNetworkViewerBlock.class))));
         controller.getConsensusNetworkMenuItem().disableProperty().bind(disableTreesMethods);
 
-        controller.getFilteredSuperNetworkMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, TreesBlock.class,
+        controller.getFilteredSuperNetworkMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, TreesBlock.class,
                 new Pair<>(SuperNetwork.class, SplitsBlock.class), new Pair<>(SplitsFilter.class, SplitsBlock.class), new Pair<>(SplitsNetworkAlgorithm.class, ViewerBlock.SplitsNetworkViewerBlock.class))));
         controller.getFilteredSuperNetworkMenuItem().disableProperty().bind(disableTreesMethods);
 
-        controller.getMedianJoiningMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, CharactersBlock.class,
+        controller.getMedianJoiningMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, CharactersBlock.class,
                 MedianJoining.class, NetworkBlock.class, NetworkEmbedder.class, ViewerBlock.NetworkViewerBlock.class)));
         controller.getMedianJoiningMenuItem().disableProperty().bind(disableCharactersMethods);
 
-        controller.getMinSpanningNetworkMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, DistancesBlock.class,
+        controller.getMinSpanningNetworkMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, DistancesBlock.class,
                 MinSpanningNetwork.class, NetworkBlock.class, NetworkEmbedder.class, ViewerBlock.NetworkViewerBlock.class)));
         controller.getMinSpanningNetworkMenuItem().disableProperty().bind(disableDistancesMethods);
 
-        controller.getSplitsNetworkViewMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, SplitsBlock.class,
+        controller.getSplitsNetworkViewMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, SplitsBlock.class,
                 SplitsNetworkAlgorithm.class, ViewerBlock.SplitsNetworkViewerBlock.class)));
         controller.getSplitsNetworkViewMenuItem().disableProperty().bind(disableSplitsMethods);
 
-        controller.getHaplotypeNetworkViewMenuItem().setOnAction((e) -> mainWindow.show(workflow.findOrCreatePath(viewDataNode, NetworkBlock.class,
+        controller.getHaplotypeNetworkViewMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, NetworkBlock.class,
                 NetworkEmbedder.class, ViewerBlock.NetworkViewerBlock.class)));
         controller.getHaplotypeNetworkViewMenuItem().disableProperty().bind(disableNetworkMethods);
     }

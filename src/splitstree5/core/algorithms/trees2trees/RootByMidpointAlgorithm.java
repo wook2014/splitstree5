@@ -50,6 +50,10 @@ public class RootByMidpointAlgorithm extends Algorithm<TreesBlock, TreesBlock> i
             for (PhyloTree orig : parent.getTrees()) {
                 final PhyloTree tree = new PhyloTree();
                 tree.copy(orig);
+                if (tree.getRoot() == null) {
+                    tree.setRoot(tree.getFirstNode());
+                    tree.redirectEdgesAwayFromRoot();
+                }
                 RerootingUtils.rerootByMidpoint(tree);
                 child.getTrees().add(tree);
             }

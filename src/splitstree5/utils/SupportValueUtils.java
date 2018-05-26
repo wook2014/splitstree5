@@ -54,7 +54,7 @@ public class SupportValueUtils {
      * @param tree
      * @return edge labels
      */
-    public static EdgeArray<String> setEgeLabelsFromInternalNodeLabels(PhyloTree tree) {
+    public static EdgeArray<String> setEdgeLabelsFromInternalNodeLabels(PhyloTree tree) {
         final EdgeArray<String> edgeLabels = new EdgeArray<>(tree);
         for (Node v = tree.getFirstNode(); v != null; v = v.getNext()) {
             if (v.getInDegree() == 1 && v.getOutDegree() > 0) {

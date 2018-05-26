@@ -900,7 +900,7 @@ public class PhyloTree extends PhyloGraph {
      */
     public void setRoot(Edge e, double weightToSource, double weightToTarget, EdgeArray<String> edgeLabels) {
         final Node root = getRoot();
-        if (root != null && root.getDegree() == 2 && (getTaxa(root) == null || hasTaxa(root))) {
+        if (root != null && root.getDegree() == 2 && !hasTaxa(root)) {
             if (root == e.getSource()) {
                 Edge f = (root.getFirstAdjacentEdge() != e ? root.getFirstAdjacentEdge() : root.getLastAdjacentEdge());
                 setWeight(e, weightToSource);
@@ -925,11 +925,9 @@ public class PhyloTree extends PhyloGraph {
             edgeLabels.put(vu, edgeLabels.getValue(e));
             edgeLabels.put(uw, edgeLabels.getValue(e));
         }
-
         deleteEdge(e);
         setRoot(u);
     }
-
 
     public void setSpecial(Edge e, boolean special) {
         specialEdges.set(e.getId(), special);
@@ -977,7 +975,6 @@ public class PhyloTree extends PhyloGraph {
         out.println(st.toString());
     }
 
-
     /**
      * was last read tree multi-labeled? If so, the parser replaces instances of the same label
      * by label.1, label.2 ...
@@ -991,7 +988,6 @@ public class PhyloTree extends PhyloGraph {
     private void setInputHasMultiLabels(boolean inputHasMultiLabels) {
         this.inputHasMultiLabels = inputHasMultiLabels;
     }
-
 
     /**
      * returns true if string contains a bootstrap value
@@ -1066,7 +1062,6 @@ public class PhyloTree extends PhyloGraph {
      */
     public void redirectEdgesAwayFromRoot() {
         redirectEdgesAwayFromRootRec(getRoot(), null);
-
     }
 
     /**
@@ -1096,7 +1091,7 @@ public class PhyloTree extends PhyloGraph {
             return null;
         else {
             label = getLabel(v).trim();
-            label = label.replaceAll("[ \\[\\]\\(\\),:]+", "_");
+            label = label.replaceAll("[ \\[\\](),:]+", "_");
             if (label.length() > 0)
                 return label;
             else

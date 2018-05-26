@@ -31,17 +31,18 @@ import jloda.fx.ASelectionModel;
 import jloda.util.Basic;
 import jloda.util.Pair;
 import jloda.util.Single;
+import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.algorithms.filters.CharactersFilter;
-import splitstree5.core.algorithms.filters.IFilter;
-import splitstree5.core.algorithms.filters.SplitsFilter;
-import splitstree5.core.algorithms.filters.TreesFilter;
-import splitstree5.core.algorithms.trees2trees.RootByMidpointAlgorithm;
-import splitstree5.core.algorithms.trees2trees.RootByOutGroupAlgorithm;
 import splitstree5.core.datablocks.*;
 import splitstree5.core.topfilters.*;
+import splitstree5.io.nexus.AlgorithmNexusInput;
+import splitstree5.io.nexus.AlgorithmNexusOutput;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.*;
 
 /**
@@ -511,7 +512,16 @@ public class Workflow {
                 if (nodesToDuplicate.contains(connector)) {
                     final DataNode childCopy = createDataNode(connector.getChild().getDataBlock().newInstance());
                     newNodes.add(childCopy);
-                    final Connector connectorCopy = createConnector(parentCopy, childCopy, connector.getAlgorithm().newInstance());
+                    Algorithm algorithm;
+                    try { // try to copy because then we maintain all settings
+                        final Writer w = new StringWriter();
+                        (new AlgorithmNexusOutput()).write(w, connector.getAlgorithm());
+                        NexusStreamParser np = new NexusStreamParser(new StringReader(w.toString()));
+                        algorithm = (new AlgorithmNexusInput()).parse(np);
+                    } catch (IOException ex) { // copy failed, just make a new instance
+                        algorithm = connector.getAlgorithm().newInstance();
+                    }
+                    final Connector connectorCopy = createConnector(parentCopy, childCopy, algorithm);
                     newNodes.add(connectorCopy);
                     duplicateRec(connector.getChild(), childCopy, nodesToDuplicate, newNodes);
                 } else {
@@ -679,74 +689,37 @@ public class Workflow {
     }
 
     /**
-     * creates a short chain of nodes leading to a view. If the type of view is already present, returns the node
+     * finds the lowest ancestor whose datablock is of the given class. If no such ancestor found, but a single node of the given class exists, then returns that
      *
-     * @param currentDataNode
-     * @param desiredParentClass
-     * @param algorithm1class
-     * @param data1class
-     * @return connector and view node
-     * @throws Exception
+     * @param dataNode
+     * @param clazz
+     * @return lowest ancestor whose datablock is of the given class, or any datablock of the given class, if only one such exists, or null
      */
-    public Pair<Connector, DataNode> findOrCreatePath(DataNode currentDataNode, Class<? extends DataBlock> desiredParentClass,
-                                                      Class<? extends Algorithm> algorithm1class, Class<? extends DataBlock> data1class) {
-        return findOrCreatePath(currentDataNode, desiredParentClass, new Pair<>(algorithm1class, data1class));
-    }
+    public <T extends DataBlock> Pair<DataNode<T>, Connector<T, ? extends DataBlock>> getAncestorAndDescendantForClass(DataNode dataNode, Class<T> clazz) {
+        Connector<T, ? extends DataBlock> connector = null;
 
-    /**
-     * creates a short chain of nodes leading to a view. If the type of view is already present, returns the node
-     *
-     * @param currentDataNode
-     * @param desiredParentClass
-     * @param algorithm1class
-     * @param data1class
-     * @param algorithm2class    can be null
-     * @param data2class         can be null if algorithm2class is also null
-     * @return connector and view node
-     */
-    public Pair<Connector, DataNode> findOrCreatePath(DataNode currentDataNode, Class<? extends DataBlock> desiredParentClass,
-                                                      Class<? extends Algorithm> algorithm1class, Class<? extends DataBlock> data1class,
-                                                      Class<? extends Algorithm> algorithm2class, Class<? extends DataBlock> data2class) {
-        return findOrCreatePath(currentDataNode, desiredParentClass, new Pair<>(algorithm1class, data1class), new Pair<>(algorithm2class, data2class));
-    }
-
-    /**
-     * creates a short chain of nodes leading to a view. If the type of view is already present, returns the node
-     *
-     * @param currentDataNode
-     * @param desiredParentClass
-     * @param path
-     * @return connector and view node
-     */
-    public Pair<Connector, DataNode> findOrCreatePath(DataNode currentDataNode, Class<? extends DataBlock> desiredParentClass, Pair<Class<? extends Algorithm>, Class<? extends DataBlock>>... path) {
-        final DataNode parent = getAncestorForClass(currentDataNode, desiredParentClass);
-        if (parent != null) {
-            try {
-                Pair<Connector, DataNode> result = matchPath(parent, path);
-                if (result != null)
-                    return result;
-                else {
-                    Connector firstConnector = null;
-                    DataNode lastDataNode = parent;
-
-                    for (Pair<Class<? extends Algorithm>, Class<? extends DataBlock>> pair : path) {
-                        final DataNode dataNode = createDataNode(pair.getSecond().newInstance());
-                        final Connector connector = createConnector(lastDataNode, dataNode, (Algorithm) pair.getFirst().newInstance());
-                        if (firstConnector == null)
-                            firstConnector = connector;
-                        lastDataNode = dataNode;
-                    }
-                    if (firstConnector != null) {
-                        firstConnector.forceRecompute();
-                        return new Pair<>(firstConnector, lastDataNode);
-                    }
-                }
-            } catch (Exception ex) {
-                Basic.caught(ex);
+        while (dataNode != null) {
+            if (dataNode.getDataBlock().getClass().isAssignableFrom(clazz))
+                break;
+            if (dataNode.getParent() != null) {
+                connector = dataNode.getParent();
+                dataNode = dataNode.getParent().getParent();
+            } else {
+                connector = null;
+                dataNode = null;
             }
         }
-        return null;
-
+        if (dataNode == null) {
+            for (DataNode aNode : dataNodes) {
+                if (aNode != getTopDataNode() && aNode != getTopTaxaNode() && aNode != getTopTraitsNode() && aNode.getDataBlock().getClass().isAssignableFrom(clazz)) {
+                    if (dataNode == null)
+                        dataNode = aNode;
+                    else
+                        return null; // multiple such nodes, can't decide, return null
+                }
+            }
+        }
+        return new Pair<DataNode<T>, Connector<T, ? extends DataBlock>>(dataNode, connector);
     }
 
     /**
@@ -756,7 +729,7 @@ public class Workflow {
      * @param path
      * @return first connector and last data node, if matched, else null
      */
-    private Pair<Connector, DataNode> matchPath(DataNode dataNode, Pair<Class<? extends Algorithm>, Class<? extends DataBlock>>... path) {
+    public Pair<Connector, DataNode> matchPath(DataNode dataNode, Pair<Class<? extends Algorithm>, Class<? extends DataBlock>>... path) {
         final Pair<Connector, DataNode> pair = new Pair<>();
         final Single<Connector> mustForceRecompute = new Single<>(null);
         if (matchPathRecursively(dataNode, path, 0, pair, mustForceRecompute)) {
@@ -807,97 +780,6 @@ public class Workflow {
         return false; // didn't match, return false
     }
 
-
-    /**
-     * find the filter for this node, if it exists, otherwise insert one and return it
-     *
-     * @param dataNode
-     * @return filter or null
-     */
-    public Connector findOrInsertFilter(DataNode dataNode) {
-        if (dataNode != null && dataNode.getDataBlock() != null && dataNode.getParent() != null && dataNode.getParent().getAlgorithm() != null) {
-            final DataBlock dataBlock = dataNode.getDataBlock();
-            final Connector inConnector = dataNode.getParent();
-
-            if (dataBlock instanceof CharactersBlock) {
-                if (inConnector.getAlgorithm() instanceof CharactersFilter)
-                    return inConnector;
-                else {
-                    final DataNode<CharactersBlock> newDataNode = createDataNode(new CharactersBlock());
-                    ArrayList<Connector<CharactersBlock, ? extends DataBlock>> connectors = new ArrayList<>(dataNode.getChildren());
-                    dataNode.getChildren().clear();
-                    for (Connector<CharactersBlock, ? extends DataBlock> connector : connectors) {
-                        final DataNode child = connector.getChild();
-                        final Algorithm algorithm = connector.getAlgorithm();
-                        delete(connector, true, false);
-                        createConnector(newDataNode, child, algorithm);
-                    }
-                    return createConnector(dataNode, newDataNode, new CharactersFilter());
-                }
-            } else if (dataBlock instanceof SplitsBlock) {
-                if (inConnector.getAlgorithm() instanceof SplitsFilter)
-                    return inConnector;
-                else {
-                    final DataNode<SplitsBlock> newDataNode = createDataNode(new SplitsBlock());
-                    ArrayList<Connector<SplitsBlock, ? extends DataBlock>> connectors = new ArrayList<>(dataNode.getChildren());
-                    dataNode.getChildren().clear();
-                    for (Connector<SplitsBlock, ? extends DataBlock> connector : connectors) {
-                        final DataNode child = connector.getChild();
-                        final Algorithm algorithm = connector.getAlgorithm();
-                        delete(connector, true, false);
-                        createConnector(newDataNode, child, algorithm);
-                    }
-                    return createConnector(dataNode, newDataNode, new SplitsFilter());
-                }
-            } else if (dataBlock instanceof TreesBlock) {
-                if (inConnector.getAlgorithm() instanceof TreesFilter)
-                    return inConnector;
-                else {
-                    final DataNode<TreesBlock> newDataNode = createDataNode(new TreesBlock());
-                    ArrayList<Connector<TreesBlock, ? extends DataBlock>> connectors = new ArrayList<>(dataNode.getChildren());
-                    dataNode.getChildren().clear();
-                    for (Connector<TreesBlock, ? extends DataBlock> connector : connectors) {
-                        final DataNode child = connector.getChild();
-                        final Algorithm algorithm = connector.getAlgorithm();
-                        delete(connector, true, false);
-                        createConnector(newDataNode, child, algorithm);
-                    }
-                    return createConnector(dataNode, newDataNode, new TreesFilter());
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * finds tree trees block above this node and then finds or add tree-rooting algorithm
-     *
-     * @param dataNode
-     * @return tree rooting algorithm node or null
-     */
-    public Pair<Connector, DataNode> findOrInsertTreeRootAlgorithm(DataNode dataNode, Algorithm<TreesBlock, TreesBlock> algorithm) {
-        final DataNode<TreesBlock> treesNode = getAncestorForClass(dataNode, TreesBlock.class);
-
-        if (treesNode != null) {
-            for (Connector<TreesBlock, ? extends DataBlock> child : treesNode.getChildren()) {
-                if (child.getAlgorithm() instanceof RootByOutGroupAlgorithm || child.getAlgorithm() instanceof RootByMidpointAlgorithm) {
-                    child.setAlgorithm((Algorithm) algorithm);
-                    return new Pair<>(child, child.getChild());
-                }
-            }
-            for (Connector<TreesBlock, ? extends DataBlock> child : treesNode.getChildren()) {
-                if (true || child.getAlgorithm() instanceof IFilter) {
-                    final DataNode<TreesBlock> treeNode = document.getWorkflow().createDataNode(new TreesBlock());
-                    final Connector<TreesBlock, TreesBlock> rerootConnector = document.getWorkflow().createConnector(treesNode, treeNode, algorithm);
-                    child.changeParent(treeNode);
-                    return new Pair<>(rerootConnector, rerootConnector.getChild());
-                }
-            }
-        }
-        return null;
-    }
-
-
     /**
      * can data of this type be loaded into the current workflow?
      *
@@ -918,5 +800,32 @@ public class Workflow {
     public void loadData(TaxaBlock taxaBlock, DataBlock dataBlock) {
         getTopTaxaNode().getDataBlock().copy(taxaBlock);
         getTopDataNode().getDataBlock().copy(taxaBlock, dataBlock);
+    }
+
+    /**
+     * select all nodes  below
+     *
+     * @param nodes
+     * @param strictlyBelow don't select the given nodes, only ones below
+     * @return
+     */
+    public boolean selectAllBelow(Collection<WorkflowNode> nodes, boolean strictlyBelow) {
+        final Set<WorkflowNode> nodesToSelect = new HashSet<>();
+
+        if (!strictlyBelow)
+            nodesToSelect.addAll(nodes);
+
+        final Stack<WorkflowNode> stack = new Stack<>();
+        stack.addAll(nodes);
+        while (stack.size() > 0) {
+            final WorkflowNode v = stack.pop();
+            for (WorkflowNode w : v.getChildren()) {
+                stack.push(w);
+                nodesToSelect.add(w);
+            }
+        }
+        nodesToSelect.removeAll(getNodeSelectionModel().getSelectedItems());
+        getNodeSelectionModel().selectItems(nodesToSelect);
+        return nodesToSelect.size() > 0;
     }
 }

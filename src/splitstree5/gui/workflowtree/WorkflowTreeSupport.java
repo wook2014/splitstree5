@@ -40,6 +40,8 @@ public class WorkflowTreeSupport {
         treeView.setOnMouseEntered((e) -> treeView.requestFocus());
         treeView.setOnMouseExited((e) -> document.getMainWindow().getMainWindowController().getMainTabPane().requestFocus());
 
+        treeView.focusedProperty().addListener((c, o, n) -> System.err.println("Focus: " + n));
+
         workflow.getTopologyChanged().addListener((c, o, n) -> {
             Platform.runLater(() -> {
                 treeView.getRoot().getChildren().clear();

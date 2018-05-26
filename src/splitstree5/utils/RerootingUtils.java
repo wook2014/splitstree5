@@ -19,6 +19,7 @@
 
 package splitstree5.utils;
 
+import jloda.fx.NotificationManager;
 import jloda.graph.*;
 import jloda.phylo.PhyloTree;
 import jloda.util.Pair;
@@ -45,7 +46,7 @@ public class RerootingUtils {
 
         final EdgeArray<String> edgeLabels;
         if (tree.isInternalNodeLabelsAreEdgeLabels())
-            edgeLabels = SupportValueUtils.setEgeLabelsFromInternalNodeLabels(tree);
+            edgeLabels = SupportValueUtils.setEdgeLabelsFromInternalNodeLabels(tree);
         else
             edgeLabels = null;
 
@@ -92,7 +93,7 @@ public class RerootingUtils {
 
         final EdgeArray<String> edgeLabels;
         if (tree.isInternalNodeLabelsAreEdgeLabels())
-            edgeLabels = SupportValueUtils.setEgeLabelsFromInternalNodeLabels(tree);
+            edgeLabels = SupportValueUtils.setEdgeLabelsFromInternalNodeLabels(tree);
         else
             edgeLabels = null;
 
@@ -138,8 +139,10 @@ public class RerootingUtils {
             }
         }
 
-        if (totalOutgroupTaxa == 0 || totalIngroupNodes == 0)
+        if (totalOutgroupTaxa == 0 || totalIngroupNodes == 0) {
+            NotificationManager.showError("Internal error: no taxa found in rerootByOutGroup()");
             return;
+        }
 
         EdgeIntegerArray edge2OutgroupBelow = new EdgeIntegerArray(tree); // how many outgroup taxa below this edge?
         EdgeIntegerArray edge2NodesBelow = new EdgeIntegerArray(tree);  // how many nodes below this edge?

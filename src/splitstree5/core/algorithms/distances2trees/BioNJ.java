@@ -58,24 +58,25 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
 
         final PhyloTree tree = new PhyloTree();
         final HashMap<String, Node> taxaHashMap = new HashMap<>();
-        int nbNtax = distances.getNtax();
+        final int nTax = distances.getNtax();
 
-        StringBuffer tax[] = new StringBuffer[nbNtax + 1];
+        final StringBuffer tax[] = new StringBuffer[nTax + 1];
 
-        for (int i = 1; i <= nbNtax; i++) {
-            tax[i] = new StringBuffer();
-            tax[i].append(String.valueOf(i));
+        for (int t = 1; t <= nTax; t++) {
+            tax[t] = new StringBuffer();
+            tax[t].append(String.valueOf(t));
             final Node v = tree.newNode(); // create newNode for each Taxon
-            tree.setLabel(v, taxaBlock.getLabel(i));
-            taxaHashMap.put(tax[i].toString(), v);
+            tree.setLabel(v, taxaBlock.getLabel(t));
+            taxaHashMap.put(tax[t].toString(), v);
+            tree.addTaxon(v, t);
         }
 
-        final double h[][] = new double[nbNtax + 1][nbNtax + 1];// distance matrix
+        final double h[][] = new double[nTax + 1][nTax + 1];// distance matrix
 
         final BitSet active = new BitSet();
 
-        double var[][] = new double[nbNtax + 1][nbNtax + 1]; // variances matrix. This really should be upper diag of h.
-        double b[] = new double[nbNtax + 1];// the b variable in Neighbor Joining
+        double var[][] = new double[nTax + 1][nTax + 1]; // variances matrix. This really should be upper diag of h.
+        double b[] = new double[nTax + 1];// the b variable in Neighbor Joining
         int i_min = 0, j_min = 0; // needed for manipulation of h and b
         double temp, dist_e, dist_f;//new edge weights
         StringBuffer tax_old_i; //labels of taxa that are being merged
@@ -85,11 +86,11 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
         Edge e, f; //from tax_old to new=merged edge
         double lambda; //lambda value in BioNJ
 
-        active.set(1, nbNtax + 1);
+        active.set(1, nTax + 1);
 
-        for (int i = 1; i <= nbNtax; i++) {
+        for (int i = 1; i <= nTax; i++) {
             h[i][i] = 0.0;
-            for (int j = 1; j <= nbNtax; j++) { //fill up the distance matix h
+            for (int j = 1; j <= nTax; j++) { //fill up the distance matix h
                 if (i < j)
                     h[i][j] = distances.get(i, j);//
                 else
@@ -99,20 +100,20 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
         }
 
         // calculate b:
-        for (int i = 1; i <= nbNtax; i++) {
-            for (int j = 1; j <= nbNtax; j++) {
+        for (int i = 1; i <= nTax; i++) {
+            for (int j = 1; j <= nTax; j++) {
                 b[i] += h[i][j];
             }
         }
         // recall: int i_min=0, j_min=0;
 
         // actual for (finding all nearest Neighbors)
-        for (int actual = nbNtax; actual > 3; actual--) {
+        for (int actual = nTax; actual > 3; actual--) {
             // find: min D (h, b, b)
             double d_min = Double.MAX_VALUE, d_ij;
-            for (int i = 1; i < nbNtax; i++) {
+            for (int i = 1; i < nTax; i++) {
                 if (!active.get(i)) continue;
-                for (int j = i + 1; j <= nbNtax; j++) {
+                for (int j = i + 1; j <= nTax; j++) {
                     if (!active.get(j))
                         continue;
                     d_ij = ((double) actual - 2.0) * h[i][j] - b[i] - b[j];
@@ -154,7 +155,7 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
             if ((var_min == 0.0) || (actual == 3))
                 lambda = 0.5;
             else {
-                for (int i = 1; i <= nbNtax; i++) {
+                for (int i = 1; i <= nTax; i++) {
                     if ((i_min != i) && (j_min != i) && (h[0][i] != 0.0))
                         lambda += var[i_min][i] - var[j_min][i];
                 }
@@ -166,7 +167,7 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
             }
 
 
-            for (int i = 1; i <= nbNtax; i++) {
+            for (int i = 1; i <= nTax; i++) {
                 if ((i == i_min) || (!active.get(i)))
                     continue;
                 //temp=(h[i][i_min] + h[i][j_min] - h_min)/2; NJ                                        //temp=(h[i][i_min] + h[i][j_min] - dist_e - dist_f)/2; NJ
@@ -182,7 +183,7 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
                 var[i][i_min] = var[i_min][i];
             }
 
-            for (int i = 1; i <= nbNtax; i++) {
+            for (int i = 1; i <= nTax; i++) {
                 h[i_min][i] = h[i][i_min];
                 h[i][j_min] = 0.0;
                 h[j_min][i] = 0.0;
@@ -241,7 +242,6 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
         tree.setWeight(e, 0.5 * (h[i_min][k_min] + h[j_min][k_min] - h[i_min][j_min]));
         return tree;
     }
-
 
     @Override
     public boolean isApplicable(TaxaBlock taxaBlock, DistancesBlock parent) {

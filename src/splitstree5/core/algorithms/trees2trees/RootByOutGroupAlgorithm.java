@@ -63,17 +63,24 @@ public class RootByOutGroupAlgorithm extends Algorithm<TreesBlock, TreesBlock> i
             child.getTrees().clear();
 
             for (PhyloTree orig : parent.getTrees()) {
-                final PhyloTree tree = new PhyloTree();
-                tree.copy(orig);
-                RerootingUtils.rerootByOutGroup(tree, outGroupTaxonSet);
-                child.getTrees().add(tree);
+                if (orig.getNumberOfNodes() > 0) {
+                    final PhyloTree tree = new PhyloTree();
+                    tree.copy(orig);
+                    if (tree.getRoot() == null) {
+                        tree.setRoot(tree.getFirstNode());
+                        tree.redirectEdgesAwayFromRoot();
+                    }
+                    RerootingUtils.rerootByOutGroup(tree, outGroupTaxonSet);
+                    child.getTrees().add(tree);
+                }
             }
+            child.setRooted(true);
         }
 
         if (inGroupTaxa.size() == 0 || outGroupTaxa.size() == 0)
             setShortDescription(Basic.fromCamelCase(Basic.getShortName(this.getClass())));
         else
-            setShortDescription("using " + outGroupTaxa.size() + " of " + (taxa.getNtax() + " taxa to root trees"));
+            setShortDescription("using " + outGroupTaxa.size() + " of " + (taxa.getNtax() + " for tree rooting"));
 
     }
 

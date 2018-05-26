@@ -1,3 +1,22 @@
+/*
+ *  Copyright (C) 2018 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package splitstree5.core.algorithms.distances2trees;
 
 import jloda.graph.Edge;
@@ -42,13 +61,15 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> implements IFro
         final int[] sizes = new int[ntax + 1];
         double[] heights = new double[ntax + 1];
 
-        for (int i = 1; i <= ntax; i++) {
-            subtrees[i] = tree.newNode();
-            tree.setLabel(subtrees[i], taxaBlock.getLabel(i));
-            sizes[i] = 1;
+        for (int t = 1; t <= ntax; t++) {
+            final Node v = tree.newNode();
+            subtrees[t] = v;
+            tree.setLabel(v, taxaBlock.getLabel(t));
+            tree.addTaxon(v, t);
+            sizes[t] = 1;
         }
 
-        double d[][] = new double[ntax + 1][ntax + 1];// distance matix
+        final double d[][] = new double[ntax + 1][ntax + 1];// distance matix
 
         //Initialise d
         //Compute the closest values for each taxa.

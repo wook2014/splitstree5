@@ -194,12 +194,13 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> imple
     }
 
     private static void initialize(int nTax, TaxaBlock taxa, PhyloTree tree, HashMap<String, Node> taxa2nodes, StringBuilder[] labels) {
-        for (int i = 1; i <= nTax; i++) {
-            labels[i] = new StringBuilder();
-            labels[i].append(taxa.getLabel(i));
+        for (int t = 1; t <= nTax; t++) {
+            labels[t] = new StringBuilder();
+            labels[t].append(taxa.getLabel(t));
             final Node v = tree.newNode(); // create newNode for each Taxon
-            tree.setLabel(v, labels[i].toString());
-            taxa2nodes.put(labels[i].toString(), v);
+            tree.setLabel(v, labels[t].toString());
+            tree.addTaxon(v, t);
+            taxa2nodes.put(labels[t].toString(), v);
         }
     }
 

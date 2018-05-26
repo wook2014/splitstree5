@@ -40,6 +40,8 @@ import splitstree5.core.workflow.UpdateState;
 import splitstree5.core.workflow.WorkflowNode;
 import splitstree5.dialogs.exporter.ExportDialog;
 
+import java.util.Collections;
+
 
 /**
  * a workflow tree node
@@ -125,13 +127,24 @@ public class WorkflowTreeItem extends TreeItem<String> {
                     showView();
                 });
                 show.disableProperty().bind(disable);
-                MenuItem export = new MenuItem("Export...");
+                final MenuItem export = new MenuItem("Export...");
                 export.setOnAction((x) -> {
                     if (workflowNode instanceof DataNode)
                         ExportDialog.show(document.getMainWindow(), document.getWorkflow().getWorkingTaxaBlock(), ((DataNode) workflowNode).getDataBlock());
                 });
                 export.setDisable(!(workflowNode instanceof DataNode));
-                label.setContextMenu(new ContextMenu(show, new SeparatorMenuItem(), export));
+
+                final MenuItem duplicate = new MenuItem("Duplicate");
+                duplicate.setOnAction((x) -> {
+                    if (workflowNode instanceof Connector) {
+                        document.getWorkflow().selectAllBelow(Collections.singletonList(workflowNode), false);
+                        document.getMainWindow().getWorkflowTab().callDuplicateCommand();
+                    }
+                });
+                duplicate.setDisable(!(workflowNode instanceof Connector));
+
+
+                label.setContextMenu(new ContextMenu(show, new SeparatorMenuItem(), export, new SeparatorMenuItem(), duplicate));
             }
             label.setOnMouseClicked((e) -> {
                 if (e.getClickCount() == 2) {
@@ -165,9 +178,5 @@ public class WorkflowTreeItem extends TreeItem<String> {
         else {
             document.getMainWindow().showAlgorithmView((Connector) workflowNode);
         }
-    }
-
-    public WorkflowNode getWorkflowNode() {
-        return workflowNode;
     }
 }
