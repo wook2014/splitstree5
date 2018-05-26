@@ -1,0 +1,148 @@
+#NEXUS
+Begin Data;
+    Dimensions ntax=7 nchar=56;
+    Format datatype=DNA missing=N gap=-;
+    Matrix
+seq_1	ATATACGGGGTTA---TTAGA----AAAATGTGTGTGTGTTTTTTTTTTCATGTGG
+seq_2	ATATAC--GGATA---TTACA----AGAATCTATGTCTGCTTTCTTTTTCATGTGG
+seq_3	ATATACGGGGATA---TTATA----AGAATGTGTGTGTGTTTTTTTTTTCATGTGG
+seq_4	ATATACGGGGATA---GTAGT----AAAATGTGTGTGTGTTTTTTTTTTCATGTGA
+seq_5	ATATACGGGGATA---GTAGG----AAAATGTGTGTGTGTTTTTTTTTTCATGTGC
+seq_6	ATATACGGGGATA---GTAGC----AAAATGTGTGTGTGTTTTTTTTTTCATGTGT
+seq_7	ATATACGGGGATA---GTAGA----AAAATGTGTGTGTGTTTTTTTTTTCATGTGA
+;
+End;
+
+Begin Traits;
+Dimensions NTraits=5;
+Format labels=yes missing=? separator=Comma;
+TraitLatitude 53 43.6811 5.4 -25.61 -0;
+TraitLongitude 16.75 87.3311 26.5 134.355 -76;
+TraitLabels Europe Asia Africa Australia America;
+Matrix
+seq_1 0,0,0,3,3
+seq_2 10,5,0,6,0
+seq_3 0,0,0,3,5
+seq_4 0,0,0,4,2
+seq_5 4,0,10,0,0
+seq_6 0,0,0,7,3
+seq_7 0,0,5,0,0
+;
+End;
+
+Begin GeoTags;
+Dimensions NClusts=5;
+Format labels=yes separator=Comma;
+ClustLatitude 53 43.6811 5.4 -25.61 -0;
+ClustLongitude 16.75 87.3311 26.5 134.355 -76;
+ClustLabels Europe Asia Africa Australia America;
+Matrix
+seq_1	-28.1279,133.928,3,4
+seq_1	1.90619,-100.675,3,5
+seq_2	43.4068,40.4459,10,1
+seq_2	36.0291,68.1753,5,2
+seq_2	-21.8526,120.607,6,4
+seq_3	-9.20315,156.496,3,4
+seq_3	2.76142,-95.3738,5,5
+seq_4	-34.5249,156.98,4,4
+seq_4	6.47997,-126.311,2,5
+seq_5	48.3622,-10.6803,4,1
+seq_5	20.9012,41.0061,10,3
+seq_6	-25.3125,132.07,7,4
+seq_6	-17.542,-81.8875,3,5
+seq_7	12.3725,32.996,5,3
+;
+End;
+
+Begin Trees;
+tree POPART_1 = (seq_1,((seq_2,seq_3),((seq_4,seq_6,seq_7),seq_5)));
+tree POPART_2 = (seq_1,((seq_2,seq_3),(((seq_4,seq_7),seq_6),seq_5)));
+tree POPART_3 = (seq_1,((seq_2,seq_3),(((seq_4,seq_7),seq_5),seq_6)));
+tree POPART_4 = (seq_1,((seq_2,seq_3),(((seq_4,seq_6),seq_7),seq_5)));
+tree POPART_5 = (seq_1,((seq_2,seq_3),((seq_4,seq_7),(seq_5,seq_6))));
+tree POPART_6 = (seq_1,((seq_2,seq_3),((seq_4,(seq_5,seq_6)),seq_7)));
+tree POPART_7 = (seq_1,((seq_2,seq_3),(seq_4,(seq_5,seq_6),seq_7)));
+tree POPART_8 = (seq_1,((seq_2,seq_3),((seq_4,seq_5),seq_6,seq_7)));
+tree POPART_9 = (seq_1,((seq_2,seq_3),(seq_4,seq_5,seq_6,seq_7)));
+tree POPART_10 = (seq_1,((seq_2,seq_3),((seq_4,seq_6),seq_5,seq_7)));
+tree POPART_11 = (seq_1,((seq_2,seq_3),(((seq_4,seq_6),seq_5),seq_7)));
+tree POPART_12 = (seq_1,((seq_2,seq_3),((seq_4,seq_5,seq_7),seq_6)));
+tree POPART_13 = (seq_1,((seq_2,seq_3),(((seq_4,seq_5),seq_7),seq_6)));
+tree POPART_14 = (seq_1,((seq_2,seq_3),(((seq_4,seq_5),seq_6),seq_7)));
+End;
+
+Begin Network;
+Dimensions ntax=7 nvertices=12 nedges=15 plotDim=0,0,833.293,507.593;
+Format Font=baskerville,10,-1,5,50,0,0,0,0,0 LegendFont=baskerville,10,-1,5,50,0,0,0,0,0 VColour=#000000ff EColour=#000000ff BGColour=#00000000 VSize=15 EView=Dashes LPos=721.293,303.159 LColours=#ffffffff,#ccccccff,#000000ff,#f9f9f9ff,#1a1a1aff,#f2f2f2ff,#b3b3b3ff,#333333ff,#e6e6e6ff,#666666ff;
+Translate
+1 seq_1,
+2 seq_2,
+3 seq_3,
+4 seq_4,
+5 seq_5,
+6 seq_6,
+7 seq_7,
+;
+Vertices
+1 245.138 383.721,
+2 638.554 371.267,
+3 427.852 423.854,
+4 125.773 198.989,
+5 15 94.7128,
+6 217.58 31.6423,
+7 200.282 201.821,
+8 113.032 137.963,
+9 176.141 123.393,
+10 292.479 309.644,
+11 466.524 358.525,
+12 383.145 348.133,
+;
+VLabels
+1 211.138 383.721,
+2 790.554 3.267,
+3 393.852 423.854,
+4 91.7733 198.989,
+5 0 94.7128,
+6 183.58 31.6423,
+7 166.282 201.821,
+8 113.532 138.963,
+9 176.641 124.393,
+10 292.979 310.644,
+11 467.024 359.525,
+12 383.645 349.133,
+;
+Edges
+1 6 3 1,
+2 7 3 1,
+3 7 4 1,
+4 7 6 1,
+5 8 3 1,
+6 8 5 1,
+7 8 6 1,
+8 8 7 1,
+9 9 0 1,
+10 10 2 1,
+11 11 2 1,
+12 11 9 1,
+13 11 10 1,
+14 9 6 2,
+15 10 1 5,
+;
+ELABELS
+1 'Label1' ll=11 f='Dialog-PLAIN-22',
+2 'Label2' ll=11,
+3 'Label3' ll=11,
+4 'Label4' ll=11,
+5 'Label5' ll=11,
+6 'Label6' ll=11,
+7 'Label7' ll=11,
+8 'Label8' ll=11,
+9 'Label9' ll=11,
+10 'Label10' ll=11,
+11 'Label11' ll=11,
+12 'Label12' ll=11,
+13 'Label13' ll=11,
+14 'Label14' ll=11,
+15 'Label15' ll=11,
+;
+End;

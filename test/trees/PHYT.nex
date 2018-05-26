@@ -1,0 +1,51 @@
+#nexus
+begin taxa;
+dimensions ntax=40;
+taxlabels
+brachypodi
+pharus
+eremitis
+nardus
+phragmites
+anomochloa
+thysanolae
+buergersio
+oryza
+joinvillea
+avena
+melicaa
+chusquea
+chasmanthi
+nassella
+molinia
+sporobolus
+triticum
+streptogyn
+zea
+eragrostis
+pariana
+danthoniop
+aristida
+olyra
+anisopogon
+danthonia
+lithachne
+pennisetum
+lygeum
+flagellari
+panicum
+glycerias
+streptocha
+bromus
+ehrharta
+miscanthus
+puelia
+diarrhena
+pseudosasa
+;
+end;
+
+begin trees;
+tree tree1=
+(joinvillea:0.092372,((streptocha:0.0481,anomochloa:0.067208):0.018469,((((((((zea:0.027399,miscanthus:0.014674):0.026083,(pennisetum:0.038431,panicum:0.037994):0.022203):0.010204,danthoniop:0.048217):0.021536,((chasmanthi:0.038593,thysanolae:0.036982):0.02146,((sporobolus:0.055857,eragrostis:0.033726):0.024669,(molinia:0.045482,phragmites:0.030747):0.008308):0.005692):0.004644):0.009968,(danthonia:0.05355,aristida:0.055897):0.01682):0.030633,(streptogyn:0.036131,(((chusquea:0.032967,pseudosasa:0.030455):0.00332,((olyra:0.018154,lithachne:0.043539):0.030858,(buergersio:0.021936,(pariana:0.023696,eremitis:0.015561):0.042561):0.004723):0.01098):0.014606,(((anisopogon:0.0475,(((((triticum:0.014139,bromus:0.017309):0.014211,avena:0.049953):0.007817,diarrhena:0.031491):0.008132,brachypodi:0.038008):0.009165,(nassella:0.031823,(glycerias:0.043246,melicaa:0.036965):0.012001):0.004798):0.00251):0.007406,(nardus:0.029612,lygeum:0.029253):0.032935):0.014333,(oryza:0.074197,ehrharta:0.043541):0.023105):0.005809):0.004846):0.012869):0.014319,puelia:0.040431):0.027871,pharus:0.051248):0.012862):0.075544,flagellari:0.201952);
+end;

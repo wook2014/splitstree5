@@ -1,0 +1,104 @@
+#nexus
+
+BEGIN Taxa;
+DIMENSIONS ntax=16;
+TAXLABELS
+[1] 'Aedes_albopictus'
+[2] 'Aedes_aegypti'
+[3] 'Aedes_seatoi'
+[4] 'Aedes_flavopictus'
+[5] 'Aedes_alcasidi'
+[6] 'Aedes_katherinensis'
+[7] 'Aedes_polynesiensis'
+[8] 'Aedes_triseriatus'
+[9] 'Aedes_tropalpus'
+[10] 'Aedes_epactius'
+[11] 'Haemagogus_equinus'
+[12] 'Armigeres_subalbatus'
+[13] 'Culex_pipiens'
+[14] 'Tripteroides_bambusa'
+[15] 'Sabethes_cyaneus'
+[16] 'Anopheles_albimanus'
+;
+END; [Taxa]
+
+BEGIN Network;
+DIMENSIONS ntax=16 nvertices=14 nedges=14;
+DRAW to_scale rotateAbout=6.254911;
+TRANSLATE
+1 'Aedes_polynesiensis',
+2 'Sabethes_cyaneus',
+4 'Culex_pipiens',
+5 'Aedes_aegypti',
+6 'Tripteroides_bambusa',
+7 'Aedes_albopictus' 'Aedes_flavopictus',
+8 'Aedes_triseriatus',
+9 'Aedes_seatoi' 'Aedes_alcasidi' 'Aedes_katherinensis',
+10 'Haemagogus_equinus',
+12 'Armigeres_subalbatus',
+13 'Aedes_tropalpus' 'Aedes_epactius',
+14 'Anopheles_albimanus',
+;
+VERTICES
+1 151.91843 -17.573029 w=4 h=4 bg=255 255 255,
+2 316.77994 101.28519 w=4 h=4 bg=255 255 255,
+3 248.50285 66.87165 w=2 h=2 s=r,
+4 56.460968 -222.09966 w=4 h=4 bg=255 255 255,
+5 34.94027 -87.041405 w=4 h=4 bg=255 255 255,
+6 47.81029 -167.01875 w=4 h=4 bg=255 255 255,
+7 219.4745 -24.767153 w=10 h=10 bg=255 255 255,
+8 -277.6023 -142.50214 w=4 h=4 bg=255 255 255,
+9 268.86844 8.565243 w=14 h=14 bg=255 255 255,
+10 -326.24887 -155.02399 w=4 h=4 bg=255 255 255,
+11 -94.17395 -94.408 w=2 h=2 s=r,
+12 -194.5019 -121.92136 w=4 h=4 bg=255 255 255,
+13 -124.01107 -55.26694 w=10 h=10 bg=255 255 255,
+14 268.14966 141.90071 w=4 h=4 bg=255 255 255,
+;
+VLABELS
+1 'Aedes_polynesiensis' x=-161 y=6 f='Dialog-BOLDITALIC-14',
+2 'Sabethes_cyaneus' x=11 y=13,
+4 'Culex_pipiens' x=-48 y=-18,
+5 'Aedes_aegypti' x=-51 y=27,
+6 'Tripteroides_bambusa' x=-79 y=-18,
+7 'Aedes_albopictus,Aedes_flavopictus' x=-124 y=-27,
+8 'Aedes_triseriatus' x=-137 y=5,
+9 'Aedes_seatoi,Aedes_alcasidi,Aedes_katherinensis' x=11 y=4,
+10 'Haemagogus_equinus' x=-169 y=-4,
+12 'Armigeres_subalbatus' x=-171 y=9,
+13 'Aedes_tropalpus,Aedes_epactius' x=-123 y=40,
+14 'Anopheles_albimanus' x=-75 y=26,
+;
+EDGES
+1 1 3,
+2 1 5,
+3 1 7,
+4 2 3,
+5 3 9,
+6 5 6,
+7 5 11,
+8 7 9,
+9 8 10,
+10 8 12,
+11 11 12,
+12 11 13,
+13 4 6 w=3.0,
+14 3 14 w=7.0,
+;
+ELABELS
+1 '25' ll=11 f='Dialog-PLAIN-22',
+2 '22' ll=11,
+3 '10' ll=11,
+4 '11' ll=11,
+5 '10' ll=11,
+6 '7' ll=11,
+7 '2' ll=11,
+8 '25' ll=11,
+9 '22' ll=11,
+10 '13' ll=11,
+11 '25' ll=11,
+12 '19' ll=11,
+13 '17,23,26' ll=11,
+14 '3,5,9,14,15,21,24' ll=11,
+;
+END; [Network]

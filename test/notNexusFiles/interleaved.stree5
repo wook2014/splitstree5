@@ -1,0 +1,244 @@
+#nexus
+
+BEGIN SPLITSTREE5;
+	DIMENSIONS nDataNodes=9 nAlgorithms=7;
+	PROGRAM version='SplitsTree5 Community Edition (version 5.0.0alpha, built 23 June 2017)';
+	WORKFLOW creationDate='1520850449559'; [Mon Mar 12 11:27:29 CET 2018]
+END; [SPLITSTREE5]
+
+BEGIN TAXA;
+	TITLE InputTaxa;
+	DIMENSIONS ntax=5;
+	TAXLABELS
+		[1] 'Turkey'
+		[2] 'Salmo gair'
+		[3] 'H. Sapiens'
+		[4] 'Chimp'
+		[5] 'Gorilla'
+	;
+END; [TAXA]
+
+BEGIN ALGORITHM;
+	TITLE Algorithm1;
+	LINK TAXA = InputTaxa;
+	ALGORITHM TaxaFilter;
+END; [ALGORITHM]
+
+BEGIN TAXA;
+	TITLE Taxa1;
+	LINK ALGORITHM = Algorithm1;
+	DIMENSIONS ntax=5;
+	TAXLABELS
+		[1] 'Turkey'
+		[2] 'Salmo gair'
+		[3] 'H. Sapiens'
+		[4] 'Chimp'
+		[5] 'Gorilla'
+	;
+END; [TAXA]
+
+BEGIN CHARACTERS;
+	TITLE InputData;
+DIMENSIONS ntax=5 nchar=42;
+FORMAT
+	datatype='DNA' missing=N gap=- symbols="atgc" labels=left transpose=no interleave=yes;
+MATRIX
+Turkey       aagctngggcatttcagggtgagcccgggcaatacagggtat
+'Salmo gair' aagccttggcagtgcagggtgagccgtggccgggcacggtat
+'H. Sapiens' accggttggccgttcagggtacaggttggccgttcagggtaa
+Chimp        aaacccttgccgttacgcttaaaccgaggccgggacactcat
+Gorilla      aaacccttgccggtacgcttaaaccattgccggtacgcttaa
+
+;
+END; [CHARACTERS]
+
+BEGIN ALGORITHM;
+	TITLE Algorithm2;
+	LINK CHARACTERS = InputData;
+	ALGORITHM TopFilter;
+END; [ALGORITHM]
+
+BEGIN CHARACTERS;
+	TITLE Characters1;
+	LINK ALGORITHM = Algorithm2;
+DIMENSIONS ntax=5 nchar=42;
+FORMAT
+	datatype='DNA' missing=n gap=- symbols="atgc" labels=left transpose=no interleave=yes;
+MATRIX
+Turkey       aagctngggcatttcagggtgagcccgggcaatacagggtat
+'Salmo gair' aagccttggcagtgcagggtgagccgtggccgggcacggtat
+'H. Sapiens' accggttggccgttcagggtacaggttggccgttcagggtaa
+Chimp        aaacccttgccgttacgcttaaaccgaggccgggacactcat
+Gorilla      aaacccttgccggtacgcttaaaccattgccggtacgcttaa
+
+;
+END; [CHARACTERS]
+
+BEGIN ALGORITHM;
+	TITLE Algorithm3;
+	LINK CHARACTERS = Characters1;
+	ALGORITHM HammingDistances;
+	OPTIONS
+		Normalize = true;
+END; [ALGORITHM]
+
+BEGIN DISTANCES;
+	TITLE Distances1;
+	LINK ALGORITHM = Algorithm3;
+DIMENSIONS ntax=5;
+FORMAT labels=left diagonal triangle=Both;
+MATRIX
+[1] 'Turkey'         0.000000   0.279762   0.446429   0.589286   0.613095
+[2] 'Salmo gair'     0.279762   0.000000   0.380952   0.428571   0.500000
+[3] 'H. Sapiens'     0.446429   0.380952   0.000000   0.571429   0.500000
+[4] 'Chimp'          0.589286   0.428571   0.571429   0.000000   0.190476
+[5] 'Gorilla'        0.613095   0.500000   0.500000   0.190476   0.000000
+;
+END; [DISTANCES]
+
+BEGIN ALGORITHM;
+	TITLE Algorithm4;
+	LINK DISTANCES = Distances1;
+	ALGORITHM NeighborNet;
+	OPTIONS
+		CutOff = 1.0E-6,
+		LeastSquares = ols,
+		Regularization = nnls,
+		LambdaFrac = 1.0;
+END; [ALGORITHM]
+
+BEGIN ALGORITHM;
+	TITLE Algorithm5;
+	LINK DISTANCES = Distances1;
+	ALGORITHM NeighborJoining;
+END; [ALGORITHM]
+
+BEGIN SPLITS;
+	TITLE Splits1;
+	LINK ALGORITHM = Algorithm4;
+	DIMENSIONS ntax=5 nsplits=10;
+	FORMAT labels=no weights=yes confidences=no;
+	PROPERTIES fit=100.00 cyclic;
+	CYCLE 1 2 4 5 3;
+MATRIX
+[1, size=1] 	 0.1666666716337204 	 1 2 4 5,
+[2, size=2] 	 0.0476190485060215 	 1 2 4,
+[3, size=2] 	 0.0595238097012043 	 1 2,
+[4, size=1] 	 0.1726190447807312 	 1,
+[5, size=1] 	 0.0595238097012043 	 1 2 3 4,
+[6, size=2] 	 0.25 	 1 2 3,
+[7, size=2] 	 0.02380952425301075 	 1 3,
+[8, size=1] 	 0.0595238097012043 	 1 2 3 5,
+[9, size=2] 	 0.02380952425301075 	 1 3 5,
+[10, size=1] 	 0.0595238097012043 	 1 3 4 5,
+;
+END; [SPLITS]
+
+BEGIN TREES;
+	TITLE Trees1;
+	LINK ALGORITHM = Algorithm5;
+	TRANSLATE
+		1 'Turkey',
+		2 'Salmo gair',
+		3 'H. Sapiens',
+		4 'Chimp',
+		5 'Gorilla',
+;
+	[TREES]
+		[1] tree 't1'=[&R] (4:0.09126984,5:0.09920635,(3:0.20833333,(1:0.1904762,2:0.08928572):0.065476194):0.23214285);
+END; [TREES]
+
+BEGIN ALGORITHM;
+	TITLE Algorithm6;
+	LINK SPLITS = Splits1;
+	ALGORITHM SplitsNetworkAlgorithm;
+	OPTIONS
+		Algorithm = EqualAngleConvexHull,
+		UseWeights = true,
+		BoxOpenIterations = 0,
+		DaylightIterations = 0;
+END; [ALGORITHM]
+
+BEGIN ALGORITHM;
+	TITLE Algorithm7;
+	LINK TREES = Trees1;
+	ALGORITHM TreeEmbedder;
+	OPTIONS
+		Layout = LeftToRight,
+		EdgeLengths = Weights,
+		EdgeShape = Angular,
+		ParentPlacement = ChildrenAverage,
+		LeafGroupGapProperty = 20,
+		CubicCurveParentControl = 20,
+		CubicCurveChildControl = 50,
+		ShowInternalNodeLabels = false;
+END; [ALGORITHM]
+
+BEGIN VIEWER;
+	TITLE Viewer1;
+	LINK ALGORITHM = Algorithm6;
+	DIMENSIONS nnodes=16 nedges=20;
+	FORMAT type=SplitsNetworkViewer;
+NODES
+	N: 1 -53.6451 166.9991f S: TriangleDown 0 0 42.618 42.618 0xffffffff,
+	N: 2 24.2232 406.6529f S: TriangleDown 0 0 42.618 42.618 0xffffffff L: 'Turkey' -8.2696 429.7385 0x333333ff 'Arial,Regular,30',
+	N: 3 -186.8179 197.6434f S: TriangleDown 0 0 42.618 42.618 0xffffffff L: 'Salmo gair' -316.7639 221.9639 0x333333ff 'Arial,Regular,30',
+	N: 4 -272.7415 -334.2284f S: TriangleDown 0 0 42.618 42.618 0xffffffff L: 'Chimp' -374.3354 -394.5489 0x333333ff 'Arial,Regular,30',
+	N: 5 -84.5987 -406.6529f S: TriangleDown 0 0 42.618 42.618 0xffffffff L: 'Gorilla' -114.5939 -465.7385 0x333333ff 'Arial,Regular,30',
+	N: 6 272.7415 43.5008f S: TriangleDown 0 0 42.618 42.618 0xffffffff L: 'H. Sapiens' 300.1675 25.5008 0x333333ff 'Arial,Regular,30',
+	N: 7 -26.794 84.3598f S: TriangleDown 0 0 42.618 42.618 0xffffffff,
+	N: 8 -81.7639 146.5695f S: TriangleDown 0 0 42.618 42.618 0xffffffff,
+	N: 9 -54.9128 63.9303f S: TriangleDown 0 0 42.618 42.618 0xffffffff,
+	N: 10 1.3249 23.0712f S: TriangleDown 0 0 42.618 42.618 0xffffffff,
+	N: 11 29.4438 43.5008f S: TriangleDown 0 0 42.618 42.618 0xffffffff,
+	N: 12 -167.6875 -283.1545f S: TriangleDown 0 0 42.618 42.618 0xffffffff,
+	N: 13 -111.4498 -324.0136f S: TriangleDown 0 0 42.618 42.618 0xffffffff,
+	N: 14 -116.5208 146.5695f S: TriangleDown 0 0 42.618 42.618 0xffffffff,
+	N: 15 -89.6696 63.9303f S: TriangleDown 0 0 42.618 42.618 0xffffffff,
+	N: 16 -202.4443 -283.1545f S: TriangleDown 0 0 42.618 42.618 0xffffffff;
+EDGES
+	E: 1 2 S: 'M -53.6451 166.9991 L 24.2232 406.6529' 1 0x000000ff,
+	E: 7 1 S: 'M -26.794 84.3598 L -53.6451 166.9991' 1 0x000000ff,
+	E: 8 1 S: 'M -81.7639 146.5695 L -53.6451 166.9991' 1 0x000000ff,
+	E: 9 7 S: 'M -54.9128 63.9303 L -26.794 84.3598' 1 0x000000ff,
+	E: 9 8 S: 'M -54.9128 63.9303 L -81.7639 146.5695' 1 0x000000ff,
+	E: 10 9 S: 'M 1.3249 23.0712 L -54.9128 63.9303' 1 0x000000ff,
+	E: 11 7 S: 'M 29.4438 43.5008 L -26.794 84.3598' 1 0x000000ff,
+	E: 11 10 S: 'M 29.4438 43.5008 L 1.3249 23.0712' 1 0x000000ff,
+	E: 11 6 S: 'M 29.4438 43.5008 L 272.7415 43.5008' 1 0x000000ff,
+	E: 12 9 S: 'M -167.6875 -283.1545 L -54.9128 63.9303' 1 0x000000ff,
+	E: 13 10 S: 'M -111.4498 -324.0136 L 1.3249 23.0712' 1 0x000000ff,
+	E: 13 12 S: 'M -111.4498 -324.0136 L -167.6875 -283.1545' 1 0x000000ff,
+	E: 13 5 S: 'M -111.4498 -324.0136 L -84.5987 -406.6529' 1 0x000000ff,
+	E: 14 8 S: 'M -116.5208 146.5695 L -81.7639 146.5695' 1 0x000000ff,
+	E: 14 3 S: 'M -116.5208 146.5695 L -186.8179 197.6434' 1 0x000000ff,
+	E: 15 9 S: 'M -89.6696 63.9303 L -54.9128 63.9303' 1 0x000000ff,
+	E: 15 14 S: 'M -89.6696 63.9303 L -116.5208 146.5695' 1 0x000000ff,
+	E: 16 12 S: 'M -202.4443 -283.1545 L -167.6875 -283.1545' 1 0x000000ff,
+	E: 16 15 S: 'M -202.4443 -283.1545 L -89.6696 63.9303' 1 0x000000ff,
+	E: 16 4 S: 'M -202.4443 -283.1545 L -272.7415 -334.2284' 1 0x000000ff;
+END; [VIEWER]
+
+BEGIN VIEWER;
+	TITLE Viewer2;
+	LINK ALGORITHM = Algorithm7;
+	DIMENSIONS nnodes=8 nedges=7;
+	FORMAT type=TreeViewer;
+NODES
+	N: 1 832 541.2398f S: Circle 0 0 41 41 0xffffffff L: 'Turkey' 840 529.7398 0x333333ff 'Arial,Regular,30',
+	N: 2 659.5123 680.9146f S: Circle 0 0 41 41 0xffffffff L: 'Salmo gair' 667.5123 669.4146 0x333333ff 'Arial,Regular,30',
+	N: 3 750.8293 349.187f S: Circle 0 0 41 41 0xffffffff L: 'H. Sapiens' 758.8293 337.687 0x333333ff 'Arial,Regular,30',
+	N: 4 155.5772 0f S: Circle 0 0 41 41 0xffffffff L: 'Chimp' 163.5772 -11.5 0x333333ff 'Arial,Regular,30',
+	N: 5 169.1057 174.5935f S: Circle 0 0 41 41 0xffffffff L: 'Gorilla' 177.1057 163.0935 0x333333ff 'Arial,Regular,30',
+	N: 6 0 240.066f S: Circle 0 0 41 41 0xffffffff,
+	N: 7 395.7073 480.1321f S: Circle 0 0 41 41 0xffffffff,
+	N: 8 507.3171 611.0772f S: Circle 0 0 41 41 0xffffffff;
+EDGES
+	E: 6 4 S: 'M 0 240.066 L 0 0 L 155.5772 0' 1 0x000000ff,
+	E: 6 5 S: 'M 0 240.066 L 0 174.5935 L 169.1057 174.5935' 1 0x000000ff,
+	E: 7 3 S: 'M 395.7073 480.1321 L 395.7073 349.187 L 750.8293 349.187' 1 0x000000ff,
+	E: 6 7 S: 'M 0 240.066 L 0 480.1321 L 395.7073 480.1321' 1 0x000000ff,
+	E: 8 1 S: 'M 507.3171 611.0772 L 507.3171 541.2398 L 832 541.2398' 1 0x000000ff,
+	E: 8 2 S: 'M 507.3171 611.0772 L 507.3171 680.9146 L 659.5123 680.9146' 1 0x000000ff,
+	E: 7 8 S: 'M 395.7073 480.1321 L 395.7073 611.0772 L 507.3171 611.0772' 1 0x000000ff;
+END; [VIEWER]

@@ -1,0 +1,270 @@
+#nexus
+
+BEGIN Taxa;
+DIMENSIONS ntax=8;
+TAXLABELS
+[1] 'CRB2205'
+[2] 'CRB2433'
+[3] 'CRB2570'
+[4] 'CRB2667'
+[5] 'CRB2698'
+[6] 'CRB2697'
+[7] 'CRB2837'
+[8] 'CRB2696'
+;
+END; [Taxa]
+
+BEGIN Characters;
+DIMENSIONS nchar=1140;
+FORMAT
+	datatype=DNA
+	missing=n
+	gap=-
+	symbols="atgc"
+	labels=left
+	transpose=no
+	interleave=yes
+;
+MATRIX
+'CRB2205' atgaccattccccgcaaaacacacccactagcaaaaattattaacaactcatttattgat
+'CRB2433' atgaccattccccgcaaaacacacccactagcaaaaattattaacaactcatttattgat
+'CRB2570' atgaccattccccgcaaaacacacccactagcaaaaattattaacaactcatttattgat
+'CRB2667' atgaccattccccgcaaaacacacccactagcaaaaattattaacaactcatttattgat
+'CRB2698' atgaccattccccgcaaaacgcacccactagcaaaaattattaacaactcatttattgat
+'CRB2697' atgaccattccccgcaaaacgcacccactagcaaaaattattaacaactcatttattgat
+'CRB2837' atgaccattccccgcaaaacgcacccactagcaaaaattattaacaactcatttattgat
+'CRB2696' atgaccattccccgcaaaacgcacccactagcaaaaattattaacaactcatttattgat
+
+'CRB2205' cttcccacaccatccaatatctcatactgatgaaattttggctcacttttaggtatctgc
+'CRB2433' cttcccacaccatccaatatctcatactgatgaaattttggctcacttttaggtatctgc
+'CRB2570' cttcccacaccatccaatatctcatactgatgaaattttggctcacttttaggtatctgc
+'CRB2667' cttcccacaccatccaatatctcatactgatgaaattttggctcacttttaggtatctgc
+'CRB2698' cttcccacaccatccaatatctcatactgatgaaatttcggctcacttttaggtatctgc
+'CRB2697' cttcccacaccatccaatatctcatactgatgaaatttcggctcacttttaggtatctgc
+'CRB2837' cttcccacaccatccaatatctcatactgatgaaatttcggctcacttttaggtatctgc
+'CRB2696' cttcccacaccatccaatatctcatactgatgaaatttcggctcacttttaggtatctgc
+
+'CRB2205' cttattacccaaatcgccaccggcctatttctagccatacattatacaccagacacttca
+'CRB2433' cttattacccaaatcgccaccggcctatttctagccatacattatacaccagacacttca
+'CRB2570' cttattacccaaatcgccaccggcctatttctagccatacattatacaccagacacttca
+'CRB2667' cttattacccaaatcgccaccggcctatttctagccatacattatacaccagacacttca
+'CRB2698' cttatcacccaaatcgccaccggcctatttctagctatacattatacaccagacacttca
+'CRB2697' cttatcacccaaatcgccaccggcctatttctagctatacattatacaccagacacttca
+'CRB2837' cttattacccaaatcgccaccggcctatttctagctatacattacacaccagacacttca
+'CRB2696' cttattacccaaatcgccaccggcctatttctagctatacattatacaccagacacttca
+
+'CRB2205' accgccttctcctcagtagctcatattatacgagacgtaaactacggctgaataatccgc
+'CRB2433' accgccttctcctcagtagctcatattatacgagacgtaaactacggctgaataatccgc
+'CRB2570' accgccttctcctcagtagctcatattatacgagacgtaaactacggctgaataatccgc
+'CRB2667' accgccttctcctcagtagctcatattatacgagacgtaaactacggctgaataatccgc
+'CRB2698' accgccttctcctcagtagcccatattatacgagacgtaaactacggctgaataatccgc
+'CRB2697' accgccttctcctcagtagcccatattatacgagacgtaaactacggctgaataatccgc
+'CRB2837' accgccttctcctcagtagctcatattatacgagacgtaaactacggctgaataatccgc
+'CRB2696' accgccttctcctcagtagctcatattatacgagacgtaaactacggctgaataatccgc
+
+'CRB2205' tacctacacgctaacggcgcctccatattttttatttgcctctttatgcatgttggacgg
+'CRB2433' tacctacacgctaacggcgcctccatattttttatttgcctctttatgcatgttggacgg
+'CRB2570' tacctacacgctaacggcgcctccatattttttatttgcctctttatgcatgttggacgg
+'CRB2667' tacctacacgctaacggcgcctccatattttttatttgcctctttatgcatgttggacgg
+'CRB2698' tacctacacgctaacggcgcctccatattttttatctgcctctttatgcatgttggacgg
+'CRB2697' tacctacacgctaacggcgcctccatattttttatctgcctctttatgcatgttggacgg
+'CRB2837' tacctacacgctaacggcgcctccatattttttatctgcctctttatgcatgttggacgg
+'CRB2696' tacctacacgctaacggcgcctccatattttttatctgcctctttatgcatgttggacgg
+
+'CRB2205' ggcttatattatggatcttttctctttctgaagacctgaaacgtcggtattatcctacta
+'CRB2433' ggcttatattatggatcttttctctttctgaagacctgaaacgtcggtattatcctacta
+'CRB2570' ggcttatattatggatcttttctctttctgaagacctgaaacgtcggtattatcctacta
+'CRB2667' ggcttatattatggatcttttctctttctgaagacctgaaacgtcggtattatcctacta
+'CRB2698' ggcttatattatggatcttttctctttctgaagacctgaaacgtcggtattatcctacta
+'CRB2697' ggcttatattatggatcttttctctttctgaagacctgaaacgtcggtattatcctacta
+'CRB2837' ggcttatattatggatcttttctctttctgaagacctgaaacgtcggtattatcctacta
+'CRB2696' ggcttatattatggatcttttctctttctgaagacctgaaacgtcggtattatcctacta
+
+'CRB2205' ctgacatccatagccacagcattcataggctatgtacttccatggggccaaatatccttc
+'CRB2433' ctgacatccatagccacagcattcataggctatgtacttccatggggccaaatatccttc
+'CRB2570' ctgacatccatagccacagcattcataggctatgtacttccatggggccaaatatccttc
+'CRB2667' ctgacatccatagccacagcattcataggctatgtacttccatggggccaaatatccttc
+'CRB2698' ctgacatccatagccacagcatttataggctatgtacttccatggggccaaatatccttc
+'CRB2697' ctgacatctatagccacagcatttataggctatgtacttccatggggccaaatatccttc
+'CRB2837' ctgacatccatagccacagcatttataggctatgtacttccatggggccaaatatccttc
+'CRB2696' ctgacatctatagccacagcatttataggctatgtacttccatggggccaaatatccttc
+
+'CRB2205' tgaggcgccacagtaattacaaatctcctatcagcaatcccctatattggatcagacctc
+'CRB2433' tgaggcgccacagtaattacaaatctcctatcagcaatcccctatatgggatcagacctc
+'CRB2570' tgaggcgccacagtaattacaaatctcctatcagcaatcccctatattggatcagacctc
+'CRB2667' tgaggcgccacagtaattacaaatctcctatcagcaatcccctatattggatcagacctc
+'CRB2698' tgaggcgccacagtaattacaaatctcctatcagcaatcccctatattggatcagacctc
+'CRB2697' tgaggcgccacagtaattacaaatctcctatcagcaatcccctatattggatcagacctc
+'CRB2837' tgaggcgccacagtaattacaaatctcctatcagcaatcccctatattggatcagacctc
+'CRB2696' tgaggcgccacagtaattacaaatctcctatcagcaatcccctatattggatcagacctc
+
+'CRB2205' gtacaatgaatctgaggaggattctctgtagataaagccacactcacacgatttttcacc
+'CRB2433' gtacaatgaatctgaggaggattctctgtagataaagccacactcacacgatttttcacc
+'CRB2570' gtacaatgaatctgaggaggattctctgtagataaagccacactcacacgatttttcacc
+'CRB2667' gtacaatgaatctgaggaggattctctgtagataaagccacactcacacgatttttcacc
+'CRB2698' gtacaatggatctgaggaggattctccgtagataaagccacactcacacgattcttcacc
+'CRB2697' gtacaatggatctgaggaggattctccgtagataaagccacactcacacgattcttcacc
+'CRB2837' gtacaatgaatctgaggaggattctccgtagataaagccacactcacacgattcttcacc
+'CRB2696' gtacaatgaatctgaggaggattctccgtagataaagccacactcacacgattcttcacc
+
+'CRB2205' ttccactttattataccctttattattgcagccttagctgctattcaccttttatttcta
+'CRB2433' ttccactttattataccctttattattgcagccttagctgctattcaccttttatttcta
+'CRB2570' ttccactttattataccctttattattgcagccttagctgctattcaccttttatttcta
+'CRB2667' ttccactttattataccctttattattgcagccttagctgctattcaccttttatttcta
+'CRB2698' ttccactttattataccctttattattgcagccttagctgctatccaccttttatttcta
+'CRB2697' ttccactttattataccctttattattgcagccttagctgctatccaccttttatttcta
+'CRB2837' ttccactttattataccctttattattgcagccttagctgctatccaccttttatttcta
+'CRB2696' ttccactttattataccctttattattgcagccttagctgctatccaccttttatttcta
+
+'CRB2205' cacgacacaggttctaataacccatcaggactaatatctaactccgacaaaattgcattc
+'CRB2433' cacgacacaggttctaataacccatcaggactaatatctaactccgacaaaattgcattc
+'CRB2570' cacgacacaggttctaataacccatcaggactaatatctaactccgacaaaattgcattc
+'CRB2667' cacgacacaggttctaataacccatcaggactaatatctaactccgacaaaattgcattc
+'CRB2698' cacgacacaggttctaataacccatcaggactaatatctaactccgacaaaattgcattc
+'CRB2697' cacgacacaggttctaataacccatcaggactaatatctaactccgacaaaattgcattc
+'CRB2837' cacgacacaggttctaataacccatcaggactaatatctaactccgacaaaattgcattc
+'CRB2696' cacgacacaggttctaataacccatcaggactaatatctaactccgacaaaattgcattc
+
+'CRB2205' cacccctactatacaattaaagacattctaggattaatttttcttcttctccttctaata
+'CRB2433' cacccctactatacaattaaagacattctaggattaatttttcttcttctccttctaata
+'CRB2570' cacccctactatacaattaaagacattctaggattagtttttcttcttctccttctaata
+'CRB2667' cacccctactatacaattaaagacattctaggattagtttttcttcttctccttctaata
+'CRB2698' cacccctactatacaattaaagacattctagggttaatttttcttcttctccttctaata
+'CRB2697' cacccctactatacaattaaagacattctagggttaatttttcttcttctccttctaata
+'CRB2837' cacccctactatacaattaaagacattctagggttaatttttcttcttctccttctaata
+'CRB2696' cacccctactatacaattaaagacattctagggttaatttttcttcttctccttctaata
+
+'CRB2205' agcctaaccctatttacacctgatctattaactgacccagataactacaccctagcaaac
+'CRB2433' agcctaaccctatttacacctgatctattaactgacccagataactacaccctagcaaac
+'CRB2570' agcctaaccctatttacacctgatctattaactgacccagataactacaccctagcaaac
+'CRB2667' agcctaaccctatttacacctgatctattaactgacccagataactacaccctagcaaac
+'CRB2698' agcctaaccctatttatacctgacctattaactgacccagataactacaccctagcaaac
+'CRB2697' agcctaaccctatttatacctgacctattaactgacccagataactacaccctagcaaac
+'CRB2837' agcctaaccctatttatacctgacctattaactgacccagataactacaccctagcaaac
+'CRB2696' agcctaaccctatttacacctgacctattaactgacccagataactacaccctagcaaac
+
+'CRB2205' ccccttaacaccccgccccacattaaaccagaatgatacttcctatttgcatacgccatc
+'CRB2433' ccccttaacaccccgccccacattaaaccagaatgatacttcctatttgcatacgccatc
+'CRB2570' ccccttaacaccccgccccacattaaaccagaatgatacttcctatttgcatacgccatc
+'CRB2667' ccccttaacaccccgccccacattaaaccagaatgatacttcctatttgcatacgccatc
+'CRB2698' ccccttaacaccccaccccacattaaaccagaatgatacttcctatttgcatacgccatc
+'CRB2697' ccccttaacaccccaccccacattaaaccagaatgatacttcctatttgcatacgccatc
+'CRB2837' ccccttaacaccccaccccacattaaaccagaatgatacttcctatttgcatacgccatc
+'CRB2696' ccccttaacaccccaccccacattaaaccagaatgatacttcctatttgcatacgccatc
+
+'CRB2205' ctacgatctatccccaataaactaggaggggttctagcccttatactctccattctaatt
+'CRB2433' ctacgatctatccccaataaactaggaggggttctagcccttatactctccattctaatt
+'CRB2570' ctacgatctatccccaataaactaggaggggttctagcccttatactctccattctaatt
+'CRB2667' ctacgatctatccccaataaactaggaggggttctagcccttatactctccattctaatt
+'CRB2698' ctacgatctattcccaataaactaggaggggttctagcccttatactctccattctaatt
+'CRB2697' ctacgatctattcccaataaactaggaggggttctagcccttatactctccattctaatt
+'CRB2837' ctacgatctattcccaataaactaggaggggttctagcccttatactctccattctaatt
+'CRB2696' ctacgatctattcccaataaactaggaggagttctagcccttatactctccattctaatt
+
+'CRB2205' ctagcaattattcctataatccacctgtccaaacaacaaagtataatatttcgaccaatc
+'CRB2433' ctagcaattattcctataatccacctgtccaaacaacaaagtataatatttcgaccaatc
+'CRB2570' ctagcaattattcctataatccacctgtccaaacaacaaagtataatatttcgaccaatc
+'CRB2667' ctagcaattattcctataatccacctgtccaaacaacaaagtataatatttcgaccaatc
+'CRB2698' ctagcaattattcctataatccacctatccaaacaacaaagcataatatttcgaccaatt
+'CRB2697' ctagcaattattcctataatccacctatccaaacaacaaagcataatatttcgaccaatt
+'CRB2837' ctagcaattattcctataatccacttatccaaacaacaaagcataatatttcgaccaatt
+'CRB2696' ctagcaattattcctataatccatctatccaaacaacaaagcataatatttcgaccaatt
+
+'CRB2205' agncaaagtttattctgaaccctaacagctattctacttacacttacatgaattggaggc
+'CRB2433' agccaaagtttattctgaaccctaacagctattctacttacacttacatgaattggaggc
+'CRB2570' agccaaagtttattctgaaccctaacagctattctacttacacttacatgaattggaggc
+'CRB2667' agccaaagtttattctgaaccctaacagctattctacttacacttacatgaattggaggc
+'CRB2698' agccaaagcttattctgaaccctaacagctgttctacttacacttacatgaattggaggc
+'CRB2697' agccaaagcttattctgaaccctaacagctgttctacttacacttacatgaattggaggc
+'CRB2837' agccaaagcttattctgaaccctaacagctgttctacttacacttacatgaattggaggc
+'CRB2696' agccaaagcttattctgaaccctaacagctgttctacttacacttacatgaattggaggc
+
+'CRB2205' caaccagttgaacacccctttattactattggncaaacagcatctattatatacttcctc
+'CRB2433' caaccagttgaacacccctttattactattggncaaacagcatctattatatacttcctc
+'CRB2570' caaccagttgaacacccctttattactattggccaaacagcatctattatatacttcctc
+'CRB2667' caaccagttgaacacccctttattactattggccaaacagcatctattatatacttcctc
+'CRB2698' caaccagttgaacacccctttattactattggccaaacagcatctattatatatttcctc
+'CRB2697' caaccagttgaacacccctttattactattggccaaacagcatctattatatatttcctc
+'CRB2837' caaccagttgaacacccctttattactattggccaaacagcatctattatatatttnctc
+'CRB2696' caaccagttgaacacccctttattactattggccaaacagcatctattatatatttcctc
+
+'CRB2205' attattattacccttatccctttatcctctctaattgaaaataaattacttaaattataa
+'CRB2433' attattattacccttatccctttatcctctctnatngaaaataaattacttaaattataa
+'CRB2570' attattattacccttatccctttatcctctctaattgaaaataaattacttaaattataa
+'CRB2667' attattattacccttatccctttatcctctctaattgaaaataaattacttaaattataa
+'CRB2698' attattattacccttatccctttatcctctctaattgaaaataaactacttaaattataa
+'CRB2697' attattattacccttatccctttatcctctctaattgaaaataaactacttaaattataa
+'CRB2837' attattattacccttatccctttatcctctctaattgaaaataaactacttaaattataa
+'CRB2696' attattattacccttattcctttatcctctctaattgaaaataaactacttaaattataa
+;
+END; [Characters]
+
+BEGIN Network;
+DIMENSIONS ntax=8 nvertices=11 nedges=12;
+DRAW to_scale;
+TRANSLATE
+2 'CRB2837',
+4 'CRB2205',
+5 'CRB2697',
+7 'CRB2433',
+8 'CRB2696',
+10 'CRB2698',
+11 'CRB2570' 'CRB2667',
+;
+VERTICES
+1 76.204834 -25.480093 w=2 h=2 s=r bg=0 0 0,
+2 26.655933 91.39671 w=4 h=4,
+3 -15.548531 21.499325 w=2 h=2 s=r bg=0 0 0,
+4 247.93219 -25.306877 w=4 h=4,
+5 -139.35713 -15.276212 w=4 h=4,
+6 13.875429 -106.80335 w=2 h=2 s=r bg=0 0 0,
+7 311.22842 -52.795116 w=4 h=4,
+8 16.449362 -178.05673 w=4 h=4,
+9 -63.942368 -61.47594 w=2 h=2 s=r bg=0 0 0,
+10 -96.81623 67.56688 w=4 h=4,
+11 304.61398 12.252362 w=10 h=10,
+;
+VLABELS
+2 'CRB2837' x=-47 y=35 f='Dialog-PLAIN-24',
+4 'CRB2205' x=12 y=11 f='Dialog-PLAIN-24',
+5 'CRB2697' x=-117 y=9 f='Dialog-PLAIN-24',
+7 'CRB2433' x=11 y=8 f='Dialog-PLAIN-24',
+8 'CRB2696' x=-53 y=-23 f='Dialog-PLAIN-24',
+10 'CRB2698' x=-56 y=37 f='Dialog-PLAIN-24',
+11 'CRB2570,CRB2667' x=10 y=16 f='Dialog-PLAIN-16',
+;
+EDGES
+1 1 3,
+2 1 6,
+3 3 9,
+4 4 7,
+5 4 11,
+6 5 10,
+7 6 9,
+8 2 3 w=2.0,
+9 3 10 w=3.0,
+10 5 9 w=3.0,
+11 6 8 w=3.0,
+12 1 4 w=19.0,
+;
+ELABELS
+1 '737' ll=11 f='Dialog-PLAIN-16',
+2 '369' ll=11 f='Dialog-PLAIN-16',
+3 '369' ll=11 f='Dialog-PLAIN-16',
+4 '468' ll=11 f='Dialog-PLAIN-16',
+5 '697' ll=11 f='Dialog-PLAIN-16',
+6 '369' ll=11 f='Dialog-PLAIN-16',
+7 '737' ll=11 f='Dialog-PLAIN-16',
+8 '165,925' ll=11 f='Dialog-PLAIN-16',
+9 '126,201,489' ll=11 f='Dialog-PLAIN-16',
+10 '126,201,489' ll=11 f='Dialog-PLAIN-16',
+11 '870,924,1098' ll=11 f='Dialog-PLAIN-16',
+12 '21,99,156,276,384,507,534,585,693,744,795,852,927,942,960,969,991,1074,1126' ll=9 x=-321 y=43 f='Dialog-PLAIN-16',
+;
+END; [Network]
+
+BEGIN st_Assumptions;
+	uptodate;
+	chartransform=MedianJoining Epsilon = 1 SpringEmbedderIterations = 2000 LabelEdges = true ShowHaplotypes = false SubdivideEdges = false ScaleNodesByTaxa = true;
+	autolayoutnodelabels;
+END; [st_Assumptions]
