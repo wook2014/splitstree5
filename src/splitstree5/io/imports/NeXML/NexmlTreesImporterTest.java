@@ -22,7 +22,8 @@ public class NexmlTreesImporterTest {
         TreesBlock treesBlock = new TreesBlock();
         ProgressListener pl = new ProgressPercentage();
 
-        nexmlTreesImporter.parse(pl, "test/neXML/trees.xml", taxaBlock, treesBlock);
+        //nexmlTreesImporter.parse(pl, "test/neXML/trees.xml", taxaBlock, treesBlock);
+        nexmlTreesImporter.parse(pl, "test/neXML/trees_partial.xml", taxaBlock, treesBlock);
         // printing
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");

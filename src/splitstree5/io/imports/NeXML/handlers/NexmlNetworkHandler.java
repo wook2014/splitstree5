@@ -53,9 +53,9 @@ public class NexmlNetworkHandler extends DefaultHandler {
 
             Node node = networkBlock.getGraph().newNode();
             NetworkBlock.NodeData nodeData = networkBlock.getNodeData(node);
-            nodeData.put("id", id);
+            nodeData.put("nex:id", id);
             if (label != null)
-                nodeData.put("label", label);
+                nodeData.put("nex:label", label);
             networkBlock.getNode2data().put(node, nodeData);
             if (otu != null)
                 networkBlock.getGraph().addTaxon(node, taxaLabels.indexOf(otu));
@@ -73,9 +73,9 @@ public class NexmlNetworkHandler extends DefaultHandler {
             Node sourceNode = networkBlock.getGraph().getLastNode();
             Node targetNode = networkBlock.getGraph().getFirstNode();
             for (Node n : networkBlock.getGraph().getNodesAsSet()) {
-                if (networkBlock.getNodeData(n).get("id").equals(source))
+                if (networkBlock.getNodeData(n).get("nex:id").equals(source))
                     sourceNode = n;
-                if (networkBlock.getNodeData(n).get("id").equals(target))
+                if (networkBlock.getNodeData(n).get("nex:id").equals(target))
                     targetNode = n;
             }
 

@@ -6,17 +6,17 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 
 public class NexmlTreesHandler extends DefaultHandler {
 
     // tree 't1'=[&R] (((3:0.234,2:0.3243):0.324,(5:0.32443,4:0.2342):0.3247):0.34534,1:0.4353);
     private boolean bReadingTree = false;
     private boolean partial = false;
+    private boolean rooted = false;
 
     private PhyloTree tree;
+    private ArrayList<String> treeLabels = new ArrayList<>();
     private ArrayList<String> taxaLabels = new ArrayList<>();
     private ArrayList<PhyloTree> trees = new ArrayList<>();
     private HashMap<String, Node> id2node = new HashMap<>();
@@ -45,6 +45,7 @@ public class NexmlTreesHandler extends DefaultHandler {
         // TREES INFO
         else if (qName.equalsIgnoreCase("tree")) {
             tree = new PhyloTree();
+            treeLabels = new ArrayList<>();
             id2node = new HashMap<>();
             bReadingTree = true;
         } else if (qName.equalsIgnoreCase("node") && bReadingTree) {
@@ -54,11 +55,15 @@ public class NexmlTreesHandler extends DefaultHandler {
             boolean root = Boolean.parseBoolean(attributes.getValue("root"));
 
             Node node = tree.newNode();
-            if (root) tree.setRoot(node);
+            if (root) {
+                tree.setRoot(node);
+                rooted = true;
+            }
             id2node.put(id, node);
 
             if (otu != null) {
                 tree.setLabel(node, otu);
+                treeLabels.add(otu);
                 tree.addTaxon(node, taxaLabels.indexOf(otu));
             }
 
@@ -116,8 +121,8 @@ public class NexmlTreesHandler extends DefaultHandler {
             trees.add(tree);
 
             // if a tree already set as partial, no further check
-            //if (partial || !treeContainsAllTaxa(tree))
-            //  partial = true;
+            if (partial || taxaLabels.size() != treeLabels.size())
+                partial = true;
         }
     }
 
@@ -133,25 +138,51 @@ public class NexmlTreesHandler extends DefaultHandler {
         return this.partial;
     }
 
+    public boolean isRooted() {
+        return this.rooted;
+    }
+
     private boolean treeContainsAllTaxa(PhyloTree tree) {
 
         int numOfLabelsInTree = 0;
+
         /*for (String s : tree.nodeLabels()) {
             numOfLabelsInTree++;
             System.err.println("üüüüüüüüü"+s);
-        }
-        System.err.println("üüüüüüüüü"+numOfLabelsInTree);*/
+        }*/
         //System.err.println(tree.nodeLabels().iterator().next());
-        Iterator<String> iterator = tree.nodeLabels().iterator();
-        System.err.println(iterator.next());
-        while (iterator.hasNext()) {
+
+        //Iterable<String> iterator = tree.nodeLabels();
+        //iterator.forEach(System.err.println("ffff"));
+
+        /*while (iterator.spliterator().hasNext()) {
             //iterator.next();
             System.err.println(iterator.next());
             numOfLabelsInTree++;
-        }
+        }*/
         System.err.println("üüüüüüüüü" + numOfLabelsInTree);
-        return numOfLabelsInTree == taxaLabels.size();
+        //return numOfLabelsInTree == taxaLabels.size();
 
+        /*Iterator<String> source = tree.nodeLabels().iterator();
+        ArrayList<String> target = (ArrayList<String>) makeCollection(tree.nodeLabels());
+        //tree.nodeLabels().forEach(target::add);
+
+        for (String s : target)
+            System.err.println("Label "+s);*/
+
+
+        //tree.nodeLabels().forEach(y -> System.out.println(y));
+
+
+        return true;
         // todo : how to use iterator?
+    }
+
+    public static Collection<String> makeCollection(Iterable<String> iter) {
+        Collection<String> list = new ArrayList<String>();
+        for (String item : iter) {
+            list.add(item);
+        }
+        return list;
     }
 }
