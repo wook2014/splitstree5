@@ -83,6 +83,12 @@ public class NeXMLExporterTest {
         ProgressListener pl = new ProgressPercentage();
         nexmlNetworkImporter.parse(pl, "test/neXML/trees.xml", taxa, networkBlock);
 
+        // test metadata
+        NetworkBlock.NodeData nodeData = networkBlock.getNodeData(networkBlock.getGraph().getFirstNode());
+        nodeData.put("x", "1.2");
+        nodeData.put("y", "3.4");
+        networkBlock.getNode2data().put(networkBlock.getGraph().getFirstNode(), nodeData);
+
         neXMLExporter.writeStart(writer);
         neXMLExporter.export(writer, taxa, networkBlock);
         neXMLExporter.writeEnd();

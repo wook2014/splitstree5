@@ -22,6 +22,7 @@ import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 public class NeXMLExporter implements
@@ -218,30 +219,96 @@ public class NeXMLExporter implements
             xmlWriter.writeAttribute("label", "NetworkBlock");
             xmlWriter.writeAttribute("xsi:type", "nex:FloatNetwork");
 
+            // Nodes and edges
             NodeSet nodes = graph.getNodesAsSet();
             EdgeSet edges = graph.getEdgesAsSet();
 
+            HashMap<Integer, String> id2nexId = new HashMap<>();
+
             for (Node node : nodes) {
-                writeNewLineWithTabs(xmlWriter, 2);
+
+                writeNewLineWithTabs(xmlWriter, 3);
                 xmlWriter.writeEmptyElement("node");
-                xmlWriter.writeAttribute("id", "n" + node.getId());
-                /*if (graph.hasTaxa(node))
-                    xmlWriter.writeAttribute("otu", graph.getLabel(node));*/
+
+                // check original id/labels
+                if (network.getNodeData(node).containsKey("nex:id")) {
+                    xmlWriter.writeAttribute("id", network.getNodeData(node).get("nex:id"));
+                    id2nexId.put(node.getId(), network.getNodeData(node).get("nex:id"));
+                }
+                else
+                    xmlWriter.writeAttribute("id", "n" + node.getId());
+
+                if (network.getNodeData(node).containsKey("nex:label"))
+                    xmlWriter.writeAttribute("label", network.getNodeData(node).get("nex:label"));
+
+
+                // Taxon
                 int i;
                 Object o = graph.getTaxa(node).iterator().next();
                 if (o != null) {
                     i  = (int) o;
                     xmlWriter.writeAttribute("otu", taxa.getLabel(i + 1));
                 }
+
+                // Metadata
+                NetworkBlock.NodeData nodeData = network.getNodeData(node);
+                nodeData.remove("nex:id");
+                nodeData.remove("nex:label");
+                if (!nodeData.keySet().isEmpty()) {
+                    writeNewLineWithTabs(xmlWriter, 4);
+                    xmlWriter.writeEmptyElement("meta");
+                    for (String key : nodeData.keySet())
+                        if(key.contains("metadata_"))
+                            xmlWriter.writeAttribute(key.replace("metadata_", ""), nodeData.get(key));
+                        else
+                            xmlWriter.writeAttribute("sp5:" + key, nodeData.get(key));
+                }
             }
 
+            xmlWriter.writeCharacters("\n");
+
             for (Edge edge : edges) {
-                writeNewLineWithTabs(xmlWriter, 2);
+                writeNewLineWithTabs(xmlWriter, 3);
                 xmlWriter.writeEmptyElement("edge");
-                xmlWriter.writeAttribute("id", "e" + edge.getId());
-                xmlWriter.writeAttribute("source", "n" + edge.getSource().getId());
-                xmlWriter.writeAttribute("target", "n" + edge.getTarget().getId());
+
+                // ID
+                if (network.getEdgeData(edge).containsKey("nex:id"))
+                    xmlWriter.writeAttribute("id", network.getEdgeData(edge).get("nex:id"));
+                else
+                    xmlWriter.writeAttribute("id", "e" + edge.getId());
+
+                // Label
+                if (network.getEdgeData(edge).containsKey("nex:label"))
+                    xmlWriter.writeAttribute("label", network.getEdgeData(edge).get("nex:label"));
+
+                // Source
+                if (id2nexId.containsKey(edge.getSource().getId()))
+                    xmlWriter.writeAttribute("source", id2nexId.get(edge.getSource().getId()));
+                else
+                    xmlWriter.writeAttribute("source", "n" + edge.getSource().getId());
+
+                // Target
+                if (id2nexId.containsKey(edge.getTarget().getId()))
+                    xmlWriter.writeAttribute("target", id2nexId.get(edge.getTarget().getId()));
+                else
+                    xmlWriter.writeAttribute("target", "n" + edge.getTarget().getId());
+
+                // Weight
                 xmlWriter.writeAttribute("length", graph.getWeight(edge) + "");
+
+                // Metadata
+                NetworkBlock.EdgeData edgeData = network.getEdgeData(edge);
+                edgeData.remove("nex:id");
+                edgeData.remove("nex:label");
+                if (!edgeData.keySet().isEmpty()) {
+                    writeNewLineWithTabs(xmlWriter, 4);
+                    xmlWriter.writeEmptyElement("meta");
+                    for (String key : edgeData.keySet())
+                        if(key.contains("metadata_"))
+                            xmlWriter.writeAttribute(key.replace("metadata_", ""), edgeData.get(key));
+                        else
+                            xmlWriter.writeAttribute("sp5:" + key, edgeData.get(key));
+                }
             }
             writeNewLineWithTabs(xmlWriter, 2);
             xmlWriter.writeEndElement();
@@ -278,6 +345,8 @@ public class NeXMLExporter implements
         xmlStreamWriter.writeDefaultNamespace("http://www.nexml.org/2009");
         w.write("\n\t");
         xmlStreamWriter.writeNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        w.write("\n\t");
+        xmlStreamWriter.writeNamespace("sp5", "https://github.com/danielhuson/splitstree5");
         //w.write("\n\t");
         //xmlStreamWriter.writeNamespace("xml", "http://www.w3.org/XML/1998/namespace");
 
