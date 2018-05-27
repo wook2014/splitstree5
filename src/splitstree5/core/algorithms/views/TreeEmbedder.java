@@ -152,6 +152,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
                 // compute all coordinates:
                 final NodeArray<Point2D> node2point = new NodeArray<>(tree);
                 final EdgeArray<EdgeControlPoints> edge2controlPoints = new EdgeArray<>(tree);
+                final double factorX;
 
                 switch (getOptionLayout()) {
                     case Radial: {
@@ -162,7 +163,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
                             computeNodeLocationsForRadialRec(root, new Point2D(0, 0), edgeLengths, edge2Angle, node2point);
                         else
                             computeNodeLocationsForCircular(root, edgeLengths, edge2Angle, node2point);
-                        scaleAndCenterToFitTarget(getOptionLayout(), viewTab.getTargetDimensions(), node2point, false);
+                        factorX = scaleAndCenterToFitTarget(getOptionLayout(), viewTab.getTargetDimensions(), node2point, false);
                         computeEdgePointsForCircularRec(root, 0, edge2Angle, node2point, edge2controlPoints, getOptionCubicCurveParentControl(), getOptionCubicCurveChildControl());
                         break;
                     }
@@ -171,19 +172,20 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
                         if (getOptionEdgeShape() == EdgeView2D.EdgeShape.Straight) {
                             setOptionEdgeLengths(EdgeLengths.Cladogram);
                             computeEmbeddingForTriangularLayoutRec(root, null, 0, 0, edgeLengths, node2point);
-                            scaleAndCenterToFitTarget(getOptionLayout(), viewTab.getTargetDimensions(), node2point, false);
+                            factorX = scaleAndCenterToFitTarget(getOptionLayout(), viewTab.getTargetDimensions(), node2point, false);
                             computeEdgePointsForRectilinearRec(root, node2point, edge2controlPoints, optionCubicCurveParentControl.get(), getOptionCubicCurveChildControl());
                         } else {
                             final NodeFloatArray nodeHeights = new NodeFloatArray(tree); // height of edge
                             setNodeHeightsRec(root, 0, nodeHeights, optionLeafGroupGapProperty.get(), optionParentPlacementProperty().getValue());
 
                             computeNodeLocationsForRectilinearRec(root, 0, edgeLengths, nodeHeights, node2point);
-                            scaleAndCenterToFitTarget(getOptionLayout(), viewTab.getTargetDimensions(), node2point, false);
+                            factorX = scaleAndCenterToFitTarget(getOptionLayout(), viewTab.getTargetDimensions(), node2point, false);
                             computeEdgePointsForRectilinearRec(root, node2point, edge2controlPoints, optionCubicCurveParentControl.get(), getOptionCubicCurveChildControl());
                         }
                         break;
                     }
                 }
+                ((Graph2DTab) child.getTab()).getScaleBar().setUnitLengthX(factorX);
 
                 final Font labelFont = Font.font(ProgramProperties.getDefaultFont().getFamily(), taxaBlock.getNtax() <= 64 ? 16 : Math.max(4, 12 - Math.log(taxaBlock.getNtax() - 64) / Math.log(2)));
 
@@ -261,7 +263,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
      * @param target
      * @param node2point
      */
-    static void scaleAndCenterToFitTarget(GraphLayout optionLayout, Dimension2D target, NodeArray<Point2D> node2point, boolean center) {
+    static double scaleAndCenterToFitTarget(GraphLayout optionLayout, Dimension2D target, NodeArray<Point2D> node2point, boolean center) {
         // scale to target dimensions:
         final float factorX;
         final float factorY;
@@ -297,6 +299,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
                     node2point.setValue(v, new Point2D(factorX * (point.getX() - (center ? midX : 0)), factorY * (point.getY() - (center ? midY : 0))));
             }
         }
+        return factorX;
     }
 
     /**
@@ -367,7 +370,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
         node2point.setValue(v, vPoint);
         for (Edge e : v.outEdges()) {
             final Node w = e.getTarget();
-            final Point2D wLocation = GeometryUtils.translateByAngle(vPoint, edgeAngles.getValue(e), 1000 * edgeLengths.getValue(e));
+            final Point2D wLocation = GeometryUtils.translateByAngle(vPoint, edgeAngles.getValue(e), edgeLengths.getValue(e));
             node2point.setValue(w, wLocation);
             computeNodeLocationsForRadialRec(w, wLocation, edgeLengths, edgeAngles, node2point);
         }
@@ -384,7 +387,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
         node2point.setValue(root, rootLocation);
         for (Edge e : root.outEdges()) {
             final Node w = e.getTarget();
-            final Point2D wLocation = GeometryUtils.translateByAngle(rootLocation, edgeAngles.getValue(e), 1000 * edgeLengths.getValue(e));
+            final Point2D wLocation = GeometryUtils.translateByAngle(rootLocation, edgeAngles.getValue(e), edgeLengths.getValue(e));
             node2point.setValue(w, wLocation);
             computeNodeLocationAndViewForCicularRec(rootLocation, w, wLocation, e, edgeLengths, edgeAngles, node2point);
         }
@@ -403,7 +406,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
         for (Edge f : v.outEdges()) {
             final Node w = f.getTarget();
             final Point2D b = GeometryUtils.rotateAbout(vLocation, edgeAngles.getValue(f) - edgeAngles.getValue(e), origin);
-            final Point2D c = GeometryUtils.translateByAngle(b, edgeAngles.getValue(f), 1000 * edgeLengths.getValue(f));
+            final Point2D c = GeometryUtils.translateByAngle(b, edgeAngles.getValue(f), edgeLengths.getValue(f));
             node2point.setValue(w, c);
             computeNodeLocationAndViewForCicularRec(origin, w, c, f, edgeLengths, edgeAngles, node2point);
         }

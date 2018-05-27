@@ -33,8 +33,11 @@ import javafx.scene.control.Labeled;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import jloda.find.EdgeLabelSearcher;
 import jloda.find.FindToolBar;
 import jloda.find.NodeLabelSearcher;
@@ -112,6 +115,7 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
      */
     public GraphTabBase() {
         setContent(centerPane); // first need to set this here and then later set to center of root node...
+        centerPane.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
 
         // setup find / replace tool bar:
         {
@@ -544,8 +548,7 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
         controller.getCopyImageMenuItem().setOnAction((x) -> {
             final Clipboard clipboard = Clipboard.getSystemClipboard();
             final ClipboardContent content = new ClipboardContent();
-            WritableImage writableImage = new WritableImage((int) centerPane.getWidth() + 1,
-                    (int) centerPane.getHeight() + 1);
+            WritableImage writableImage = new WritableImage((int) centerPane.getWidth() + 1, (int) centerPane.getHeight() + 1);
             centerPane.snapshot(null, writableImage);
             content.putImage(writableImage);
             clipboard.setContent(content);

@@ -20,10 +20,7 @@ package splitstree5.gui.graphtab.base;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
@@ -34,6 +31,8 @@ import jloda.fx.shapes.NodeShape;
 import jloda.graph.*;
 import jloda.phylo.PhyloGraph;
 import jloda.phylo.PhyloTree;
+import splitstree5.gui.graphtab.SplitsViewTab;
+import splitstree5.gui.graphtab.TreeViewTab;
 import splitstree5.gui.graphtab.commands.LayoutLabelsCommand;
 import splitstree5.gui.graphtab.commands.RotateCommand;
 import splitstree5.gui.graphtab.commands.ZoomCommand;
@@ -56,6 +55,8 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
     private DoubleProperty scaleChangeY = new SimpleDoubleProperty(1);
     private DoubleProperty angleChange = new SimpleDoubleProperty(0);
     private ObjectProperty<GraphLayout> layout = new SimpleObjectProperty<>(GraphLayout.LeftToRight);
+
+    private final ScaleBar scaleBar = new ScaleBar();
 
     private final boolean withScrollPane;
 
@@ -99,6 +100,8 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
         Platform.runLater(() -> {
             try {
                 if (centerPane.getChildren().size() == 0) {
+                    centerPane.getChildren().add(scaleBar);
+                    scaleBar.setFactorX(scaleChangeX.get());
                     final Group world = new Group();
                     world.getChildren().add(group);
                     centerPane.getChildren().add(world);
@@ -195,6 +198,8 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
         for (EdgeViewBase ev : getEdge2view().values()) {
             ((EdgeView2D) ev).scaleCoordinates(xFactor, yFactor);
         }
+
+        scaleBar.setFactorX(scaleChangeX.get());
     }
 
     /**
@@ -388,6 +393,13 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
         controller.getSparseLabelsCheckMenuItem().selectedProperty().bindBidirectional(sparseLabels);
         controller.getSparseLabelsCheckMenuItem().setOnAction(controller.getLayoutLabelsMenuItem().getOnAction());
 
+        controller.getShowScaleBarMenuItem().selectedProperty().bindBidirectional(scaleBar.visibleProperty());
+        controller.getShowScaleBarMenuItem().disableProperty().bind(new SimpleBooleanProperty(!(this instanceof TreeViewTab || this instanceof SplitsViewTab)));
+
         controller.getResetMenuItem().disableProperty().bind(scaleChangeX.isEqualTo(1).and(scaleChangeY.isEqualTo(1)).and(angleChange.isEqualTo(0)));
+    }
+
+    public ScaleBar getScaleBar() {
+        return scaleBar;
     }
 }

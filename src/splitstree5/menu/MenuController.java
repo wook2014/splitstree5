@@ -205,6 +205,9 @@ public class MenuController {
     private CheckMenuItem sparseLabelsCheckMenuItem;
 
     @FXML
+    private CheckMenuItem showScaleBarMenuItem;
+
+    @FXML
     private MenuItem fullScreenMenuItem;
 
     @FXML
@@ -591,6 +594,10 @@ public class MenuController {
 
     public CheckMenuItem getSparseLabelsCheckMenuItem() {
         return sparseLabelsCheckMenuItem;
+    }
+
+    public CheckMenuItem getShowScaleBarMenuItem() {
+        return showScaleBarMenuItem;
     }
 
     public MenuItem getFullScreenMenuItem() {
