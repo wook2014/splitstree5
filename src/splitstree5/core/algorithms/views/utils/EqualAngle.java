@@ -177,7 +177,7 @@ public class EqualAngle {
         int[] result = new int[cycle.length];
 
         int i = 1;
-        while (cycle[i] != 1 && i < cycle.length)
+        while (cycle[i] != 1 && i < cycle.length - 1)
             i++;
         int j = 1;
         while (i < cycle.length) {

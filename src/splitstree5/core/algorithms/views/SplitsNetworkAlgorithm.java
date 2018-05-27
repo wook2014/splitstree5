@@ -44,6 +44,7 @@ import splitstree5.core.datablocks.ViewerBlock;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.graphtab.ISplitsViewTab;
 import splitstree5.gui.graphtab.base.EdgeViewBase;
+import splitstree5.gui.graphtab.base.Graph2DTab;
 import splitstree5.gui.graphtab.base.GraphLayout;
 import splitstree5.gui.graphtab.base.NodeViewBase;
 
@@ -128,7 +129,10 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
         progress.setProgress(90);
 
 
-        TreeEmbedder.scaleAndCenterToFitTarget(GraphLayout.Radial, viewTab.getTargetDimensions(), node2point, true);
+        double factorX = TreeEmbedder.scaleAndCenterToFitTarget(GraphLayout.Radial, viewTab.getTargetDimensions(), node2point, true);
+        if (child.getTab() instanceof Graph2DTab) {
+            ((Graph2DTab) child.getTab()).getScaleBar().setUnitLengthX(factorX);
+        }
 
         progress.setProgress(100);   //set progress to 100%
 
