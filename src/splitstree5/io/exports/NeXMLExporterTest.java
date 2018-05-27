@@ -1,10 +1,14 @@
 package splitstree5.io.exports;
 
+import jloda.util.ProgressListener;
+import jloda.util.ProgressPercentage;
 import jloda.util.parse.NexusStreamParser;
 import org.junit.Test;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DataBlock;
+import splitstree5.core.datablocks.NetworkBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.io.imports.NeXML.NexmlNetworkImporter;
 import splitstree5.io.nexus.CharactersNexusInput;
 import splitstree5.io.nexus.TaxaNexusInput;
 
@@ -12,9 +16,9 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NeXMLOutTest {
+public class NeXMLExporterTest {
 
-    private NeXMLOut neXMLOut = new NeXMLOut();
+    private NeXMLExporter neXMLExporter = new NeXMLExporter();
 
     @Test
     public void export() throws Exception {
@@ -38,11 +42,11 @@ public class NeXMLOutTest {
         list.add(taxa);
         list.add(characters);
 
-        neXMLOut.export(writer, list);
-        neXMLOut.writeStart(writer2);
-        neXMLOut.export(writer2, taxa);
-        neXMLOut.export(writer2, taxa, characters);
-        neXMLOut.writeEnd();
+        neXMLExporter.export(writer, list);
+        neXMLExporter.writeStart(writer2);
+        neXMLExporter.export(writer2, taxa);
+        neXMLExporter.export(writer2, taxa, characters);
+        neXMLExporter.writeEnd();
         writer.close();
         writer2.close();
 
@@ -59,11 +63,30 @@ public class NeXMLOutTest {
         List<DataBlock> trees_list = new ArrayList<>();
         trees_list.add(taxaBlock);
         trees_list.add(treesBlock);
-        //neXMLOut.export(writer_trees, trees_list);
-        neXMLOut.writeStart(writer_trees);
-        neXMLOut.export(writer_trees, taxaBlock, treesBlock);
-        neXMLOut.writeEnd();
+        //neXMLExporter.export(writer_trees, trees_list);
+        neXMLExporter.writeStart(writer_trees);
+        neXMLExporter.export(writer_trees, taxaBlock, treesBlock);
+        neXMLExporter.writeEnd();
         writer_trees.close();*/
+    }
+
+
+    @Test
+    public void exportNetwork() throws Exception {
+
+        File file = new File("test/exports/TEST_NeXML_network.xml");
+        Writer writer = new BufferedWriter(new FileWriter(file));
+
+        TaxaBlock taxa = new TaxaBlock();
+        NetworkBlock networkBlock = new NetworkBlock();
+        NexmlNetworkImporter nexmlNetworkImporter = new NexmlNetworkImporter();
+        ProgressListener pl = new ProgressPercentage();
+        nexmlNetworkImporter.parse(pl, "test/neXML/trees.xml", taxa, networkBlock);
+
+        neXMLExporter.writeStart(writer);
+        neXMLExporter.export(writer, taxa, networkBlock);
+        neXMLExporter.writeEnd();
+        writer.close();
     }
 
 }

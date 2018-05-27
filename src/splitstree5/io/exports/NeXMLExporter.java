@@ -4,15 +4,15 @@ import jloda.graph.Edge;
 import jloda.graph.EdgeSet;
 import jloda.graph.Node;
 import jloda.graph.NodeSet;
+import jloda.phylo.PhyloGraph;
 import jloda.phylo.PhyloTree;
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IFromNetwork;
 import splitstree5.core.algorithms.interfaces.IFromTaxa;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
-import splitstree5.core.datablocks.CharactersBlock;
-import splitstree5.core.datablocks.DataBlock;
-import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.datablocks.TreesBlock;
+import splitstree5.core.datablocks.*;
 import splitstree5.io.exports.interfaces.IExportCharacters;
+import splitstree5.io.exports.interfaces.IExportNetwork;
 import splitstree5.io.exports.interfaces.IExportTaxa;
 import splitstree5.io.exports.interfaces.IExportTrees;
 
@@ -24,7 +24,9 @@ import java.io.Writer;
 import java.util.Collections;
 import java.util.List;
 
-public class NeXMLOut implements IFromTaxa, IExportTaxa, IFromChararacters, IExportCharacters, IFromTrees, IExportTrees {
+public class NeXMLExporter implements
+        IFromTaxa, IExportTaxa, IFromChararacters, IFromNetwork,
+        IExportCharacters, IFromTrees, IExportTrees, IExportNetwork {
 
     public enum CharactersOutputType {cell, matrix, both}
 
@@ -46,7 +48,7 @@ public class NeXMLOut implements IFromTaxa, IExportTaxa, IFromChararacters, IExp
             writeNewLineWithTabs(xmlWriter, 1);
             xmlWriter.writeStartElement("otus");
             xmlWriter.writeAttribute("id", "otus1");
-            xmlWriter.writeAttribute("label", "taxaBlock");
+            xmlWriter.writeAttribute("label", "TaxaBlock");
 
             int i = 0;
             for (String label : taxa.getLabels()) {
@@ -189,6 +191,61 @@ public class NeXMLOut implements IFromTaxa, IExportTaxa, IFromChararacters, IExp
                 writeNewLineWithTabs(xmlWriter, 2);
                 xmlWriter.writeEndElement();
             }
+            writeNewLineWithTabs(xmlWriter, 1);
+            xmlWriter.writeEndElement(); //trees
+        } catch (XMLStreamException xmlEx) {
+            xmlEx.printStackTrace();
+        }
+    }
+
+    @Override
+    public void export(Writer w, TaxaBlock taxa, NetworkBlock network) throws IOException {
+
+        export(w, taxa);
+        try {
+            XMLOutputFactory xMLOutputFactory = XMLOutputFactory.newInstance();
+            XMLStreamWriter xmlWriter =
+                    xMLOutputFactory.createXMLStreamWriter(w);
+            writeNewLineWithTabs(xmlWriter, 1);
+            xmlWriter.writeStartElement("trees");
+            xmlWriter.writeAttribute("otus", "otus1");
+            xmlWriter.writeAttribute("id", "trees1");
+
+            PhyloGraph graph = network.getGraph();
+            writeNewLineWithTabs(xmlWriter, 2);
+            xmlWriter.writeStartElement("network");
+            xmlWriter.writeAttribute("id", "network1");
+            xmlWriter.writeAttribute("label", "NetworkBlock");
+            xmlWriter.writeAttribute("xsi:type", "nex:FloatNetwork");
+
+            NodeSet nodes = graph.getNodesAsSet();
+            EdgeSet edges = graph.getEdgesAsSet();
+
+            for (Node node : nodes) {
+                writeNewLineWithTabs(xmlWriter, 2);
+                xmlWriter.writeEmptyElement("node");
+                xmlWriter.writeAttribute("id", "n" + node.getId());
+                /*if (graph.hasTaxa(node))
+                    xmlWriter.writeAttribute("otu", graph.getLabel(node));*/
+                int i;
+                Object o = graph.getTaxa(node).iterator().next();
+                if (o != null) {
+                    i  = (int) o;
+                    xmlWriter.writeAttribute("otu", taxa.getLabel(i + 1));
+                }
+            }
+
+            for (Edge edge : edges) {
+                writeNewLineWithTabs(xmlWriter, 2);
+                xmlWriter.writeEmptyElement("edge");
+                xmlWriter.writeAttribute("id", "e" + edge.getId());
+                xmlWriter.writeAttribute("source", "n" + edge.getSource().getId());
+                xmlWriter.writeAttribute("target", "n" + edge.getTarget().getId());
+                xmlWriter.writeAttribute("length", graph.getWeight(edge) + "");
+            }
+            writeNewLineWithTabs(xmlWriter, 2);
+            xmlWriter.writeEndElement();
+
             writeNewLineWithTabs(xmlWriter, 1);
             xmlWriter.writeEndElement(); //trees
         } catch (XMLStreamException xmlEx) {

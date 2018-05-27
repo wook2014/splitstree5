@@ -42,6 +42,7 @@ public class NexmlTreesImporter implements IToTrees, IImportTrees {
                 trees.getTrees().add(t);
             }
             trees.setPartial(handler.isPartial());
+            trees.setRooted(handler.isRooted());
 
             progressListener.close();
         } catch (Exception e) {
