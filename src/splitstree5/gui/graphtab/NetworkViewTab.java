@@ -54,6 +54,7 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
         setIcon(ResourceManager.getIcon("NetworkViewer16.gif"));
 
         setLayout(GraphLayout.Radial);
+        getScaleBar().setVisible(false);
     }
 
 

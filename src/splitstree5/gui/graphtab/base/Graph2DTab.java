@@ -31,6 +31,8 @@ import jloda.fx.shapes.NodeShape;
 import jloda.graph.*;
 import jloda.phylo.PhyloGraph;
 import jloda.phylo.PhyloTree;
+import splitstree5.gui.graphtab.SplitsViewTab;
+import splitstree5.gui.graphtab.TreeViewTab;
 import splitstree5.gui.graphtab.commands.LayoutLabelsCommand;
 import splitstree5.gui.graphtab.commands.RotateCommand;
 import splitstree5.gui.graphtab.commands.ZoomCommand;
@@ -392,7 +394,7 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
         controller.getSparseLabelsCheckMenuItem().setOnAction(controller.getLayoutLabelsMenuItem().getOnAction());
 
         controller.getShowScaleBarMenuItem().selectedProperty().bindBidirectional(scaleBar.visibleProperty());
-        controller.getShowScaleBarMenuItem().disableProperty().bind(new SimpleBooleanProperty(false));
+        controller.getShowScaleBarMenuItem().disableProperty().bind(new SimpleBooleanProperty(!(this instanceof TreeViewTab || this instanceof SplitsViewTab)));
 
         controller.getResetMenuItem().disableProperty().bind(scaleChangeX.isEqualTo(1).and(scaleChangeY.isEqualTo(1)).and(angleChange.isEqualTo(0)));
     }
