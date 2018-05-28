@@ -28,6 +28,8 @@ import jloda.fx.NotificationManager;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 
+import javax.swing.*;
+
 /**
  * check for update and install, if present
  * Daniel Huson, 5.2018
@@ -58,18 +60,16 @@ public class CheckForUpdate {
             return;
         }
 
+        SwingUtilities.invokeLater(() -> {
+            ApplicationLauncher.launchApplicationInProcess("1691242391", null, new ApplicationLauncher.Callback() {
+                public void exited(int exitValue) {
+                    //TODO add your code here (not invoked on event dispatch thread)
+                }
 
-        // This will return immediately if you call it from the EDT,
-// otherwise it will block until the installer application exits
-        ApplicationLauncher.launchApplicationInProcess("1691242905", null, new ApplicationLauncher.Callback() {
-            public void exited(int exitValue) {
-                //TODO add your code here (not invoked on event dispatch thread)
-            }
-
-            public void prepareShutdown() {
-                ProgramProperties.store();
-            }
-        }, ApplicationLauncher.WindowMode.FRAME, null);
-
+                public void prepareShutdown() {
+                    ProgramProperties.store();
+                }
+            }, ApplicationLauncher.WindowMode.FRAME, null);
+        });
     }
 }
