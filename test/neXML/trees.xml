@@ -105,6 +105,10 @@
         -->
         <network id="tree3" xsi:type="nex:IntNetwork" label="tree2">
             <node id="tree3n1" label="tree3n1"/>
+                <meta
+                        id="node_meta"
+                        xsi:type="nex:LiteralMeta"
+                        datatype="xsd:boolean"/>
             <node id="tree3n2" label="tree3n2" otu="t1"/>
             <node id="tree3n3" label="tree3n3"/>
             <node id="tree3n4" label="tree3n4"/>
@@ -116,6 +120,10 @@
             <edge source="tree3n1" target="tree3n3" id="tree3e1" length="1"/>
             <edge source="tree3n1" target="tree3n2" id="tree3e2" length="2"/>
             <edge source="tree3n3" target="tree3n4" id="tree3e3" length="3"/>
+                <meta
+                        id="edge_meta"
+                        xsi:type="nex:LiteralMeta"
+                        datatype="xsd:boolean"/>
             <edge source="tree3n3" target="tree3n7" id="tree3e4" length="1"/>
             <edge source="tree3n4" target="tree3n5" id="tree3e5" length="2"/>
             <edge source="tree3n4" target="tree3n6" id="tree3e6" length="1"/>

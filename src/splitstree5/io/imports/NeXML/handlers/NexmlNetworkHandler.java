@@ -1,5 +1,6 @@
 package splitstree5.io.imports.NeXML.handlers;
 
+import jloda.graph.Edge;
 import jloda.graph.Node;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -11,9 +12,12 @@ import java.util.ArrayList;
 public class NexmlNetworkHandler extends DefaultHandler {
 
     private boolean bReadingNetwork = false;
+    private boolean bReadingNode = false;
+    private boolean bReadingEdge = false;
     private boolean bReadOneNetwork = false;
 
     NetworkBlock networkBlock;
+    Object currentElement;
     private ArrayList<String> taxaLabels = new ArrayList<>();
 
 
@@ -46,6 +50,7 @@ public class NexmlNetworkHandler extends DefaultHandler {
             //graph = new PhyloGraph();
             bReadingNetwork = true;
         } else if (qName.equalsIgnoreCase("node") && bReadingNetwork) {
+            bReadingNode = true;
             String id = attributes.getValue("id");
             String label = attributes.getValue("label");
             String otu = attributes.getValue("otu");
@@ -60,7 +65,12 @@ public class NexmlNetworkHandler extends DefaultHandler {
             if (otu != null)
                 networkBlock.getGraph().addTaxon(node, taxaLabels.indexOf(otu));
 
+            currentElement = node;
+
         } else if (qName.equalsIgnoreCase("edge") && bReadingNetwork) {
+            bReadingEdge = true;
+            String id = attributes.getValue("id");
+            String label = attributes.getValue("label");
             String source = attributes.getValue("source");
             String target = attributes.getValue("target");
             String weightString = attributes.getValue("length");
@@ -69,7 +79,6 @@ public class NexmlNetworkHandler extends DefaultHandler {
             if (weightString != null)
                 weight = Double.parseDouble(weightString);
 
-            // todo add edge data
             Node sourceNode = networkBlock.getGraph().getLastNode();
             Node targetNode = networkBlock.getGraph().getFirstNode();
             for (Node n : networkBlock.getGraph().getNodesAsSet()) {
@@ -79,7 +88,42 @@ public class NexmlNetworkHandler extends DefaultHandler {
                     targetNode = n;
             }
 
-            networkBlock.getGraph().setWeight(networkBlock.getGraph().newEdge(sourceNode, targetNode), weight);
+            Edge edge = networkBlock.getGraph().newEdge(sourceNode, targetNode);
+            networkBlock.getGraph().setWeight(edge, weight);
+
+            // Save original labels
+            NetworkBlock.EdgeData edgeData = networkBlock.getEdgeData(edge);
+            edgeData.put("nex:id", id);
+            if (label != null)
+                edgeData.put("nex:label", label);
+            networkBlock.getEdge2data().put(edge, edgeData);
+
+            currentElement = edge;
+
+        // Metadata
+        } else if (qName.equalsIgnoreCase("meta") && bReadingNetwork) {
+            System.out.println("READING META");
+
+            if (currentElement instanceof Node) {
+                NetworkBlock.NodeData nodeData = networkBlock.getNodeData((Node) currentElement);
+
+                for (int i = 0; i<attributes.getLength(); i++)
+                    nodeData.put("metadata_"+attributes.getLocalName(i), attributes.getValue(i));
+
+
+
+                networkBlock.getNode2data().put((Node) currentElement, nodeData);
+            }
+
+            if (currentElement instanceof Edge) {
+                NetworkBlock.EdgeData edgeData = networkBlock.getEdgeData((Edge) currentElement);
+
+                for (int i = 0; i<attributes.getLength(); i++)
+                    edgeData.put("metadata_"+attributes.getLocalName(i), attributes.getValue(i));
+
+                networkBlock.getEdge2data().put((Edge) currentElement, edgeData);
+            }
+
         }
 
     }
@@ -93,6 +137,10 @@ public class NexmlNetworkHandler extends DefaultHandler {
             bReadingNetwork = false;
             bReadOneNetwork = true; // todo read only one network
             //trees.add(tree);
+        } else if (qName.equalsIgnoreCase("node")) {
+            bReadingNode = false;
+        } else if (qName.equalsIgnoreCase("edge")) {
+            bReadingEdge = false;
         }
     }
 
