@@ -39,10 +39,13 @@
 package splitstree5.main;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.IntegerBinding;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.ReadOnlyLongProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
 import javafx.stage.Stage;
 import splitstree5.dialogs.ClosingLastDocument;
@@ -56,7 +59,7 @@ import java.util.Map;
  * Daniel Huson, 1.2018
  */
 public class MainWindowManager {
-    private final ArrayList<MainWindow> mainWindows;
+    private final ObservableList<MainWindow> mainWindows;
     private final Map<MainWindow, ArrayList<Stage>> mainWindows2AdditionalWindows;
     private MainWindow lastFocusedMainWindow;
 
@@ -70,7 +73,7 @@ public class MainWindowManager {
      * constructor
      */
     private MainWindowManager() {
-        mainWindows = new ArrayList<>();
+        mainWindows = FXCollections.observableArrayList();
         mainWindows2AdditionalWindows = new HashMap<>();
         previousSelection = FXCollections.observableSet();
     }
@@ -165,7 +168,7 @@ public class MainWindowManager {
         return changed;
     }
 
-    public ArrayList<MainWindow> getMainWindows() {
+    public ObservableList<MainWindow> getMainWindows() {
         return mainWindows;
     }
 
@@ -179,5 +182,9 @@ public class MainWindowManager {
 
     public void setLastFocusedMainWindow(MainWindow lastFocusedMainWindow) {
         this.lastFocusedMainWindow = lastFocusedMainWindow;
+    }
+
+    public IntegerBinding sizeProperty() {
+        return Bindings.size(mainWindows);
     }
 }
