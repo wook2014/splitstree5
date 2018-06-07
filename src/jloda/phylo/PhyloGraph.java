@@ -137,7 +137,7 @@ public class PhyloGraph extends Graph {
      */
     public Iterable<String> nodeLabels() {
         return () -> new Iterator<String>() {
-            private Node v;
+            private Node v = getFirstNode();
 
             {
                 while (v != null && getLabel(v) == null) {
@@ -154,9 +154,45 @@ public class PhyloGraph extends Graph {
             public String next() {
                 final String result = getLabel(v);
                 {
-                    while (v != null && getLabel(v) == null) {
+                    do {
                         v = v.getNext();
                     }
+                    while (v != null && getLabel(v) == null);
+                }
+                return result;
+            }
+        };
+    }
+
+
+    /**
+     * iterates over all edge labels
+     *
+     * @return edge labels
+     */
+    public Iterable<String> edgeLabels() {
+        return () -> new Iterator<String>() {
+            private Edge e = getFirstEdge();
+
+            {
+                while (e != null && getLabel(e) == null) {
+                    e = e.getNext();
+                }
+            }
+
+            @Override
+            public boolean hasNext() {
+                return e != null;
+            }
+
+            @Override
+            public String next() {
+                final String result = getLabel(e);
+                {
+                    do {
+                        e = e.getNext();
+                    }
+                    while (e != null && getLabel(e) == null);
                 }
                 return result;
             }

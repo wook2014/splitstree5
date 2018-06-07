@@ -330,7 +330,6 @@ public class Workflow {
         this.topTraitsNode.set(topTraitsNode);
     }
 
-
     public DataNode<TraitsBlock> getWorkingTraitsNode() {
         return workingTraitsNode.get();
     }
@@ -349,11 +348,9 @@ public class Workflow {
         return workingDataNode.get();
     }
 
-
     public void setWorkingDataNode(DataNode workingDataNode) {
         this.workingDataNode.set(workingDataNode);
     }
-
 
     public Connector<TaxaBlock, TaxaBlock> getTaxaFilter() {
         return taxaFilter.get();

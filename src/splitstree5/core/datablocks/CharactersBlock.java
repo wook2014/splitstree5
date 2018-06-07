@@ -54,8 +54,8 @@ public class CharactersBlock extends DataBlock {
 
     private CharactersType dataType = CharactersType.Unknown;
 
-    private StateLabeler stateLabeler;
-    private Map<Integer, String> charLabeler;
+    private StateLabeler stateLabeler; // manages state labels
+    private Map<Integer, String> charLabeler; // manages character labels
 
     private float gammaParam = Float.MAX_VALUE;
     private float pInvar = Float.MAX_VALUE;

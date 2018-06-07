@@ -94,7 +94,6 @@ import java.util.*;
  */
 public class WorkflowViewTab extends ViewerTab {
     private final Document document;
-
     private final Group nodeViews = new Group();
     private final Group edgeViews = new Group();
 
@@ -114,8 +113,8 @@ public class WorkflowViewTab extends ViewerTab {
         setText("Workflow");
         setIcon(ResourceManager.getIcon("sun/toolbarButtonGraphics/general/Preferences16.gif"));
 
-
         centerPane = new Pane(new StackPane(edgeViews, nodeViews));
+
         centerPane.setPadding(new Insets(5, 5, 5, 5));
         //centerPane.setStyle("-fx-border-color: red");
         scrollPane = new ZoomableScrollPane(centerPane);
@@ -161,7 +160,6 @@ public class WorkflowViewTab extends ViewerTab {
         noDataLabel.setTextFill(Color.DARKGRAY);
     }
 
-
     public void clear() {
         getUndoManager().clear();
 
@@ -170,7 +168,6 @@ public class WorkflowViewTab extends ViewerTab {
         node2NodeView.clear();
         node2EdgeViews.clear();
     }
-
 
     /**
      * clear and then recompute the view

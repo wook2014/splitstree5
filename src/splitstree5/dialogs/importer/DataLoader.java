@@ -54,7 +54,7 @@ public class DataLoader {
     /**
      * loads data into document
      *
-     * @param reload       if true, attempt to reload into current workflow, otherwise open new window
+     * @param reload if true, attempt to reload into current workflow, otherwise open new window
      * @param taxaBlock
      * @param dataBlock
      * @param parentWindow
@@ -95,7 +95,9 @@ public class DataLoader {
 
         final Workflow workflow = mainWindow.getWorkflow();
 
-        if (dataBlock instanceof CharactersBlock) {
+        Platform.runLater(() -> {
+
+            if (dataBlock instanceof CharactersBlock) {
             workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
             final DataNode<DistancesBlock> distances = workflow.createDataNode(new DistancesBlock());
             workflow.createConnector(workflow.getWorkingDataNode(), distances, new HammingDistances());
@@ -155,7 +157,6 @@ public class DataLoader {
 
         document.setupTaxonSelectionModel();
 
-        Platform.runLater(() -> {
             document.setDirty(true);
             if (mainWindow == parentWindow) // are using an existing window
                 mainWindow.getStage().toFront();
