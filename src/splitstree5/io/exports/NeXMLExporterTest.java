@@ -4,10 +4,8 @@ import jloda.util.ProgressListener;
 import jloda.util.ProgressPercentage;
 import jloda.util.parse.NexusStreamParser;
 import org.junit.Test;
-import splitstree5.core.datablocks.CharactersBlock;
-import splitstree5.core.datablocks.DataBlock;
-import splitstree5.core.datablocks.NetworkBlock;
-import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.datablocks.*;
+import splitstree5.io.imports.NeXML.NexmlFileParser;
 import splitstree5.io.imports.NeXML.NexmlNetworkImporter;
 import splitstree5.io.nexus.CharactersNexusInput;
 import splitstree5.io.nexus.TaxaNexusInput;
@@ -21,7 +19,7 @@ public class NeXMLExporterTest {
     private NeXMLExporter neXMLExporter = new NeXMLExporter();
 
     @Test
-    public void export() throws Exception {
+    public void exportCharacters() throws Exception {
 
         File file = new File("test/exports/TEST_NeXML_list.xml");
         Writer writer = new BufferedWriter(new FileWriter(file));
@@ -49,25 +47,23 @@ public class NeXMLExporterTest {
         neXMLExporter.writeEnd();
         writer.close();
         writer2.close();
+    }
 
+    @Test
+    public void exportTrees() throws Exception {
 
-        // test trees block
-        /*File file_trees = new File("test/exports/TEST_NeXML_trees.xml");
+        File file_trees = new File("test/exports/TEST_NeXML_trees.xml");
         Writer writer_trees = new BufferedWriter(new FileWriter(file_trees));
 
         TaxaBlock taxaBlock = new TaxaBlock();
         TreesBlock treesBlock = new TreesBlock();
         NexmlFileParser nexmlFileParser = new NexmlFileParser();
-        nexmlFileParser.parse("test/neXML/simple.xml", taxaBlock, treesBlock);
+        nexmlFileParser.parse("test/neXML/trees.xml", taxaBlock, treesBlock);
 
-        List<DataBlock> trees_list = new ArrayList<>();
-        trees_list.add(taxaBlock);
-        trees_list.add(treesBlock);
-        //neXMLExporter.export(writer_trees, trees_list);
         neXMLExporter.writeStart(writer_trees);
         neXMLExporter.export(writer_trees, taxaBlock, treesBlock);
         neXMLExporter.writeEnd();
-        writer_trees.close();*/
+        writer_trees.close();
     }
 
 

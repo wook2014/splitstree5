@@ -36,7 +36,6 @@ public class NeXMLExporter implements
 
     private XMLStreamWriter startWriter;
 
-    // todo use fileName as block label
     @Override
     public void export(Writer w, TaxaBlock taxa) throws IOException {
 
@@ -87,7 +86,6 @@ public class NeXMLExporter implements
                 String dataType = "nex:" + characters.getDataType().name() + "Seqs";
                 xmlWriter.writeAttribute("xsi:type", dataType);
 
-                /////////// format todo: char elements? as option?
                 writeNewLineWithTabs(xmlWriter, 2);
                 xmlWriter.writeStartElement("format");
                 writeNewLineWithTabs(xmlWriter, 3);
@@ -128,7 +126,7 @@ public class NeXMLExporter implements
                     xmlWriter.writeStartElement("row");
                     xmlWriter.writeAttribute("id", "row" + i);
                     xmlWriter.writeAttribute("label", taxa.getLabel(i));
-                    xmlWriter.writeAttribute("otus", "otu" + i);
+                    xmlWriter.writeAttribute("otus", "otu1");
 
                     writeNewLineWithTabs(xmlWriter, 4);
                     xmlWriter.writeStartElement("seq");
@@ -167,22 +165,36 @@ public class NeXMLExporter implements
                     xMLOutputFactory.createXMLStreamWriter(w);
             writeNewLineWithTabs(xmlWriter, 1);
             xmlWriter.writeStartElement("trees");
+            xmlWriter.writeAttribute("otus", "otus1");
+            xmlWriter.writeAttribute("id", "trees1");
+            xmlWriter.writeAttribute("label", "TreesBlock");
 
+            int treesCounter = 0;
             for (PhyloTree tree : trees.getTrees()) {
+                treesCounter++;
+
                 writeNewLineWithTabs(xmlWriter, 2);
                 xmlWriter.writeStartElement("tree");
+                xmlWriter.writeAttribute("id", "tree"+treesCounter);
+                xmlWriter.writeAttribute("label", "tree"+treesCounter);
+                xmlWriter.writeAttribute("xsi:type", "nex:FloatTree");
 
                 NodeSet nodes = tree.getNodesAsSet();
                 EdgeSet edges = tree.getEdgesAsSet();
 
                 for (Node node : nodes) {
-                    writeNewLineWithTabs(xmlWriter, 2);
+                    writeNewLineWithTabs(xmlWriter, 3);
                     xmlWriter.writeEmptyElement("node");
                     xmlWriter.writeAttribute("id", "n" + node.getId());
+                    xmlWriter.writeAttribute("label", "n" + node.getId());
+                    if (tree.getRoot() != null && tree.getRoot().equals(node))
+                        xmlWriter.writeAttribute("root", "true");
+                    if (node.isLeaf())
+                        xmlWriter.writeAttribute("otu", tree.getLabel(node));
                 }
 
                 for (Edge edge : edges) {
-                    writeNewLineWithTabs(xmlWriter, 2);
+                    writeNewLineWithTabs(xmlWriter, 3);
                     xmlWriter.writeEmptyElement("edge");
                     xmlWriter.writeAttribute("source", "n" + edge.getSource().getId());
                     xmlWriter.writeAttribute("target", "n" + edge.getTarget().getId());
@@ -211,12 +223,12 @@ public class NeXMLExporter implements
             xmlWriter.writeStartElement("trees");
             xmlWriter.writeAttribute("otus", "otus1");
             xmlWriter.writeAttribute("id", "trees1");
+            xmlWriter.writeAttribute("label", "NetworkBlock");
 
             PhyloGraph graph = network.getGraph();
             writeNewLineWithTabs(xmlWriter, 2);
             xmlWriter.writeStartElement("network");
             xmlWriter.writeAttribute("id", "network1");
-            xmlWriter.writeAttribute("label", "NetworkBlock");
             xmlWriter.writeAttribute("xsi:type", "nex:FloatNetwork");
 
             // Nodes and edges
