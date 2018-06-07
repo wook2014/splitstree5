@@ -183,7 +183,7 @@ public class ImporterManager {
         } else if (importer instanceof IImportSplits) {
             return "Splits";
         } else if (importer instanceof IImportNetwork) {
-            return "Splits";
+            return "Network";
         } else
             return UNKNOWN;
     }
