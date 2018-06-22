@@ -60,7 +60,6 @@ public class Distortion {
         for (Node v = tree.getFirstNode(); v != null; v = v.getNext()) {
             boolean hasA = false;
             boolean hasB = false;
-            System.out.println(tree.getTaxa(v));
             for (Object aVTaxa : tree.getTaxa(v)) {
                 int t = (Integer) aVTaxa;
                 if (A.get(t))
@@ -120,7 +119,7 @@ public class Distortion {
      * @param scoreB
      */
     private static void computeScoreRec(Node v, Edge e, NodeIntegerArray scoreA, NodeIntegerArray scoreB) {
-        System.out.println("Entering with v=" + v);
+        //System.out.println("Entering with v=" + v);
         //printScores(tree,scoreA,scoreB);
         boolean hasAMuchBetterThanB = false;
         boolean hasBMuchBetterThanA = false;

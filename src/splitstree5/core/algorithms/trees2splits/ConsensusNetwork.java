@@ -54,7 +54,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
     public enum EdgeWeights {Median, Mean, Count, Sum, None}
 
     private final SimpleObjectProperty<EdgeWeights> optionEdgeWeights = new SimpleObjectProperty<>(EdgeWeights.Mean);
-    private DoubleProperty optionThreshold = new SimpleDoubleProperty(0.5);
+    private DoubleProperty optionThresholdPercent = new SimpleDoubleProperty(30.0);
 
     private final Object sync = new Object();
 
@@ -147,7 +147,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
             final CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
             final Single<CanceledException> exception = new Single<>();
 
-            final double threshold = (optionThreshold.getValue() < 1 ? optionThreshold.getValue() : 0.999999);
+            final double threshold = (optionThresholdPercent.getValue() < 100 ? optionThresholdPercent.getValue() / 100.0 : 0.999999);
 
             final ArrayList<Pair<BitSet, WeightStats>> array = new ArrayList<>(splitsAndWeights.values());
 
@@ -240,16 +240,16 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
         this.optionEdgeWeights.set(optionEdgeWeights);
     }
 
-    public double getOptionThreshold() {
-        return optionThreshold.get();
+    public double getOptionThresholdPercent() {
+        return optionThresholdPercent.get();
     }
 
-    public DoubleProperty optionThresholdProperty() {
-        return optionThreshold;
+    public DoubleProperty optionThresholdPercentProperty() {
+        return optionThresholdPercent;
     }
 
-    public void setOptionThreshold(double optionThreshold) {
-        this.optionThreshold.set(optionThreshold);
+    public void setOptionThresholdPercent(double optionThresholdPercent) {
+        this.optionThresholdPercent.set(optionThresholdPercent);
     }
 
     /**
@@ -319,5 +319,4 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
             return sum;
         }
     }
-
 }

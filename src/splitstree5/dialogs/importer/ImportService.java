@@ -22,6 +22,7 @@ package splitstree5.dialogs.importer;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.scene.layout.Pane;
+import jloda.fx.NotificationManager;
 import jloda.fx.ProgramExecutorService;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
@@ -74,6 +75,10 @@ public class ImportService extends Service<Boolean> {
         final ProgressPane progressPane = new ProgressPane(titleProperty(), messageProperty(), progressProperty(), runningProperty(), this::cancel);
         if (progressBarParent != null)
             progressBarParent.getChildren().add(progressPane);
+
+        setOnFailed((e) -> {
+            NotificationManager.showError("Import failed: " + getException().getMessage());
+        });
     }
 
     @Override

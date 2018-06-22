@@ -50,6 +50,7 @@ public class NewickTreeIn implements IToTrees, IImportTrees {
                 final Set<String> taxonNamesFound = new TreeSet<>();
 
                 final SimpleNewickParser newickParser = new SimpleNewickParser();
+                newickParser.setEnforceLeafLabelsStartWithLetter(true);
                 boolean partial = false;
                 final ArrayList<String> parts = new ArrayList<>();
 
@@ -71,6 +72,9 @@ public class NewickTreeIn implements IToTrees, IImportTrees {
                             tree = newickParser.parse(treeLine);
                         } catch (IOException ex) {
                             throw new IOExceptionWithLineNumber(lineno, ex);
+                        }
+                        if (TreesUtilities.hasNumbersOnLeafNodes(tree)) {
+                            throw new IOException("Leaf labels must begin with a letter");
                         }
                         if (TreesUtilities.hasNumbersOnInternalNodes(tree)) {
                             TreesUtilities.changeNumbersOnInternalNodesToEdgeConfidencies(tree);

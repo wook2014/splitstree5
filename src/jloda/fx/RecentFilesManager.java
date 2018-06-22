@@ -91,11 +91,14 @@ public class RecentFilesManager {
                         for (WeakReference<Menu> ref : menuReferences) {
                             final Menu menu = ref.get();
                             if (menu != null) {
-                                for (String fileName : c.getAddedSubList()) {
-                                    final MenuItem openMenuItem = new MenuItem(fileName);
-                                    openMenuItem.setOnAction((e) -> fileOpener.get().accept(fileName));
-                                    openMenuItem.disableProperty().bind(disable);
-                                    menu.getItems().add(0, openMenuItem);
+                                try {
+                                    for (String fileName : c.getAddedSubList()) {
+                                        final MenuItem openMenuItem = new MenuItem(fileName);
+                                        openMenuItem.setOnAction((e) -> fileOpener.get().accept(fileName));
+                                        openMenuItem.disableProperty().bind(disable);
+                                        menu.getItems().add(0, openMenuItem);
+                                    }
+                                } catch (Exception ex) {
                                 }
                             } else
                                 deadRefs.add(ref);
