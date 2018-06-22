@@ -91,23 +91,24 @@ public class TreesUtilities {
      * are there any labeled internal nodes and are all such labels numbers?
      *
      * @param tree
-     * @return true, if some internal nodes labeled by numbers
+     * @return true, if some internal nodes labeled and all labeled by numbers
      */
     public static boolean hasNumbersOnInternalNodes(PhyloTree tree) {
-        boolean hasNumbersOnInternalNodes = false;
+        boolean hasNumbers = false;
         for (Node v = tree.getFirstNode(); v != null; v = v.getNext()) {
             if (v.getOutDegree() != 0 && v.getInDegree() != 0) {
                 String label = tree.getLabel(v);
                 if (label != null) {
                     if (Basic.isDouble(label))
-                        hasNumbersOnInternalNodes = true;
+                        hasNumbers = true;
                     else
                         return false;
                 }
             }
         }
-        return hasNumbersOnInternalNodes;
+        return hasNumbers;
     }
+
 
     /**
      * reinterpret an numerical label of an internal node as the confidence associated with the incoming edge
@@ -122,6 +123,46 @@ public class TreesUtilities {
                     if (Basic.isDouble(label)) {
                         tree.setConfidence(v.getFirstInEdge(), Basic.parseDouble(label));
                         tree.setLabel(v, null);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * are there any labeled leaf nodes and are all such labels numbers?
+     *
+     * @param tree
+     * @return true, if some leaves nodes labeled by numbers
+     */
+    public static boolean hasNumbersOnLeafNodes(PhyloTree tree) {
+        boolean hasNumbers = false;
+        for (Node v = tree.getFirstNode(); v != null; v = v.getNext()) {
+            if (v.getOutDegree() == 0) {
+                final String label = tree.getLabel(v);
+                if (label != null) {
+                    if (Basic.isDouble(label))
+                        hasNumbers = true;
+                    else
+                        return false;
+                }
+            }
+        }
+        return hasNumbers;
+    }
+
+    /**
+     * change numerical leaf label to string
+     *
+     * @param tree
+     */
+    public static void changeNumbersOnLeafNodesToLabels(PhyloTree tree) {
+        for (Node v = tree.getFirstNode(); v != null; v = v.getNext()) {
+            if (v.getOutDegree() == 0) {
+                final String label = tree.getLabel(v);
+                if (label != null) {
+                    if (Basic.isDouble(label)) {
+                        tree.setLabel(v, "Taxon-" + label);
                     }
                 }
             }

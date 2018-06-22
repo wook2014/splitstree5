@@ -383,7 +383,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
      * @param edgeAngles assignment of angles to edges
      */
     static void computeNodeLocationsForCircular(Node root, EdgeFloatArray edgeLengths, EdgeFloatArray edgeAngles, NodeArray<Point2D> node2point) {
-        Point2D rootLocation = new Point2D(0.25, 0);
+        Point2D rootLocation = new Point2D(0, 0); // has to be 0,0
         node2point.setValue(root, rootLocation);
         for (Edge e : root.outEdges()) {
             final Node w = e.getTarget();

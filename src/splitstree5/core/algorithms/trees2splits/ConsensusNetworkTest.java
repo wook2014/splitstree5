@@ -39,7 +39,7 @@ public class ConsensusNetworkTest {
 
         consensusNetwork.compute(new ProgressPercentage(), taxaBlock, treesBlock, splitsBlock);
         System.err.println(consensusNetwork.getOptionEdgeWeights());
-        System.err.println(consensusNetwork.getOptionThreshold());
+        System.err.println(consensusNetwork.getOptionThresholdPercent());
 
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");

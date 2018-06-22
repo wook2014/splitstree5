@@ -160,6 +160,7 @@ public class EdgeView2D extends EdgeViewBase {
             edgeShape.setPickOnBounds(false);
             edgeShape.setFill(Color.TRANSPARENT);
             edgeShape.setStroke(Color.BLACK);
+            
             edgeShape.setStrokeLineCap(StrokeLineCap.ROUND);
             edgeShape.setStrokeWidth(1);
             setShape(edgeShape);

@@ -20,17 +20,19 @@
 package splitstree5.core.algorithms.trees2splits;
 
 import javafx.beans.property.SimpleObjectProperty;
+import jloda.util.Basic;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToSplits;
-import splitstree5.core.algorithms.trees2trees.ConsensusTree;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
+import splitstree5.core.misc.ASplit;
+import splitstree5.core.misc.Compatibility;
 import splitstree5.utils.SplitsUtilities;
-import splitstree5.utils.TreesUtilities;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -40,9 +42,10 @@ import java.util.List;
  * Daniel Huson, 2.2018
  */
 public class ConsensusTreeSplits extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
-    private final SimpleObjectProperty<ConsensusTree.Consensus> optionConsensus = new SimpleObjectProperty<>(ConsensusTree.Consensus.Majority);
-    private final SimpleObjectProperty<ConsensusNetwork.EdgeWeights> optionEdgeWeights = new SimpleObjectProperty<>(ConsensusNetwork.EdgeWeights.Mean);
+    public enum Consensus {Strict, Majority, Greedy} // todo: add loose?
 
+    private final SimpleObjectProperty<Consensus> optionConsensus = new SimpleObjectProperty<>(Consensus.Majority);
+    private final SimpleObjectProperty<ConsensusNetwork.EdgeWeights> optionEdgeWeights = new SimpleObjectProperty<>(ConsensusNetwork.EdgeWeights.Mean);
 
     /**
      * compute the consensus splits
@@ -53,14 +56,41 @@ public class ConsensusTreeSplits extends Algorithm<TreesBlock, SplitsBlock> impl
      * @param child
      */
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock parent, SplitsBlock child) throws Exception {
-        final ConsensusTree consensusTree = new ConsensusTree();
-        consensusTree.setOptionConsensus(getOptionConsensus());
-        consensusTree.setOptionEdgeWeights(getOptionEdgeWeights());
+        final ConsensusNetwork consensusNetwork = new ConsensusNetwork();
+        switch (getOptionConsensus()) {
+            default:
+            case Majority:
+                consensusNetwork.setOptionThresholdPercent(50);
+                break;
+            case Strict:
+                consensusNetwork.setOptionThresholdPercent(99.999999); // todo: implement without use of splits
+                break;
+            case Greedy:
+                consensusNetwork.setOptionThresholdPercent(0);
+        }
+        final SplitsBlock consensusSplits = new SplitsBlock();
+        consensusNetwork.setOptionEdgeWeights(getOptionEdgeWeights());
+        consensusNetwork.compute(progress, taxaBlock, parent, consensusSplits);
 
-        final TreesBlock trees = new TreesBlock();
-        consensusTree.compute(progress, taxaBlock, parent, trees);
+        if (getOptionConsensus().equals(Consensus.Greedy)) {
+            final ArrayList<ASplit> list = new ArrayList<>(consensusSplits.size());
+            consensusSplits.getSplits().addAll(consensusSplits.getSplits());
+            list.sort((s1, s2) -> {
+                if (s1.getWeight() > s2.getWeight())
+                    return -1;
+                else if (s1.getWeight() < s2.getWeight())
+                    return 1;
+                else
+                    return Basic.compare(s1.getA(), s2.getA());
+            });
+            for (ASplit split : list) {
+                if (Compatibility.isCompatible(split, child.getSplits()))
+                    child.getSplits().add(split);
+            }
+        } else
+            child.getSplits().setAll(consensusSplits.getSplits());
 
-        TreesUtilities.computeSplits(null, trees.getTrees().get(0), child.getSplits());
+        child.setCompatibility(Compatibility.compatible);
         child.setCycle(SplitsUtilities.computeCycle(taxaBlock.getNtax(), child.getSplits()));
     }
 
@@ -74,15 +104,15 @@ public class ConsensusTreeSplits extends Algorithm<TreesBlock, SplitsBlock> impl
         return Arrays.asList("consensus", "edgeWeights");
     }
 
-    public ConsensusTree.Consensus getOptionConsensus() {
+    public Consensus getOptionConsensus() {
         return optionConsensus.get();
     }
 
-    public SimpleObjectProperty<ConsensusTree.Consensus> optionConsensusProperty() {
+    public SimpleObjectProperty<Consensus> optionConsensusProperty() {
         return optionConsensus;
     }
 
-    public void setOptionConsensus(ConsensusTree.Consensus optionConsensus) {
+    public void setOptionConsensus(Consensus optionConsensus) {
         this.optionConsensus.set(optionConsensus);
     }
 

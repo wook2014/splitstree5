@@ -37,6 +37,7 @@ import java.util.Set;
 public class SimpleNewickParser {
     private static final String punctuationCharacters = "),;:";
     private static final String startOfNumber = "-.0123456789";
+    private boolean enforceLeafLabelsStartWithLetter = false;
 
     private PhyloTree tree;
     private boolean hasWeights;
@@ -112,10 +113,13 @@ public class SimpleNewickParser {
                             i++;
                         }
 
-                        final String label = buf.toString().trim();
+                        String label = buf.toString().trim();
                         if (label.length() == 0)
                             throw new IOException("Expected label at position " + i0);
 
+                        if (enforceLeafLabelsStartWithLetter && w.getOutDegree() == 0 && !Character.isLetter(label.charAt(0))) {
+                            label = "T" + label;
+                        }
                         tree.setLabel(w, label);
                         if (w.getOutDegree() == 0) {
                             if (leafLabels.contains(label))
@@ -146,6 +150,10 @@ public class SimpleNewickParser {
 
                     if (label.length() == 0)
                         throw new IOException("Expected label at position " + i0);
+
+                    if (enforceLeafLabelsStartWithLetter && w.getOutDegree() == 0 && !Character.isLetter(label.charAt(0))) {
+                        label = "T" + label;
+                    }
 
                     tree.setLabel(w, label);
                     if (w.getOutDegree() == 0) {
@@ -211,5 +219,13 @@ public class SimpleNewickParser {
 
     public Set<String> getInternalLabels() {
         return internalLabels;
+    }
+
+    public boolean isEnforceLeafLabelsStartWithLetter() {
+        return enforceLeafLabelsStartWithLetter;
+    }
+
+    public void setEnforceLeafLabelsStartWithLetter(boolean enforceLeafLabelsStartWithLetter) {
+        this.enforceLeafLabelsStartWithLetter = enforceLeafLabelsStartWithLetter;
     }
 }
