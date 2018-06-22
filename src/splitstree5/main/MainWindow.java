@@ -55,6 +55,7 @@ import splitstree5.gui.datatab.DataViewTab;
 import splitstree5.gui.formattab.FormatTab;
 import splitstree5.gui.inputtab.InputTab;
 import splitstree5.gui.methodstab.MethodsViewTab;
+import splitstree5.gui.editinputtab.EditInputTab;
 import splitstree5.gui.workflowtab.WorkflowViewTab;
 import splitstree5.gui.workflowtree.WorkflowTreeSupport;
 import splitstree5.menu.MenuController;
@@ -94,6 +95,7 @@ public class MainWindow {
     private final WorkflowViewTab workflowViewTab;
     private final MethodsViewTab methodsViewTab;
     private InputTab inputTab;
+    private EditInputTab editInputTab; // todo delete after testing
 
     /**
      * constructor
@@ -521,8 +523,30 @@ public class MainWindow {
         getMainWindowController().getMainTabPane().getSelectionModel().select(inputTab);
     }
 
+    /**
+     * show the enter data tab
+     */
+    public void showEditInputTab() { //todo : delete after testing
+        if (editInputTab == null) {
+            editInputTab = new EditInputTab(this);
+            getDocument().dirtyProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue) {
+                    removeInputTab();
+                }
+            });
+        }
+        if (!getMainWindowController().getMainTabPane().getTabs().contains(editInputTab))
+            getMainWindowController().getMainTabPane().getTabs().add(editInputTab);
+        getMainWindowController().getMainTabPane().getSelectionModel().select(editInputTab);
+    }
+
     public InputTab getInputTab() {
         return inputTab;
+    }
+
+
+    public EditInputTab getEditedInputTab() { //todo : delete after testing
+        return editInputTab;
     }
 
     public void showWorkflow() {

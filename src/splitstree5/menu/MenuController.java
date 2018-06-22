@@ -57,6 +57,9 @@ public class MenuController {
     private MenuItem inputDataMenuItem;
 
     @FXML
+    private MenuItem inputEditDataMenuItem;
+
+    @FXML
     private MenuItem saveMenuItem;
 
     @FXML
@@ -398,6 +401,10 @@ public class MenuController {
 
     public MenuItem getEnterDataMenuItem() {
         return inputDataMenuItem;
+    }
+
+    public MenuItem getEnterEditDataMenuItem() { //todo : delete after testing + in menu.fxml
+        return inputEditDataMenuItem;
     }
 
     public MenuItem getSaveMenuItem() {

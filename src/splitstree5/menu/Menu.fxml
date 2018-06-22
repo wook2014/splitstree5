@@ -44,6 +44,11 @@
                         <KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
+                <MenuItem fx:id="inputEditDataMenuItem" text="Input Editable Data">
+                    <accelerator>
+                        <KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
+                    </accelerator>
+                </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="saveMenuItem" text="Save">
                     <accelerator>
