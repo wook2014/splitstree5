@@ -432,8 +432,18 @@ public class Graph extends GraphBase {
      * @return iterable over all nodes
      */
     public Iterable<Node> nodes() {
+        return nodes(null);
+    }
+
+    /**
+     * iterable over all nodes after given node prev
+     *
+     * @param prev the previous node, after which the iteration starts. If null, iterates over all nodes
+     * @return iterable over all nodes
+     */
+    public Iterable<Node> nodes(Node prev) {
         return () -> new Iterator<Node>() {
-            Node v = getFirstNode();
+            Node v = (prev == null ? getFirstNode() : prev.getNext());
 
             @Override
             public boolean hasNext() {

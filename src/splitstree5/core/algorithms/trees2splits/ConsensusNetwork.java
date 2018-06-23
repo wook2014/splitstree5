@@ -25,10 +25,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import jloda.fx.ProgramExecutorService;
 import jloda.phylo.PhyloTree;
-import jloda.util.CanceledException;
-import jloda.util.Pair;
-import jloda.util.ProgressListener;
-import jloda.util.Single;
+import jloda.util.*;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToSplits;
@@ -51,7 +48,7 @@ import java.util.concurrent.ExecutorService;
  * @author Daniel Huson, 1/2017
  */
 public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
-    public enum EdgeWeights {Median, Mean, Count, Sum, None}
+    public enum EdgeWeights {Mean, TreeSizeWeightedMean, Median, Count, Sum, None}
 
     private final SimpleObjectProperty<EdgeWeights> optionEdgeWeights = new SimpleObjectProperty<>(EdgeWeights.Mean);
     private DoubleProperty optionThresholdPercent = new SimpleDoubleProperty(30.0);
@@ -81,6 +78,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
         final Map<BitSet, Pair<BitSet, WeightStats>> splitsAndWeights = new HashMap<>();
         final BitSet taxaInTree = taxaBlock.getTaxaSet();
 
+
         final ExecutorService executor = ProgramExecutorService.getInstance();
 
         if (treesBlock.getNTrees() == 1) System.err.println("Consensus network: only one tree specified");
@@ -99,18 +97,26 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
                     try {
                         for (int which = threadNumber; which < trees.size(); which += numberOfThreads) {
                             final PhyloTree tree = trees.get(which);
+                            final double factor;
+                            if (getOptionEdgeWeights() == EdgeWeights.TreeSizeWeightedMean)
+                                factor = 1.0 / TreesUtilities.computeTotalWeight(tree);
+                            else
+                                factor = 1;
+
+                            //System.err.println("Tree "+which+": "+factor);
+
                             final List<ASplit> splits = new ArrayList<>();
                             TreesUtilities.computeSplits(taxaInTree, tree, splits);
                             try {
                                 SplitsUtilities.verifySplits(splits, taxaBlock);
-                            } catch (SplitsException e) {
-                                e.printStackTrace();
+                            } catch (SplitsException ex) {
+                                Basic.caught(ex);
                             }
 
                             for (ASplit split : splits) {
                                 synchronized (sync) {
                                     final Pair<BitSet, WeightStats> pair = splitsAndWeights.computeIfAbsent(split.getPartContaining(1), k -> new Pair<>(k, new WeightStats()));
-                                    pair.getSecond().add((float) split.getWeight());
+                                    pair.getSecond().add((float) (factor * split.getWeight()), which);
                                 }
                             }
                             if (threadNumber == 0) {
@@ -163,6 +169,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
                                     case Count:
                                         wgt = weightStats.getCount();
                                         break;
+                                    case TreeSizeWeightedMean: // values have all already been divided by total tree length, just need mean here...
                                     case Mean:
                                         wgt = weightStats.getMean();
                                         break;
@@ -258,6 +265,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
         private ArrayList<Float> weights;
         private int totalCount;
         private double sum;
+        private int treeIndex;
 
         /**
          * construct a new values map
@@ -266,6 +274,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
             weights = new ArrayList<>();
             totalCount = 0;
             sum = 0;
+            treeIndex = -1;
         }
 
         /**
@@ -273,10 +282,11 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
          *
          * @param weight
          */
-        void add(float weight) {
+        void add(float weight, int treeIndex) {
             weights.add(weight);
             totalCount++;
             sum += weight;
+            this.treeIndex = treeIndex;
         }
 
         /**

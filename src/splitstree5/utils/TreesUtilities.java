@@ -252,4 +252,17 @@ public class TreesUtilities {
         return vAndBelowTaxa;
     }
 
+    /**
+     * compute the total weight of a tree
+     *
+     * @param tree
+     * @return total weight
+     */
+    public static double computeTotalWeight(PhyloTree tree) {
+        double weight = 0;
+        for (Edge e : tree.edges()) {
+            weight += tree.getWeight(e);
+        }
+        return weight;
+    }
 }

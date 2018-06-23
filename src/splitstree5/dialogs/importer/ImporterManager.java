@@ -107,7 +107,7 @@ public class ImporterManager {
      * @param includeGZ
      * @return completed extensions
      */
-    private List<String> completeExtensions(Collection<String> extensions, boolean includeGZ) {
+    public static List<String> completeExtensions(Collection<String> extensions, boolean includeGZ) {
         if (extensions == null)
             return null;
         final Set<String> set = new TreeSet<>();

@@ -59,7 +59,7 @@ public class BitSetUtils {
     }
 
     /**
-     * does set contain set b?
+     * does set a contain set b?
      *
      * @param a
      * @param b

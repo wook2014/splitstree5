@@ -66,7 +66,10 @@ public class MenuController {
     private MenuItem saveAsMenuItem;
 
     @FXML
-    private MenuItem ImportMenuItem;
+    private MenuItem importMenuItem;
+
+    @FXML
+    private MenuItem importMultipleTreeFilesMenuItem;
 
     @FXML
     private MenuItem exportMenuItem;
@@ -416,7 +419,11 @@ public class MenuController {
     }
 
     public MenuItem getImportMenuItem() {
-        return ImportMenuItem;
+        return importMenuItem;
+    }
+
+    public MenuItem getImportMultipleTreeFilesMenuItem() {
+        return importMultipleTreeFilesMenuItem;
     }
 
     public MenuItem getExportMenuItem() {

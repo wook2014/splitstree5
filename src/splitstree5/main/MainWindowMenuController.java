@@ -53,6 +53,7 @@ import splitstree5.core.workflow.Workflow;
 import splitstree5.core.workflow.WorkflowEditing;
 import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.dialogs.importer.ImportDialog;
+import splitstree5.dialogs.importer.ImportMultipleTreeFilesDialog;
 import splitstree5.dialogs.importer.ImporterManager;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.utils.CheckForUpdate;
@@ -82,6 +83,7 @@ public class MainWindowMenuController {
         });
 
         controller.getImportMenuItem().setOnAction((e) -> ImportDialog.show(mainWindow));
+        controller.getImportMultipleTreeFilesMenuItem().setOnAction((e) -> ImportMultipleTreeFilesDialog.apply(mainWindow));
 
         controller.getOpenMenuItem().setOnAction((e) -> {
             final File previousDir = new File(ProgramProperties.get("InputDir", ""));

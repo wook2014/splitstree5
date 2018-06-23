@@ -28,7 +28,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import jloda.fx.ExtendedFXMLLoader;
 import jloda.fx.NotificationManager;
-import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 import splitstree5.io.imports.interfaces.IImporter;
 import splitstree5.main.MainWindow;
@@ -51,7 +50,7 @@ public class ImportDialog {
      * @param parentMainWindow
      * @throws IOException
      */
-    public ImportDialog(MainWindow parentMainWindow, String fileName) throws IOException {
+    public ImportDialog(MainWindow parentMainWindow, String fileName) {
         final ExtendedFXMLLoader<ImportDialogController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         controller = extendedFXMLLoader.getController();
 
@@ -164,12 +163,8 @@ public class ImportDialog {
      * @param other
      */
     public static void show(MainWindow other, String file) {
-        try {
             ImportDialog importDialog = new ImportDialog(other, file);
             importDialog.show();
-        } catch (IOException e) {
-            Basic.caught(e);
-        }
     }
 
     public ImportDialogController getController() {

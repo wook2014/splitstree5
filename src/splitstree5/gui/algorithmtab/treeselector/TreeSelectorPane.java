@@ -138,32 +138,32 @@ public class TreeSelectorPane extends AlgorithmPane {
                 syncController2Model();
             }
         });
-        controller.getGotoFirstButton().disableProperty().bind(currentTree.lessThanOrEqualTo(1));
+        controller.getGotoFirstButton().disableProperty().bind(currentTree.lessThanOrEqualTo(1).or(connector.stateProperty().isNotEqualTo(UpdateState.VALID)));
 
 
         controller.getGotoFirstButton().setOnAction((e) -> {
             currentTree.set(1);
             syncController2Model();
         });
-        controller.getGotoFirstButton().disableProperty().bind(currentTree.lessThanOrEqualTo(1));
+        controller.getGotoFirstButton().disableProperty().bind(currentTree.lessThanOrEqualTo(1).or(connector.stateProperty().isNotEqualTo(UpdateState.VALID)));
 
         controller.getGotoPreviousButton().setOnAction((e) -> {
             currentTree.set(currentTree.get() - 1);
             syncController2Model();
         });
-        controller.getGotoPreviousButton().disableProperty().bind(currentTree.lessThanOrEqualTo(1));
+        controller.getGotoPreviousButton().disableProperty().bind(currentTree.lessThanOrEqualTo(1).or(connector.stateProperty().isNotEqualTo(UpdateState.VALID)));
 
         controller.getGotoNextButton().setOnAction((e) -> {
             currentTree.set(currentTree.get() + 1);
             syncController2Model();
         });
-        controller.getGotoNextButton().disableProperty().bind(currentTree.greaterThanOrEqualTo(numberOfTrees));
+        controller.getGotoNextButton().disableProperty().bind(currentTree.greaterThanOrEqualTo(numberOfTrees).or(connector.stateProperty().isNotEqualTo(UpdateState.VALID)));
 
         controller.getGotoLastButton().setOnAction((e) -> {
             currentTree.set(numberOfTrees.get());
             syncController2Model();
         });
-        controller.getGotoLastButton().disableProperty().bind(currentTree.greaterThanOrEqualTo(connector.getParent().getDataBlock().getNTrees()));
+        controller.getGotoLastButton().disableProperty().bind(currentTree.greaterThanOrEqualTo(connector.getParent().getDataBlock().getNTrees()).or(connector.stateProperty().isNotEqualTo(UpdateState.VALID)));
 
         isApplicable.bind(currentTree.greaterThanOrEqualTo(1).and(currentTree.lessThanOrEqualTo(numberOfTrees)));
 

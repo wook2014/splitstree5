@@ -95,17 +95,17 @@ public class AntiConsensusSplitsFabian extends Algorithm<TreesBlock, SplitsBlock
 
 
         //for tests
-     /*   if (AntiConsensusSplits.progress == null)
-            AntiConsensusSplits.progress = progress;
+     /*   if (AntiConsensusNetwork.progress == null)
+            AntiConsensusNetwork.progress = progress;
 
-        if (AntiConsensusSplits.splitsBlock == null)
-            AntiConsensusSplits.splitsBlock = splitsBlock;
+        if (AntiConsensusNetwork.splitsBlock == null)
+            AntiConsensusNetwork.splitsBlock = splitsBlock;
 
-        if (AntiConsensusSplits.treesBlock == null)
-            AntiConsensusSplits.treesBlock = treesBlock;
+        if (AntiConsensusNetwork.treesBlock == null)
+            AntiConsensusNetwork.treesBlock = treesBlock;
 
-        if (AntiConsensusSplits.taxaBlock == null)
-            AntiConsensusSplits.taxaBlock = taxaBlock;*/
+        if (AntiConsensusNetwork.taxaBlock == null)
+            AntiConsensusNetwork.taxaBlock = taxaBlock;*/
 
         final ObservableList<PhyloTree> trees = treesBlock.getTrees();
         final Map<BitSet, Pair<BitSet, WeightStats>> splitsAndWeights = new HashMap<>();

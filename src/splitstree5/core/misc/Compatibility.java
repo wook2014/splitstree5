@@ -19,7 +19,6 @@
 
 package splitstree5.core.misc;
 
-import javafx.collections.ObservableList;
 import splitstree5.utils.SplitsUtilities;
 
 import java.util.BitSet;
@@ -215,20 +214,5 @@ public enum Compatibility {
         return matrix;
     }
 
-    /**
-     * count the number of splits to which split is incompatible
-     *
-     * @param split
-     * @param splits
-     * @return count
-     */
-    public static int computeIncompatible(ASplit split, ObservableList<ASplit> splits) {
-        int count = 0;
-        for (ASplit other : splits) {
-            if (other.size() > 1 && !Compatibility.areCompatible(split, other)) {
-                count++;
-            }
-        }
-        return count;
-    }
+
 }

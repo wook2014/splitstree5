@@ -19,6 +19,8 @@
 
 package splitstree5.core.misc;
 
+import jloda.util.BitSetUtils;
+
 import java.util.BitSet;
 import java.util.Comparator;
 
@@ -119,6 +121,13 @@ public final class ASplit {
         }
         this.weight = weight;
         this.confidence = confidence;
+    }
+
+    public static int compare(ASplit a, ASplit b) {
+        int com = BitSetUtils.compare(a.getA(), b.getA());
+        if (com == 0)
+            com = BitSetUtils.compare(a.getB(), b.getB());
+        return com;
     }
 
     public int ntax() {

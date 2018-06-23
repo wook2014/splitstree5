@@ -61,11 +61,18 @@
                     </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
-                <MenuItem fx:id="ImportMenuItem" mnemonicParsing="false" text="Import...">
+                <MenuItem fx:id="importMenuItem" mnemonicParsing="false" text="Import...">
                     <accelerator>
                         <KeyCodeCombination alt="UP" code="I" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
+                <MenuItem fx:id="importMultipleTreeFilesMenuItem" mnemonicParsing="false"
+                          text="Import Trees from Multiple Files...">
+                    <accelerator>
+                        <KeyCodeCombination alt="UP" code="I" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
+                    </accelerator>
+                </MenuItem>
+                <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="exportMenuItem" mnemonicParsing="false" text="Export...">
                     <accelerator>
                         <KeyCodeCombination alt="UP" code="E" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>

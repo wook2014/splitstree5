@@ -57,6 +57,12 @@ public class CallableService<T> extends Service<T> {
         setExecutor(ProgramExecutorService.getInstance());
     }
 
+    public CallableService(Callable<T> callable) {
+        super();
+        setExecutor(ProgramExecutorService.getInstance());
+        setCallable(callable);
+    }
+
     @Override
     protected Task<T> createTask() {
         return new Task<T>() {
