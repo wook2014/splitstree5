@@ -77,7 +77,6 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
      * @param splitsBlock
      */
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock) throws CanceledException, SplitsException {
-
         final ObservableList<PhyloTree> trees = treesBlock.getTrees();
         final Map<BitSet, Pair<BitSet, WeightStats>> splitsAndWeights = new HashMap<>();
         final BitSet taxaInTree = taxaBlock.getTaxaSet();

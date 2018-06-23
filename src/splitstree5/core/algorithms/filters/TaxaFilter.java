@@ -21,7 +21,6 @@ package splitstree5.core.algorithms.filters;
 
 import javafx.application.Platform;
 import jloda.util.Basic;
-import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTaxa;
@@ -45,7 +44,7 @@ public class TaxaFilter extends Algorithm<TaxaBlock, TaxaBlock> implements IFrom
     private final ArrayList<Taxon> disabledTaxa = new ArrayList<>();
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock ignored, TaxaBlock parent, TaxaBlock child) throws InterruptedException, CanceledException {
+    public void compute(ProgressListener progress, TaxaBlock ignored, TaxaBlock parent, TaxaBlock child) {
         child.getTaxa().clear();
 
         if (enabledTaxa.size() == 0 && disabledTaxa.size() == 0) // nothing has been explicitly set, copy everything

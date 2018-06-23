@@ -76,6 +76,7 @@ public class ViewerBlock extends DataBlock {
             super.setDocument(document);
             if (document.getMainWindow() != null) {
                 Platform.runLater(() -> { // setup tab
+                    viewerTab.setMainWindow(document.getMainWindow());
                     document.getMainWindow().showDataView(getDataNode());
                 });
             }

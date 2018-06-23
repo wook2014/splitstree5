@@ -1252,27 +1252,6 @@ public class Basic {
         return file;
     }
 
-    /**
-     * compare two bit sets
-     *
-     * @param a
-     * @param b
-     * @return comparison
-     */
-    public static int compare(BitSet a, BitSet b) {
-        int i = a.nextSetBit(0);
-        int j = b.nextSetBit(0);
-        while (i == j) {
-            if (i == -1)
-                return 0;
-            i = a.nextSetBit(i + 1);
-            j = b.nextSetBit(j + 1);
-        }
-        if (i < j)
-            return -1;
-        else
-            return 1;
-    }
 }
 
 /**

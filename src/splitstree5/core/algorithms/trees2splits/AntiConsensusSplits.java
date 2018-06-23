@@ -21,10 +21,7 @@ package splitstree5.core.algorithms.trees2splits;
 
 import jloda.fx.ProgramExecutorService;
 import jloda.phylo.PhyloTree;
-import jloda.util.Basic;
-import jloda.util.CanceledException;
-import jloda.util.ProgressListener;
-import jloda.util.Single;
+import jloda.util.*;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToSplits;
@@ -47,12 +44,18 @@ import java.util.concurrent.ExecutorService;
  * @author Daniel Huson, June 2018
  */
 public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
-    public enum EdgeWeights {Median, Mean, Count, Sum, None}
-
     private float optionIncompatibilitiesPercent = 10; // percent of non-trivial incompatibilities that a split should have to be considered for the anti-consensus
+
+    private ConsensusNetwork.EdgeWeights optionEdgeWeights = ConsensusNetwork.EdgeWeights.Mean;
+
+    private int optionSourceTree = 0;
 
     public final static String DESCRIPTION = "Computes the anti-consensus splits of trees";
 
+    @Override
+    public List<String> listOptions() {
+        return Arrays.asList("optionIncompatibilitiesPercent", "optionEdgeWeights", "optionTree");
+    }
 
     @Override
     public String getCitation() {
@@ -75,7 +78,7 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
             progress.setSubtask("Determining all splits");
             final ConsensusNetwork consensusNetwork = new ConsensusNetwork();
             consensusNetwork.setOptionThresholdPercent(0);
-            consensusNetwork.setOptionEdgeWeights(ConsensusNetwork.EdgeWeights.Mean);
+            consensusNetwork.setOptionEdgeWeights(optionEdgeWeights);
             consensusNetwork.compute(progress, taxaBlock, treesBlock, allSplits);
             System.err.println("All splits: " + allSplits.size());
         }
@@ -86,7 +89,7 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
             progress.setSubtask("Determining consensus tree splits");
             final ConsensusTreeSplits consensusTreeSplits = new ConsensusTreeSplits();
             consensusTreeSplits.setOptionConsensus(ConsensusTreeSplits.Consensus.Majority); // todo: implement and use loose consensus
-            consensusTreeSplits.setOptionEdgeWeights(ConsensusNetwork.EdgeWeights.Mean);
+            consensusTreeSplits.setOptionEdgeWeights(optionEdgeWeights);
             consensusTreeSplits.compute(progress, taxaBlock, treesBlock, consensusSplits);
             System.err.println("Consensus tree splits: " + consensusSplits.size());
         }
@@ -128,31 +131,45 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
             }
         }
         System.err.println("Incompatible splits added: " + addSplits.size());
-        splitsBlock.getSplits().addAll(addSplits.getSplits());
 
         if (addSplits.size() > 0) {
             progress.setSubtask("Mapping back to trees:");
 
-            final Map<Integer, BitSet> splitId2TreeIds = new TreeMap<>();
-            mapSplitsToTrees(progress, taxaBlock, addSplits, treesBlock, splitId2TreeIds);
-            for (Integer splitId : splitId2TreeIds.keySet()) {
-                System.err.println("Split " + splitId + " from tree(s) " + Basic.toString(splitId2TreeIds.get(splitId), ", "));
+            final Map<Integer, Pair<ASplit, BitSet>> id2splitAndTreeIds = new TreeMap<>();
+            mapSplitsToTrees(progress, taxaBlock, addSplits, treesBlock, id2splitAndTreeIds);
+
+            if (getOptionSourceTree() > 0) {
+                final ArrayList<Integer> toDelete = new ArrayList<>();
+                for (Integer splitId : id2splitAndTreeIds.keySet()) {
+                    final Pair<ASplit, BitSet> pair = id2splitAndTreeIds.get(splitId);
+                    if (!pair.getSecond().get(getOptionSourceTree())) {
+                        toDelete.add(splitId);
+                        addSplits.getSplits().remove(pair.getFirst());
+                    }
+                }
+                if (toDelete.size() > 0)
+                    id2splitAndTreeIds.keySet().removeAll(toDelete);
+            }
+
+            for (Integer splitId : id2splitAndTreeIds.keySet()) {
+                System.err.print("Split " + splitId + " from tree(s): ");
+                final BitSet bits = id2splitAndTreeIds.get(splitId).getSecond();
+                if (bits != null) {
+                    boolean first = true;
+                    for (Integer t : BitSetUtils.members(bits)) {
+                        if (first)
+                            first = false;
+                        else
+                            System.err.print(", ");
+                        System.err.print("[" + t + "] " + treesBlock.getTree(t).getName());
+                    }
+                }
+                System.err.println();
+
             }
         }
-    }
 
-
-    public float getOptionIncompatibilitiesPercent() {
-        return optionIncompatibilitiesPercent;
-    }
-
-    public void setOptionIncompatibilitiesPercent(float optionIncompatibilitiesPercent) {
-        this.optionIncompatibilitiesPercent = optionIncompatibilitiesPercent;
-    }
-
-    @Override
-    public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent) {
-        return !parent.isPartial();
+        splitsBlock.getSplits().addAll(addSplits.getSplits());
     }
 
     /**
@@ -162,10 +179,10 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
      * @param taxaBlock
      * @param splitsBlock
      * @param treesBlock
-     * @param splitId2TreeIds
+     * @param splitId2SplitAndTreeIds
      * @throws CanceledException
      */
-    public static void mapSplitsToTrees(ProgressListener progress, final TaxaBlock taxaBlock, SplitsBlock splitsBlock, TreesBlock treesBlock, Map<Integer, BitSet> splitId2TreeIds) throws CanceledException {
+    public static void mapSplitsToTrees(ProgressListener progress, final TaxaBlock taxaBlock, SplitsBlock splitsBlock, TreesBlock treesBlock, Map<Integer, Pair<ASplit, BitSet>> splitId2SplitAndTreeIds) throws CanceledException {
         // compute added split to tree map:
         final ExecutorService executor = ProgramExecutorService.getInstance();
 
@@ -196,12 +213,12 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
                                 final ASplit split = splitsBlock.get(splitId);
                                 if (splits.contains(split)) {
                                     synchronized (sync[splitId & mask]) {
-                                        BitSet bits = splitId2TreeIds.get(splitId);
-                                        if (bits == null) {
-                                            bits = new BitSet();
-                                            splitId2TreeIds.put(splitId, bits);
+                                        Pair<ASplit, BitSet> pair = splitId2SplitAndTreeIds.get(splitId);
+                                        if (pair == null) {
+                                            pair = new Pair<>(split, new BitSet());
+                                            splitId2SplitAndTreeIds.put(splitId, pair);
                                         }
-                                        bits.set(treeId);
+                                        pair.getSecond().set(treeId);
                                     }
                                 }
                             }
@@ -232,6 +249,40 @@ public class AntiConsensusSplits extends Algorithm<TreesBlock, SplitsBlock> impl
                 throw exception.get();
             }
         }
+    }
+
+
+    public float getOptionIncompatibilitiesPercent() {
+        return optionIncompatibilitiesPercent;
+    }
+
+    public void setOptionIncompatibilitiesPercent(float optionIncompatibilitiesPercent) {
+        this.optionIncompatibilitiesPercent = optionIncompatibilitiesPercent;
+    }
+
+    public ConsensusNetwork.EdgeWeights getOptionEdgeWeights() {
+        return optionEdgeWeights;
+    }
+
+    public void setOptionEdgeWeights(ConsensusNetwork.EdgeWeights optionEdgeWeights) {
+        this.optionEdgeWeights = optionEdgeWeights;
+    }
+
+    public int getOptionSourceTree() {
+        return optionSourceTree;
+    }
+
+    public void setOptionSourceTree(int optionSourceTree) {
+        this.optionSourceTree = optionSourceTree;
+    }
+
+    public String getShortDescriptionSourceTree() {
+        return "The index of the tree from which incompatible splits are considered, 0 means use all trees";
+    }
+
+    @Override
+    public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent) {
+        return !parent.isPartial();
     }
 }
 

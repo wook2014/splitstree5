@@ -90,6 +90,7 @@ public class ConnectorService<P extends DataBlock, C extends DataBlock> extends 
                     if (verbose)
                         System.err.println("USER CANCELED");
                     connector.stateProperty().set(UpdateState.FAILED);
+                    throw ex;
                 } finally {
                     if (verbose)
                         System.err.println("--- Compute " + getMethodName() + " done");

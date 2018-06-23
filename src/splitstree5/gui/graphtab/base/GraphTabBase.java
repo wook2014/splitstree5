@@ -146,7 +146,20 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
         // centerPane.setStyle("-fx-border-color: red");
 
         nodeSelectionModel.getSelectedItems().addListener((ListChangeListener<Node>) c -> {
+            boolean verbose = false;
+            if (verbose) {
+                System.err.println("Node selection for " + Basic.getShortName(this.getClass()) + "(" + this + "):");
+                for (Node v : graph.nodes()) {
+                    System.err.println("node " + v + " id: " + v.getId() + " label: " + graph.getLabel(v) + " taxa: " + Basic.toString(graph.getTaxa(v), " "));
+                }
+            }
             while (c.next()) {
+                if (verbose) {
+                    System.err.println("ADDED:");
+                    for (Node v : c.getAddedSubList()) {
+                        System.err.println("node " + v + " id: " + v.getId());
+                    }
+                }
                 for (Node v : c.getAddedSubList()) {
                     if (v.getOwner() == getGraph()) {
                         final NodeViewBase nv = getNode2view().get(v);
@@ -162,6 +175,12 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
                             nv.showAsSelected(false);
                         }
                     }
+                }
+            }
+            if (verbose) {
+                System.err.println("Selected:");
+                for (Node v : graph.nodes()) {
+                    System.err.println("node " + v + " id: " + v.getId() + " selected: " + nodeSelectionModel.getSelectedItems().contains(v) + " shown: " + getNode2view().get(v).isShownAsSelected());
                 }
             }
         });

@@ -20,7 +20,7 @@
 package splitstree5.core.algorithms.trees2splits;
 
 import javafx.beans.property.SimpleObjectProperty;
-import jloda.util.Basic;
+import jloda.util.BitSetUtils;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
@@ -81,7 +81,7 @@ public class ConsensusTreeSplits extends Algorithm<TreesBlock, SplitsBlock> impl
                 else if (s1.getWeight() < s2.getWeight())
                     return 1;
                 else
-                    return Basic.compare(s1.getA(), s2.getA());
+                    return BitSetUtils.compare(s1.getA(), s2.getA());
             });
             for (ASplit split : list) {
                 if (Compatibility.isCompatible(split, child.getSplits()))

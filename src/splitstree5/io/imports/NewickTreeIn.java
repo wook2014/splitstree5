@@ -48,6 +48,7 @@ public class NewickTreeIn implements IToTrees, IImportTrees {
 
                 final Map<String, Integer> taxName2Id = new HashMap<>(); // starts at 1
                 final Set<String> taxonNamesFound = new TreeSet<>();
+                final ArrayList<String> orderedTaxonNames = new ArrayList<>();
 
                 final SimpleNewickParser newickParser = new SimpleNewickParser();
                 newickParser.setEnforceLeafLabelsStartWithLetter(true);
@@ -81,8 +82,11 @@ public class NewickTreeIn implements IToTrees, IImportTrees {
                         }
                         if (taxonNamesFound.size() == 0) {
                             for (String name : newickParser.getLeafLabels()) {
-                                taxonNamesFound.add(name);
-                                taxName2Id.put(name, taxonNamesFound.size()); //
+                                if (taxonNamesFound.add(name)) {
+                                    orderedTaxonNames.add(name);
+                                    taxName2Id.put(name, orderedTaxonNames.size());
+                                } else
+                                    throw new IOException("Name appears multiple times in tree:" + name);
                             }
                         } else {
                             if (!taxonNamesFound.equals(newickParser.getLeafLabels())) {
@@ -90,7 +94,8 @@ public class NewickTreeIn implements IToTrees, IImportTrees {
                                 for (String name : newickParser.getLeafLabels()) {
                                     if (!taxonNamesFound.contains(name)) {
                                         taxonNamesFound.add(name);
-                                        taxName2Id.put(name, taxonNamesFound.size());
+                                        orderedTaxonNames.add(name);
+                                        taxName2Id.put(name, orderedTaxonNames.size());
                                     }
                                 }
                             }
@@ -111,7 +116,7 @@ public class NewickTreeIn implements IToTrees, IImportTrees {
                 }
                 if (parts.size() > 0)
                     System.err.println("Ignoring trailing lines at end of file:\n" + Basic.abbreviateDotDotDot(Basic.toString(parts, "\n"), 400));
-                taxa.addTaxaByNames(taxonNamesFound);
+                taxa.addTaxaByNames(orderedTaxonNames);
                 trees.setPartial(partial);
                 trees.setRooted(true);
             }
