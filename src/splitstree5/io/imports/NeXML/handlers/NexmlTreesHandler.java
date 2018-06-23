@@ -123,6 +123,8 @@ public class NexmlTreesHandler extends DefaultHandler {
             // if a tree already set as partial, no further check
             if (partial || taxaLabels.size() != treeLabels.size())
                 partial = true;
+
+            treeContainsAllTaxa(tree);
         }
     }
 
@@ -146,10 +148,10 @@ public class NexmlTreesHandler extends DefaultHandler {
 
         int numOfLabelsInTree = 0;
 
-        /*for (String s : tree.nodeLabels()) {
+        for (String s : tree.nodeLabels()) {
             numOfLabelsInTree++;
             System.err.println("üüüüüüüüü"+s);
-        }*/
+        }
         //System.err.println(tree.nodeLabels().iterator().next());
 
         //Iterable<String> iterator = tree.nodeLabels();
@@ -160,10 +162,10 @@ public class NexmlTreesHandler extends DefaultHandler {
             System.err.println(iterator.next());
             numOfLabelsInTree++;
         }*/
-        System.err.println("üüüüüüüüü" + numOfLabelsInTree);
+        /*System.err.println("üüüüüüüüü" + numOfLabelsInTree);
         //return numOfLabelsInTree == taxaLabels.size();
 
-        /*Iterator<String> source = tree.nodeLabels().iterator();
+        Iterator<String> source = tree.nodeLabels().iterator();
         ArrayList<String> target = (ArrayList<String>) makeCollection(tree.nodeLabels());
         //tree.nodeLabels().forEach(target::add);
 

@@ -25,6 +25,9 @@ public class NexmlNetworkHandler extends DefaultHandler {
     public void startElement(String uri,
                              String localName, String qName, Attributes attributes) throws SAXException {
 
+        // todo delete "sp5" in metadata before parsing
+        // todo reachTextFX (StyleClassesTextArea), WebView von javaFX
+
         // Taxa INFO
         if (qName.equalsIgnoreCase("otus")) {
             String label = attributes.getValue("label");

@@ -120,6 +120,16 @@ public class MainWindowMenuController {
             }
         });
 
+        controller.getEnterEditDataMenuItem().setOnAction((e) -> { //todo : delete after testing
+            if (!mainWindow.getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().get() || mainWindow.getEditedInputTab() != null) {
+                mainWindow.showEditInputTab();
+            } else {
+                final MainWindow newMainWindow = new MainWindow();
+                newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50);
+                newMainWindow.showEditInputTab();
+            }
+        });
+
         controller.getSaveMenuItem().setOnAction((e) -> {
             try {
                 new WorkflowNexusOutput().save(mainWindow.getDocument());
