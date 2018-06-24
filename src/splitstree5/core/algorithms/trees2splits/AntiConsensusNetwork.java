@@ -21,6 +21,7 @@ package splitstree5.core.algorithms.trees2splits;
 
 import jloda.fx.ProgramExecutorService;
 import jloda.graph.Edge;
+import jloda.graph.Graph;
 import jloda.graph.Node;
 import jloda.phylo.PhyloGraph;
 import jloda.phylo.PhyloTree;
@@ -50,12 +51,19 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
     private ConsensusNetwork.EdgeWeights optionEdgeWeights = ConsensusNetwork.EdgeWeights.TreeSizeWeightedMean;
 
     private int optionMaxRank = 1;
+    private boolean optionRequireSameSource = false;
+    private boolean optionMaxRankOnly = false;
 
     public final static String DESCRIPTION = "Computes the anti-consensus of trees";
 
     @Override
+    public List<String> listOptions() {
+        return Arrays.asList("optionMaxRank", "optionEdgeWeights", "optionRequireSameSource", "optionMaxRankOnly");
+    }
+
+    @Override
     public String getCitation() {
-        return null;
+        return "Huson, Steel et al, 2018;Huson, Steel et al;Anti-consensus: manuscript in preparation";
     }
 
     /**
@@ -107,15 +115,16 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
             }
         }
 
-        // 2. compute the result:
         final SplitsBlock otherSplits = new SplitsBlock();
         otherSplits.getSplits().setAll(allSplits.getSplits());
         otherSplits.getSplits().removeAll(consensusSplits.getSplits());
         System.err.println("Difference: " + otherSplits.size());
 
         splitsBlock.getSplits().setAll(consensusSplits.getSplits()); // add all consensus splits
+
         final SplitsBlock addSplits = new SplitsBlock();
         final Map<ASplit, BitSet> split2incompatibilities = new HashMap<>();
+
         for (ASplit split : otherSplits.getSplits()) {
             split2incompatibilities.put(split, new BitSet());
 
@@ -142,7 +151,16 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
 
             progress.setTasks("Anti-consensus", "Computing domination DAG");
             final Map<ASplit, Node> split2nodeInDominationGraph = new HashMap<>();
-            final PhyloGraph dominationDAG = computeDominationDAG(addSplits, split2incompatibilities, split2nodeInDominationGraph);
+            final Graph dominationDAG = computeDominationDAG(addSplits, split2incompatibilities, split2nodeInDominationGraph);
+
+            if (isOptionRequireSameSource()) {
+                for (Edge e : dominationDAG.edges()) {
+                    final ASplit split1 = addSplits.get((Integer) e.getSource().getInfo());
+                    final ASplit split2 = addSplits.get((Integer) e.getTarget().getInfo());
+                    if (BitSetUtils.intersection(addedSplit2Trees.get(split1), addedSplit2Trees.get(split2)).cardinality() == 0)
+                        dominationDAG.deleteEdge(e);
+                }
+            }
 
             final ArrayList<Pair<Integer, Double>> weightAndSplitId = new ArrayList<>();
             for (int s = 1; s <= addSplits.getNsplits(); s++) {
@@ -155,7 +173,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
                 return comp;
             });
 
-            final Map<ASplit, Integer> split2rank = computeSplit2Rank(addSplits, weightAndSplitId, dominationDAG, split2nodeInDominationGraph);
+            final Map<ASplit, Integer> split2rank = computeSplit2Rank(addSplits, weightAndSplitId, split2nodeInDominationGraph);
 
             for (Pair<Integer, Double> pair : weightAndSplitId) {
                 final int s = pair.get1();
@@ -168,7 +186,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
                         for (Node w : v.children()) {
                             if (dominatesBuffer.length() > 0)
                                 dominatesBuffer.append(",");
-                            dominatesBuffer.append(dominationDAG.getLabel(w));
+                            dominatesBuffer.append(w.getInfo());
                         }
                     }
                     if (dominatesBuffer.length() == 0)
@@ -177,7 +195,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
                         for (Node w : v.parents()) {
                             if (dominatorsBuffer.length() > 0)
                                 dominatorsBuffer.append(",");
-                            dominatorsBuffer.append(dominationDAG.getLabel(w));
+                            dominatorsBuffer.append(w.getInfo());
                         }
                     }
                     if (dominatorsBuffer.length() == 0)
@@ -193,10 +211,10 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
             }
 
             for (ASplit split : addSplits.getSplits()) {
-                if (split2rank.get(split) <= getOptionMaxRank())
+                if ((!isOptionMaxRankOnly() && split2rank.get(split) < getOptionMaxRank()) || split2rank.get(split) == getOptionMaxRank())
                     splitsBlock.getSplits().add(split);
             }
-            }
+        }
     }
 
 
@@ -207,12 +225,12 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
      * @param split2incompatibilities
      * @return graph
      */
-    private static PhyloGraph computeDominationDAG(SplitsBlock splits, Map<ASplit, BitSet> split2incompatibilities, Map<ASplit, Node> split2nodeMap) {
-        final PhyloGraph graph = new PhyloGraph();
+    private static Graph computeDominationDAG(SplitsBlock splits, Map<ASplit, BitSet> split2incompatibilities, Map<ASplit, Node> split2nodeMap) {
+        final Graph graph = new PhyloGraph();
 
         for (int s = 1; s <= splits.getNsplits(); s++) {
             final Node v = graph.newNode();
-            graph.setLabel(v, "" + s);
+            v.setInfo(s);
             split2nodeMap.put(splits.get(s), v);
         }
         for (int s = 1; s <= splits.getNsplits(); s++) {
@@ -250,11 +268,10 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
      * computes the split to rank mapping
      *
      * @param weightAndSplitId
-     * @param graph
      * @param split2node
      * @return split to level mapping
      */
-    private Map<ASplit, Integer> computeSplit2Rank(SplitsBlock splitsBlock, ArrayList<Pair<Integer, Double>> weightAndSplitId, PhyloGraph graph, Map<ASplit, Node> split2node) {
+    private Map<ASplit, Integer> computeSplit2Rank(SplitsBlock splitsBlock, ArrayList<Pair<Integer, Double>> weightAndSplitId, Map<ASplit, Node> split2node) {
         final Map<ASplit, Integer> split2rank = new HashMap<>();
 
         int rank = 0;
@@ -268,7 +285,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
                 queue.add(v);
                 while (queue.size() > 0) {
                     v = queue.remove();
-                    split = splitsBlock.get(Integer.parseInt(graph.getLabel(v)));
+                    split = splitsBlock.get((Integer) v.getInfo());
                     split2rank.put(split, rank);
                     for (Node w : v.children()) {
                         queue.add(w);
@@ -397,8 +414,36 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         return optionEdgeWeights;
     }
 
+    public String getShortDescriptionMaxRank() {
+        return "Maximum rank of splits used in anti-consensus. Larger rank means more conflict.";
+    }
+
     public void setOptionEdgeWeights(ConsensusNetwork.EdgeWeights optionEdgeWeights) {
         this.optionEdgeWeights = optionEdgeWeights;
+    }
+
+    public boolean isOptionRequireSameSource() {
+        return optionRequireSameSource;
+    }
+
+    public void setOptionRequireSameSource(boolean optionRequireSameSource) {
+        this.optionRequireSameSource = optionRequireSameSource;
+    }
+
+    public String getShortDescriptionRequireSame() {
+        return "Require splits of same rank to come from the same input tree";
+    }
+
+    public boolean isOptionMaxRankOnly() {
+        return optionMaxRankOnly;
+    }
+
+    public void setOptionMaxRankOnly(boolean optionMaxRankOnly) {
+        this.optionMaxRankOnly = optionMaxRankOnly;
+    }
+
+    public String getShortDescriptionMaxRankOnly() {
+        return "Only add splits that have the set max-rank, not those with a better (lower) rank";
     }
 
     @Override
