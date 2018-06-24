@@ -48,8 +48,6 @@ import java.util.concurrent.ExecutorService;
  * @author Daniel Huson, June 2018
  */
 public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
-    private ConsensusNetwork.EdgeWeights optionEdgeWeights = ConsensusNetwork.EdgeWeights.TreeSizeWeightedMean;
-
     private int optionMaxRank = 1;
     private boolean optionRequireSameSource = false;
     private boolean optionMaxRankOnly = false;
@@ -58,12 +56,12 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
 
     @Override
     public List<String> listOptions() {
-        return Arrays.asList("optionMaxRank", "optionEdgeWeights", "optionRequireSameSource", "optionMaxRankOnly");
+        return Arrays.asList("optionMaxRank", "optionRequireSameSource", "optionMaxRankOnly");
     }
 
     @Override
     public String getCitation() {
-        return "Huson, Steel et al, 2018;Huson, Steel et al;Anti-consensus: manuscript in preparation";
+        return "Huson, Steel et al, 2018;D.H. Huson, M.A. Steel and ???. Anti-consensus: manuscript in preparation";
     }
 
     /**
@@ -83,9 +81,9 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
             progress.setTasks("Anti-consensus", "Determining all splits");
             final ConsensusNetwork consensusNetwork = new ConsensusNetwork();
             consensusNetwork.setOptionThresholdPercent(0);
-            consensusNetwork.setOptionEdgeWeights(optionEdgeWeights);
+            consensusNetwork.setOptionEdgeWeights(ConsensusNetwork.EdgeWeights.TreeSizeWeightedMean);
             consensusNetwork.compute(progress, taxaBlock, treesBlock, allSplits);
-            System.err.println("All splits: " + allSplits.size());
+            System.err.println("Input splits: " + allSplits.size());
         }
 
         // 1. compute the majority consensus splits and tree
@@ -94,7 +92,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
             progress.setTasks("Anti-consensus", "Determining consensus tree splits");
             final ConsensusTreeSplits consensusTreeSplits = new ConsensusTreeSplits();
             consensusTreeSplits.setOptionConsensus(ConsensusTreeSplits.Consensus.Majority); // todo: implement and use loose consensus
-            consensusTreeSplits.setOptionEdgeWeights(optionEdgeWeights);
+            consensusTreeSplits.setOptionEdgeWeights(ConsensusNetwork.EdgeWeights.TreeSizeWeightedMean);
             consensusTreeSplits.compute(progress, taxaBlock, treesBlock, consensusSplits);
             System.err.println("Consensus tree splits: " + consensusSplits.size());
         }
@@ -118,7 +116,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         final SplitsBlock otherSplits = new SplitsBlock();
         otherSplits.getSplits().setAll(allSplits.getSplits());
         otherSplits.getSplits().removeAll(consensusSplits.getSplits());
-        System.err.println("Difference: " + otherSplits.size());
+        //System.err.println("Difference: " + otherSplits.size());
 
         splitsBlock.getSplits().setAll(consensusSplits.getSplits()); // add all consensus splits
 
@@ -410,16 +408,8 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         this.optionMaxRank = Math.max(1, optionMaxRank);
     }
 
-    public ConsensusNetwork.EdgeWeights getOptionEdgeWeights() {
-        return optionEdgeWeights;
-    }
-
     public String getShortDescriptionMaxRank() {
-        return "Maximum rank of splits used in anti-consensus. Larger rank means more conflict.";
-    }
-
-    public void setOptionEdgeWeights(ConsensusNetwork.EdgeWeights optionEdgeWeights) {
-        this.optionEdgeWeights = optionEdgeWeights;
+        return "Add all splits upto the given rank";
     }
 
     public boolean isOptionRequireSameSource() {
@@ -430,7 +420,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         this.optionRequireSameSource = optionRequireSameSource;
     }
 
-    public String getShortDescriptionRequireSame() {
+    public String getShortDescriptionRequireSameSource() {
         return "Require splits of same rank to come from the same input tree";
     }
 

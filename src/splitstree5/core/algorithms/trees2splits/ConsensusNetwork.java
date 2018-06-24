@@ -170,6 +170,8 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
                                         wgt = weightStats.getCount();
                                         break;
                                     case TreeSizeWeightedMean: // values have all already been divided by total tree length, just need mean here...
+                                        wgt = weightStats.getMean();
+                                        break;
                                     case Mean:
                                         wgt = weightStats.getMean();
                                         break;
