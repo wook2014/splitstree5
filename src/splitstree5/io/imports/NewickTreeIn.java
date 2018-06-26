@@ -47,7 +47,7 @@ public class NewickTreeIn implements IToTrees, IImportTrees {
                 progressListener.setProgress(0);
 
                 final Map<String, Integer> taxName2Id = new HashMap<>(); // starts at 1
-                final Set<String> taxonNamesFound = new TreeSet<>();
+                final Set<String> taxonNamesFound = new HashSet<>();
                 final ArrayList<String> orderedTaxonNames = new ArrayList<>();
 
                 final SimpleNewickParser newickParser = new SimpleNewickParser();
@@ -93,6 +93,7 @@ public class NewickTreeIn implements IToTrees, IImportTrees {
                                 partial = true;
                                 for (String name : newickParser.getLeafLabels()) {
                                     if (!taxonNamesFound.contains(name)) {
+                                        System.err.println("new name: " + name);
                                         taxonNamesFound.add(name);
                                         orderedTaxonNames.add(name);
                                         taxName2Id.put(name, orderedTaxonNames.size());
@@ -108,8 +109,6 @@ public class NewickTreeIn implements IToTrees, IImportTrees {
                                 }
                             }
                         }
-
-                        tree.setName(String.format("Tree-%05d", (++count)));
                         trees.getTrees().add(tree);
                         progressListener.setProgress(it.getProgress());
                     }

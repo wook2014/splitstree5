@@ -36,6 +36,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
+import jloda.fx.ProgramExecutorService;
 
 /**
  * A progress pane with cancel button
@@ -106,7 +107,7 @@ public class ProgressPane extends StackPane {
             }
         });
 
-        final Thread thread = new Thread(() -> { // wait three seconds before showing the progress pane
+        ProgramExecutorService.getInstance().submit(() -> { // wait three seconds before showing the progress pane
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
@@ -117,7 +118,5 @@ public class ProgressPane extends StackPane {
                 }
             });
         });
-        thread.setDaemon(true);
-        thread.start();
     }
 }

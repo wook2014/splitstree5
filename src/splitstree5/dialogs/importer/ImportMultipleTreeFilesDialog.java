@@ -22,6 +22,7 @@ package splitstree5.dialogs.importer;
 import javafx.application.Platform;
 import javafx.stage.FileChooser;
 import jloda.fx.CallableService;
+import jloda.fx.NotificationManager;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
@@ -31,6 +32,7 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.Taxon;
 import splitstree5.core.workflow.TaskWithProgressListener;
+import splitstree5.dialogs.ProgressPane;
 import splitstree5.io.imports.NewickTreeIn;
 import splitstree5.main.MainWindow;
 
@@ -59,13 +61,21 @@ public class ImportMultipleTreeFilesDialog {
 
         final List<File> selectedFiles = fileChooser.showOpenMultipleDialog(parentMainWindow.getStage());
         if (selectedFiles != null && selectedFiles.size() > 0) {
+            ProgramProperties.put("ImportDir", selectedFiles.get(0).getParentFile());
             final CallableService<Pair<TaxaBlock, TreesBlock>> service = new CallableService<>(new TaskWithProgressListener<Pair<TaxaBlock, TreesBlock>>() {
                 @Override
                 public Pair<TaxaBlock, TreesBlock> call() throws Exception {
                     final TaxaBlock allTaxa = new TaxaBlock();
                     final HashSet<Taxon> taxaFound = new HashSet<>();
                     final TreesBlock allTrees = new TreesBlock();
+                    getProgressListener().setTasks("Importing trees", selectedFiles.size() + " files...");
+                    System.err.println("Importing trees from " + selectedFiles.size() + " files...");
+
+                    getProgressListener().setMaximum(selectedFiles.size());
+                    getProgressListener().setProgress(0);
                     for (File file : selectedFiles) {
+                        getProgressListener().setSubtask(file.getName());
+                        System.err.println("Reading file: " + file);
                         final NewickTreeIn newickTreeIn = new NewickTreeIn();
                         if (!newickTreeIn.isApplicable(file.getPath()))
                             System.err.println("Skipping, not a tree file in Newick format: " + file);
@@ -101,10 +111,16 @@ public class ImportMultipleTreeFilesDialog {
                             }
                             allTrees.getTrees().addAll(treesBlock.getTrees());
                         }
+                        getProgressListener().incrementProgress();
                     }
+                    System.err.println("Trees: " + allTrees.size());
                     return new Pair<>(allTaxa, allTrees);
                 }
             });
+
+            service.setOnRunning((e) -> parentMainWindow.getMainWindowController().getBottomPane().getChildren().add(new ProgressPane(service)));
+
+            service.setOnFailed((e) -> NotificationManager.showError("Error: " + service.getException().getMessage()));
 
             service.setOnSucceeded((e) -> {
                 Platform.runLater(() -> {

@@ -114,6 +114,7 @@ public class SimpleNewickParser {
                         }
 
                         String label = buf.toString().trim();
+
                         if (label.length() == 0)
                             throw new IOException("Expected label at position " + i0);
 
