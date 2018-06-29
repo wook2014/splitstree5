@@ -203,6 +203,19 @@ public class Basic {
     }
 
     /**
+     * returns array of characters as string. Stops at first 0, if present
+     *
+     * @param array
+     * @return string representation
+     */
+    public static String toString(char[] array) {
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == 0)
+                return new String(array, 0, i);
+        }
+        return new String(array);
+    }
+    /**
      * returns an array of integers as a separated string
      *
      * @param array

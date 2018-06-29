@@ -65,56 +65,61 @@ public class ImportMultipleTreeFilesDialog {
             final CallableService<Pair<TaxaBlock, TreesBlock>> service = new CallableService<>(new TaskWithProgressListener<Pair<TaxaBlock, TreesBlock>>() {
                 @Override
                 public Pair<TaxaBlock, TreesBlock> call() throws Exception {
-                    final TaxaBlock allTaxa = new TaxaBlock();
-                    final HashSet<Taxon> taxaFound = new HashSet<>();
-                    final TreesBlock allTrees = new TreesBlock();
-                    getProgressListener().setTasks("Importing trees", selectedFiles.size() + " files...");
-                    System.err.println("Importing trees from " + selectedFiles.size() + " files...");
+                    try {
+                        final TaxaBlock allTaxa = new TaxaBlock();
+                        final HashSet<Taxon> taxaFound = new HashSet<>();
+                        final TreesBlock allTrees = new TreesBlock();
+                        getProgressListener().setTasks("Importing trees", selectedFiles.size() + " files...");
+                        System.err.println("Importing trees from " + selectedFiles.size() + " files...");
 
-                    getProgressListener().setMaximum(selectedFiles.size());
-                    getProgressListener().setProgress(0);
-                    for (File file : selectedFiles) {
-                        getProgressListener().setSubtask(file.getName());
-                        System.err.println("Reading file: " + file);
-                        final NewickTreeIn newickTreeIn = new NewickTreeIn();
-                        if (!newickTreeIn.isApplicable(file.getPath()))
-                            System.err.println("Skipping, not a tree file in Newick format: " + file);
-                        else {
-                            final TaxaBlock taxaBlock = new TaxaBlock();
-                            final TreesBlock treesBlock = new TreesBlock();
-                            newickTreeIn.parse(getProgressListener(), file.getPath(), taxaBlock, treesBlock);
-                            // name trees after the file that contains them:
-                            if (treesBlock.getNTrees() == 1)
-                                treesBlock.getTree(1).setName(Basic.replaceFileSuffix(file.getName(), ""));
-                            else if (treesBlock.getNTrees() > 1) {
-                                for (int t = 1; t <= treesBlock.getNTrees(); t++) {
-                                    treesBlock.getTree(1).setName(Basic.replaceFileSuffix(file.getName(), "-" + t));
+                        getProgressListener().setMaximum(selectedFiles.size());
+                        getProgressListener().setProgress(0);
+                        for (File file : selectedFiles) {
+                            getProgressListener().setSubtask(file.getName());
+                            //System.err.println("Reading file: " + file);
+                            final NewickTreeIn newickTreeIn = new NewickTreeIn();
+                            if (!newickTreeIn.isApplicable(file.getPath()))
+                                System.err.println("Skipping, not a tree file in Newick format: " + file);
+                            else {
+                                final TaxaBlock taxaBlock = new TaxaBlock();
+                                final TreesBlock treesBlock = new TreesBlock();
+                                newickTreeIn.parse(getProgressListener(), file.getPath(), taxaBlock, treesBlock);
+                                // name trees after the file that contains them:
+                                if (treesBlock.getNTrees() == 1)
+                                    treesBlock.getTree(1).setName(Basic.replaceFileSuffix(file.getName(), ""));
+                                else if (treesBlock.getNTrees() > 1) {
+                                    for (int t = 1; t <= treesBlock.getNTrees(); t++) {
+                                        treesBlock.getTree(1).setName(Basic.replaceFileSuffix(file.getName(), "-" + t));
+                                    }
                                 }
-                            }
 
-                            if (treesBlock.isPartial())
-                                allTrees.setPartial(true);
+                                if (treesBlock.isPartial())
+                                    allTrees.setPartial(true);
 
-                            // ensure all trees use the same taxon ids:
-                            for (Taxon taxon : taxaBlock.getTaxa()) {
-                                if (!taxaFound.contains(taxon)) {
-                                    taxaFound.add(taxon);
-                                    allTaxa.add(taxon);
+                                // ensure all trees use the same taxon ids:
+                                for (Taxon taxon : taxaBlock.getTaxa()) {
+                                    if (!taxaFound.contains(taxon)) {
+                                        taxaFound.add(taxon);
+                                        allTaxa.add(taxon);
 
-                                    if (allTrees.getNTrees() > 0)
-                                        allTrees.setPartial(true); // this is not the first file and need to add taxa, partial!
+                                        if (allTrees.getNTrees() > 0)
+                                            allTrees.setPartial(true); // this is not the first file and need to add taxa, partial!
+                                    }
                                 }
-                            }
 
-                            for (PhyloTree tree : treesBlock.getTrees()) {
-                                fixTaxonNumbers(taxaBlock, allTaxa, tree);
+                                for (PhyloTree tree : treesBlock.getTrees()) {
+                                    fixTaxonNumbers(taxaBlock, allTaxa, tree);
+                                }
+                                allTrees.getTrees().addAll(treesBlock.getTrees());
                             }
-                            allTrees.getTrees().addAll(treesBlock.getTrees());
+                            getProgressListener().incrementProgress();
                         }
-                        getProgressListener().incrementProgress();
+                        System.err.println("Trees: " + allTrees.size());
+                        return new Pair<>(allTaxa, allTrees);
+                    } catch (Exception ex) {
+                        Basic.caught(ex);
+                        throw ex;
                     }
-                    System.err.println("Trees: " + allTrees.size());
-                    return new Pair<>(allTaxa, allTrees);
                 }
             });
 

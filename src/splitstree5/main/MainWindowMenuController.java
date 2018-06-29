@@ -55,6 +55,7 @@ import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.dialogs.importer.ImportDialog;
 import splitstree5.dialogs.importer.ImportMultipleTreeFilesDialog;
 import splitstree5.dialogs.importer.ImporterManager;
+import splitstree5.dialogs.message.MessageWindow;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.utils.CheckForUpdate;
 import splitstree5.io.nexus.workflow.WorkflowNexusInput;
@@ -354,6 +355,11 @@ public class MainWindowMenuController {
         controller.getHaplotypeNetworkViewMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, NetworkBlock.class,
                 NetworkEmbedder.class, ViewerBlock.NetworkViewerBlock.class)));
         controller.getHaplotypeNetworkViewMenuItem().disableProperty().bind(disableNetworkMethods);
+
+        controller.getShowMessageWindowMenuItem().setOnAction((e) -> MessageWindow.getInstance().setVisible(controller.getShowMessageWindowMenuItem().isSelected()));
+        MessageWindow.visibleProperty().addListener((c, o, n) -> {
+            controller.getShowMessageWindowMenuItem().setSelected(n);
+        });
 
         controller.getCheckForUpdatesMenuItem().setOnAction((e) -> CheckForUpdate.apply());
         controller.getCheckForUpdatesMenuItem().disableProperty().bind(Bindings.isNotEmpty(workflow.dataNodes()).or(MainWindowManager.getInstance().sizeProperty().greaterThan(1)));

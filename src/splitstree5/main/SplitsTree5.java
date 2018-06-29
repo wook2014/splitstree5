@@ -34,6 +34,7 @@ import java.time.Duration;
 
 public class SplitsTree5 extends Application {
     private static String[] inputFilesAtStartup;
+    private static boolean showMessageWindow;
 
     @Override
     public void init() {
@@ -74,6 +75,7 @@ public class SplitsTree5 extends Application {
         inputFilesAtStartup = options.getOption("-i", "input", "Input file(s)", new String[0]);
 
         options.comment("Configuration:");
+        showMessageWindow = options.getOption("-w", "messageWindow", "Show the message window", true);
         final String defaultPreferenceFile;
         if (ProgramProperties.isMacOS())
             defaultPreferenceFile = System.getProperty("user.home") + "/Library/Preferences/SplitsTree5.def";
@@ -112,10 +114,11 @@ public class SplitsTree5 extends Application {
 
         mainWindow.show(primaryStage, 100, 100);
 
-        // todo: enable this to have collected lines appear in message window
-        // System.err.println(Basic.stopCollectingStdErr()); // collected lines will be sent to message window
+        if (showMessageWindow) {
+            mainWindow.getMenuController().getShowMessageWindowMenuItem().fire();
+            System.err.println(Basic.stopCollectingStdErr()); // collected lines will be sent to message window
+        }
 
-        // todo: implement use of showMessagesAtStartup
         if (inputFilesAtStartup != null && inputFilesAtStartup.length > 0) {
             System.err.println("NOT IMPLEMENTED: load files from command line");
             // todo: implement
