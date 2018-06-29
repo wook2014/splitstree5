@@ -19,7 +19,11 @@
 package splitstree5.gui.graphtab;
 
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import jloda.fx.ASelectionModel;
 import jloda.fx.shapes.NodeShape;
 import jloda.graph.Edge;
@@ -32,9 +36,7 @@ import splitstree5.gui.graphtab.base.GraphLayout;
 import splitstree5.gui.graphtab.base.NodeView2D;
 import splitstree5.menu.MenuController;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * The tree viewer tab
@@ -188,6 +190,26 @@ public class TreeViewTab extends Graph2DTab<PhyloTree> {
     @Override
     public void updateMenus(MenuController controller) {
         super.updateMenus(controller);
+
+        final EventHandler<ActionEvent> copyLabels = controller.getCopyMenuItem().getOnAction();
+        controller.getCopyMenuItem().setOnAction((e) -> {
+            if (nodeSelectionModel.isEmpty() && edgeSelectionModel.isEmpty()) {
+                Map<String, String> translate = new HashMap<>();
+                for (Node v : graph.nodes()) {
+                    if (v.isLeaf() && graph.getLabel(v) != null) {
+                        translate.put(graph.getLabel(v), node2view.get(v).getLabel().getText());
+                    }
+                }
+                final Clipboard clipboard = Clipboard.getSystemClipboard();
+                final ClipboardContent content = new ClipboardContent();
+                content.putString(graph.toString(true, translate) + ";");
+                clipboard.setContent(content);
+            } else copyLabels.handle(e);
+        });
+        controller.getCopyMenuItem().disableProperty().unbind();
+        controller.getCopyMenuItem().setDisable(false);
+
+
         controller.getSelectAllBelowMenuItem().setOnAction((e) -> {
             final Stack<Node> stack = new Stack<>();
             final Set<Node> nodesToSelect = new HashSet<>();

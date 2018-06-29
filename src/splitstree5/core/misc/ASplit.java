@@ -22,7 +22,6 @@ package splitstree5.core.misc;
 import jloda.util.BitSetUtils;
 
 import java.util.BitSet;
-import java.util.Comparator;
 
 /**
  * simple split implementation
@@ -276,22 +275,5 @@ public final class ASplit {
         result.setConfidence(this.getConfidence());
         result.setLabel(this.label);
         return result;
-    }
-
-    /**
-     * compare by decreasing size
-     *
-     * @return comparison
-     */
-    public static Comparator<? super ASplit> comparatorByDecreasingSize() {
-        return (Comparator<ASplit>) (a, b) -> {
-            if (a.size() > b.size())
-                return -1;
-            else if (a.size() < b.size())
-                return 1;
-            else
-                return a.toString().compareTo(b.toString());
-
-        };
     }
 }

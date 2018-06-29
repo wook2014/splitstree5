@@ -154,6 +154,9 @@ public class ASelectionModel<T> extends MultipleSelectionModel<T> {
     @Override
     public void select(T item) {
         if (!inUpdate) {
+            // todo: the two collections selectedIndicesAsSet and selectedIndices can become out of sync... so best to do this here:
+            selectedIndicesAsSet.retainAll(selectedIndices);
+
             for (int i = 0; i < items.length; i++) {
                 if (items[i].equals(item) && !selectedIndicesAsSet.contains(i)) {
                     focusIndex = i;
@@ -181,6 +184,9 @@ public class ASelectionModel<T> extends MultipleSelectionModel<T> {
 
     public void clearSelection(T item) {
         if (!inUpdate) {
+            // todo: the two collections selectedIndicesAsSet and selectedIndices can become out of sync... so best to do this here:
+            selectedIndicesAsSet.retainAll(selectedIndices);
+
             for (int i : selectedIndices) {
                 if (items[i].equals(item)) {
                     if (i == focusIndex)
@@ -225,6 +231,7 @@ public class ASelectionModel<T> extends MultipleSelectionModel<T> {
         if (!inUpdate) {
             focusIndex = -1;
             selectedIndices.clear();
+            selectedItems.clear();
         }
     }
 

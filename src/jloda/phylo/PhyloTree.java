@@ -148,75 +148,56 @@ public class PhyloTree extends PhyloGraph {
     }
 
     /**
-     * Produces a string representation of the tree in bracket notation.
+     * gets a string representation of the tree in bracket notation, showing weights
      *
-     * @return a string representation of the tree in bracket notation
+     * @return Newick string
      */
     public String toBracketString() {
-        final StringWriter sw = new StringWriter();
-        try {
-            write(sw, true);
-        } catch (Exception ex) {
-            Basic.caught(ex);
-            return "();";
-        }
-        return sw.toString();
+        return toString(true, null);
     }
 
     /**
-     * Produces a string representation of the tree in bracket notation.
-     *
-     * @return a string representation of the tree in bracket notation
+     * gets a string representation of the tree in bracket notation.
+     * @param showWeights
+     * @return Newick string
      */
     public String toBracketString(boolean showWeights) {
-        final StringWriter sw = new StringWriter();
-        try {
-            write(sw, showWeights);
-        } catch (Exception ex) {
-            Basic.caught(ex);
-            return "();";
-        }
-        return sw.toString();
+        return toString(showWeights, null);
     }
 
     /**
-     * gets the string representation of this tree
+     * gets a string representation of the tree in bracket notation, showing weights
      *
-     * @return tree
+     * @return Newick string
      */
     public String toString() {
-        return toBracketString();
+        return toString(true, null);
     }
 
     /**
-     * Produces a string representation of the tree in bracket notation.
-     *
-     * @return a string representation of the tree in bracket notation
+     * gets a string representation of the tree in bracket notation.
+     * @param translate
+     * @return Newick string
      */
     public String toString(Map<String, String> translate) {
-        final StringWriter sw = new StringWriter();
-        try {
-            if (translate == null || translate.size() == 0) {
-                this.write(sw, true);
+        return toString(true, translate);
+    }
 
-            } else {
-                PhyloTree tmpTree = new PhyloTree();
-                tmpTree.copy(this);
-                for (Node v = tmpTree.getFirstNode(); v != null; v = v.getNext()) {
-                    String key = tmpTree.getLabel(v);
-                    if (key != null) {
-                        String value = (String) translate.get(key);
-                        if (value != null)
-                            tmpTree.setLabel(v, value);
-                    }
-                }
-                tmpTree.write(sw, true);
-            }
-        } catch (Exception ex) {
-            Basic.caught(ex);
-            return "()";
+    /**
+     * gets a string representation of the tree in bracket notation.
+     *
+     * @param showWeights
+     * @param translate
+     * @return Newick string
+     */
+    public String toString(boolean showWeights, Map<String, String> translate) {
+        final StringWriter w = new StringWriter();
+        try {
+            write(w, showWeights, translate);
+        } catch (IOException e) {
+            return "();";
         }
-        return sw.toString();
+        return w.toString();
     }
 
     /**

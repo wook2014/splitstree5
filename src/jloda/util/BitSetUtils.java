@@ -49,12 +49,13 @@ public class BitSetUtils {
     public static BitSet intersection(BitSet... sets) {
         final BitSet result = new BitSet();
         boolean first = true;
-        for (BitSet b : sets)
+        for (BitSet b : sets) {
             if (first) {
                 result.or(b);
                 first = false;
             } else
                 result.and(b);
+        }
         return result;
     }
 

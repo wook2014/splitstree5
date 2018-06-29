@@ -44,12 +44,12 @@ public class TreeSelector extends Algorithm<TreesBlock, TreesBlock> implements I
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock ignored, TreesBlock parent, TreesBlock child) throws CanceledException {
-        int which = Math.max(0, Math.min(parent.size() - 1, optionSelected.get() - 1));
-        child.getTrees().add(parent.getTrees().get(which));
+        int which = Math.max(0, Math.min(parent.size(), optionSelected.get()));
+        child.getTrees().add(parent.getTree(which));
         child.setRooted(parent.isRooted());
         child.setPartial(parent.isPartial());
         active = parent.getNTrees() > 1;
-        setShortDescription("using one of " + parent.size() + " trees");
+        setShortDescription("using tree " + which + " of " + parent.size() + " trees");
     }
 
     @Override

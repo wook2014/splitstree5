@@ -93,7 +93,7 @@ public class NewickTreeIn implements IToTrees, IImportTrees {
                                 partial = true;
                                 for (String name : newickParser.getLeafLabels()) {
                                     if (!taxonNamesFound.contains(name)) {
-                                        System.err.println("new name: " + name);
+                                        System.err.println("Additional taxon name: " + name);
                                         taxonNamesFound.add(name);
                                         orderedTaxonNames.add(name);
                                         taxName2Id.put(name, orderedTaxonNames.size());
@@ -110,6 +110,8 @@ public class NewickTreeIn implements IToTrees, IImportTrees {
                             }
                         }
                         trees.getTrees().add(tree);
+                        tree.setName("tree-" + trees.size());
+
                         progressListener.setProgress(it.getProgress());
                     }
                 }

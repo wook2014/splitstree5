@@ -75,10 +75,10 @@ public class Document {
         if (workflow.getTopTaxaNode() != null) {
             workflow.getTopTaxaNode().stateProperty().addListener((observable, oldValue, newValue) -> {
                 final List<Taxon> taxa = workflow.getTopTaxaNode().getDataBlock().getTaxa();
-                taxaSelectionModel.setItems(taxa.toArray(new Taxon[taxa.size()]));
+                taxaSelectionModel.setItems(taxa.toArray(new Taxon[0]));
             });
             final List<Taxon> taxa = workflow.getTopTaxaNode().getDataBlock().getTaxa();
-            taxaSelectionModel.setItems(taxa.toArray(new Taxon[taxa.size()]));
+            taxaSelectionModel.setItems(taxa.toArray(new Taxon[0]));
         }
 
         // for debugging:

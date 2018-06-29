@@ -156,18 +156,19 @@ public class TreesUtilities {
      *
      * @param tree
      */
-    public static void changeNumbersOnLeafNodesToLabels(PhyloTree tree) {
+    public static void changeNumbersOnLeafNodesToLabels(final TaxaBlock taxaBlock, PhyloTree tree) {
         for (Node v = tree.getFirstNode(); v != null; v = v.getNext()) {
             if (v.getOutDegree() == 0) {
                 final String label = tree.getLabel(v);
                 if (label != null) {
-                    if (Basic.isDouble(label)) {
-                        tree.setLabel(v, "Taxon-" + label);
+                    if (Basic.isInteger(label)) {
+                        tree.setLabel(v, taxaBlock.getLabel(Basic.parseInt(label)));
                     }
                 }
             }
         }
     }
+
 
     /**
      * compute all the splits in a tree

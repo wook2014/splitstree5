@@ -52,10 +52,10 @@ import splitstree5.gui.algorithmtab.AlgorithmTab;
 import splitstree5.gui.auxwindow.AuxWindow;
 import splitstree5.gui.auxwindow.TabPaneDragAndDropSupport;
 import splitstree5.gui.datatab.DataViewTab;
+import splitstree5.gui.editinputtab.EditInputTab;
 import splitstree5.gui.formattab.FormatTab;
 import splitstree5.gui.inputtab.InputTab;
 import splitstree5.gui.methodstab.MethodsViewTab;
-import splitstree5.gui.editinputtab.EditInputTab;
 import splitstree5.gui.workflowtab.WorkflowViewTab;
 import splitstree5.gui.workflowtree.WorkflowTreeSupport;
 import splitstree5.menu.MenuController;
@@ -362,7 +362,7 @@ public class MainWindow {
      *
      * @param workflowNode
      */
-    public void showDataView(DataNode workflowNode) {
+    public synchronized void showDataView(DataNode workflowNode) {
         // if the data block has a getTab method, then assume that it is present and select it
         try {
             if (workflowNode != null && workflowNode.getDataBlock() instanceof ViewerBlock) {

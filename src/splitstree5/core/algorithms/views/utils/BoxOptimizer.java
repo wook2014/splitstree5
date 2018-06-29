@@ -34,6 +34,10 @@ import splitstree5.gui.graphtab.base.GeometryUtils;
 
 import java.util.*;
 
+/**
+ * box optimizer, implemented by Phillip Gambette in SplitsTree4
+ * todo: this is broken in SplitsTree5...
+ */
 public class BoxOptimizer {
 
     private static DaylightOptimizer instance;
@@ -91,11 +95,8 @@ public class BoxOptimizer {
     private void runOptimizeBoxes(Node start, SplitsGraph graph, int numberOfSplits, NodeArray<Point2D> node2point, HashSet forbiddenSplits) throws CanceledException {
         //We first build EdgeSplits, where each split is linked with the set containing all its edges
         final HashMap<Integer, List<Edge>> edgeSplits = getEdgeSplits(graph);
-        Edge currentEdge;
-        List currentEdges;
 
         int nbIterations = optionIterations.get();
-
 
         progress.setTasks("Optimize boxes", "iterating");
         progress.setMaximum(nbIterations * numberOfSplits);
@@ -104,10 +105,9 @@ public class BoxOptimizer {
 
         Set<Integer> SplitsSet = edgeSplits.keySet();
         double totalSize = 0;
-        for (Object aSplitsSet : SplitsSet) {
-            int CurrentSplit = (Integer) aSplitsSet;
-            currentEdges = edgeSplits.get(CurrentSplit);
-            totalSize += maximizeArea(currentEdges, graph, graph.getAngle((Edge) currentEdges.get(0)), graph.getAngle((Edge) currentEdges.get(0))).getFirst();
+        for (Integer CurrentSplit : SplitsSet) {
+            final List<Edge> currentEdges = edgeSplits.get(CurrentSplit);
+            totalSize += maximizeArea(currentEdges, graph, graph.getAngle(currentEdges.get(0)), graph.getAngle(currentEdges.get(0))).getFirst();
         }
 
         double originalSize = totalSize;
@@ -151,9 +151,8 @@ public class BoxOptimizer {
                     //If the split is improvable, it will have more chances to be improved:
                     counter++;
                     progress.setProgress(counter);
-                    currentEdges = (List) edgeSplits.get(CurrentSplit);
-                    currentEdge = (Edge) currentEdges.get(0);
-                    Iterator CurrentEdgesIt;
+                    final List<Edge> currentEdges = edgeSplits.get(CurrentSplit);
+                    final Edge currentEdge = currentEdges.get(0);
 
                     double oldAngle = graph.getAngle(currentEdge);
 
@@ -163,18 +162,17 @@ public class BoxOptimizer {
                     //Choose a new angle for the split between those two critical angles :
                     double trigAngle = oldAngle + currentExtremeAngles.getFirst();
                     double clockAngle = oldAngle + currentExtremeAngles.getSecond();
-                    //Good System.out.println("\n Split "+CurrentSplit+" Angle : "+oldAngle+" - Edge: "+CurrentEdge);
+
+
                     Pair<Double, Double> newTrigClock = createsCollisions(start, graph, trigAngle, clockAngle, oldAngle, currentEdges, oldAngle, node2point);
 
                     trigAngle = newTrigClock.getFirst();
                     clockAngle = newTrigClock.getSecond();
 
                     if (currentEdges.size() > 1) {
-                        Pair<Double, Double> optimized = maximizeArea(currentEdges, graph, clockAngle, trigAngle);
-                        CurrentEdgesIt = currentEdges.iterator();
-                        while (CurrentEdgesIt.hasNext()) {
-                            currentEdge = (Edge) CurrentEdgesIt.next();
-                            graph.setAngle(currentEdge, optimized.getSecond());
+                        final Pair<Double, Double> optimized = maximizeArea(currentEdges, graph, clockAngle, trigAngle);
+                        for (Edge aEdge : currentEdges) {
+                            graph.setAngle(aEdge, optimized.getSecond());
                         }
                         totalSize += optimized.getFirst();
                     } else {
@@ -192,33 +190,34 @@ public class BoxOptimizer {
      * <p/>
      * Can be used to get the current area of the split by setting minAngle=maxAngle= the split angle
      *
-     * @param SplitEdges list of the Edges of the Split, not necessary all directed in the same sense.
+     * @param splitEdges list of the Edges of the Split, not necessary all directed in the same sense.
      * @param graph
      * @param minAngle
      * @param maxAngle
      */
-    public Pair<Double, Double> maximizeArea(List SplitEdges, SplitsGraph graph, double minAngle, double maxAngle) {
+    public Pair<Double, Double> maximizeArea(List<Edge> splitEdges, SplitsGraph graph, double minAngle, double maxAngle) {
         //We will first express the area of the split as A cos x + B sin x, x being the split angle
         double alpha = 0;
         double beta = 0;
         double area = 0;
 
-        Iterator EdgesIt = SplitEdges.iterator();
-        Edge CurrentEdge = (Edge) EdgesIt.next();
-        double resultAngle = 0;
-        double splitAngle = GeometryUtils.moduloTwoPI(graph.getAngle(CurrentEdge));
+        final Iterator<Edge> edgeIt = splitEdges.iterator();
+        Edge currentEdge = edgeIt.next();
+        double splitAngle = GeometryUtils.moduloTwoPI(graph.getAngle(currentEdge));
 
-        if (Math.abs(graph.getWeight(CurrentEdge)) > 0.0000000000001) {
-            while (EdgesIt.hasNext()) {
-                Edge ThePreviousEdge = CurrentEdge;
-                CurrentEdge = (Edge) EdgesIt.next();
-                Node NodeA = ThePreviousEdge.getSource();
-                Node NodeB = CurrentEdge.getSource();
-                if (!(NodeA.isAdjacent(NodeB))) {
-                    NodeB = CurrentEdge.getTarget();
+        double resultAngle = 0;
+
+        if (Math.abs(graph.getWeight(currentEdge)) > 0.0000000000001) {
+            while (edgeIt.hasNext()) {
+                Edge previousEdge = currentEdge;
+                currentEdge = edgeIt.next();
+                Node nodeA = previousEdge.getSource();
+                Node nodeB = currentEdge.getSource();
+                if (!(nodeA.isAdjacent(nodeB))) {
+                    nodeB = currentEdge.getTarget();
                 }
 
-                Edge uncompEdge = NodeA.getCommonEdge(NodeB);
+                final Edge uncompEdge = nodeA.getCommonEdge(nodeB);
                 if (GeometryUtils.moduloTwoPI(graph.getAngle(uncompEdge) - splitAngle) < Math.PI) {
                     alpha = alpha + Math.sin(graph.getAngle(uncompEdge)) * graph.getWeight(uncompEdge);
                     beta = beta - Math.cos(graph.getAngle(uncompEdge)) * graph.getWeight(uncompEdge);
@@ -228,8 +227,8 @@ public class BoxOptimizer {
                 }
             }
 
-            alpha = alpha * graph.getWeight(CurrentEdge);
-            beta = beta * graph.getWeight(CurrentEdge);
+            alpha = alpha * graph.getWeight(currentEdge);
+            beta = beta * graph.getWeight(currentEdge);
             //A cos x + B sin x = C cos (x-D)
             double gamma = Math.sqrt(alpha * alpha + beta * beta);
             double delta = Math.atan(beta / alpha);
@@ -251,13 +250,12 @@ public class BoxOptimizer {
             area = gamma * Math.cos(resultAngle - delta);
         }
 
-        if (!(resultAngle == resultAngle)) {
+        if (Double.isNaN(area)) {
             //The angle found is not a Number : we don't move the split. This is the case where all edges of the split
             // are in the same place so we could choose a more clever angle? Let's leave the old angle right now.
             resultAngle = splitAngle;
             area = 0;
         }
-
         return new Pair<>(area, resultAngle);
     }
 

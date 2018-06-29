@@ -109,7 +109,7 @@ public class RecentFilesManager {
                 if (deadRefs.size() > 0) {
                     menuReferences.removeAll(deadRefs); // purge anything that has been garbage collected
                 }
-                ProgramProperties.put("RecentFiles", recentFiles.toArray(new String[recentFiles.size()]));
+                ProgramProperties.put("RecentFiles", recentFiles.toArray(new String[0]));
             });
         });
     }

@@ -104,10 +104,10 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
         }
 
         if (getOptionBoxOpenIterations() > 0) {
-            final BoxOptimizer box = new BoxOptimizer();
-            box.setOptionIterations(getOptionBoxOpenIterations());
-            box.setOptionUseWeights(isOptionUseWeights());
-            box.apply(progress, taxaBlock, parent.getNsplits(), graph, node2point);
+            final BoxOptimizer boxOptimizer = new BoxOptimizer();
+            boxOptimizer.setOptionIterations(getOptionBoxOpenIterations());
+            boxOptimizer.setOptionUseWeights(isOptionUseWeights());
+            boxOptimizer.apply(progress, taxaBlock, parent.getNsplits(), graph, node2point);
         }
 
         if (getOptionAlgorithm() != Algorithm.EqualAngleOnly && usedSplits.cardinality() < parent.getNsplits()) {
