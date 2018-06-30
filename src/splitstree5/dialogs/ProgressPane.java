@@ -71,7 +71,7 @@ public class ProgressPane extends StackPane {
         setPadding(new Insets(5, 10, 3, 40));
         setVisible(false);
         label = new Label();
-        label.textProperty().bind(titleProperty.concat(": "));
+        label.textProperty().bind(titleProperty.concat(": ").concat(messageProperty));
         label.setFont(Font.font("System", 10));
         progressBar = new ProgressBar();
         progressBar.progressProperty().bind(progressProperty);

@@ -96,15 +96,15 @@ abstract public class TaskWithProgressListener<T> extends Task<T> implements Cal
 
                 @Override
                 public void setTasks(String taskName, String subtaskName) {
-                    TaskWithProgressListener.this.updateTitle(taskName + (taskName.endsWith(":") ? " " : ": ") + subtaskName);
-                    TaskWithProgressListener.this.updateMessage(subtaskName);
+                    TaskWithProgressListener.this.updateTitle(taskName);
+                    TaskWithProgressListener.this.updateMessage(subtaskName != null ? subtaskName : "");
                     if (debug)
                         System.err.println("progress.setTasks(" + taskName + "," + subtaskName + ")");
                 }
 
                 @Override
                 public void setSubtask(String subtaskName) {
-                    TaskWithProgressListener.this.updateMessage(subtaskName);
+                    TaskWithProgressListener.this.updateMessage(subtaskName != null ? subtaskName : "");
                     if (debug)
                         System.err.println("progress.setSubtask(" + subtaskName + ")");
                 }
