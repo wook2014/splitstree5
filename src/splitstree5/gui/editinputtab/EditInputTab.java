@@ -94,7 +94,8 @@ public class EditInputTab extends EditTextViewTab {
         //codeArea.replaceText(0, 0, sampleCode);
         //////////
 
-        //codeArea.setPromptText("Input and edit data in any supported format");
+        /////codeArea.setAccessibleText("Input and edit data in any supported format");
+        //setPromptText("Input and edit data in any supported format");
 
         codeArea.setContextMenu(createContextMenu());
 
@@ -303,11 +304,11 @@ public class EditInputTab extends EditTextViewTab {
     }
 
     private static final String[] KEYWORDS = new String[] {
-            "BEGIN", "END",
-            "DIMENSIONS",
-            "FORMAT",
-            "TAXLABELS", "MATRIX",
-            "PROPERTIES", "CYCLE"
+            "begin", "end", "endblock",
+            "dimensions",
+            "format",
+            "taxlabels", "matrix",
+            "properties", "cycle"
     };
 
     private static final String[] OPTIONS = new String[] {
@@ -317,7 +318,7 @@ public class EditInputTab extends EditTextViewTab {
     };
 
     private static final String[] BLOCKS = new String[] {
-            "Taxa", "Characters", "Distances", "Splits"
+            "taxa", "characters", "distances", "splits"
     };
 
     private static final String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
@@ -326,10 +327,10 @@ public class EditInputTab extends EditTextViewTab {
     private static final String BRACE_PATTERN = "\\{|\\}";
     //private static final String BRACKET_PATTERN = "\\[|\\]";
     private static final String SEMICOLON_PATTERN = "\\;";
-    private static final String COMMENT_PATTERN = "\\[(.*?)\\]";
+    private static final String COMMENT_PATTERN = "\\[(.|\\R)*?\\]";
     private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
     //private static final String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
-    private static final String NUMBER_PATTERN = "\\d";
+    private static final String NUMBER_PATTERN = "\\b\\d+\\.\\d+\\b|\\b\\d+\\b";
 
     private static final Pattern PATTERN = Pattern.compile(
             "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
@@ -344,6 +345,7 @@ public class EditInputTab extends EditTextViewTab {
     );
 
     private static StyleSpans<Collection<String>> computeHighlighting(String text) {
+        text = text.toLowerCase();
         Matcher matcher = PATTERN.matcher(text);
         int lastKwEnd = 0;
         StyleSpansBuilder<Collection<String>> spansBuilder
@@ -360,7 +362,8 @@ public class EditInputTab extends EditTextViewTab {
                     matcher.group("SEMICOLON") != null ? "semicolon" :
                     matcher.group("STRING") != null ? "string" :
                     matcher.group("COMMENT") != null ? "comment" :
-                    null; /* never happens */ assert styleClass != null;
+                    null; /* never happens */
+            assert styleClass != null;
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
             spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
             lastKwEnd = matcher.end();

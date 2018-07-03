@@ -28,11 +28,13 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.StageStyle;
 import jloda.find.FindToolBar;
 import jloda.find.TextAreaSearcher;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
+import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import splitstree5.gui.ViewerTab;
@@ -50,7 +52,7 @@ public class EditTextViewTab extends ViewerTab {
     //private final TextArea textArea;
     //private final TextAreaSearcher textAreaSearcher;
 
-    private final CodeArea codeArea;
+    private final VirtualizedScrollPane<CodeArea> codeArea;
 
     /**
      * constructor
@@ -72,24 +74,29 @@ public class EditTextViewTab extends ViewerTab {
         label.textProperty().bind(nameProperty);
         setGraphic(label);
         setText("");
-        codeArea = new CodeArea();
-        codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
+        codeArea = new VirtualizedScrollPane<>(new CodeArea());
+        //CodeArea codeArea = vsp.getContent();
+        codeArea.getContent().setParagraphGraphicFactory(LineNumberFactory.get(codeArea.getContent()));
+        ////
+        new VirtualizedScrollPane<>(new CodeArea());
+
+        ///
         String css = this.getClass().getResource("/resources/css/styles.css").toExternalForm();
         codeArea.getStylesheets().add(css);
         //textArea.setFont(Font.font("Courier New")); // gets set by style file
-        codeArea.setEditable(false);
-        //if (textProperty != null)
-            //codeArea.textProperty().bind(textProperty);
-        codeArea.textProperty().addListener((InvalidationListener) -> getUndoManager().clear());
+        codeArea.getContent().setEditable(false);
+        if (textProperty != null)
+             codeArea.accessibleTextProperty().bind(textProperty);
+        codeArea.getContent().textProperty().addListener((InvalidationListener) -> getUndoManager().clear());
 
-        codeArea.selectionProperty().addListener((c, o, n) -> {
+        codeArea.getContent().selectionProperty().addListener((c, o, n) -> {
             MainWindowManager.getInstance().getPreviousSelection().clear();
-            MainWindowManager.getInstance().getPreviousSelection().add(codeArea.getText(n.getStart(), n.getEnd()));
+            MainWindowManager.getInstance().getPreviousSelection().add(codeArea.getContent().getText(n.getStart(), n.getEnd()));
         });
 
-        // setup find tool bar:
+        // setup find tool bar: todo
         /*{
-            textAreaSearcher = new TextAreaSearcher("Text", textArea);
+            textAreaSearcher = new TextAreaSearcher("Text", codeArea);
             findToolBar = new FindToolBar(textAreaSearcher);
         }*/
 
@@ -112,7 +119,7 @@ public class EditTextViewTab extends ViewerTab {
             col--; // because col is 1-based
 
         lineNumber = Math.max(1, lineNumber);
-        final String text = codeArea.getText();
+        final String text = codeArea.getContent().getText();
         int start = 0;
         for (int i = 1; i < lineNumber; i++) {
             start = text.indexOf('\n', start + 1);
@@ -129,7 +136,7 @@ public class EditTextViewTab extends ViewerTab {
             if (start + col < end)
                 start = start + col;
             codeArea.requestFocus();
-            codeArea.selectRange(start, end);
+            codeArea.getContent().selectRange(start, end);
         }
     }
 
@@ -194,12 +201,12 @@ public class EditTextViewTab extends ViewerTab {
 
         controller.getCopyMenuItem().setOnAction((e) -> {
             e.consume();
-            codeArea.copy();
+            codeArea.getContent().copy();
         });
 
         //controller.getCopyMenuItem().disableProperty().bind(codeArea.selectedTextProperty().isEmpty());
 
-        controller.getSelectAllMenuItem().setOnAction((e) -> codeArea.selectAll());
+        controller.getSelectAllMenuItem().setOnAction((e) -> codeArea.getContent().selectAll());
         //controller.getSelectNoneMenuItem().setOnAction((e) -> codeArea.selectHome());
         //controller.getSelectNoneMenuItem().disableProperty().bind(codeArea.selectedTextProperty().isEmpty());
 
@@ -235,12 +242,12 @@ public class EditTextViewTab extends ViewerTab {
         controller.getResetMenuItem().setOnAction((x) -> codeArea.setStyle("-fx-font-size: 12;"));
 
         controller.getWrapTextMenuItem().selectedProperty().unbind();
-        controller.getWrapTextMenuItem().setSelected(codeArea.isWrapText());
-        controller.getWrapTextMenuItem().selectedProperty().bindBidirectional(codeArea.wrapTextProperty());
+        controller.getWrapTextMenuItem().setSelected(codeArea.getContent().isWrapText());
+        controller.getWrapTextMenuItem().selectedProperty().bindBidirectional(codeArea.getContent().wrapTextProperty());
         controller.getWrapTextMenuItem().disableProperty().bind(new SimpleBooleanProperty(false));
     }
 
     public CodeArea getCodeArea() {
-        return codeArea;
+        return codeArea.getContent();
     }
 }

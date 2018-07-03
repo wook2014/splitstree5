@@ -8,7 +8,8 @@
     -fx-font-weight: bold;
 }
 .number {
-    -fx-fill: darkgreen;
+    -fx-fill: green;
+    -fx-font-weight: bold;
 }
 
 .semicolon {
