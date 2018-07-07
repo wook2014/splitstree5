@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 /**
- * JTextArea searcher
+ * TextArea searcher
  * Daniel Huson, 7.2008
  */
 public class TextAreaSearcher implements ITextSearcher {

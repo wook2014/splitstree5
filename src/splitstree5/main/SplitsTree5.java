@@ -68,7 +68,8 @@ public class SplitsTree5 extends Application {
 
         final ArgsOptions options = new ArgsOptions(args, SplitsTree5.class, "Interactive computation of phylogenetic trees and networks");
         options.setAuthors("Daniel H. Huson and David J. Bryant. Some code by Daria Evseeva and others.");
-        options.setLicense("This is free software, licensed under the terms of the GNU General Public License, Version 3.");
+        // options.setLicense("This is free software, licensed under the terms of the GNU General Public License, Version 3.");
+        options.setLicense("This is an early (BETA) version of SplitsTree5, made available for testing purposes. Source code will be released wih first official version");
         options.setVersion(ProgramProperties.getProgramVersion());
 
         options.comment("Input:");
