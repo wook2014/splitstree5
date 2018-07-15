@@ -41,6 +41,7 @@ import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.reactfx.Subscription;
 import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.dialogs.importer.ImporterManager;
+import splitstree5.gui.editinputtab.highlighters.XMLHighlighter;
 import splitstree5.gui.texttab.TextViewTab;
 import splitstree5.io.imports.IOExceptionWithLineNumber;
 import splitstree5.main.MainWindow;
@@ -62,6 +63,8 @@ import java.util.regex.Pattern;
 public class EditInputTab extends EditTextViewTab {
     private File tmpFile;
 
+    private XMLHighlighter xmlHighlighter = new XMLHighlighter();
+
     /**
      * constructor
      *
@@ -75,9 +78,11 @@ public class EditInputTab extends EditTextViewTab {
         //final TextArea textArea = getTextArea();
         final CodeArea codeArea = getCodeArea();
 
-        String css = this.getClass().getResource("styles.css").toExternalForm();
+        //String css = this.getClass().getResource("styles.css").toExternalForm();
+        String css = this.getClass().getResource("xml-highlighting.css").toExternalForm();
         codeArea.getStylesheets().add(css);
         codeArea.setEditable(true);
+        /////////////////codeArea.setWrapText(true);
         // recompute the syntax highlighting 500 ms after user stops editing area
         Subscription cleanupWhenNoLongerNeedIt = codeArea
 
@@ -90,7 +95,8 @@ public class EditInputTab extends EditTextViewTab {
                 .successionEnds(Duration.ofMillis(500))
 
                 // run the following code block when previous stream emits an event
-                .subscribe(ignore -> codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText())));
+                //.subscribe(ignore -> codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText())));
+                .subscribe(ignore -> codeArea.setStyleSpans(0, xmlHighlighter.computeHighlighting(codeArea.getText())));
         //codeArea.replaceText(0, 0, sampleCode);
         //////////
 
@@ -345,7 +351,7 @@ public class EditInputTab extends EditTextViewTab {
     );
 
     private static StyleSpans<Collection<String>> computeHighlighting(String text) {
-        text = text.toLowerCase();
+        text = text.toLowerCase(); // todo weg, case in reg. expression
         Matcher matcher = PATTERN.matcher(text);
         int lastKwEnd = 0;
         StyleSpansBuilder<Collection<String>> spansBuilder
