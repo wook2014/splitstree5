@@ -39,8 +39,11 @@ import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.reactfx.Subscription;
+import org.reactfx.value.Val;
 import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.dialogs.importer.ImporterManager;
+import splitstree5.gui.editinputtab.highlighters.Highlighter;
+import splitstree5.gui.editinputtab.highlighters.NexusHighlighter;
 import splitstree5.gui.editinputtab.highlighters.XMLHighlighter;
 import splitstree5.gui.texttab.TextViewTab;
 import splitstree5.io.imports.IOExceptionWithLineNumber;
@@ -63,7 +66,7 @@ import java.util.regex.Pattern;
 public class EditInputTab extends EditTextViewTab {
     private File tmpFile;
 
-    private XMLHighlighter xmlHighlighter = new XMLHighlighter();
+    private Highlighter highlighter; //= new XMLHighlighter();
 
     /**
      * constructor
@@ -77,18 +80,19 @@ public class EditInputTab extends EditTextViewTab {
 
         //final TextArea textArea = getTextArea();
         final CodeArea codeArea = getCodeArea();
+        highlighter = new NexusHighlighter();
 
         //String css = this.getClass().getResource("styles.css").toExternalForm();
-        String css = this.getClass().getResource("xml-highlighting.css").toExternalForm();
+        String css = this.getClass().getResource(highlighter.getCSS()).toExternalForm();
         codeArea.getStylesheets().add(css);
         codeArea.setEditable(true);
-        /////////////////codeArea.setWrapText(true);
+
         // recompute the syntax highlighting 500 ms after user stops editing area
         Subscription cleanupWhenNoLongerNeedIt = codeArea
 
                 // plain changes = ignore style changes that are emitted when syntax highlighting is reapplied
                 // multi plain changes = save computation by not rerunning the code multiple times
-                //   when making multiple changes (e.g. renaming a method at multiple parts in file)
+                // when making multiple changes (e.g. renaming a method at multiple parts in file)
                 .multiPlainChanges()
 
                 // do not emit an event until 500 ms have passed since the last emission of previous stream
@@ -96,7 +100,7 @@ public class EditInputTab extends EditTextViewTab {
 
                 // run the following code block when previous stream emits an event
                 //.subscribe(ignore -> codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText())));
-                .subscribe(ignore -> codeArea.setStyleSpans(0, xmlHighlighter.computeHighlighting(codeArea.getText())));
+                .subscribe(ignore -> codeArea.setStyleSpans(0, highlighter.computeHighlighting(codeArea.getText())));
         //codeArea.replaceText(0, 0, sampleCode);
         //////////
 
@@ -130,7 +134,7 @@ public class EditInputTab extends EditTextViewTab {
 
         toolBar.getItems().addAll(applyButton, highlightButton); //+++
         //toolBar.getItems().addAll(applyButton);
-        //applyButton.disableProperty().bind(getCodeArea().textProperty().isEmpty());
+        applyButton.disableProperty().bind(Val.map(codeArea.lengthProperty(), n -> n == 0));
         //highlightButton.disableProperty().bind(getCodeArea().textProperty().isEmpty()); //+++
 
         applyButton.setOnAction((e) -> {
@@ -170,11 +174,11 @@ public class EditInputTab extends EditTextViewTab {
             System.err.println("highlighting pressed");
             try {
                 System.err.println("highlighting");
-                for (StyleSpan styleSpan : computeHighlighting(getCodeArea().getText())){
+                /*for (StyleSpan styleSpan : computeHighlighting(getCodeArea().getText())){
                     System.err.println(styleSpan.getLength());
                     System.err.println(styleSpan.toString());
                     System.err.println(styleSpan.getStyle());
-                }
+                }*/
 
                 //codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText()));
                 //codeArea.replaceText(0, 0, codeArea.getText());
@@ -206,8 +210,8 @@ public class EditInputTab extends EditTextViewTab {
                 createMenuItem("Paste", (e) -> textArea.paste()),
                 createMenuItem("Delete", (e) -> textArea.deleteText(textArea.getSelection())),
                 new SeparatorMenuItem(),
-                createMenuItem("Select All", (e) -> textArea.selectAll()));
-               // createMenuItem("Select Brackets", (e) -> selectBrackets(textArea)));
+                createMenuItem("Select All", (e) -> textArea.selectAll()),
+                createMenuItem("Select Brackets", (e) -> selectBrackets(textArea)));
     }
 
     private MenuItem createMenuItem(String name, EventHandler<ActionEvent> eventHandler) {
@@ -309,7 +313,7 @@ public class EditInputTab extends EditTextViewTab {
 
     }
 
-    private static final String[] KEYWORDS = new String[] {
+    /*private static final String[] KEYWORDS = new String[] {
             "begin", "end", "endblock",
             "dimensions",
             "format",
@@ -335,8 +339,7 @@ public class EditInputTab extends EditTextViewTab {
     private static final String SEMICOLON_PATTERN = "\\;";
     private static final String COMMENT_PATTERN = "\\[(.|\\R)*?\\]";
     private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
-    //private static final String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
-    private static final String NUMBER_PATTERN = "\\b\\d+\\.\\d+\\b|\\b\\d+\\b";
+    /*private static final String NUMBER_PATTERN = "\\b\\d+\\.\\d+\\b|\\b\\d+\\b";
 
     private static final Pattern PATTERN = Pattern.compile(
             "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
@@ -369,12 +372,12 @@ public class EditInputTab extends EditTextViewTab {
                     matcher.group("STRING") != null ? "string" :
                     matcher.group("COMMENT") != null ? "comment" :
                     null; /* never happens */
-            assert styleClass != null;
+        /*    assert styleClass != null;
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
             spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
             lastKwEnd = matcher.end();
         }
         spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
         return spansBuilder.create();
-    }
+    }*/
 }

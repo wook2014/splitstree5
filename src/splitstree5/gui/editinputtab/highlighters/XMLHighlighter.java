@@ -10,6 +10,8 @@ import java.util.regex.Pattern;
 
 public class XMLHighlighter implements Highlighter {
 
+    private final String css = "xml-highlighting.css";
+
     private static final Pattern XML_TAG = Pattern.compile("(?<ELEMENT>(</?\\h*)(\\w+)([^<>]*)(\\h*/?>))"
             +"|(?<COMMENT><!--[^<>]+-->)");
 
@@ -73,5 +75,10 @@ public class XMLHighlighter implements Highlighter {
         }
         spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
         return spansBuilder.create();
+    }
+
+    @Override
+    public String getCSS() {
+        return this.css;
     }
 }

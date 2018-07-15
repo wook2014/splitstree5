@@ -24,19 +24,18 @@ import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import javafx.stage.StageStyle;
+import jloda.find.CodeAreaSearcher;
 import jloda.find.FindToolBar;
-import jloda.find.TextAreaSearcher;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
+import org.reactfx.value.Val;
 import splitstree5.gui.ViewerTab;
 import splitstree5.main.MainWindowManager;
 import splitstree5.menu.MenuController;
@@ -53,6 +52,7 @@ public class EditTextViewTab extends ViewerTab {
     //private final TextAreaSearcher textAreaSearcher;
 
     private final VirtualizedScrollPane<CodeArea> codeArea;
+    private final CodeAreaSearcher codeAreaSearcher;
 
     /**
      * constructor
@@ -78,7 +78,7 @@ public class EditTextViewTab extends ViewerTab {
         //CodeArea codeArea = vsp.getContent();
         codeArea.getContent().setParagraphGraphicFactory(LineNumberFactory.get(codeArea.getContent()));
         ////
-        new VirtualizedScrollPane<>(new CodeArea());
+        //new VirtualizedScrollPane<>(new CodeArea());
 
         ///
         String css = this.getClass().getResource("/resources/css/styles.css").toExternalForm();
@@ -95,13 +95,13 @@ public class EditTextViewTab extends ViewerTab {
         });
 
         // setup find tool bar: todo
-        /*{
-            textAreaSearcher = new TextAreaSearcher("Text", codeArea);
-            findToolBar = new FindToolBar(textAreaSearcher);
-        }*/
+        {
+            codeAreaSearcher = new CodeAreaSearcher("Text", codeArea.getContent());
+            findToolBar = new FindToolBar(codeAreaSearcher);
+        }
 
         final BorderPane borderPane = new BorderPane(codeArea);
-        ///////////borderPane.setTop(findToolBar);
+        borderPane.setTop(findToolBar);
         setContent(borderPane);
         setClosable(true);
     }
@@ -143,26 +143,26 @@ public class EditTextViewTab extends ViewerTab {
     /**
      * select matching brackets
      *
-     * @param textArea
+     * @param codeArea
      */
-    protected void selectBrackets(TextArea textArea) {
-        int pos = textArea.getCaretPosition() - 1;
-        while (pos > 0 && pos < textArea.getText().length()) {
-            final char close = textArea.getText().charAt(pos);
+    protected void selectBrackets(CodeArea codeArea) {
+        int pos = codeArea.getCaretPosition() - 1;
+        while (pos > 0 && pos < codeArea.getText().length()) {
+            final char close = codeArea.getText().charAt(pos);
             if (close == ')' || close == ']' || close == '}') {
                 final int closePos = pos;
                 final int open = (close == ')' ? '(' : (close == ']' ? '[' : '}'));
 
                 int balance = 0;
                 for (; pos >= 0; pos--) {
-                    char ch = textArea.getText().charAt(pos);
+                    char ch = codeArea.getText().charAt(pos);
                     if (ch == open)
                         balance--;
                     else if (ch == close)
                         balance++;
                     if (balance == 0) {
                         final int fpos = pos;
-                        Platform.runLater(() -> textArea.selectRange(fpos, closePos + 1));
+                        Platform.runLater(() -> codeArea.selectRange(fpos, closePos + 1));
                         return;
                     }
                 }
@@ -210,12 +210,13 @@ public class EditTextViewTab extends ViewerTab {
         //controller.getSelectNoneMenuItem().setOnAction((e) -> codeArea.selectHome());
         //controller.getSelectNoneMenuItem().disableProperty().bind(codeArea.selectedTextProperty().isEmpty());
 
-        //controller.getSelectBracketsMenuItem().setOnAction((e) -> selectBrackets(codeArea));
-        //controller.getSelectBracketsMenuItem().disableProperty().bind(codeArea.textProperty().isEmpty());
+        controller.getSelectBracketsMenuItem().setOnAction((e) -> selectBrackets(codeArea.getContent()));
+        controller.getSelectBracketsMenuItem().disableProperty().bind
+                (Val.map(codeArea.getContent().lengthProperty(), n -> n == 0));
 
-        //controller.getFindMenuItem().setOnAction((e) -> findToolBar.setShowFindToolBar(true));
-        //controller.getFindAgainMenuItem().setOnAction((e) -> findToolBar.findAgain());
-        //controller.getFindAgainMenuItem().disableProperty().bind(findToolBar.canFindAgainProperty().not());
+        controller.getFindMenuItem().setOnAction((e) -> findToolBar.setShowFindToolBar(true));
+        controller.getFindAgainMenuItem().setOnAction((e) -> findToolBar.findAgain());
+        controller.getFindAgainMenuItem().disableProperty().bind(findToolBar.canFindAgainProperty().not());
 
         controller.getGotoLineMenuItem().setOnAction((e) -> {
             final TextInputDialog dialog = new TextInputDialog("");

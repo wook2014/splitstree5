@@ -7,4 +7,6 @@ import java.util.Collection;
 public interface Highlighter {
 
     StyleSpans<Collection<String>> computeHighlighting(String text);
+
+    String getCSS();
 }
