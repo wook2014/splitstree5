@@ -244,7 +244,7 @@ public class EditInputTab extends EditTextViewTab {
     public void updateMenus(MenuController controller) {
         super.updateMenus(controller);
 
-        final CodeArea textArea = getCodeArea();
+        final CodeArea codeArea = getCodeArea();
 
         controller.getOpenMenuItem().setOnAction((e) -> {
             final File previousDir = new File(ProgramProperties.get("InputDir", ""));
@@ -261,24 +261,26 @@ public class EditInputTab extends EditTextViewTab {
                 loadFile(selectedFile.getPath());
             }
         });
-        //controller.getOpenMenuItem().disableProperty().bind(textArea.textProperty().isNotEmpty());
+        // not empty
+        controller.getOpenMenuItem().disableProperty().bind(Val.map(codeArea.lengthProperty(), n -> n != 0));
 
         RecentFilesManager.getInstance().setFileOpener(this::loadFile);
-        //controller.getOpenRecentMenu().disableProperty().bind(textArea.textProperty().isNotEmpty());
+        // not empty
+        controller.getOpenRecentMenu().disableProperty().bind(Val.map(codeArea.lengthProperty(), n -> n != 0));
 
         controller.getPasteMenuItem().setOnAction((e) -> {
             e.consume();
-            textArea.paste();
+            codeArea.paste();
         });
 
         controller.getSelectFromPreviousMenuItem().setOnAction((e) -> {
             for (String word : MainWindowManager.getInstance().getPreviousSelection()) {
                 final Pattern pattern = Pattern.compile(word);
-                String source = textArea.getText();
+                String source = codeArea.getText();
                 Matcher matcher = pattern.matcher(source);
 
                 if (matcher.find(0)) {
-                    textArea.selectRange(matcher.start(), matcher.end());
+                    codeArea.selectRange(matcher.start(), matcher.end());
                     break;
                 }
             }
@@ -286,35 +288,38 @@ public class EditInputTab extends EditTextViewTab {
         controller.getSelectFromPreviousMenuItem().disableProperty().bind(Bindings.isEmpty(MainWindowManager.getInstance().getPreviousSelection()));
 
         final MenuItem undoMenuItem = controller.getUndoMenuItem();
-        undoMenuItem.setOnAction((e) -> textArea.undo());
+        undoMenuItem.setOnAction((e) -> codeArea.undo());
         //undoMenuItem.setText("Undo edit");
         //undoMenuItem.disableProperty().bind(getTextArea().undoableProperty().not());
+        undoMenuItem.disableProperty().bind(Val.map(codeArea.undoAvailableProperty(), n -> !n));
 
         final MenuItem redoMenuItem = controller.getRedoMenuItem();
-        redoMenuItem.setOnAction((e) -> textArea.redo());
+        redoMenuItem.setOnAction((e) -> codeArea.redo());
         //redoMenuItem.setText("Redo edit");
         //redoMenuItem.disableProperty().bind(getTextArea().redoableProperty().not());
+        redoMenuItem.disableProperty().bind(Val.map(codeArea.redoAvailableProperty(), n -> !n));
 
         controller.getReplaceMenuItem().setOnAction((e) -> findToolBar.setShowReplaceToolBar(true));
         controller.getReplaceMenuItem().setDisable(false);
 
         controller.getCutMenuItem().setOnAction((e) -> {
             e.consume();
-            textArea.cut();
+            codeArea.cut();
         });
         //controller.getCutMenuItem().disableProperty().bind(getTextArea().selectedTextProperty().length().isEqualTo(0));
+        controller.getCutMenuItem().disableProperty().bind(Val.map(codeArea.selectedTextProperty(), n -> n.length() == 0));
 
         controller.getDeleteMenuItem().setOnAction((e) -> {
             e.consume();
-            textArea.deleteText(getCodeArea().getSelection());
+            codeArea.deleteText(getCodeArea().getSelection());
         });
-        //controller.getDeleteMenuItem().disableProperty().bind(getTextArea().selectedTextProperty().length().isEqualTo(0));
+        controller.getDeleteMenuItem().disableProperty().bind(Val.map(codeArea.selectedTextProperty(), n -> n.length() == 0));
 
         controller.getDuplicateMenuItem().setOnAction((e) -> {
             e.consume();
-            textArea.replaceSelection(textArea.getSelectedText() + textArea.getSelectedText());
+            codeArea.replaceSelection(codeArea.getSelectedText() + codeArea.getSelectedText());
         });
-        //controller.getDuplicateMenuItem().disableProperty().bind(getTextArea().selectedTextProperty().length().isEqualTo(0));
+        controller.getDuplicateMenuItem().disableProperty().bind(Val.map(codeArea.selectedTextProperty(), n -> n.length() == 0));
 
 
     }
@@ -331,72 +336,4 @@ public class EditInputTab extends EditTextViewTab {
         }
 
     }
-
-    /*private static final String[] KEYWORDS = new String[] {
-            "begin", "end", "endblock",
-            "dimensions",
-            "format",
-            "taxlabels", "matrix",
-            "properties", "cycle"
-    };
-
-    private static final String[] OPTIONS = new String[] {
-            "ntax", "nsplits",
-            "labels", "triangle", "diagonal",
-            "weights", "confidences", "intervals", "fit"
-    };
-
-    private static final String[] BLOCKS = new String[] {
-            "taxa", "characters", "distances", "splits"
-    };
-
-    private static final String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
-    private static final String OPTION_PATTERN = "\\b(" + String.join("|", OPTIONS) + ")\\b";
-    private static final String PAREN_PATTERN = "\\(|\\)";
-    private static final String BRACE_PATTERN = "\\{|\\}";
-    //private static final String BRACKET_PATTERN = "\\[|\\]";
-    private static final String SEMICOLON_PATTERN = "\\;";
-    private static final String COMMENT_PATTERN = "\\[(.|\\R)*?\\]";
-    private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
-    /*private static final String NUMBER_PATTERN = "\\b\\d+\\.\\d+\\b|\\b\\d+\\b";
-
-    private static final Pattern PATTERN = Pattern.compile(
-            "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
-                    + "|(?<OPTION>" + OPTION_PATTERN + ")"
-                    + "|(?<PAREN>" + PAREN_PATTERN + ")"
-                    + "|(?<BRACE>" + BRACE_PATTERN + ")"
-                    //+ "|(?<BRACKET>" + BRACKET_PATTERN + ")"
-                    + "|(?<SEMICOLON>" + SEMICOLON_PATTERN + ")"
-                    + "|(?<STRING>" + STRING_PATTERN + ")"
-                    + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
-                    + "|(?<NUMBER>" + NUMBER_PATTERN + ")"
-    );
-
-    private static StyleSpans<Collection<String>> computeHighlighting(String text) {
-        text = text.toLowerCase(); // todo weg, case in reg. expression
-        Matcher matcher = PATTERN.matcher(text);
-        int lastKwEnd = 0;
-        StyleSpansBuilder<Collection<String>> spansBuilder
-                = new StyleSpansBuilder<>();
-
-        while(matcher.find()) {
-            String styleClass =
-                    matcher.group("KEYWORD") != null ? "keyword" :
-                    matcher.group("OPTION") != null ? "option" :
-                    matcher.group("NUMBER") != null ? "number" :
-                    matcher.group("PAREN") != null ? "paren" :
-                    matcher.group("BRACE") != null ? "brace" :
-                    //matcher.group("BRACKET") != null ? "bracket" :
-                    matcher.group("SEMICOLON") != null ? "semicolon" :
-                    matcher.group("STRING") != null ? "string" :
-                    matcher.group("COMMENT") != null ? "comment" :
-                    null; /* never happens */
-        /*    assert styleClass != null;
-            spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
-            spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
-            lastKwEnd = matcher.end();
-        }
-        spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
-        return spansBuilder.create();
-    }*/
 }
