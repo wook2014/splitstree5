@@ -10,8 +10,6 @@ import java.util.regex.Pattern;
 
 public class NexusHighlighter implements Highlighter {
 
-    private final String css = "styles.css";
-
     private static final String[] KEYWORDS = new String[] {
             "begin", "end", "endblock",
             "dimensions",
@@ -80,10 +78,5 @@ public class NexusHighlighter implements Highlighter {
         }
         spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
         return spansBuilder.create();
-    }
-
-    @Override
-    public String getCSS() {
-        return this.css;
     }
 }

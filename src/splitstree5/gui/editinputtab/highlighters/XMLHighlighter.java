@@ -10,8 +10,6 @@ import java.util.regex.Pattern;
 
 public class XMLHighlighter implements Highlighter {
 
-    private final String css = "xml-highlighting.css";
-
     private static final Pattern XML_TAG = Pattern.compile("(?<ELEMENT>(</?\\h*)(\\w+)([^<>]*)(\\h*/?>))"
             +"|(?<COMMENT><!--[^<>]+-->)");
 
@@ -35,15 +33,15 @@ public class XMLHighlighter implements Highlighter {
 
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
             if(matcher.group("COMMENT") != null) {
-                spansBuilder.add(Collections.singleton("comment"), matcher.end() - matcher.start());
+                spansBuilder.add(Collections.singleton("xml-comment"), matcher.end() - matcher.start());
             }
             else {
                 if(matcher.group("ELEMENT") != null) {
                     String attributesText = matcher.group(GROUP_ATTRIBUTES_SECTION);
 
-                    spansBuilder.add(Collections.singleton("tagmark"),
+                    spansBuilder.add(Collections.singleton("xml-tagmark"),
                             matcher.end(GROUP_OPEN_BRACKET) - matcher.start(GROUP_OPEN_BRACKET));
-                    spansBuilder.add(Collections.singleton("anytag"),
+                    spansBuilder.add(Collections.singleton("xml-anytag"),
                             matcher.end(GROUP_ELEMENT_NAME) - matcher.end(GROUP_OPEN_BRACKET));
 
                     if(!attributesText.isEmpty()) {
@@ -54,11 +52,11 @@ public class XMLHighlighter implements Highlighter {
                         while(amatcher.find()) {
                             spansBuilder.add(Collections.emptyList(),
                                     amatcher.start() - lastKwEnd);
-                            spansBuilder.add(Collections.singleton("attribute"),
+                            spansBuilder.add(Collections.singleton("xml-attribute"),
                                     amatcher.end(GROUP_ATTRIBUTE_NAME) - amatcher.start(GROUP_ATTRIBUTE_NAME));
-                            spansBuilder.add(Collections.singleton("tagmark"),
+                            spansBuilder.add(Collections.singleton("xml-tagmark"),
                                     amatcher.end(GROUP_EQUAL_SYMBOL) - amatcher.end(GROUP_ATTRIBUTE_NAME));
-                            spansBuilder.add(Collections.singleton("avalue"),
+                            spansBuilder.add(Collections.singleton("xml-avalue"),
                                     amatcher.end(GROUP_ATTRIBUTE_VALUE) - amatcher.end(GROUP_EQUAL_SYMBOL));
                             lastKwEnd = amatcher.end();
                         }
@@ -68,17 +66,12 @@ public class XMLHighlighter implements Highlighter {
 
                     lastKwEnd = matcher.end(GROUP_ATTRIBUTES_SECTION);
 
-                    spansBuilder.add(Collections.singleton("tagmark"), matcher.end(GROUP_CLOSE_BRACKET) - lastKwEnd);
+                    spansBuilder.add(Collections.singleton("xml-tagmark"), matcher.end(GROUP_CLOSE_BRACKET) - lastKwEnd);
                 }
             }
             lastKwEnd = matcher.end();
         }
         spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
         return spansBuilder.create();
-    }
-
-    @Override
-    public String getCSS() {
-        return this.css;
     }
 }

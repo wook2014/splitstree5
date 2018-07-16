@@ -21,7 +21,11 @@ package splitstree5.gui.editinputtab;
 
 import com.sun.org.apache.bcel.internal.classfile.Code;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableBooleanValue;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
@@ -51,6 +55,7 @@ import splitstree5.main.MainWindow;
 import splitstree5.main.MainWindowManager;
 import splitstree5.menu.MenuController;
 
+import javax.swing.event.ChangeListener;
 import java.io.*;
 import java.time.Duration;
 import java.util.Collection;
@@ -66,7 +71,7 @@ import java.util.regex.Pattern;
 public class EditInputTab extends EditTextViewTab {
     private File tmpFile;
 
-    private Highlighter highlighter; //= new XMLHighlighter();
+    private Highlighter highlighter = new NexusHighlighter();
 
     /**
      * constructor
@@ -80,10 +85,24 @@ public class EditInputTab extends EditTextViewTab {
 
         //final TextArea textArea = getTextArea();
         final CodeArea codeArea = getCodeArea();
-        highlighter = new NexusHighlighter();
 
-        //String css = this.getClass().getResource("styles.css").toExternalForm();
-        String css = this.getClass().getResource(highlighter.getCSS()).toExternalForm();
+        // controls highlighter updating (change if >= 6 symbols = #nexus)
+        Val.map(codeArea.lengthProperty(), n -> n >= 6).addListener(new javafx.beans.value.ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                System.err.println(newValue);
+                if (newValue) {
+                    if (codeArea.getText().startsWith("#nexus"))
+                        highlighter = new NexusHighlighter();
+                    else
+                        highlighter = new XMLHighlighter();
+                    System.err.println(highlighter.getClass().toString());
+                }
+            }
+        });
+
+        String css = this.getClass().getResource("styles.css").toExternalForm();
+        //String css = this.getClass().getResource(highlighter.getCSS()).toExternalForm();
         codeArea.getStylesheets().add(css);
         codeArea.setEditable(true);
 
