@@ -48,6 +48,7 @@ import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.dialogs.importer.ImporterManager;
 import splitstree5.gui.editinputtab.highlighters.Highlighter;
 import splitstree5.gui.editinputtab.highlighters.NexusHighlighter;
+import splitstree5.gui.editinputtab.highlighters.UniversalHighlighter;
 import splitstree5.gui.editinputtab.highlighters.XMLHighlighter;
 import splitstree5.gui.texttab.TextViewTab;
 import splitstree5.io.imports.IOExceptionWithLineNumber;
@@ -87,19 +88,75 @@ public class EditInputTab extends EditTextViewTab {
         final CodeArea codeArea = getCodeArea();
 
         // controls highlighter updating (change if >= 6 symbols = #nexus)
-        Val.map(codeArea.lengthProperty(), n -> n >= 6).addListener(new javafx.beans.value.ChangeListener<Boolean>() {
+        /*Val.map(codeArea.lengthProperty(), n -> n >= 6).addListener(new javafx.beans.value.ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 System.err.println(newValue);
                 if (newValue) {
                     if (codeArea.getText().startsWith("#nexus"))
                         highlighter = new NexusHighlighter();
-                    else
+                    else if (codeArea.getText().startsWith("<"))
                         highlighter = new XMLHighlighter();
+                    else
+                        highlighter = new UniversalHighlighter();
                     System.err.println(highlighter.getClass().toString());
                 }
             }
-        });
+        });*/
+
+        // controls highlighter updating (change if the first line changed)
+        /*Val.map(codeArea.textProperty(), n -> n.substring(0, n.indexOf(System.lineSeparator())))
+            .addListener(new javafx.beans.value.ChangeListener<String>() {
+                 @Override
+                 public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                     if (newValue.length() != 0) {
+                         System.err.println(newValue);
+                         if (codeArea.getText().startsWith("#nexus"))
+                             highlighter = new NexusHighlighter();
+                         else
+                             highlighter = new XMLHighlighter();
+                         System.err.println(highlighter.getClass().toString());
+                     }
+                 }
+            });*/
+
+        Val.map(codeArea.textProperty(), n -> n.length() >= 6
+                && n.replaceAll("^\\n+", "").substring(0, 6).toLowerCase().equals("#nexus"))
+            .addListener(new javafx.beans.value.ChangeListener<Boolean>() {
+                @Override
+                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                    if (newValue) {
+                        System.err.println("Use Nexus highlighter");
+                        highlighter = new NexusHighlighter();
+                    }
+                }
+            });
+
+        Val.map(codeArea.textProperty(), n -> n.length() != 0 &&
+                n.replaceAll("^\\n+", "").startsWith("<"))
+                .addListener(new javafx.beans.value.ChangeListener<Boolean>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                        if (newValue) {
+                            System.err.println("Use xml highlighter");
+                            highlighter = new XMLHighlighter();
+                        }
+                    }
+                });
+
+        Val.map(codeArea.textProperty(), n -> n.length() >= 6
+                && !n.replaceAll("^\\n+", "").substring(0, 6).toLowerCase().equals("#nexus")
+                && !n.replaceAll("^\\n+", "").startsWith("<"))
+                .addListener(new javafx.beans.value.ChangeListener<Boolean>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                        if (newValue) {
+                            System.err.println("Use universal highlighter");
+                            highlighter = new UniversalHighlighter();
+                        }
+                    }
+                });
+
 
         String css = this.getClass().getResource("styles.css").toExternalForm();
         //String css = this.getClass().getResource(highlighter.getCSS()).toExternalForm();
@@ -335,5 +392,12 @@ public class EditInputTab extends EditTextViewTab {
             NotificationManager.showError("Input file failed: " + ex.getMessage());
         }
 
+    }
+
+    private static String returnFirstLine(String s){
+        if (s.length() == 0 || !s.contains("\\n"))
+            return s;
+        else
+            return s.substring(0, s.indexOf("\\n"));
     }
 }
