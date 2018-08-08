@@ -64,6 +64,8 @@ public class SplitsNexusOutput extends NexusIOBase implements INexusOutput<Split
             w.write(" confidences=yes");
         else
             w.write(" confidences=no");
+        if (format.isOptionShowBothSides())
+            w.write(" showBothSides=yes");
         w.write(";\n");
         if (splitsBlock.getThreshold() != 0)
             w.write("THRESHOLD=" + splitsBlock.getThreshold() + "; \n");
@@ -108,7 +110,10 @@ public class SplitsNexusOutput extends NexusIOBase implements INexusOutput<Split
             if (format.isOptionConfidences()) {
                 w.write(" " + split.getConfidence() + " \t");
             }
-            w.write(" " + Basic.toString(split.getA(), " ") + ",\n");
+            w.write(" " + Basic.toString(split.getA(), " "));
+            if (format.isOptionShowBothSides())
+                w.write(" | " + Basic.toString(split.getB(), " "));
+            w.write(",\n");
         }
         w.write(";\n");
         w.write("END; [" + SplitsBlock.BLOCK_NAME + "]\n");

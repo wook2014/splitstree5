@@ -29,6 +29,8 @@ public class SplitsNexusFormat implements INexusFormat {
     private boolean optionLabels = false;
     private boolean optionWeights = true;
     private boolean optionConfidences = false;
+    private boolean optionShowBothSides = false;
+
 
     /**
      * Constructor
@@ -90,6 +92,13 @@ public class SplitsNexusFormat implements INexusFormat {
         this.optionConfidences = optionConfidences;
     }
 
+    public boolean isOptionShowBothSides() {
+        return optionShowBothSides;
+    }
+
+    public void setOptionShowBothSides(boolean optionShowBothSides) {
+        this.optionShowBothSides = optionShowBothSides;
+    }
 
     @Override
     public List<String> listOptions() {

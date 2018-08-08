@@ -19,6 +19,7 @@
 
 package splitstree5.io.nexus;
 
+import jloda.util.BitSetUtils;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -41,16 +42,17 @@ public class SplitsNexusInput extends NexusIOBase implements INexusInput<SplitsB
             "\t[LINK name = title;]\n" +
             "\t[DIMENSIONS [NTAX=number-of-taxa] [NSPLITS=number-of-splits];]\n" +
             "\t[FORMAT\n" +
-            "\t\t[LABELS={LEFT|NO}]\n" +
-            "\t\t[WEIGHTS={YES|NO}]\n" +
-            "\t\t[CONFIDENCES={YES|NO}]\n" +
-            "\t\t[INTERVALS={YES|NO}]\n" +
+            "\t\t[Labels={LEFT|NO}]\n" +
+            "\t\t[Weights={YES|NO}]\n" +
+            "\t\t[Confidences={YES|NO}]\n" +
+            "\t\t[Intervals={YES|NO}]\n" +
+            "\t\t[ShowBothSides={NO|YES}]\n" +
             "\t;]\n" +
-            "\t[THRESHOLD=non-negative-number;]\n" +
+            "\t[Threshold=non-negative-number;]\n" +
             "\t[PROPERTIES\n" +
-            "\t\t[FIT=non-negative-number]\n" +
-            "\t\t[leastsquares]\n" +
-            "\t\t[{COMPATIBLE|CYCLIC|WEAKLY COMPATIBLE|INCOMPATIBLE]\n" +
+            "\t\t[Fit=non-negative-number]\n" +
+            // "\t\t[LeastSquares]\n" + // only present for compatibility with SplitsTree4
+            "\t\t[{Compatible|Cyclic|Weakly Compatible|Incompatible]\n" +
             "\t;]\n" +
             "\t[CYCLE [taxon_i_1 taxon_i_2 ... taxon_i_ntax];]\n" +
             "\t[SPLITSLABELS label_1 label_2 ... label_nsplits;]\n" +
@@ -58,7 +60,7 @@ public class SplitsNexusInput extends NexusIOBase implements INexusInput<SplitsB
             "[label_1] [weight_1] [confidence_1] split_1,\n" +
             "[label_2] [weight_2] [confidence_2] split_2,\n" +
             " ....\n" +
-            "[label_nsplits] [weight_nsplits] [confidence_nsplits] split_nsplits,\n" +
+            "[label_nsplits] [weight_nsplits] [confidence_nsplits] split_nsplits[,]\n" +
             ";\n" +
             "END;\n";
 
@@ -92,10 +94,10 @@ public class SplitsNexusInput extends NexusIOBase implements INexusInput<SplitsB
         parseTitleAndLink(np);
 
         final int ntax = taxaBlock.getNtax();
-        np.matchIgnoreCase("dimensions ntax=" + ntax);
+        np.matchIgnoreCase("dimensions nTax=" + ntax);
         int nsplits = 0;
-        if (np.peekMatchIgnoreCase("nsplits=")) {
-            np.matchIgnoreCase("nsplits=");
+        if (np.peekMatchIgnoreCase("nSplits=")) {
+            np.matchIgnoreCase("nSplits=");
             nsplits = np.getInt();
         }
         np.matchIgnoreCase(";");
@@ -110,6 +112,9 @@ public class SplitsNexusInput extends NexusIOBase implements INexusInput<SplitsB
 
             format.setOptionConfidences(np.findIgnoreCase(formatTokens, "confidences=no", false, format.isOptionConfidences()));
             format.setOptionConfidences(np.findIgnoreCase(formatTokens, "confidences=yes", true, format.isOptionConfidences()));
+
+            format.setOptionShowBothSides(np.findIgnoreCase(formatTokens, "showBothSides=no", false, format.isOptionShowBothSides()));
+            format.setOptionShowBothSides(np.findIgnoreCase(formatTokens, "showBothSides=yes", true, format.isOptionShowBothSides()));
 
             // for backward compatiblity, we never used this in SplitsTree4...
             np.findIgnoreCase(formatTokens, "intervals=no", false, false);
@@ -158,7 +163,7 @@ public class SplitsNexusInput extends NexusIOBase implements INexusInput<SplitsB
                 splitsBlock.setCompatibility(Compatibility.incompatible);
 
             // for compatiblity with splitstree4
-            np.findIgnoreCase(p, "leastsquares", true, false);
+            np.findIgnoreCase(p, "leastSquares", true, false);
         }
 
         if (np.peekMatchIgnoreCase("CYCLE")) {
@@ -171,7 +176,7 @@ public class SplitsNexusInput extends NexusIOBase implements INexusInput<SplitsB
         }
         if (np.peekMatchIgnoreCase("matrix")) {
             np.matchIgnoreCase("matrix");
-            readMatrix(np, ntax, nsplits, splitsBlock, format);
+            readMatrix(np, taxaBlock, nsplits, splitsBlock, format);
             np.matchIgnoreCase(";");
         }
         np.matchEndBlock();
@@ -184,7 +189,7 @@ public class SplitsNexusInput extends NexusIOBase implements INexusInput<SplitsB
      *
      * @param np the nexus parser
      */
-    private static void readMatrix(NexusStreamParser np, int ntax, int nsplits, SplitsBlock splitsBlock, SplitsNexusFormat splitsNexusFormat) throws IOException {
+    private static void readMatrix(NexusStreamParser np, TaxaBlock taxaBlock, int nsplits, SplitsBlock splitsBlock, SplitsNexusFormat splitsNexusFormat) throws IOException {
         for (int i = 1; i <= nsplits; i++) {
             float weight = 1;
             float confidence = -1;
@@ -201,19 +206,42 @@ public class SplitsNexusInput extends NexusIOBase implements INexusInput<SplitsB
             if (splitsNexusFormat.isOptionConfidences())
                 confidence = (float) Math.max(0.0, np.getDouble());
 
-            final BitSet set = new BitSet();
 
-            while (!np.peekMatchIgnoreCase(",")) {
-                Integer t = new Integer(np.getWordRespectCase());
-                set.set(t);
+            final ASplit split;
 
+            if (splitsNexusFormat.isOptionShowBothSides()) {
+                final BitSet setA = new BitSet();
+                while (!np.peekMatchIgnoreCase("|")) {
+                    setA.set(Integer.parseInt(np.getWordRespectCase()));
+                    if (setA.cardinality() == 0 || setA.cardinality() == taxaBlock.getNtax())
+                        throw new IOExceptionWithLineNumber(np.lineno(), "non-split of size " + setA.cardinality());
+                }
+                np.matchIgnoreCase("|");
+                final BitSet setB = new BitSet();
+                while (!np.peekMatchIgnoreCase(",") && !(i == nsplits && np.peekMatchIgnoreCase(";"))) {
+                    setB.set(Integer.parseInt(np.getWordRespectCase()));
+                    if (setB.cardinality() == 0 || setB.cardinality() == taxaBlock.getNtax())
+                        throw new IOExceptionWithLineNumber(np.lineno(), "non-split of size " + setB.cardinality());
+                }
+                if (BitSetUtils.intersection(setA, setB).cardinality() > 0)
+                    throw new IOExceptionWithLineNumber(np.lineno(), "Split sides not disjoint");
+                if (BitSetUtils.compare(BitSetUtils.union(setA, setB), taxaBlock.getTaxaSet()) != 0)
+                    throw new IOExceptionWithLineNumber(np.lineno(), "Union of split doesn't equal complete taxon set");
+
+                split = new ASplit(setA, setB, weight);
+            } else {
+                final BitSet setA = new BitSet();
+                while (!np.peekMatchIgnoreCase(",") && !(i == nsplits && np.peekMatchIgnoreCase(";"))) {
+                    setA.set(Integer.parseInt(np.getWordRespectCase()));
+                    if (setA.cardinality() == 0 || setA.cardinality() == taxaBlock.getNtax() || !BitSetUtils.contains(taxaBlock.getTaxaSet(), setA))
+                        throw new IOExceptionWithLineNumber(np.lineno(), "Illegal split part of size" + setA.cardinality());
+
+                }
+                split = new ASplit(setA, taxaBlock.getTaxaSet(), weight);
             }
-            np.matchIgnoreCase(",");
-            if (set.cardinality() == 0 || set.cardinality() == ntax)
-                throw new IOExceptionWithLineNumber(np.lineno(), "non-split of size " + set.cardinality());
+            if (np.peekMatchIgnoreCase(","))
+                np.matchIgnoreCase(",");
 
-
-            final ASplit split = new ASplit(set, ntax, weight);
             if (confidence != -1)
                 split.setConfidence(confidence);
             if (label != null)

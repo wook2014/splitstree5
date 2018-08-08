@@ -214,7 +214,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
 
 
     /**
-     * computes the domination graph: split s covers t, if the incompatibilities associated with t are contained in those for s
+     * computes the coverage graph: split s covers t, if the incompatibilities associated with t are contained in those for s
      * If s and t have the same set of incompatibilities, then additionally require that s is lexicographically smaller
      *
      * @param splits
