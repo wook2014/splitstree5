@@ -315,7 +315,15 @@ public class EditInputTab extends EditTextViewTab {
             if (selectedFile != null) {
                 if (selectedFile.getParentFile().isDirectory())
                     ProgramProperties.put("InputDir", selectedFile.getParent());
+
+                // check running time
+                long startTime = System.nanoTime();
                 loadFile(selectedFile.getPath());
+                long endTime   = System.nanoTime();
+                long totalTime = endTime - startTime;
+                System.err.println();
+                System.err.println(this.getClass()+":"+selectedFile.getPath());
+                System.err.println("Running time: "+totalTime);
             }
         });
         // not empty
@@ -381,13 +389,15 @@ public class EditInputTab extends EditTextViewTab {
 
     }
 
+    // todo performance test
+
     private void loadFile(String fileName) {
         final StringBuilder buf = new StringBuilder();
         try (BufferedReader r = new BufferedReader(new InputStreamReader(Basic.getInputStreamPossiblyZIPorGZIP(fileName)))) {
             String aLine;
             while ((aLine = r.readLine()) != null)
                 buf.append(aLine).append("\n");
-            getCodeArea().setAccessibleText(buf.toString());
+            getCodeArea().replaceText(buf.toString());
         } catch (IOException ex) {
             NotificationManager.showError("Input file failed: " + ex.getMessage());
         }
