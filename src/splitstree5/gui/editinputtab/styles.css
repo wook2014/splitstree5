@@ -63,7 +63,11 @@
     -fx-fill: darkviolet;
 }
 .xml-avalue {
+    -fx-font-weight: bold;
     -fx-fill: black;
+}
+.xml-namespace {
+    -fx-fill: darkblue;
 }
 .xml-comment {
 	-fx-fill: teal;
