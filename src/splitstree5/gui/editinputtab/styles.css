@@ -4,9 +4,14 @@
 }
 
 .option {
-    -fx-fill: black;
+    -fx-fill: darkviolet;
+}
+
+.block {
+    -fx-fill: darkblue;
     -fx-font-weight: bold;
 }
+
 .number {
     -fx-fill: green;
     -fx-font-weight: bold;
