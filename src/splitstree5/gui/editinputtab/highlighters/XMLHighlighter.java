@@ -10,13 +10,13 @@ import java.util.regex.Pattern;
 
 public class XMLHighlighter implements Highlighter {
 
-    private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
-    private static final String NAMESPACE_PATTERN = "\\b\\s+:";
-
     private static final Pattern XML_TAG = Pattern.compile("(?<ELEMENT>(</?\\h*)(\\w+[:])?(\\w+)([^<>]*)(\\h*/?>))"
             +"|(?<COMMENT><!--[^<>]+-->)");
 
-    private static final Pattern ATTRIBUTES = Pattern.compile("(\\w+[:])?(\\w+\\h*)(=)(\\h*\"[^\"]+\")");
+    private static final Pattern ATTRIBUTES = Pattern.compile(
+                    "((?!xmlns:)\\w+[:])?" + //namespace prefix not equal xmlns:
+                    "(\\w+\\h*|xmlns:\\w+)" + // attribute name
+                    "(=)(\\h*\"[^\"]+\")"); // attribute value
 
     private static final int GROUP_OPEN_BRACKET = 2;
     private static final int GROUP_ELEMENT_NAMESPACE = 3;
@@ -41,11 +41,7 @@ public class XMLHighlighter implements Highlighter {
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
             if(matcher.group("COMMENT") != null) {
                 spansBuilder.add(Collections.singleton("xml-comment"), matcher.end() - matcher.start());
-            }
-            /*if(matcher.group("STRING") != null) {
-                spansBuilder.add(Collections.singleton("fasta"), matcher.end() - matcher.start());
-            }*/
-            else {
+            } else {
                 if(matcher.group("ELEMENT") != null) {
                     String attributesText = matcher.group(GROUP_ATTRIBUTES_SECTION);
 
@@ -71,9 +67,15 @@ public class XMLHighlighter implements Highlighter {
                             spansBuilder.add(Collections.emptyList(),
                                     amatcher.start() - lastKwEnd);
 
+                            // no namespace found
                             if (amatcher.group(GROUP_ATTRIBUTE_NAMESPACE) == null)
-                                spansBuilder.add(Collections.singleton("xml-attribute"),
-                                        amatcher.end(GROUP_ATTRIBUTE_NAME) - amatcher.start(GROUP_ATTRIBUTE_NAME));
+                                if (amatcher.group(GROUP_ATTRIBUTE_NAME).startsWith("xmlns:"))
+                                    spansBuilder.add(Collections.singleton("xml-namespace"),
+                                            amatcher.end(GROUP_ATTRIBUTE_NAME) - amatcher.start(GROUP_ATTRIBUTE_NAME));
+                                else
+                                    spansBuilder.add(Collections.singleton("xml-attribute"),
+                                            amatcher.end(GROUP_ATTRIBUTE_NAME) - amatcher.start(GROUP_ATTRIBUTE_NAME));
+                            // name contains namespace
                             else {
                                 spansBuilder.add(Collections.singleton("xml-namespace"),
                                         amatcher.end(GROUP_ATTRIBUTE_NAMESPACE) - amatcher.start(GROUP_ATTRIBUTE_NAMESPACE));
@@ -81,6 +83,7 @@ public class XMLHighlighter implements Highlighter {
                                         amatcher.end(GROUP_ATTRIBUTE_NAME) - amatcher.end(GROUP_ATTRIBUTE_NAMESPACE));
                             }
 
+                            // values
                             spansBuilder.add(Collections.singleton("xml-tagmark"),
                                     amatcher.end(GROUP_EQUAL_SYMBOL) - amatcher.end(GROUP_ATTRIBUTE_NAME));
                             spansBuilder.add(Collections.singleton("xml-avalue"),
