@@ -30,6 +30,7 @@ public class NexusHighlighter implements Highlighter {
             "splitstree5"
     };
 
+    // todo rename !
     private static final String KEYWORD_PATTERN = "(?<KEYWORD>(?<ff>(?i)\\b(" + String.join("|", KEYWORDS) + ")\\b)"+
                         "(?<OPTION>(?i)(?!\\h+" + String.join("|\\h+", BLOCKS)+")[^;]*;(?!\\h*\\R*end))?)";
                         // everything between keyword and semicolon not ending with "end" and not blocks word
@@ -52,6 +53,7 @@ public class NexusHighlighter implements Highlighter {
                     + "|(?<STRING>" + STRING_PATTERN + ")"
                     + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
                     + "|(?<BLOCK>" + BLOCK_PATTERN + ")"
+                    + "|(?<COLLAPSED><< Collapsed block \\d+>>)"
                     //+ "|(?<NUMBER>" + NUMBER_PATTERN + ") "
     );
 
@@ -69,6 +71,7 @@ public class NexusHighlighter implements Highlighter {
                     matcher.group("KEYWORD") != null ? "keyword" :
                     //matcher.group("OPTION") != null ? "option" :
                     matcher.group("BLOCK") != null ? "block" :
+                    matcher.group("COLLAPSED") != null ? "collapsed" :
                     matcher.group("PAREN") != null ? "paren" :
                     //matcher.group("BRACE") != null ? "brace" :
                     //matcher.group("BRACKET") != null ? "bracket" :
@@ -78,15 +81,16 @@ public class NexusHighlighter implements Highlighter {
                     null; /* never happens */
             assert styleClass != null;
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
+
             if (styleClass.equals("keyword")) {
                 spansBuilder.add(Collections.singleton("keyword"),
                         matcher.end("ff") - matcher.start("ff"));
                 if (matcher.group("OPTION") != null && matcher.group("BLOCK") == null)
                     spansBuilder.add(Collections.singleton("option"),
                             matcher.end("OPTION") - matcher.start("OPTION"));
-            }
-            else
+            } else
                 spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
+
             lastKwEnd = matcher.end();
         }
         spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);

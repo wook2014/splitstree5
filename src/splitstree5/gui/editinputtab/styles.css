@@ -10,6 +10,12 @@
 .block {
     -fx-fill: darkblue;
     -fx-font-weight: bold;
+    -fx-underline: true;
+}
+
+.collapsed {
+    -fx-fill: blue;
+    -fx-underline: true;
 }
 
 .number {
