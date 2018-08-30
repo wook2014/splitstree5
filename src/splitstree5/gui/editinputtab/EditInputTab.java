@@ -84,9 +84,13 @@ public class EditInputTab extends EditTextViewTab {
 
     private Highlighter highlighter = new NexusHighlighter();
 
-    private int blocksCounter = 0;
-    private HashMap<Integer, String> tmpBlocksKeeper = new HashMap<>();
-    //private ArrayList<String> tmpBlocksKeeper = new ArrayList<>();
+    //private int blocksCounter = 0;
+    //private HashMap<Integer, String> tmpBlocksKeeper = new HashMap<>();
+
+    // todo undo doesn't work: collapse-uncollapce-undo. solution:dont delete blocks from the tmpBlocksKeeper after uncollapsing
+    private boolean hold;
+    private int chIdx;
+    private HashMap<String, String> tmpBlocksKeeper = new HashMap<>();
 
     /**
      * constructor
@@ -259,6 +263,7 @@ public class EditInputTab extends EditTextViewTab {
         });
 
         //+++
+        collapseButton.setDisable(true);
         collapseButton.setOnAction((e) -> {
             System.err.println("collapseButton pressed");
             try {
@@ -273,28 +278,42 @@ public class EditInputTab extends EditTextViewTab {
         codeArea.setMouseOverTextDelay(Duration.ofMillis(200));
         codeArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e -> {
 
-            int chIdx = e.getCharacterIndex();
+            int i = e.getCharacterIndex();
             Point2D pos = e.getScreenPosition();
 
-            if (codeArea.getStyleAtPosition(chIdx).toString().contains("block")
-                    || codeArea.getStyleAtPosition(chIdx).toString().contains("collapsed"))
+            if (codeArea.getStyleAtPosition(i).toString().contains("block")
+                    || codeArea.getStyleAtPosition(i).toString().contains("collapsed")) {
                 codeArea.setCursor(Cursor.HAND);
+                hold = true;
+                chIdx = e.getCharacterIndex();
+            }
+        });
+        codeArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_END, e -> {
+            codeArea.setCursor(Cursor.TEXT);
+        });
 
-            codeArea.setOnMouseClicked(click -> {
+        codeArea.setOnMouseClicked(click -> {
+
+            if (hold) {
+
+                //int chIdx = click.getCharacterIndex();
+                System.out.println(codeArea.getStyleAtPosition(chIdx).toString());
+
                 if (codeArea.getStyleAtPosition(chIdx).toString().contains("block"))
                     collapseBlock(chIdx);
 
                 if (codeArea.getStyleAtPosition(chIdx).toString().contains("collapsed")) {
 
-                    for (int i : tmpBlocksKeeper.keySet()){
-                        System.out.println(tmpBlocksKeeper.get(i).substring(0,10));
+                    for (String i : tmpBlocksKeeper.keySet()) {
+                        System.out.println(tmpBlocksKeeper.get(i).substring(0, 10));
                     }
 
-                    final String CB = "(<< Collapsed block )(\\d+)(>>)";
+                    final String CB = "(<< Collapsed )(\\w+)(Block >>)";
                     Pattern PATTERN = Pattern.compile(CB);
                     Matcher matcher = PATTERN.matcher(getCodeArea().getText());
 
                     int cbStart = 0, cbEnd = 0;
+                    String key;
                     while (matcher.find()) {
                         cbStart = matcher.start();
                         cbEnd = matcher.end();
@@ -304,21 +323,38 @@ public class EditInputTab extends EditTextViewTab {
 
                     System.out.println(codeArea.getText().substring(cbStart, cbEnd));
 
-                    int blockNr = Integer.parseInt(matcher.group(2));
-                    System.out.println("collapsed nr. "+matcher.group(2));
+                    //int blockNr = Integer.parseInt(matcher.group(2));
+                    //System.out.println("collapsed nr. "+matcher.group(2));
 
                     if (cbStart != 0 || cbEnd != 0) {
-                        codeArea.replaceText(cbStart, cbEnd, tmpBlocksKeeper.get(blockNr));
-                        tmpBlocksKeeper.remove(blockNr);
+                        key = matcher.group(2);
+                        codeArea.replaceText(cbStart, cbEnd, tmpBlocksKeeper.get(key));
+                        tmpBlocksKeeper.remove(key);
                     }
 
+                    /*int cbStart = chIdx, cbEnd = chIdx;
+                    while(getCodeArea().getText().charAt(cbStart) != '<')
+                        cbStart--;
+                    while(getCodeArea().getText().charAt(cbEnd) != '>')
+                        cbEnd++;
+                    cbStart--;
+                    cbEnd++;
+
+                    final String CB = "(< Collapsed )(\\w+)(Block >)";
+                    Pattern PATTERN = Pattern.compile(CB);
+
+                    String CB_string = getKeyWord(chIdx, false);
+                    System.out.println(CB_string);
+                    Matcher matcher = PATTERN.matcher(CB_string);
+
+                    if (matcher.find()) {
+                        String key = matcher.group(2);
+                        codeArea.replaceText(cbStart, cbEnd, tmpBlocksKeeper22.get(key));
+                        tmpBlocksKeeper22.remove(key);
+                    }*/
                 }
-
-            });
-
-        });
-        codeArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_END, e -> {
-            codeArea.setCursor(Cursor.TEXT);
+                hold = false; // prevents double collapsing after continuous clicks
+            }
         });
     }
 
@@ -488,10 +524,36 @@ public class EditInputTab extends EditTextViewTab {
         //tmpBlocksKeeper.put(beginCounter, getCodeArea().getText().substring(start2remove, end2remove));
 
         if (start2remove != 0 || end2remove != 0) {
-            blocksCounter ++;
+            /*blocksCounter ++;
             tmpBlocksKeeper.put(blocksCounter, getCodeArea().getText().substring(start2remove, end2remove));
             getCodeArea().replaceText(start2remove, end2remove, "<< Collapsed block "+blocksCounter+">>");
-            System.out.println("Block Nr. "+blocksCounter);
+            System.out.println("Block Nr. "+blocksCounter);*/
+
+            String keyWord = getKeyWord(charIndex, true);
+            tmpBlocksKeeper.put(keyWord, getCodeArea().getText().substring(start2remove, end2remove));
+            getCodeArea().replaceText(start2remove, end2remove, "<< Collapsed "+keyWord+"Block >>");
+            System.out.println("Block Nr. "+keyWord);
         }
+    }
+
+    private String getKeyWord(int position, boolean collapse) {
+
+        int leftPos = position;
+        int rightPos = position;
+
+        if (collapse) {
+            while(Character.isLetter(getCodeArea().getText().charAt(leftPos)))
+                leftPos--;
+            while(Character.isLetter(getCodeArea().getText().charAt(rightPos)))
+                rightPos++;
+            leftPos++;
+        } else {
+            while(getCodeArea().getText().charAt(leftPos) != '<')
+                leftPos--;
+            while(getCodeArea().getText().charAt(leftPos) != '>')
+                rightPos++;
+            rightPos++;
+        }
+        return getCodeArea().getText().substring(leftPos, rightPos);
     }
 }

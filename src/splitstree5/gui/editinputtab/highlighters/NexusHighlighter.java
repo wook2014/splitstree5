@@ -15,7 +15,8 @@ public class NexusHighlighter implements Highlighter {
             "dimensions",
             "format",
             "taxlabels", "matrix",
-            "properties", "cycle"
+            "properties", "cycle",
+            //"translate", "DRAW", "VERTICES", "VLABELS", "EDGES" -> single keywords
     };
 
     private static final String[] OPTIONS = new String[] {
@@ -27,7 +28,7 @@ public class NexusHighlighter implements Highlighter {
     private static final String[] BLOCKS = new String[] {
             "data", "taxa", "characters", "distances", "trees",
             "splits", "network", "traits", "analysis", "viewer",
-            "splitstree5"
+            "splitstree5", "traits"
     };
 
     // todo rename !
@@ -53,7 +54,7 @@ public class NexusHighlighter implements Highlighter {
                     + "|(?<STRING>" + STRING_PATTERN + ")"
                     + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
                     + "|(?<BLOCK>" + BLOCK_PATTERN + ")"
-                    + "|(?<COLLAPSED><< Collapsed block \\d+>>)"
+                    + "|(?<COLLAPSED><< Collapsed \\w+Block >>)"
                     //+ "|(?<NUMBER>" + NUMBER_PATTERN + ") "
     );
 
