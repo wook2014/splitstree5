@@ -189,7 +189,13 @@ public class ImporterManager {
     }
 
     private static String getFileFormat(IImporter importer) {
-        return Basic.getShortName(importer.getClass()).replaceAll("In$", "");
+        String name = Basic.getShortName(importer.getClass());
+        if (name.endsWith("In"))
+            return name.substring(0, name.length() - 2);
+        else if (name.endsWith("Importer"))
+            return name.substring(0, name.length() - 8);
+        else
+            return name;
     }
 
 

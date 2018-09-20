@@ -39,11 +39,9 @@
 package splitstree5.io.nexus.workflow;
 
 import jloda.fx.NotificationManager;
-import jloda.fx.RecentFilesManager;
 import jloda.util.Basic;
 import jloda.util.Pair;
 import jloda.util.ProgramProperties;
-import splitstree5.core.Document;
 import splitstree5.core.datablocks.SplitsTree5Block;
 import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.DataNode;
@@ -66,12 +64,11 @@ public class WorkflowNexusOutput {
     /**
      * save the workflow in nexus format
      *
-     * @param document
+     * @param workflow
+     * @param file file or stdout
      * @throws IOException
      */
-    public void save(Document document) throws IOException {
-
-        final Workflow workflow = document.getWorkflow();
+    public void save(Workflow workflow, final File file) throws IOException {
         SplitsTree5Block splitsTree5Block = new SplitsTree5Block();
         splitsTree5Block.setOptionNumberOfDataNodes(workflow.getNumberOfDataNodes());
         splitsTree5Block.setOptionNumberOfAlgorithms(workflow.getNumberOfConnectorNodes());
@@ -82,12 +79,10 @@ public class WorkflowNexusOutput {
         final Map<String, Integer> nodeType2Count = new HashMap<>();
         final Map<WorkflowNode, String> node2title = new HashMap<>();
 
-        final File selectedFile = new File(document.getFileName());
+        if (file.getParentFile() != null && file.getParentFile().isDirectory())
+            ProgramProperties.put("SaveDir", file.getParent());
 
-        if (selectedFile.getParentFile().isDirectory())
-            ProgramProperties.put("SaveDir", selectedFile.getParent());
-
-        try (Writer w = new BufferedWriter(new FileWriter(selectedFile))) {
+        try (Writer w = new BufferedWriter(file.getName().equals("stdout") ? new OutputStreamWriter(System.out) : new FileWriter(file))) {
             w.write("#nexus\n");
             new SplitsTree5NexusOutput().write(w, splitsTree5Block);
 
@@ -148,11 +143,7 @@ public class WorkflowNexusOutput {
             node.setTitle(null);
         }
 
-        NotificationManager.showInformation("Saved " + splitsTree5Block.size() + " blocks to file: " + selectedFile.getPath());
-        document.setDirty(false);
-        document.setHasSplitsTree5File(true);
-        if (!document.getFileName().endsWith(".tmp"))
-            RecentFilesManager.getInstance().addRecentFile(selectedFile.getPath());
+        NotificationManager.showInformation("Saved " + splitsTree5Block.size() + " blocks to file: " + file.getPath());
     }
 
     /**

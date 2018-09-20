@@ -63,6 +63,59 @@ public class ArgsOptions {
      * constructor
      *
      * @param args        command line arguments
+     * @param main        class that contains main method
+     * @param description program description
+     */
+    public ArgsOptions(String[] args, Object main, String description) throws CanceledException {
+        this(args, main, (ProgramProperties.getProgramName() != null && ProgramProperties.getProgramName().length() > 0 ? ProgramProperties.getProgramName() : (main != null ? Basic.getShortName(main.getClass()) : "Unknown")), description);
+    }
+
+    /**
+     * constructor
+     *
+     * @param args        command line arguments
+     * @param main        class that contains main method
+     * @param programName
+     * @param description program description
+     */
+    public ArgsOptions(String[] args, Object main, String programName, String description) throws CanceledException {
+
+        if (args.length > 0 && args[0].equals("--install4j")) {
+            String[] tmp = new String[args.length - 1];
+            System.arraycopy(args, 1, tmp, 0, tmp.length);
+            args = tmp;
+            usingInstall4j = true;
+        } else
+            usingInstall4j = false;
+
+        if (args.length > 0 && args[args.length - 1].equals("--argsGui")) {
+            args = getDialogInput(args, args.length - 1);
+        }
+        arguments = new LinkedList<>();
+        arguments.addAll(Arrays.asList(args));
+
+        this.programName = programName;
+        if (main != null)
+            this.version = ResourceManager.getVersion(main.getClass(), programName);
+        this.description = description;
+
+        usage = new LinkedList<>();
+
+        try {
+            doHelp = getOption("-h", "--help", "Show help", false, false);
+            setVerbose(getOption("-v", "--verbose", "verbose", false) && !doHelp);
+        } catch (UsageException e) {
+        }
+
+        if (verbose)
+            System.err.println(programName + " - " + getDescription() + "\nOptions:");
+    }
+
+
+    /**
+     * constructor
+     *
+     * @param args        command line arguments
      * @param clazz       class that contains main method
      * @param programName
      * @param description program description

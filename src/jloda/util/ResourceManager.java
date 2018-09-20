@@ -26,8 +26,13 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 
 /**
@@ -299,6 +304,46 @@ public class ResourceManager {
 
     public static boolean isWarnMissing() {
         return warnMissing;
+    }
+
+    /**
+     * gets the compile time version of the given class
+     *
+     * @param clazz
+     * @param name
+     * @return compile time version
+     */
+    public static String getVersion(final Class clazz, final String name) {
+        String version;
+        try {
+            final ClassLoader classLoader = clazz.getClassLoader();
+            String threadContexteClass = clazz.getName().replace('.', '/');
+            URL url = classLoader.getResource(threadContexteClass + ".class");
+            if (url == null) {
+                version = name + " $ (no manifest) $";
+            } else {
+                final String path = url.getPath();
+                final String jarExt = ".jar";
+                int index = path.indexOf(jarExt);
+                SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+                if (index != -1) {
+                    final String jarPath = path.substring(0, index + jarExt.length());
+                    final File file = new File(jarPath);
+                    final String jarVersion = file.getName();
+                    final JarFile jarFile = new JarFile(new File(new URI(jarPath)));
+                    final JarEntry entry = jarFile.getJarEntry("META-INF/MANIFEST.MF");
+                    version = name + " $ " + jarVersion.substring(0, jarVersion.length() - jarExt.length()) + " $ " + sdf.format(new Date(entry.getTime()));
+                    jarFile.close();
+                } else {
+                    final File file = new File(path);
+                    version = name + " $ " + sdf.format(new Date(file.lastModified()));
+                }
+            }
+        } catch (Exception e) {
+            //Basic.caught(e);
+            version = name + " $ " + e.toString();
+        }
+        return version;
     }
 }
 

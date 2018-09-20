@@ -24,9 +24,7 @@ import javafx.stage.Stage;
 import jloda.fx.CallableService;
 import jloda.fx.NotificationManager;
 import jloda.fx.RecentFilesManager;
-import jloda.util.Basic;
-import jloda.util.Pair;
-import jloda.util.ProgressListener;
+import jloda.util.*;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
@@ -64,7 +62,7 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
      * @param parentWindow
      * @param fileName
      */
-    public static void open(MainWindow parentWindow, String fileName) {
+    public static CallableService<MainWindow> open(MainWindow parentWindow, String fileName) {
         final CallableService<MainWindow> service = new CallableService<>();
         service.setExecutor(Platform::runLater); // todo: make this runnable in a separate thread
         service.setCallable(new WorkflowNexusInput(parentWindow, fileName));
@@ -77,6 +75,7 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
                     + "\nLoaded workflow containing " + workflow.getNumberOfDataNodes() + " data nodes and " + workflow.getNumberOfConnectorNodes() + " algorithms");
         });
         service.start();
+        return service;
     }
 
     /**
@@ -115,6 +114,59 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
 
         final ArrayList<ViewerBlock> viewerBlocks = new ArrayList<>();
 
+        input(progress, workflow, viewerBlocks, fileName);
+
+        Platform.runLater(() -> {
+            try {
+                if (usingNewWindow)
+                    mainWindow.show(new Stage(), parentWindow.getStage().getX() + 50, parentWindow.getStage().getY() + 50);
+                if (!fileName.endsWith(".tmp"))
+                    RecentFilesManager.getInstance().addRecentFile(fileName);
+                if (mainWindow.getStage() != null)
+                    mainWindow.getStage().toFront();
+            } catch (Exception ex) {
+                Basic.caught(ex);
+            }
+        });
+
+        Platform.runLater(() -> {
+            document.updateMethodsText();
+            for (ViewerBlock viewerBlock : viewerBlocks) {
+                viewerBlock.getTab().setSkipNextLabelLayout(true);
+                viewerBlock.show();
+            }
+        });
+        return mainWindow;
+    }
+
+    /**
+     * does this file look like it contains a workflow?
+     *
+     * @param fileName
+     * @return true, if SplitsTree5Block present
+     */
+    public static boolean isApplicable(String fileName) {
+        try (NexusStreamParser np = new NexusStreamParser(new FileReader(fileName))) {
+            if (np.peekMatchIgnoreCase("#nexus")) {
+                np.matchIgnoreCase("#nexus");
+                return np.peekMatchBeginBlock(SplitsTree5Block.BLOCK_NAME);
+            }
+        } catch (IOException ex) {
+            return false;
+        }
+        return false;
+    }
+
+    /**
+     * input a work flow
+     *
+     * @param progress
+     * @param workflow
+     * @param fileName
+     * @throws IOException
+     * @throws CanceledException
+     */
+    public static void input(ProgressListener progress, Workflow workflow, ArrayList<ViewerBlock> viewerBlocks, String fileName) throws IOException, CanceledException {
         try (NexusStreamParser np = new NexusStreamParser(Basic.getReaderPossiblyZIPorGZIP(fileName))) {
             progress.setMaximum((new File(fileName).length() / (Basic.isZIPorGZIPFile(fileName) ? 100 : 20)));
             np.matchIgnoreCase("#nexus");
@@ -203,44 +255,7 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
                 progress.setProgress(np.lineno());
             }
         }
-
-        Platform.runLater(() -> {
-            try {
-                if (usingNewWindow)
-                    mainWindow.show(new Stage(), parentWindow.getStage().getX() + 50, parentWindow.getStage().getY() + 50);
-                if (!fileName.endsWith(".tmp"))
-                    RecentFilesManager.getInstance().addRecentFile(fileName);
-                mainWindow.getStage().toFront();
-            } catch (Exception ex) {
-                Basic.caught(ex);
-            }
-        });
-
-        Platform.runLater(() -> {
-            document.updateMethodsText();
-            for (ViewerBlock viewerBlock : viewerBlocks) {
-                viewerBlock.getTab().setSkipNextLabelLayout(true);
-                viewerBlock.show();
-            }
-        });
-        return mainWindow;
-    }
-
-    /**
-     * does this file look like it contains a workflow?
-     *
-     * @param fileName
-     * @return true, if SplitsTree5Block present
-     */
-    public static boolean isApplicable(String fileName) {
-        try (NexusStreamParser np = new NexusStreamParser(new FileReader(fileName))) {
-            if (np.peekMatchIgnoreCase("#nexus")) {
-                np.matchIgnoreCase("#nexus");
-                return np.peekMatchBeginBlock(SplitsTree5Block.BLOCK_NAME);
-            }
-        } catch (IOException ex) {
-            return false;
-        }
-        return false;
+        if (progress instanceof ProgressPercentage)
+            ((ProgressPercentage) progress).reportTaskCompleted();
     }
 }

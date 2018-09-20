@@ -23,6 +23,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.scene.control.Tab;
 import javafx.stage.FileChooser;
+import jloda.fx.RecentFilesManager;
 import jloda.util.Basic;
 import jloda.util.Pair;
 import jloda.util.ProgramProperties;
@@ -135,7 +136,11 @@ public class MainWindowMenuController {
 
         controller.getSaveMenuItem().setOnAction((e) -> {
             try {
-                new WorkflowNexusOutput().save(mainWindow.getDocument());
+                new WorkflowNexusOutput().save(mainWindow.getWorkflow(), new File(document.getFileName()));
+                document.setDirty(false);
+                document.setHasSplitsTree5File(true);
+                if (!document.getFileName().endsWith(".tmp"))
+                    RecentFilesManager.getInstance().addRecentFile(document.getFileName());
                 mainWindow.getDocument().setDirty(false);
             } catch (IOException ex) {
                 Basic.caught(ex);
@@ -191,9 +196,14 @@ public class MainWindowMenuController {
             if (selectedFile.getParentFile().isDirectory())
                 ProgramProperties.put("SaveDir", selectedFile.getParent());
             try {
-                mainWindow.getDocument().setFileName(selectedFile.getPath());
-                new WorkflowNexusOutput().save(mainWindow.getDocument());
+                final Document document = mainWindow.getDocument();
+                document.setFileName(selectedFile.getPath());
+                new WorkflowNexusOutput().save(mainWindow.getWorkflow(), selectedFile);
                 mainWindow.getDocument().setDirty(false);
+                document.setHasSplitsTree5File(true);
+                if (!document.getFileName().endsWith(".tmp"))
+                    RecentFilesManager.getInstance().addRecentFile(document.getFileName());
+
             } catch (IOException e) {
                 Basic.caught(e);
             }

@@ -534,7 +534,7 @@ public class Workflow {
      * @param nodes
      */
     public void recomputeTop(Collection<WorkflowNode> nodes) {
-        final DataNode root = getTopDataNode(); // only allow duplication below top data node
+        final DataNode root = getTopDataNode();
         if (root != null) {
             final Stack<WorkflowNode> stack = new Stack<>();
             stack.push(root);

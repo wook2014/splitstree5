@@ -19,10 +19,10 @@
 
 package splitstree5.io.nexus;
 
+import jloda.util.IOExceptionWithLineNumber;
 import jloda.util.PluginClassLoader;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.io.imports.IOExceptionWithLineNumber;
 import splitstree5.utils.Option;
 import splitstree5.utils.OptionsAccessor;
 

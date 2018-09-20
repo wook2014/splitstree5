@@ -20,10 +20,10 @@
 package splitstree5.io.nexus;
 
 import jloda.util.Basic;
+import jloda.util.IOExceptionWithLineNumber;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TraitsBlock;
-import splitstree5.io.imports.IOExceptionWithLineNumber;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -19,9 +19,9 @@
 
 package splitstree5.io.nexus;
 
+import jloda.util.IOExceptionWithLineNumber;
 import jloda.util.Pair;
 import jloda.util.parse.NexusStreamParser;
-import splitstree5.io.imports.IOExceptionWithLineNumber;
 
 import java.io.IOException;
 import java.io.Writer;

@@ -29,10 +29,10 @@ import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloGraph;
 import jloda.util.Basic;
+import jloda.util.IOExceptionWithLineNumber;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.gui.graphtab.base.EdgeView2D;
 import splitstree5.gui.graphtab.base.Graph2DTab;
-import splitstree5.io.imports.IOExceptionWithLineNumber;
 
 import java.util.ArrayList;
 import java.util.Map;

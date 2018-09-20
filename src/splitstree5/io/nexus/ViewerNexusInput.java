@@ -23,6 +23,7 @@ import jloda.phylo.PhyloGraph;
 import jloda.phylo.PhyloTree;
 import jloda.phylo.SplitsGraph;
 import jloda.util.Basic;
+import jloda.util.IOExceptionWithLineNumber;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.ViewerBlock;
@@ -32,7 +33,6 @@ import splitstree5.gui.graphtab.TreeViewTab;
 import splitstree5.gui.graphtab.base.EdgeView2D;
 import splitstree5.gui.graphtab.base.Graph2DTab;
 import splitstree5.gui.graphtab.base.NodeView2D;
-import splitstree5.io.imports.IOExceptionWithLineNumber;
 import splitstree5.io.nexus.graph.EdgeViewIO;
 import splitstree5.io.nexus.graph.NodeViewIO;
 

@@ -20,7 +20,7 @@
 package jloda.util.parse;
 
 import jloda.util.Basic;
-import splitstree5.io.imports.IOExceptionWithLineNumber;
+import jloda.util.IOExceptionWithLineNumber;
 
 import java.io.*;
 import java.util.*;

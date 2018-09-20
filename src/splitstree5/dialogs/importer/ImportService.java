@@ -24,10 +24,7 @@ import javafx.concurrent.Task;
 import javafx.scene.layout.Pane;
 import jloda.fx.NotificationManager;
 import jloda.fx.ProgramExecutorService;
-import jloda.util.Basic;
-import jloda.util.CanceledException;
-import jloda.util.Pair;
-import jloda.util.ProgressListener;
+import jloda.util.*;
 import splitstree5.core.datablocks.*;
 import splitstree5.core.workflow.TaskWithProgressListener;
 import splitstree5.dialogs.ProgressPane;
@@ -136,6 +133,8 @@ public class ImportService extends Service<Boolean> {
             taxaBlock.setTraitsBlock(traitsBlock);
             new TraitsNexusImporter().parse(progress, fileName, taxaBlock, traitsBlock);
         }
+        if (progress instanceof ProgressPercentage)
+            ((ProgressPercentage) progress).reportTaskCompleted();
         return new Pair<>(taxaBlock, dataBlock);
     }
 }

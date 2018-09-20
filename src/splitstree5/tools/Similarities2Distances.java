@@ -22,7 +22,6 @@ package splitstree5.tools;
 import jloda.util.*;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.io.imports.IOExceptionWithLineNumber;
 import splitstree5.io.nexus.DistancesNexusOutput;
 import splitstree5.io.nexus.TaxaNexusOutput;
 

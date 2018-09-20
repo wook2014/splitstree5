@@ -1,5 +1,6 @@
 package splitstree5.io.imports;
 
+import jloda.util.IOExceptionWithLineNumber;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.datablocks.characters.CharactersType;

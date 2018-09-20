@@ -2,6 +2,7 @@ package splitstree5.io.imports;
 
 import jloda.util.CanceledException;
 import jloda.util.FileInputIterator;
+import jloda.util.IOExceptionWithLineNumber;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IToSplits;
 import splitstree5.core.datablocks.SplitsBlock;
