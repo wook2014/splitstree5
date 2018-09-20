@@ -10,8 +10,8 @@ import java.util.regex.Pattern;
 
 public class UniversalHighlighter implements Highlighter {
 
-    private static final String PAREN_PATTERN = "\\(|\\)";
-    private static final String BRACE_PATTERN = "\\{|\\}";
+    private static final String PAREN_PATTERN = "[()]";
+    private static final String BRACE_PATTERN = "[{}]";
     //private static final String SEMICOLON_PATTERN = "\\;";
     private static final String COMMENT_PATTERN = "#[^\n]*";
     private static final String FASTA_COMMENT_PATTERN = ";[^\n]*";
@@ -33,7 +33,6 @@ public class UniversalHighlighter implements Highlighter {
 
     @Override
     public StyleSpans<Collection<String>> computeHighlighting(String text) {
-        text = text.toLowerCase(); // todo weg, case in reg. expression
         Matcher matcher = PATTERN.matcher(text);
         int lastKwEnd = 0;
         StyleSpansBuilder<Collection<String>> spansBuilder

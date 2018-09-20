@@ -4,9 +4,20 @@
 }
 
 .option {
-    -fx-fill: black;
-    -fx-font-weight: bold;
+    -fx-fill: darkviolet;
 }
+
+.block {
+    -fx-fill: darkblue;
+    -fx-font-weight: bold;
+    -fx-underline: true;
+}
+
+.collapsed {
+    -fx-fill: blue;
+    -fx-underline: true;
+}
+
 .number {
     -fx-fill: green;
     -fx-font-weight: bold;
@@ -63,7 +74,11 @@
     -fx-fill: darkviolet;
 }
 .xml-avalue {
+    -fx-font-weight: bold;
     -fx-fill: black;
+}
+.xml-namespace {
+    -fx-fill: darkblue;
 }
 .xml-comment {
 	-fx-fill: teal;

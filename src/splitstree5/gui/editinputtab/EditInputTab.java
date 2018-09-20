@@ -19,7 +19,10 @@
 
 package splitstree5.gui.editinputtab;
 
+import com.sun.deploy.util.StringUtils;
 import com.sun.org.apache.bcel.internal.classfile.Code;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -28,10 +31,14 @@ import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
+import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import jloda.fx.NotificationManager;
 import jloda.fx.RecentFilesManager;
@@ -39,6 +46,7 @@ import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 import jloda.util.ResourceManager;
 import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.event.MouseOverTextEvent;
 import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
@@ -59,8 +67,10 @@ import splitstree5.menu.MenuController;
 import javax.swing.event.ChangeListener;
 import java.io.*;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -73,6 +83,14 @@ public class EditInputTab extends EditTextViewTab {
     private File tmpFile;
 
     private Highlighter highlighter = new NexusHighlighter();
+
+    //private int blocksCounter = 0;
+    //private HashMap<Integer, String> tmpBlocksKeeper = new HashMap<>();
+
+    // todo undo doesn't work: collapse-uncollapce-undo. solution:dont delete blocks from the tmpBlocksKeeper after uncollapsing
+    private boolean hold;
+    private int chIdx;
+    private HashMap<String, String> tmpBlocksKeeper = new HashMap<>();
 
     /**
      * constructor
@@ -177,7 +195,6 @@ public class EditInputTab extends EditTextViewTab {
                 // run the following code block when previous stream emits an event
                 //.subscribe(ignore -> codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText())));
                 .subscribe(ignore -> codeArea.setStyleSpans(0, highlighter.computeHighlighting(codeArea.getText())));
-        //codeArea.replaceText(0, 0, sampleCode);
         //////////
 
         /////codeArea.setAccessibleText("Input and edit data in any supported format");
@@ -206,9 +223,9 @@ public class EditInputTab extends EditTextViewTab {
         final Button applyButton = new Button("Parse and Load");
         applyButton.setTooltip(new Tooltip("Save this data to a temporary file, parse the file and then load the data"));
 
-        final Button highlightButton = new Button("Highlight"); //+++
+        final Button collapseButton = new Button("Collapse nexus block"); //+++
 
-        toolBar.getItems().addAll(applyButton, highlightButton); //+++
+        toolBar.getItems().addAll(applyButton, collapseButton); //+++
         //toolBar.getItems().addAll(applyButton);
         applyButton.disableProperty().bind(Val.map(codeArea.lengthProperty(), n -> n == 0));
         //highlightButton.disableProperty().bind(getCodeArea().textProperty().isEmpty()); //+++
@@ -246,26 +263,97 @@ public class EditInputTab extends EditTextViewTab {
         });
 
         //+++
-        highlightButton.setOnAction((e) -> {
-            System.err.println("highlighting pressed");
+        collapseButton.setDisable(true);
+        collapseButton.setOnAction((e) -> {
+            System.err.println("collapseButton pressed");
             try {
-                System.err.println("highlighting");
-                /*for (StyleSpan styleSpan : computeHighlighting(getCodeArea().getText())){
-                    System.err.println(styleSpan.getLength());
-                    System.err.println(styleSpan.toString());
-                    System.err.println(styleSpan.getStyle());
-                }*/
-
-                //codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText()));
-                //codeArea.replaceText(0, 0, codeArea.getText());
-                //getCodeArea().setStyle("-fx-font-weight: bold;");
-
-                //textArea.setParagraphGraphicFactory(LineNumberFactory.get(textArea));
-                //textArea.setStyleSpans(0, computeHighlighting(textArea.getText()));
-
-
+                System.err.println("Collapse current block");
+                int position = codeArea.getCaretPosition();
+                collapseBlock(position);
             } catch (Exception ex) {
-                NotificationManager.showError("Enter data failed: " + ex.getMessage());
+                NotificationManager.showError("Nexus block collapsing failed: " + ex.getMessage());
+            }
+        });
+
+        codeArea.setMouseOverTextDelay(Duration.ofMillis(200));
+        codeArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e -> {
+
+            int i = e.getCharacterIndex();
+            Point2D pos = e.getScreenPosition();
+
+            if (codeArea.getStyleAtPosition(i).toString().contains("block")
+                    || codeArea.getStyleAtPosition(i).toString().contains("collapsed")) {
+                codeArea.setCursor(Cursor.HAND);
+                hold = true;
+                chIdx = e.getCharacterIndex();
+            }
+        });
+        codeArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_END, e -> {
+            codeArea.setCursor(Cursor.TEXT);
+        });
+
+        codeArea.setOnMouseClicked(click -> {
+
+            if (hold) {
+
+                //int chIdx = click.getCharacterIndex();
+                System.out.println(codeArea.getStyleAtPosition(chIdx).toString());
+
+                if (codeArea.getStyleAtPosition(chIdx).toString().contains("block"))
+                    collapseBlock(chIdx);
+
+                if (codeArea.getStyleAtPosition(chIdx).toString().contains("collapsed")) {
+
+                    for (String i : tmpBlocksKeeper.keySet()) {
+                        System.out.println(tmpBlocksKeeper.get(i).substring(0, 10));
+                    }
+
+                    final String CB = "(<< Collapsed )(\\w+)(Block >>)";
+                    Pattern PATTERN = Pattern.compile(CB);
+                    Matcher matcher = PATTERN.matcher(getCodeArea().getText());
+
+                    int cbStart = 0, cbEnd = 0;
+                    String key;
+                    while (matcher.find()) {
+                        cbStart = matcher.start();
+                        cbEnd = matcher.end();
+                        if (matcher.end() > chIdx)
+                            break;
+                    }
+
+                    System.out.println(codeArea.getText().substring(cbStart, cbEnd));
+
+                    //int blockNr = Integer.parseInt(matcher.group(2));
+                    //System.out.println("collapsed nr. "+matcher.group(2));
+
+                    if (cbStart != 0 || cbEnd != 0) {
+                        key = matcher.group(2);
+                        codeArea.replaceText(cbStart, cbEnd, tmpBlocksKeeper.get(key));
+                        tmpBlocksKeeper.remove(key);
+                    }
+
+                    /*int cbStart = chIdx, cbEnd = chIdx;
+                    while(getCodeArea().getText().charAt(cbStart) != '<')
+                        cbStart--;
+                    while(getCodeArea().getText().charAt(cbEnd) != '>')
+                        cbEnd++;
+                    cbStart--;
+                    cbEnd++;
+
+                    final String CB = "(< Collapsed )(\\w+)(Block >)";
+                    Pattern PATTERN = Pattern.compile(CB);
+
+                    String CB_string = getKeyWord(chIdx, false);
+                    System.out.println(CB_string);
+                    Matcher matcher = PATTERN.matcher(CB_string);
+
+                    if (matcher.find()) {
+                        String key = matcher.group(2);
+                        codeArea.replaceText(cbStart, cbEnd, tmpBlocksKeeper22.get(key));
+                        tmpBlocksKeeper22.remove(key);
+                    }*/
+                }
+                hold = false; // prevents double collapsing after continuous clicks
             }
         });
     }
@@ -315,7 +403,15 @@ public class EditInputTab extends EditTextViewTab {
             if (selectedFile != null) {
                 if (selectedFile.getParentFile().isDirectory())
                     ProgramProperties.put("InputDir", selectedFile.getParent());
+
+                // check running time
+                long startTime = System.nanoTime();
                 loadFile(selectedFile.getPath());
+                long endTime   = System.nanoTime();
+                long totalTime = endTime - startTime;
+                System.err.println();
+                System.err.println(this.getClass()+":"+selectedFile.getPath());
+                System.err.println("Running time: "+totalTime);
             }
         });
         // not empty
@@ -381,13 +477,15 @@ public class EditInputTab extends EditTextViewTab {
 
     }
 
+    // todo performance test
+
     private void loadFile(String fileName) {
         final StringBuilder buf = new StringBuilder();
         try (BufferedReader r = new BufferedReader(new InputStreamReader(Basic.getInputStreamPossiblyZIPorGZIP(fileName)))) {
             String aLine;
             while ((aLine = r.readLine()) != null)
                 buf.append(aLine).append("\n");
-            getCodeArea().setAccessibleText(buf.toString());
+            getCodeArea().replaceText(buf.toString());
         } catch (IOException ex) {
             NotificationManager.showError("Input file failed: " + ex.getMessage());
         }
@@ -399,5 +497,63 @@ public class EditInputTab extends EditTextViewTab {
             return s;
         else
             return s.substring(0, s.indexOf("\\n"));
+    }
+
+    private void collapseBlock(int charIndex) {
+
+        int start2remove = 0;
+        int end2remove = 0;
+        //int endOffset = codeArea.getText().substring(0, chIdx).length();
+
+        Pattern PATTERN1 = Pattern.compile("(?i)\\b(end|endblock)\\b;");
+        Pattern PATTERN2 = Pattern.compile("(?i)\\bbegin\\b");
+        Matcher matcher1 = PATTERN1.matcher(getCodeArea().getText().substring(charIndex));
+        Matcher matcher2 = PATTERN2.matcher(getCodeArea().getText().substring(0, charIndex));
+
+        // the first end
+        if (matcher1.find())
+            end2remove = matcher1.end() + charIndex + 1;
+        // the last begin
+        while (matcher2.find())
+            start2remove = matcher2.start();
+
+        System.out.println("start2remove "+start2remove);
+        System.out.println("end2remove "+end2remove);
+        //System.out.println("Block Nr. "+beginCounter);
+
+        //tmpBlocksKeeper.put(beginCounter, getCodeArea().getText().substring(start2remove, end2remove));
+
+        if (start2remove != 0 || end2remove != 0) {
+            /*blocksCounter ++;
+            tmpBlocksKeeper.put(blocksCounter, getCodeArea().getText().substring(start2remove, end2remove));
+            getCodeArea().replaceText(start2remove, end2remove, "<< Collapsed block "+blocksCounter+">>");
+            System.out.println("Block Nr. "+blocksCounter);*/
+
+            String keyWord = getKeyWord(charIndex, true);
+            tmpBlocksKeeper.put(keyWord, getCodeArea().getText().substring(start2remove, end2remove));
+            getCodeArea().replaceText(start2remove, end2remove, "<< Collapsed "+keyWord+"Block >>");
+            System.out.println("Block Nr. "+keyWord);
+        }
+    }
+
+    private String getKeyWord(int position, boolean collapse) {
+
+        int leftPos = position;
+        int rightPos = position;
+
+        if (collapse) {
+            while(Character.isLetter(getCodeArea().getText().charAt(leftPos)))
+                leftPos--;
+            while(Character.isLetter(getCodeArea().getText().charAt(rightPos)))
+                rightPos++;
+            leftPos++;
+        } else {
+            while(getCodeArea().getText().charAt(leftPos) != '<')
+                leftPos--;
+            while(getCodeArea().getText().charAt(leftPos) != '>')
+                rightPos++;
+            rightPos++;
+        }
+        return getCodeArea().getText().substring(leftPos, rightPos);
     }
 }
