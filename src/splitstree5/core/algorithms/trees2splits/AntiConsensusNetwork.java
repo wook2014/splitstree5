@@ -23,6 +23,7 @@ import jloda.fx.NotificationManager;
 import jloda.graph.Edge;
 import jloda.graph.Graph;
 import jloda.graph.Node;
+import jloda.graph.NodeSet;
 import jloda.phylo.PhyloGraph;
 import jloda.phylo.PhyloTree;
 import jloda.util.*;
@@ -48,14 +49,17 @@ import java.util.*;
 public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
     private int optionSinRank = 1;
     private boolean optionAllSinsUpToRank = false;
+    private double optionMinSpanPercent = 10;
+
     private int optionMaxDistortion = 1;
-    private double optionMinimumSpanPercent = 10;
+
+    private double optionMinWeight = 0.00001;
 
     public final static String DESCRIPTION = "Computes the anti-consensus of trees";
 
     @Override
     public List<String> listOptions() {
-        return Arrays.asList("optionSinRank", "optionAllSinsUpToRank", "optionMinimumSpan", "optionMaxDistortion");
+        return Arrays.asList("optionSinRank", "optionAllSinsUpToRank", "optionMaxDistortion", "optionMinIncompatPercent", "optionMinWeightPercent");
     }
 
     @Override
@@ -127,6 +131,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
 
         ArrayList<SIN> listOfSins = new ArrayList<>();
 
+
         for (int t = 1; t <= treesBlock.getNTrees(); t++) {
             final PhyloTree tree = treesBlock.getTree(t);
             final ArrayList<ASplit> splits = new ArrayList<>(tree.getNumberOfEdges());
@@ -147,9 +152,9 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
 
             for (ASplit split : splits) {
                 split2incompatibilities.put(split, new BitSet());
-                int distortion = Distortion.computeDistortionForSplit(consensusTree, split.getA(), split.getB());
+                final int distortion = Distortion.computeDistortionForSplit(consensusTree, split.getA(), split.getB());
                 if (distortion > 0 && distortion <= getOptionMaxDistortion()) {
-                    final double incompatiblitySpanPercent = 100.0 * computeIncompatibleWeight(split, consensusSplits, split2incompatibilities.get(split)) / totalWeightNonTrivialSplits;
+                    final double incompatiblitySpanPercent = (100.0 * computeIncompatibleWeight(split, consensusSplits, split2incompatibilities.get(split))) / totalWeightNonTrivialSplits;
                     // previous line also computes split2incompatibilities mapping
                     split.setConfidence(incompatiblitySpanPercent);
                     splitsWithDistortion.add(split);
@@ -157,30 +162,78 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
             }
             final Graph coverageGraph = computeCoverageDAG(splitsWithDistortion, split2incompatibilities);
 
-            for (Node u : coverageGraph.nodes()) {
-                if (u.getInDegree() == 0) // is not covered by any other split
-                {
-                    final ASplit coveringSplit = (ASplit) u.getInfo();
-                    if (coveringSplit.getConfidence() >= getOptionMinimumSpanPercent()) {
-                        final SIN sin = new SIN(t, treesBlock.getTree(t).getName(), coveringSplit.getConfidence());
-                        sin.add(coveringSplit);
+            if (getOptionMaxDistortion() == 1) {
+                for (Node u : coverageGraph.nodes()) {
+                    if (u.getInDegree() == 0) // is not covered by any other split
+                    {
+                        final ASplit splitU = (ASplit) u.getInfo();
+                        if (splitU.getConfidence() >= getOptionMinSpanPercent()) {
+                            final SIN sin = new SIN(t, treesBlock.getTree(t).getName(), splitU.getConfidence(), 1);
+                            sin.add(splitU);
+                            final Queue<Node> queue = new LinkedList<>();
+                            for (Node w : u.children()) {
+                                queue.add(w);
+                            }
+                            while (queue.size() > 0) {
+                                Node v = queue.remove();
+                                final ASplit split = (ASplit) v.getInfo();
+
+                                sin.add(split);
+                                for (Node w : v.children()) {
+                                    queue.add(w);
+                                }
+                            }
+                            if (sin.getTotalWeight() >= 0.01 * getOptionMinWeight())
+                                listOfSins.add(sin);
+                        }
+                    }
+                }
+            } else if (getOptionMaxDistortion() > 1) {
+                ArrayList<Pair<SIN, Node>> consideredSins = new ArrayList<>();
+                for (Node u : coverageGraph.nodes()) {
+                    if (u.getInDegree() == 0) // is not covered by any other split
+                    {
+                        final ASplit split = (ASplit) u.getInfo();
+                        final int distortion = Distortion.computeDistortionForSplit(consensusTree, split.getA(), split.getB());
+
+                        final SIN sin = new SIN(t, treesBlock.getTree(t).getName(), split.getConfidence(), distortion);
+                        sin.add(split);
                         final Queue<Node> queue = new LinkedList<>();
                         for (Node w : u.children()) {
                             queue.add(w);
                         }
                         while (queue.size() > 0) {
                             Node v = queue.remove();
-                            final ASplit split = (ASplit) v.getInfo();
+                            final ASplit splitV = (ASplit) v.getInfo();
 
-                            sin.add(split);
+                            sin.add(splitV);
                             for (Node w : v.children()) {
                                 queue.add(w);
                             }
                         }
-                        listOfSins.add(sin);
+                        if (sin.getTotalWeight() >= 0.01 * getOptionMinWeight()) {
+                            ArrayList<Pair<SIN, Node>> toDelete = new ArrayList<>();
+                            boolean ok = true;
+                            for (Pair<SIN, Node> pair : consideredSins) {
+                                final SIN other = pair.get1();
+                                final Node otherNode = pair.get2();
+                                if (isBetter(sin, u, other, otherNode))
+                                    toDelete.add(pair);
+                                else if (isBetter(other, otherNode, sin, u))
+                                    ok = false;
+                            }
+                            consideredSins.removeAll(toDelete);
+                            if (ok)
+                                consideredSins.add(new Pair<>(sin, u));
+                        }
                     }
                 }
-            }
+                for (Pair<SIN, Node> pair : consideredSins) {
+                    listOfSins.add(pair.get1());
+                }
+            } else throw new IllegalArgumentException("max distortion must be at least 1");
+
+
             progress.setProgress(t);
         }
 
@@ -210,6 +263,40 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
             }
             NotificationManager.showInformation("Computed anti-consensus using top " + getOptionSinRank() + " SINs");
         }
+    }
+
+    /**
+     * is given sin better than other? That is, does sin have a bigger score and overlap with other
+     *
+     * @param sin
+     * @param other
+     * @return true, if better score and overlaps with other
+     */
+    private boolean isBetter(SIN sin, Node u, SIN other, Node otherNode) {
+        return (sin.getSpanPercent() > other.getSpanPercent() || (sin.getSpanPercent() == other.getSpanPercent() && sin.getTotalWeight() > other.getTotalWeight()))
+                && SetUtils.intersection(allBelow(u), allBelow(otherNode)).iterator().hasNext();
+    }
+
+
+    /**
+     * get all below
+     *
+     * @param v
+     * @return all below
+     */
+    private NodeSet allBelow(Node v) {
+        final NodeSet result = new NodeSet(v.getOwner());
+        final Queue<Node> queue = new LinkedList<>();
+        queue.add(v);
+        while (queue.size() > 0) {
+            v = queue.poll();
+            result.add(v);
+            for (Node w : v.children()) {
+                if (!result.contains(w)) // not necessary in a DAG, but let's play it safe here...
+                    queue.add(w);
+            }
+        }
+        return result;
     }
 
 
@@ -299,9 +386,6 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         return "The rank of the set of strongly incompatible splits to be shown";
     }
 
-    public String getShortDescriptionRequireSameSource() {
-        return "SINs only contains splits from same source tree";
-    }
 
     public boolean isOptionAllSinsUpToRank() {
         return optionAllSinsUpToRank;
@@ -315,6 +399,18 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         return "Show all SINs up to selected rank";
     }
 
+    public double getOptionMinSpanPercent() {
+        return optionMinSpanPercent;
+    }
+
+    public void setOptionMinSpanPercent(double optionMinSpanPercent) {
+        this.optionMinSpanPercent = Math.max(0, Math.min(100, optionMinSpanPercent));
+    }
+
+    public String getShortDescriptionMinSpanPercent() {
+        return "Set the minimum amount of the consensus tree that an incompatible split must span";
+    }
+
     public int getOptionMaxDistortion() {
         return optionMaxDistortion;
     }
@@ -324,21 +420,20 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
     }
 
     public String getShortDescriptionMaxDistortion() {
-        return "Consider only splits whose SPR distance to the consensus tree does not exceed this value";
+        return "Set the max-distortion. Uses the single-event heuristic, when set to 1, else the multi-event heuristic\n(see the paper for details)";
     }
 
-    public double getOptionMinimumSpanPercent() {
-        return optionMinimumSpanPercent;
+    public double getOptionMinWeight() {
+        return optionMinWeight;
     }
 
-    public void setOptionMinimumSpanPercent(double optionMinimumSpanPercent) {
-        this.optionMinimumSpanPercent = Math.max(0, Math.min(100, optionMinimumSpanPercent));
+    public void setOptionMinWeight(double optionMinWeight) {
+        this.optionMinWeight = optionMinWeight;
     }
 
-    public String getShortDescriptionMinimumSpanPercent() {
-        return "Set the minimum amount of the consensus tree that an incompatible split must span";
+    public String getShortDescriptionMinWeight() {
+        return "Set the minimum weight for a SIN to be reported";
     }
-
 
     @Override
     public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent) {
@@ -347,9 +442,9 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
 
     public static Comparator<SIN> sinsComparator() {
         return (a, b) -> {
-            if (a.getSpanPercent() * a.getTotalWeight() > b.getSpanPercent() * b.getTotalWeight())
+            if (a.getSpanPercent() > b.getSpanPercent())
                 return -1;
-            else if (a.getSpanPercent() * a.getTotalWeight() < b.getSpanPercent() * b.getTotalWeight())
+            else if (a.getSpanPercent() < b.getSpanPercent())
                 return 1;
             else
                 return -Integer.compare(a.getSplits().size(), b.getSplits().size());
@@ -395,16 +490,18 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         private final int treeId;
         private final String treeName;
         private final double spanPercent;
+        private final int distortion;
 
 
         private final ArrayList<ASplit> splits = new ArrayList<>();
         private double totalWeight = 0;
         private int rank;
 
-        public SIN(int treeId, String treeName, double spanPercent) {
+        public SIN(int treeId, String treeName, double spanPercent, int distortion) {
             this.treeId = treeId;
             this.treeName = treeName;
             this.spanPercent = spanPercent;
+            this.distortion = distortion;
         }
 
         public void add(ASplit split) {
@@ -437,8 +534,8 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         }
 
         public String toString() {
-            return String.format("SIN rank: %d, incompatibility: %f, span: %f, weight: %f,  splits: %d, tree: %d (%s)",
-                    getRank(), spanPercent * totalWeight, spanPercent, totalWeight, splits.size(), treeId, treeName);
+            return String.format("SIN rank: %d, incompatib.: %f, weight: %f,  distortion: %d, splits: %d, tree: %d (%s)",
+                    getRank(), spanPercent, totalWeight, distortion, splits.size(), treeId, treeName);
         }
     }
 }
