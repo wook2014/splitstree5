@@ -58,6 +58,7 @@ public class MessageWindow {
             stage.setHeight(150);
         }
         stage.setTitle("Message Window - " + ProgramProperties.getProgramName());
+        stage.setOnHiding((e) -> Basic.restoreSystemErr());
 
         Basic.sendSystemErrToSystemOut();
 
@@ -99,7 +100,6 @@ public class MessageWindow {
             stage.getIcons().setAll(ProgramProperties.getProgramIcons()); // seem to need to refresh these
         } else {
             if (stage.isShowing()) {
-                Basic.restoreSystemErr();
                 stage.hide();
             }
         }

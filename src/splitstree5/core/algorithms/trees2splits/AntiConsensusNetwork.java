@@ -193,38 +193,40 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
                 for (Node u : coverageGraph.nodes()) {
                     if (u.getInDegree() == 0) // is not covered by any other split
                     {
-                        final ASplit split = (ASplit) u.getInfo();
-                        final int distortion = Distortion.computeDistortionForSplit(consensusTree, split.getA(), split.getB());
+                        final ASplit splitU = (ASplit) u.getInfo();
+                        if (splitU.getConfidence() >= getOptionMinSpanPercent()) {
+                            final int distortion = Distortion.computeDistortionForSplit(consensusTree, splitU.getA(), splitU.getB());
 
-                        final SIN sin = new SIN(t, treesBlock.getTree(t).getName(), split.getConfidence(), distortion);
-                        sin.add(split);
-                        final Queue<Node> queue = new LinkedList<>();
-                        for (Node w : u.children()) {
-                            queue.add(w);
-                        }
-                        while (queue.size() > 0) {
-                            Node v = queue.remove();
-                            final ASplit splitV = (ASplit) v.getInfo();
-
-                            sin.add(splitV);
-                            for (Node w : v.children()) {
+                            final SIN sin = new SIN(t, treesBlock.getTree(t).getName(), splitU.getConfidence(), distortion);
+                            sin.add(splitU);
+                            final Queue<Node> queue = new LinkedList<>();
+                            for (Node w : u.children()) {
                                 queue.add(w);
                             }
-                        }
-                        if (sin.getTotalWeight() >= 0.01 * getOptionMinWeight()) {
-                            ArrayList<Pair<SIN, Node>> toDelete = new ArrayList<>();
-                            boolean ok = true;
-                            for (Pair<SIN, Node> pair : consideredSins) {
-                                final SIN other = pair.get1();
-                                final Node otherNode = pair.get2();
-                                if (isBetter(sin, u, other, otherNode))
-                                    toDelete.add(pair);
-                                else if (isBetter(other, otherNode, sin, u))
-                                    ok = false;
+                            while (queue.size() > 0) {
+                                Node v = queue.remove();
+                                final ASplit splitV = (ASplit) v.getInfo();
+
+                                sin.add(splitV);
+                                for (Node w : v.children()) {
+                                    queue.add(w);
+                                }
                             }
-                            consideredSins.removeAll(toDelete);
-                            if (ok)
-                                consideredSins.add(new Pair<>(sin, u));
+                            if (sin.getTotalWeight() >= 0.01 * getOptionMinWeight()) {
+                                ArrayList<Pair<SIN, Node>> toDelete = new ArrayList<>();
+                                boolean ok = true;
+                                for (Pair<SIN, Node> pair : consideredSins) {
+                                    final SIN other = pair.get1();
+                                    final Node otherNode = pair.get2();
+                                    if (isBetter(sin, u, other, otherNode))
+                                        toDelete.add(pair);
+                                    else if (isBetter(other, otherNode, sin, u))
+                                        ok = false;
+                                }
+                                consideredSins.removeAll(toDelete);
+                                if (ok)
+                                    consideredSins.add(new Pair<>(sin, u));
+                            }
                         }
                     }
                 }
@@ -244,14 +246,18 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         for (int i = 0; i < listOfSins.size(); i++) {
             final SIN sins = listOfSins.get(i);
             sins.setRank(i + 1);
-            System.err.println(sins);
+            System.out.println(sins);
             if (showTrees) {
                 System.err.println(reportTree(taxaBlock, consensusSplits, sins.getSplits()) + ";");
             }
         }
 
+
         splitsBlock.getSplits().addAll(consensusSplits.getSplits());
-        if (!isOptionAllSinsUpToRank()) {
+
+        if (listOfSins.size() == 0) {
+            NotificationManager.showInformation("No SINs found");
+        } else if (!isOptionAllSinsUpToRank()) {
             final int i = getOptionSinRank() - 1;
             final SIN sins = listOfSins.get(i);
             NotificationManager.showInformation(sins.toString());

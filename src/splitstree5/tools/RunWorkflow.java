@@ -110,7 +110,9 @@ public class RunWorkflow extends Application {
         options.comment("Options");
         final String inputFileExtension = options.getOption("-e", "inputExt", "File extension for input files (when providing directory for input)", "");
         final boolean inputRecursively = options.getOption("-r", "recursive", "Recursively visit all sub-directories (when providing directory for input)", false);
-        if (options.getOption("-s", "silent", "Silent mode (hide all stderr output)", false))
+
+        final boolean silent = options.getOption("-s", "silent", "Silent mode (hide all stderr output)", false);
+        if (silent)
             Basic.hideSystemErr();
         options.done();
 
