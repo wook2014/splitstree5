@@ -173,6 +173,8 @@ public class WorkflowViewTab extends ViewerTab {
      * clear and then recompute the view
      */
     public void recompute() {
+        if (getWorkflow().getWorkingDataNode() == null)
+            return;
 
         getEdgeViews().getChildren().clear();
         getNodeViews().getChildren().clear();

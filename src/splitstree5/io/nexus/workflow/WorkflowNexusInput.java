@@ -24,7 +24,10 @@ import javafx.stage.Stage;
 import jloda.fx.CallableService;
 import jloda.fx.NotificationManager;
 import jloda.fx.RecentFilesManager;
-import jloda.util.*;
+import jloda.util.Basic;
+import jloda.util.CanceledException;
+import jloda.util.Pair;
+import jloda.util.ProgressListener;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
@@ -255,7 +258,5 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
                 progress.setProgress(np.lineno());
             }
         }
-        if (progress instanceof ProgressPercentage)
-            ((ProgressPercentage) progress).reportTaskCompleted();
     }
 }

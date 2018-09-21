@@ -27,6 +27,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.List;
+import java.util.Queue;
 import java.util.zip.*;
 
 public class Basic {
@@ -1265,6 +1266,41 @@ public class Basic {
         return file;
     }
 
+    /**
+     * get all files listed below the given root directory
+     *
+     * @param rootDirectory
+     * @param recursively
+     * @return list of files
+     */
+    public static ArrayList<File> getAllFilesInDirectory(File rootDirectory, String fileExtension, boolean recursively) {
+        final ArrayList<File> result = new ArrayList<>();
+
+        final Queue<File> queue = new LinkedList<>();
+        File[] list = rootDirectory.listFiles();
+        if (list != null) {
+            Collections.addAll(queue, list);
+            while (queue.size() > 0) {
+                File file = queue.poll();
+                if (file.isDirectory()) {
+                    if (recursively) {
+                        File[] below = file.listFiles();
+                        if (below != null) {
+                            Collections.addAll(queue, below);
+                        }
+                    }
+                } else if (fileExtension.length() == 0 || file.getName().endsWith(fileExtension)) {
+                    result.add(file);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static boolean isDirectory(String fileName) {
+        return (new File(fileName)).isDirectory();
+    }
 }
 
 /**
