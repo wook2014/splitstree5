@@ -96,7 +96,7 @@ public class RunWorkflow extends Application {
     }
 
     private void run(String[] args) throws Exception {
-        final ArgsOptions options = new ArgsOptions(args, RunWorkflow.class, "Runs a SplitsTree5 workflow on input data");
+        final ArgsOptions options = new ArgsOptions(args, RunWorkflow.class, "Exports data from a SplitsTree5 workflow");
         options.setVersion(ProgramProperties.getProgramVersion());
         options.setLicense("Copyright (C) 2018 Daniel H. Huson. This program comes with ABSOLUTELY NO WARRANTY.");
         options.setAuthors("Daniel H. Huson");
@@ -105,9 +105,9 @@ public class RunWorkflow extends Application {
         final File inputWorkflowFile = new File(options.getOptionMandatory("-w", "workflow", "File containing SplitsTree5 workflow", ""));
         String[] inputFiles = options.getOptionMandatory("-i", "input", "File(s) containing input data (or directory)", new String[0]);
         String inputFormat = options.getOption("-f", "format", "Input format", ImporterManager.getInstance().getAllFileFormats(), "Unknown");
-        String[] outputFiles = options.getOption("-o", "output", "Output file(s0 (or directory or stdout)", new String[]{"stdout"});
+        String[] outputFiles = options.getOption("-o", "output", "Output file(s) (or directory or stdout)", new String[]{"stdout"});
 
-        options.comment("Options");
+        options.comment(ArgsOptions.OTHER);
         final String inputFileExtension = options.getOption("-e", "inputExt", "File extension for input files (when providing directory for input)", "");
         final boolean inputRecursively = options.getOption("-r", "recursive", "Recursively visit all sub-directories (when providing directory for input)", false);
 
@@ -140,10 +140,7 @@ public class RunWorkflow extends Application {
         // setup and check output files:
         if (inputFiles.length == 0) {
             throw new IOException("No input file(s)");
-        } else if (inputFiles.length == 1) {
-            if (outputFiles.length > 1)
-                throw new UsageException("Too many output files specified: " + outputFiles.length);
-        } else { // more than one file
+        } else { // one or more input files
             if (outputFiles.length == 1) {
                 File output = new File(outputFiles[0]);
                 if (output.isDirectory()) {
@@ -169,7 +166,7 @@ public class RunWorkflow extends Application {
         final Workflow workflow = mainWindow.getWorkflow();
 
         try (final ProgressListener progress = new ProgressPercentage("Loading workflow from file: " + inputWorkflowFile)) {
-            WorkflowNexusInput.input(progress, workflow, new ArrayList<>(), inputWorkflowFile.getPath());
+            WorkflowNexusInput.input(progress, workflow, new ArrayList<>(), inputWorkflowFile.getPath(), null);
         }
 
         final DataNode<TaxaBlock> topTaxaNode = workflow.getTopTaxaNode();

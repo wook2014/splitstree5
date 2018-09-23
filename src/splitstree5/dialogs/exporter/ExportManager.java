@@ -45,11 +45,11 @@ import jloda.util.PluginClassLoader;
 import splitstree5.core.datablocks.*;
 import splitstree5.io.exports.interfaces.*;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class ExportManager {
     private final ArrayList<IExporter> exporters;
@@ -83,6 +83,19 @@ public class ExportManager {
             }
         }
         return list;
+    }
+
+    /**
+     * get all exporter names
+     *
+     * @return exporter names
+     */
+    public Collection<String> getExporterNames() {
+        final Set<String> names = new TreeSet<>();
+        for (IExporter exporter : exporters) {
+            names.add(Basic.getShortName(exporter.getClass()));
+        }
+        return names;
     }
 
     /**
@@ -123,7 +136,7 @@ public class ExportManager {
     public void exportFile(String fileName, TaxaBlock taxaBlock, DataBlock dataBlock, String exporterName) throws IOException {
         IExporter exporter = getExporterByName(exporterName);
         if (exporter != null) {
-            try (BufferedWriter w = new BufferedWriter(new FileWriter(fileName))) {
+            try (BufferedWriter w = new BufferedWriter(fileName.equals("stdout") ? new OutputStreamWriter(System.out) : new FileWriter(fileName))) {
                 if (exporter instanceof IExportCharacters && dataBlock instanceof CharactersBlock)
                     ((IExportCharacters) exporter).export(w, taxaBlock, (CharactersBlock) dataBlock);
                 else if (exporter instanceof IExportDistances && dataBlock instanceof DistancesBlock)
