@@ -133,6 +133,7 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
         });
 
         Platform.runLater(() -> {
+            document.setHasSplitsTree5File(true);
             document.updateMethodsText();
             for (ViewerBlock viewerBlock : viewerBlocks) {
                 viewerBlock.getTab().setSkipNextLabelLayout(true);
