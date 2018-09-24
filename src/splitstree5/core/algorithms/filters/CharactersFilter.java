@@ -45,8 +45,6 @@ public class CharactersFilter extends Algorithm<CharactersBlock, CharactersBlock
     private boolean optionExcludeSecondCodonPosition = false;
     private boolean optionExcludeThirdCodonPosition = false;
 
-    private String methodsString;
-
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxa, CharactersBlock parent, CharactersBlock child) throws InterruptedException, CanceledException {
         child.clear();

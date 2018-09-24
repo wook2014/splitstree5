@@ -174,7 +174,7 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
             progress.setMaximum((new File(fileName).length() / (Basic.isZIPorGZIPFile(fileName) ? 100 : 20)));
             np.matchIgnoreCase("#nexus");
             final SplitsTree5Block splitsTree5Block = new SplitsTree5Block();
-            new SplitsTree5NexusInput().parse(np, splitsTree5Block);
+            (new SplitsTree5NexusInput()).parse(np, splitsTree5Block);
             // todo: check input based on splitsTree5Block
 
             final Map<String, DataNode> title2node = (title2node0 != null ? title2node0 : new HashMap<>());

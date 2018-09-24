@@ -825,4 +825,8 @@ public class Workflow {
         getNodeSelectionModel().selectItems(nodesToSelect);
         return nodesToSelect.size() > 0;
     }
+
+    public Document getDocument() {
+        return document;
+    }
 }

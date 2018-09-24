@@ -64,7 +64,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
 
     @Override
     public String getCitation() {
-        return "Huson, Steel et al, 2018;D.H. Huson, M.A. Steel and ???. Anti-consensus: manuscript in preparation";
+        return "Huson, Steel et al, 2018;D.H. Huson, M.A. Steel and [???]. Anti-consensus: manuscript in preparation";
     }
 
     /**

@@ -84,7 +84,10 @@ public class WorkflowNexusOutput {
 
         try (Writer w = new BufferedWriter(file.getName().equals("stdout") ? new OutputStreamWriter(System.out) : new FileWriter(file))) {
             w.write("#nexus\n");
-            new SplitsTree5NexusOutput().write(w, splitsTree5Block);
+
+            (new SplitsTree5NexusOutput()).write(w, splitsTree5Block);
+
+            w.write("\n[\n" + workflow.getDocument().methodsTextProperty().get().replaceAll("\\[", "(").replaceAll("]", ")") + "]\n");
 
             nexusExporter.setTitle("TopTaxa");
             node2title.put(workflow.getTopTaxaNode(), "TopTaxa");

@@ -59,7 +59,6 @@ package splitstree5.info;
 
 import jloda.util.Basic;
 import jloda.util.Pair;
-import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.filters.IFilter;
 import splitstree5.core.workflow.Connector;
@@ -104,13 +103,11 @@ public class MethodsTextGenerator {
     /**
      * generate the current methods text
      *
-     * @param document
+     * @param workflow
      * @return method text
      */
-    public String apply(Document document) {
-        final Workflow dag = document.getWorkflow();
-
-        if (dag.getTopTaxaNode() == null || dag.getTopDataNode() == null)
+    public String apply(Workflow workflow) {
+        if (workflow.getTopTaxaNode() == null || workflow.getTopDataNode() == null)
             return "";
 
         final StringBuilder buf = new StringBuilder();
@@ -122,12 +119,12 @@ public class MethodsTextGenerator {
 
         final Set<String> set = new HashSet<>(); // use this to avoid duplicate lines
 
-        buf.append(String.format(inputDataTemplate, dag.getTopTaxaNode().getDataBlock().getInfo(), dag.getTopDataNode().getDataBlock().getInfo()));
-        if (dag.getWorkingTaxaBlock() != null && dag.getWorkingTaxaBlock().getNtax() < dag.getTopTaxaNode().getDataBlock().getNtax()) {
-            int removed = (dag.getTopTaxaNode().getDataBlock().getNtax() - dag.getWorkingTaxaBlock().getNtax());
-            buf.append(String.format(taxonFilterTemplate, removed, dag.getWorkingTaxaBlock().getInfo(), dag.getWorkingDataNode().getDataBlock().getInfo()));
+        buf.append(String.format(inputDataTemplate, workflow.getTopTaxaNode().getDataBlock().getInfo(), workflow.getTopDataNode().getDataBlock().getInfo()));
+        if (workflow.getWorkingTaxaBlock() != null && workflow.getWorkingTaxaBlock().getNtax() < workflow.getTopTaxaNode().getDataBlock().getNtax()) {
+            int removed = (workflow.getTopTaxaNode().getDataBlock().getNtax() - workflow.getWorkingTaxaBlock().getNtax());
+            buf.append(String.format(taxonFilterTemplate, removed, workflow.getWorkingTaxaBlock().getInfo(), workflow.getWorkingDataNode().getDataBlock().getInfo()));
         }
-        final DataNode root = dag.getWorkingDataNode();
+        final DataNode root = workflow.getWorkingDataNode();
         final Set<DataNode> visited = new HashSet<>();
         final Stack<DataNode> stack = new Stack<>();
         stack.push(root); // should only contain data nodes

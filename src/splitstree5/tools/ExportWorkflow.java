@@ -95,6 +95,7 @@ public class ExportWorkflow extends Application {
         String[] outputFiles = options.getOption("-o", "output", "Output file(s) (or directory or stdout)", new String[]{"stdout"});
 
         options.comment(ArgsOptions.OTHER);
+        final boolean methods = options.getOption("-m", "methods", "Report methods used by worflow", false);
         final boolean silent = options.getOption("-s", "silent", "Silent mode (hide all stderr output)", false);
         if (silent)
             Basic.hideSystemErr();
@@ -107,7 +108,7 @@ public class ExportWorkflow extends Application {
             throw new IOException("Number of specified nodes " + nodeNames.length + " does not match number of specified formats " + exportFormats.length);
 
         // setup and check output files:
-        if (nodeNames.length == 0) {
+        if (nodeNames.length == 0 && !methods) {
             throw new IOException("No node name specified");
         } else { // one or more nodes
             if (outputFiles.length == 1) {
@@ -138,6 +139,8 @@ public class ExportWorkflow extends Application {
             WorkflowNexusInput.input(progress, workflow, new ArrayList<>(), inputWorkflowFile.getPath(), title2node);
         }
 
+        workflow.getDocument().updateMethodsText();
+
         final DataNode<TaxaBlock> topTaxaNode = workflow.getTopTaxaNode();
         if (topTaxaNode == null)
             throw new IOException("Workflow does not have top taxon node");
@@ -146,6 +149,11 @@ public class ExportWorkflow extends Application {
             throw new IOException("Workflow does not have top data node");
 
         System.err.println("Loaded workflow has " + workflow.getNumberOfDataNodes() + " nodes and " + workflow.getNumberOfConnectorNodes() + " connections");
+
+        if (methods) {
+            System.out.println(mainWindow.getDocument().methodsTextProperty().getValue());
+            System.out.flush();
+        }
 
         for (int i = 0; i < nodeNames.length; i++) {
             final DataNode dataNode = findNode(nodeNames[i], title2node);

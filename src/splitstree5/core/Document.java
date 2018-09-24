@@ -117,7 +117,7 @@ public class Document {
     }
 
     public void updateMethodsText() {
-        methodsText.setValue(MethodsTextGenerator.getInstance().apply(this));
+        methodsText.setValue(MethodsTextGenerator.getInstance().apply(workflow));
     }
 
     public boolean isDirty() {

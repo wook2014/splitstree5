@@ -138,7 +138,7 @@ public class RecentFilesManager {
             final MenuItem openMenuItem = new MenuItem(fileName);
             openMenuItem.setOnAction((e) -> fileOpener.get().accept(fileName));
             openMenuItem.disableProperty().bind(disable);
-            menu.getItems().add(0, openMenuItem);
+            menu.getItems().add(openMenuItem);
         }
     }
 
@@ -160,7 +160,7 @@ public class RecentFilesManager {
         // remove if already present and then add, this will bring to top of list
         if (recentFiles.contains(fileName))
             removeRecentFile(fileName);
-        recentFiles.add(fileName);
+        recentFiles.add(0, fileName);
         if (recentFiles.size() >= maxNumberRecentFiles)
             recentFiles.remove(maxNumberRecentFiles - 1);
     }

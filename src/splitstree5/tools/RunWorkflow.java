@@ -166,7 +166,25 @@ public class RunWorkflow extends Application {
         final Workflow workflow = mainWindow.getWorkflow();
 
         try (final ProgressListener progress = new ProgressPercentage("Loading workflow from file: " + inputWorkflowFile)) {
-            WorkflowNexusInput.input(progress, workflow, new ArrayList<>(), inputWorkflowFile.getPath(), null);
+            final CountDownLatch latch = new CountDownLatch(1);
+
+            final ChangeListener<Boolean> listener = (c, o, n) -> {
+                if (n) {
+                    System.err.println("Loading workflow...");
+                }
+                if (!n) {
+                    System.err.println("done");
+                    latch.countDown();
+                }
+            };
+            // listens for end of update and counts down latch:
+            workflow.updatingProperty().addListener(listener);
+            try {
+                WorkflowNexusInput.input(progress, workflow, new ArrayList<>(), inputWorkflowFile.getPath(), null);
+                latch.await();
+            } finally {
+                workflow.updatingProperty().removeListener(listener);
+            }
         }
 
         final DataNode<TaxaBlock> topTaxaNode = workflow.getTopTaxaNode();
@@ -221,24 +239,26 @@ public class RunWorkflow extends Application {
             // listens for end of update and counts down latch:
             workflow.updatingProperty().addListener(listener);
 
-            // update workflow:
-            topTaxaNode.getChildren().get(0).forceRecompute();
-            // wait for end of update:
-            latch.await();
-
-            // save updated workflow:
             try {
-                final File outputFile = new File((outputFiles.length == inputFiles.length ? outputFiles[i] : outputFiles[0]));
-                System.err.println("Saving to file: " + outputFile);
-                (new WorkflowNexusOutput()).save(workflow, outputFile);
-                System.err.println("done");
-                System.err.println("Saved workflow has " + workflow.getNumberOfDataNodes() + " nodes and " + workflow.getNumberOfConnectorNodes() + " connections");
-            } catch (IOException e) {
-                System.err.println("Save FAILED: " + e.getMessage());
-            }
+                // update workflow:
+                topTaxaNode.getChildren().get(0).forceRecompute();
+                // wait for end of update:
+                latch.await();
 
-            // remove listener
-            workflow.updatingProperty().removeListener(listener);
+                // save updated workflow:
+                try {
+                    final File outputFile = new File((outputFiles.length == inputFiles.length ? outputFiles[i] : outputFiles[0]));
+                    System.err.println("Saving to file: " + outputFile);
+                    (new WorkflowNexusOutput()).save(workflow, outputFile);
+                    System.err.println("done");
+                    System.err.println("Saved workflow has " + workflow.getNumberOfDataNodes() + " nodes and " + workflow.getNumberOfConnectorNodes() + " connections");
+                } catch (IOException e) {
+                    System.err.println("Save FAILED: " + e.getMessage());
+                }
+            } finally {
+                // remove listener
+                workflow.updatingProperty().removeListener(listener);
+            }
         }
     }
 }
