@@ -68,7 +68,7 @@ public class DataLoader {
                 Platform.runLater(() -> {
                     workflow.getTopTaxaNode().setState(UpdateState.VALID);
                     if (!fileName.endsWith(".tmp"))
-                        RecentFilesManager.getInstance().addRecentFile(fileName);
+                        RecentFilesManager.getInstance().insertRecentFile(fileName);
                     final String shortDescription = workflow.getTopTaxaNode() != null ? workflow.getTopDataNode().getShortDescription() : "null";
                     NotificationManager.showInformation("Opened file: " + Basic.getFileNameWithoutPath(fileName) + (shortDescription.length() > 0 ? "\nLoaded " + shortDescription : ""));
                 });
@@ -169,7 +169,7 @@ public class DataLoader {
         Platform.runLater(() -> {
             workflow.getTopTaxaNode().setState(UpdateState.VALID);
             if (!fileName.endsWith(".tmp"))
-                RecentFilesManager.getInstance().addRecentFile(fileName);
+                RecentFilesManager.getInstance().insertRecentFile(fileName);
         });
     }
 

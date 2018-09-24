@@ -150,7 +150,7 @@ public class ExportManager {
                 else
                     NotificationManager.showError("Export failed: invalid combination of exporter and data");
             }
-            RecentFilesManager.getInstance().addRecentFile(fileName);
+            RecentFilesManager.getInstance().insertRecentFile(fileName);
             NotificationManager.showInformation(String.format("Wrote %,d bytes to file: %s", (new File(fileName)).length(), fileName));
         }
     }

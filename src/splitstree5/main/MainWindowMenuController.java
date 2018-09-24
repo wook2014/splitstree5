@@ -140,7 +140,7 @@ public class MainWindowMenuController {
                 document.setDirty(false);
                 document.setHasSplitsTree5File(true);
                 if (!document.getFileName().endsWith(".tmp"))
-                    RecentFilesManager.getInstance().addRecentFile(document.getFileName());
+                    RecentFilesManager.getInstance().insertRecentFile(document.getFileName());
                 mainWindow.getDocument().setDirty(false);
             } catch (IOException ex) {
                 Basic.caught(ex);
@@ -202,7 +202,7 @@ public class MainWindowMenuController {
                 mainWindow.getDocument().setDirty(false);
                 document.setHasSplitsTree5File(true);
                 if (!document.getFileName().endsWith(".tmp"))
-                    RecentFilesManager.getInstance().addRecentFile(document.getFileName());
+                    RecentFilesManager.getInstance().insertRecentFile(document.getFileName());
 
             } catch (IOException e) {
                 Basic.caught(e);

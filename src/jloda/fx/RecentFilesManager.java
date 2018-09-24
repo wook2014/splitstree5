@@ -62,12 +62,13 @@ public class RecentFilesManager {
         maxNumberRecentFiles = ProgramProperties.get("MaxNumberRecentFiles", 40);
 
         for (String fileName : ProgramProperties.get("RecentFiles", new String[0])) {
-            if (new File(fileName).exists())
-                addRecentFile(fileName);
+            if (new File(fileName).exists() && recentFiles.size() < maxNumberRecentFiles)
+                recentFiles.add(fileName);
         }
 
         recentFiles.addListener((ListChangeListener<String>) (c) -> {
             Platform.runLater(() -> {
+
                 final Set<WeakReference<Menu>> deadRefs = new HashSet<>();
 
                 while (c.next()) {
@@ -152,11 +153,11 @@ public class RecentFilesManager {
     }
 
     /**
-     * add a recent file
+     * inserts a recent file to top of menu
      *
      * @param fileName
      */
-    public void addRecentFile(String fileName) {
+    public void insertRecentFile(String fileName) {
         // remove if already present and then add, this will bring to top of list
         if (recentFiles.contains(fileName))
             removeRecentFile(fileName);
