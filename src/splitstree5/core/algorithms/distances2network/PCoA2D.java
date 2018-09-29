@@ -212,8 +212,10 @@ public class PCoA2D extends Algorithm<DistancesBlock, NetworkBlock> implements I
             NetworkBlock.NodeData nodeData = networkBlock.getNodeData(v);
             nodeData.put("x", 100 * coordinates[0]+"");
             nodeData.put("y", 100 * coordinates[1]+"");
+            nodeData.put("w", "3");
+            nodeData.put("h", "3");
 
-            // todo add width/height = 3 ???
+            // todo width/height = 3 ?
         }
     }
 

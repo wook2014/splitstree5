@@ -32,6 +32,7 @@ import splitstree5.core.algorithms.characters2distances.*;
 import splitstree5.core.algorithms.characters2network.MedianJoining;
 import splitstree5.core.algorithms.characters2splits.ParsimonySplits;
 import splitstree5.core.algorithms.distances2network.MinSpanningNetwork;
+import splitstree5.core.algorithms.distances2network.PCoA2D;
 import splitstree5.core.algorithms.distances2splits.BunemanTree;
 import splitstree5.core.algorithms.distances2splits.NeighborNet;
 import splitstree5.core.algorithms.distances2splits.SplitDecomposition;
@@ -357,6 +358,11 @@ public class MainWindowMenuController {
         controller.getMinSpanningNetworkMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, DistancesBlock.class,
                 MinSpanningNetwork.class, NetworkBlock.class, NetworkEmbedder.class, ViewerBlock.NetworkViewerBlock.class)));
         controller.getMinSpanningNetworkMenuItem().disableProperty().bind(disableDistancesMethods);
+
+        //todo PCoA
+        controller.getPcoaMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, DistancesBlock.class,
+                PCoA2D.class, NetworkBlock.class, NetworkEmbedder.class, ViewerBlock.NetworkViewerBlock.class)));
+        controller.getPcoaMenuItem().disableProperty().bind(disableDistancesMethods);
 
         controller.getSplitsNetworkViewMenuItem().setOnAction((e) -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, SplitsBlock.class,
                 SplitsNetworkAlgorithm.class, ViewerBlock.SplitsNetworkViewerBlock.class)));
