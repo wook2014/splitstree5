@@ -24,6 +24,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.ListView;
+import jloda.find.ListViewTypeSearcher;
 import jloda.fx.ExtendedFXMLLoader;
 import jloda.phylo.PhyloTree;
 import splitstree5.core.Document;
@@ -140,14 +141,21 @@ public class TreeFilterPane extends AlgorithmPane {
         });
         controller.getActivateSelectedButton().disableProperty().bind(Bindings.isEmpty(controller.getInactiveList().getSelectionModel().getSelectedIndices()));
 
-        controller.getActivate1SelectedButton().setOnAction((e) -> {
-            final ArrayList<String> list = new ArrayList<>(controller.getInactiveList().getSelectionModel().getSelectedItems());
-            controller.getInactiveList().getItems().addAll(controller.getActiveList().getItems());
-            controller.getActiveList().getItems().clear();
-            controller.getInactiveList().getItems().removeAll(list);
-            controller.getActiveList().getItems().addAll(list);
+        controller.getSelectFullTrees().setOnAction((e) -> {
+            controller.getActiveList().getSelectionModel().clearSelection();
+            controller.getInactiveList().getSelectionModel().clearSelection();
+
+            final int totalTaxa = document.getWorkflow().getWorkingTaxaBlock().getNtax();
+            for (PhyloTree tree : ((TreesBlock) connector.getParent().getDataBlock()).getTrees()) {
+                if (tree.getNumberOfTaxa() == totalTaxa) {
+                    controller.getActiveList().getSelectionModel().select(tree.getName());
+                    controller.getInactiveList().getSelectionModel().select(tree.getName());
+                }
+            }
         });
-        controller.getActivateSelectedButton().disableProperty().bind(Bindings.isEmpty(controller.getInactiveList().getSelectionModel().getSelectedIndices()));
+
+        ListViewTypeSearcher.setup(controller.getActiveList());
+        ListViewTypeSearcher.setup(controller.getInactiveList());
 
 
         applicableProperty.bind(Bindings.isEmpty(controller.getActiveList().getItems()).not().and(undoManager.canUndoProperty()));

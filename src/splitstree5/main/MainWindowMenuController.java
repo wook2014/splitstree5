@@ -372,10 +372,7 @@ public class MainWindowMenuController {
                 NetworkEmbedder.class, ViewerBlock.NetworkViewerBlock.class)));
         controller.getHaplotypeNetworkViewMenuItem().disableProperty().bind(disableNetworkMethods);
 
-        controller.getShowMessageWindowMenuItem().setOnAction((e) -> MessageWindow.getInstance().setVisible(controller.getShowMessageWindowMenuItem().isSelected()));
-        MessageWindow.visibleProperty().addListener((c, o, n) -> {
-            controller.getShowMessageWindowMenuItem().setSelected(n);
-        });
+        controller.getShowMessageWindowMenuItem().setOnAction((e) -> MessageWindow.getInstance().setVisible(true));
 
         controller.getCheckForUpdatesMenuItem().setOnAction((e) -> CheckForUpdate.apply());
         controller.getCheckForUpdatesMenuItem().disableProperty().bind(Bindings.isNotEmpty(workflow.dataNodes()).or(MainWindowManager.getInstance().sizeProperty().greaterThan(1)));

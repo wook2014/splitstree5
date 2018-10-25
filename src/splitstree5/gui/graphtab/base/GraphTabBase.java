@@ -391,6 +391,7 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
      * @param set
      */
     public void selectByLabel(Collection<String> set) {
+        System.err.println("Selecting by label...");
         for (Node node : getGraph().nodes()) {
             String label = getGraph().getLabel(node);
             if (label != null && set.contains(label))
@@ -423,6 +424,7 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
                 }
             }
         }
+        //System.err.println("Previous selection: "+Basic.toString(MainWindowManager.getInstance().getPreviousSelection(),", "));
     }
 
     public void addNodeLabelMovementSupport(NodeView2D nodeView) {

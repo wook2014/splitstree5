@@ -342,7 +342,7 @@ public class Basic {
      * @return string representation
      */
     public static String toString(long[] array, String separator) {
-        return toString(Arrays.asList(array).iterator(), separator);
+        return toString(iterator(array), separator);
     }
 
 
@@ -354,7 +354,7 @@ public class Basic {
      * @return string representation
      */
     public static String toString(double[] array, String separator) {
-        return toString(Arrays.asList(array).iterator(), separator);
+        return toString(iterator(array), separator);
     }
 
     /**
@@ -404,7 +404,9 @@ public class Basic {
         while (iterator.hasNext()) {
             if (buf.length() > 0)
                 buf.append(separator);
-            buf.append(iterator.next());
+            Object next = iterator.next();
+            String str = next.toString();
+            buf.append(next);
         }
         return buf.toString();
     }
@@ -1300,6 +1302,70 @@ public class Basic {
 
     public static boolean isDirectory(String fileName) {
         return (new File(fileName)).isDirectory();
+    }
+
+    public static Iterator<Double> iterator(double[] values) {
+        return new Iterator<Double>() {
+            private int pos = 0;
+
+            @Override
+            public boolean hasNext() {
+                return pos < values.length;
+            }
+
+            @Override
+            public Double next() {
+                return values[pos++];
+            }
+        };
+    }
+
+    public static Iterator<Integer> iterator(int[] values) {
+        return new Iterator<Integer>() {
+            private int pos = 0;
+
+            @Override
+            public boolean hasNext() {
+                return pos < values.length;
+            }
+
+            @Override
+            public Integer next() {
+                return values[pos++];
+            }
+        };
+    }
+
+    public static Iterator<Float> iterator(float[] values) {
+        return new Iterator<Float>() {
+            private int pos = 0;
+
+            @Override
+            public boolean hasNext() {
+                return pos < values.length;
+            }
+
+            @Override
+            public Float next() {
+                return values[pos++];
+            }
+        };
+    }
+
+    public static Iterator<Long> iterator(long[] values) {
+        return new Iterator<Long>() {
+            private int pos = 0;
+
+            @Override
+            public boolean hasNext() {
+                return pos < values.length;
+            }
+
+            @Override
+            public Long next() {
+                return values[pos++];
+            }
+        };
     }
 }
 

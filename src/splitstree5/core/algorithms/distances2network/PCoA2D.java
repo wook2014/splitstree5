@@ -13,9 +13,6 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.NetworkBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
-import java.awt.*;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,55 +37,11 @@ public class PCoA2D extends Algorithm<DistancesBlock, NetworkBlock> implements I
     private int optionSecondCoordinate = 2;
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock,
-                        DistancesBlock distancesBlock, NetworkBlock networkBlock) throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, DistancesBlock distancesBlock, NetworkBlock networkBlock) throws Exception {
+        progress.setMaximum(6);
+        progress.setProgress(0);
 
-        /////////final PhyloGraphView graphView = new PhyloGraphView();
-
-        Runnable myRunnable = new Runnable() {
-            public void run() {
-                PCoA2D.this.run(taxaBlock, distancesBlock, networkBlock);
-            }
-        };
-        Thread t = new Thread(myRunnable); // myRunnable does the calculations
-
-        t.start(); // Kick off calculations
-
-        progress.setTasks("Calculating PCoA", "Init.");
-        progress.setMaximum(-1);
-
-        try {
-            progress.setProgress(-1);
-            while (t.isAlive()) {
-                Thread.sleep(100L);  // Sleep 1/10 second
-                progress.checkForCancel();
-            }
-        } catch (Exception ex) {
-            if (t.isAlive()) {
-                System.err.println("(Trying to cancel PCoA calculation)");
-                t.interrupt();
-                // t.stop();  // should never do this!
-                System.err.println("CANCELED PCoA calculation");
-            }
-        }
-
-        ///////Network network = new Network(taxa, graphView);
-        ///////network.setLayout(Network.CIRCULAR);
-        //////return network;
-
-    }
-
-
-
-    /**
-     * run the PCoA algorithm
-     *
-     * @param taxa
-     * @param distances
-     * @throws IOException
-     */
-    private void run(TaxaBlock taxa, DistancesBlock distances, NetworkBlock networkBlock) {
-        rank = taxa.getNtax();
+        rank = taxaBlock.getNtax();
         distanceMatrix = new Matrix(rank, rank);
         double sum = 0;
         for (int i = 0; i < rank; i++) {
@@ -96,7 +49,7 @@ public class PCoA2D extends Algorithm<DistancesBlock, NetworkBlock> implements I
                 if (i == j)
                     distanceMatrix.set(i, j, 0);
                 else {
-                    double d = distances.get(i + 1, j + 1);
+                    double d = distancesBlock.get(i + 1, j + 1);
                     distanceMatrix.set(i, j, d);
                     sum += d * d;
                 }
@@ -105,28 +58,12 @@ public class PCoA2D extends Algorithm<DistancesBlock, NetworkBlock> implements I
         totalSquaredDistance = 2 * sum;
         vectors = new double[rank][];
 
-        PrintWriter pw = new PrintWriter(System.err);
-        /*
-        System.err.println("distanceMatrix:");
-        distanceMatrix.print(pw, rank, rank);
-        pw.flush();
-        */
+        progress.incrementProgress();
 
-        Matrix centered = computeDoubleCenteringOfSquaredMatrix(distanceMatrix);
+        final Matrix centered = computeDoubleCenteringOfSquaredMatrix(distanceMatrix);
 
-        /*
-        System.err.println("centered:");
-        centered.print(pw, rank, rank);
-        pw.flush();
-        */
-
-        EigenvalueDecomposition eigenValueDecomposition = centered.eig();
-        Matrix eigenVectors = eigenValueDecomposition.getV();
-        /*
-        System.err.println("eigenVectors:");
-        eigenVectors.print(pw, rank, rank);
-        pw.flush();
-        */
+        final EigenvalueDecomposition eigenValueDecomposition = centered.eig();
+        final Matrix eigenVectors = eigenValueDecomposition.getV();
 
         numberOfPositiveEigenValues = 0;
         Matrix positiveEigenValues = eigenValueDecomposition.getD();
@@ -136,11 +73,8 @@ public class PCoA2D extends Algorithm<DistancesBlock, NetworkBlock> implements I
             else
                 positiveEigenValues.set(i, i, 0);
         }
-        /*
-        System.err.println("positiveEigenValues:");
-        positiveEigenValues.print(pw, rank, rank);
-        pw.flush();
-        */
+
+        progress.incrementProgress();
 
         // multiple eigenvectors by sqrt of eigenvalues
         Matrix scaledEigenVectors = (Matrix) eigenVectors.clone();
@@ -151,26 +85,22 @@ public class PCoA2D extends Algorithm<DistancesBlock, NetworkBlock> implements I
                 scaledEigenVectors.set(i, j, v);
             }
         }
-        /*
-        System.err.println("scaledEigenVectors:");
-        scaledEigenVectors.print(pw, rank, rank);
-        pw.flush();
-        */
 
-        // sort indices by eigenValues
-        int[] indices = sortValues(positiveEigenValues);
-        // System.err.println("indices: " + Basic.toString(indices));
+        progress.incrementProgress();
+
+        final int[] indices = sortValues(positiveEigenValues);
 
         eigenValues = new double[numberOfPositiveEigenValues];
         for (int j = 0; j < numberOfPositiveEigenValues; j++) {
             eigenValues[j] = positiveEigenValues.get(indices[j], indices[j]);
         }
         System.err.println("Positive eigenvalues:");
-        System.err.println(Basic.toString(eigenValues, ", "));
+        System.err.println(Basic.toString("%.6f", eigenValues, ", "));
 
+        progress.incrementProgress();
 
         for (int i = 0; i < rank; i++) {
-            String name = taxa.getLabel(i + 1);
+            String name = taxaBlock.getLabel(i + 1);
             double[] vector = new double[numberOfPositiveEigenValues];
             name2vector.put(name, vector);
             vectors[i] = vector;
@@ -180,33 +110,16 @@ public class PCoA2D extends Algorithm<DistancesBlock, NetworkBlock> implements I
         }
         done = true;
 
-        /***********final PhyloGraph graph = graphView.getPhyloGraph();
+        setOptionFirstCoordinate(Math.min(numberOfPositiveEigenValues, getOptionFirstCoordinate()));
+        setOptionSecondCoordinate(Math.min(numberOfPositiveEigenValues, getOptionSecondCoordinate()));
 
-        System.err.println("Stress: " + getStress(getOptionFirstCoordinate(), getOptionSecondCoordinate()));
-        for (int t = 1; t <= taxa.getNtax(); t++) {
-            String name = taxa.getLabel(t);
-            double[] coordinates = getProjection(getOptionFirstCoordinate(), getOptionSecondCoordinate(), name);
-            Node v = graph.newNode();
-            graph.setLabel(v, name);
-            graphView.setLabel(v, name);
-            graphView.setLocation(v, 100 * coordinates[0], 100 * coordinates[1]);
-            graphView.fitGraphToWindow();
-            graphView.setWidth(v, 3);
-            graphView.setHeight(v, 3);
-            graphView.setColor(v, Color.BLACK);
-            graphView.setBackgroundColor(v, Color.BLACK);
-            graphView.setShape(v, NodeView.OVAL_NODE);
-        }
-        graphView.trans.setCoordinateRect(graphView.getBBox());
-        graphView.fitGraphToWindow();
-        graphView.getScrollPane().revalidate();***************/
-
+        progress.incrementProgress();
 
         final PhyloGraph graph = networkBlock.getGraph();
-        System.err.println("Stress: " + getStress(getOptionFirstCoordinate(), getOptionSecondCoordinate()));
-        for (int t = 1; t <= taxa.getNtax(); t++) {
-            String name = taxa.getLabel(t);
-            double[] coordinates = getProjection(getOptionFirstCoordinate(), getOptionSecondCoordinate(), name);
+        System.err.println(String.format("Stress: %.6f", getStress(getOptionFirstCoordinate() - 1, getOptionSecondCoordinate() - 1)));
+        for (int t = 1; t <= taxaBlock.getNtax(); t++) {
+            String name = taxaBlock.getLabel(t);
+            double[] coordinates = getProjection(getOptionFirstCoordinate() - 1, getOptionSecondCoordinate() - 1, name);
             Node v = graph.newNode();
             graph.setLabel(v, name);
             NetworkBlock.NodeData nodeData = networkBlock.getNodeData(v);
@@ -217,18 +130,9 @@ public class PCoA2D extends Algorithm<DistancesBlock, NetworkBlock> implements I
 
             // todo width/height = 3 ?
         }
-    }
 
+        progress.incrementProgress();
 
-    /**
-     * Determine whether given method can be applied to given data.
-     *
-     * @param taxa      the taxa
-     * @param distances the distances matrix
-     * @return true, if method applies to given data
-     */
-    public boolean isApplicable(TaxaBlock taxa, DistancesBlock distances) {
-        return taxa != null && distances != null;
     }
 
     /**
@@ -400,4 +304,6 @@ public class PCoA2D extends Algorithm<DistancesBlock, NetworkBlock> implements I
         if (optionSecondCoordinate > 0)
             this.optionSecondCoordinate = optionSecondCoordinate;
     }
+
+
 }

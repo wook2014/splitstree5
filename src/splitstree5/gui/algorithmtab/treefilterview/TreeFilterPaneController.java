@@ -48,14 +48,13 @@ public class TreeFilterPaneController {
     private Button activateSelectedButton;
 
     @FXML
-    private Button activate1SelectedButton;
-
-    @FXML
     private Button activateAllButton;
 
     @FXML
     private ListView<String> inactiveList;
 
+    @FXML
+    private Button selectFullTrees;
 
     @FXML
         // This method is called by the FXMLLoader when initialization is complete
@@ -88,12 +87,11 @@ public class TreeFilterPaneController {
         return activateSelectedButton;
     }
 
-    public Button getActivate1SelectedButton() {
-        return activate1SelectedButton;
-    }
-
     public Button getActivateAllButton() {
         return activateAllButton;
     }
 
+    public Button getSelectFullTrees() {
+        return selectFullTrees;
+    }
 }

@@ -47,6 +47,10 @@ import java.util.*;
  * @author Daniel Huson, July 2018
  */
 public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
+    public enum Reference {MajorityConsensus, FirstInputTree, LastInputTree}
+
+    private Reference optionReferenceTree = Reference.MajorityConsensus;
+
     private int optionSinRank = 1;
     private boolean optionAllSinsUpToRank = false;
     private double optionMinSpanPercent = 10;
@@ -59,7 +63,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
 
     @Override
     public List<String> listOptions() {
-        return Arrays.asList("optionSinRank", "optionAllSinsUpToRank", "optionMaxDistortion", "optionMinIncompatPercent", "optionMinWeightPercent");
+        return Arrays.asList("optionSinRank", "optionAllSinsUpToRank", "optionMaxDistortion", "optionMinSpanPercent", "optionMinWeight", "optionReferenceTree");
     }
 
     @Override
@@ -81,45 +85,72 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
 
         System.err.println("Computing anti-consensus network...");
         // 1. compute the majority consensus splits and tree
-        final SplitsBlock consensusSplits = new SplitsBlock();
-        {
-            progress.setTasks("Anti-consensus", "Determining consensus tree splits");
-            final ConsensusTreeSplits consensusTreeSplits = new ConsensusTreeSplits();
-            consensusTreeSplits.setOptionConsensus(ConsensusTreeSplits.Consensus.Majority); // todo: implement and use loose consensus
-            consensusTreeSplits.setOptionEdgeWeights(ConsensusNetwork.EdgeWeights.TreeSizeWeightedMean);
-            consensusTreeSplits.compute(progress, taxaBlock, treesBlock, consensusSplits);
+        final SplitsBlock referenceSplits = new SplitsBlock();
 
-            // normalize weights
-            {
-                double totalWeight = 0;
-                for (ASplit split : consensusSplits.getSplits())
-                    totalWeight += split.getWeight();
-                if (totalWeight > 0) {
-                    for (ASplit split : consensusSplits.getSplits())
-                        split.setWeight(split.getWeight() / totalWeight);
-                }
+        final int firstTreeToUse;
+        final int lastTreeToUse;
+
+        switch (getOptionReferenceTree()) {
+            default:
+            case MajorityConsensus: {
+                progress.setTasks("Anti-consensus", "Determining majority consensus splits");
+                final ConsensusTreeSplits consensusTreeSplits = new ConsensusTreeSplits();
+                consensusTreeSplits.setOptionConsensus(ConsensusTreeSplits.Consensus.Majority); // todo: implement and use loose consensus
+                consensusTreeSplits.setOptionEdgeWeights(ConsensusNetwork.EdgeWeights.TreeSizeWeightedMean);
+                consensusTreeSplits.compute(progress, taxaBlock, treesBlock, referenceSplits);
+                firstTreeToUse = 1;
+                lastTreeToUse = treesBlock.getNTrees();
+                break;
             }
-
-
-            System.err.println("Consensus tree splits: " + consensusSplits.size());
+            case FirstInputTree: {
+                progress.setTasks("Anti-consensus", "Extracting splits from first tree");
+                final TreeSelector treeSelector = new TreeSelector();
+                treeSelector.setOptionWhich(1);
+                treeSelector.compute(progress, taxaBlock, treesBlock, referenceSplits);
+                firstTreeToUse = 2;
+                lastTreeToUse = treesBlock.getNTrees();
+                break;
+            }
+            case LastInputTree: {
+                progress.setTasks("Anti-consensus", "Extracting splits from last tree");
+                final TreeSelector treeSelector = new TreeSelector();
+                treeSelector.setOptionWhich(treesBlock.getNTrees());
+                treeSelector.compute(progress, taxaBlock, treesBlock, referenceSplits);
+                firstTreeToUse = 1;
+                lastTreeToUse = treesBlock.getNTrees() - 1;
+                break;
+            }
         }
 
-        final PhyloTree consensusTree;
+        // normalize weights
+        {
+            double totalWeight = 0;
+            for (ASplit split : referenceSplits.getSplits())
+                totalWeight += split.getWeight();
+            if (totalWeight > 0) {
+                for (ASplit split : referenceSplits.getSplits())
+                    split.setWeight(split.getWeight() / totalWeight);
+            }
+        }
+
+        System.err.println("Reference tree splits: " + referenceSplits.size());
+
+        final PhyloTree referenceTree;
         {
             final TreesBlock trees = new TreesBlock();
             final GreedyTree greedyTree = new GreedyTree();
-            greedyTree.compute(progress, taxaBlock, consensusSplits, trees);
-            consensusTree = trees.getTree(1);
+            greedyTree.compute(progress, taxaBlock, referenceSplits, trees);
+            referenceTree = trees.getTree(1);
             if (showTrees) {
                 System.err.println("Consensus tree:");
-                TreesUtilities.changeNumbersOnLeafNodesToLabels(taxaBlock, consensusTree);
-                System.err.println(consensusTree.toBracketString(true) + ";");
+                TreesUtilities.changeNumbersOnLeafNodesToLabels(taxaBlock, referenceTree);
+                System.err.println(referenceTree.toBracketString(true) + ";");
             }
         }
 
         double totalWeightNonTrivialSplits = 0;
         {
-            for (ASplit split : consensusSplits.getSplits()) {
+            for (ASplit split : referenceSplits.getSplits()) {
                 if (split.size() > 1)
                     totalWeightNonTrivialSplits += split.getWeight();
             }
@@ -127,12 +158,12 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
 
         // consider each tree in turn:
         progress.setTasks("Anti-consensus", "Comparing majority tree with gene trees");
-        progress.setMaximum(treesBlock.getNTrees());
+        progress.setMaximum(lastTreeToUse - firstTreeToUse + 1);
 
         ArrayList<SIN> listOfSins = new ArrayList<>();
 
 
-        for (int t = 1; t <= treesBlock.getNTrees(); t++) {
+        for (int t = firstTreeToUse; t <= lastTreeToUse; t++) {
             final PhyloTree tree = treesBlock.getTree(t);
             final ArrayList<ASplit> splits = new ArrayList<>(tree.getNumberOfEdges());
             TreesUtilities.computeSplits(taxaBlock.getTaxaSet(), tree, splits);
@@ -152,9 +183,9 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
 
             for (ASplit split : splits) {
                 split2incompatibilities.put(split, new BitSet());
-                final int distortion = Distortion.computeDistortionForSplit(consensusTree, split.getA(), split.getB());
+                final int distortion = Distortion.computeDistortionForSplit(referenceTree, split.getA(), split.getB());
                 if (distortion > 0 && distortion <= getOptionMaxDistortion()) {
-                    final double incompatiblitySpanPercent = (100.0 * computeIncompatibleWeight(split, consensusSplits, split2incompatibilities.get(split))) / totalWeightNonTrivialSplits;
+                    final double incompatiblitySpanPercent = (100.0 * computeIncompatibleWeight(split, referenceSplits, split2incompatibilities.get(split))) / totalWeightNonTrivialSplits;
                     // previous line also computes split2incompatibilities mapping
                     split.setConfidence(incompatiblitySpanPercent);
                     splitsWithDistortion.add(split);
@@ -195,7 +226,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
                     {
                         final ASplit splitU = (ASplit) u.getInfo();
                         if (splitU.getConfidence() >= getOptionMinSpanPercent()) {
-                            final int distortion = Distortion.computeDistortionForSplit(consensusTree, splitU.getA(), splitU.getB());
+                            final int distortion = Distortion.computeDistortionForSplit(referenceTree, splitU.getA(), splitU.getB());
 
                             final SIN sin = new SIN(t, treesBlock.getTree(t).getName(), splitU.getConfidence(), distortion);
                             sin.add(splitU);
@@ -236,7 +267,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
             } else throw new IllegalArgumentException("max distortion must be at least 1");
 
 
-            progress.setProgress(t);
+            progress.incrementProgress();
         }
 
         listOfSins.sort(sinsComparator());
@@ -248,12 +279,12 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
             sins.setRank(i + 1);
             System.out.println(sins);
             if (showTrees) {
-                System.err.println(reportTree(taxaBlock, consensusSplits, sins.getSplits()) + ";");
+                System.err.println(reportTree(taxaBlock, referenceSplits, sins.getSplits()) + ";");
             }
         }
 
 
-        splitsBlock.getSplits().addAll(consensusSplits.getSplits());
+        splitsBlock.getSplits().addAll(referenceSplits.getSplits());
 
         if (listOfSins.size() == 0) {
             NotificationManager.showInformation("No SINs found");
@@ -440,6 +471,19 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
     public String getShortDescriptionMinWeight() {
         return "Set the minimum weight for a SIN to be reported";
     }
+
+    public Reference getOptionReferenceTree() {
+        return optionReferenceTree;
+    }
+
+    public void setOptionReferenceTree(Reference optionReferenceTree) {
+        this.optionReferenceTree = optionReferenceTree;
+    }
+
+    public String getShortDescriptionReferenceTree() {
+        return "By default, uses the majority consensus as the reference 'species' tree. Alternatively, the first or last input tree can be used";
+    }
+
 
     @Override
     public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent) {

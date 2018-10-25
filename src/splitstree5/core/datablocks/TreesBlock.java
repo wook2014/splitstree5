@@ -125,7 +125,7 @@ public class TreesBlock extends DataBlock {
 
     @Override
     public String getDisplayText() {
-        if (getDocument().getWorkflow().getTopTaxaNode().getDataBlock().getNtax() * size() < 10000)
+        if (getDocument().getWorkflow().getTopTaxaNode().getDataBlock().getNtax() * size() < 100000)
             return super.getDisplayText();
         else {
             return "Number of trees: " + size() + " (too many to list here)\n";

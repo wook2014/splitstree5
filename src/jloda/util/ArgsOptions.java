@@ -436,6 +436,14 @@ public class ArgsOptions {
         return result.toArray(new String[0]);
     }
 
+    public String[] getOption(String shortKey, String longKey, String description, Collection<?> legalValues, String[] defaultValue) throws UsageException {
+        final Set<String> legalStrings = new HashSet<>();
+        for (Object v : legalValues)
+            legalStrings.add(v.toString());
+        List<String> result = getOption(shortKey, longKey, description, legalStrings, Arrays.asList(defaultValue), false);
+        return result.toArray(new String[0]);
+    }
+
     public Number getOption(String shortKey, String longKey, String description, Number defaultValue, boolean mandatory) throws UsageException {
         if (!shortKey.startsWith("-"))
             shortKey = "-" + shortKey;

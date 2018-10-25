@@ -165,7 +165,6 @@ public class AlgorithmTab<P extends DataBlock, C extends DataBlock> extends View
                 connector.setAlgorithm(currentAlgorithm);
             algorithmPane.syncController2Model();
             getUndoManager().addUndoableApply(algorithmPane::syncController2Model);
-
             getUndoManager().clear(); // clear undo
 
             applicableChangeHasBeenMade.set(false);

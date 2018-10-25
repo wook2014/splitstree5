@@ -45,13 +45,17 @@ public class TreesFilter extends Algorithm<TreesBlock, TreesBlock> implements IF
     private final ArrayList<String> disabledTrees = new ArrayList<>();
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock ignored, TreesBlock parent, TreesBlock child) throws CanceledException {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock parent, TreesBlock child) throws CanceledException {
         if (enabledTrees.size() == 0 && disabledTrees.size() == 0) // nothing has been explicitly set, copy everything
         {
-            progress.setMaximum(0);
+            progress.setMaximum(1);
             child.getTrees().setAll(parent.getTrees());
+            child.setPartial(parent.isPartial()); // if trees subselected, recompute this!
             progress.incrementProgress();
         } else {
+            final int totalTaxa = taxaBlock.getNtax();
+            boolean partial = false;
+
             progress.setMaximum(enabledTrees.size());
             final Map<String, PhyloTree> name2tree = new HashMap<>();
             for (PhyloTree tree : parent.getTrees()) {
@@ -59,17 +63,20 @@ public class TreesFilter extends Algorithm<TreesBlock, TreesBlock> implements IF
             }
             for (String name : enabledTrees) {
                 if (!disabledTrees.contains(name)) {
-                    child.getTrees().add(name2tree.get(name));
+                    final PhyloTree tree = name2tree.get(name);
+                    child.getTrees().add(tree);
+                    if (tree.getNumberOfTaxa() != totalTaxa)
+                        partial = true;
                     progress.incrementProgress();
                 }
             }
+            child.setPartial(partial);
         }
         if (disabledTrees.size() == 0)
             setShortDescription("using all " + parent.size() + " trees");
         else
             setShortDescription("using " + enabledTrees.size() + " of " + parent.size() + " trees");
 
-        child.setPartial(parent.isPartial()); // if trees subselected, recompute this!
         child.setRooted(parent.isRooted());
     }
 

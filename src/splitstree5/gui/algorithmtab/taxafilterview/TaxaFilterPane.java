@@ -26,6 +26,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.WeakListChangeListener;
 import javafx.scene.control.ListView;
+import jloda.find.ListViewTypeSearcher;
 import jloda.fx.ExtendedFXMLLoader;
 import jloda.util.Triplet;
 import splitstree5.core.Document;
@@ -123,6 +124,10 @@ public class TaxaFilterPane extends AlgorithmPane {
                 }
             }
         };
+
+        ListViewTypeSearcher.setup(controller.getActiveList());
+        ListViewTypeSearcher.setup(controller.getInactiveList());
+
     }
 
     @Override

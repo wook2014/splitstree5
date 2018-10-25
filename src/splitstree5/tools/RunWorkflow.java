@@ -150,7 +150,7 @@ public class RunWorkflow extends Application {
                         String name = Basic.replaceFileSuffix(input.getName(), "-out.spt5");
                         outputFiles[i] = (new File(output.getPath(), name)).getPath();
                     }
-                } else if (!outputFiles[0].equals("stdout")) {
+                } else if (inputFiles.length > 1 && !outputFiles[0].equals("stdout")) {
                     throw new IOException("Too few output files specified");
                 }
             }
@@ -166,25 +166,7 @@ public class RunWorkflow extends Application {
         final Workflow workflow = mainWindow.getWorkflow();
 
         try (final ProgressListener progress = new ProgressPercentage("Loading workflow from file: " + inputWorkflowFile)) {
-            final CountDownLatch latch = new CountDownLatch(1);
-
-            final ChangeListener<Boolean> listener = (c, o, n) -> {
-                if (n) {
-                    System.err.println("Loading workflow...");
-                }
-                if (!n) {
-                    System.err.println("done");
-                    latch.countDown();
-                }
-            };
-            // listens for end of update and counts down latch:
-            workflow.updatingProperty().addListener(listener);
-            try {
                 WorkflowNexusInput.input(progress, workflow, new ArrayList<>(), inputWorkflowFile.getPath(), null);
-                latch.await();
-            } finally {
-                workflow.updatingProperty().removeListener(listener);
-            }
         }
 
         final DataNode<TaxaBlock> topTaxaNode = workflow.getTopTaxaNode();
@@ -195,12 +177,11 @@ public class RunWorkflow extends Application {
             throw new IOException("Workflow does not have top data node");
 
         System.err.println("Loaded workflow has " + workflow.getNumberOfDataNodes() + " nodes and " + workflow.getNumberOfConnectorNodes() + " connections");
+        System.err.println("Number of input taxa: " + workflow.getTopTaxaNode().getDataBlock().getNtax());
 
         for (int i = 0; i < inputFiles.length; i++) {
             final String inputFile = inputFiles[i];
-            if (inputFiles.length > 1) {
                 System.err.println("++++ Processing " + inputFile + " (" + (i + 1) + " of " + inputFiles.length + ") ++++");
-            }
 
             final CountDownLatch latch = new CountDownLatch(1);
 
@@ -232,9 +213,11 @@ public class RunWorkflow extends Application {
                         final NexusStreamParser np = new NexusStreamParser(new StringReader(w.toString()));
                         ((new TaxaNexusInput())).parse(np, topTaxaNode.getDataBlock());
                         NexusParser.parse(np, topTaxaNode.getDataBlock(), topDataNode.getDataBlock());
+                        System.err.println("Number of input taxa: " + workflow.getTopTaxaNode().getDataBlock().getNtax());
                     }
                 }
-            }
+            } else
+                throw new IOException("Unknown data or file format: " + inputFile);
 
             // listens for end of update and counts down latch:
             workflow.updatingProperty().addListener(listener);

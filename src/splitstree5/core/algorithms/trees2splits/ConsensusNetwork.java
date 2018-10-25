@@ -23,6 +23,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
+import jloda.fx.NotificationManager;
 import jloda.fx.ProgramExecutorService;
 import jloda.phylo.PhyloTree;
 import jloda.util.*;
@@ -91,15 +92,29 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
             final CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
             final Single<CanceledException> exception = new Single<>();
 
+            final Single<Boolean> warnedAboutZeroWeight = new Single<>(false);
+
             for (int i = 0; i < numberOfThreads; i++) {
                 final int threadNumber = i;
                 executor.execute(() -> {
                     try {
-                        for (int which = threadNumber; which < trees.size(); which += numberOfThreads) {
-                            final PhyloTree tree = trees.get(which);
+                        for (int which = threadNumber + 1; which <= trees.size(); which += numberOfThreads) {
+                            final PhyloTree tree = treesBlock.getTree(which);
                             final double factor;
-                            if (getOptionEdgeWeights() == EdgeWeights.TreeSizeWeightedMean)
-                                factor = 1.0 / TreesUtilities.computeTotalWeight(tree);
+                            if (getOptionEdgeWeights() == EdgeWeights.TreeSizeWeightedMean) {
+                                final double treeWeight = TreesUtilities.computeTotalWeight(tree);
+                                if (treeWeight == 0) {
+                                    synchronized (warnedAboutZeroWeight) {
+                                        if (!warnedAboutZeroWeight.get()) {
+                                            NotificationManager.showWarning("Tree[" + which + "] '" + tree.getName() + "' has zero weight (check the message window for others)");
+                                            warnedAboutZeroWeight.set(true);
+                                        }
+                                    }
+                                    System.err.println("Warning: Tree " + which + " has zero weight");
+                                    factor = 1;
+                                } else
+                                    factor = 1.0 / treeWeight;
+                            }
                             else
                                 factor = 1;
 

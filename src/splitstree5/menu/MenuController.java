@@ -372,7 +372,7 @@ public class MenuController {
     private MenuItem aboutMenuItem;
 
     @FXML
-    private CheckMenuItem showMessageWindowMenuItem;
+    private MenuItem showMessageWindowMenuItem;
 
     @FXML
     private MenuItem communityWebsiteMenuItem;
@@ -822,7 +822,7 @@ public class MenuController {
         return aboutMenuItem;
     }
 
-    public CheckMenuItem getShowMessageWindowMenuItem() {
+    public MenuItem getShowMessageWindowMenuItem() {
         return showMessageWindowMenuItem;
     }
 

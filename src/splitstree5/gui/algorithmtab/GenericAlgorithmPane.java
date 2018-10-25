@@ -232,7 +232,7 @@ public class GenericAlgorithmPane<P extends DataBlock, C extends DataBlock> exte
      * sync model to controller
      */
     public void syncModel2Controller() {
-        // not sure what we must do here...
+        // can't sync back
     }
 
     /**

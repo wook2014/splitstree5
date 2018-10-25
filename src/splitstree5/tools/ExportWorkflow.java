@@ -90,8 +90,8 @@ public class ExportWorkflow extends Application {
 
         options.comment("Input Output:");
         final File inputWorkflowFile = new File(options.getOptionMandatory("-w", "workflow", "File containing SplitsTree5 workflow", ""));
-        String[] nodeNames = options.getOptionMandatory("-n", "node", "Title(s) of node(s) to be exported", new String[0]);
-        String[] exportFormats = options.getOptionMandatory("-e", "exporter", "Name of exporter(s) to use", ExportManager.getInstance().getExporterNames(), new String[0]);
+        String[] nodeNames = options.getOption("-n", "node", "Title(s) of node(s) to be exported", new String[0]);
+        String[] exportFormats = options.getOption("-e", "exporter", "Name of exporter(s) to use", ExportManager.getInstance().getExporterNames(), new String[0]);
         String[] outputFiles = options.getOption("-o", "output", "Output file(s) (or directory or stdout)", new String[]{"stdout"});
 
         options.comment(ArgsOptions.OTHER);
@@ -119,7 +119,7 @@ public class ExportWorkflow extends Application {
                         final String suffix = ExportManager.getInstance().getExporterByName(exportFormats[i]).getExtensions().get(0);
                         outputFiles[i] = Basic.replaceFileSuffix(inputWorkflowFile.getPath(), "-" + nodeNames[i] + "." + suffix);
                     }
-                } else if (!outputFiles[0].equals("stdout")) {
+                } else if (nodeNames.length > 1 && !outputFiles[0].equals("stdout")) {
                     throw new IOException("Too few output files specified");
                 }
             }

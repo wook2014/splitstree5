@@ -24,13 +24,18 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import jloda.fx.ExtendedFXMLLoader;
+import jloda.fx.NotificationManager;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 import splitstree5.main.MainWindow;
 import splitstree5.main.MainWindowManager;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintStream;
 
 public class MessageWindow {
@@ -58,11 +63,11 @@ public class MessageWindow {
             stage.setHeight(150);
         }
         stage.setTitle("Message Window - " + ProgramProperties.getProgramName());
-        stage.setOnHiding((e) -> Basic.restoreSystemErr());
-
-        Basic.sendSystemErrToSystemOut();
 
         printStream = createPrintStream(controller.getTextArea());
+
+        controller.getCloseMenuItem().setOnAction((e) -> setVisible(false));
+        controller.getSaveAsMenuItem().setOnAction((e) -> saveAs());
 
         controller.getClearMenuItem().setOnAction((e) -> controller.getTextArea().clear());
         controller.getClearMenuItem().disableProperty().bind(controller.getTextArea().textProperty().isEmpty());
@@ -94,12 +99,18 @@ public class MessageWindow {
         if (visible) {
             if (!stage.isShowing()) {
                 stage.show();
+                Basic.restoreSystemOut(printStream);
                 Basic.restoreSystemErr(printStream);
+
             }
             stage.toFront();
             stage.getIcons().setAll(ProgramProperties.getProgramIcons()); // seem to need to refresh these
-        } else {
+        } else if (!stage.isFocused()) {
+            stage.toFront();
+        } else { // is showing and has focus, hide
             if (stage.isShowing()) {
+                Basic.restoreSystemOut();
+                Basic.restoreSystemErr();
                 stage.hide();
             }
         }
@@ -118,6 +129,27 @@ public class MessageWindow {
             textArea.setText(textArea.getText() + string);
             textArea.positionCaret(textArea.getText().length());
         });
+    }
+
+    public void saveAs() {
+
+        final FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save SplitsTree5 messages");
+
+        final File previousFile = new File(ProgramProperties.get("SaveMessagesFile", "messages.txt"));
+
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Text", "*.txt"));
+        fileChooser.setInitialFileName(previousFile.getPath());
+        final File selectedFile = fileChooser.showSaveDialog(MainWindowManager.getInstance().getLastFocusedMainWindow().getStage());
+        if (selectedFile != null) {
+            ProgramProperties.put("SaveMessagesFile", selectedFile.getPath());
+            try (FileWriter w = new FileWriter(selectedFile)) {
+                w.write(controller.getTextArea().getText());
+
+            } catch (IOException e) {
+                NotificationManager.showError("Save messages failed: " + e.getMessage());
+            }
+        }
     }
 
     private PrintStream createPrintStream(TextArea textArea) {

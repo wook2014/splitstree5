@@ -399,7 +399,7 @@
                         <KeyCodeCombination alt="UP" code="H" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
-                <CheckMenuItem fx:id="showMessageWindowMenuItem" mnemonicParsing="false" text="Show Message Window..."/>
+                <MenuItem fx:id="showMessageWindowMenuItem" mnemonicParsing="false" text="Show Message Window..."/>
             </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">
