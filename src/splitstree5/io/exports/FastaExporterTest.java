@@ -18,9 +18,9 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class FastaOutTest {
+public class FastaExporterTest {
 
-    private FastaOut fastaOut = new FastaOut();
+    private FastaExporter fastaExporter = new FastaExporter();
 
     @Test
     public void exportCharacters() throws Exception {
@@ -38,7 +38,7 @@ public class FastaOutTest {
                 taxa, characters);
         taxa.addTaxaByNames(taxonNames);
 
-        fastaOut.export(writer, taxa, characters);
+        fastaExporter.export(writer, taxa, characters);
         writer.close();
 
     }
@@ -57,7 +57,7 @@ public class FastaOutTest {
         new TaxaNexusInput().parse(np, taxa);
         new SplitsNexusInput().parse(np, taxa, splits);
 
-        fastaOut.export(writer, taxa, splits);
+        fastaExporter.export(writer, taxa, splits);
         writer.close();
 
         byte[] encoded1 = Files.readAllBytes(Paths.get("test/notNexusFiles/algae_splits.fasta"));
@@ -85,7 +85,7 @@ public class FastaOutTest {
         new TaxaNexusInput().parse(np, taxa);
         new SplitsNexusInput().parse(np, taxa, splits);
 
-        fastaOut.export(writer, taxa, splits);
+        fastaExporter.export(writer, taxa, splits);
         writer.close();
 
         byte[] encoded1 = Files.readAllBytes(Paths.get("test/notNexusFiles/trees49_splits.fasta"));

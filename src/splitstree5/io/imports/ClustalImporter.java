@@ -25,7 +25,7 @@ import java.util.Map;
  * http://www.clustal.org/download/clustalw_help.txt
  */
 
-public class ClustalIn extends CharactersFormat implements IToCharacters, IImportCharacters {
+public class ClustalImporter extends CharactersFormat implements IToCharacters, IImportCharacters {
 
     @Override
     public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxa, CharactersBlock characters)

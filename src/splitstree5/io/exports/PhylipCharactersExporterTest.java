@@ -10,9 +10,9 @@ import splitstree5.io.nexus.CharactersNexusInput;
 import java.io.*;
 import java.util.List;
 
-public class PhylipCharactersOutTest {
+public class PhylipCharactersExporterTest {
 
-    private PhylipCharactersOut phylipCharactersOut = new PhylipCharactersOut();
+    private PhylipCharactersExporter phylipCharactersExporter = new PhylipCharactersExporter();
 
     @Test
     public void export() throws Exception {
@@ -31,12 +31,12 @@ public class PhylipCharactersOutTest {
                 taxaI, charactersI);
         taxaI.addTaxaByNames(taxonNamesI);
 
-        phylipCharactersOut.export(writerI, taxaI, charactersI);
+        phylipCharactersExporter.export(writerI, taxaI, charactersI);
         writerI.close();
 
 
         // standard
-        phylipCharactersOut.setOptionInterleaved(false);
+        phylipCharactersExporter.setOptionInterleaved(false);
         File file = new File("test/exports/TEST_PHYL.phy");
         Writer writer = new BufferedWriter(new FileWriter(file));
 
@@ -50,7 +50,7 @@ public class PhylipCharactersOutTest {
                 taxa, characters);
         taxa.addTaxaByNames(taxonNames);
 
-        phylipCharactersOut.export(writer, taxa, characters);
+        phylipCharactersExporter.export(writer, taxa, characters);
         writer.close();
 
     }

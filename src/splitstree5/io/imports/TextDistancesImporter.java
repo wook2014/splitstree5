@@ -36,7 +36,7 @@ import java.util.List;
  * text matrix input
  * Daniel Huson, 3.2018
  */
-public class TextDistancesIn implements IToDistances, IImportDistances, IImportNoAutoDetect {
+public class TextDistancesImporter implements IToDistances, IImportDistances, IImportNoAutoDetect {
     public static final List<String> extensions = new ArrayList<>(Collections.singletonList("txt"));
 
     @Override

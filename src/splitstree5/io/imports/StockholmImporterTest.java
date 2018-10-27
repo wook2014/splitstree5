@@ -17,9 +17,9 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 
-public class SingleLineSequencesInTest {
+public class StockholmImporterTest {
 
-    private SingleLineSequencesIn singleLineSequencesIn = new SingleLineSequencesIn();
+    private StockholmImporter stockholmImporter = new StockholmImporter();
 
     @Test
     public void parse() throws Exception {
@@ -27,8 +27,7 @@ public class SingleLineSequencesInTest {
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
         ProgressListener pl = new ProgressPercentage();
-
-        singleLineSequencesIn.parse(pl, "test/notNexusFiles/singleLineDNA.txt", taxaBlock, charactersBlock);
+        stockholmImporter.parse(pl, "test/notNexusFiles/PF02171_seed.txt", taxaBlock, charactersBlock);
 
         // printing
         final StringWriter w = new StringWriter();
@@ -36,7 +35,6 @@ public class SingleLineSequencesInTest {
         new TaxaNexusOutput().write(w, taxaBlock);
         new CharactersNexusOutput().write(w, taxaBlock, charactersBlock);
         System.err.println(w.toString());
-
     }
 
     @Test
@@ -47,12 +45,12 @@ public class SingleLineSequencesInTest {
         File[] directoryListing = directory.listFiles();
         if (directoryListing != null) {
             for (File file : directoryListing) {
-                if (singleLineSequencesIn.isApplicable(file.getPath()))
+                if (stockholmImporter.isApplicable(file.getPath()))
                     applicableFiles.add(Basic.getFileNameWithoutPath(file.getName()));
             }
         }
         System.err.println(applicableFiles);
-        assertEquals(applicableFiles, Arrays.asList("singleLineDNA.txt"));
+        assertEquals(applicableFiles, Arrays.asList("PF02171_seed.txt"));
     }
 
 }

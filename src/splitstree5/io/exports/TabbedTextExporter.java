@@ -18,7 +18,7 @@ import java.io.Writer;
 import java.util.BitSet;
 import java.util.List;
 
-public class TabbedTextOut implements
+public class TabbedTextExporter implements
         IFromTaxa, IFromChararacters, IFromDistances, IFromSplits,
         IExportTaxa, IExportCharacters, IExportDistances, IExportSplits {
 

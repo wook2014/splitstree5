@@ -18,9 +18,9 @@ import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
 
-public class TabbedTextOutTest {
+public class TabbedTextExporterTest {
 
-    private TabbedTextOut tabbedTextOut = new TabbedTextOut();
+    private TabbedTextExporter tabbedTextExporter = new TabbedTextExporter();
 
     @Test
     public void export() throws Exception {
@@ -50,10 +50,10 @@ public class TabbedTextOutTest {
         nj.compute(pl, taxa, distances, trees);
         treeSelector.compute(pl, taxa, trees, splits);
 
-        tabbedTextOut.export(writer, taxa);
-        tabbedTextOut.export(writer, taxa, character);
-        tabbedTextOut.export(writer, taxa, distances);
-        tabbedTextOut.export(writer, taxa, splits);
+        tabbedTextExporter.export(writer, taxa);
+        tabbedTextExporter.export(writer, taxa, character);
+        tabbedTextExporter.export(writer, taxa, distances);
+        tabbedTextExporter.export(writer, taxa, splits);
         writer.close();
 
         byte[] encoded1 = Files.readAllBytes(Paths.get("test/notNexusFiles/algae_tabbed.txt"));

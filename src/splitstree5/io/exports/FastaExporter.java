@@ -13,7 +13,7 @@ import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
 
-public class FastaOut implements IFromChararacters, IExportCharacters, IFromSplits, IExportSplits {
+public class FastaExporter implements IFromChararacters, IExportCharacters, IFromSplits, IExportSplits {
 
     @Override
     public void export(Writer w, TaxaBlock taxa, CharactersBlock characters) throws IOException {

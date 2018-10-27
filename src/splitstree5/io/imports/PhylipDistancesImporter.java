@@ -15,7 +15,7 @@ import java.util.*;
  * Phylip matrix input
  * Daria Evseeva,02.10.2017.
  */
-public class PhylipDistancesIn implements IToDistances, IImportDistances {
+public class PhylipDistancesImporter implements IToDistances, IImportDistances {
 
     public static final List<String> extensions = new ArrayList<>(Arrays.asList("dist", "dst"));
 

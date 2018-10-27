@@ -10,9 +10,9 @@ import splitstree5.io.nexus.CharactersNexusInput;
 import java.io.*;
 import java.util.List;
 
-public class ClustalOutTest {
+public class ClustalExporterTest {
 
-    private ClustalOut clustalOut = new ClustalOut();
+    private ClustalExporter clustalExporter = new ClustalExporter();
 
     @Test
     public void export() throws Exception {
@@ -30,7 +30,7 @@ public class ClustalOutTest {
                 taxa, characters);
         taxa.addTaxaByNames(taxonNames);
 
-        clustalOut.export(writer, taxa, characters);
+        clustalExporter.export(writer, taxa, characters);
         writer.close();
     }
 

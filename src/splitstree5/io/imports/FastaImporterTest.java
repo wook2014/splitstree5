@@ -20,9 +20,9 @@ import static org.junit.Assert.assertEquals;
 /**
  * Daria Evseeva,01.07.2017.
  */
-public class FastaInTest {
+public class FastaImporterTest {
 
-    private FastaIn fastaIn = new FastaIn();
+    private FastaImporter fastaImporter = new FastaImporter();
 
     @Test
     public void parseI() throws Exception {
@@ -30,7 +30,7 @@ public class FastaInTest {
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
         try (ProgressPercentage progress = new ProgressPercentage("Test")) {
-            fastaIn.parse(progress, "test/notNexusFiles/smallTest.fasta", taxaBlock, charactersBlock);
+            fastaImporter.parse(progress, "test/notNexusFiles/smallTest.fasta", taxaBlock, charactersBlock);
         }
 
         // printing
@@ -47,7 +47,7 @@ public class FastaInTest {
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
         try (ProgressPercentage progress = new ProgressPercentage("Test")) {
-            fastaIn.parse(progress, "test/notNexusFiles/algae.fasta", taxaBlock, charactersBlock);
+            fastaImporter.parse(progress, "test/notNexusFiles/algae.fasta", taxaBlock, charactersBlock);
         }
 
         // printing
@@ -64,7 +64,7 @@ public class FastaInTest {
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
         try (ProgressPercentage progress = new ProgressPercentage("Test")) {
-            fastaIn.parse(progress, "test/notNexusFiles/ncbi.fasta", taxaBlock, charactersBlock);
+            fastaImporter.parse(progress, "test/notNexusFiles/ncbi.fasta", taxaBlock, charactersBlock);
         }
 
         // printing
@@ -81,8 +81,8 @@ public class FastaInTest {
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
         try (ProgressPercentage progress = new ProgressPercentage("Test")) {
-            fastaIn.setOptionPIRFormat(true);
-            fastaIn.parse(progress, "test/notNexusFiles/pir.fasta", taxaBlock, charactersBlock);
+            fastaImporter.setOptionPIRFormat(true);
+            fastaImporter.parse(progress, "test/notNexusFiles/pir.fasta", taxaBlock, charactersBlock);
         }
 
         // printing
@@ -101,7 +101,7 @@ public class FastaInTest {
         File[] directoryListing = directory.listFiles();
         if (directoryListing != null) {
             for (File file : directoryListing) {
-                if (fastaIn.isApplicable(file.getPath()))
+                if (fastaImporter.isApplicable(file.getPath()))
                     applicableFiles.add(Basic.getFileNameWithoutPath(file.getName()));
             }
         }

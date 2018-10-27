@@ -10,7 +10,7 @@ import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
 
-public class PhylipDistancesOut implements IFromDistances, IExportDistances {
+public class PhylipDistancesExporter implements IFromDistances, IExportDistances {
 
     private boolean optionTriangular = false;
 
