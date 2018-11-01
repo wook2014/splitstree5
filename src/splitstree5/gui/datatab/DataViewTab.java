@@ -27,18 +27,23 @@ import javafx.scene.control.Labeled;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import jloda.util.ResourceManager;
+import org.reactfx.Subscription;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.UpdateState;
+import splitstree5.gui.editinputtab.EditTextViewTab;
+import splitstree5.gui.editinputtab.highlighters.NexusHighlighter;
 import splitstree5.gui.texttab.TextViewTab;
+
+import java.time.Duration;
 
 /**
  * a data block viewer tab
  * Daniel Huson, 1.2018
  */
-public class DataViewTab extends TextViewTab {
+public class DataViewTab extends EditTextViewTab {
     private final ChangeListener<UpdateState> stateChangeListener;
 
     /**
@@ -74,7 +79,8 @@ public class DataViewTab extends TextViewTab {
             }
         };
         dataNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
-        getTextArea().textProperty().bind(textProperty);
+        //getTextArea().textProperty().bind(textProperty);
+        bindToCodeArea(textProperty);
 
         setMainWindow(document.getMainWindow());
         if (getGraphic() instanceof Labeled) {
