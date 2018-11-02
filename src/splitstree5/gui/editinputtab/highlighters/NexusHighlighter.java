@@ -16,7 +16,6 @@ public class NexusHighlighter implements Highlighter {
             "format",
             "taxlabels", "matrix",
             "properties", "cycle", "draw"
-            //"translate", "DRAW", "VERTICES", "VLABELS", "EDGES" -> single keywords
     };
 
     private static final String[] NETWORK_KEYWORDS = new String[] {
