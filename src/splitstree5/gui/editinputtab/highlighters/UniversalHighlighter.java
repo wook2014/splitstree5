@@ -12,7 +12,6 @@ public class UniversalHighlighter implements Highlighter {
 
     private static final String PAREN_PATTERN = "[()]";
     private static final String BRACE_PATTERN = "[{}]";
-    //private static final String SEMICOLON_PATTERN = "\\;";
     private static final String COMMENT_PATTERN = "#[^\n]*";
     private static final String FASTA_COMMENT_PATTERN = ";[^\n]*";
     private static final String FASTA_PATTERN = ">[^\n]*";
@@ -22,8 +21,6 @@ public class UniversalHighlighter implements Highlighter {
     private static final Pattern PATTERN = Pattern.compile(
             "(?<PAREN>" + PAREN_PATTERN + ")"
                     + "|(?<BRACE>" + BRACE_PATTERN + ")"
-                    //+ "|(?<BRACKET>" + BRACKET_PATTERN + ")"
-                    //+ "|(?<SEMICOLON>" + SEMICOLON_PATTERN + ")"
                     + "|(?<STRING>" + STRING_PATTERN + ")"
                     + "|(?<FASTACOMMENT>" + FASTA_COMMENT_PATTERN + ")"
                     + "|(?<FASTA>" + FASTA_PATTERN + ")"
@@ -43,8 +40,6 @@ public class UniversalHighlighter implements Highlighter {
                     matcher.group("NUMBER") != null ? "number" :
                     matcher.group("PAREN") != null ? "paren" :
                     matcher.group("BRACE") != null ? "brace" :
-                    //matcher.group("BRACKET") != null ? "bracket" :
-                    //matcher.group("SEMICOLON") != null ? "semicolon" :
                     matcher.group("STRING") != null ? "string" :
                     matcher.group("COMMENT") != null ? "comment" :
                     matcher.group("FASTACOMMENT") != null ? "fasta-comment" :
