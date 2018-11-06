@@ -19,11 +19,11 @@ import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Daria Evseeva,05.08.2017.
+ * Daria Evseeva,27.09.2017.
  */
-public class ClustalInTest {
+public class PhylipCharactersImporterTest {
 
-    private ClustalIn clustalIn = new ClustalIn();
+    private PhylipCharactersImporter phylipCharactersImporter = new PhylipCharactersImporter();
 
     @Test
     public void parse() throws Exception {
@@ -33,51 +33,47 @@ public class ClustalInTest {
         CharactersNexusFormat format = new CharactersNexusFormat();
         ProgressListener pl = new ProgressPercentage();
 
-        clustalIn.parse(pl, "test/notNexusFiles/prot1.aln", taxaBlock, charactersBlock);
+        phylipCharactersImporter.parse(pl, "test/notNexusFiles/standard.phy", taxaBlock, charactersBlock);
         // printing
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
         new TaxaNexusOutput().write(w1, taxaBlock);
         new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock);
         System.err.println(w1.toString());
-        System.err.println(format.isOptionInterleave());
-        //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
+        String standard = w1.toString();
 
-        clustalIn.parse(pl, "test/notNexusFiles/protein.aln", taxaBlock, charactersBlock);
+        phylipCharactersImporter.parse(pl, "test/notNexusFiles/standardEOL.phy", taxaBlock, charactersBlock);
         // printing
         final StringWriter w2 = new StringWriter();
         w2.write("#nexus\n");
         new TaxaNexusOutput().write(w2, taxaBlock);
         new CharactersNexusOutput().write(w2, taxaBlock, charactersBlock);
         System.err.println(w2.toString());
-        //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
+        String standardEOL = w2.toString();
 
-        clustalIn.parse(pl, "test/notNexusFiles/conservation.aln", taxaBlock, charactersBlock);
+        phylipCharactersImporter.parse(pl, "test/notNexusFiles/interleaved.phy", taxaBlock, charactersBlock);
         // printing
         final StringWriter w3 = new StringWriter();
         w3.write("#nexus\n");
         new TaxaNexusOutput().write(w3, taxaBlock);
         new CharactersNexusOutput().write(w3, taxaBlock, charactersBlock);
         System.err.println(w3.toString());
-        //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
+        String interleaved = w3.toString();
 
-        clustalIn.parse(pl, "test/notNexusFiles/dna-ncbi.aln", taxaBlock, charactersBlock);
+        phylipCharactersImporter.parse(pl, "test/notNexusFiles/interleaved-multi.phy", taxaBlock, charactersBlock);
         // printing
         final StringWriter w4 = new StringWriter();
         w4.write("#nexus\n");
         new TaxaNexusOutput().write(w4, taxaBlock);
         new CharactersNexusOutput().write(w4, taxaBlock, charactersBlock);
         System.err.println(w4.toString());
-        //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
+        String interleavedMulti = w4.toString();
 
-        clustalIn.parse(pl, "test/notNexusFiles/dna-ncbi-num.aln", taxaBlock, charactersBlock);
-        // printing
-        final StringWriter w5 = new StringWriter();
-        w5.write("#nexus\n");
-        new TaxaNexusOutput().write(w5, taxaBlock);
-        new CharactersNexusOutput().write(w5, taxaBlock, charactersBlock);
-        System.err.println(w5.toString());
-        //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
+
+        //assertEquals(standard, interleaved);
+        assertEquals(interleaved, interleavedMulti);
+        assertEquals(standard, standardEOL);
+
     }
 
     @Test
@@ -88,12 +84,12 @@ public class ClustalInTest {
         File[] directoryListing = directory.listFiles();
         if (directoryListing != null) {
             for (File file : directoryListing) {
-                if (clustalIn.isApplicable(file.getPath()))
+                if (phylipCharactersImporter.isApplicable(file.getPath()))
                     applicableFiles.add(Basic.getFileNameWithoutPath(file.getName()));
             }
         }
         System.err.println(applicableFiles);
-        assertEquals(applicableFiles, Arrays.asList("conservation.aln", "dna-ncbi-num.aln", "dna-ncbi.aln", "prot1.aln"));
+        assertEquals(applicableFiles, Arrays.asList("interleaved-multi.phy", "interleaved.phy", "standard.phy", "standardEOL.phy"));
     }
 
 }

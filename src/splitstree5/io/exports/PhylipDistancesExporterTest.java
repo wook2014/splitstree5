@@ -8,9 +8,9 @@ import splitstree5.io.nexus.DistancesNexusInput;
 
 import java.io.*;
 
-public class PhylipDistancesOutTest {
+public class PhylipDistancesExporterTest {
 
-    private PhylipDistancesOut phylipDistancesOut = new PhylipDistancesOut();
+    private PhylipDistancesExporter phylipDistancesExporter = new PhylipDistancesExporter();
 
     @Test
     public void export() throws Exception {
@@ -27,10 +27,10 @@ public class PhylipDistancesOutTest {
                         new FileReader("test/distances/algaeCod.nex")),
                 taxa, distances));
 
-        phylipDistancesOut.export(writer1, taxa, distances);
+        phylipDistancesExporter.export(writer1, taxa, distances);
         writer1.close();
-        phylipDistancesOut.setOptionTriangular(true);
-        phylipDistancesOut.export(writer2, taxa, distances);
+        phylipDistancesExporter.setOptionTriangular(true);
+        phylipDistancesExporter.export(writer2, taxa, distances);
         writer2.close();
     }
 

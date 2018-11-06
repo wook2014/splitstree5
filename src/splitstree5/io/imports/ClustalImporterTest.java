@@ -4,9 +4,10 @@ import jloda.util.Basic;
 import jloda.util.ProgressListener;
 import jloda.util.ProgressPercentage;
 import org.junit.Test;
-import splitstree5.core.datablocks.DistancesBlock;
+import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.io.nexus.DistancesNexusOutput;
+import splitstree5.io.nexus.CharactersNexusFormat;
+import splitstree5.io.nexus.CharactersNexusOutput;
 import splitstree5.io.nexus.TaxaNexusOutput;
 
 import java.io.File;
@@ -18,60 +19,65 @@ import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Daria Evseeva,03.10.2017.
+ * Daria Evseeva,05.08.2017.
  */
-public class PhylipDistancesInTest {
+public class ClustalImporterTest {
 
-    private PhylipDistancesIn phylipDistancesIn = new PhylipDistancesIn();
+    private ClustalImporter clustalImporter = new ClustalImporter();
 
-    @org.junit.Test
+    @Test
     public void parse() throws Exception {
 
         TaxaBlock taxaBlock = new TaxaBlock();
-        DistancesBlock distancesBlock = new DistancesBlock();
+        CharactersBlock charactersBlock = new CharactersBlock();
+        CharactersNexusFormat format = new CharactersNexusFormat();
         ProgressListener pl = new ProgressPercentage();
 
-        phylipDistancesIn.parse(pl, "test/notNexusFiles/square.dist", taxaBlock, distancesBlock);
+        clustalImporter.parse(pl, "test/notNexusFiles/prot1.aln", taxaBlock, charactersBlock);
         // printing
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
         new TaxaNexusOutput().write(w1, taxaBlock);
-        new DistancesNexusOutput().write(w1, taxaBlock, distancesBlock);
+        new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock);
         System.err.println(w1.toString());
-        String s1 = w1.toString();
+        System.err.println(format.isOptionInterleave());
+        //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
 
-        phylipDistancesIn.parse(pl, "test/notNexusFiles/triangular.dist", taxaBlock, distancesBlock);
+        clustalImporter.parse(pl, "test/notNexusFiles/protein.aln", taxaBlock, charactersBlock);
         // printing
         final StringWriter w2 = new StringWriter();
         w2.write("#nexus\n");
         new TaxaNexusOutput().write(w2, taxaBlock);
-        new DistancesNexusOutput().write(w2, taxaBlock, distancesBlock);
+        new CharactersNexusOutput().write(w2, taxaBlock, charactersBlock);
         System.err.println(w2.toString());
-        String s2 = w2.toString();
+        //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
 
-        phylipDistancesIn.parse(pl, "test/notNexusFiles/triangularEOL.dist", taxaBlock, distancesBlock);
+        clustalImporter.parse(pl, "test/notNexusFiles/conservation.aln", taxaBlock, charactersBlock);
         // printing
         final StringWriter w3 = new StringWriter();
         w3.write("#nexus\n");
         new TaxaNexusOutput().write(w3, taxaBlock);
-        new DistancesNexusOutput().write(w3, taxaBlock, distancesBlock);
+        new CharactersNexusOutput().write(w3, taxaBlock, charactersBlock);
         System.err.println(w3.toString());
+        //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
 
-        phylipDistancesIn.parse(pl, "test/notNexusFiles/squareEOL-bf.dist", taxaBlock, distancesBlock);
+        clustalImporter.parse(pl, "test/notNexusFiles/dna-ncbi.aln", taxaBlock, charactersBlock);
         // printing
         final StringWriter w4 = new StringWriter();
         w4.write("#nexus\n");
         new TaxaNexusOutput().write(w4, taxaBlock);
-        new DistancesNexusOutput().write(w4, taxaBlock, distancesBlock);
+        new CharactersNexusOutput().write(w4, taxaBlock, charactersBlock);
         System.err.println(w4.toString());
+        //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
 
-        phylipDistancesIn.parse(pl, "test/notNexusFiles/triangular_upper.dist", taxaBlock, distancesBlock);
+        clustalImporter.parse(pl, "test/notNexusFiles/dna-ncbi-num.aln", taxaBlock, charactersBlock);
         // printing
         final StringWriter w5 = new StringWriter();
         w5.write("#nexus\n");
         new TaxaNexusOutput().write(w5, taxaBlock);
-        new DistancesNexusOutput().write(w5, taxaBlock, distancesBlock);
+        new CharactersNexusOutput().write(w5, taxaBlock, charactersBlock);
         System.err.println(w5.toString());
+        //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
     }
 
     @Test
@@ -82,13 +88,12 @@ public class PhylipDistancesInTest {
         File[] directoryListing = directory.listFiles();
         if (directoryListing != null) {
             for (File file : directoryListing) {
-                if (phylipDistancesIn.isApplicable(file.getPath()))
+                if (clustalImporter.isApplicable(file.getPath()))
                     applicableFiles.add(Basic.getFileNameWithoutPath(file.getName()));
             }
         }
         System.err.println(applicableFiles);
-        assertEquals(applicableFiles, Arrays.asList("square.dist", "squareEOL-bf.dist", "triangular.dist",
-                "triangularEOL.dist", "triangular_upper.dist"));
+        assertEquals(applicableFiles, Arrays.asList("conservation.aln", "dna-ncbi-num.aln", "dna-ncbi.aln", "prot1.aln"));
     }
 
 }

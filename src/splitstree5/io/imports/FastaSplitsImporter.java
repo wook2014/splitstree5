@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 
-public class FastaSplitsIn extends CharactersFormat implements IToSplits, IImportSplits, IImportNoAutoDetect {
+public class FastaSplitsImporter extends CharactersFormat implements IToSplits, IImportSplits, IImportNoAutoDetect {
 
     public static final List<String> extensions = new ArrayList<>(Arrays.asList("fasta", "fas", "fa", "seq", "fsa", "fna"));
     private static int numberOfLinesToCheckInApplicable = 10;

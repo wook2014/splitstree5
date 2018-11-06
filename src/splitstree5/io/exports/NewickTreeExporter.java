@@ -10,7 +10,7 @@ import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
 
-public class NewickTreeOut implements IFromTrees, IExportTrees {
+public class NewickTreeExporter implements IFromTrees, IExportTrees {
 
     public void export(Writer w, TaxaBlock taxa, TreesBlock trees) throws IOException {
 

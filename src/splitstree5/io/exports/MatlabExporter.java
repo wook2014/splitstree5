@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 
-public class MatlabOut implements IFromTaxa, IExportTaxa, IFromDistances, IExportDistances, IFromSplits, IExportSplits {
+public class MatlabExporter implements IFromTaxa, IExportTaxa, IFromDistances, IExportDistances, IFromSplits, IExportSplits {
 
     private boolean optionExportDataBlockWithTaxa = false;
     private boolean bHeader = true;

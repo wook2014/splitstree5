@@ -20,9 +20,9 @@ import static org.junit.Assert.assertEquals;
 /**
  * Daria Evseeva,17.10.2017.
  */
-public class NewickTreeInTest {
+public class NewickTreeImporterTest {
 
-    private NewickTreeIn newickTreeIn = new NewickTreeIn();
+    private NewickTreeImporter newickTreeImporter = new NewickTreeImporter();
 
     @org.junit.Test
     public void parse() throws Exception {
@@ -35,9 +35,9 @@ public class NewickTreeInTest {
         TaxaBlock taxaBlock = new TaxaBlock();
         TreesBlock treesBlock = new TreesBlock();
         try (ProgressPercentage progress = new ProgressPercentage("Test")) {
-            newickTreeIn.parse(progress, "test/notNexusFiles/colors-nj.tre", taxaBlock, treesBlock);
+            newickTreeImporter.parse(progress, "test/notNexusFiles/colors-nj.tre", taxaBlock, treesBlock);
         }
-        //NewickTreeIn.parse("test/notNexusFiles/trees3.tre", taxaBlock, treesBlock);
+        //NewickTreeImporter.parse("test/notNexusFiles/trees3.tre", taxaBlock, treesBlock);
 
         // printing
         final StringWriter w = new StringWriter();
@@ -58,7 +58,7 @@ public class NewickTreeInTest {
         File[] directoryListing = directory.listFiles();
         if (directoryListing != null) {
             for (File file : directoryListing) {
-                if (newickTreeIn.isApplicable(file.getPath()))
+                if (newickTreeImporter.isApplicable(file.getPath()))
                     applicableFiles.add(Basic.getFileNameWithoutPath(file.getName()));
             }
         }

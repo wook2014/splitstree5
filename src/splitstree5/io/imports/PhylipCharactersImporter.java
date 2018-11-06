@@ -13,7 +13,7 @@ import java.util.*;
 /**
  * Daria Evseeva,27.09.2017.
  */
-public class PhylipCharactersIn extends CharactersFormat implements IToCharacters, IImportCharacters {
+public class PhylipCharactersImporter extends CharactersFormat implements IToCharacters, IImportCharacters {
 
     public static final List<String> extensions = new ArrayList<>(Arrays.asList("phy", "phylip"));
 

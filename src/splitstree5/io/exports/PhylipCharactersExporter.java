@@ -10,7 +10,7 @@ import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
 
-public class PhylipCharactersOut implements IFromChararacters, IExportCharacters {
+public class PhylipCharactersExporter implements IFromChararacters, IExportCharacters {
 
     private boolean optionInterleaved = true;
     private boolean optionInterleavedMultiLabels = true;

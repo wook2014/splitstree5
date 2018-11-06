@@ -17,9 +17,9 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
-public class FastaSplitsInTest {
+public class FastaSplitsImporterTest {
 
-    private FastaSplitsIn fastaSplitsIn = new FastaSplitsIn();
+    private FastaSplitsImporter fastaSplitsImporter = new FastaSplitsImporter();
 
     @Test
     public void parse() throws Exception {
@@ -27,7 +27,7 @@ public class FastaSplitsInTest {
         TaxaBlock taxaBlock = new TaxaBlock();
         SplitsBlock splitsBlock = new SplitsBlock();
         ProgressListener pl = new ProgressPercentage();
-        fastaSplitsIn.parse(pl, "test/notNexusFiles/algae_splits.fasta", taxaBlock, splitsBlock);
+        fastaSplitsImporter.parse(pl, "test/notNexusFiles/algae_splits.fasta", taxaBlock, splitsBlock);
 
         // printing
         final StringWriter w = new StringWriter();
@@ -80,7 +80,7 @@ public class FastaSplitsInTest {
         File[] directoryListing = directory.listFiles();
         if (directoryListing != null) {
             for (File file : directoryListing) {
-                if (fastaSplitsIn.isApplicable(file.getPath()))
+                if (fastaSplitsImporter.isApplicable(file.getPath()))
                     applicableFiles.add(Basic.getFileNameWithoutPath(file.getName()));
             }
         }

@@ -12,17 +12,15 @@ public class NexusHighlighter implements Highlighter {
 
     private static final String[] KEYWORDS = new String[] {
             "begin", "end", "endblock",
-            "dimensions",
+            "dimensions", "matrix",
             "format",
             "taxlabels", "matrix",
-            "properties", "cycle",
+            "properties", "cycle", "draw"
             //"translate", "DRAW", "VERTICES", "VLABELS", "EDGES" -> single keywords
     };
 
-    private static final String[] OPTIONS = new String[] {
-            "ntax", "nchar", "nsplits",
-            "labels", "triangle", "diagonal",
-            "weights", "confidences", "intervals", "fit"
+    private static final String[] NETWORK_KEYWORDS = new String[] {
+            "TRANSLATE", "VERTICES", "VLABELS", "EDGES", "ELABELS"
     };
 
     private static final String[] BLOCKS = new String[] {
@@ -31,34 +29,26 @@ public class NexusHighlighter implements Highlighter {
             "splitstree5", "traits"
     };
 
-    // todo rename !
-    private static final String KEYWORD_PATTERN = "(?<KEYWORD>(?<ff>(?i)\\b(" + String.join("|", KEYWORDS) + ")\\b)"+
+    private static final String KEYWORD_PATTERN = "(?<KEYWORDSLINE>(?<KEYWORD>(?i)\\b(" + String.join("|", KEYWORDS) + ")\\b)"+
                         "(?<OPTION>(?i)(?!\\h+" + String.join("|\\h+", BLOCKS)+")[^;]*;(?!\\h*\\R*end))?)";
                         // everything between keyword and semicolon not ending with "end" and not blocks word
 
     private static final String BLOCK_PATTERN = "(?i)\\b(" + String.join("|", BLOCKS) + ")\\b";
+    private static final String NETWORK_KEYWORDS_PATTERN = "(?i)\\b(" + String.join("|", NETWORK_KEYWORDS) + ")\\b";
     private static final String PAREN_PATTERN = "[()]";
-    //private static final String BRACE_PATTERN = "\\{|\\}";
-    //private static final String BRACKET_PATTERN = "\\[|\\]";
-    //private static final String SEMICOLON_PATTERN = "\\;";
     private static final String COMMENT_PATTERN = "\\[(.|\\R)*?]";
     private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
-    //private static final String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
-    private static final String NUMBER_PATTERN = "\\b\\d+\\.\\d+\\b|\\b\\d+\\b";
 
     private static final Pattern PATTERN = Pattern.compile(
             "(" + KEYWORD_PATTERN + ")"
                     + "|(?<PAREN>" + PAREN_PATTERN + ")"
-                    //+ "|(?<BRACE>" + BRACE_PATTERN + ")"
-                    //+ "|(?<SEMICOLON>" + SEMICOLON_PATTERN + ")"
                     + "|(?<STRING>" + STRING_PATTERN + ")"
                     + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
                     + "|(?<BLOCK>" + BLOCK_PATTERN + ")"
+                    + "|(?<NK>" + NETWORK_KEYWORDS_PATTERN + ")"
                     + "|(?<COLLAPSED><< Collapsed \\w+Block >>)"
-                    //+ "|(?<NUMBER>" + NUMBER_PATTERN + ") "
     );
 
-    // NUMBER_PATTERN = "\\b[-+]?[0-9]*\\.?[0-9]+\\b([eE][-+]?[0-9]+\\b)?";
     @Override
     public StyleSpans<Collection<String>> computeHighlighting(String text) {
         Matcher matcher = PATTERN.matcher(text);
@@ -68,16 +58,11 @@ public class NexusHighlighter implements Highlighter {
 
         while(matcher.find()) {
             String styleClass =
-                    //matcher.group("NUMBER") != null ? "number" :
-                    matcher.group("KEYWORD") != null ? "keyword" :
-                    //matcher.group("OPTION") != null ? "option" :
+                    matcher.group("KEYWORDSLINE") != null ? "keyword" :
                     matcher.group("BLOCK") != null ? "block" :
+                    matcher.group("NK") != null ? "keyword" :
                     matcher.group("COLLAPSED") != null ? "collapsed" :
                     matcher.group("PAREN") != null ? "paren" :
-                    //matcher.group("BRACE") != null ? "brace" :
-                    //matcher.group("BRACKET") != null ? "bracket" :
-                    //matcher.group("SEMICOLON") != null ? "semicolon" :
-                    //matcher.group("STRING") != null ? "string" :
                     matcher.group("COMMENT") != null ? "comment" :
                     null; /* never happens */
             assert styleClass != null;
@@ -85,7 +70,9 @@ public class NexusHighlighter implements Highlighter {
 
             if (styleClass.equals("keyword")) {
                 spansBuilder.add(Collections.singleton("keyword"),
-                        matcher.end("ff") - matcher.start("ff"));
+                        matcher.end("NK") - matcher.start("NK"));
+                spansBuilder.add(Collections.singleton("keyword"),
+                        matcher.end("KEYWORD") - matcher.start("KEYWORD"));
                 if (matcher.group("OPTION") != null && matcher.group("BLOCK") == null)
                     spansBuilder.add(Collections.singleton("option"),
                             matcher.end("OPTION") - matcher.start("OPTION"));

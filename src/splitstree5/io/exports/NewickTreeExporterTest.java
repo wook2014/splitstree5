@@ -14,9 +14,9 @@ import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
 
-public class NewickTreeOutTest {
+public class NewickTreeExporterTest {
 
-    private NewickTreeOut newickTreeOut = new NewickTreeOut();
+    private NewickTreeExporter newickTreeExporter = new NewickTreeExporter();
 
     @Test
     public void export() throws Exception {
@@ -32,7 +32,7 @@ public class NewickTreeOutTest {
         new TaxaNexusInput().parse(np, taxa);
         new TreesNexusInput().parse(np, taxa, treesBlock);
 
-        newickTreeOut.export(writer, taxa, treesBlock);
+        newickTreeExporter.export(writer, taxa, treesBlock);
         writer.close();
 
         byte[] encoded1 = Files.readAllBytes(Paths.get("test/notNexusFiles/trees49.tre"));

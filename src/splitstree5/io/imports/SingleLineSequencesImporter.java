@@ -16,7 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SingleLineSequencesIn extends CharactersFormat implements IToCharacters, IImportCharacters, IImportNoAutoDetect {
+public class SingleLineSequencesImporter extends CharactersFormat implements IToCharacters, IImportCharacters, IImportNoAutoDetect {
 
     private static int numberOfLinesToCheckInApplicable = 10;
 

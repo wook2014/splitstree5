@@ -33,7 +33,7 @@ import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.Taxon;
 import splitstree5.core.workflow.TaskWithProgressListener;
 import splitstree5.dialogs.ProgressPane;
-import splitstree5.io.imports.NewickTreeIn;
+import splitstree5.io.imports.NewickTreeImporter;
 import splitstree5.main.MainWindow;
 
 import java.io.File;
@@ -55,7 +55,7 @@ public class ImportMultipleTreeFilesDialog {
         if (previousDir.isDirectory())
             fileChooser.setInitialDirectory(previousDir);
         fileChooser.setTitle("Open Import File");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Newick tree file", ImporterManager.completeExtensions(NewickTreeIn.extensions, true)));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Newick tree file", ImporterManager.completeExtensions(NewickTreeImporter.extensions, true)));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All files: *.* *.gz", "*.*", "*.gz"));
 // show file browser
 
@@ -77,13 +77,13 @@ public class ImportMultipleTreeFilesDialog {
                         for (File file : selectedFiles) {
                             getProgressListener().setSubtask(file.getName());
                             //System.err.println("Reading file: " + file);
-                            final NewickTreeIn newickTreeIn = new NewickTreeIn();
-                            if (!newickTreeIn.isApplicable(file.getPath()))
+                            final NewickTreeImporter newickTreeImporter = new NewickTreeImporter();
+                            if (!newickTreeImporter.isApplicable(file.getPath()))
                                 System.err.println("Skipping, not a tree file in Newick format: " + file);
                             else {
                                 final TaxaBlock taxaBlock = new TaxaBlock();
                                 final TreesBlock treesBlock = new TreesBlock();
-                                newickTreeIn.parse(getProgressListener(), file.getPath(), taxaBlock, treesBlock);
+                                newickTreeImporter.parse(getProgressListener(), file.getPath(), taxaBlock, treesBlock);
                                 // name trees after the file that contains them:
                                 if (treesBlock.getNTrees() == 1)
                                     treesBlock.getTree(1).setName(Basic.replaceFileSuffix(file.getName(), ""));

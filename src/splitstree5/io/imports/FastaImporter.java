@@ -14,7 +14,7 @@ import java.util.*;
  * Import Characters in FastA format.
  * Daria Evseeva, 07.2017
  */
-public class FastaIn extends CharactersFormat implements IToCharacters, IImportCharacters {
+public class FastaImporter extends CharactersFormat implements IToCharacters, IImportCharacters {
     private static final String[] possibleIDs =
             {"gb", "emb", "ena", "dbj", "pir", "prf", "sp", "pdb", "pat", "bbs", "gnl", "ref", "lcl"};
 

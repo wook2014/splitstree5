@@ -16,9 +16,9 @@ import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
 
-public class MatlabOutTest {
+public class MatlabExporterTest {
 
-    private MatlabOut matlabOut = new MatlabOut();
+    private MatlabExporter matlabExporter = new MatlabExporter();
 
     @Test
     public void export() throws Exception {
@@ -36,9 +36,9 @@ public class MatlabOutTest {
         new DistancesNexusInput().parse(np, taxa, distances);
         new SplitsNexusInput().parse(np, taxa, splits);
 
-        matlabOut.export(writer, taxa);
-        matlabOut.export(writer, taxa, splits);
-        matlabOut.export(writer, taxa, distances);
+        matlabExporter.export(writer, taxa);
+        matlabExporter.export(writer, taxa, splits);
+        matlabExporter.export(writer, taxa, distances);
         writer.close();
 
         byte[] encoded1 = Files.readAllBytes(Paths.get("test/notNexusFiles/algae.m"));

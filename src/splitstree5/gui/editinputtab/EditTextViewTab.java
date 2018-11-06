@@ -20,9 +20,13 @@
 package splitstree5.gui.editinputtab;
 
 
+import com.sun.istack.internal.NotNull;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.control.IndexRange;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.KeyCode;
@@ -37,6 +41,7 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.reactfx.value.Val;
 import splitstree5.gui.ViewerTab;
+import splitstree5.gui.editinputtab.highlighters.NexusHighlighter;
 import splitstree5.main.MainWindowManager;
 import splitstree5.menu.MenuController;
 import splitstree5.utils.Print;
@@ -80,13 +85,15 @@ public class EditTextViewTab extends ViewerTab {
         ////
         //new VirtualizedScrollPane<>(new CodeArea());
 
-        ///
         String css = this.getClass().getResource("/resources/css/styles.css").toExternalForm();
         codeArea.getStylesheets().add(css);
         //textArea.setFont(Font.font("Courier New")); // gets set by style file
         codeArea.getContent().setEditable(false);
+
+        // bind to textProperty
         if (textProperty != null)
-             codeArea.accessibleTextProperty().bind(textProperty);
+            bindToCodeArea(textProperty);
+
         codeArea.getContent().textProperty().addListener((InvalidationListener) -> getUndoManager().clear());
 
         codeArea.getContent().selectionProperty().addListener((c, o, n) -> {
@@ -250,5 +257,24 @@ public class EditTextViewTab extends ViewerTab {
 
     public CodeArea getCodeArea() {
         return codeArea.getContent();
+    }
+
+    // replaces bind function for two properties
+    // todo: is there better solution?
+    protected void bindToCodeArea(@NotNull ReadOnlyStringProperty textProperty) {
+        NexusHighlighter nexusHighlighter = new NexusHighlighter();
+        IndexRange indexRange = new IndexRange(0, getCodeArea().getText().length());
+
+        getCodeArea().replaceText(indexRange, textProperty.getValue());
+        getCodeArea().setStyleSpans(0, nexusHighlighter.computeHighlighting(getCodeArea().getText()));
+
+        textProperty.addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                IndexRange indexRange = new IndexRange(0, getCodeArea().getText().length());
+                getCodeArea().setStyleSpans(0, nexusHighlighter.computeHighlighting(getCodeArea().getText()));
+                getCodeArea().replaceText(indexRange, newValue);
+            }
+        });
     }
 }

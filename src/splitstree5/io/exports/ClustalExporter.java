@@ -9,7 +9,7 @@ import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
 
-public class ClustalOut implements IExportCharacters {
+public class ClustalExporter implements IExportCharacters {
 
     private int optionLineLength = 40;
 
