@@ -21,8 +21,8 @@
     <mountPoints>
       <mountPoint id="1691242153" root="" location="Examples" mode="755" />
       <mountPoint id="1691242167" root="" location="jars" mode="755" />
-      <mountPoint id="675425072" root="" location="" mode="755" />
       <mountPoint id="1691242495" root="" location="tools" mode="755" />
+      <mountPoint id="675425072" root="" location="" mode="755" />
     </mountPoints>
     <entries>
       <fileEntry mountPoint="1691242153" file="../examples/fitch-margoliash-1967.nex" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
@@ -38,15 +38,16 @@
         <exclude />
       </dirEntry>
       <fileEntry mountPoint="1691242167" file="../antbuild/SplitsTree5.jar" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="675425072" file="./License.txt" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="true" overrideOverwriteMode="true" overrideUninstallMode="true" />
       <fileEntry mountPoint="1691242495" file="../tools/workflow-run" overwriteMode="4" shared="false" fileMode="755" uninstallMode="0" overrideFileMode="true" overrideOverwriteMode="false" overrideUninstallMode="false" />
       <fileEntry mountPoint="1691242495" file="../tools/workflow-export" overwriteMode="4" shared="false" fileMode="755" uninstallMode="0" overrideFileMode="true" overrideOverwriteMode="false" overrideUninstallMode="false" />
+      <fileEntry mountPoint="675425072" file="./License.txt" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="true" overrideOverwriteMode="true" overrideUninstallMode="true" />
     </entries>
     <components>
       <component name="SplitsTree" id="1691242194" customizedId="" displayDescription="false" hideHelpButton="false" selected="true" changeable="false" downloadable="false" hidden="false">
         <description>SplitsTree program.</description>
         <include all="false">
           <entry location="jars" fileType="regular" />
+          <entry location="tools" fileType="regular" />
           <entry location="License.txt" fileType="regular" />
           <entry location="SplitsTree5" fileType="launcher" />
         </include>
