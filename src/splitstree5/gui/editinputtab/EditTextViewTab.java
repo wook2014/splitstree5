@@ -20,7 +20,6 @@
 package splitstree5.gui.editinputtab;
 
 
-import com.sun.istack.internal.NotNull;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -261,7 +260,7 @@ public class EditTextViewTab extends ViewerTab {
 
     // replaces bind function for two properties
     // todo: is there better solution?
-    protected void bindToCodeArea(@NotNull ReadOnlyStringProperty textProperty) {
+    protected void bindToCodeArea(ReadOnlyStringProperty textProperty) {
         NexusHighlighter nexusHighlighter = new NexusHighlighter();
         IndexRange indexRange = new IndexRange(0, getCodeArea().getText().length());
 
