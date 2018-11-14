@@ -53,7 +53,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
 
     private int optionSinRank = 1;
     private boolean optionAllSinsUpToRank = false;
-    private double optionMinSpanPercent = 10;
+    private double optionMinSpanPercent = 1;
 
     private int optionMaxDistortion = 1;
 
@@ -148,20 +148,26 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
             }
         }
 
-        double totalWeightNonTrivialSplits = 0;
+        final double minSpan;
         {
-            for (ASplit split : referenceSplits.getSplits()) {
-                if (split.size() > 1)
-                    totalWeightNonTrivialSplits += split.getWeight();
+            double totalWeightNonTrivialReferenceSplits = 0;
+            {
+                for (ASplit split : referenceSplits.getSplits()) {
+                    if (split.size() > 1)
+                        totalWeightNonTrivialReferenceSplits += split.getWeight();
+                }
             }
+            minSpan = (totalWeightNonTrivialReferenceSplits * getOptionMinSpanPercent()) / 100;
         }
 
         // consider each tree in turn:
         progress.setTasks("Anti-consensus", "Comparing majority tree with gene trees");
         progress.setMaximum(lastTreeToUse - firstTreeToUse + 1);
+        progress.setProgress(0);
+        final ArrayList<SIN> listOfSins = new ArrayList<>();
 
-        ArrayList<SIN> listOfSins = new ArrayList<>();
-
+        final Map<BitSet, Pair<Integer, Double>> splitSet2DistortionAndIncompatiblitySpan = new HashMap<>();
+        final Map<BitSet, BitSet> splitSet2Incompatibilities = new HashMap<>();
 
         for (int t = firstTreeToUse; t <= lastTreeToUse; t++) {
             final PhyloTree tree = treesBlock.getTree(t);
@@ -179,26 +185,35 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
             }
 
             final Collection<ASplit> splitsWithDistortion = new ArrayList<>(tree.getNumberOfEdges());
-            final Map<ASplit, BitSet> split2incompatibilities = new HashMap<>();
 
             for (ASplit split : splits) {
-                split2incompatibilities.put(split, new BitSet());
-                final int distortion = Distortion.computeDistortionForSplit(referenceTree, split.getA(), split.getB());
+                final int distortion;
+                final double incompatiblitySpan;
+
+                if (splitSet2DistortionAndIncompatiblitySpan.containsKey(split.getSmallerPart())) {
+                    final Pair<Integer, Double> pair = splitSet2DistortionAndIncompatiblitySpan.get(split.getSmallerPart());
+                    distortion = pair.getFirst();
+                    incompatiblitySpan = pair.getSecond();
+                } else {
+                    splitSet2Incompatibilities.put(split.getSmallerPart(), new BitSet());
+                    distortion = Distortion.computeDistortionForSplit(referenceTree, split.getA(), split.getB());
+                    incompatiblitySpan = computeTotalWeightOfIncompatibleReferenceSplits(split, referenceSplits, splitSet2Incompatibilities.get(split.getSmallerPart()));
+                    splitSet2DistortionAndIncompatiblitySpan.put(split.getSmallerPart(), new Pair<>(distortion, incompatiblitySpan));
+                }
                 if (distortion > 0 && distortion <= getOptionMaxDistortion()) {
-                    final double incompatiblitySpanPercent = (100.0 * computeIncompatibleWeight(split, referenceSplits, split2incompatibilities.get(split))) / totalWeightNonTrivialSplits;
                     // previous line also computes split2incompatibilities mapping
-                    split.setConfidence(incompatiblitySpanPercent);
+                    split.setConfidence(incompatiblitySpan);
                     splitsWithDistortion.add(split);
                 }
             }
-            final Graph coverageGraph = computeCoverageDAG(splitsWithDistortion, split2incompatibilities);
+            final Graph coverageGraph = computeCoverageDAG(splitsWithDistortion, splitSet2Incompatibilities);
 
             if (getOptionMaxDistortion() == 1) {
                 for (Node u : coverageGraph.nodes()) {
                     if (u.getInDegree() == 0) // is not covered by any other split
                     {
                         final ASplit splitU = (ASplit) u.getInfo();
-                        if (splitU.getConfidence() >= getOptionMinSpanPercent()) {
+                        if (splitU.getConfidence() >= minSpan) {
                             final SIN sin = new SIN(t, treesBlock.getTree(t).getName(), splitU.getConfidence(), 1);
                             sin.add(splitU);
                             final Queue<Node> queue = new LinkedList<>();
@@ -225,7 +240,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
                     if (u.getInDegree() == 0) // is not covered by any other split
                     {
                         final ASplit splitU = (ASplit) u.getInfo();
-                        if (splitU.getConfidence() >= getOptionMinSpanPercent()) {
+                        if (splitU.getConfidence() >= minSpan) {
                             final int distortion = Distortion.computeDistortionForSplit(referenceTree, splitU.getA(), splitU.getB());
 
                             final SIN sin = new SIN(t, treesBlock.getTree(t).getName(), splitU.getConfidence(), distortion);
@@ -314,7 +329,6 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
                 && SetUtils.intersection(allBelow(u), allBelow(otherNode)).iterator().hasNext();
     }
 
-
     /**
      * get all below
      *
@@ -345,26 +359,26 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
      * @param split2incompatibilities
      * @return graph
      */
-    private static Graph computeCoverageDAG(Collection<ASplit> splits, Map<ASplit, BitSet> split2incompatibilities) {
+    private static Graph computeCoverageDAG(Collection<ASplit> splits, Map<BitSet, BitSet> split2incompatibilities) {
         final Graph graph = new PhyloGraph();
 
-        final Map<ASplit, Node> split2nodeMap = new HashMap<>();
+        final Map<BitSet, Node> split2nodeMap = new HashMap<>();
 
         for (ASplit split : splits) {
             final Node v = graph.newNode();
             v.setInfo(split);
-            split2nodeMap.put(split, v);
+            split2nodeMap.put(split.getSmallerPart(), v);
         }
         for (ASplit split1 : splits) {
-            final Node v = split2nodeMap.get(split1);
-            final BitSet incompatibilities1 = split2incompatibilities.get(split1);
+            final Node v = split2nodeMap.get(split1.getSmallerPart());
+            final BitSet incompatibilities1 = split2incompatibilities.get(split1.getSmallerPart());
             for (ASplit split2 : splits) {
                 if (!split1.equals(split2)) {
-                    final BitSet incompatibilities2 = split2incompatibilities.get(split2);
+                    final BitSet incompatibilities2 = split2incompatibilities.get(split2.getSmallerPart());
                     if (BitSetUtils.contains(incompatibilities1, incompatibilities2) &&
                             ((incompatibilities1.cardinality() > incompatibilities2.cardinality())
                                     || (incompatibilities1.cardinality() == incompatibilities2.cardinality() && ASplit.compare(split1, split2) == -1)))
-                        graph.newEdge(v, split2nodeMap.get(split2));
+                        graph.newEdge(v, split2nodeMap.get(split2.getSmallerPart()));
                 }
             }
         }
@@ -391,19 +405,19 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
 
 
     /**
-     * determine all splits that are incompatible to split0 and return their total weight
+     * determine all splits that are incompatible to the given split and return their total weight
      *
-     * @param split0
-     * @param splits
+     * @param split
+     * @param referenceSplits
      * @param incompatible will contain indices of incompatible splits
      * @return count
      */
-    public static double computeIncompatibleWeight(ASplit split0, SplitsBlock splits, BitSet incompatible) {
+    public static double computeTotalWeightOfIncompatibleReferenceSplits(ASplit split, SplitsBlock referenceSplits, BitSet incompatible) {
         incompatible.clear();
         double weight = 0;
-        for (int s = 1; s <= splits.getNsplits(); s++) {
-            final ASplit other = splits.get(s);
-            if (other.size() > 1 && !Compatibility.areCompatible(split0, other)) {
+        for (int s = 1; s <= referenceSplits.getNsplits(); s++) {
+            final ASplit other = referenceSplits.get(s);
+            if (other.size() > 1 && !Compatibility.areCompatible(split, other)) {
                 weight += other.getWeight();
                 incompatible.set(s);
             }
