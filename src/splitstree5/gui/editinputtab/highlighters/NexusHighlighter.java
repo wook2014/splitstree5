@@ -13,7 +13,7 @@ public class NexusHighlighter implements Highlighter {
     private static final String[] KEYWORDS = new String[] {
             "begin", "end", "endblock",
             "dimensions", "matrix",
-            "format",
+            "format", "title",
             "taxlabels", "matrix",
             "properties", "cycle", "draw"
     };

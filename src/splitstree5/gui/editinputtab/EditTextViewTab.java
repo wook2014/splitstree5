@@ -81,6 +81,7 @@ public class EditTextViewTab extends ViewerTab {
         codeArea = new VirtualizedScrollPane<>(new CodeArea());
         //CodeArea codeArea = vsp.getContent();
         codeArea.getContent().setParagraphGraphicFactory(LineNumberFactory.get(codeArea.getContent()));
+        //codeArea.getContent().setParagraphGraphicFactory(MyLNF.get(codeArea.getContent()));
         ////
         //new VirtualizedScrollPane<>(new CodeArea());
 
@@ -100,7 +101,6 @@ public class EditTextViewTab extends ViewerTab {
             MainWindowManager.getInstance().getPreviousSelection().add(codeArea.getContent().getText(n.getStart(), n.getEnd()));
         });
 
-        // setup find tool bar: todo
         {
             codeAreaSearcher = new CodeAreaSearcher("Text", codeArea.getContent());
             findToolBar = new FindToolBar(codeAreaSearcher);
@@ -271,8 +271,8 @@ public class EditTextViewTab extends ViewerTab {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 IndexRange indexRange = new IndexRange(0, getCodeArea().getText().length());
-                getCodeArea().setStyleSpans(0, nexusHighlighter.computeHighlighting(getCodeArea().getText()));
                 getCodeArea().replaceText(indexRange, newValue);
+                getCodeArea().setStyleSpans(0, nexusHighlighter.computeHighlighting(newValue));
             }
         });
     }
