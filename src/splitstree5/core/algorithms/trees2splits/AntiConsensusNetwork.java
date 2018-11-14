@@ -166,7 +166,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         progress.setProgress(0);
         final ArrayList<SIN> listOfSins = new ArrayList<>();
 
-        final Map<BitSet, Pair<Integer, Double>> splitSet2DistortionAndIncompatiblitySpan = new HashMap<>(); // todo: use this
+        final Map<BitSet, Pair<Integer, Double>> splitSet2DistortionAndIncompatiblitySpan = new HashMap<>();
         final Map<BitSet, BitSet> splitSet2Incompatibilities = new HashMap<>();
 
         for (int t = firstTreeToUse; t <= lastTreeToUse; t++) {
@@ -328,7 +328,6 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         return (sin.getSpanPercent() > other.getSpanPercent() || (sin.getSpanPercent() == other.getSpanPercent() && sin.getTotalWeight() > other.getTotalWeight()))
                 && SetUtils.intersection(allBelow(u), allBelow(otherNode)).iterator().hasNext();
     }
-
 
     /**
      * get all below
