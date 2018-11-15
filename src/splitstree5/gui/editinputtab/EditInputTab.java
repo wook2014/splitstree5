@@ -47,12 +47,14 @@ import splitstree5.gui.editinputtab.highlighters.Highlighter;
 import splitstree5.gui.editinputtab.highlighters.NexusHighlighter;
 import splitstree5.gui.editinputtab.highlighters.UniversalHighlighter;
 import splitstree5.gui.editinputtab.highlighters.XMLHighlighter;
+import splitstree5.gui.inputtab.InputTab;
 import splitstree5.main.MainWindow;
 import splitstree5.main.MainWindowManager;
 import splitstree5.menu.MenuController;
 
 import java.io.*;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -71,9 +73,13 @@ public class EditInputTab extends EditTextViewTab {
     //private HashMap<Integer, String> tmpBlocksKeeper = new HashMap<>();
 
     // todo undo doesn't work: collapse-uncollapce-undo. solution:dont delete blocks from the tmpBlocksKeeper after uncollapsing
+    // todo zeilennummern, finding, performance?
+
     private boolean hold;
     private int chIdx;
     private HashMap<String, String> tmpBlocksKeeper = new HashMap<>();
+    private int paragraphStart = 0;
+    private int paragraphEnd = 0;
 
     /**
      * constructor
@@ -85,42 +91,11 @@ public class EditInputTab extends EditTextViewTab {
         setIcon(ResourceManager.getIcon("sun/toolbarButtonGraphics/general/Import16.gif"));
         setMainWindow(mainWindow);
 
-        //final TextArea textArea = getTextArea();
         final CodeArea codeArea = getCodeArea();
 
-        // controls highlighter updating (change if >= 6 symbols = #nexus)
-        /*Val.map(codeArea.lengthProperty(), n -> n >= 6).addListener(new javafx.beans.value.ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                System.err.println(newValue);
-                if (newValue) {
-                    if (codeArea.getText().startsWith("#nexus"))
-                        highlighter = new NexusHighlighter();
-                    else if (codeArea.getText().startsWith("<"))
-                        highlighter = new XMLHighlighter();
-                    else
-                        highlighter = new UniversalHighlighter();
-                    System.err.println(highlighter.getClass().toString());
-                }
-            }
-        });*/
-
-        // controls highlighter updating (change if the first line changed)
-        /*Val.map(codeArea.textProperty(), n -> n.substring(0, n.indexOf(System.lineSeparator())))
-            .addListener(new javafx.beans.value.ChangeListener<String>() {
-                 @Override
-                 public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                     if (newValue.length() != 0) {
-                         System.err.println(newValue);
-                         if (codeArea.getText().startsWith("#nexus"))
-                             highlighter = new NexusHighlighter();
-                         else
-                             highlighter = new XMLHighlighter();
-                         System.err.println(highlighter.getClass().toString());
-                     }
-                 }
-            });*/
-
+        /*
+         * Add listeners for highlighting type checking
+         */
         Val.map(codeArea.textProperty(), n -> n.length() >= 6
                 && n.replaceAll("^\\n+", "").substring(0, 6).toLowerCase().equals("#nexus"))
             .addListener(new javafx.beans.value.ChangeListener<Boolean>() {
@@ -160,7 +135,6 @@ public class EditInputTab extends EditTextViewTab {
 
 
         String css = this.getClass().getResource("styles.css").toExternalForm();
-        //String css = this.getClass().getResource(highlighter.getCSS()).toExternalForm();
         codeArea.getStylesheets().add(css);
         codeArea.setEditable(true);
 
@@ -178,7 +152,6 @@ public class EditInputTab extends EditTextViewTab {
                 // run the following code block when previous stream emits an event
                 //.subscribe(ignore -> codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText())));
                 .subscribe(ignore -> codeArea.setStyleSpans(0, highlighter.computeHighlighting(codeArea.getText())));
-        //////////
 
         /////codeArea.setAccessibleText("Input and edit data in any supported format");
         //setPromptText("Input and edit data in any supported format");
@@ -282,8 +255,10 @@ public class EditInputTab extends EditTextViewTab {
                 //int chIdx = click.getCharacterIndex();
                 System.out.println(codeArea.getStyleAtPosition(chIdx).toString());
 
-                if (codeArea.getStyleAtPosition(chIdx).toString().contains("block"))
+                if (codeArea.getStyleAtPosition(chIdx).toString().contains("block")){
                     collapseBlock(chIdx);
+                    paragraphStart = getCodeArea().getCurrentParagraph();
+                }
 
                 if (codeArea.getStyleAtPosition(chIdx).toString().contains("collapsed")) {
 
@@ -313,6 +288,7 @@ public class EditInputTab extends EditTextViewTab {
                         key = matcher.group(2);
                         codeArea.replaceText(cbStart, cbEnd, tmpBlocksKeeper.get(key));
                         tmpBlocksKeeper.remove(key);
+                        getCodeArea().setParagraphGraphicFactory(MyLNF.get(getCodeArea()));
                     }
 
                     /*int cbStart = chIdx, cbEnd = chIdx;
@@ -387,14 +363,14 @@ public class EditInputTab extends EditTextViewTab {
                 if (selectedFile.getParentFile().isDirectory())
                     ProgramProperties.put("InputDir", selectedFile.getParent());
 
-                // check running time
-                long startTime = System.nanoTime();
+                // todo check running time
+                long startTime = System.nanoTime() / (long) Math.pow(10, 9);
                 loadFile(selectedFile.getPath());
-                long endTime   = System.nanoTime();
+                long endTime   = System.nanoTime() / (long) Math.pow(10, 9);
                 long totalTime = endTime - startTime;
                 System.err.println();
                 System.err.println(this.getClass()+":"+selectedFile.getPath());
-                System.err.println("Running time: "+totalTime);
+                System.err.println("Running time EditInputTab: "+totalTime+" sec");
             }
         });
         // not empty
@@ -512,10 +488,21 @@ public class EditInputTab extends EditTextViewTab {
             getCodeArea().replaceText(start2remove, end2remove, "<< Collapsed block "+blocksCounter+">>");
             System.out.println("Block Nr. "+blocksCounter);*/
 
+            /*int linesCounter = paragraphStart;
+            int sum = start2remove;
+            while(sum < end2remove){
+                sum = sum + getCodeArea().getParagraph(paragraphStart).length();
+                linesCounter++;
+            }*/
+            int[] replaceRange = getLinesRangeByIndex(start2remove, end2remove);
+
             String keyWord = getKeyWord(charIndex, true);
             tmpBlocksKeeper.put(keyWord, getCodeArea().getText().substring(start2remove, end2remove));
             getCodeArea().replaceText(start2remove, end2remove, "<< Collapsed "+keyWord+"Block >>");
             System.out.println("Block Nr. "+keyWord);
+
+            //int[] replaceRange = {paragraphStart, linesCounter};
+            getCodeArea().setParagraphGraphicFactory(MyLNF.get(getCodeArea(), replaceRange));
         }
     }
 
@@ -538,5 +525,37 @@ public class EditInputTab extends EditTextViewTab {
             rightPos++;
         }
         return getCodeArea().getText().substring(leftPos, rightPos);
+    }
+
+
+    private int[] getLinesRangeByIndex(int startIdx, int endItx){
+
+        /*int startLine = 0;
+        int sum = 0;
+        while(sum < startIdx){
+            sum = sum + getCodeArea().getParagraph(startLine).length();
+            startLine++;
+        }
+
+
+        int endLine = startLine++;
+        sum = startIdx;
+        while(sum < endItx){
+            sum = sum + getCodeArea().getParagraph(endLine).length();
+            System.err.println(getCodeArea().getParagraph(endLine)+"--------");
+            endLine++;
+        }*/
+
+        System.err.println(Arrays.toString(getCodeArea().getText(0, startIdx).split("\n")));
+        System.err.println("----------------");
+        System.err.println(getCodeArea().getText(startIdx, endItx));
+
+        int endLine = getCodeArea().getText(0, endItx).split("\n").length;
+        int startLine = endLine - getCodeArea().getText(startIdx, endItx).split("\n").length;
+
+        System.err.println("Start line of block "+startLine);
+        System.err.println("End line of block "+endLine);
+
+        return new int[]{startLine, endLine};
     }
 }

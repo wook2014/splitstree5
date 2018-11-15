@@ -172,7 +172,16 @@ public class InputTab extends TextViewTab {
             if (selectedFile != null) {
                 if (selectedFile.getParentFile().isDirectory())
                     ProgramProperties.put("InputDir", selectedFile.getParent());
+                //loadFile(selectedFile.getPath());
+
+                // todo check running time
+                long startTime = System.nanoTime() / (long) Math.pow(10, 9);
                 loadFile(selectedFile.getPath());
+                long endTime   = System.nanoTime() / (long) Math.pow(10, 9);
+                long totalTime = endTime - startTime;
+                System.err.println();
+                System.err.println(this.getClass()+":"+selectedFile.getPath());
+                System.err.println("Running time InputTab: "+totalTime+" sec");
             }
         });
         controller.getOpenMenuItem().disableProperty().bind(textArea.textProperty().isNotEmpty());
