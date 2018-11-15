@@ -20,7 +20,6 @@
 package splitstree5.core.algorithms.trees2splits;
 
 import jloda.phylo.PhyloTree;
-import jloda.util.Basic;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToSplits;
@@ -31,7 +30,6 @@ import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Distortion;
 import splitstree5.utils.TreesUtilities;
 
-import java.io.IOException;
 import java.util.BitSet;
 
 /**
@@ -79,12 +77,8 @@ public class FilteredSuperNetwork extends SuperNetwork implements IFromTrees, IT
                     treeTaxaAndB.and(B);
 
                     if (treeTaxaAndA.cardinality() > 1 && treeTaxaAndB.cardinality() > 1) {
-                        try {
-                            PhyloTree tree = trees.getTree(t);
+                        final PhyloTree tree = trees.getTree(t);
                             totalScore += Distortion.computeDistortionForSplit(tree, A, B);
-                        } catch (IOException ex) {
-                            Basic.caught(ex);
-                        }
                     }
                     progress.incrementProgress();
                 }
@@ -108,17 +102,13 @@ public class FilteredSuperNetwork extends SuperNetwork implements IFromTrees, IT
                     treeTaxaAndB.and(B);
 
                     if (treeTaxaAndA.cardinality() > 1 && treeTaxaAndB.cardinality() > 1) {
-                        try {
-                            PhyloTree tree = trees.getTree(t);
+                        final PhyloTree tree = trees.getTree(t);
                             int score = Distortion.computeDistortionForSplit(tree, A, B);
                             //System.err.print(" " + score);
                             if (score <= getOptionMaxDistortionScore())
                                 count++;
                             if (count + (trees.getNTrees() - t) < getOptionMinNumberTrees())
                                 break; // no hope to get above threshold
-                        } catch (IOException e) {
-                            Basic.caught(e);
-                        }
                     } else if ((A.cardinality() == 1 || B.cardinality() == 1)
                             && treeTaxaAndB.cardinality() > 0 && treeTaxaAndB.cardinality() > 0) {
                         count++; // is confirmed split

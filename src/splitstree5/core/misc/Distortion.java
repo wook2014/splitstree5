@@ -21,18 +21,18 @@ package splitstree5.core.misc;
 
 import jloda.graph.Edge;
 import jloda.graph.Node;
-import jloda.graph.NodeIntegerArray;
 import jloda.phylo.PhyloTree;
 
-import java.io.IOException;
 import java.util.BitSet;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Compute the distortion score on a tree
  * Daniel Huson, 2.2006
  */
 public class Distortion {
-    static public int computeDistortionForSplit(PhyloTree tree, BitSet A, BitSet B) throws IOException {
+    static public int computeDistortionForSplit(PhyloTree tree, BitSet A, BitSet B) {
         return computeDistortionForSplit(tree, A, B, null);
     }
 
@@ -48,15 +48,14 @@ public class Distortion {
      * @param root the root to use, this should not make any difference, but is here for testing
      *             purposes
      * @return homoplasy score for split
-     * @throws IOException
      */
-    static public int computeDistortionForSplit(PhyloTree tree, BitSet A, BitSet B, Node root) throws IOException {
+    static public int computeDistortionForSplit(PhyloTree tree, BitSet A, BitSet B, Node root) {
         if (tree.getNumberOfNodes() < 2 || A.cardinality() <= 1 || B.cardinality() <= 1)
             return 0;
         BitSet treeTaxa = new BitSet();
         // setup scoring map:
-        NodeIntegerArray scoreA = new NodeIntegerArray(tree); // optimal score for subtree labeled A at root
-        NodeIntegerArray scoreB = new NodeIntegerArray(tree); // optimal score for subtree labeled B at root
+        Map<Node, Integer> scoreA = new HashMap<>(); // optimal score for subtree labeled A at root
+        Map<Node, Integer> scoreB = new HashMap<>(); // optimal score for subtree labeled B at root
         for (Node v = tree.getFirstNode(); v != null; v = v.getNext()) {
             boolean hasA = false;
             boolean hasB = false;
@@ -67,7 +66,7 @@ public class Distortion {
                 else if (B.get(t))
                     hasB = true;
                 else
-                    throw new IOException("Taxon t=" + t + ": not present in split");
+                    throw new RuntimeException("Taxon t=" + t + ": not present in split");
                 treeTaxa.set(t);
             }
             int aValue = 0;
@@ -78,8 +77,8 @@ public class Distortion {
                 aValue = Integer.MAX_VALUE;
             //else if (hasA && hasB)
             //   aValue = bValue = 1; // TODOt: is this really correct?
-            scoreA.set(v, aValue);
-            scoreB.set(v, bValue);
+            scoreA.put(v, aValue);
+            scoreB.put(v, bValue);
         }
         // if only 0 or 1 of either side of the split occurs in T, then score is 0:
         BitSet intersection = (BitSet) treeTaxa.clone();
@@ -107,7 +106,7 @@ public class Distortion {
         //System.out.println("initially:");
         //printScores(tree,scoreA,scoreB);
         computeScoreRec(root, null, scoreA, scoreB);
-        return Math.min(scoreA.getValue(root), scoreB.getValue(root)) - 1;
+        return Math.min(scoreA.get(root), scoreB.get(root)) - 1;
     }
 
     /**
@@ -118,7 +117,7 @@ public class Distortion {
      * @param scoreA
      * @param scoreB
      */
-    private static void computeScoreRec(Node v, Edge e, NodeIntegerArray scoreA, NodeIntegerArray scoreB) {
+    private static void computeScoreRec(Node v, Edge e, Map<Node, Integer> scoreA, Map<Node, Integer> scoreB) {
         //System.out.println("Entering with v=" + v);
         //printScores(tree,scoreA,scoreB);
         boolean hasAMuchBetterThanB = false;
@@ -131,32 +130,32 @@ public class Distortion {
                 Node w = f.getOpposite(v);
                 if (w.getDegree() > 1)
                     computeScoreRec(w, f, scoreA, scoreB);
-                if (scoreA.getValue(w) <= scoreB.getValue(w) - 1) {
+                if (scoreA.get(w) <= scoreB.get(w) - 1) {
                     hasAMuchBetterThanB = true;
-                    countB += scoreA.getValue(w);
+                    countB += scoreA.get(w);
                 } else {
-                    countB += scoreB.getValue(w);
+                    countB += scoreB.get(w);
                 }
-                if (scoreB.getValue(w) <= scoreA.getValue(w) - 1) {
+                if (scoreB.get(w) <= scoreA.get(w) - 1) {
                     hasBMuchBetterThanA = true;
-                    countA += scoreB.getValue(w);
+                    countA += scoreB.get(w);
                 } else {
-                    countA += scoreA.getValue(w);
+                    countA += scoreA.get(w);
                 }
             }
         }
         // this might be a labeled internal node, treat it as an additional leaf node:
-        if (scoreA.getValue(v) <= scoreB.getValue(v) - 1) {
+        if (scoreA.get(v) <= scoreB.get(v) - 1) {
             hasAMuchBetterThanB = true;
-            countB += scoreA.getValue(v);
+            countB += scoreA.get(v);
         } else {
-            countB += scoreB.getValue(v);
+            countB += scoreB.get(v);
         }
-        if (scoreB.getValue(v) <= scoreA.getValue(v) - 1) {
+        if (scoreB.get(v) <= scoreA.get(v) - 1) {
             hasBMuchBetterThanA = true;
-            countA += scoreB.getValue(v);
+            countA += scoreB.get(v);
         } else {
-            countA += scoreA.getValue(v);
+            countA += scoreA.get(v);
         }
         // add 1 for change, if necessary:
         if (hasAMuchBetterThanB)
@@ -164,8 +163,8 @@ public class Distortion {
         if (hasBMuchBetterThanA)
             countA += 1;
         // set value for node
-        scoreA.set(v, countA);
-        scoreB.set(v, countB);
+        scoreA.put(v, countA);
+        scoreB.put(v, countB);
 
         //System.out.println("Exiting with v="+v);
         //printScores(tree,scoreA,scoreB);

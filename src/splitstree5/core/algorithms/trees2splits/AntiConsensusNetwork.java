@@ -20,6 +20,7 @@
 package splitstree5.core.algorithms.trees2splits;
 
 import jloda.fx.NotificationManager;
+import jloda.fx.ProgramExecutorService;
 import jloda.graph.Edge;
 import jloda.graph.Graph;
 import jloda.graph.Node;
@@ -40,6 +41,8 @@ import splitstree5.core.misc.Distortion;
 import splitstree5.utils.TreesUtilities;
 
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
 
 /**
  * implements the anti-consensus method
@@ -166,130 +169,156 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         progress.setProgress(0);
         final ArrayList<SIN> listOfSins = new ArrayList<>();
 
-        final Map<BitSet, Pair<Integer, Double>> splitSet2DistortionAndIncompatiblitySpan = new HashMap<>();
-        final Map<BitSet, BitSet> splitSet2Incompatibilities = new HashMap<>();
+        final ExecutorService executor = ProgramExecutorService.getInstance();
+        final int numberOfThreads = Math.min(lastTreeToUse - firstTreeToUse + 1, Math.max(1, Runtime.getRuntime().availableProcessors() - 1));
+        final CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
+        final Single<Exception> exception = new Single<>();
 
-        for (int t = firstTreeToUse; t <= lastTreeToUse; t++) {
-            final PhyloTree tree = treesBlock.getTree(t);
-            final ArrayList<ASplit> splits = new ArrayList<>(tree.getNumberOfEdges());
-            TreesUtilities.computeSplits(taxaBlock.getTaxaSet(), tree, splits);
-            // normalize weights:
-            {
-                double totalWeight = 0;
-                for (ASplit split : splits)
-                    totalWeight += split.getWeight();
-                if (totalWeight > 0) {
-                    for (ASplit split : splits)
-                        split.setWeight(split.getWeight() / totalWeight);
-                }
-            }
+        for (int thread = 0; thread < numberOfThreads; thread++) {
+            final int offset = thread;
 
-            final Collection<ASplit> splitsWithDistortion = new ArrayList<>(tree.getNumberOfEdges());
+            executor.submit(() -> {
+                try {
+                    for (int t = firstTreeToUse + offset; t <= lastTreeToUse; t += numberOfThreads) {
+                        final PhyloTree tree = treesBlock.getTree(t);
+                        final ArrayList<ASplit> splits = new ArrayList<>(tree.getNumberOfEdges());
 
-            for (ASplit split : splits) {
-                final int distortion;
-                final double incompatiblitySpan;
-
-                if (splitSet2DistortionAndIncompatiblitySpan.containsKey(split.getSmallerPart())) {
-                    final Pair<Integer, Double> pair = splitSet2DistortionAndIncompatiblitySpan.get(split.getSmallerPart());
-                    distortion = pair.getFirst();
-                    incompatiblitySpan = pair.getSecond();
-                } else {
-                    splitSet2Incompatibilities.put(split.getSmallerPart(), new BitSet());
-                    distortion = Distortion.computeDistortionForSplit(referenceTree, split.getA(), split.getB());
-                    incompatiblitySpan = computeTotalWeightOfIncompatibleReferenceSplits(split, referenceSplits, splitSet2Incompatibilities.get(split.getSmallerPart()));
-                    splitSet2DistortionAndIncompatiblitySpan.put(split.getSmallerPart(), new Pair<>(distortion, incompatiblitySpan));
-                }
-                if (distortion > 0 && distortion <= getOptionMaxDistortion()) {
-                    // previous line also computes split2incompatibilities mapping
-                    split.setConfidence(incompatiblitySpan);
-                    splitsWithDistortion.add(split);
-                }
-            }
-            final Graph coverageGraph = computeCoverageDAG(splitsWithDistortion, splitSet2Incompatibilities);
-
-            if (getOptionMaxDistortion() == 1) {
-                for (Node u : coverageGraph.nodes()) {
-                    if (u.getInDegree() == 0) // is not covered by any other split
-                    {
-                        final ASplit splitU = (ASplit) u.getInfo();
-                        if (splitU.getConfidence() >= minSpan) {
-                            final SIN sin = new SIN(t, treesBlock.getTree(t).getName(), splitU.getConfidence(), 1);
-                            sin.add(splitU);
-                            final Queue<Node> queue = new LinkedList<>();
-                            for (Node w : u.children()) {
-                                queue.add(w);
+                        TreesUtilities.computeSplits(taxaBlock.getTaxaSet(), tree, splits);
+                        // normalize weights:
+                        {
+                            double totalWeight = 0;
+                            for (ASplit split : splits)
+                                totalWeight += split.getWeight();
+                            if (totalWeight > 0) {
+                                for (ASplit split : splits)
+                                    split.setWeight(split.getWeight() / totalWeight);
                             }
-                            while (queue.size() > 0) {
-                                Node v = queue.remove();
-                                final ASplit split = (ASplit) v.getInfo();
-
-                                sin.add(split);
-                                for (Node w : v.children()) {
-                                    queue.add(w);
-                                }
-                            }
-                            if (sin.getTotalWeight() >= 0.01 * getOptionMinWeight())
-                                listOfSins.add(sin);
                         }
-                    }
-                }
-            } else if (getOptionMaxDistortion() > 1) {
-                ArrayList<Pair<SIN, Node>> consideredSins = new ArrayList<>();
-                for (Node u : coverageGraph.nodes()) {
-                    if (u.getInDegree() == 0) // is not covered by any other split
-                    {
-                        final ASplit splitU = (ASplit) u.getInfo();
-                        if (splitU.getConfidence() >= minSpan) {
-                            final int distortion = Distortion.computeDistortionForSplit(referenceTree, splitU.getA(), splitU.getB());
 
-                            final SIN sin = new SIN(t, treesBlock.getTree(t).getName(), splitU.getConfidence(), distortion);
-                            sin.add(splitU);
-                            final Queue<Node> queue = new LinkedList<>();
-                            for (Node w : u.children()) {
-                                queue.add(w);
+                        final Collection<ASplit> splitsWithDistortion = new ArrayList<>(tree.getNumberOfEdges());
+                        final Map<BitSet, BitSet> splitSet2Incompatibilities = new HashMap<>();
+
+                        for (ASplit split : splits) {
+                            final int distortion;
+                            final double incompatiblitySpan;
+
+                            splitSet2Incompatibilities.put(split.getSmallerPart(), new BitSet());
+                            distortion = Distortion.computeDistortionForSplit(referenceTree, split.getA(), split.getB());
+                            incompatiblitySpan = computeTotalWeightOfIncompatibleReferenceSplits(split, referenceSplits, splitSet2Incompatibilities.get(split.getSmallerPart()));
+                            if (distortion > 0 && distortion <= getOptionMaxDistortion()) {
+                                // previous line also computes split2incompatibilities mapping
+                                split.setConfidence(incompatiblitySpan);
+                                splitsWithDistortion.add(split);
                             }
-                            while (queue.size() > 0) {
-                                Node v = queue.remove();
-                                final ASplit splitV = (ASplit) v.getInfo();
+                        }
 
-                                sin.add(splitV);
-                                for (Node w : v.children()) {
-                                    queue.add(w);
+                        final Graph coverageGraph = computeCoverageDAG(splitsWithDistortion, splitSet2Incompatibilities);
+
+                        if (getOptionMaxDistortion() == 1) {
+                            for (Node u : coverageGraph.nodes()) {
+                                if (u.getInDegree() == 0) // is not covered by any other split
+                                {
+                                    final ASplit splitU = (ASplit) u.getInfo();
+                                    if (splitU.getConfidence() >= minSpan) {
+                                        final SIN sin = new SIN(t, treesBlock.getTree(t).getName(), splitU.getConfidence(), 1);
+                                        sin.add(splitU);
+                                        final Queue<Node> queue = new LinkedList<>();
+                                        for (Node w : u.children()) {
+                                            queue.add(w);
+                                        }
+                                        while (queue.size() > 0) {
+                                            Node v = queue.remove();
+                                            final ASplit split = (ASplit) v.getInfo();
+
+                                            sin.add(split);
+                                            for (Node w : v.children()) {
+                                                queue.add(w);
+                                            }
+                                        }
+                                        if (sin.getTotalWeight() >= 0.01 * getOptionMinWeight()) {
+                                            synchronized (listOfSins) {
+                                                listOfSins.add(sin);
+                                            }
+                                        }
+                                    }
                                 }
                             }
-                            if (sin.getTotalWeight() >= 0.01 * getOptionMinWeight()) {
-                                ArrayList<Pair<SIN, Node>> toDelete = new ArrayList<>();
-                                boolean ok = true;
+                        } else if (getOptionMaxDistortion() > 1) {
+                            ArrayList<Pair<SIN, Node>> consideredSins = new ArrayList<>();
+                            for (Node u : coverageGraph.nodes()) {
+                                if (u.getInDegree() == 0) // is not covered by any other split
+                                {
+                                    final ASplit splitU = (ASplit) u.getInfo();
+                                    if (splitU.getConfidence() >= minSpan) {
+                                        final int distortion = Distortion.computeDistortionForSplit(referenceTree, splitU.getA(), splitU.getB());
+
+                                        final SIN sin = new SIN(t, treesBlock.getTree(t).getName(), splitU.getConfidence(), distortion);
+                                        sin.add(splitU);
+                                        final Queue<Node> queue = new LinkedList<>();
+                                        for (Node w : u.children()) {
+                                            queue.add(w);
+                                        }
+                                        while (queue.size() > 0) {
+                                            Node v = queue.remove();
+                                            final ASplit splitV = (ASplit) v.getInfo();
+
+                                            sin.add(splitV);
+                                            for (Node w : v.children()) {
+                                                queue.add(w);
+                                            }
+                                        }
+                                        if (sin.getTotalWeight() >= 0.01 * getOptionMinWeight()) {
+                                            ArrayList<Pair<SIN, Node>> toDelete = new ArrayList<>();
+                                            boolean ok = true;
+                                            for (Pair<SIN, Node> pair : consideredSins) {
+                                                final SIN other = pair.get1();
+                                                final Node otherNode = pair.get2();
+                                                if (isBetter(sin, u, other, otherNode))
+                                                    toDelete.add(pair);
+                                                else if (isBetter(other, otherNode, sin, u))
+                                                    ok = false;
+                                            }
+                                            consideredSins.removeAll(toDelete);
+                                            if (ok)
+                                                consideredSins.add(new Pair<>(sin, u));
+                                        }
+                                    }
+                                }
+                            }
+                            synchronized (listOfSins) {
                                 for (Pair<SIN, Node> pair : consideredSins) {
-                                    final SIN other = pair.get1();
-                                    final Node otherNode = pair.get2();
-                                    if (isBetter(sin, u, other, otherNode))
-                                        toDelete.add(pair);
-                                    else if (isBetter(other, otherNode, sin, u))
-                                        ok = false;
+                                    listOfSins.add(pair.get1());
                                 }
-                                consideredSins.removeAll(toDelete);
-                                if (ok)
-                                    consideredSins.add(new Pair<>(sin, u));
                             }
-                        }
+                        } else throw new IllegalArgumentException("max distortion must be at least 1");
+                        progress.incrementProgress();
+
+                        if (exception.get() != null)
+                            return;
                     }
+                } catch (Exception ex) {
+                    exception.set(ex);
+                } finally {
+                    countDownLatch.countDown();
                 }
-                for (Pair<SIN, Node> pair : consideredSins) {
-                    listOfSins.add(pair.get1());
-                }
-            } else throw new IllegalArgumentException("max distortion must be at least 1");
-
-
-            progress.incrementProgress();
+            });
         }
 
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            if (exception.get() == null)
+                exception.set(e);
+        }
+        if (exception.get() != null)
+            throw exception.get();
+
         listOfSins.sort(sinsComparator());
+
         if (getOptionSinRank() >= listOfSins.size())
             setOptionSinRank(listOfSins.size());
 
-        for (int i = 0; i < listOfSins.size(); i++) {
+        for (int i = 0; i < Math.min(100, listOfSins.size()); i++) {
             final SIN sins = listOfSins.get(i);
             sins.setRank(i + 1);
             System.out.println(sins);
@@ -297,6 +326,8 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
                 System.err.println(reportTree(taxaBlock, referenceSplits, sins.getSplits()) + ";");
             }
         }
+        if (listOfSins.size() > 100)
+            System.out.println("(" + (listOfSins.size() - 100) + " more)");
 
 
         splitsBlock.getSplits().addAll(referenceSplits.getSplits());

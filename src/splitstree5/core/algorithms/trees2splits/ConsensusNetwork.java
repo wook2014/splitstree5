@@ -79,7 +79,6 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
         final Map<BitSet, Pair<BitSet, WeightStats>> splitsAndWeights = new HashMap<>();
         final BitSet taxaInTree = taxaBlock.getTaxaSet();
 
-
         final ExecutorService executor = ProgramExecutorService.getInstance();
 
         if (treesBlock.getNTrees() == 1) System.err.println("Consensus network: only one tree specified");
@@ -88,7 +87,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
         progress.setProgress(0);
 
         {
-            final int numberOfThreads = Math.min(trees.size(), 8);
+            final int numberOfThreads = Math.min(trees.size(), Math.max(1, Runtime.getRuntime().availableProcessors() - 1));
             final CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
             final Single<CanceledException> exception = new Single<>();
 
@@ -135,22 +134,18 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
                                 }
                             }
                             if (threadNumber == 0) {
-                                try {
                                     progress.setProgress((long) (which * 80.0 / trees.size()));
-                                } catch (CanceledException ex) {
-                                    while (countDownLatch.getCount() > 0)
-                                        countDownLatch.countDown(); // flush
-                                    exception.set(ex);
-                                    return;
-                                }
                             }
+                            if (exception.get() != null)
+                                return;
                         }
+                    } catch (CanceledException ex) {
+                        exception.set(ex);
                     } finally {
                         countDownLatch.countDown();
                     }
                 });
             }
-
             try {
                 countDownLatch.await();
             } catch (InterruptedException e) {
@@ -209,14 +204,12 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
                                 try {
                                     progress.setProgress(80 + 20 * (which / array.size()));
                                 } catch (CanceledException ex) {
-                                    while (countDownLatch.getCount() > 0)
-                                        countDownLatch.countDown(); // flush
                                     exception.set(ex);
-                                    return;
                                 }
                             }
+                            if (exception.get() != null)
+                                return;
                         }
-
                     } finally {
                         countDownLatch.countDown();
                     }
@@ -225,7 +218,6 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
             try {
                 countDownLatch.await();
             } catch (InterruptedException e) {
-                // Basic.caught(e);
                 if (exception.get() == null) // must have been canceled
                     exception.set(new CanceledException());
             }
