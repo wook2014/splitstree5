@@ -1,6 +1,5 @@
 package splitstree5.gui.editinputtab;
 
-import com.sun.istack.internal.Nullable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -13,7 +12,6 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import org.fxmisc.richtext.GenericStyledArea;
-import org.fxmisc.richtext.LineNumberFactory;
 import org.reactfx.collection.LiveList;
 import org.reactfx.value.Val;
 
