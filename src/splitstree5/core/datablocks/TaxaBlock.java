@@ -41,6 +41,7 @@ import java.util.*;
 public class TaxaBlock extends DataBlock {
     public static final String BLOCK_NAME = "TAXA";
 
+    private int ntax;
     private final ObservableList<Taxon> taxa;
     private final ObservableMap<Taxon, Integer> taxon2index;
     private final ObservableMap<String, Taxon> name2taxon;
@@ -64,7 +65,10 @@ public class TaxaBlock extends DataBlock {
                 name2taxon.put(taxon.getName(), taxon);
             }
         });
-        taxa.addListener((InvalidationListener) observable -> setShortDescription(getInfo()));
+        taxa.addListener((InvalidationListener) observable -> {
+            setShortDescription(getInfo());
+            ntax = size();
+        });
     }
 
     /**
@@ -101,7 +105,16 @@ public class TaxaBlock extends DataBlock {
      * @return number of taxa
      */
     public int getNtax() {
-        return taxa.size();
+        return ntax;
+    }
+
+    /**
+     * Set the number of taxa. Note that any change to the list of taxa will reset this
+     *
+     * @param ntax
+     */
+    public void setNtax(int ntax) {
+        this.ntax = ntax;
     }
 
     public Taxon get(String taxonName) {

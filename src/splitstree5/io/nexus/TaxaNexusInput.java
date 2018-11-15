@@ -77,13 +77,14 @@ public class TaxaNexusInput extends NexusIOBase {
 
         np.matchIgnoreCase("DIMENSIONS ntax=");
         final int ntax = np.getInt();
+        taxaBlock.setNtax(ntax);
         np.matchIgnoreCase(";");
 
         boolean labelsDetected = false;
 
-        if (np.peekMatchIgnoreCase("taxlabels")) // grab labels now
+        if (np.peekMatchIgnoreCase("taxLabels")) // grab labels now
         {
-            np.matchIgnoreCase("taxlabels");
+            np.matchIgnoreCase("taxLabels");
             if (np.peekMatchIgnoreCase("_detect_")) // for compatibility with SplitsTree3:
             {
                 np.matchIgnoreCase("_detect_");

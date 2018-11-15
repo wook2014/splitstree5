@@ -38,7 +38,7 @@ public class DistancesNexusInput extends NexusIOBase implements INexusInput<Dist
 
             "\t[TITLE title;]\n" +
             "\t[LINK name = title;]\n" +
-            "\t[DIMENSIONS [NTAX=number-of-taxa];]\n" +
+            "\t[DIMENSIONS NTAX=number-of-taxa;]\n" +
             "\t[FORMAT\n" +
             "\t\t[TRIANGLE={LOWER|UPPER|BOTH}]\n" +
             "\t\t[[NO] DIAGONAL]\n" +
@@ -78,13 +78,13 @@ public class DistancesNexusInput extends NexusIOBase implements INexusInput<Dist
             parseTitleAndLink(np);
 
             if (taxaBlock.getNtax() == 0) {
-                np.matchIgnoreCase("dimensions ntax=");
-                distancesBlock.setNtax(np.getInt(1, Integer.MAX_VALUE));
+                np.matchIgnoreCase("dimensions nTax=");
+                taxaBlock.setNtax(np.getInt());
                 np.matchIgnoreCase(";");
-            } else {
-                np.matchIgnoreCase("dimensions ntax=" + taxaBlock.getNtax() + ";");
-                distancesBlock.setNtax(taxaBlock.getNtax());
+            } else if (np.peekMatchIgnoreCase("dimensions")) {
+                np.matchIgnoreCase("dimensions nTax=" + taxaBlock.getNtax() + ";");
             }
+            distancesBlock.setNtax(taxaBlock.getNtax());
 
             if (np.peekMatchIgnoreCase("FORMAT")) {
                 final List<String> tokens = np.getTokensLowerCase("format", ";");
@@ -123,16 +123,15 @@ public class DistancesNexusInput extends NexusIOBase implements INexusInput<Dist
 
             {
                 np.matchIgnoreCase("MATRIX");
+                final boolean hasTaxonNames = taxaBlock.size() > 0;
                 for (int t = 1; t <= distancesBlock.getNtax(); t++) {
                     if (format.isOptionLabels()) {
-                        String label = np.getLabelRespectCase();
-                        if (taxaBlock.getNtax() > 0 && !taxaBlock.get(t).getName().equals(label))
-                            throw new IOExceptionWithLineNumber(np.lineno(), "expected '" + taxaBlock.get(t).getName() + "', found: '" + label + "'");
-                        else if (Basic.isDouble(label))
-                            throw new IOExceptionWithLineNumber(np.lineno(), "Expected taxon label, got number: '" + label + "'");
-                        taxonNamesFound.add(label);
+                        if (hasTaxonNames) {
+                            np.matchLabelRespectCase(taxaBlock.getLabel(t));
+                            taxonNamesFound.add(taxaBlock.getLabel(t));
+                        } else
+                            taxonNamesFound.add(np.getLabelRespectCase());
                     }
-
                     distancesBlock.set(t, t, 0);
 
                     int left;
@@ -167,9 +166,7 @@ public class DistancesNexusInput extends NexusIOBase implements INexusInput<Dist
                 np.matchIgnoreCase("VARMATRIX");
                 for (int t = 1; t <= distancesBlock.getNtax(); t++) {
                     if (format.isOptionLabels()) {
-                        String label = np.getLabelRespectCase();
-                        if (taxaBlock.getNtax() > 0 && !taxaBlock.get(t).getName().equals(label))
-                            throw new IOExceptionWithLineNumber(np.lineno(), "expected '" + taxaBlock.get(t).getName() + "', found: '" + label + "'");
+                        np.matchLabelRespectCase(taxaBlock.getLabel(t));
                     }
 
                     if (format.isOptionVariancesIO())

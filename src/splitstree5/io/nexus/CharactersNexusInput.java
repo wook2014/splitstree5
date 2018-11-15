@@ -287,9 +287,10 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
                 characters.getDataType() == CharactersType.DNA || characters.getDataType() == CharactersType.RNA;
         final ArrayList<String> taxonNamesFound = new ArrayList<>(characters.getNtax());
 
+        boolean hasTaxonNames = (taxa.size() > 0);
         for (int t = 1; t <= characters.getNtax(); t++) {
             if (format.isOptionLabels()) {
-                if (taxa.getNtax() > 0) {
+                if (hasTaxonNames) {
                     np.matchLabelRespectCase(taxa.getLabel(t));
                     taxonNamesFound.add(taxa.getLabel(t));
                 } else
@@ -368,8 +369,10 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
         final ArrayList<String> taxonNamesFound = new ArrayList<>(characters.getNtax());
 
         if (format.isOptionLabels()) {
+            boolean hasTaxonNames = (taxa.size() > 0);
+
             for (int t = 1; t <= characters.getNtax(); t++) {
-                if (taxa.getNtax() > 0) {
+                if (hasTaxonNames) {
                     np.matchLabelRespectCase(taxa.getLabel(t));
                     taxonNamesFound.add(taxa.getLabel(t));
                 } else
@@ -452,13 +455,15 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
         final ArrayList<String> taxonNamesFound = new ArrayList<>(characters.getNtax());
 
         try {
+            boolean hasTaxonNames = (taxa.size() > 0);
+
             int c = 0;
             boolean firstBlock = true;
             while (c < characters.getNchar()) {
                 int lineLength = 0;
                 for (int t = 1; t <= characters.getNtax(); t++) {
                     if (format.isOptionLabels()) {
-                        if (taxa.getNtax() == 0) {
+                        if (hasTaxonNames) {
                             final String name = np.getLabelRespectCase();
                             if (firstBlock) {
                                 taxonNamesFound.add(name);
