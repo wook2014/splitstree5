@@ -51,7 +51,7 @@ public class ImportDialogController {
     private Button browseButton;
 
     @FXML
-    private ComboBox<String> dataTypeComboBox;
+    private ComboBox<ImporterManager.DataType> dataTypeComboBox;
 
     @FXML
     private ComboBox<String> fileFormatComboBox;
@@ -80,7 +80,7 @@ public class ImportDialogController {
         return browseButton;
     }
 
-    public ComboBox<String> getDataTypeComboBox() {
+    public ComboBox<ImporterManager.DataType> getDataTypeComboBox() {
         return dataTypeComboBox;
     }
 

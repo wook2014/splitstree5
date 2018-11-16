@@ -38,7 +38,7 @@
                         <SeparatorMenuItem mnemonicParsing="false"/>
                         <MenuItem fx:id="clearMenuItem" mnemonicParsing="false" text="Clear">
                             <accelerator>
-                                <KeyCodeCombination alt="UP" code="DELETE" control="UP" meta="UP" shift="UP"
+                                <KeyCodeCombination alt="UP" code="BACK_SPACE" control="UP" meta="UP" shift="UP"
                                                     shortcut="DOWN"/>
                             </accelerator>
                         </MenuItem>

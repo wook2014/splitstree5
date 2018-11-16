@@ -58,6 +58,11 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
     private boolean prependTaxa = true;
     private String title;
     private Pair<String, String> link;
+    private boolean asWorkflowOnly;
+
+    public void setAsWorkflowOnly(boolean asWorkflowOnly) {
+        this.asWorkflowOnly = asWorkflowOnly;
+    }
 
     @Override
     public void export(Writer w, TaxaBlock taxa) throws IOException {
@@ -65,7 +70,10 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
             w.write("#nexus\n");
         final TaxaNexusOutput output = new TaxaNexusOutput();
         output.setTitleAndLink(getTitle(), getLink());
-        output.write(w, taxa);
+        if (asWorkflowOnly)
+            output.write(w, new TaxaBlock());
+        else
+            output.write(w, taxa);
     }
 
     @Override
@@ -81,7 +89,10 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
             new TaxaNexusOutput().write(w, taxa);
         final CharactersNexusOutput output = new CharactersNexusOutput();
         output.setTitleAndLink(getTitle(), getLink());
-        output.write(w, taxa, characters);
+        if (asWorkflowOnly)
+            output.write(w, new TaxaBlock(), new CharactersBlock());
+        else
+            output.write(w, taxa, characters);
     }
 
     @Override
@@ -90,7 +101,10 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
             new TaxaNexusOutput().write(w, taxa);
         final DistancesNexusOutput output = new DistancesNexusOutput();
         output.setTitleAndLink(getTitle(), getLink());
-        output.write(w, taxa, distances);
+        if (asWorkflowOnly)
+            output.write(w, new TaxaBlock(), new DistancesBlock());
+        else
+            output.write(w, taxa, distances);
     }
 
     @Override
@@ -108,7 +122,10 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
             new TaxaNexusOutput().write(w, taxa);
         final SplitsNexusOutput output = new SplitsNexusOutput();
         output.setTitleAndLink(getTitle(), getLink());
-        output.write(w, taxa, splitsBlock);
+        if (asWorkflowOnly)
+            output.write(w, new TaxaBlock(), new SplitsBlock());
+        else
+            output.write(w, taxa, splitsBlock);
     }
 
     @Override
@@ -117,7 +134,10 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
             new TaxaNexusOutput().write(w, taxa);
         final TreesNexusOutput output = new TreesNexusOutput();
         output.setTitleAndLink(getTitle(), getLink());
-        output.write(w, taxa, trees);
+        if (asWorkflowOnly)
+            output.write(w, new TaxaBlock(), new TreesBlock());
+        else
+            output.write(w, taxa, trees);
     }
 
     @Override
@@ -135,7 +155,10 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
             new TaxaNexusOutput().write(w, taxa);
         final ViewerNexusOutput output = new ViewerNexusOutput();
         output.setTitleAndLink(getTitle(), getLink());
-        output.write(w, taxa, viewerBlock);
+        if (asWorkflowOnly) {
+            output.write(w, taxa, ViewerBlock.create(viewerBlock.getType()));
+        } else
+            output.write(w, taxa, viewerBlock);
     }
 
     /**

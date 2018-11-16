@@ -171,7 +171,8 @@ public class AlgorithmTab<P extends DataBlock, C extends DataBlock> extends View
         });
 
         algorithmIsApplicable.setValue(currentAlgorithm.isApplicable(connector.getTaxaBlock(), connector.getParentDataBlock()));
-        controller.getApplyButton().disableProperty().bind((applicableChangeHasBeenMade.and(algorithmIsApplicable).and(algorithmSettingsIsApplicable)).not());
+        controller.getApplyButton().disableProperty().bind((applicableChangeHasBeenMade.not().or(algorithmIsApplicable.not())
+                .or(algorithmSettingsIsApplicable).not()).or(document.getWorkflow().hasTopTaxaProperty().not()));
     }
 
     /**

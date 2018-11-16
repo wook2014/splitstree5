@@ -53,7 +53,7 @@ public class SaveChangesDialog {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent()) {
                 if (result.get() == buttonTypeYes) {
-                    return splitstree5.main.MainWindowMenuController.showSaveDialog(mainWindow);
+                    return splitstree5.main.MainWindowMenuController.showSaveDialog(mainWindow, false);
                 } else if (result.get() == buttonTypeNo) {
                     return true;
                 }

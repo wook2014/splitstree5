@@ -60,6 +60,7 @@ package splitstree5.dialogs.importer;
 import javafx.stage.FileChooser;
 import jloda.util.Basic;
 import jloda.util.PluginClassLoader;
+import splitstree5.core.datablocks.*;
 import splitstree5.io.imports.interfaces.*;
 
 import java.io.IOException;
@@ -70,7 +71,9 @@ import java.util.*;
  * Daniel Huson, 1.2018
  */
 public class ImporterManager {
-    public static final String UNKNOWN = "Unknown";
+    public enum DataType {Characters, Distances, Trees, Splits, Network, Unknown}
+
+    public static String UNKNOWN_FORMAT = "Unknown";
 
     private final ArrayList<IImporter> importers;
     private final ArrayList<FileChooser.ExtensionFilter> extensionFilters;
@@ -80,9 +83,9 @@ public class ImporterManager {
     private ImporterManager() {
         importers = new ArrayList<>(PluginClassLoader.getInstances(IImporter.class, "splitstree5.io.imports"));
         extensionFilters = new ArrayList<>();
-        final Map<String, Set<String>> dataType2Extensions = new TreeMap<>();
+        final Map<DataType, Set<String>> dataType2Extensions = new TreeMap<>();
         for (IImporter importer : importers) {
-            String dataType = getDataType(importer);
+            DataType dataType = getDataType(importer);
             Collection<String> add = importer.getExtensions();
             if (add != null) {
                 if (dataType2Extensions.containsKey(dataType))
@@ -91,7 +94,7 @@ public class ImporterManager {
                     dataType2Extensions.put(dataType, new TreeSet<>(add));
             }
         }
-        for (String dataType : dataType2Extensions.keySet()) {
+        for (DataType dataType : dataType2Extensions.keySet()) {
             extensionFilters.add(new FileChooser.ExtensionFilter(dataType + ": "
                     + Basic.toString(completeExtensions(dataType2Extensions.get(dataType), false), " "),
                     completeExtensions(dataType2Extensions.get(dataType), true)));
@@ -151,13 +154,27 @@ public class ImporterManager {
         return extensionFilters;
     }
 
-    public Collection<? extends String> getAllDataTypes() {
-        final Set<String> set = new TreeSet<>();
+    /**
+     * get  extension filters
+     *
+     * @return extension filters
+     */
+    public Collection<FileChooser.ExtensionFilter> getExtensionFilters(DataType dataType) {
+        final ArrayList<FileChooser.ExtensionFilter> list = new ArrayList<>();
+        for (FileChooser.ExtensionFilter extensionFilter : extensionFilters) {
+            if (extensionFilter.getDescription().startsWith(dataType.toString()))
+                list.add(extensionFilter);
+        }
+        return list;
+    }
+
+    public Collection<DataType> getAllDataTypes() {
+        final Set<DataType> set = new TreeSet<>();
         for (IImporter importer : importers) {
             set.add(getDataType(importer));
         }
-        final ArrayList<String> result = new ArrayList<>();
-        result.add(UNKNOWN);
+        final ArrayList<DataType> result = new ArrayList<>();
+        result.add(DataType.Unknown);
         result.addAll(set);
         return result;
     }
@@ -168,24 +185,39 @@ public class ImporterManager {
             set.add(getFileFormat(importer));
         }
         final ArrayList<String> result = new ArrayList<>();
-        result.add(UNKNOWN);
+        result.add(UNKNOWN_FORMAT);
         result.addAll(set);
         return result;
     }
 
-    private static String getDataType(IImporter importer) {
+    private static DataType getDataType(IImporter importer) {
         if (importer instanceof IImportCharacters) {
-            return "Characters";
+            return DataType.Characters;
         } else if (importer instanceof IImportDistances) {
-            return "Distances";
+            return DataType.Distances;
         } else if (importer instanceof IImportTrees) {
-            return "Trees";
+            return DataType.Trees;
         } else if (importer instanceof IImportSplits) {
-            return "Splits";
+            return DataType.Splits;
         } else if (importer instanceof IImportNetwork) {
-            return "Network";
+            return DataType.Network;
         } else
-            return UNKNOWN;
+            return DataType.Unknown;
+    }
+
+    public static DataType getDataType(DataBlock dataBlock) {
+        if (dataBlock instanceof CharactersBlock) {
+            return DataType.Characters;
+        } else if (dataBlock instanceof DistancesBlock) {
+            return DataType.Distances;
+        } else if (dataBlock instanceof TreesBlock) {
+            return DataType.Trees;
+        } else if (dataBlock instanceof SplitsBlock) {
+            return DataType.Splits;
+        } else if (dataBlock instanceof NetworkBlock) {
+            return DataType.Network;
+        } else
+            return DataType.Unknown;
     }
 
     private static String getFileFormat(IImporter importer) {
@@ -205,25 +237,25 @@ public class ImporterManager {
      * @param fileName
      * @return data type
      */
-    public String getDataType(String fileName) {
-        String dataType = null;
+    public DataType getDataType(String fileName) {
+        DataType dataType = null;
 
         for (IImporter importer : importers) {
             try {
                 if (!(importer instanceof IImportNoAutoDetect) && importer.isApplicable(fileName)) {
-                    String type = getDataType(importer);
-                    if (!type.equals(UNKNOWN)) {
+                    DataType type = getDataType(importer);
+                    if (!type.equals(DataType.Unknown)) {
                         if (dataType == null)
                             dataType = type;
                         else if (!dataType.equals(type))
-                            return UNKNOWN;
+                            return DataType.Unknown;
                     }
                 }
             } catch (IOException ex) {
             }
         }
         if (dataType == null)
-            return UNKNOWN;
+            return DataType.Unknown;
         else
             return dataType;
     }
@@ -238,13 +270,13 @@ public class ImporterManager {
                     if (fileFormat == null)
                         fileFormat = format;
                     else if (!fileFormat.equals(format))
-                        return UNKNOWN;
+                        return UNKNOWN_FORMAT;
                 }
             } catch (IOException ex) {
             }
         }
         if (fileFormat == null)
-            return UNKNOWN;
+            return UNKNOWN_FORMAT;
         else
             return fileFormat;
     }
@@ -256,7 +288,7 @@ public class ImporterManager {
      * @param fileFormat
      * @return importer or null
      */
-    public IImporter getImporterByDataTypeAndFileFormat(String dataType, String fileFormat) {
+    public IImporter getImporterByDataTypeAndFileFormat(DataType dataType, String fileFormat) {
         for (IImporter importer : importers) {
             if (getDataType(importer).equals(dataType) && getFileFormat(importer).equals(fileFormat))
                 return importer;

@@ -68,12 +68,13 @@ public class WorkflowNexusOutput {
      * @param file file or stdout
      * @throws IOException
      */
-    public void save(Workflow workflow, final File file) throws IOException {
+    public void save(Workflow workflow, final File file, boolean asWorkflowOnly) throws IOException {
         SplitsTree5Block splitsTree5Block = new SplitsTree5Block();
         splitsTree5Block.setOptionNumberOfDataNodes(workflow.getNumberOfDataNodes());
         splitsTree5Block.setOptionNumberOfAlgorithms(workflow.getNumberOfConnectorNodes());
 
         final NexusExporter nexusExporter = new NexusExporter();
+        nexusExporter.setAsWorkflowOnly(asWorkflowOnly);
         nexusExporter.setPrependTaxa(false);
 
         final Map<String, Integer> nodeType2Count = new HashMap<>();
@@ -83,11 +84,12 @@ public class WorkflowNexusOutput {
             ProgramProperties.put("SaveDir", file.getParent());
 
         try (Writer w = new BufferedWriter(file.getName().equals("stdout") ? new OutputStreamWriter(System.out) : new FileWriter(file))) {
-            w.write("#nexus\n");
+            w.write("#nexus [SplitsTree4]\n");
 
             (new SplitsTree5NexusOutput()).write(w, splitsTree5Block);
 
-            w.write("\n[\n" + workflow.getDocument().methodsTextProperty().get().replaceAll("\\[", "(").replaceAll("]", ")") + "]\n");
+            if (!asWorkflowOnly)
+                w.write("\n[\n" + workflow.getDocument().methodsTextProperty().get().replaceAll("\\[", "(").replaceAll("]", ")") + "]\n");
 
             nexusExporter.setTitle("TopTaxa");
             node2title.put(workflow.getTopTaxaNode(), "TopTaxa");

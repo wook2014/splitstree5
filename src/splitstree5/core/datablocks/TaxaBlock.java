@@ -20,8 +20,8 @@
 package splitstree5.core.datablocks;
 
 import javafx.beans.InvalidationListener;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -46,6 +46,8 @@ public class TaxaBlock extends DataBlock {
     private final ObservableMap<Taxon, Integer> taxon2index;
     private final ObservableMap<String, Taxon> name2taxon;
 
+    private final BooleanProperty hasTaxa = new SimpleBooleanProperty();
+
     private final ObjectProperty<TraitsBlock> traitsBlock = new SimpleObjectProperty<>();
 
     /**
@@ -69,6 +71,8 @@ public class TaxaBlock extends DataBlock {
             setShortDescription(getInfo());
             ntax = size();
         });
+
+        hasTaxa.bind(Bindings.isNotEmpty(taxa));
     }
 
     /**
@@ -97,6 +101,10 @@ public class TaxaBlock extends DataBlock {
     @Override
     public int size() {
         return taxa.size();
+    }
+
+    public ReadOnlyBooleanProperty hasTaxaProperty() {
+        return hasTaxa;
     }
 
     /**
@@ -290,6 +298,7 @@ public class TaxaBlock extends DataBlock {
     public void setTraitsBlock(TraitsBlock traitsBlock) {
         this.traitsBlock.set(traitsBlock);
     }
+
 
     /**
      * copy a taxon block

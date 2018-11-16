@@ -24,7 +24,7 @@
 <MenuBar fx:id="menuBar" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
          fx:controller="splitstree5.menu.MenuController">
     <menus>
-        <Menu fx:id="fileMenu" mnemonicParsing="false" text="File">
+        <Menu fx:id="fileMenu" text="File">
             <items>
                 <MenuItem fx:id="newMenuItem" text="New...">
                     <accelerator>
@@ -37,16 +37,22 @@
                         <KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
-                <Menu fx:id="openRecentMenu" mnemonicParsing="false" text="Open Recent"/>
+                <Menu fx:id="openRecentMenu" text="Open Recent"/>
                 <SeparatorMenuItem mnemonicParsing="false"/>
-                <MenuItem fx:id="inputDataMenuItem" text="Input Data">
+                <MenuItem fx:id="importMenuItem" text="Import...">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="I" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
-                <MenuItem fx:id="inputEditDataMenuItem" text="Input Editable Data">
+                <MenuItem fx:id="replaceDataMenuItem" text="Replace Data...">
                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
+                        <KeyCodeCombination alt="UP" code="I" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
+                    </accelerator>
+                </MenuItem>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="inputEditorMenuItem" text="Input Editor...">
+                    <accelerator>
+                        <KeyCodeCombination alt="UP" code="U" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
@@ -61,35 +67,36 @@
                     </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
-                <MenuItem fx:id="importMenuItem" mnemonicParsing="false" text="Import...">
-                    <accelerator>
-                        <KeyCodeCombination alt="UP" code="I" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
-                    </accelerator>
-                </MenuItem>
-                <MenuItem fx:id="importMultipleTreeFilesMenuItem" mnemonicParsing="false"
-                          text="Import Trees from Multiple Files...">
-                    <accelerator>
-                        <KeyCodeCombination alt="UP" code="I" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
-                    </accelerator>
-                </MenuItem>
-                <SeparatorMenuItem mnemonicParsing="false"/>
-                <MenuItem fx:id="exportMenuItem" mnemonicParsing="false" text="Export...">
+                <MenuItem fx:id="exportMenuItem" text="Export...">
                     <accelerator>
                         <KeyCodeCombination alt="UP" code="E" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
-                <MenuItem fx:id="exportImageMenuItem" mnemonicParsing="false" text="Export Image...">
+                <MenuItem fx:id="exportImageMenuItem" text="Export Image...">
                     <accelerator>
                         <KeyCodeCombination alt="UP" code="E" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
+                <MenuItem fx:id="exportWorkflowMenuItem" text="Export Workflow..."/>
                 <SeparatorMenuItem mnemonicParsing="false"/>
-                <MenuItem fx:id="pageSetupMenuItem" mnemonicParsing="false" text="Page Setup..."/>
-                <MenuItem fx:id="printMenuitem" mnemonicParsing="false" text="Print...">
+                <MenuItem fx:id="pageSetupMenuItem" text="Page Setup..."/>
+                <MenuItem fx:id="printMenuitem" text="Print...">
                     <accelerator>
                         <KeyCodeCombination alt="UP" code="P" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <Menu mnemonicParsing="false" text="Tools">
+                    <items>
+                        <MenuItem fx:id="importMultipleTreeFilesMenuItem" mnemonicParsing="false"
+                                  text="Import Trees from Multiple Files...">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="I" control="UP" meta="UP" shift="DOWN"
+                                                    shortcut="DOWN"/>
+                            </accelerator>
+                        </MenuItem>
+                    </items>
+                </Menu>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="closeMenuItem" text="Close">
                     <accelerator>

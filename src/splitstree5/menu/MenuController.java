@@ -54,10 +54,7 @@ public class MenuController {
     private Menu openRecentMenu;
 
     @FXML
-    private MenuItem inputDataMenuItem;
-
-    @FXML
-    private MenuItem inputEditDataMenuItem;
+    private MenuItem inputEditorMenuItem;
 
     @FXML
     private MenuItem saveMenuItem;
@@ -76,6 +73,12 @@ public class MenuController {
 
     @FXML
     private MenuItem exportImageMenuItem;
+
+    @FXML
+    private MenuItem replaceDataMenuItem;
+
+    @FXML
+    private MenuItem exportWorkflowMenuItem;
 
     @FXML
     private MenuItem pageSetupMenuItem;
@@ -402,12 +405,8 @@ public class MenuController {
         return openRecentMenu;
     }
 
-    public MenuItem getEnterDataMenuItem() {
-        return inputDataMenuItem;
-    }
-
-    public MenuItem getEnterEditDataMenuItem() { //todo : delete after testing + in menu.fxml
-        return inputEditDataMenuItem;
+    public MenuItem getInputEditorMenuItem() { //todo : delete after testing + in menu.fxml
+        return inputEditorMenuItem;
     }
 
     public MenuItem getSaveMenuItem() {
@@ -432,6 +431,14 @@ public class MenuController {
 
     public MenuItem getExportImageMenuItem() {
         return exportImageMenuItem;
+    }
+
+    public MenuItem getReplaceDataMenuItem() {
+        return replaceDataMenuItem;
+    }
+
+    public MenuItem getExportWorkflowMenuItem() {
+        return exportWorkflowMenuItem;
     }
 
     public MenuItem getPageSetupMenuItem() {
@@ -928,7 +935,7 @@ public class MenuController {
         if (getOpenRecentMenu().getItems().size() == 0) // can't do this in init because mainWindow not available there
             RecentFilesManager.getInstance().setupMenu(getOpenRecentMenu());
 
-        for (Menu menu : getMenuBar().getMenus()) {
+        for (Menu menu : menuBar.getMenus()) {
             for (MenuItem menuItem : menu.getItems()) {
                 if (!alwaysOnMenuItems.contains(menuItem)) {
                     if (!menuItem.disableProperty().isBound() && menuItem.getOnAction() != null)

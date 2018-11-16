@@ -52,7 +52,7 @@ public class ViewerNexusOutput extends NexusIOBase implements INexusOutput<Viewe
         writeTitleAndLink(w);
 
         final GraphTabBase graphTab = viewerBlock.getTab();
-        final PhyloGraph graph = graphTab.getGraph();
+        final PhyloGraph graph = (graphTab.getGraph() != null ? graphTab.getGraph() : new PhyloGraph());
 
         int nLabels = 0; // if we ever implement floating labels, then this must be set to their number
 

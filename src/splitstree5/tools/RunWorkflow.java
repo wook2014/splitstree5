@@ -26,17 +26,11 @@ import javafx.stage.Stage;
 import jloda.fx.NotificationManager;
 import jloda.fx.ProgramExecutorService;
 import jloda.util.*;
-import jloda.util.parse.NexusStreamParser;
-import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.Workflow;
-import splitstree5.dialogs.importer.ImportService;
+import splitstree5.core.workflow.WorkflowDataLoader;
 import splitstree5.dialogs.importer.ImporterManager;
-import splitstree5.io.exports.NexusExporter;
-import splitstree5.io.imports.interfaces.IImporter;
-import splitstree5.io.nexus.NexusParser;
-import splitstree5.io.nexus.TaxaNexusInput;
 import splitstree5.io.nexus.workflow.WorkflowNexusInput;
 import splitstree5.io.nexus.workflow.WorkflowNexusOutput;
 import splitstree5.main.MainWindow;
@@ -44,12 +38,10 @@ import splitstree5.main.Version;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 
-import static splitstree5.dialogs.importer.ImporterManager.UNKNOWN;
+import static splitstree5.dialogs.importer.ImporterManager.UNKNOWN_FORMAT;
 
 /**
  * runs a workflow on one or more input files
@@ -104,7 +96,7 @@ public class RunWorkflow extends Application {
         options.comment("Input Output:");
         final File inputWorkflowFile = new File(options.getOptionMandatory("-w", "workflow", "File containing SplitsTree5 workflow", ""));
         String[] inputFiles = options.getOptionMandatory("-i", "input", "File(s) containing input data (or directory)", new String[0]);
-        String inputFormat = options.getOption("-f", "format", "Input format", ImporterManager.getInstance().getAllFileFormats(), UNKNOWN);
+        String inputFormat = options.getOption("-f", "format", "Input format", ImporterManager.getInstance().getAllFileFormats(), UNKNOWN_FORMAT);
         String[] outputFiles = options.getOption("-o", "output", "Output file(s) (or directory or stdout)", new String[]{"stdout"});
 
         options.comment(ArgsOptions.OTHER);
@@ -147,7 +139,7 @@ public class RunWorkflow extends Application {
                     outputFiles = new String[inputFiles.length];
                     for (int i = 0; i < inputFiles.length; i++) {
                         final File input = new File(inputFiles[i]);
-                        String name = Basic.replaceFileSuffix(input.getName(), "-out.spt5");
+                        String name = Basic.replaceFileSuffix(input.getName(), "-out.stree5");
                         outputFiles[i] = (new File(output.getPath(), name)).getPath();
                     }
                 } else if (inputFiles.length > 1 && !outputFiles[0].equals("stdout")) {
@@ -195,29 +187,7 @@ public class RunWorkflow extends Application {
                 }
             };
 
-            final String dataType = ImporterManager.getInstance().getDataType(inputFile);
-            final String fileFormat = (inputFormat.equalsIgnoreCase(UNKNOWN) ? ImporterManager.getInstance().getFileFormat(inputFile) : inputFormat);
-
-            if (!dataType.equalsIgnoreCase(UNKNOWN) && !fileFormat.equalsIgnoreCase(UNKNOWN)) {
-                final IImporter importer = ImporterManager.getInstance().getImporterByDataTypeAndFileFormat(dataType, fileFormat);
-                if (importer == null)
-                    throw new IOException("Can't open file '" + inputFile + "': Unknown data type or file format");
-                else {
-                    try (final ProgressListener progress = new ProgressPercentage("Loading input data from file: " + inputFile + " (data type: '" + dataType + "' format: '" + fileFormat + "')")) {
-                        Pair<TaxaBlock, DataBlock> pair = ImportService.apply(progress, importer, inputFile);
-                        final TaxaBlock inputTaxa = pair.getFirst();
-                        final DataBlock inputData = pair.getSecond();
-                        final StringWriter w = new StringWriter();
-                        NexusExporter exporter = new NexusExporter();
-                        exporter.export(w, inputTaxa, inputData);
-                        final NexusStreamParser np = new NexusStreamParser(new StringReader(w.toString()));
-                        ((new TaxaNexusInput())).parse(np, topTaxaNode.getDataBlock());
-                        NexusParser.parse(np, topTaxaNode.getDataBlock(), topDataNode.getDataBlock());
-                        System.err.println("Number of input taxa: " + workflow.getTopTaxaNode().getDataBlock().getNtax());
-                    }
-                }
-            } else
-                throw new IOException("Unknown data or file format: " + inputFile);
+            WorkflowDataLoader.load(workflow, inputFile, inputFormat);
 
             // listens for end of update and counts down latch:
             workflow.updatingProperty().addListener(listener);
@@ -232,7 +202,7 @@ public class RunWorkflow extends Application {
                 try {
                     final File outputFile = new File((outputFiles.length == inputFiles.length ? outputFiles[i] : outputFiles[0]));
                     System.err.println("Saving to file: " + outputFile);
-                    (new WorkflowNexusOutput()).save(workflow, outputFile);
+                    (new WorkflowNexusOutput()).save(workflow, outputFile, false);
                     System.err.println("done");
                     System.err.println("Saved workflow has " + workflow.getNumberOfDataNodes() + " nodes and " + workflow.getNumberOfConnectorNodes() + " connections");
                 } catch (IOException e) {

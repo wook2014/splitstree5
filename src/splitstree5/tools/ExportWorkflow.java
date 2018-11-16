@@ -90,8 +90,8 @@ public class ExportWorkflow extends Application {
 
         options.comment("Input Output:");
         final File inputWorkflowFile = new File(options.getOptionMandatory("-w", "workflow", "File containing SplitsTree5 workflow", ""));
-        String[] nodeNames = options.getOption("-n", "node", "Title(s) of node(s) to be exported", new String[0]);
-        String[] exportFormats = options.getOption("-e", "exporter", "Name of exporter(s) to use", ExportManager.getInstance().getExporterNames(), new String[0]);
+        final String[] nodeNames = options.getOption("-n", "node", "Title(s) of node(s) to be exported", new String[0]);
+        final String[] exportFormats = options.getOption("-e", "exporter", "Name of exporter(s) to use", ExportManager.getInstance().getExporterNames(), new String[0]);
         String[] outputFiles = options.getOption("-o", "output", "Output file(s) (or directory or stdout)", new String[]{"stdout"});
 
         options.comment(ArgsOptions.OTHER);
@@ -129,7 +129,7 @@ public class ExportWorkflow extends Application {
         }
 
         if (!WorkflowNexusInput.isApplicable(inputWorkflowFile.getPath()))
-            throw new IOException("Workflow not valid: " + inputWorkflowFile);
+            throw new IOException("Invalid workflow in file: " + inputWorkflowFile);
 
         final MainWindow mainWindow = new MainWindow();
         final Workflow workflow = mainWindow.getWorkflow();
@@ -143,10 +143,10 @@ public class ExportWorkflow extends Application {
 
         final DataNode<TaxaBlock> topTaxaNode = workflow.getTopTaxaNode();
         if (topTaxaNode == null)
-            throw new IOException("Workflow does not have top taxon node");
+            throw new IOException("Incomplete workflow: top taxon node not found");
         final DataNode topDataNode = workflow.getTopDataNode();
         if (topDataNode == null)
-            throw new IOException("Workflow does not have top data node");
+            throw new IOException("Incomplete workflow: top data node not found");
 
         System.err.println("Loaded workflow has " + workflow.getNumberOfDataNodes() + " nodes and " + workflow.getNumberOfConnectorNodes() + " connections");
 

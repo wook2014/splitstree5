@@ -23,8 +23,6 @@ package splitstree5.gui.editinputtab;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.control.IndexRange;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
@@ -267,13 +265,10 @@ public class EditTextViewTab extends ViewerTab {
         getCodeArea().replaceText(indexRange, textProperty.getValue());
         getCodeArea().setStyleSpans(0, nexusHighlighter.computeHighlighting(getCodeArea().getText()));
 
-        textProperty.addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                IndexRange indexRange = new IndexRange(0, getCodeArea().getText().length());
-                getCodeArea().replaceText(indexRange, newValue);
-                getCodeArea().setStyleSpans(0, nexusHighlighter.computeHighlighting(newValue));
-            }
+        textProperty.addListener((observable, oldValue, newValue) -> {
+            IndexRange indexRange1 = new IndexRange(0, getCodeArea().getText().length());
+            getCodeArea().replaceText(indexRange1, newValue);
+            getCodeArea().setStyleSpans(0, nexusHighlighter.computeHighlighting(newValue));
         });
     }
 }

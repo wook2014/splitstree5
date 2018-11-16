@@ -59,10 +59,11 @@ public class Workflow {
     private final ObservableSet<DataNode> topNodes = FXCollections.observableSet();
     private final ObservableSet<DataNode> workingNodes = FXCollections.observableSet();
 
-
     private final ObjectProperty<DataNode<TaxaBlock>> topTaxaNode = new SimpleObjectProperty<>();
     private final ObjectProperty<DataNode<TraitsBlock>> topTraitsNode = new SimpleObjectProperty<>();
     private final ObjectProperty<Connector<TaxaBlock, TaxaBlock>> taxaFilter = new SimpleObjectProperty<>();
+
+    private final BooleanProperty hasTopTaxa = new SimpleBooleanProperty();
 
     private final ObjectProperty<DataNode<TaxaBlock>> workingTaxaNode = new SimpleObjectProperty<>();
 
@@ -127,10 +128,15 @@ public class Workflow {
         });
 
         topTaxaNode.addListener((c, o, n) -> {
-            if (o != null)
+            if (o != null) {
                 topNodes.remove(o);
-            if (n != null)
+                hasTopTaxa.unbind();
+                hasTopTaxa.set(false);
+            }
+            if (n != null) {
                 topNodes.add(n);
+                hasTopTaxa.bind(n.getDataBlock().hasTaxaProperty());
+            }
         });
         topTraitsNode.addListener((c, o, n) -> {
             if (o != null)
@@ -192,7 +198,6 @@ public class Workflow {
                 setPathIdsRec(w, pathIds.nextClearBit(currentId + 1), pathIds);
         }
     }
-
 
     /**
      * setup the top nodes, taxa filter, top filter and working nodes
@@ -548,8 +553,6 @@ public class Workflow {
             }
 
         }
-
-
     }
 
     /**
@@ -828,5 +831,13 @@ public class Workflow {
 
     public Document getDocument() {
         return document;
+    }
+
+    public boolean isHasTopTaxa() {
+        return hasTopTaxa.get();
+    }
+
+    public BooleanProperty hasTopTaxaProperty() {
+        return hasTopTaxa;
     }
 }

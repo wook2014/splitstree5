@@ -100,7 +100,7 @@ public class ImportDialog {
 
 
         controller.getFileTextField().textProperty().addListener((c, o, n) -> {
-            String dataType = ImporterManager.getInstance().getDataType(n);
+            final ImporterManager.DataType dataType = ImporterManager.getInstance().getDataType(n);
             controller.getDataTypeComboBox().setValue(dataType);
             String dataFormat = ImporterManager.getInstance().getFileFormat(n);
             controller.getFileFormatComboBox().setValue(dataFormat);

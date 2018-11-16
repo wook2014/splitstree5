@@ -26,7 +26,7 @@ import splitstree5.main.MainWindow;
 import java.io.File;
 import java.util.function.Consumer;
 
-import static splitstree5.dialogs.importer.ImporterManager.UNKNOWN;
+import static splitstree5.dialogs.importer.ImporterManager.UNKNOWN_FORMAT;
 
 /**
  * opens a file by importing it without showing the import dialog
@@ -41,9 +41,9 @@ public class FileOpener {
     public static boolean isOpenable(String fileName) {
         if (!(new File(fileName)).canRead())
             return false;
-        final String dataType = ImporterManager.getInstance().getDataType(fileName);
+        final ImporterManager.DataType dataType = ImporterManager.getInstance().getDataType(fileName);
         final String fileFormat = ImporterManager.getInstance().getFileFormat(fileName);
-        return !dataType.equals(UNKNOWN) && !fileFormat.equals(UNKNOWN);
+        return !dataType.equals(ImporterManager.DataType.Unknown) && !fileFormat.equals(UNKNOWN_FORMAT);
     }
 
     /**
@@ -57,9 +57,9 @@ public class FileOpener {
         if (!(new File(fileName)).canRead())
             NotificationManager.showError("File not found or unreadable: " + fileName);
         else {
-            final String dataType = ImporterManager.getInstance().getDataType(fileName);
+            final ImporterManager.DataType dataType = ImporterManager.getInstance().getDataType(fileName);
             final String fileFormat = ImporterManager.getInstance().getFileFormat(fileName);
-            if (!dataType.equals(UNKNOWN) && !fileFormat.equals(UNKNOWN)) {
+            if (!dataType.equals(ImporterManager.DataType.Unknown) && !fileFormat.equals(UNKNOWN_FORMAT)) {
                 final IImporter importer = ImporterManager.getInstance().getImporterByDataTypeAndFileFormat(dataType, fileFormat);
                 if (importer == null)
                     NotificationManager.showError("Can't open file '" + fileName + "'\nUnknown data type or file format");

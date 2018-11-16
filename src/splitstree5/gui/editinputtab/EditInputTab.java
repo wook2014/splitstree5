@@ -20,6 +20,7 @@
 package splitstree5.gui.editinputtab;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -47,7 +48,7 @@ import splitstree5.gui.editinputtab.highlighters.Highlighter;
 import splitstree5.gui.editinputtab.highlighters.NexusHighlighter;
 import splitstree5.gui.editinputtab.highlighters.UniversalHighlighter;
 import splitstree5.gui.editinputtab.highlighters.XMLHighlighter;
-import splitstree5.gui.inputtab.InputTab;
+import splitstree5.io.nexus.workflow.WorkflowNexusInput;
 import splitstree5.main.MainWindow;
 import splitstree5.main.MainWindowManager;
 import splitstree5.menu.MenuController;
@@ -212,7 +213,10 @@ public class EditInputTab extends EditTextViewTab {
                     }
                 };
 
-                FileOpener.open(true, mainWindow, tmpFile.getPath(), exceptionHandler);
+                if (WorkflowNexusInput.isApplicable(tmpFile.getPath()))
+                    WorkflowNexusInput.open(mainWindow, tmpFile.getPath());
+                else
+                    FileOpener.open(true, mainWindow, tmpFile.getPath(), exceptionHandler);
             } catch (Exception ex) {
                 NotificationManager.showError("Enter data failed: " + ex.getMessage());
             }
@@ -373,12 +377,14 @@ public class EditInputTab extends EditTextViewTab {
                 System.err.println("Running time EditInputTab: "+totalTime+" sec");
             }
         });
-        // not empty
         controller.getOpenMenuItem().disableProperty().bind(Val.map(codeArea.lengthProperty(), n -> n != 0));
 
         RecentFilesManager.getInstance().setFileOpener(this::loadFile);
-        // not empty
         controller.getOpenRecentMenu().disableProperty().bind(Val.map(codeArea.lengthProperty(), n -> n != 0));
+
+        controller.getImportMenuItem().disableProperty().bind(new SimpleBooleanProperty(true));
+        controller.getInputEditorMenuItem().disableProperty().bind(new SimpleBooleanProperty(true));
+
 
         controller.getPasteMenuItem().setOnAction((e) -> {
             e.consume();
@@ -432,13 +438,11 @@ public class EditInputTab extends EditTextViewTab {
             codeArea.replaceSelection(codeArea.getSelectedText() + codeArea.getSelectedText());
         });
         controller.getDuplicateMenuItem().disableProperty().bind(Val.map(codeArea.selectedTextProperty(), n -> n.length() == 0));
-
-
     }
 
     // todo performance test
 
-    private void loadFile(String fileName) {
+    public void loadFile(String fileName) {
         final StringBuilder buf = new StringBuilder();
         try (BufferedReader r = new BufferedReader(new InputStreamReader(Basic.getInputStreamPossiblyZIPorGZIP(fileName)))) {
             String aLine;

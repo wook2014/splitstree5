@@ -67,7 +67,7 @@ public class TaxaNexusInput extends NexusIOBase {
             np.matchIgnoreCase("#nexus"); // skip header line if it is the first line
 
         final String comment = np.getComment();
-        if (comment != null) {
+        if (comment != null && comment.startsWith("!")) {
             NotificationManager.showInformation(comment);
         }
         np.setCollectAllComments(false);

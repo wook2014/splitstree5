@@ -20,6 +20,7 @@
 package splitstree5.gui.inputtab;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -48,6 +49,7 @@ import java.util.regex.Pattern;
 
 /**
  * tab for entering data
+ * @deprecated
  * Daniel Huson, 2.2018
  */
 public class InputTab extends TextViewTab {
@@ -153,7 +155,6 @@ public class InputTab extends TextViewTab {
         return menuItem;
     }
 
-
     @Override
     public void updateMenus(MenuController controller) {
         super.updateMenus(controller);
@@ -188,6 +189,9 @@ public class InputTab extends TextViewTab {
 
         RecentFilesManager.getInstance().setFileOpener(this::loadFile);
         controller.getOpenRecentMenu().disableProperty().bind(textArea.textProperty().isNotEmpty());
+
+        controller.getImportMenuItem().disableProperty().bind(new SimpleBooleanProperty(true));
+        controller.getInputEditorMenuItem().disableProperty().bind(new SimpleBooleanProperty(true));
 
         controller.getPasteMenuItem().setOnAction((e) -> {
             e.consume();
@@ -238,11 +242,9 @@ public class InputTab extends TextViewTab {
             textArea.replaceSelection(textArea.getSelectedText() + textArea.getSelectedText());
         });
         controller.getDuplicateMenuItem().disableProperty().bind(getTextArea().selectedTextProperty().length().isEqualTo(0));
-
-
     }
 
-    private void loadFile(String fileName) {
+    public void loadFile(String fileName) {
         final StringBuilder buf = new StringBuilder();
         try (BufferedReader r = new BufferedReader(new InputStreamReader(Basic.getInputStreamPossiblyZIPorGZIP(fileName)))) {
             String aLine;
