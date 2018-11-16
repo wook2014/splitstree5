@@ -104,7 +104,7 @@ public class RunWorkflow extends Application {
         options.comment("Input Output:");
         final File inputWorkflowFile = new File(options.getOptionMandatory("-w", "workflow", "File containing SplitsTree5 workflow", ""));
         String[] inputFiles = options.getOptionMandatory("-i", "input", "File(s) containing input data (or directory)", new String[0]);
-        String inputFormat = options.getOption("-f", "format", "Input format", ImporterManager.getInstance().getAllFileFormats(), "Unknown");
+        String inputFormat = options.getOption("-f", "format", "Input format", ImporterManager.getInstance().getAllFileFormats(), UNKNOWN);
         String[] outputFiles = options.getOption("-o", "output", "Output file(s) (or directory or stdout)", new String[]{"stdout"});
 
         options.comment(ArgsOptions.OTHER);
@@ -196,9 +196,9 @@ public class RunWorkflow extends Application {
             };
 
             final String dataType = ImporterManager.getInstance().getDataType(inputFile);
-            final String fileFormat = (inputFormat.length() == 0 ? ImporterManager.getInstance().getFileFormat(inputFile) : inputFormat);
+            final String fileFormat = (inputFormat.equalsIgnoreCase(UNKNOWN) ? ImporterManager.getInstance().getFileFormat(inputFile) : inputFormat);
 
-            if (!dataType.equals(UNKNOWN) && !fileFormat.equals(UNKNOWN)) {
+            if (!dataType.equalsIgnoreCase(UNKNOWN) && !fileFormat.equalsIgnoreCase(UNKNOWN)) {
                 final IImporter importer = ImporterManager.getInstance().getImporterByDataTypeAndFileFormat(dataType, fileFormat);
                 if (importer == null)
                     throw new IOException("Can't open file '" + inputFile + "': Unknown data type or file format");
