@@ -37,6 +37,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public class MessageWindow {
     private static MessageWindow instance;
@@ -63,6 +67,7 @@ public class MessageWindow {
             stage.setHeight(150);
         }
         stage.setTitle("Message Window - " + ProgramProperties.getProgramName());
+        stage.setOnCloseRequest((c) -> setVisible(false));
 
         printStream = createPrintStream(controller.getTextArea());
 
@@ -84,7 +89,6 @@ public class MessageWindow {
         controller.getClearMenuItem().setOnAction((e) -> controller.getTextArea().clear());
         controller.getClearMenuItem().disableProperty().bind(controller.getTextArea().textProperty().isEmpty());
 
-
         visible.bind(stage.showingProperty());
         setVisible(true);
     }
@@ -98,15 +102,16 @@ public class MessageWindow {
     public void setVisible(boolean visible) {
         if (visible) {
             if (!stage.isShowing()) {
-                stage.show();
-                Basic.restoreSystemOut(printStream);
-                Basic.restoreSystemErr(printStream);
-
+                {
+                    stage.show();
+                    Basic.restoreSystemOut(printStream);
+                    Basic.restoreSystemErr(printStream);
+                }
+                stage.toFront();
+                stage.getIcons().setAll(ProgramProperties.getProgramIcons()); // seem to need to refresh these
+            } else if (!stage.isFocused()) {
+                stage.toFront();
             }
-            stage.toFront();
-            stage.getIcons().setAll(ProgramProperties.getProgramIcons()); // seem to need to refresh these
-        } else if (!stage.isFocused()) {
-            stage.toFront();
         } else { // is showing and has focus, hide
             if (stage.isShowing()) {
                 Basic.restoreSystemOut();
@@ -117,7 +122,7 @@ public class MessageWindow {
     }
 
     public boolean isVisible() {
-        return stage.isShowing();
+        return visible.get();
     }
 
     public static BooleanProperty visibleProperty() {
@@ -153,95 +158,99 @@ public class MessageWindow {
     }
 
     private PrintStream createPrintStream(TextArea textArea) {
+        // will queue lines and print out sparingly
+        final BlockingQueue<String> lines = new LinkedBlockingQueue<>();
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+            if (lines.size() > 0) {
+                Platform.runLater(() -> {
+                    final long start = System.currentTimeMillis();
+                    while (lines.size() > 0) {
+                        final String line = lines.remove();
+                        MessageWindow.this.append(textArea, line);
+                        if (System.currentTimeMillis() - start > 100)
+                            break;
+                    }
+                });
+            }
+        }, 0, 100, TimeUnit.MILLISECONDS);
+
         return new PrintStream(System.out) {
             public void println(String x) {
-                MessageWindow.this.append(textArea, x);
-                MessageWindow.this.append(textArea, "\n");
+                lines.add(x);
+                lines.add("\n");
             }
 
             public void print(String x) {
-                MessageWindow.this.append(textArea, x);
+                lines.add(x);
             }
 
             public void println(Object x) {
-                MessageWindow.this.append(textArea, x.toString());
-                MessageWindow.this.append(textArea, "\n");
+                lines.add(x + "\n");
             }
 
             public void print(Object x) {
-                MessageWindow.this.append(textArea, x.toString());
+                lines.add(x.toString());
             }
 
             public void println(boolean x) {
-                MessageWindow.this.append(textArea, "" + x);
-                MessageWindow.this.append(textArea, "\n");
+                lines.add(x + "\n");
             }
 
             public void print(boolean x) {
-                MessageWindow.this.append(textArea, "" + x);
+                lines.add("" + x);
             }
 
             public void println(int x) {
-                MessageWindow.this.append(textArea, "" + x);
-                MessageWindow.this.append(textArea, "\n");
+                lines.add(x + "\n");
             }
 
             public void print(int x) {
-                MessageWindow.this.append(textArea, "" + x);
+                lines.add("" + x);
             }
 
             public void println(float x) {
-                MessageWindow.this.append(textArea, "" + x);
-                MessageWindow.this.append(textArea, "\n");
+                lines.add(x + "\n");
             }
 
             public void print(float x) {
-                MessageWindow.this.append(textArea, "" + x);
+                lines.add("" + x);
             }
 
             public void println(char x) {
-                MessageWindow.this.append(textArea, "" + x);
-                MessageWindow.this.append(textArea, "\n");
+                lines.add(x + "\n");
             }
 
             public void print(char x) {
-                MessageWindow.this.append(textArea, "" + x);
+                lines.add("" + x);
             }
 
             public void println(double x) {
-                MessageWindow.this.append(textArea, "" + x);
-                MessageWindow.this.append(textArea, "\n");
+                lines.add(x + "\n");
             }
 
             public void print(double x) {
-                MessageWindow.this.append(textArea, "" + x);
-            }
-
-            public void println(char[] x) {
-                MessageWindow.this.append(textArea, Basic.toString(x));
-                MessageWindow.this.append(textArea, "\n");
-            }
-
-            public void print(char[] x) {
-                MessageWindow.this.append(textArea, Basic.toString(x));
+                lines.add("" + x);
             }
 
             public void println(long x) {
-                MessageWindow.this.append(textArea, "" + x);
-                MessageWindow.this.append(textArea, "\n");
+                lines.add(x + "\n");
             }
 
             public void print(long x) {
-                MessageWindow.this.append(textArea, "" + x);
+                lines.add("" + x);
+            }
+
+
+            public void println(char[] x) {
+                lines.add(Basic.toString(x) + "\n");
+            }
+
+            public void print(char[] x) {
+                lines.add(Basic.toString(x));
             }
 
             public void write(byte[] buf, int off, int len) {
-                for (int i = 0; i < len; i++)
-                    write(buf[off + i]);
-            }
-
-            public void write(byte b) {
-                print((char) b);
+                lines.add(new String(buf, off, len));
             }
 
             public void setError() {
@@ -255,6 +264,4 @@ public class MessageWindow {
             }
         };
     }
-
-
 }
