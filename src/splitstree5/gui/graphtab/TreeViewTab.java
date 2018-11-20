@@ -56,7 +56,6 @@ public class TreeViewTab extends Graph2DTab<PhyloTree> {
         setIcon(ResourceManager.getIcon("TreeViewer16.gif"));
     }
 
-
     /**
      * show the tree
      */

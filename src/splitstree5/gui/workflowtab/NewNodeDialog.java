@@ -63,9 +63,13 @@ import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import jloda.fx.ExtendedFXMLLoader;
+import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 import splitstree5.core.algorithms.Algorithm;
+import splitstree5.core.algorithms.views.TreeEmbedder;
+import splitstree5.core.algorithms.views.TreesGrid;
 import splitstree5.core.datablocks.DataBlock;
+import splitstree5.core.datablocks.ViewerBlock;
 import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.Workflow;
@@ -73,6 +77,7 @@ import splitstree5.undo.UndoableRedoableCommand;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * displays the new node dialog and creates a new node, if desired
@@ -105,6 +110,12 @@ public class NewNodeDialog {
 
         controller.getTargetDataComboBox().valueProperty().addListener((observable, oldValue, newValue) -> {
             controller.getAlgorithmChoiceBox().getItems().setAll((new Connector(workflow.getWorkingTaxaBlock(), sourceNode, new DataNode(newValue), false)).getAllAlgorithms());
+            if (newValue instanceof ViewerBlock.TreeViewerBlock)
+                removeAlgorithm(controller.getAlgorithmChoiceBox().getItems(), TreesGrid.class);
+            if (newValue instanceof ViewerBlock.TreesGridBlock)
+                removeAlgorithm(controller.getAlgorithmChoiceBox().getItems(), TreeEmbedder.class);
+
+            controller.getAlgorithmChoiceBox().getItems().remove(new TreesGrid());
             controller.getAlgorithmChoiceBox().getSelectionModel().select(0);
         });
 
@@ -132,6 +143,16 @@ public class NewNodeDialog {
         stage.setAlwaysOnTop(true);
 
         stage.showAndWait();
+    }
+
+    private static void removeAlgorithm(List<? extends Algorithm> algorithms, Class clazz) {
+        final String name = Basic.getShortName(clazz);
+        for (Algorithm algorithm : algorithms) {
+            if (Basic.getShortName(algorithm.getClass()).equals(name)) {
+                algorithms.remove(algorithm);
+                break;
+            }
+        }
     }
 
     /**

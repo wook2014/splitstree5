@@ -90,7 +90,7 @@ public class TreesGrid extends Algorithm<TreesBlock, ViewerBlock> implements IFr
             viewTab.setDataNode(child.getDataNode());
 
             if (parent.getNTrees() > 0) {
-                final PhyloTree tree = parent.getTrees().get(0);
+                final PhyloTree tree = parent.getTrees().get(t);
                 viewTab.init(tree);
 
                 if (tree.getRoot() == null && tree.getNumberOfNodes() > 0) {

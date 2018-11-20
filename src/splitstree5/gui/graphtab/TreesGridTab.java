@@ -25,6 +25,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.GridPane;
 import jloda.fx.ZoomableScrollPane;
 import jloda.phylo.PhyloTree;
@@ -64,7 +65,9 @@ public class TreesGridTab extends GraphTabBase<PhyloTree> {
         setRows(rows);
         setCols(cols);
         gridPane = new GridPane();
-        // gridPane.getChildren().clear();
+        gridPane.setHgap(5);
+        gridPane.setVgap(5);
+        gridPane.setGridLinesVisible(false);
     }
 
     /**
@@ -75,6 +78,7 @@ public class TreesGridTab extends GraphTabBase<PhyloTree> {
     public TreeViewTab getCurrent(int current) {
         final TreeViewTab treeViewTab = new TreeViewTab(false);
         treeViewTab.getContent().setUserData(treeViewTab);
+        treeViewTab.getBorderPane().setBorder(Border.EMPTY);
         gridPane.add(treeViewTab.getContent(), current % getCols(), current / getCols());
         return treeViewTab;
     }
@@ -107,6 +111,8 @@ public class TreesGridTab extends GraphTabBase<PhyloTree> {
                     ((TreeViewTab) child.getUserData()).show();
                 }
             }
+
+            zoomableScrollPane.zoomBy(2, 2);
         });
     }
 

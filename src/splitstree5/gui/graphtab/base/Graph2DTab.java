@@ -22,6 +22,7 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.ScrollPane;
@@ -101,6 +102,7 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
             try {
                 if (centerPane.getChildren().size() == 0) {
                     centerPane.getChildren().add(scaleBar);
+
                     scaleBar.setFactorX(scaleChangeX.get());
                     final Group world = new Group();
                     world.getChildren().add(group);
@@ -175,9 +177,10 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
                 */
                 }
             } else { // no scrollpane
-                centerPane.setPrefWidth(100);
-                centerPane.setPrefHeight(100);
-                centerPane.setStyle("-fx-border-color: black");
+                centerPane.setPadding(new Insets(10, 10, 2, 10));
+                centerPane.setPrefWidth(120);
+                centerPane.setPrefHeight(120);
+                //centerPane.setStyle("-fx-border-color: black");
             }
         });
     }

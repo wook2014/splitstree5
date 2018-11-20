@@ -283,10 +283,10 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
             }
 
             if (optionLayout == GraphLayout.LeftToRight) {
-                factorX = (float) (target.getWidth() - 50) / (maxX - minX);
-                factorY = (float) (target.getHeight() - 50) / (maxY - minY);
+                factorX = (float) (target.getWidth() > 50 ? target.getWidth() - 50 : 50) / (maxX - minX);
+                factorY = (float) (target.getHeight() > 50 ? target.getHeight() - 50 : 50) / (maxY - minY);
             } else {
-                factorX = factorY = (float) Math.min(((target.getWidth() - 50) / (maxX - minX)), ((target.getHeight() - 50) / (maxY - minY)));
+                factorX = factorY = (float) Math.min(((target.getWidth() > 50 ? target.getWidth() - 50 : 50) / (maxX - minX)), ((target.getHeight() > 50 ? target.getHeight() - 50 : 50) / (maxY - minY)));
             }
         }
         float midX = 0.5f * (maxX + minX);

@@ -45,6 +45,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import jloda.find.FindToolBar;
 import splitstree5.core.workflow.DataNode;
@@ -72,6 +73,7 @@ public abstract class ViewerTab extends Tab {
         contentProperty().addListener((c, o, n) -> {
             if (n != borderPane) {
                 borderPane.setCenter(n);
+                borderPane.setBorder(Border.EMPTY);
                 setContent(borderPane);
             }
         });

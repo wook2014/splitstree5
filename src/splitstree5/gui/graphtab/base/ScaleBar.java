@@ -47,8 +47,8 @@ public class ScaleBar extends AnchorPane {
 
         pane.getChildren().add(numberAxis);
 
-        AnchorPane.setLeftAnchor(pane, 20.0);
-        AnchorPane.setBottomAnchor(pane, 20.0);
+        AnchorPane.setLeftAnchor(pane, 5.0);
+        AnchorPane.setBottomAnchor(pane, 2.0);
         getChildren().add(pane);
 
         numberAxis.setSide(Side.TOP);

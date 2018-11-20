@@ -33,10 +33,7 @@ import javafx.scene.control.Labeled;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import jloda.find.EdgeLabelSearcher;
 import jloda.find.FindToolBar;
@@ -114,8 +111,10 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
      * constructor
      */
     public GraphTabBase() {
+        borderPane.setBorder(Border.EMPTY);
         setContent(centerPane); // first need to set this here and then later set to center of root node...
         centerPane.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
+        centerPane.setBorder(Border.EMPTY);
 
         // setup find / replace tool bar:
         {
@@ -282,7 +281,8 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
                                     if (taxon != null)
                                         document.getTaxaSelectionModel().select(taxon);
                                     for (Integer taxId : graph.getTaxa(v)) {
-                                        document.getTaxaSelectionModel().select(taxaBlock.get(taxId));
+                                        if (taxId <= taxaBlock.getNtax())
+                                            document.getTaxaSelectionModel().select(taxaBlock.get(taxId));
                                     }
                                 }
                             }
@@ -297,7 +297,8 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
                                     if (taxon != null)
                                         document.getTaxaSelectionModel().clearSelection(taxon);
                                     for (Integer taxId : graph.getTaxa(v)) {
-                                        document.getTaxaSelectionModel().clearSelection(taxaBlock.get(taxId));
+                                        if (taxId <= taxaBlock.getNtax())
+                                            document.getTaxaSelectionModel().clearSelection(taxaBlock.get(taxId));
                                     }
                                 }
                             }
