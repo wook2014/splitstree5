@@ -63,11 +63,13 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
 
     private double optionMinWeight = 0.00001;
 
+    private boolean optionOnePerTree = false;
+
     public final static String DESCRIPTION = "Computes the anti-consensus of trees";
 
     @Override
     public List<String> listOptions() {
-        return Arrays.asList("optionSinRank", "optionAllSinsUpToRank", "optionMaxDistortion", "optionMinSpanPercent", "optionMinWeight", "optionReferenceTree");
+        return Arrays.asList("optionSinRank", "optionAllSinsUpToRank", "optionMaxDistortion", "optionMinSpanPercent", "optionMinWeight", "optionReferenceTree", "optionMultipleSINsPerTree");
     }
 
     @Override
@@ -319,17 +321,30 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         if (getOptionSinRank() >= listOfSins.size())
             setOptionSinRank(listOfSins.size());
 
+        if (isOptionOnePerTree()) {
+            BitSet trees = new BitSet();
+            ArrayList<SIN> toKeep = new ArrayList<>();
+            for (int i = 0; i < listOfSins.size(); i++) {
+                final SIN sin = listOfSins.get(i);
+                if (!trees.get(sin.getTree())) {
+                    trees.set(sin.getTree());
+                    toKeep.add(sin);
+                }
+            }
+            listOfSins.clear();
+            listOfSins.addAll(toKeep);
+        }
+
         for (int i = 0; i < Math.min(100, listOfSins.size()); i++) {
-            final SIN sins = listOfSins.get(i);
-            sins.setRank(i + 1);
-            System.out.println(sins);
+            final SIN sin = listOfSins.get(i);
+            sin.setRank(i + 1);
+            System.out.println(sin);
             if (showTrees) {
-                System.err.println(reportTree(taxaBlock, referenceSplits, sins.getSplits()) + ";");
+                System.err.println(reportTree(taxaBlock, referenceSplits, sin.getSplits()) + ";");
             }
         }
         if (listOfSins.size() > 100)
             System.out.println("(" + (listOfSins.size() - 100) + " more)");
-
 
         splitsBlock.getSplits().addAll(referenceSplits.getSplits());
 
@@ -530,6 +545,17 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         return "By default, uses the majority consensus as the reference 'species' tree. Alternatively, the first or last input tree can be used";
     }
 
+    public boolean isOptionOnePerTree() {
+        return optionOnePerTree;
+    }
+
+    public void setOptionOnePerTree(boolean optionOnePerTree) {
+        this.optionOnePerTree = optionOnePerTree;
+    }
+
+    public String getShortDescriptionOnePerTree() {
+        return "Report at most one SIN per input tree";
+    }
 
     @Override
     public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent) {
