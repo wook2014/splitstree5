@@ -22,6 +22,7 @@ package splitstree5.main;
 import com.briksoftware.javafx.platform.osx.OSXIntegration;
 import javafx.application.Application;
 import javafx.stage.Stage;
+import jloda.fx.ProgramExecutorService;
 import jloda.fx.SplashScreen;
 import jloda.util.ArgsOptions;
 import jloda.util.Basic;
@@ -85,7 +86,7 @@ public class SplitsTree5 extends Application {
         final String propertiesFile = options.getOption("-p", "propertiesFile", "Properties file", defaultPreferenceFile);
         final boolean showVersion = options.getOption("-V", "version", "Show version string", false);
         final boolean silentMode = options.getOption("-S", "silentMode", "Silent mode", false);
-
+        ProgramExecutorService.setMaxNumberOfTheadsForParallelAlgorithm(options.getOption("-t", "threads", "Maximum number of threads to use in a parallel algorithm (0=all available)", 0));
         options.done();
 
         ProgramProperties.load(propertiesFile);

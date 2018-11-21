@@ -1368,6 +1368,22 @@ public class Basic {
             }
         };
     }
+
+    public static int min(int... values) {
+        int result = Integer.MAX_VALUE;
+        for (int value : values) {
+            result = Math.min(result, value);
+        }
+        return result;
+    }
+
+    public static int max(int... values) {
+        int result = Integer.MIN_VALUE;
+        for (int value : values) {
+            result = Math.max(result, value);
+        }
+        return result;
+    }
 }
 
 /**
