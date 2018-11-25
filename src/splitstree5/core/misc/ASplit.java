@@ -27,7 +27,7 @@ import java.util.BitSet;
  * simple split implementation
  * Daniel Huson, 12/9/16.
  */
-public final class ASplit {
+public final class ASplit implements Comparable<ASplit> {
     private final BitSet A;
     private final BitSet B;
     private double weight;
@@ -275,5 +275,13 @@ public final class ASplit {
         result.setConfidence(this.getConfidence());
         result.setLabel(this.label);
         return result;
+    }
+
+    public int compareTo(ASplit other) {
+        int result = BitSetUtils.compare(getPartContaining(1), other.getPartContaining(1));
+        if (result == 0)
+            result = BitSetUtils.compare(getPartNotContaining(1), other.getPartNotContaining(1));
+        return result;
+
     }
 }

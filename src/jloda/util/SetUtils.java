@@ -22,6 +22,10 @@ package jloda.util;
 import java.util.Collection;
 import java.util.Iterator;
 
+/**
+ * some simple set utilities
+ * Daniel HUson, 2018
+ */
 public class SetUtils {
 
     /**

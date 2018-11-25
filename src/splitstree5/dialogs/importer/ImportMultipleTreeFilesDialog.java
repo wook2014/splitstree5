@@ -83,13 +83,15 @@ public class ImportMultipleTreeFilesDialog {
                             else {
                                 final TaxaBlock taxaBlock = new TaxaBlock();
                                 final TreesBlock treesBlock = new TreesBlock();
+
                                 newickTreeImporter.parse(getProgressListener(), file.getPath(), taxaBlock, treesBlock);
+
                                 // name trees after the file that contains them:
                                 if (treesBlock.getNTrees() == 1)
                                     treesBlock.getTree(1).setName(Basic.replaceFileSuffix(file.getName(), ""));
                                 else if (treesBlock.getNTrees() > 1) {
                                     for (int t = 1; t <= treesBlock.getNTrees(); t++) {
-                                        treesBlock.getTree(1).setName(Basic.replaceFileSuffix(file.getName(), "-" + t));
+                                        treesBlock.getTree(t).setName(Basic.replaceFileSuffix(file.getName(), "-" + t));
                                     }
                                 }
 

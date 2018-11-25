@@ -86,10 +86,9 @@
                     </accelerator>
                 </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false"/>
-                <Menu text="Tools">
+                <Menu fx:id="toolsMenu" text="Tools">
                     <items>
-                        <MenuItem fx:id="importMultipleTreeFilesMenuItem"
-                                  text="Import Trees from Multiple Files...">
+                        <MenuItem fx:id="importMultipleTreeFilesMenuItem" text="Import Trees from Multiple Files...">
                             <accelerator>
                                 <KeyCodeCombination alt="UP" code="I" control="UP" meta="UP" shift="DOWN"
                                                     shortcut="DOWN"/>
@@ -359,8 +358,7 @@
                 <MenuItem fx:id="medianJoiningMenuItem" text="Median Joining Network"/>
                 <MenuItem fx:id="minSpanningNetworkMenuItem" text="Min Spanning Network"/>
                 <SeparatorMenuItem mnemonicParsing="false"/>
-                <MenuItem fx:id="consensusClusterNetworkMenuItem"
-                          text="Consensus Cluster Network"/>
+                <MenuItem fx:id="consensusClusterNetworkMenuItem" text="Consensus Cluster Network"/>
                 <MenuItem fx:id="hybridizationNetworkMenuItem" text="Hybridization Network"/>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="splitsNetworkViewMenuItem" text="Splits Network View"/>
@@ -386,13 +384,10 @@
         <Menu text="Analysis">
             <items>
                 <MenuItem fx:id="showBootStrapTreeMenuItem" text="Show Bootstrap Tree..."/>
-                <MenuItem fx:id="showBootStrapNetworkMenuItem"
-                          text="Show Bootstrap Network..."/>
+                <MenuItem fx:id="showBootStrapNetworkMenuItem" text="Show Bootstrap Network..."/>
                 <SeparatorMenuItem mnemonicParsing="false"/>
-                <MenuItem fx:id="estimateInvariableSitesMenuItem"
-                          text="Esimate Invariable Sites..."/>
-                <MenuItem fx:id="computePhylogeneticDiversityMenuItem"
-                          text="Compute Phylogenetic Diversity"/>
+                <MenuItem fx:id="estimateInvariableSitesMenuItem" text="Esimate Invariable Sites..."/>
+                <MenuItem fx:id="computePhylogeneticDiversityMenuItem" text="Compute Phylogenetic Diversity"/>
                 <MenuItem fx:id="computeDeltaScoreMenuItem" text="Compute Delta Score"/>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="showWorkflowMenuItem" text="Show Workflow"/>

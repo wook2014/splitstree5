@@ -78,6 +78,9 @@ public class MenuController {
     private MenuItem replaceDataMenuItem;
 
     @FXML
+    private Menu toolsMenu;
+
+    @FXML
     private MenuItem exportWorkflowMenuItem;
 
     @FXML
@@ -889,6 +892,7 @@ public class MenuController {
         alwaysOnMenuItems.add(quitMenuItem);
         alwaysOnMenuItems.add(openRecentMenu);
         alwaysOnMenuItems.add(showWorkflowMenuItem);
+        alwaysOnMenuItems.add(toolsMenu);
     }
 
     /**

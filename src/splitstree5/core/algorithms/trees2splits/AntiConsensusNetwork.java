@@ -90,7 +90,8 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         boolean showTrees = false;
 
         System.err.println("Computing anti-consensus network...");
-        // 1. compute the majority consensus splits and tree
+
+        // 1. compute the references splits and tree
         final SplitsBlock referenceSplits = new SplitsBlock();
 
         final int firstTreeToUse;
@@ -166,14 +167,15 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
             minSpan = (totalWeightNonTrivialReferenceSplits * getOptionMinSpanPercent()) / 100;
         }
 
-        // consider each tree in turn:
+        // 2. consider each tree in turn:
         progress.setTasks("Anti-consensus", "Comparing majority tree with gene trees");
         progress.setMaximum(lastTreeToUse - firstTreeToUse + 1);
         progress.setProgress(0);
         final ArrayList<SIN> listOfSins = new ArrayList<>();
 
         final ExecutorService executor = ProgramExecutorService.getInstance();
-        final int numberOfThreads = Math.max(1, Basic.min(lastTreeToUse - firstTreeToUse + 1, ProgramExecutorService.getMaxNumberOfTheadsForParallelAlgorithm(), Runtime.getRuntime().availableProcessors()));
+        final int numberOfThreads = Math.max(1, Basic.min(lastTreeToUse - firstTreeToUse + 1,
+                ProgramExecutorService.getMaxNumberOfTheadsForParallelAlgorithm(), Runtime.getRuntime().availableProcessors()));
         final CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
         final Single<Exception> exception = new Single<>();
 
@@ -202,16 +204,16 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
                         final Map<BitSet, BitSet> splitSet2Incompatibilities = new HashMap<>();
 
                         for (ASplit split : splits) {
-                            final int distortion;
-                            final double incompatiblitySpan;
+                            final int distortion = Distortion.computeDistortionForSplit(referenceTree, split.getA(), split.getB());
 
-                            splitSet2Incompatibilities.put(split.getSmallerPart(), new BitSet());
-                            distortion = Distortion.computeDistortionForSplit(referenceTree, split.getA(), split.getB());
-                            incompatiblitySpan = computeTotalWeightOfIncompatibleReferenceSplits(split, referenceSplits, splitSet2Incompatibilities.get(split.getSmallerPart()));
+                            final BitSet incompatibilities = new BitSet();
+                            final double incompatiblitySpan = computeTotalWeightOfIncompatibleReferenceSplits(split, referenceSplits, incompatibilities);
+
                             if (distortion > 0 && distortion <= getOptionMaxDistortion()) {
-                                // previous line also computes split2incompatibilities mapping
                                 split.setConfidence(incompatiblitySpan);
                                 splitsWithDistortion.add(split);
+                                // previous line also computes split2incompatibilities mapping
+                                splitSet2Incompatibilities.put(split.getSmallerPart(), incompatibilities);
                             }
                         }
 
@@ -247,7 +249,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
                                 }
                             }
                         } else if (getOptionMaxDistortion() > 1) {
-                            ArrayList<Pair<SIN, Node>> consideredSins = new ArrayList<>();
+                            final ArrayList<Pair<SIN, Node>> consideredSins = new ArrayList<>();
                             for (Node u : coverageGraph.nodes()) {
                                 if (u.getInDegree() == 0) // is not covered by any other split
                                 {
@@ -262,7 +264,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
                                             queue.add(w);
                                         }
                                         while (queue.size() > 0) {
-                                            Node v = queue.remove();
+                                            final Node v = queue.remove();
                                             final ASplit splitV = (ASplit) v.getInfo();
 
                                             sin.add(splitV);
@@ -271,7 +273,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
                                             }
                                         }
                                         if (sin.getTotalWeight() >= 0.01 * getOptionMinWeight()) {
-                                            ArrayList<Pair<SIN, Node>> toDelete = new ArrayList<>();
+                                            final ArrayList<Pair<SIN, Node>> toDelete = new ArrayList<>();
                                             boolean ok = true;
                                             for (Pair<SIN, Node> pair : consideredSins) {
                                                 final SIN other = pair.get1();
@@ -316,16 +318,17 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         if (exception.get() != null)
             throw exception.get();
 
+        // 3. sort SINs by decreasing span:
+
         listOfSins.sort(sinsComparator());
 
         if (getOptionSinRank() >= listOfSins.size())
             setOptionSinRank(listOfSins.size());
 
         if (isOptionOnePerTree()) {
-            BitSet trees = new BitSet();
-            ArrayList<SIN> toKeep = new ArrayList<>();
-            for (int i = 0; i < listOfSins.size(); i++) {
-                final SIN sin = listOfSins.get(i);
+            final BitSet trees = new BitSet();
+            final ArrayList<SIN> toKeep = new ArrayList<>();
+            for (final SIN sin : listOfSins) {
                 if (!trees.get(sin.getTree())) {
                     trees.set(sin.getTree());
                     toKeep.add(sin);
@@ -356,16 +359,25 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
             NotificationManager.showInformation(sins.toString());
             splitsBlock.getSplits().addAll(sins.getSplits());
         } else {
+            final Map<BitSet, ASplit> splitSets2Splits = new HashMap<>();
             for (int i = 0; i < getOptionSinRank(); i++) {
                 final SIN sins = listOfSins.get(i);
-                splitsBlock.getSplits().addAll(sins.getSplits());
+                for (ASplit split : sins.getSplits()) {
+                    final ASplit other = splitSets2Splits.get(split.getSmallerPart());
+                    if (other == null || other.getWeight() < split.getWeight()) {
+                        splitSets2Splits.put(split.getSmallerPart(), split);
+                    }
+                }
             }
+            splitsBlock.getSplits().addAll(splitSets2Splits.values());
+
             NotificationManager.showInformation("Computed anti-consensus using top " + getOptionSinRank() + " SINs");
         }
+
     }
 
     /**
-     * is given sin better than other? That is, does sin have a bigger score and overlap with other
+     * is given a sin better than other? That is, does sin have a bigger score and overlap with other
      *
      * @param sin
      * @param other
@@ -408,7 +420,6 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
      */
     private static Graph computeCoverageDAG(Collection<ASplit> splits, Map<BitSet, BitSet> split2incompatibilities) {
         final Graph graph = new PhyloGraph();
-
         final Map<BitSet, Node> split2nodeMap = new HashMap<>();
 
         for (ASplit split : splits) {
@@ -449,7 +460,6 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         }
         return graph;
     }
-
 
     /**
      * determine all splits that are incompatible to the given split and return their total weight
@@ -562,17 +572,6 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         return !parent.isPartial();
     }
 
-    public static Comparator<SIN> sinsComparator() {
-        return (a, b) -> {
-            if (a.getSpanPercent() > b.getSpanPercent())
-                return -1;
-            else if (a.getSpanPercent() < b.getSpanPercent())
-                return 1;
-            else
-                return -Integer.compare(a.getSplits().size(), b.getSplits().size());
-        };
-    }
-
     /**
      * reports the tree associated with a SIN
      *
@@ -605,6 +604,35 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         return tree.toBracketString(true);
     }
 
+    public static Comparator<SIN> sinsComparator() {
+        return (a, b) -> {
+            if (a.getSpanPercent() > b.getSpanPercent())
+                return -1;
+            else if (a.getSpanPercent() < b.getSpanPercent())
+                return 1;
+            else if (a.getTotalWeight() > b.getTotalWeight())
+                return -1;
+            else if (a.getTotalWeight() < b.getTotalWeight())
+                return 1;
+            else {
+                final Iterator<ASplit> aIt = a.getSplits().iterator();
+                final Iterator<ASplit> bIt = b.getSplits().iterator();
+
+                while (aIt.hasNext() && bIt.hasNext()) {
+                    final int value = aIt.next().compareTo(bIt.next());
+                    if (value != 0)
+                        return value;
+                }
+                if (aIt.hasNext())
+                    return -1;
+                else if (bIt.hasNext())
+                    return 1;
+                else
+                    return 0;
+            }
+        };
+    }
+
     /**
      * set of strongly incompatible (SIN) splits
      */
@@ -613,7 +641,6 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         private final String treeName;
         private final double spanPercent;
         private final int distortion;
-
 
         private final ArrayList<ASplit> splits = new ArrayList<>();
         private double totalWeight = 0;

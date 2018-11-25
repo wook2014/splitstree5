@@ -60,6 +60,10 @@ public class AuxWindow implements IStageSupplier {
             menuController = extendedFXMLLoader.getController();
         }
 
+        if (tab instanceof SplitsViewTab) {
+            menuController.setMainWindow(((SplitsViewTab) tab).getMainWindow());
+        }
+
         final Stage stage = new Stage();
         stage.getIcons().setAll(ProgramProperties.getProgramIcons());
 
