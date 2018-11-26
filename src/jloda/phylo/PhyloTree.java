@@ -212,7 +212,7 @@ public class PhyloTree extends PhyloGraph {
         if (translate == null || translate.size() == 0) {
             this.write(writer, showWeights);
         } else {
-            PhyloTree tmpTree = new PhyloTree();
+            final PhyloTree tmpTree = new PhyloTree();
             tmpTree.copy(this);
             for (Node v = tmpTree.getFirstNode(); v != null; v = v.getNext()) {
                 final String key = tmpTree.getLabel(v);

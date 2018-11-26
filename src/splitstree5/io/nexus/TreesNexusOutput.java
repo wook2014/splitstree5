@@ -65,7 +65,7 @@ public class TreesNexusOutput extends NexusIOBase implements INexusOutput<TreesB
             }
             w.write(";\n");
         } else
-            translator = null;
+            translator = computeTranslationNumber2Name(taxaBlock);
 
         w.write("[TREES]\n");
         int t = 1;
@@ -88,6 +88,20 @@ public class TreesNexusOutput extends NexusIOBase implements INexusOutput<TreesB
         final Map<String, String> translation = new HashMap<>();
         for (Taxon taxon : taxaBlock.getTaxa()) {
             translation.put(taxon.getName(), "" + taxaBlock.indexOf(taxon));
+        }
+        return translation;
+    }
+
+    /**
+     * compute translation from taxon names to number
+     *
+     * @param taxaBlock
+     * @return translation
+     */
+    private static Map<String, String> computeTranslationNumber2Name(TaxaBlock taxaBlock) {
+        final Map<String, String> translation = new HashMap<>();
+        for (Taxon taxon : taxaBlock.getTaxa()) {
+            translation.put("" + taxaBlock.indexOf(taxon), taxon.getName());
         }
         return translation;
     }

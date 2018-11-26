@@ -73,8 +73,7 @@ public class ConsensusTreeSplits extends Algorithm<TreesBlock, SplitsBlock> impl
         consensusNetwork.compute(progress, taxaBlock, parent, consensusSplits);
 
         if (getOptionConsensus().equals(Consensus.Greedy)) {
-            final ArrayList<ASplit> list = new ArrayList<>(consensusSplits.size());
-            consensusSplits.getSplits().addAll(consensusSplits.getSplits());
+            final ArrayList<ASplit> list = new ArrayList<>(consensusSplits.getSplits());
             list.sort((s1, s2) -> {
                 if (s1.getWeight() > s2.getWeight())
                     return -1;
