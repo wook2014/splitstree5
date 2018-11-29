@@ -46,6 +46,7 @@ public class StockholmImporter extends CharactersFormat implements IToCharacters
 
                 String label = line.substring(0, labelIndex);
                 String seq = line.substring(labelIndex).replaceAll("\\s+", "");
+                seq = seq.replaceAll("\\.", "-");
 
                 taxonNamesFound.add(label);
                 String allowedChars = "" + getMissing() + getMatchChar() + getGap();

@@ -60,14 +60,14 @@ public class NexmlCharactersHandler extends DefaultHandler {
         // CHARACTERS INFO
         else if (qName.equalsIgnoreCase("characters")) {
             String type = attributes.getValue("xsi:type");
-            System.out.println(type);
+            //System.out.println(type);
             if (type.contains("Cells"))
                 bCells = true;
             type = type.replaceAll("nex:", "");
             type = type.replaceAll("Seqs", "");
             type = type.replaceAll("Cells", "");
             dataType = CharactersType.valueOfIgnoreCase(type);
-            System.out.println(dataType);
+            //System.out.println(dataType);
         } else if (qName.equalsIgnoreCase("format") && bCells) {
             column2state = new HashMap<>();
             id2states = new HashMap<>();
@@ -120,14 +120,14 @@ public class NexmlCharactersHandler extends DefaultHandler {
     public void endElement(String uri,
                            String localName, String qName) throws SAXException {
         if (qName.equalsIgnoreCase("otus")) {
-            System.out.println("End Element :" + qName);
+            //System.out.println("End Element :" + qName);
         } else if (qName.equalsIgnoreCase("states") && bCells) {
             id2states.put(currentStatesID, states2symbols);
         } else if (qName.equalsIgnoreCase("row") && bCells) {
-            matrix.add(tmp.toString());
-            System.out.println(tmp);
+            matrix.add(tmp.toString().replaceAll("\\s+", ""));
+            //System.out.println(tmp);
         } else if (qName.equalsIgnoreCase("seq")) {
-            matrix.add(tmp.toString());
+            matrix.add(tmp.toString().replaceAll("\\s+", ""));
             //System.out.println(tmp);
             bSeq = false;
         }
@@ -161,13 +161,13 @@ public class NexmlCharactersHandler extends DefaultHandler {
         nchar = matrix.get(0).length();
         char[][] charMatrix = new char[ntax][nchar];
 
-        System.err.println("Matrix");
+        //System.err.println("Matrix");
         for (int i = 0; i < ntax; i++) {
-            System.err.println();
+            //System.err.println();
             for (int j = 0; j < nchar; j++) {
                 // todo : check if char corresponds to the datatype
                 charMatrix[i][j] = matrix.get(i).charAt(j);
-                System.err.print(charMatrix[i][j]);
+                //System.err.print(charMatrix[i][j]);
             }
         }
         return charMatrix;

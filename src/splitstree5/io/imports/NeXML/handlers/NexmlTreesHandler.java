@@ -28,17 +28,17 @@ public class NexmlTreesHandler extends DefaultHandler {
         if (qName.equalsIgnoreCase("otus")) {
             String label = attributes.getValue("label");
             String id = attributes.getValue("id");
-            System.out.println("Label : " + label);
-            System.out.println("ID : " + id);
+            //System.out.println("Label : " + label);
+            //System.out.println("ID : " + id);
         } else if (qName.equalsIgnoreCase("otu")) {
             //otu = true;
             String label = attributes.getValue("label");
             String id = attributes.getValue("id");
             if (label != null) {
-                System.out.println("Label : " + label);
+                //System.out.println("Label : " + label);
                 taxaLabels.add(label);
             } else {
-                System.out.println("Label = ID : " + id);
+                //System.out.println("Label = ID : " + id);
                 taxaLabels.add(id);
             }
         }
@@ -115,7 +115,7 @@ public class NexmlTreesHandler extends DefaultHandler {
     public void endElement(String uri,
                            String localName, String qName) throws SAXException {
         if (qName.equalsIgnoreCase("otus")) {
-            System.out.println("End Element :" + qName);
+            //System.out.println("End Element :" + qName);
         } else if (qName.equalsIgnoreCase("tree")) {
             bReadingTree = false;
             trees.add(tree);
@@ -150,7 +150,6 @@ public class NexmlTreesHandler extends DefaultHandler {
 
         for (String s : tree.nodeLabels()) {
             numOfLabelsInTree++;
-            System.err.println("üüüüüüüüü"+s);
         }
         //System.err.println(tree.nodeLabels().iterator().next());
 

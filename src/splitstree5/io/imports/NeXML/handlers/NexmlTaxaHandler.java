@@ -18,17 +18,13 @@ public class NexmlTaxaHandler extends DefaultHandler {
         if (qName.equalsIgnoreCase("otus")) {
             String label = attributes.getValue("label");
             String id = attributes.getValue("id");
-            System.out.println("Label : " + label);
-            System.out.println("ID : " + id);
         } else if (qName.equalsIgnoreCase("otu")) {
             otu = true;
             String label = attributes.getValue("label");
             String id = attributes.getValue("id");
             if (label != null) {
-                System.out.println("Label : " + label);
                 taxaLabels.add(label);
             } else {
-                System.out.println("Label = ID : " + id);
                 taxaLabels.add(id);
             }
         }
