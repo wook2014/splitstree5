@@ -24,27 +24,28 @@ public class MatlabExporterTest {
     public void export() throws Exception {
 
         File file = new File("test/exports/TEST_Matlab.txt");
-        Writer writer = new BufferedWriter(new FileWriter(file));
 
         TaxaBlock taxa = new TaxaBlock();
         DistancesBlock distances = new DistancesBlock();
         SplitsBlock splits = new SplitsBlock();
 
-        NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/algae.nex"));
-        np.matchIgnoreCase("#nexus");
-        new TaxaNexusInput().parse(np, taxa);
-        new DistancesNexusInput().parse(np, taxa, distances);
-        new SplitsNexusInput().parse(np, taxa, splits);
+        try (NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/algae.nex"))) {
+            np.matchIgnoreCase("#nexus");
+            new TaxaNexusInput().parse(np, taxa);
+            new DistancesNexusInput().parse(np, taxa, distances);
+            new SplitsNexusInput().parse(np, taxa, splits);
+        }
 
-        matlabExporter.export(writer, taxa);
-        matlabExporter.export(writer, taxa, splits);
-        matlabExporter.export(writer, taxa, distances);
-        writer.close();
+        try (Writer writer = new BufferedWriter(new FileWriter(file))) {
+            matlabExporter.export(writer, taxa);
+            matlabExporter.export(writer, taxa, splits);
+            matlabExporter.export(writer, taxa, distances);
+        }
 
         byte[] encoded1 = Files.readAllBytes(Paths.get("test/notNexusFiles/algae.m"));
         String algae = new String(encoded1, StandardCharsets.UTF_8);
 
-        byte[] encoded2 = Files.readAllBytes(Paths.get("test/exports/TEST_Matlab.txt"));
+        byte[] encoded2 = Files.readAllBytes(Paths.get(file.getPath()));
         String export = new String(encoded2, StandardCharsets.UTF_8);
 
         System.err.println(algae);

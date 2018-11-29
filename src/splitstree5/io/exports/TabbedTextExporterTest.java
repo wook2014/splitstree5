@@ -26,7 +26,7 @@ public class TabbedTextExporterTest {
     public void export() throws Exception {
 
         File file = new File("test/exports/TEST_TabbedText.txt");
-        Writer writer = new BufferedWriter(new FileWriter(file));
+
 
         TaxaBlock taxa = new TaxaBlock();
         CharactersBlock character = new CharactersBlock();
@@ -35,10 +35,11 @@ public class TabbedTextExporterTest {
         SplitsBlock splits = new SplitsBlock();
         ProgressListener pl = new ProgressPercentage();
 
-        NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/algae_char.nex"));
-        np.matchIgnoreCase("#nexus");
-        new TaxaNexusInput().parse(np, taxa);
-        new CharactersNexusInput().parse(np, taxa, character);
+        try (NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/algae_char.nex"))) {
+            np.matchIgnoreCase("#nexus");
+            new TaxaNexusInput().parse(np, taxa);
+            new CharactersNexusInput().parse(np, taxa, character);
+        }
         /*new DistancesNexusInput().parse(np, taxa, distances, null);
         new SplitsNexusInput().parse(np, taxa, splits, null);*/
 
@@ -50,11 +51,12 @@ public class TabbedTextExporterTest {
         nj.compute(pl, taxa, distances, trees);
         treeSelector.compute(pl, taxa, trees, splits);
 
-        tabbedTextExporter.export(writer, taxa);
-        tabbedTextExporter.export(writer, taxa, character);
-        tabbedTextExporter.export(writer, taxa, distances);
-        tabbedTextExporter.export(writer, taxa, splits);
-        writer.close();
+        try (Writer writer = new BufferedWriter(new FileWriter(file))) {
+            tabbedTextExporter.export(writer, taxa);
+            tabbedTextExporter.export(writer, taxa, character);
+            tabbedTextExporter.export(writer, taxa, distances);
+            tabbedTextExporter.export(writer, taxa, splits);
+        }
 
         byte[] encoded1 = Files.readAllBytes(Paths.get("test/notNexusFiles/algae_tabbed.txt"));
         String algae = new String(encoded1, StandardCharsets.UTF_8);

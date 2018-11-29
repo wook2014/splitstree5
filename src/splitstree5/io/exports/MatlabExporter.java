@@ -90,17 +90,12 @@ public class MatlabExporter implements IFromTaxa, IExportTaxa, IFromDistances, I
         w.write("\n");
 
         //int ntax = splits.getNtax();
-        for (int i = 1; i < ntax; i++) {
-            for (int j = i + 1; j <= ntax; j++) {
-                for (int s = 1; s <= nsplits; s++) {
-                    final BitSet S = splits.get(s).getA();
-                    if (S.get(i) != S.get(j))
-                        w.write("\t" + 1);
-                    else
-                        w.write("\t" + 0);
-                }
-                w.write("\n");
+        for (int s = 1; s <= nsplits; s++) {
+            final BitSet A = splits.get(s).getPartContaining(1);
+            for (int i = 1; i < ntax; i++) {
+                w.write(A.get(i) ? "\t1" : "\t0");
             }
+                w.write("\n");
         }
         w.write("\n");
         w.flush();
