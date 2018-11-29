@@ -41,9 +41,9 @@ public class FastaExporter implements IFromChararacters, IExportCharacters, IFro
             char[] seq = new char[splits.getNsplits()];
             for (int s = 1; s <= splits.getNsplits(); s++) {
                 if (splits.get(s).getA().get(t))
-                    seq[s] = '1';
+                    seq[s - 1] = '1';
                 else
-                    seq[s] = '0';
+                    seq[s - 1] = '0';
             }
             fasta.add(taxa.getLabel(t), String.valueOf(seq));
         }

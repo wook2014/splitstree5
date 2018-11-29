@@ -86,6 +86,8 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
     public List<String> parse(NexusStreamParser np, TaxaBlock taxa, CharactersBlock charactersBlock) throws IOException {
         charactersBlock.clear();
 
+        final boolean hasTaxonNames = taxa.getNtax() > 0;
+
         final CharactersNexusFormat format = (CharactersNexusFormat) charactersBlock.getFormat();
 
         if (np.peekMatchIgnoreCase("#nexus"))
@@ -248,11 +250,11 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
             np.matchIgnoreCase("MATRIX");
             if (!isIgnoreMatrix()) {
                 if (!format.isOptionTranspose() && !format.isOptionInterleave()) {
-                    taxonNamesFound = readMatrix(np, taxa, charactersBlock, format, unknownStates);
+                    taxonNamesFound = readMatrix(np, hasTaxonNames, taxa, charactersBlock, format, unknownStates);
                 } else if (format.isOptionTranspose() && !format.isOptionInterleave()) {
-                    taxonNamesFound = readMatrixTransposed(np, taxa, charactersBlock, format, unknownStates);
+                    taxonNamesFound = readMatrixTransposed(np, hasTaxonNames, taxa, charactersBlock, format, unknownStates);
                 } else if (!format.isOptionTranspose() && format.isOptionInterleave()) {
-                    taxonNamesFound = readMatrixInterleaved(np, taxa, charactersBlock, format, unknownStates);
+                    taxonNamesFound = readMatrixInterleaved(np, hasTaxonNames, taxa, charactersBlock, format, unknownStates);
                 } else
                     throw new IOExceptionWithLineNumber(np.lineno(), "can't read matrix!");
                 np.matchIgnoreCase(";");
@@ -281,16 +283,15 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
      * @return
      * @throws IOException
      */
-    private ArrayList<String> readMatrix(NexusStreamParser np, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format,
+    private ArrayList<String> readMatrix(NexusStreamParser np, boolean hasTaxonNames, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format,
                                          Set<Character> unknownStates) throws IOException {
         final boolean checkStates = characters.getDataType() == CharactersType.Protein ||
                 characters.getDataType() == CharactersType.DNA || characters.getDataType() == CharactersType.RNA;
         final ArrayList<String> taxonNamesFound = new ArrayList<>(characters.getNtax());
 
-        boolean hasTaxonNames = (taxa.size() > 0);
         for (int t = 1; t <= characters.getNtax(); t++) {
             if (format.isOptionLabels()) {
-                if (hasTaxonNames) {
+                if (!hasTaxonNames) {
                     np.matchLabelRespectCase(taxa.getLabel(t));
                     taxonNamesFound.add(taxa.getLabel(t));
                 } else
@@ -362,17 +363,15 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
      * @return
      * @throws IOException
      */
-    private ArrayList<String> readMatrixTransposed(NexusStreamParser np, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format,
+    private ArrayList<String> readMatrixTransposed(NexusStreamParser np, boolean hasTaxonNames, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format,
                                                    Set<Character> unknownStates) throws IOException {
         final boolean checkStates = characters.getDataType() == CharactersType.Protein ||
                 characters.getDataType() == CharactersType.DNA || characters.getDataType() == CharactersType.RNA;
         final ArrayList<String> taxonNamesFound = new ArrayList<>(characters.getNtax());
 
         if (format.isOptionLabels()) {
-            boolean hasTaxonNames = (taxa.size() > 0);
-
             for (int t = 1; t <= characters.getNtax(); t++) {
-                if (hasTaxonNames) {
+                if (!hasTaxonNames) {
                     np.matchLabelRespectCase(taxa.getLabel(t));
                     taxonNamesFound.add(taxa.getLabel(t));
                 } else
@@ -448,22 +447,20 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
      * @return
      * @throws IOException
      */
-    private ArrayList<String> readMatrixInterleaved(NexusStreamParser np, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format,
+    private ArrayList<String> readMatrixInterleaved(NexusStreamParser np, boolean hasTaxonNames, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format,
                                                     Set<Character> unknownStates) throws IOException {
         final boolean checkStates = characters.getDataType() == CharactersType.Protein ||
                 characters.getDataType() == CharactersType.DNA || characters.getDataType() == CharactersType.RNA;
         final ArrayList<String> taxonNamesFound = new ArrayList<>(characters.getNtax());
 
         try {
-            boolean hasTaxonNames = (taxa.size() > 0);
-
             int c = 0;
             boolean firstBlock = true;
             while (c < characters.getNchar()) {
                 int lineLength = 0;
                 for (int t = 1; t <= characters.getNtax(); t++) {
                     if (format.isOptionLabels()) {
-                        if (hasTaxonNames) {
+                        if (!hasTaxonNames) {
                             final String name = np.getLabelRespectCase();
                             if (firstBlock) {
                                 taxonNamesFound.add(name);
