@@ -41,6 +41,11 @@
 .block {
     -fx-fill: darkblue;
     -fx-font-weight: bold;
+}
+
+.block-collapse-able {
+    -fx-fill: darkblue;
+    -fx-font-weight: bold;
     -fx-underline: true;
 }
 

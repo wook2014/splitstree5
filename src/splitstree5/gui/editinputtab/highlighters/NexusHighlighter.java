@@ -10,6 +10,8 @@ import java.util.regex.Pattern;
 
 public class NexusHighlighter implements Highlighter {
 
+    private boolean collapsingActive = false;
+
     private static final String[] KEYWORDS = new String[] {
             "begin", "end", "endblock",
             "dimensions", "matrix",
@@ -50,6 +52,13 @@ public class NexusHighlighter implements Highlighter {
 
     @Override
     public StyleSpans<Collection<String>> computeHighlighting(String text) {
+
+        String collapsing = "";
+        if (collapsingActive)
+            collapsing = "-collapse-able";
+
+        System.err.println("->"+collapsingActive);
+
         Matcher matcher = PATTERN.matcher(text);
         int lastKwEnd = 0;
         StyleSpansBuilder<Collection<String>> spansBuilder
@@ -58,16 +67,16 @@ public class NexusHighlighter implements Highlighter {
         while(matcher.find()) {
             String styleClass =
                     matcher.group("KEYWORDSLINE") != null ? "keyword" :
-                    matcher.group("BLOCK") != null ? "block" :
+                    matcher.group("BLOCK") != null ? "block"+collapsing :
                     matcher.group("NK") != null ? "keyword" :
                     matcher.group("COLLAPSED") != null ? "collapsed" :
                     matcher.group("PAREN") != null ? "paren" :
                     matcher.group("COMMENT") != null ? "comment" :
-                    null; /* never happens */
-            assert styleClass != null;
+                    null;
+
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
 
-            if (styleClass.equals("keyword")) {
+            if (styleClass != null && styleClass.equals("keyword")) {
                 spansBuilder.add(Collections.singleton("keyword"),
                         matcher.end("NK") - matcher.start("NK"));
                 spansBuilder.add(Collections.singleton("keyword"),
@@ -82,5 +91,9 @@ public class NexusHighlighter implements Highlighter {
         }
         spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
         return spansBuilder.create();
+    }
+
+    public void setCollapsingActive(boolean active){
+        this.collapsingActive = active;
     }
 }

@@ -22,6 +22,7 @@ package splitstree5.gui.editinputtab;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -39,15 +40,13 @@ import jloda.util.IOExceptionWithLineNumber;
 import jloda.util.ProgramProperties;
 import jloda.util.ResourceManager;
 import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.event.MouseOverTextEvent;
 import org.reactfx.Subscription;
 import org.reactfx.value.Val;
 import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.dialogs.importer.ImporterManager;
-import splitstree5.gui.editinputtab.highlighters.Highlighter;
 import splitstree5.gui.editinputtab.highlighters.NexusHighlighter;
-import splitstree5.gui.editinputtab.highlighters.UniversalHighlighter;
-import splitstree5.gui.editinputtab.highlighters.XMLHighlighter;
 import splitstree5.io.nexus.workflow.WorkflowNexusInput;
 import splitstree5.main.MainWindow;
 import splitstree5.main.MainWindowManager;
@@ -68,19 +67,8 @@ import java.util.regex.Pattern;
 public class EditInputTab extends EditTextViewTab {
     private File tmpFile;
 
-    private Highlighter highlighter = new NexusHighlighter();
-
-    //private int blocksCounter = 0;
-    //private HashMap<Integer, String> tmpBlocksKeeper = new HashMap<>();
-
     // todo undo doesn't work: collapse-uncollapce-undo. solution:dont delete blocks from the tmpBlocksKeeper after uncollapsing
     // todo zeilennummern, finding, performance?
-
-    private boolean hold;
-    private int chIdx;
-    private HashMap<String, String> tmpBlocksKeeper = new HashMap<>();
-    private int paragraphStart = 0;
-    private int paragraphEnd = 0;
 
     /**
      * constructor
@@ -93,49 +81,9 @@ public class EditInputTab extends EditTextViewTab {
         setMainWindow(mainWindow);
 
         final CodeArea codeArea = getCodeArea();
+        CodeAreaStyler codeAreaStyler = new CodeAreaStyler(codeArea);
 
-        /*
-         * Add listeners for highlighting type checking
-         */
-        Val.map(codeArea.textProperty(), n -> n.length() >= 6
-                && n.replaceAll("^\\n+", "").substring(0, 6).toLowerCase().equals("#nexus"))
-            .addListener(new javafx.beans.value.ChangeListener<Boolean>() {
-                @Override
-                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                    if (newValue) {
-                        System.err.println("Use Nexus highlighter");
-                        highlighter = new NexusHighlighter();
-                    }
-                }
-            });
-
-        Val.map(codeArea.textProperty(), n -> n.length() != 0 &&
-                n.replaceAll("^\\n+", "").startsWith("<"))
-                .addListener(new javafx.beans.value.ChangeListener<Boolean>() {
-                    @Override
-                    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                        if (newValue) {
-                            System.err.println("Use xml highlighter");
-                            highlighter = new XMLHighlighter();
-                        }
-                    }
-                });
-
-        Val.map(codeArea.textProperty(), n -> n.length() >= 6
-                && !n.replaceAll("^\\n+", "").substring(0, 6).toLowerCase().equals("#nexus")
-                && !n.replaceAll("^\\n+", "").startsWith("<"))
-                .addListener(new javafx.beans.value.ChangeListener<Boolean>() {
-                    @Override
-                    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                        if (newValue) {
-                            System.err.println("Use universal highlighter");
-                            highlighter = new UniversalHighlighter();
-                        }
-                    }
-                });
-
-
-        String css = this.getClass().getResource("styles.css").toExternalForm();
+        String css = this.getClass().getResource("/resources/css/styles.css").toExternalForm();
         codeArea.getStylesheets().add(css);
         codeArea.setEditable(true);
 
@@ -152,7 +100,8 @@ public class EditInputTab extends EditTextViewTab {
 
                 // run the following code block when previous stream emits an event
                 //.subscribe(ignore -> codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText())));
-                .subscribe(ignore -> codeArea.setStyleSpans(0, highlighter.computeHighlighting(codeArea.getText())));
+                .subscribe(ignore -> codeArea.setStyleSpans(0,
+                        codeAreaStyler.getHighlighter().computeHighlighting(codeArea.getText())));
 
         /////codeArea.setAccessibleText("Input and edit data in any supported format");
         //setPromptText("Input and edit data in any supported format");
@@ -180,7 +129,8 @@ public class EditInputTab extends EditTextViewTab {
         final Button applyButton = new Button("Parse and Load");
         applyButton.setTooltip(new Tooltip("Save this data to a temporary file, parse the file and then load the data"));
 
-        final Button collapseButton = new Button("Collapse nexus block"); //+++
+        //final Button collapseButton = new Button("Activate Collapse NexusBlock"); //+++
+        final CheckBox collapseButton = new CheckBox("Activate Collapse NexusBlock");
 
         toolBar.getItems().addAll(applyButton, collapseButton); //+++
         //toolBar.getItems().addAll(applyButton);
@@ -222,101 +172,22 @@ public class EditInputTab extends EditTextViewTab {
             }
         });
 
-        //+++
-        collapseButton.setDisable(true);
-        collapseButton.setOnAction((e) -> {
-            System.err.println("collapseButton pressed");
-            try {
-                System.err.println("Collapse current block");
-                int position = codeArea.getCaretPosition();
-                collapseBlock(position);
-            } catch (Exception ex) {
-                NotificationManager.showError("Nexus block collapsing failed: " + ex.getMessage());
-            }
-        });
 
-        codeArea.setMouseOverTextDelay(Duration.ofMillis(200));
-        codeArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e -> {
-
-            int i = e.getCharacterIndex();
-            Point2D pos = e.getScreenPosition();
-
-            if (codeArea.getStyleAtPosition(i).toString().contains("block")
-                    || codeArea.getStyleAtPosition(i).toString().contains("collapsed")) {
-                codeArea.setCursor(Cursor.HAND);
-                hold = true;
-                chIdx = e.getCharacterIndex();
-            }
-        });
-        codeArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_END, e -> {
-            codeArea.setCursor(Cursor.TEXT);
-        });
-
-        codeArea.setOnMouseClicked(click -> {
-
-            if (hold) {
-
-                //int chIdx = click.getCharacterIndex();
-                System.out.println(codeArea.getStyleAtPosition(chIdx).toString());
-
-                if (codeArea.getStyleAtPosition(chIdx).toString().contains("block")){
-                    collapseBlock(chIdx);
-                    paragraphStart = getCodeArea().getCurrentParagraph();
+        collapseButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if(oldValue) {
+                    System.err.println("Block collapsing is disabled");
+                    getCodeArea().setParagraphGraphicFactory(LineNumberFactory.get(getCodeArea()));
+                    codeAreaStyler.setCollapsingActive(false);
+                    ((NexusHighlighter) codeAreaStyler.getHighlighter()).setCollapsingActive(false);
                 }
-
-                if (codeArea.getStyleAtPosition(chIdx).toString().contains("collapsed")) {
-
-                    for (String i : tmpBlocksKeeper.keySet()) {
-                        System.out.println(tmpBlocksKeeper.get(i).substring(0, 10));
-                    }
-
-                    final String CB = "(<< Collapsed )(\\w+)(Block >>)";
-                    Pattern PATTERN = Pattern.compile(CB);
-                    Matcher matcher = PATTERN.matcher(getCodeArea().getText());
-
-                    int cbStart = 0, cbEnd = 0;
-                    String key;
-                    while (matcher.find()) {
-                        cbStart = matcher.start();
-                        cbEnd = matcher.end();
-                        if (matcher.end() > chIdx)
-                            break;
-                    }
-
-                    System.out.println(codeArea.getText().substring(cbStart, cbEnd));
-
-                    //int blockNr = Integer.parseInt(matcher.group(2));
-                    //System.out.println("collapsed nr. "+matcher.group(2));
-
-                    if (cbStart != 0 || cbEnd != 0) {
-                        key = matcher.group(2);
-                        codeArea.replaceText(cbStart, cbEnd, tmpBlocksKeeper.get(key));
-                        tmpBlocksKeeper.remove(key);
-                        getCodeArea().setParagraphGraphicFactory(MyLNF.get(getCodeArea()));
-                    }
-
-                    /*int cbStart = chIdx, cbEnd = chIdx;
-                    while(getCodeArea().getText().charAt(cbStart) != '<')
-                        cbStart--;
-                    while(getCodeArea().getText().charAt(cbEnd) != '>')
-                        cbEnd++;
-                    cbStart--;
-                    cbEnd++;
-
-                    final String CB = "(< Collapsed )(\\w+)(Block >)";
-                    Pattern PATTERN = Pattern.compile(CB);
-
-                    String CB_string = getKeyWord(chIdx, false);
-                    System.out.println(CB_string);
-                    Matcher matcher = PATTERN.matcher(CB_string);
-
-                    if (matcher.find()) {
-                        String key = matcher.group(2);
-                        codeArea.replaceText(cbStart, cbEnd, tmpBlocksKeeper22.get(key));
-                        tmpBlocksKeeper22.remove(key);
-                    }*/
+                if(newValue) {
+                    System.err.println("Block collapsing is active");
+                    getCodeArea().setParagraphGraphicFactory(MyLNF.get(getCodeArea()));
+                    codeAreaStyler.setCollapsingActive(true);
+                    ((NexusHighlighter) codeAreaStyler.getHighlighter()).setCollapsingActive(true);
                 }
-                hold = false; // prevents double collapsing after continuous clicks
             }
         });
     }
@@ -453,113 +324,5 @@ public class EditInputTab extends EditTextViewTab {
             NotificationManager.showError("Input file failed: " + ex.getMessage());
         }
 
-    }
-
-    private static String returnFirstLine(String s){
-        if (s.length() == 0 || !s.contains("\\n"))
-            return s;
-        else
-            return s.substring(0, s.indexOf("\\n"));
-    }
-
-    private void collapseBlock(int charIndex) {
-
-        int start2remove = 0;
-        int end2remove = 0;
-        //int endOffset = codeArea.getText().substring(0, chIdx).length();
-
-        Pattern PATTERN1 = Pattern.compile("(?i)\\b(end|endblock)\\b;");
-        Pattern PATTERN2 = Pattern.compile("(?i)\\bbegin\\b");
-        Matcher matcher1 = PATTERN1.matcher(getCodeArea().getText().substring(charIndex));
-        Matcher matcher2 = PATTERN2.matcher(getCodeArea().getText().substring(0, charIndex));
-
-        // the first end
-        if (matcher1.find())
-            end2remove = matcher1.end() + charIndex + 1;
-        // the last begin
-        while (matcher2.find())
-            start2remove = matcher2.start();
-
-        System.out.println("start2remove "+start2remove);
-        System.out.println("end2remove "+end2remove);
-        //System.out.println("Block Nr. "+beginCounter);
-
-        //tmpBlocksKeeper.put(beginCounter, getCodeArea().getText().substring(start2remove, end2remove));
-
-        if (start2remove != 0 || end2remove != 0) {
-            /*blocksCounter ++;
-            tmpBlocksKeeper.put(blocksCounter, getCodeArea().getText().substring(start2remove, end2remove));
-            getCodeArea().replaceText(start2remove, end2remove, "<< Collapsed block "+blocksCounter+">>");
-            System.out.println("Block Nr. "+blocksCounter);*/
-
-            /*int linesCounter = paragraphStart;
-            int sum = start2remove;
-            while(sum < end2remove){
-                sum = sum + getCodeArea().getParagraph(paragraphStart).length();
-                linesCounter++;
-            }*/
-            int[] replaceRange = getLinesRangeByIndex(start2remove, end2remove);
-
-            String keyWord = getKeyWord(charIndex, true);
-            tmpBlocksKeeper.put(keyWord, getCodeArea().getText().substring(start2remove, end2remove));
-            getCodeArea().replaceText(start2remove, end2remove, "<< Collapsed "+keyWord+"Block >>");
-            System.out.println("Block Nr. "+keyWord);
-
-            //int[] replaceRange = {paragraphStart, linesCounter};
-            getCodeArea().setParagraphGraphicFactory(MyLNF.get(getCodeArea(), replaceRange));
-        }
-    }
-
-    private String getKeyWord(int position, boolean collapse) {
-
-        int leftPos = position;
-        int rightPos = position;
-
-        if (collapse) {
-            while(Character.isLetter(getCodeArea().getText().charAt(leftPos)))
-                leftPos--;
-            while(Character.isLetter(getCodeArea().getText().charAt(rightPos)))
-                rightPos++;
-            leftPos++;
-        } else {
-            while(getCodeArea().getText().charAt(leftPos) != '<')
-                leftPos--;
-            while(getCodeArea().getText().charAt(leftPos) != '>')
-                rightPos++;
-            rightPos++;
-        }
-        return getCodeArea().getText().substring(leftPos, rightPos);
-    }
-
-
-    private int[] getLinesRangeByIndex(int startIdx, int endItx){
-
-        /*int startLine = 0;
-        int sum = 0;
-        while(sum < startIdx){
-            sum = sum + getCodeArea().getParagraph(startLine).length();
-            startLine++;
-        }
-
-
-        int endLine = startLine++;
-        sum = startIdx;
-        while(sum < endItx){
-            sum = sum + getCodeArea().getParagraph(endLine).length();
-            System.err.println(getCodeArea().getParagraph(endLine)+"--------");
-            endLine++;
-        }*/
-
-        System.err.println(Arrays.toString(getCodeArea().getText(0, startIdx).split("\n")));
-        System.err.println("----------------");
-        System.err.println(getCodeArea().getText(startIdx, endItx));
-
-        int endLine = getCodeArea().getText(0, endItx).split("\n").length;
-        int startLine = endLine - getCodeArea().getText(startIdx, endItx).split("\n").length;
-
-        System.err.println("Start line of block "+startLine);
-        System.err.println("End line of block "+endLine);
-
-        return new int[]{startLine, endLine};
     }
 }
