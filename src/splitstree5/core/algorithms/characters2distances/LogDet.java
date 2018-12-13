@@ -1,6 +1,7 @@
 package splitstree5.core.algorithms.characters2distances;
 
 import Jama.Matrix;
+import jloda.fx.Alert;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;
@@ -9,7 +10,6 @@ import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.gui.utils.Alert;
 
 /**
  * Calculation of the LogDet transform.

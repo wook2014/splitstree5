@@ -73,6 +73,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import jloda.fx.ASelectionModel;
+import jloda.fx.Print;
 import jloda.fx.ZoomableScrollPane;
 import jloda.util.ResourceManager;
 import splitstree5.core.Document;
@@ -84,7 +85,6 @@ import splitstree5.gui.utils.SelectionEffect;
 import splitstree5.menu.MenuController;
 import splitstree5.undo.UndoableChangeList;
 import splitstree5.undo.UndoableRedoableCommand;
-import splitstree5.utils.Print;
 
 import java.util.*;
 

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -16,8 +16,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package splitstree5.utils;
+package jloda.fx;
 
 import javafx.application.Platform;
 import javafx.print.PageLayout;
@@ -28,7 +27,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 import jloda.util.ProgramProperties;
-import splitstree5.gui.utils.Alert;
 
 import java.util.Optional;
 

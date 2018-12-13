@@ -1,5 +1,6 @@
 package splitstree5.core.algorithms.characters2distances;
 
+import jloda.fx.Alert;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;
@@ -9,7 +10,6 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.CharactersType;
 import splitstree5.core.models.NucleotideModel;
-import splitstree5.gui.utils.Alert;
 import splitstree5.gui.utils.CharactersUtilities;
 import splitstree5.utils.SplitsException;
 

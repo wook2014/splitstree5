@@ -31,6 +31,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.StageStyle;
 import jloda.find.CodeAreaSearcher;
 import jloda.find.FindToolBar;
+import jloda.fx.Print;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 import org.fxmisc.flowless.VirtualizedScrollPane;
@@ -41,7 +42,6 @@ import splitstree5.gui.ViewerTab;
 import splitstree5.gui.editinputtab.highlighters.NexusHighlighter;
 import splitstree5.main.MainWindowManager;
 import splitstree5.menu.MenuController;
-import splitstree5.utils.Print;
 
 import java.util.Optional;
 

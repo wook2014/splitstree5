@@ -38,6 +38,7 @@
 
 package splitstree5.gui.utils;
 
+import jloda.fx.Alert;
 import splitstree5.core.datablocks.CharactersBlock;
 
 public class CharactersUtilities {

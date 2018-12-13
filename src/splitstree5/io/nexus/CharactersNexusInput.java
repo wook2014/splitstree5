@@ -19,6 +19,7 @@
 
 package splitstree5.io.nexus;
 
+import jloda.fx.Alert;
 import jloda.util.Basic;
 import jloda.util.IOExceptionWithLineNumber;
 import jloda.util.parse.NexusStreamParser;
@@ -26,7 +27,6 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.datablocks.characters.CharactersType;
-import splitstree5.gui.utils.Alert;
 import splitstree5.io.nexus.stateLabeler.MicrostatStateLabeler;
 import splitstree5.io.nexus.stateLabeler.ProteinStateLabeler;
 import splitstree5.io.nexus.stateLabeler.StandardStateLabeler;

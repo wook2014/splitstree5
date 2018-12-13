@@ -1,6 +1,7 @@
 package splitstree5.core.algorithms.trees2splits;
 
 import javafx.beans.property.SimpleObjectProperty;
+import jloda.fx.Alert;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.graph.NotOwnerException;
@@ -20,7 +21,6 @@ import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
-import splitstree5.gui.utils.Alert;
 import splitstree5.utils.SplitsUtilities;
 import splitstree5.utils.TreesUtilities;
 
