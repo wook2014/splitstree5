@@ -64,6 +64,7 @@ import splitstree5.dialogs.importer.ImportMultipleTreeFilesDialog;
 import splitstree5.dialogs.importer.ImporterManager;
 import splitstree5.dialogs.message.MessageWindow;
 import splitstree5.gui.ViewerTab;
+import splitstree5.gui.utils.CharactersUtilities;
 import splitstree5.gui.utils.CheckForUpdate;
 import splitstree5.io.nexus.workflow.WorkflowNexusInput;
 import splitstree5.io.nexus.workflow.WorkflowNexusOutput;
@@ -93,6 +94,18 @@ public class MainWindowMenuController {
 
         controller.getImportMenuItem().setOnAction((e) -> ImportDialog.show(mainWindow));
         controller.getImportMultipleTreeFilesMenuItem().setOnAction((e) -> ImportMultipleTreeFilesDialog.apply(mainWindow));
+
+        controller.getGroupIdenticalHaplotypesFilesMenuItem().disableProperty().
+                bind(mainWindow.getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().not());
+        controller.getGroupIdenticalHaplotypesFilesMenuItem().setOnAction((e) -> {
+
+            CharactersUtilities.collapseByType(mainWindow.getWorkflow().getTopTaxaNode().getDataBlock(),
+                    mainWindow.getWorkflow().getTopDataNode().getDataBlock());
+            /*final Document newDoc = mainWindow.getDocument();
+            final MainWindow newMainWindow = new MainWindow();
+            newDoc.setMainWindow(newMainWindow);
+            newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50);*/
+        });
 
         controller.getOpenMenuItem().setOnAction((e) -> {
             final File previousDir = new File(ProgramProperties.get("InputDir", ""));

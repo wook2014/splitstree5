@@ -69,6 +69,9 @@ public class MenuController {
     private MenuItem importMultipleTreeFilesMenuItem;
 
     @FXML
+    private MenuItem GroupIdenticalHaplotypesFilesMenuItem;
+
+    @FXML
     private MenuItem exportMenuItem;
 
     @FXML
@@ -426,6 +429,10 @@ public class MenuController {
 
     public MenuItem getImportMultipleTreeFilesMenuItem() {
         return importMultipleTreeFilesMenuItem;
+    }
+
+    public MenuItem getGroupIdenticalHaplotypesFilesMenuItem() {
+        return GroupIdenticalHaplotypesFilesMenuItem;
     }
 
     public MenuItem getExportMenuItem() {
