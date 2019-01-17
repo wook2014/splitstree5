@@ -23,6 +23,9 @@ public class HammingDistancesAmbiguousStatesTest {
     @Test
     public void compute() throws Exception{
 
+
+        // todo no ambig -> different results(must be the same!): MAtch case!
+
         final TaxaBlock taxa = new TaxaBlock();
         final CharactersBlock characters = new CharactersBlock();
         final DistancesBlock distances = new DistancesBlock();
@@ -46,6 +49,47 @@ public class HammingDistancesAmbiguousStatesTest {
         final DistancesBlock distancesFromSplitsTree4 = new DistancesBlock();
         taxaFromSplitsTree4.addTaxaByNames(
                 new DistancesNexusInput().parse(new NexusStreamParser(new FileReader("test/distances/PRLP_hamming_Match")), taxaFromSplitsTree4, distancesFromSplitsTree4));
+
+        StringWriter wFromSplitsTree4 = new StringWriter();
+        new DistancesNexusOutput().write(wFromSplitsTree4, taxaFromSplitsTree4, distancesFromSplitsTree4);
+        //System.err.println(wFromSplitsTree4.toString());
+
+
+        assertEquals(w.toString().toUpperCase(), wFromSplitsTree4.toString().toUpperCase());
+
+        w.close();
+        wFromSplitsTree4.close();
+    }
+
+    @Test
+    public void computeIgnore() throws Exception{
+
+
+        // todo no ambig -> different results(must be the same!): MAtch case!
+
+        final TaxaBlock taxa = new TaxaBlock();
+        final CharactersBlock characters = new CharactersBlock();
+        final DistancesBlock distances = new DistancesBlock();
+
+        final HammingDistancesAmbiguousStates hammingDistances = new HammingDistancesAmbiguousStates();
+        final FastaImporter fastaImporter = new FastaImporter();
+        final ProgressListener progressListener = new ProgressPercentage();
+
+        fastaImporter.parse(progressListener,
+                "test/PRLR pyramidum complex final haplotypes edited labels.fas",
+                taxa, characters);
+
+        hammingDistances.setOptionHandleAmbiguousStates(HammingDistancesAmbiguousStates.AmbiguousOptions.Ignore);
+        hammingDistances.compute(new ProgressPercentage(), taxa, characters, distances);
+
+        StringWriter w = new StringWriter();
+        new DistancesNexusOutput().write(w, taxa, distances);
+        System.err.println(w.toString());
+
+        final TaxaBlock taxaFromSplitsTree4 = new TaxaBlock();
+        final DistancesBlock distancesFromSplitsTree4 = new DistancesBlock();
+        taxaFromSplitsTree4.addTaxaByNames(
+                new DistancesNexusInput().parse(new NexusStreamParser(new FileReader("test/distances/PRLP_hamming_Ignore")), taxaFromSplitsTree4, distancesFromSplitsTree4));
 
         StringWriter wFromSplitsTree4 = new StringWriter();
         new DistancesNexusOutput().write(wFromSplitsTree4, taxaFromSplitsTree4, distancesFromSplitsTree4);

@@ -37,6 +37,8 @@ import splitstree5.core.datablocks.TaxaBlock;
 public class HammingDistances extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
     private boolean optionNormalize = true;
 
+    // todo new class HammingDistance with ambigous states
+
     @Override
     public String getCitation() {
         return "Hamming 1950; Hamming, Richard W. Error detecting and error correcting codes. Bell System Technical Journal. 29 (2): 147–160. MR 0035935, 1950.";
