@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Daniel H. Huson
+ *  Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -48,6 +48,7 @@ import splitstree5.gui.graphtab.base.Graph2DTab;
 import splitstree5.gui.graphtab.base.GraphLayout;
 import splitstree5.gui.graphtab.base.NodeViewBase;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
@@ -83,6 +84,8 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, SplitsBlock parent, ViewerBlock child) throws Exception {
+        if (parent.getNsplits() == 0)
+            throw new IOException("No splits in input");
         progress.setTasks("Split network construction", "Init.");
         final ISplitsViewTab viewTab = (ISplitsViewTab) child.getTab();
         //splitsViewTab.setNodeLabel2Style(nodeLabel2Style);

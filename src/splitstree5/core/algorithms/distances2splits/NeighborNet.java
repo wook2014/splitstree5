@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Daniel H. Huson
+ *  Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -84,7 +84,7 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
 
         final int[] cycle = runNeighborNet(progress, distancesBlock.size(), distancesBlock.getDistances());
 
-        progress.setSubtask("edge weights");
+        progress.setTasks("NNet", "edge weights");
 
         final ArrayList<ASplit> splits = NeighborNetSplitWeightOptimizer.computeWeightedSplits(cycle, distancesBlock, optionCutOff, optionLeastSquares, optionRegularization, optionLambdaFrac);
 
@@ -181,9 +181,9 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
         /* Perform the agglomeration step */
         final Stack<NetNode> amalgs = new Stack<>();
         int num_nodes = ntax;
-        progress.setSubtask("agglomeration");
+        progress.setTasks("NNet", "agglomeration");
         num_nodes = agglomNodes(progress, amalgs, D, netNodes, num_nodes);
-        progress.setSubtask("expansion");
+        progress.setTasks("NNet", "expansion");
         // System.err.println("Ordering: "+ Basic.toString(ordering));
 
         return expandNodes(progress, num_nodes, ntax, amalgs, netNodes);

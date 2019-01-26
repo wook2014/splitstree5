@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Daniel H. Huson
+ *  Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -839,5 +839,24 @@ public class Workflow {
 
     public BooleanProperty hasTopTaxaProperty() {
         return hasTopTaxa;
+    }
+
+    /**
+     * finds a data node by title
+     *
+     * @param title
+     * @return node by title
+     */
+    public DataNode findDataNode(String title) {
+        for (DataNode node : dataNodes) {
+            if (node.getTitle() != null && node.getTitle().equals(title))
+                return node;
+        }
+        // fall back: use type as name:
+        for (DataNode node : dataNodes) {
+            if (Basic.getShortName(node.getDataBlock().getClass()).startsWith(title))
+                return node;
+        }
+        return null;
     }
 }

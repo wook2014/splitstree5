@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Daniel H. Huson
+ *  Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -30,6 +30,7 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.Workflow;
 import splitstree5.core.workflow.WorkflowDataLoader;
+import splitstree5.dialogs.exporter.ExportManager;
 import splitstree5.dialogs.importer.ImporterManager;
 import splitstree5.io.nexus.workflow.WorkflowNexusInput;
 import splitstree5.io.nexus.workflow.WorkflowNexusOutput;
@@ -47,7 +48,8 @@ import static splitstree5.dialogs.importer.ImporterManager.UNKNOWN_FORMAT;
  * runs a workflow on one or more input files
  * Daniel Huson, 9.2018
  */
-public class RunWorkflow extends Application {
+public class
+RunWorkflow extends Application {
     private static String[] args;
 
     @Override
@@ -90,17 +92,21 @@ public class RunWorkflow extends Application {
     private void run(String[] args) throws Exception {
         final ArgsOptions options = new ArgsOptions(args, RunWorkflow.class, "Exports data from a SplitsTree5 workflow");
         options.setVersion(ProgramProperties.getProgramVersion());
-        options.setLicense("Copyright (C) 2018 Daniel H. Huson. This program comes with ABSOLUTELY NO WARRANTY.");
+        options.setLicense("Copyright (C) 2019 Daniel H. Huson. This program comes with ABSOLUTELY NO WARRANTY.");
         options.setAuthors("Daniel H. Huson");
 
         options.comment("Input Output:");
         final File inputWorkflowFile = new File(options.getOptionMandatory("-w", "workflow", "File containing SplitsTree5 workflow", ""));
         String[] inputFiles = options.getOptionMandatory("-i", "input", "File(s) containing input data (or directory)", new String[0]);
-        String inputFormat = options.getOption("-f", "format", "Input format", ImporterManager.getInstance().getAllFileFormats(), UNKNOWN_FORMAT);
+        final String inputFormat = options.getOption("-f", "format", "Input format", ImporterManager.getInstance().getAllFileFormats(), UNKNOWN_FORMAT);
         String[] outputFiles = options.getOption("-o", "output", "Output file(s) (or directory or stdout)", new String[]{"stdout"});
 
+
+        final String nodeName = options.getOption("-n", "node", "Title of node to be exported", "");
+        final String exportFormat = options.getOption("-e", "exporter", "Name of exporter to use", ExportManager.getInstance().getExporterNames(), "");
+
         options.comment(ArgsOptions.OTHER);
-        final String inputFileExtension = options.getOption("-e", "inputExt", "File extension for input files (when providing directory for input)", "");
+        final String inputFileExtension = options.getOption("-x", "inputExt", "File extension for input files (when providing directory for input)", "");
         final boolean inputRecursively = options.getOption("-r", "recursive", "Recursively visit all sub-directories (when providing directory for input)", false);
 
         final boolean silent = options.getOption("-s", "silent", "Silent mode (hide all stderr output)", false);
@@ -110,6 +116,11 @@ public class RunWorkflow extends Application {
 
         if (!inputWorkflowFile.canRead())
             throw new IOException("File not found or unreadable: " + inputWorkflowFile);
+
+        if ((nodeName.length() == 0) != (exportFormat.length() == 0))
+            throw new IOException("Must specify both node name and exporter, or none");
+
+        final boolean exportCompleteWorkflow = (nodeName.length() == 0);
 
         // Setup and check input files:
         if (inputFiles.length == 1) {
@@ -136,10 +147,17 @@ public class RunWorkflow extends Application {
             if (outputFiles.length == 1) {
                 File output = new File(outputFiles[0]);
                 if (output.isDirectory()) {
+                    final String extension;
+                    if (exportCompleteWorkflow)
+                        extension = ".stree5";
+                    else {
+                        extension = "." + ExportManager.getInstance().getExporterByName(exportFormat).getExtensions().get(0);
+                    }
+
                     outputFiles = new String[inputFiles.length];
                     for (int i = 0; i < inputFiles.length; i++) {
                         final File input = new File(inputFiles[i]);
-                        String name = Basic.replaceFileSuffix(input.getName(), "-out.stree5");
+                        String name = Basic.replaceFileSuffix(input.getName(), "-out" + extension);
                         outputFiles[i] = (new File(output.getPath(), name)).getPath();
                     }
                 } else if (inputFiles.length > 1 && !outputFiles[0].equals("stdout")) {
@@ -158,7 +176,7 @@ public class RunWorkflow extends Application {
         final Workflow workflow = mainWindow.getWorkflow();
 
         try (final ProgressListener progress = new ProgressPercentage("Loading workflow from file: " + inputWorkflowFile)) {
-                WorkflowNexusInput.input(progress, workflow, new ArrayList<>(), inputWorkflowFile.getPath(), null);
+            WorkflowNexusInput.input(progress, workflow, new ArrayList<>(), inputWorkflowFile.getPath());
         }
 
         final DataNode<TaxaBlock> topTaxaNode = workflow.getTopTaxaNode();
@@ -202,9 +220,19 @@ public class RunWorkflow extends Application {
                 try {
                     final File outputFile = new File((outputFiles.length == inputFiles.length ? outputFiles[i] : outputFiles[0]));
                     System.err.println("Saving to file: " + outputFile);
-                    (new WorkflowNexusOutput()).save(workflow, outputFile, false);
-                    System.err.println("done");
-                    System.err.println("Saved workflow has " + workflow.getNumberOfDataNodes() + " nodes and " + workflow.getNumberOfConnectorNodes() + " connections");
+                    if (exportCompleteWorkflow) {
+                        (new WorkflowNexusOutput()).save(workflow, outputFile, false);
+                        System.err.println("done");
+                        System.err.println("Saved workflow has " + workflow.getNumberOfDataNodes() + " nodes and " + workflow.getNumberOfConnectorNodes() + " connections");
+                    } else {
+                        final DataNode dataNode = workflow.findDataNode(nodeName);
+
+                        if (dataNode == null)
+                            throw new IOException("Node with title '" + nodeName + "': not found");
+
+                        System.err.println("Exporting node '" + nodeName + "' to file: " + outputFile);
+                        ExportManager.getInstance().exportFile(outputFile.getPath(), workflow.getWorkingTaxaBlock(), dataNode.getDataBlock(), exportFormat);
+                    }
                 } catch (IOException e) {
                     System.err.println("Save FAILED: " + e.getMessage());
                 }

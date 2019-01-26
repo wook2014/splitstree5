@@ -1,6 +1,6 @@
 /*
  * PhyloGraph.java
- * Copyright (C) 2018 Daniel H. Huson
+ * Copyright (C) 2019 Daniel H. Huson
  * <p>
  * (Some files contain contributions from other authors, who are then mentioned separately.)
  * <p>
@@ -21,6 +21,8 @@ package jloda.phylo;
 
 
 import jloda.graph.*;
+import jloda.util.Basic;
+import jloda.util.BitSetUtils;
 import jloda.util.EmptyIterator;
 
 import java.util.*;
@@ -88,8 +90,7 @@ public class PhyloGraph extends Graph {
      * @return old node to new node mapping
      */
     public NodeArray<Node> copy(PhyloGraph src) {
-        clear();
-        NodeArray<Node> oldNode2NewNode = new NodeArray<>(src);
+        final NodeArray<Node> oldNode2NewNode = new NodeArray<>(src);
         copy(src, oldNode2NewNode, new EdgeArray<>(src));
         return oldNode2NewNode;
     }
@@ -111,22 +112,44 @@ public class PhyloGraph extends Graph {
         super.copy(src, oldNode2NewNode, oldEdge2NewEdge);
         edgeConfidencesSet = src.edgeConfidencesSet;
 
+        setName(src.getName());
+
+        BitSet added = new BitSet();
+
         for (Node v : src.nodes()) {
-            Node w = (oldNode2NewNode.getValue(v));
+            final Node w = (oldNode2NewNode.getValue(v));
             nodeLabels.setValue(w, src.nodeLabels.getValue(v));
-            node2taxa.setValue(w, src.node2taxa.getValue(v));
+            for (Integer tax : src.getTaxa(v)) {
+                addTaxon(w, tax);
+                added.set(tax);
+            }
         }
         for (Edge e : src.edges()) {
-            Edge f = (oldEdge2NewEdge.getValue(e));
+            final Edge f = (oldEdge2NewEdge.getValue(e));
             edgeWeights.put(f, src.edgeWeights.getValue(e));
             edgeLabels.put(f, src.edgeLabels.getValue(e));
             edgeConfidences.put(f, src.edgeConfidences.getValue(e));
         }
-        for (Integer t : taxon2node.keySet()) {
-            Node v = src.getTaxon2Node(t);
-            if (v != null)
-                addTaxon(oldNode2NewNode.getValue(v), t);
+
+        if (src.getNumberOfTaxa() != getNumberOfTaxa() || src.getNumberOfNodes() != getNumberOfNodes()) {
+            System.err.println("++++++++++ Copy problem:");
+            System.err.println("Src: " + src.getName());
+            System.err.println("Src size:  " + src.getNumberOfTaxa() + ": " + Basic.toString(BitSetUtils.asBitSet(src.taxon2node.keySet())));
+            System.err.println("src nodes: " + src.getNumberOfNodes());
+            System.err.println("Cpy: " + getName());
+            System.err.println("Cpy size:  " + getNumberOfTaxa() + ": " + Basic.toString(BitSetUtils.asBitSet(taxon2node.keySet())));
+            System.err.println("Cpy nodes: " + getNumberOfNodes());
+
+            final BitSet nullTaxa = new BitSet();
+            for (Integer taxon : src.taxon2node.keySet()) {
+                if (src.taxon2node.get(taxon) == null)
+                    nullTaxa.set(taxon);
+            }
+            if (nullTaxa.cardinality() > 0)
+                System.err.println("Src: taxa mapped to null (" + nullTaxa.cardinality() + "): " + Basic.toString(nullTaxa));
+            System.err.println("++++++++++");
         }
+
         return oldNode2NewNode;
     }
 
@@ -346,7 +369,7 @@ public class PhyloGraph extends Graph {
         if (list != null) {
             for (int t : list) {
                 if (taxon2node.get(t) == v)
-                    taxon2node.put(t, null);
+                    taxon2node.remove(t);
             }
             node2taxa.put(v, null);
         }

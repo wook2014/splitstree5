@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Daniel H. Huson
+ *  Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -84,16 +84,6 @@ public class TreesFilter extends Algorithm<TreesBlock, TreesBlock> implements IF
     public void clear() {
         enabledTrees.clear();
         disabledTrees.clear();
-    }
-
-    @Override
-    public String getShortDescription() {
-        if (enabledTrees.size() == 0 && disabledTrees.size() == 0)
-            return "";
-        else if (disabledTrees.size() == 0)
-            return "Enabled: " + enabledTrees.size();
-        else
-            return "Enabled: " + enabledTrees.size() + " (of " + (enabledTrees.size() + disabledTrees.size() + ")");
     }
 
     public ArrayList<String> getEnabledTrees() {

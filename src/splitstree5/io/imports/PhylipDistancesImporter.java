@@ -52,7 +52,6 @@ public class PhylipDistancesImporter implements IToDistances, IImportDistances {
                 final String line = it.next();
                 StringTokenizer st = new StringTokenizer(line);
                 while (st.hasMoreTokens()) {
-
                     String token = st.nextToken();
                     if (!Basic.isInteger(token)) {
                         foundFirstLabel = true;

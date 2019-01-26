@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Daniel H. Huson
+ *  Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -18,7 +18,7 @@
  */
 
 /*
- *  Copyright (C) 2018 Daniel H. Huson
+ *  Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -169,7 +169,6 @@ public class Connector<P extends DataBlock, C extends DataBlock> extends Workflo
 
     public void setAlgorithm(Algorithm<P, C> algorithm) {
         if (this.algorithm != null) {
-            this.algorithm.disabledProperty().unbind();
             shortDescriptionProperty().unbind();
         }
         this.algorithm = algorithm;

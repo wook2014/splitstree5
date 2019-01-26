@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Daniel H. Huson
+ *  Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -125,7 +125,7 @@ public class TreesBlock extends DataBlock {
 
     @Override
     public String getDisplayText() {
-        if (getDocument().getWorkflow().getTopTaxaNode().getDataBlock().getNtax() * size() < 100000)
+        if (getDocument().getWorkflow().getTopTaxaNode().getDataBlock().getNtax() * size() < 1000000)
             return super.getDisplayText();
         else {
             return "Number of trees: " + size() + " (too many to list here)\n";

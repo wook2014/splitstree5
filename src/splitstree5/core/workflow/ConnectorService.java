@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Daniel H. Huson
+ *  Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -18,7 +18,7 @@
  */
 
 /*
- *  Copyright (C) 2018 Daniel H. Huson
+ *  Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -120,12 +120,17 @@ public class ConnectorService<P extends DataBlock, C extends DataBlock> extends 
 
         @Override
         protected void failed() {
-            if (verbose) {
-                System.err.println("Algorithm " + getMethodName() + " failed: " + getException());
+            if (getException().getMessage().startsWith("Restart")) {
+                NotificationManager.showInformation(getException().getMessage());
+                connector.setState(UpdateState.INVALID);
+            } else {
+                if (verbose) {
+                    System.err.println("Algorithm " + getMethodName() + " failed: " + getException());
+                }
+                NotificationManager.showError("Algorithm " + getMethodName() + " failed: " + getException().getMessage());
+                Basic.caught(getException());
+                connector.setState(UpdateState.FAILED);
             }
-            NotificationManager.showError("Algorithm " + getMethodName() + " failed: " + getException().getMessage());
-            Basic.caught(getException());
-            connector.setState(UpdateState.FAILED);
         }
 
         @Override

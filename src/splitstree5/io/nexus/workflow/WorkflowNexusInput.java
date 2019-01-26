@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Daniel H. Huson
+ *  Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -117,7 +117,7 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
 
         final ArrayList<ViewerBlock> viewerBlocks = new ArrayList<>();
 
-        input(progress, workflow, viewerBlocks, fileName, null);
+        input(progress, workflow, viewerBlocks, fileName);
 
         Platform.runLater(() -> {
             try {
@@ -170,7 +170,7 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
      * @throws IOException
      * @throws CanceledException
      */
-    public static void input(ProgressListener progress, Workflow workflow, ArrayList<ViewerBlock> viewerBlocks, String fileName, Map<String, DataNode> title2node0) throws IOException, CanceledException {
+    public static void input(ProgressListener progress, Workflow workflow, ArrayList<ViewerBlock> viewerBlocks, String fileName) throws IOException, CanceledException {
         try (NexusStreamParser np = new NexusStreamParser(Basic.getReaderPossiblyZIPorGZIP(fileName))) {
             progress.setMaximum((new File(fileName).length() / (Basic.isZIPorGZIPFile(fileName) ? 100 : 20)));
             np.matchIgnoreCase("#nexus");
@@ -178,7 +178,7 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
             (new SplitsTree5NexusInput()).parse(np, splitsTree5Block);
             // todo: check input based on splitsTree5Block
 
-            final Map<String, DataNode> title2node = (title2node0 != null ? title2node0 : new HashMap<>());
+            final Map<String, DataNode> title2node = new HashMap<>();
             final Map<String, Pair<Algorithm, String>> title2algorithmAndLink = new HashMap<>();
 
             DataNode<TaxaBlock> topTaxaNode = null;

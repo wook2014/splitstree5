@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Daniel H. Huson
+ *  Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -35,8 +35,6 @@ import splitstree5.main.Version;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * runs a workflow on one or more input files
@@ -85,7 +83,7 @@ public class ExportWorkflow extends Application {
     private void run(String[] args) throws Exception {
         final ArgsOptions options = new ArgsOptions(args, ExportWorkflow.class, "Runs a SplitsTree5 workflow on input data");
         options.setVersion(ProgramProperties.getProgramVersion());
-        options.setLicense("Copyright (C) 2018 Daniel H. Huson. This program comes with ABSOLUTELY NO WARRANTY.");
+        options.setLicense("Copyright (C) 2019 Daniel H. Huson. This program comes with ABSOLUTELY NO WARRANTY.");
         options.setAuthors("Daniel H. Huson");
 
         options.comment("Input Output:");
@@ -133,10 +131,9 @@ public class ExportWorkflow extends Application {
 
         final MainWindow mainWindow = new MainWindow();
         final Workflow workflow = mainWindow.getWorkflow();
-        final Map<String, DataNode> title2node = new HashMap<>();
 
         try (final ProgressListener progress = new ProgressPercentage("Loading workflow from file: " + inputWorkflowFile)) {
-            WorkflowNexusInput.input(progress, workflow, new ArrayList<>(), inputWorkflowFile.getPath(), title2node);
+            WorkflowNexusInput.input(progress, workflow, new ArrayList<>(), inputWorkflowFile.getPath());
         }
 
         workflow.getDocument().updateMethodsText();
@@ -156,27 +153,12 @@ public class ExportWorkflow extends Application {
         }
 
         for (int i = 0; i < nodeNames.length; i++) {
-            final DataNode dataNode = findNode(nodeNames[i], title2node);
+            final DataNode dataNode = workflow.findDataNode(nodeNames[i]);
             if (dataNode == null)
                 throw new IOException("Node with title '" + nodeNames[i] + "': not found");
             final String outputFile = (outputFiles.length == 1 ? outputFiles[0] : outputFiles[i]);
             System.err.println("Exporting node '" + nodeNames[i] + "' to " + outputFile);
             ExportManager.getInstance().exportFile(outputFile, workflow.getWorkingTaxaBlock(), dataNode.getDataBlock(), exportFormats[i]);
         }
-    }
-
-    /**
-     * finds the
-     *
-     * @param name
-     * @param title2node
-     * @return
-     */
-    private DataNode findNode(String name, Map<String, DataNode> title2node) {
-        for (String key : title2node.keySet()) {
-            if (key.endsWith(name))
-                return title2node.get(key);
-        }
-        return null;
     }
 }

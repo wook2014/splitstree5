@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Daniel H. Huson
+ *  Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -19,11 +19,13 @@
 
 package splitstree5.gui.algorithmtab.treefilterview;
 
+import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Tooltip;
 import jloda.find.ListViewTypeSearcher;
 import jloda.fx.ExtendedFXMLLoader;
 import jloda.phylo.PhyloTree;
@@ -91,13 +93,14 @@ public class TreeFilterPane extends AlgorithmPane {
      * setup controller
      */
     public void setup() {
-        controller.getActiveList().getItems().addListener((ListChangeListener.Change<? extends String> c) -> {
+        controller.getActiveList().getItems().addListener((InvalidationListener) (c) -> {
             if (!undoManager.isPerformingUndoOrRedo()) { // for performance reasons, check this here. Is also checked in addUndoableChange, but why make a change object if we don't need it...
                 final UndoableChangeListViews2<String> change = new UndoableChangeListViews2<String>("Change Active Trees", controller.getActiveList(), prevActiveTrees, controller.getInactiveList(), prevInactiveTrees);
                 prevActiveTrees = change.getItemsA();
                 prevInactiveTrees = change.getItemsB();
                 if (!inSync)
                     undoManager.add(change);
+                controller.getActiveList().setTooltip(new Tooltip("Active: " + controller.getActiveList().getItems().size()));
             }
 
             controller.getActiveList().prefHeightProperty().bind(this.prefHeightProperty().subtract(50));
@@ -109,7 +112,12 @@ public class TreeFilterPane extends AlgorithmPane {
             updateSelection();
         });
 
-        controller.getInactiveList().getItems().addListener((ListChangeListener.Change<? extends String> c) -> updateSelection());
+        controller.getInactiveList().getItems().addListener(
+                (InvalidationListener) (c) -> {
+                    updateSelection();
+                    controller.getInactiveList().setTooltip(new Tooltip("Inactive: " + controller.getInactiveList().getItems().size()));
+                }
+        );
 
         controller.getActiveList().getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends String> c) -> updateSelection());
 

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Daniel H. Huson
+ *  Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -26,8 +26,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Point2D;
-import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.KeyCode;
@@ -41,7 +39,6 @@ import jloda.util.ProgramProperties;
 import jloda.util.ResourceManager;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
-import org.fxmisc.richtext.event.MouseOverTextEvent;
 import org.reactfx.Subscription;
 import org.reactfx.value.Val;
 import splitstree5.dialogs.importer.FileOpener;
@@ -54,8 +51,6 @@ import splitstree5.menu.MenuController;
 
 import java.io.*;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

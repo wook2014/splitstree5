@@ -57,7 +57,7 @@ public class NexusHighlighter implements Highlighter {
         if (collapsingActive)
             collapsing = "-collapse-able";
 
-        System.err.println("->"+collapsingActive);
+        //System.err.println("collapsingActive ->"+collapsingActive);
 
         Matcher matcher = PATTERN.matcher(text);
         int lastKwEnd = 0;

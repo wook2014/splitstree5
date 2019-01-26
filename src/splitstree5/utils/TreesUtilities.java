@@ -30,6 +30,8 @@ import splitstree5.core.misc.ASplit;
 
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * some computations on trees
@@ -265,5 +267,76 @@ public class TreesUtilities {
             weight += tree.getWeight(e);
         }
         return weight;
+    }
+
+    /**
+     * computes the induced tree
+     *
+     * @param oldTaxonId2NewTaxonId - old to new mapping, where removed taxa map to 0
+     * @param originalTree
+     * @return induced tree
+     */
+    public static PhyloTree computeInducedTree(int[] oldTaxonId2NewTaxonId, PhyloTree originalTree) {
+        final PhyloTree inducedTree = new PhyloTree();
+        inducedTree.copy(originalTree);
+
+        final List<Node> toRemove = new LinkedList<>(); // initially, set to all leaves that have lost their taxa
+
+        // change taxa:
+        for (Node v : inducedTree.nodes()) {
+            if (inducedTree.getNumberOfTaxa(v) > 0) {
+                BitSet taxa = new BitSet();
+                for (Integer t : inducedTree.getTaxa(v)) {
+                    if (oldTaxonId2NewTaxonId[t] > 0)
+                        taxa.set(oldTaxonId2NewTaxonId[t]);
+                }
+                inducedTree.clearTaxa(v);
+                if (taxa.cardinality() == 0)
+                    toRemove.add(v);
+                else {
+                    for (Integer t : BitSetUtils.members(taxa)) {
+                        inducedTree.addTaxon(v, t);
+                    }
+                }
+            }
+        }
+
+        // delete all nodes that don't belong to the induced tree
+        while (toRemove.size() > 0) {
+            final Node v = toRemove.remove(0);
+            for (Edge e : v.inEdges()) {
+                final Node w = e.getSource();
+                if (w.getOutDegree() == 1 && inducedTree.getNumberOfTaxa(w) == 0) {
+                    toRemove.add(w);
+                }
+            }
+            if (inducedTree.getRoot() == v) {
+                inducedTree.deleteNode(v);
+                inducedTree.setRoot(null);
+                return null; // tree has completely disappeared...
+            }
+            inducedTree.deleteNode(v);
+        }
+
+        // remove path from original root to new root:
+
+        Node root = inducedTree.getRoot();
+        while (inducedTree.getNumberOfTaxa(root) == 0 && root.getOutDegree() == 1) {
+            root = root.getFirstOutEdge().getTarget();
+            inducedTree.deleteNode(inducedTree.getRoot());
+            inducedTree.setRoot(root);
+        }
+
+        // remove all divertices
+        final List<Node> diVertices = new LinkedList<>();
+        for (Node v : inducedTree.nodes()) {
+            if (v.getInDegree() == 1 && v.getOutDegree() == 1)
+                diVertices.add(v);
+        }
+        for (Node v : diVertices) {
+            inducedTree.delDivertex(v);
+        }
+
+        return inducedTree;
     }
 }

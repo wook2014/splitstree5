@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Daniel H. Huson
+ *  Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -18,7 +18,7 @@
  */
 
 /*
- *  Copyright (C) 2018 Daniel H. Huson
+ *  Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -84,7 +84,7 @@ public class WorkflowNexusOutput {
             ProgramProperties.put("SaveDir", file.getParent());
 
         try (Writer w = new BufferedWriter(file.getName().equals("stdout") ? new OutputStreamWriter(System.out) : new FileWriter(file))) {
-            w.write("#nexus [SplitsTree4]\n");
+            w.write("#nexus [SplitsTree5]\n");
 
             (new SplitsTree5NexusOutput()).write(w, splitsTree5Block);
 

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Daniel H. Huson
+ *  Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -105,9 +105,9 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
 
         if (taxa.getNtax() == 0) {
             np.matchIgnoreCase("dimensions ntax=");
-            ntax = np.getInt(1, Integer.MAX_VALUE);
+            ntax = np.getInt(0, Integer.MAX_VALUE);
             np.matchIgnoreCase("nchar=");
-            nchar = np.getInt(1, Integer.MAX_VALUE);
+            nchar = np.getInt(0, Integer.MAX_VALUE);
             charactersBlock.setDimension(ntax, nchar);
             np.matchIgnoreCase(";");
         } else {

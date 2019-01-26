@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Daniel H. Huson
+ *  Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -19,8 +19,6 @@
 
 package splitstree5.core.algorithms;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import jloda.util.Basic;
 import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.DataBlock;
@@ -37,7 +35,6 @@ import splitstree5.utils.OptionsAccessor;
 abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extends NameableBase {
     public static final String BLOCK_NAME = "ALGORITHM";
 
-    private final BooleanProperty disabled = new SimpleBooleanProperty(true);
     private Connector<P, C> connector;
 
     /**
@@ -75,35 +72,10 @@ abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extend
     abstract public void compute(ProgressListener progress, TaxaBlock taxaBlock, P parent, C child) throws Exception;
 
     /**
-     * perform the computation for datablocks of unknown type
-     *
-     * @param progressListener
-     * @param taxaBlock
-     * @param parent
-     * @param child
-     * @throws Exception
-     */
-    public void compute0(ProgressListener progressListener, TaxaBlock taxaBlock, DataBlock parent, DataBlock child) throws Exception {
-        compute(progressListener, taxaBlock, (P) parent, (C) child);
-    }
-
-    /**
      * clear temporary data
      */
     public void clear() {
         super.clear();
-    }
-
-    public boolean isDisabled() {
-        return disabled.get();
-    }
-
-    public BooleanProperty disabledProperty() {
-        return disabled;
-    }
-
-    public void setDisabled(boolean disabled) {
-        this.disabled.set(disabled);
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Daniel H. Huson
+ *  Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -26,6 +26,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.control.TextFormatter;
 import javafx.util.converter.IntegerStringConverter;
 import jloda.fx.ExtendedFXMLLoader;
+import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.filters.TreeSelector;
@@ -132,10 +133,22 @@ public class TreeSelectorPane extends AlgorithmPane {
 
 
         controller.getTreeIdTextField().setOnAction((e) -> {
-            int value = Basic.parseInt(controller.getTreeIdTextField().getText());
-            if (value >= 1 && value <= numberOfTrees.get()) {
-                currentTree.set(value);
-                syncController2Model();
+            final String text = controller.getTreeIdTextField().getText();
+            if (Basic.isInteger(text)) {
+                int value = Basic.parseInt(text);
+                if (value >= 1 && value <= numberOfTrees.get()) {
+                    currentTree.set(value);
+                    syncController2Model();
+                }
+            } else {
+                for (int i = 1; i <= numberOfTrees.get(); i++) {
+                    final PhyloTree tree = treeSelector.getConnector().getParent().getDataBlock().getTree(i);
+                    if (tree.getName() != null && tree.getName().contains(text)) {
+                        currentTree.set(i);
+                        syncController2Model();
+                        break;
+                    }
+                }
             }
         });
         controller.getGotoFirstButton().disableProperty().bind(currentTree.lessThanOrEqualTo(1).or(connector.stateProperty().isNotEqualTo(UpdateState.VALID)));

@@ -60,7 +60,7 @@ public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> implements 
 
     @Override
     public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent) {
-        return 1 <= optionWhich && optionWhich <= parent.getTrees().size();
+        return 1 <= optionWhich && optionWhich <= parent.getTrees().size() && !parent.isPartial();
     }
 
     public int getOptionWhich() {

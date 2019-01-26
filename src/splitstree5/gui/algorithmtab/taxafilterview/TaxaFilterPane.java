@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Daniel H. Huson
+ *  Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -26,6 +26,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.WeakListChangeListener;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Tooltip;
 import jloda.find.ListViewTypeSearcher;
 import jloda.fx.ExtendedFXMLLoader;
 import jloda.util.Triplet;
@@ -160,7 +161,14 @@ public class TaxaFilterPane extends AlgorithmPane {
         controller.getActiveList().getSelectionModel().getSelectedItems().addListener(new WeakListChangeListener<>(paneTaxonSelectionChangeListener));
         controller.getInactiveList().getSelectionModel().getSelectedItems().addListener(new WeakListChangeListener<>(paneTaxonSelectionChangeListener));
 
-        controller.getActiveList().getItems().addListener((InvalidationListener) (c) -> select(document.getTaxaSelectionModel().getSelectedItems(), true));
+        controller.getActiveList().getItems().addListener((InvalidationListener) (c) -> {
+            select(document.getTaxaSelectionModel().getSelectedItems(), true);
+            controller.getActiveList().setTooltip(new Tooltip("Active: " + controller.getActiveList().getItems().size()));
+        });
+
+        controller.getInactiveList().getItems().addListener((InvalidationListener) (c) -> {
+            controller.getInactiveList().setTooltip(new Tooltip("Inactive: " + controller.getInactiveList().getItems().size()));
+        });
 
         document.getTaxaSelectionModel().getSelectedItems().addListener(new WeakListChangeListener<>(documentTaxonSelectionChangeListener));
 

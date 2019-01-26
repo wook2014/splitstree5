@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Daniel H. Huson
+ *  Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -51,7 +51,7 @@ import java.util.concurrent.ExecutorService;
 public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
     public enum EdgeWeights {Mean, TreeSizeWeightedMean, Median, Count, Sum, None}
 
-    private final SimpleObjectProperty<EdgeWeights> optionEdgeWeights = new SimpleObjectProperty<>(EdgeWeights.Mean);
+    private final SimpleObjectProperty<EdgeWeights> optionEdgeWeights = new SimpleObjectProperty<>(EdgeWeights.TreeSizeWeightedMean);
     private DoubleProperty optionThresholdPercent = new SimpleDoubleProperty(30.0);
 
     private final Object sync = new Object();
@@ -60,10 +60,8 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
 
     @Override
     public String getCitation() {
-        return "Holland and Moulton 2003; " +
-                "B. Holland and V. Moulton. Consensus networks:  A method for visualizing incompatibilities in  collections  of  trees.   " +
-                "In  G.  Benson  and  R.  Page,  editors, Proceedings  of  “Workshop  on Algorithms in Bioinformatics”, " +
-                "volume 2812 of LNBI, pages 165–176. Springer, 2003.";
+        return "Holland and Moulton 2003; B. Holland and V. Moulton. Consensus networks:  A method for visualizing incompatibilities in  collections  of  trees. " +
+                "In  G.  Benson  and  R.  Page,  editors, Proceedings  of  “Workshop  on Algorithms in Bioinformatics, volume 2812 of LNBI, pages 165–176. Springer, 2003.";
     }
 
     /**
@@ -131,6 +129,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
                                 synchronized (sync) {
                                     final Pair<BitSet, WeightStats> pair = splitsAndWeights.computeIfAbsent(split.getPartContaining(1), k -> new Pair<>(k, new WeightStats()));
                                     pair.getSecond().add((float) (factor * split.getWeight()), which);
+                                    progress.checkForCancel();
                                 }
                             }
                             if (threadNumber == 0) {

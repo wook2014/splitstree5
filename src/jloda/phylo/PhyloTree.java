@@ -1,6 +1,6 @@
 /**
  * PhyloTree.java
- * Copyright (C) 2018 Daniel H. Huson
+ * Copyright (C) 2019 Daniel H. Huson
  * <p>
  * (Some files contain contributions from other authors, who are then mentioned separately.)
  * <p>
@@ -39,7 +39,6 @@ public class PhyloTree extends PhyloGraph {
 
     protected final BitSet specialEdges = new BitSet();
 
-
     Node root = null; // can be a node or edge
     boolean inputHasMultiLabels = false;
     static boolean warnMultiLabeled = true;
@@ -64,6 +63,16 @@ public class PhyloTree extends PhyloGraph {
     }
 
     /**
+     * copy constructor
+     *
+     * @param src
+     */
+    public PhyloTree(PhyloTree src) {
+        this();
+        copy(src);
+    }
+
+    /**
      * Clears the tree.
      */
     public void clear() {
@@ -79,25 +88,7 @@ public class PhyloTree extends PhyloGraph {
      * @return mapping of old nodes to new nodes
      */
     public NodeArray<Node> copy(PhyloTree src) {
-        NodeArray<Node> oldNode2NewNode = super.copy(src);
-
-        if (src.getRoot() != null) {
-            Node root = src.getRoot();
-            setRoot(oldNode2NewNode.getValue(root));
-        }
-        for (Node v = src.getFirstNode(); v != null; v = v.getNext()) {
-            List<Node> children = src.getNode2GuideTreeChildren().getValue(v);
-            if (children != null) {
-                List<Node> newChildren = new LinkedList<>();
-                for (Node w : children) {
-                    newChildren.add(oldNode2NewNode.getValue(w));
-                }
-                getNode2GuideTreeChildren().setValue(oldNode2NewNode.getValue(v), newChildren);
-            }
-        }
-        setName(src.getName());
-
-        return oldNode2NewNode;
+        return copy(src, null, null);
     }
 
     /**
@@ -107,7 +98,7 @@ public class PhyloTree extends PhyloGraph {
      * @param oldNode2NewNode
      * @param oldEdge2NewEdge
      */
-    public void copy(PhyloTree src, NodeArray<Node> oldNode2NewNode, EdgeArray<Edge> oldEdge2NewEdge) {
+    public NodeArray<Node> copy(PhyloTree src, NodeArray<Node> oldNode2NewNode, EdgeArray<Edge> oldEdge2NewEdge) {
         oldNode2NewNode = super.copy(src, oldNode2NewNode, oldEdge2NewEdge);
         // super.copy(src, oldNode2NewNode, oldEdge2NewEdge);
         if (src.getRoot() != null) {
@@ -124,6 +115,7 @@ public class PhyloTree extends PhyloGraph {
                 getNode2GuideTreeChildren().setValue(oldNode2NewNode.getValue(v), newChildren);
             }
         }
+        return oldNode2NewNode;
     }
 
     /**
@@ -158,6 +150,7 @@ public class PhyloTree extends PhyloGraph {
 
     /**
      * gets a string representation of the tree in bracket notation.
+     *
      * @param showWeights
      * @return Newick string
      */
@@ -176,6 +169,7 @@ public class PhyloTree extends PhyloGraph {
 
     /**
      * gets a string representation of the tree in bracket notation.
+     *
      * @param translate
      * @return Newick string
      */
@@ -1151,6 +1145,68 @@ public class PhyloTree extends PhyloGraph {
 
     public void setInternalNodeLabelsAreEdgeLabels(boolean internalNodeLabelsAreEdgeLabels) {
         this.internalNodeLabelsAreEdgeLabels = internalNodeLabelsAreEdgeLabels;
+    }
+
+    /**
+     * returns a new tree in which all edges of length < min length have been contracted
+     *
+     * @param minLength
+     * @return true, if anything contracted
+     */
+    public boolean contractShortEdges(double minLength) {
+        boolean hasContractedOne = false;
+
+        while (true) {
+            boolean contracted = false;
+
+            for (Edge e : edges()) {
+                if (getWeight(e) < minLength) {
+                    contracted = true;
+                    final Node v = e.getSource();
+                    final Node w = e.getTarget();
+                    for (Edge f : v.adjacentEdges()) {
+                        if (f != e) {
+                            final Node u = f.getOpposite(v);
+                            final Edge z;
+                            if (u == f.getSource())
+                                z = newEdge(u, w);
+                            else
+                                z = newEdge(w, u);
+                            setWeight(z, getWeight(f));
+                            setConfidence(z, getConfidence(f));
+                            setLabel(z, getLabel(z));
+                        }
+                    }
+                    for (Integer taxon : getTaxa(v))
+                        addTaxon(w, taxon);
+
+                    if (getRoot() == v)
+                        setRoot(w);
+
+                    deleteNode(v);
+                    break;
+                }
+            }
+            if (contracted)
+                hasContractedOne = true;
+            else
+                break;
+        }
+        return hasContractedOne;
+    }
+
+    /**
+     * give all edges unit weight
+     */
+    public boolean makeEdgesUnitWeight() {
+        boolean changed = false;
+        for (Edge e : edges()) {
+            if (getWeight(e) != 1) {
+                setWeight(e, 1);
+                changed = true;
+            }
+        }
+        return changed;
     }
 }
 

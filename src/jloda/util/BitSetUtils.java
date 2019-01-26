@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Daniel H. Huson
+ *  Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -20,6 +20,7 @@
 package jloda.util;
 
 import java.util.BitSet;
+import java.util.Comparator;
 import java.util.Iterator;
 
 /**
@@ -122,5 +123,49 @@ public class BitSetUtils {
             return -1;
         else
             return 1;
+    }
+
+    /**
+     * get a comparator that compares by decreasing cardinality
+     *
+     * @return comparator
+     */
+    public static Comparator<BitSet> getComparatorByDecreasingCardinality() {
+        return (a, b) -> {
+            if (a.cardinality() > b.cardinality())
+                return -1;
+            else if (a.cardinality() < b.cardinality())
+                return 1;
+            else
+                return compare(a, b);
+        };
+    }
+
+    /**
+     * gets an array in which the i-th component has value i, if and only if i is contained in bits
+     *
+     * @param max  maximum value
+     * @param bits
+     * @return values and 0s
+     */
+    public static int[] asArrayWith0s(int max, BitSet bits) {
+        final int[] array = new int[max + 1];
+        for (Integer t : members(bits))
+            array[t] = t;
+        return array;
+    }
+
+    /**
+     * get the largest member of the set
+     *
+     * @param bits
+     * @return maximum member
+     */
+    public static int max(BitSet bits) {
+        int max = 0;
+        for (int value = bits.nextSetBit(0); value != -1; value = bits.nextSetBit(value + 1)) {
+            max = value;
+        }
+        return max;
     }
 }

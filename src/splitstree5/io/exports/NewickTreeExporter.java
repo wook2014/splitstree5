@@ -23,6 +23,6 @@ public class NewickTreeExporter implements IFromTrees, IExportTrees {
 
     @Override
     public List<String> getExtensions() {
-        return Arrays.asList("new", "nwk", "tree", "tre", "treefile");
+        return Arrays.asList("tree", "tre", "new", "nwk", "treefile");
     }
 }

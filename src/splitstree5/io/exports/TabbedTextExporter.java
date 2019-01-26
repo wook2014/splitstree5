@@ -15,6 +15,7 @@ import splitstree5.io.exports.interfaces.IExportTaxa;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 
@@ -105,6 +106,6 @@ public class TabbedTextExporter implements
 
     @Override
     public List<String> getExtensions() {
-        return null;
+        return Arrays.asList("tab", "txt");
     }
 }

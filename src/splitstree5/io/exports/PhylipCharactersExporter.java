@@ -92,6 +92,6 @@ public class PhylipCharactersExporter implements IFromChararacters, IExportChara
 
     @Override
     public List<String> getExtensions() {
-        return Arrays.asList("phy", "phylip");
+        return Arrays.asList("phylip", "phy");
     }
 }
