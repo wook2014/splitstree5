@@ -19,6 +19,8 @@
 
 package splitstree5.core.algorithms.characters2distances.utils;
 
+import com.sun.istack.internal.Nullable;
+import splitstree5.core.algorithms.characters2distances.HammingDistancesAmbiguousStates;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.models.SubstitutionModel;
@@ -44,6 +46,10 @@ public class PairwiseCompare { // todo: add support for character weights
      * @param j
      * @throws SplitsException
      */
+
+    // todo 2 constructor with/without ambig param
+    // todo group identical haplotypes
+
     public PairwiseCompare(final CharactersBlock characters, final int i, final int j) throws SplitsException {
         final String states = characters.getSymbols();
         final char gapChar = characters.getGapCharacter();
@@ -61,8 +67,14 @@ public class PairwiseCompare { // todo: add support for character weights
         numNotMissing = 0;
 
         for (int k = 1; k <= characters.getNchar(); k++) {
-            final char ci = characters.get(i, k);
-            final char cj = characters.get(j, k);
+            char ci = characters.get(i, k); // todo use final?
+            char cj = characters.get(j, k);//todo replace ambig with missing
+
+            if (AmbiguityCodes.isAmbiguityCode(ci))
+                ci = '?';
+            if (AmbiguityCodes.isAmbiguityCode(cj))
+                cj = '?';
+
             final double charWeight = characters.getCharacterWeight(k);
 
             if (ci != missingChar && ci != gapChar && cj != missingChar && cj != gapChar)
@@ -115,6 +127,7 @@ public class PairwiseCompare { // todo: add support for character weights
                     }
                 }
             } else {
+                //todo: replace ambig with ? in SP4!!
                 int stateI = states.indexOf(ci);
                 int stateJ = states.indexOf(cj);
                 if (ci == gapChar)

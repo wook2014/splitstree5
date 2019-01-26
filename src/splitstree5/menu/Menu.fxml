@@ -94,6 +94,8 @@
                                                     shortcut="DOWN"/>
                             </accelerator>
                         </MenuItem>
+                        <MenuItem fx:id="GroupIdenticalHaplotypesFilesMenuItem" text="Group identical haplotypes...">
+                        </MenuItem>
                     </items>
                 </Menu>
                 <SeparatorMenuItem mnemonicParsing="false"/>

@@ -39,7 +39,19 @@
 package splitstree5.gui.utils;
 
 import jloda.fx.Alert;
+import jloda.util.Basic;
+import splitstree5.core.Document;
 import splitstree5.core.datablocks.CharactersBlock;
+import splitstree5.core.datablocks.DataBlock;
+import splitstree5.core.datablocks.DistancesBlock;
+import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.misc.Taxon;
+import splitstree5.io.nexus.CharactersNexusOutput;
+import splitstree5.io.nexus.DistancesNexusInput;
+import splitstree5.io.nexus.DistancesNexusOutput;
+import splitstree5.io.nexus.TaxaNexusOutput;
+
+import java.io.StringWriter;
 
 public class CharactersUtilities {
 
@@ -98,5 +110,183 @@ public class CharactersUtilities {
 
         return Fcount;
 
+    }
+
+    /**
+     * Group identical haplotype function
+     *
+     * @param taxa taxa to group
+     * @param topBlock characters or distances block
+     */
+
+    static public void collapseByType(TaxaBlock taxa, DataBlock topBlock) {
+
+        if(!(topBlock instanceof CharactersBlock || topBlock instanceof DistancesBlock)){
+            System.err.println("Only applicable if top block is character or distances");
+            return;
+        }
+
+        try {
+
+            System.err.println();
+            System.err.println("Applied: Group identical haplotypes function");
+            int ntax = taxa.getNtax();
+
+            int typecount = 0;
+            int numNonSingleClasses = 0;
+
+            int[] taxaTypes = new int[taxa.getNtax() + 1];
+            int[] representatives = new int[taxa.getNtax() + 1]; //Representative taxon of each type.
+
+            TaxaBlock newTaxa = new TaxaBlock();
+            Document newDoc = new Document();
+
+            //Use a breadth-first search to identify classes of identical sequences or distance matrix rows.
+            //Build up new taxa block. Classes of size one give new taxa with the same name, larger classes
+            //are named TYPEn for n=1,2,3...
+            for (int i = 1; i <= ntax; i++) {
+                if (taxaTypes[i] != 0)  //Already been 'typed'
+                    continue;
+                typecount++;
+                taxaTypes[i] = typecount;
+                representatives[typecount] = i;
+                int numberOfThisType = 1;
+                String info = taxa.getLabel(i); //Start building up the info string for this taxon.
+
+
+                for (int j = i + 1; j <= ntax; j++) {
+                    if (taxaTypes[j] != 0)
+                        continue;
+                    boolean taxaIdentical;
+                    if (topBlock instanceof CharactersBlock)
+                        taxaIdentical = taxaIdentical((CharactersBlock) topBlock, i, j);
+                    else
+                        taxaIdentical = taxaIdentical((DistancesBlock) topBlock, i, j);
+                    if (taxaIdentical) {
+                        taxaTypes[j] = typecount;
+                        numberOfThisType++;
+                        info += ", " + taxa.getLabel(j);
+                    }
+                }
+
+                if (numberOfThisType > 1) {
+                    numNonSingleClasses++;
+                    Taxon t = new Taxon("TYPE" + numNonSingleClasses);
+                    t.setInfo(info);
+                    newTaxa.add(t);
+                } else {
+                    Taxon t = new Taxon(info);
+                    t.setInfo(info);
+                    newTaxa.add(t); //Info is the same as taxa label.
+                }
+            }
+            //newDoc.setTaxa(newTaxa);
+            final StringWriter w = new StringWriter();
+            new TaxaNexusOutput().write(w, newTaxa);
+
+            //Set up the new characters block, if one exists.
+            CharactersBlock newCharacters;
+            if (topBlock instanceof CharactersBlock) {
+                CharactersBlock characters = (CharactersBlock) topBlock;
+                newCharacters = new CharactersBlock();
+                newCharacters.setDimension(newTaxa.getNtax(), characters.getNchar());
+                for (int i = 1; i <= newTaxa.getNtax(); i++) {
+                    int old_i = representatives[i];
+                    for (int k = 1; k <= characters.getNchar(); k++)
+                        newCharacters.set(i, k, characters.get(old_i, k));
+                }
+                //newDoc.setCharacters(newCharacters);
+
+                new CharactersNexusOutput().write(w, newTaxa, newCharacters);
+            }
+
+            //Set up the new distances block, if necc.
+            DistancesBlock newDistances;
+            if (topBlock instanceof DistancesBlock) {
+
+                DistancesBlock distances = (DistancesBlock) topBlock;
+                newDistances = new DistancesBlock();
+                newDistances.setNtax(newTaxa.getNtax());
+
+                for (int i = 1; i <= newTaxa.getNtax(); i++) {
+                    int old_i = representatives[i];
+                    for (int j = 1; j < i; j++) {
+                        int old_j = representatives[j];
+                        double val = distances.get(old_i, old_j);
+                        newDistances.set(i, j, val);
+                        newDistances.set(j, i, val);
+                    }
+                }
+                //newDoc.setDistances(newDistances);
+                new DistancesNexusOutput().write(w, newTaxa, newDistances);
+            }
+            /*if (doc != null)
+                newDoc.setTitle("Distinct Haplotypes for " + doc.getTitle());
+            else
+                newDoc.setTitle("Distinct Haplotypes");*/
+            if (taxa.getNtax() == newTaxa.getNtax())
+                System.err.println("No identical haplotypes are found!");
+            else {
+                System.err.println("Updated Data after grouping:");
+                System.err.println(w);
+            }
+
+        } catch (Exception ex) {
+            Basic.caught(ex);
+        }
+    }
+
+    /**
+     * Check to see if two sequences are identical on all the unmasked sites.
+     *
+     * @param characters
+     * @param i
+     * @param j
+     * @return true is sequences are identical. False otherwise.
+     */
+    static public boolean taxaIdentical(CharactersBlock characters, int i, int j) {
+        char[] seqi = characters.getRow1(i);
+        char[] seqj = characters.getRow1(j);
+        char missingchar = characters.getMissingCharacter();
+        char gapchar = characters.getGapCharacter();
+
+        for (int k = 1; k <= characters.getNchar(); k++) {
+            char ci = seqi[k];
+            char cj = seqj[k];
+
+            //Convert to lower case if the respectCase option is not set
+            if (!characters.isRespectCase()) {
+                if (ci != missingchar && ci != gapchar)
+                    ci = Character.toLowerCase(ci);
+                if (cj != missingchar && cj != gapchar)
+                    cj = Character.toLowerCase(cj);
+            }
+            if (ci != cj)
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * Check to see if two sequences are identical using the distance data
+     *
+     * @param distances
+     * @param i
+     * @param j
+     * @return true if two rows in the distance matrix are identical and the taxa have distance 0
+     */
+    static private boolean taxaIdentical(DistancesBlock distances, int i, int j) {
+
+        int ntax = distances.getNtax();
+
+        if (distances.get(i, j) > 0)
+            return false;
+        for (int k = 1; k <= ntax; k++) {
+            if (k == i || k == j)
+                continue;
+            if (distances.get(i, k) != distances.get(j, k))
+                return false;
+        }
+        return true;
     }
 }
