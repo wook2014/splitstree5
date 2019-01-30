@@ -53,6 +53,7 @@ public class CharactersBlock extends DataBlock {
     private boolean respectCase = false; // respectCase==true hasn't been implemented
 
     private CharactersType dataType = CharactersType.Unknown;
+    private boolean hasAmbiguityCodes = false;
 
     private StateLabeler stateLabeler; // manages state labels
     private Map<Integer, String> charLabeler; // manages character labels
@@ -424,6 +425,14 @@ public class CharactersBlock extends DataBlock {
             return getNtax() + " character sequences of length " + getNchar();
         else
             return getNtax() + " " + getDataType().toString() + " character sequences of length " + getNchar();
+    }
+
+    public boolean isHasAmbiguityCodes(){
+        return this.hasAmbiguityCodes;
+    }
+
+    public void setHasAmbiguityCodes(boolean hasAmbiguityCodes){
+        this.hasAmbiguityCodes = hasAmbiguityCodes;
     }
 
 }

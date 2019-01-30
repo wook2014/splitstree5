@@ -331,6 +331,9 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
                 //TODo clean this up.
                 final char ch = str.charAt(i - 1);
 
+                if(AmbiguityCodes.isAmbiguityCode(ch))
+                    characters.setHasAmbiguityCodes(true); // todo for all char importer?
+
                 if (ch == format.getOptionMatchCharacter()) {
                     if (t == 1)
                         throw new IOExceptionWithLineNumber(np.lineno(), "matchchar illegal in first sequence");

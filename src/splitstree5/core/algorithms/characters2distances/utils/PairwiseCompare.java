@@ -18,9 +18,6 @@
  */
 
 package splitstree5.core.algorithms.characters2distances.utils;
-
-import com.sun.istack.internal.Nullable;
-import splitstree5.core.algorithms.characters2distances.HammingDistancesAmbiguousStates;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.models.SubstitutionModel;

@@ -29,7 +29,8 @@ public class HammingDistancesAmbiguousStates extends Algorithm<CharactersBlock, 
 
         distances.setNtax(characters.getNtax());
 
-        if (optionHandleAmbiguousStates.equals(AmbiguousOptions.MatchStates))
+        if (optionHandleAmbiguousStates.equals(AmbiguousOptions.MatchStates)
+                && characters.getDataType().isNucleotides() && characters.isHasAmbiguityCodes())
             computeMatchStatesHamming(progress, taxa, characters, distances);
         else {
             // all the same here
