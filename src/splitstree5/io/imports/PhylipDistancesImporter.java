@@ -53,7 +53,7 @@ public class PhylipDistancesImporter implements IToDistances, IImportDistances {
                 StringTokenizer st = new StringTokenizer(line);
                 while (st.hasMoreTokens()) {
                     String token = st.nextToken();
-                    if (!Basic.isInteger(token)) {
+                    if (!Basic.isDouble(token)) {
                         foundFirstLabel = true;
 
                         if (tokensInCurrentRow > ntax)
@@ -86,7 +86,6 @@ public class PhylipDistancesImporter implements IToDistances, IImportDistances {
                         // System.err.println("curr " + tokensInCurrentRow + " pref " + tokensInPreviousRow);
                         tokensInPreviousRow = tokensInCurrentRow;
                         tokensInCurrentRow = 0;
-
                         currentLabel = addTaxaName(matrix, token, counter);
                     } else {
 

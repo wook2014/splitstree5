@@ -87,7 +87,7 @@ public class PhylipDistancesImporterTest {
             }
         }
         System.err.println(applicableFiles);
-        assertEquals(applicableFiles, Arrays.asList("square.dist", "squareEOL-bf.dist", "triangular.dist",
+        assertEquals(applicableFiles, Arrays.asList("mash.dist", "square.dist", "squareEOL-bf.dist", "triangular.dist",
                 "triangularEOL.dist", "triangular_upper.dist"));
     }
 
