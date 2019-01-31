@@ -107,26 +107,29 @@ public class MainWindowMenuController {
                     CharactersUtilities.collapseByType(mainWindow.getWorkflow().getTopTaxaNode().getDataBlock(),
                     mainWindow.getWorkflow().getTopDataNode().getDataBlock());
 
-            TaxaBlock newTaxa = p.get1();
-            DataBlock newTopBlock = p.get2();
+            if (p != null) {
+                TaxaBlock newTaxa = p.get1();
+                DataBlock newTopBlock = p.get2();
 
-            // Printing
-            final StringWriter w = new StringWriter();
-            try {
-                new TaxaNexusOutput().write(w, newTaxa);
-                if (newTopBlock instanceof CharactersBlock)
-                    new CharactersNexusOutput().write(w, newTaxa, (CharactersBlock) newTopBlock);
-                else
-                    new DistancesNexusOutput().write(w, newTaxa, (DistancesBlock) newTopBlock);
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+                // Printing
+                final StringWriter w = new StringWriter();
+                try {
+                    new TaxaNexusOutput().write(w, newTaxa);
+                    if (newTopBlock instanceof CharactersBlock)
+                        new CharactersNexusOutput().write(w, newTaxa, (CharactersBlock) newTopBlock);
+                    else
+                        new DistancesNexusOutput().write(w, newTaxa, (DistancesBlock) newTopBlock);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
 
-            if (mainWindow.getWorkflow().getTopTaxaNode().getDataBlock().getNtax() == newTaxa.getNtax())
-                System.err.println("No identical haplotypes are found!");
-            else {
-                System.err.println("Updated Data after grouping:");
-                System.err.println(w);
+                if (mainWindow.getWorkflow().getTopTaxaNode().getDataBlock().getNtax() == newTaxa.getNtax()) {
+                    System.err.println("No identical haplotypes are found!");
+                    System.err.println(w);
+                } else {
+                    System.err.println("Updated Data after grouping:");
+                    System.err.println(w);
+                }
             }
         });
 

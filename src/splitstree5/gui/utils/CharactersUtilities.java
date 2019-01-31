@@ -123,7 +123,7 @@ public class CharactersUtilities {
 
         if(!(topBlock instanceof CharactersBlock || topBlock instanceof DistancesBlock)){
             System.err.println("Only applicable if top block is character or distances");
-            return new Pair<>(taxa, topBlock);
+            return null;
         }
 
         try {
