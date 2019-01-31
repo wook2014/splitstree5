@@ -428,6 +428,12 @@ public class CharactersBlock extends DataBlock {
             return getNtax() + " " + getDataType().toString() + " character sequences of length " + getNchar();
     }
 
+    /**
+     * "On demand" ambiguity check.
+     * The value is calculated and set to the field, if the value is null.
+     *
+     * @return boolean value
+     */
     public boolean isHasAmbiguityCodes() {
         return (this.hasAmbiguityCodes == null) ?
                 AmbiguityCodes.isAmbiguityCode(this) :
