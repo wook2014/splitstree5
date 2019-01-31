@@ -21,6 +21,7 @@ package splitstree5.core.datablocks;
 
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
 import splitstree5.core.algorithms.interfaces.IToCharacters;
+import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.datablocks.characters.CharactersType;
 import splitstree5.io.nexus.CharactersNexusFormat;
 import splitstree5.io.nexus.stateLabeler.StateLabeler;
@@ -53,7 +54,8 @@ public class CharactersBlock extends DataBlock {
     private boolean respectCase = false; // respectCase==true hasn't been implemented
 
     private CharactersType dataType = CharactersType.Unknown;
-    private boolean hasAmbiguityCodes = false;
+    private Boolean hasAmbiguityCodes = null; //todo if null - calculate( in AmbigCodes), else return
+    // todo: pcoa gui, labels styling(partial)
 
     private StateLabeler stateLabeler; // manages state labels
     private Map<Integer, String> charLabeler; // manages character labels
@@ -132,8 +134,7 @@ public class CharactersBlock extends DataBlock {
     }
 
     /**
-     * gets the value for i and j. If the letter is an ambiguity code, then returns the missing character.
-     * In the case of an ambiguity code, use getAmbiguousNucleotides() to get all nucleotides associated with the code
+     * gets the value for i and j.
      *
      * @param t   in range 1..nTax
      * @param pos in range 1..nchar
@@ -427,8 +428,10 @@ public class CharactersBlock extends DataBlock {
             return getNtax() + " " + getDataType().toString() + " character sequences of length " + getNchar();
     }
 
-    public boolean isHasAmbiguityCodes(){
-        return this.hasAmbiguityCodes;
+    public boolean isHasAmbiguityCodes() {
+        return (this.hasAmbiguityCodes == null) ?
+                AmbiguityCodes.isAmbiguityCode(this) :
+                this.hasAmbiguityCodes;
     }
 
     public void setHasAmbiguityCodes(boolean hasAmbiguityCodes){

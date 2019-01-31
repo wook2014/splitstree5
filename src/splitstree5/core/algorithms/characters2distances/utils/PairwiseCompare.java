@@ -68,9 +68,9 @@ public class PairwiseCompare { // todo: add support for character weights
             char cj = characters.get(j, k);//todo replace ambig with missing
 
             if (AmbiguityCodes.isAmbiguityCode(ci))
-                ci = '?';
+                ci = characters.getMissingCharacter();//'?';
             if (AmbiguityCodes.isAmbiguityCode(cj))
-                cj = '?';
+                cj = characters.getMissingCharacter();
 
             final double charWeight = characters.getCharacterWeight(k);
 
