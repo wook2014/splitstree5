@@ -66,12 +66,16 @@ import splitstree5.dialogs.message.MessageWindow;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.utils.CharactersUtilities;
 import splitstree5.gui.utils.CheckForUpdate;
+import splitstree5.io.nexus.CharactersNexusOutput;
+import splitstree5.io.nexus.DistancesNexusOutput;
+import splitstree5.io.nexus.TaxaNexusOutput;
 import splitstree5.io.nexus.workflow.WorkflowNexusInput;
 import splitstree5.io.nexus.workflow.WorkflowNexusOutput;
 import splitstree5.menu.MenuController;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.Optional;
 
@@ -99,12 +103,31 @@ public class MainWindowMenuController {
                 bind(mainWindow.getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().not());
         controller.getGroupIdenticalHaplotypesFilesMenuItem().setOnAction((e) -> {
 
-            CharactersUtilities.collapseByType(mainWindow.getWorkflow().getTopTaxaNode().getDataBlock(),
+            Pair<TaxaBlock, DataBlock> p =
+                    CharactersUtilities.collapseByType(mainWindow.getWorkflow().getTopTaxaNode().getDataBlock(),
                     mainWindow.getWorkflow().getTopDataNode().getDataBlock());
-            /*final Document newDoc = mainWindow.getDocument();
-            final MainWindow newMainWindow = new MainWindow();
-            newDoc.setMainWindow(newMainWindow);
-            newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50);*/
+
+            TaxaBlock newTaxa = p.get1();
+            DataBlock newTopBlock = p.get2();
+
+            // Printing
+            final StringWriter w = new StringWriter();
+            try {
+                new TaxaNexusOutput().write(w, newTaxa);
+                if (newTopBlock instanceof CharactersBlock)
+                    new CharactersNexusOutput().write(w, newTaxa, (CharactersBlock) newTopBlock);
+                else
+                    new DistancesNexusOutput().write(w, newTaxa, (DistancesBlock) newTopBlock);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+
+            if (mainWindow.getWorkflow().getTopTaxaNode().getDataBlock().getNtax() == newTaxa.getNtax())
+                System.err.println("No identical haplotypes are found!");
+            else {
+                System.err.println("Updated Data after grouping:");
+                System.err.println(w);
+            }
         });
 
         controller.getOpenMenuItem().setOnAction((e) -> {

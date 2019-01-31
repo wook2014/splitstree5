@@ -40,18 +40,12 @@ package splitstree5.gui.utils;
 
 import jloda.fx.Alert;
 import jloda.util.Basic;
-import splitstree5.core.Document;
+import jloda.util.Pair;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
-import splitstree5.io.nexus.CharactersNexusOutput;
-import splitstree5.io.nexus.DistancesNexusInput;
-import splitstree5.io.nexus.DistancesNexusOutput;
-import splitstree5.io.nexus.TaxaNexusOutput;
-
-import java.io.StringWriter;
 
 public class CharactersUtilities {
 
@@ -119,17 +113,20 @@ public class CharactersUtilities {
      * @param topBlock characters or distances block
      */
 
-    static public void collapseByType(TaxaBlock taxa, DataBlock topBlock) {
+    //todo return Pair of Blocks
+    //todo test on: mash.dist, lugens-1.nex
+
+    static public Pair<TaxaBlock, DataBlock> collapseByType(TaxaBlock taxa, DataBlock topBlock) {
+
+        System.err.println();
+        System.err.println("Applied: Group identical haplotypes function");
 
         if(!(topBlock instanceof CharactersBlock || topBlock instanceof DistancesBlock)){
             System.err.println("Only applicable if top block is character or distances");
-            return;
+            return new Pair<>(taxa, topBlock);
         }
 
         try {
-
-            System.err.println();
-            System.err.println("Applied: Group identical haplotypes function");
             int ntax = taxa.getNtax();
 
             int typecount = 0;
@@ -139,7 +136,6 @@ public class CharactersUtilities {
             int[] representatives = new int[taxa.getNtax() + 1]; //Representative taxon of each type.
 
             TaxaBlock newTaxa = new TaxaBlock();
-            Document newDoc = new Document();
 
             //Use a breadth-first search to identify classes of identical sequences or distance matrix rows.
             //Build up new taxa block. Classes of size one give new taxa with the same name, larger classes
@@ -180,32 +176,23 @@ public class CharactersUtilities {
                     newTaxa.add(t); //Info is the same as taxa label.
                 }
             }
-            //newDoc.setTaxa(newTaxa);
-            final StringWriter w = new StringWriter();
-            new TaxaNexusOutput().write(w, newTaxa);
 
             //Set up the new characters block, if one exists.
-            CharactersBlock newCharacters;
             if (topBlock instanceof CharactersBlock) {
                 CharactersBlock characters = (CharactersBlock) topBlock;
-                newCharacters = new CharactersBlock();
+                CharactersBlock newCharacters = new CharactersBlock();
                 newCharacters.setDimension(newTaxa.getNtax(), characters.getNchar());
                 for (int i = 1; i <= newTaxa.getNtax(); i++) {
                     int old_i = representatives[i];
                     for (int k = 1; k <= characters.getNchar(); k++)
                         newCharacters.set(i, k, characters.get(old_i, k));
                 }
-                //newDoc.setCharacters(newCharacters);
+                return new Pair<>(newTaxa, newCharacters);
 
-                new CharactersNexusOutput().write(w, newTaxa, newCharacters);
-            }
-
-            //Set up the new distances block, if necc.
-            DistancesBlock newDistances;
-            if (topBlock instanceof DistancesBlock) {
-
+            } else {
+                //Set up the new distances block
                 DistancesBlock distances = (DistancesBlock) topBlock;
-                newDistances = new DistancesBlock();
+                DistancesBlock newDistances = new DistancesBlock();
                 newDistances.setNtax(newTaxa.getNtax());
 
                 for (int i = 1; i <= newTaxa.getNtax(); i++) {
@@ -217,22 +204,12 @@ public class CharactersUtilities {
                         newDistances.set(j, i, val);
                     }
                 }
-                //newDoc.setDistances(newDistances);
-                new DistancesNexusOutput().write(w, newTaxa, newDistances);
-            }
-            /*if (doc != null)
-                newDoc.setTitle("Distinct Haplotypes for " + doc.getTitle());
-            else
-                newDoc.setTitle("Distinct Haplotypes");*/
-            if (taxa.getNtax() == newTaxa.getNtax())
-                System.err.println("No identical haplotypes are found!");
-            else {
-                System.err.println("Updated Data after grouping:");
-                System.err.println(w);
+                return new Pair<>(newTaxa, newDistances);
             }
 
         } catch (Exception ex) {
             Basic.caught(ex);
+            return new Pair<>(taxa, topBlock);
         }
     }
 
