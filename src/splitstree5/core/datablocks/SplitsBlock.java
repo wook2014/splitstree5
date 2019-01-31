@@ -22,6 +22,7 @@ package splitstree5.core.datablocks;
 import javafx.beans.InvalidationListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import jloda.util.Basic;
 import splitstree5.core.algorithms.interfaces.IFromSplits;
 import splitstree5.core.algorithms.interfaces.IToSplits;
@@ -33,6 +34,7 @@ import splitstree5.utils.SplitsUtilities;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.TreeMap;
 
 /**
  * A splits block
@@ -40,7 +42,6 @@ import java.util.NoSuchElementException;
  */
 public class SplitsBlock extends DataBlock {
     public static final String BLOCK_NAME = "SPLITS";
-
 
     private final ObservableList<ASplit> splits;
 
@@ -53,6 +54,8 @@ public class SplitsBlock extends DataBlock {
 
     private int[] cycle;
 
+    private final ObservableMap<Integer, String> splitLabels;
+
     /**
      * default constructor
      */
@@ -60,6 +63,8 @@ public class SplitsBlock extends DataBlock {
         super(BLOCK_NAME);
         splits = FXCollections.observableArrayList();
         format = new SplitsNexusFormat();
+
+        splitLabels = FXCollections.observableMap(new TreeMap<>());
     }
 
     /**
@@ -87,6 +92,7 @@ public class SplitsBlock extends DataBlock {
         threshold = that.getThreshold();
         partial = that.isPartial();
         cycle = that.getCycle().clone();
+        splitLabels.putAll(that.splitLabels);
     }
 
     @Override
@@ -98,6 +104,7 @@ public class SplitsBlock extends DataBlock {
         fit = -1;
         threshold = 0;
         setShortDescription("");
+        splitLabels.clear();
     }
 
     public ObservableList<ASplit> getSplits() {
@@ -219,6 +226,10 @@ public class SplitsBlock extends DataBlock {
             }
         }
         this.cycle = cycle;
+    }
+
+    public ObservableMap<Integer, String> getSplitLabels() {
+        return splitLabels;
     }
 
     @Override

@@ -95,6 +95,17 @@ public class SplitsNexusOutput extends NexusIOBase implements INexusOutput<Split
             w.write(";\n");
         }
 
+        if (splitsBlock.getSplitLabels().size() > 0) {
+            w.write("SPLITSLABELS");
+            for (String label : splitsBlock.getSplitLabels().values()) {
+                if (label == null)
+                    w.write(" null");
+                else
+                    w.write(" '" + label + "'");
+            }
+            w.write(";\n");
+        }
+
         w.write("MATRIX\n");
 
         int t = 1;

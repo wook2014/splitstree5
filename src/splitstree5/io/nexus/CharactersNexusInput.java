@@ -291,7 +291,7 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
 
         for (int t = 1; t <= characters.getNtax(); t++) {
             if (format.isOptionLabels()) {
-                if (!hasTaxonNames) {
+                if (hasTaxonNames) {
                     np.matchLabelRespectCase(taxa.getLabel(t));
                     taxonNamesFound.add(taxa.getLabel(t));
                 } else
@@ -374,7 +374,7 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
 
         if (format.isOptionLabels()) {
             for (int t = 1; t <= characters.getNtax(); t++) {
-                if (!hasTaxonNames) {
+                if (hasTaxonNames) {
                     np.matchLabelRespectCase(taxa.getLabel(t));
                     taxonNamesFound.add(taxa.getLabel(t));
                 } else

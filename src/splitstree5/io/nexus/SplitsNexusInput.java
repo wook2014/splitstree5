@@ -174,6 +174,19 @@ public class SplitsNexusInput extends NexusIOBase implements INexusInput<SplitsB
             np.matchIgnoreCase(";");
             splitsBlock.setCycle(cycle);
         }
+
+        if (np.peekMatchIgnoreCase("SPLITSLABELS")) {
+            np.matchIgnoreCase("SPLITSLABELS");
+            for (int s = 1; s <= nsplits; s++) {
+                final String label = (!np.peekMatchIgnoreCase(";") ? np.getWordRespectCase() : null); // string "null" may be in input
+                if (label.equals("null"))
+                    splitsBlock.getSplitLabels().put(s, null);
+                else
+                    splitsBlock.getSplitLabels().put(s, label);
+            }
+            np.matchIgnoreCase(";");
+        }
+
         if (np.peekMatchIgnoreCase("matrix")) {
             np.matchIgnoreCase("matrix");
             readMatrix(np, taxaBlock, nsplits, splitsBlock, format);

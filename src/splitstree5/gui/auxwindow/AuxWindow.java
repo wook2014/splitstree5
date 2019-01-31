@@ -121,9 +121,6 @@ public class AuxWindow implements IStageSupplier {
     private void close(Stage stage) {
         if (stage.getOnCloseRequest() != null)
             stage.fireEvent(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
-        else
-            stage.close();
-        ;
     }
 
     @Override

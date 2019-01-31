@@ -41,11 +41,12 @@ import java.util.*;
  * Daniel Huson, 1/2019
  */
 public class TreesFilter3 extends Algorithm<TreesBlock, TreesBlock> implements IFromTrees, IToTrees, IFilter {
-    private final BooleanProperty optionBestTaxonSubset = new SimpleBooleanProperty(false);
-    private final BooleanProperty optionFilterTaxa = new SimpleBooleanProperty(false);
+    private final BooleanProperty optionBestTaxonSubset = new SimpleBooleanProperty(true);
+    private final BooleanProperty optionFilterTaxa = new SimpleBooleanProperty(true);
+    private final BooleanProperty optionPreferFullTaxa = new SimpleBooleanProperty(true);
 
     public List<String> listOptions() {
-        return Arrays.asList("optionBestTaxonSubset");
+        return Arrays.asList("optionBestTaxonSubset", "optionFilterTaxa", "optionPreferFullTaxa");
     }
 
     @Override
@@ -94,7 +95,7 @@ public class TreesFilter3 extends Algorithm<TreesBlock, TreesBlock> implements I
             BitSet best = null;
             int bestScore = 0;
             for (BitSet taxa : sorted) {
-                final int score = taxa.cardinality() * taxa2trees.get(taxa).cardinality() * (taxa.equals(taxaBlock.getTaxaSet()) ? 10 : 1); // 10: prefer to use all taxa, if possible
+                final int score = taxa.cardinality() * taxa2trees.get(taxa).cardinality() * (isOptionPreferFullTaxa() && taxa.equals(taxaBlock.getTaxaSet()) ? 10 : 1); // 10: prefer to use all taxa, if possible
                 if (score > bestScore) {
                     bestScore = score;
                     best = taxa;
@@ -201,5 +202,17 @@ public class TreesFilter3 extends Algorithm<TreesBlock, TreesBlock> implements I
 
     public void setOptionFilterTaxa(boolean optionFilterTaxa) {
         this.optionFilterTaxa.set(optionFilterTaxa);
+    }
+
+    public boolean isOptionPreferFullTaxa() {
+        return optionPreferFullTaxa.get();
+    }
+
+    public BooleanProperty optionPreferFullTaxaProperty() {
+        return optionPreferFullTaxa;
+    }
+
+    public void setOptionPreferFullTaxa(boolean optionPreferFullTaxa) {
+        this.optionPreferFullTaxa.set(optionPreferFullTaxa);
     }
 }

@@ -41,7 +41,7 @@ import java.util.List;
 public class ConsensusTree extends Algorithm<TreesBlock, TreesBlock> implements IFromTrees, IToTrees {
 
     private final SimpleObjectProperty<ConsensusTreeSplits.Consensus> optionConsensus = new SimpleObjectProperty<>(ConsensusTreeSplits.Consensus.Majority);
-    private final SimpleObjectProperty<ConsensusNetwork.EdgeWeights> optionEdgeWeights = new SimpleObjectProperty<>(ConsensusNetwork.EdgeWeights.Mean);
+    private final SimpleObjectProperty<ConsensusNetwork.EdgeWeights> optionEdgeWeights = new SimpleObjectProperty<>(ConsensusNetwork.EdgeWeights.TreeSizeWeightedMean);
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock parent, TreesBlock child) throws Exception {

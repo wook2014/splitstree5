@@ -131,7 +131,6 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
 
         progress.setProgress(90);
 
-
         double factorX = TreeEmbedder.scaleAndCenterToFitTarget(GraphLayout.Radial, viewTab.getTargetDimensions(), node2point, true);
         if (child.getTab() instanceof Graph2DTab) {
             ((Graph2DTab) child.getTab()).getScaleBar().setUnitLengthX(factorX);
@@ -159,6 +158,14 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
             if (edgeView.getLabel() != null) {
                 viewTab.getEdgeLabelsGroup().getChildren().addAll(edgeView.getLabel());
                 edgeView.getLabel().setFont(labelFont);
+            }
+
+            final int split = graph.getSplit(e);
+            final String label = parent.getSplitLabels().get(split);
+            if (label != null) {
+                if (label.contains("BOLD")) {
+                    edgeView.setStrokeWidth(3);
+                }
             }
         }
 

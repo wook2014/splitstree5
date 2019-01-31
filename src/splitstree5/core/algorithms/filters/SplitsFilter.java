@@ -34,9 +34,7 @@ import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
 import splitstree5.utils.SplitsUtilities;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * splits filter
@@ -76,6 +74,11 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
             NotificationManager.showWarning("optionModifyWeightsUsingLeastSquares: not implemented");
             // modify weights least squares
             //active = true;
+        }
+
+        final Map<ASplit, String> split2label = new HashMap<>();
+        for (int s = 1; s <= parent.getSplitLabels().size(); s++) {
+            split2label.put(parent.get(s), parent.getSplitLabels().get(s));
         }
 
         Compatibility compatibility = Compatibility.unknown;
@@ -141,6 +144,12 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
         }
 
         child.getSplits().addAll(splits);
+        if (split2label.size() > 0) {
+            for (int s = 1; s <= child.getNsplits(); s++) {
+                final String label = split2label.get(child.get(s));
+                child.getSplitLabels().put(s, label);
+            }
+        }
 
         if (!active) {
             child.setCycle(parent.getCycle());

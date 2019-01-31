@@ -45,7 +45,7 @@ public class ConsensusTreeSplits extends Algorithm<TreesBlock, SplitsBlock> impl
     public enum Consensus {Strict, Majority, Greedy} // todo: add loose?
 
     private final SimpleObjectProperty<Consensus> optionConsensus = new SimpleObjectProperty<>(Consensus.Majority);
-    private final SimpleObjectProperty<ConsensusNetwork.EdgeWeights> optionEdgeWeights = new SimpleObjectProperty<>(ConsensusNetwork.EdgeWeights.Mean);
+    private final SimpleObjectProperty<ConsensusNetwork.EdgeWeights> optionEdgeWeights = new SimpleObjectProperty<>(ConsensusNetwork.EdgeWeights.TreeSizeWeightedMean);
 
     /**
      * compute the consensus splits

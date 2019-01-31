@@ -350,6 +350,9 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
             System.out.println("(" + (listOfSins.size() - 100) + " more)");
 
         splitsBlock.getSplits().addAll(referenceSplits.getSplits());
+        for (int s = 1; s <= splitsBlock.getNsplits(); s++) {
+            splitsBlock.getSplitLabels().put(s, "BOLD");
+        }
 
         if (listOfSins.size() == 0) {
             NotificationManager.showInformation("No SINs found");
@@ -370,10 +373,8 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
                 }
             }
             splitsBlock.getSplits().addAll(splitSets2Splits.values());
-
             NotificationManager.showInformation("Computed anti-consensus using top " + getOptionSinRank() + " SINs");
         }
-
     }
 
     /**
