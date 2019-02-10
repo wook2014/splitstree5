@@ -349,6 +349,10 @@ public class Workflow {
         this.topDataNode.set(topDataNode);
     }
 
+    public ReadOnlyObjectProperty<DataNode> topDataNodeProperty() {
+        return topDataNode;
+    }
+
     public DataNode getWorkingDataNode() {
         return workingDataNode.get();
     }

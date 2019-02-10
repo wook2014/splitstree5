@@ -69,6 +69,25 @@ public class WorkflowNexusOutput {
      * @throws IOException
      */
     public void save(Workflow workflow, final File file, boolean asWorkflowOnly) throws IOException {
+        if (file.getParentFile() != null && file.getParentFile().isDirectory())
+            ProgramProperties.put("SaveDir", file.getParent());
+        try (Writer w = new BufferedWriter(file.getName().equals("stdout") ? new OutputStreamWriter(System.out) : new FileWriter(file))) {
+            final int count = save(workflow, w, asWorkflowOnly);
+            NotificationManager.showInformation("Saved " + count + " blocks to file: " + file.getPath());
+        }
+
+    }
+
+    /**
+     * write a workflow
+     *
+     * @param workflow
+     * @param w
+     * @param asWorkflowOnly
+     * @return
+     * @throws IOException
+     */
+    public int save(Workflow workflow, Writer w, boolean asWorkflowOnly) throws IOException {
         SplitsTree5Block splitsTree5Block = new SplitsTree5Block();
         splitsTree5Block.setOptionNumberOfDataNodes(workflow.getNumberOfDataNodes());
         splitsTree5Block.setOptionNumberOfAlgorithms(workflow.getNumberOfConnectorNodes());
@@ -80,65 +99,60 @@ public class WorkflowNexusOutput {
         final Map<String, Integer> nodeType2Count = new HashMap<>();
         final Map<WorkflowNode, String> node2title = new HashMap<>();
 
-        if (file.getParentFile() != null && file.getParentFile().isDirectory())
-            ProgramProperties.put("SaveDir", file.getParent());
+        w.write("#nexus [SplitsTree5]\n");
 
-        try (Writer w = new BufferedWriter(file.getName().equals("stdout") ? new OutputStreamWriter(System.out) : new FileWriter(file))) {
-            w.write("#nexus [SplitsTree5]\n");
+        (new SplitsTree5NexusOutput()).write(w, splitsTree5Block);
 
-            (new SplitsTree5NexusOutput()).write(w, splitsTree5Block);
+        if (!asWorkflowOnly)
+            w.write("\n[\n" + workflow.getDocument().methodsTextProperty().get().replaceAll("\\[", "(").replaceAll("]", ")") + "]\n");
 
-            if (!asWorkflowOnly)
-                w.write("\n[\n" + workflow.getDocument().methodsTextProperty().get().replaceAll("\\[", "(").replaceAll("]", ")") + "]\n");
+        nexusExporter.setTitle("TopTaxa");
+        node2title.put(workflow.getTopTaxaNode(), "TopTaxa");
+        nexusExporter.export(w, workflow.getTopTaxaNode().getDataBlock());
 
-            nexusExporter.setTitle("TopTaxa");
-            node2title.put(workflow.getTopTaxaNode(), "TopTaxa");
-            nexusExporter.export(w, workflow.getTopTaxaNode().getDataBlock());
+        if (workflow.getTopTraitsNode() != null) {
+            workflow.getTopTraitsNode().setTitle("TopTraits");
+            node2title.put(workflow.getTopTraitsNode(), "TopTraits");
+            setupExporter(workflow.getTopTraitsNode(), nexusExporter, nodeType2Count, node2title);
+            nexusExporter.export(w, workflow.getTopTaxaNode().getDataBlock(), workflow.getTopTraitsNode().getDataBlock());
+        }
 
-            if (workflow.getTopTraitsNode() != null) {
-                workflow.getTopTraitsNode().setTitle("TopTraits");
-                node2title.put(workflow.getTopTraitsNode(), "TopTraits");
-                setupExporter(workflow.getTopTraitsNode(), nexusExporter, nodeType2Count, node2title);
-                nexusExporter.export(w, workflow.getTopTaxaNode().getDataBlock(), workflow.getTopTraitsNode().getDataBlock());
+        node2title.put(workflow.getTaxaFilter(), "TaxaFilter");
+        setupExporter(workflow.getTaxaFilter(), nexusExporter, nodeType2Count, node2title);
+        nexusExporter.export(w, workflow.getTaxaFilter().getAlgorithm());
+
+        node2title.put(workflow.getWorkingTaxaNode(), "WorkingTaxa");
+        setupExporter(workflow.getWorkingTaxaNode(), nexusExporter, nodeType2Count, node2title);
+        nexusExporter.export(w, workflow.getWorkingTaxaNode().getDataBlock());
+
+        if (workflow.getWorkingTraitsNode() != null) {
+            node2title.put(workflow.getWorkingTraitsNode(), "Traits");
+            setupExporter(workflow.getWorkingTraitsNode(), nexusExporter, nodeType2Count, node2title);
+            nexusExporter.export(w, workflow.getWorkingTaxaBlock(), workflow.getWorkingTraitsNode().getDataBlock());
+        }
+
+        node2title.put(workflow.getTopDataNode(), "TopData");
+        setupExporter(workflow.getTopDataNode(), nexusExporter, nodeType2Count, node2title);
+        nexusExporter.export(w, workflow.getTopTaxaNode().getDataBlock(), workflow.getTopDataNode().getDataBlock());
+
+        node2title.put(workflow.getTopFilter(), "TopFilter");
+        setupExporter(workflow.getTopFilter(), nexusExporter, nodeType2Count, node2title);
+        nexusExporter.export(w, workflow.getTopFilter().getAlgorithm());
+
+        final Queue<WorkflowNode> queue = new LinkedList<>();
+        queue.add(workflow.getWorkingDataNode());
+        while (queue.size() > 0) {
+            final WorkflowNode node = queue.poll();
+            if (node instanceof DataNode) {
+                final DataNode dataNode = (DataNode) node;
+                setupExporter(dataNode, nexusExporter, nodeType2Count, node2title);
+                nexusExporter.export(w, workflow.getWorkingTaxaBlock(), dataNode.getDataBlock());
+            } else {
+                final Connector connector = (Connector) node;
+                setupExporter(connector, nexusExporter, nodeType2Count, node2title);
+                nexusExporter.export(w, connector.getAlgorithm());
             }
-
-            node2title.put(workflow.getTaxaFilter(), "TaxaFilter");
-            setupExporter(workflow.getTaxaFilter(), nexusExporter, nodeType2Count, node2title);
-            nexusExporter.export(w, workflow.getTaxaFilter().getAlgorithm());
-
-            node2title.put(workflow.getWorkingTaxaNode(), "WorkingTaxa");
-            setupExporter(workflow.getWorkingTaxaNode(), nexusExporter, nodeType2Count, node2title);
-            nexusExporter.export(w, workflow.getWorkingTaxaNode().getDataBlock());
-
-            if (workflow.getWorkingTraitsNode() != null) {
-                node2title.put(workflow.getWorkingTraitsNode(), "Traits");
-                setupExporter(workflow.getWorkingTraitsNode(), nexusExporter, nodeType2Count, node2title);
-                nexusExporter.export(w, workflow.getWorkingTaxaBlock(), workflow.getWorkingTraitsNode().getDataBlock());
-            }
-
-            node2title.put(workflow.getTopDataNode(), "TopData");
-            setupExporter(workflow.getTopDataNode(), nexusExporter, nodeType2Count, node2title);
-            nexusExporter.export(w, workflow.getTopTaxaNode().getDataBlock(), workflow.getTopDataNode().getDataBlock());
-
-            node2title.put(workflow.getTopFilter(), "TopFilter");
-            setupExporter(workflow.getTopFilter(), nexusExporter, nodeType2Count, node2title);
-            nexusExporter.export(w, workflow.getTopFilter().getAlgorithm());
-
-            final Queue<WorkflowNode> queue = new LinkedList<>();
-            queue.add(workflow.getWorkingDataNode());
-            while (queue.size() > 0) {
-                final WorkflowNode node = queue.poll();
-                if (node instanceof DataNode) {
-                    final DataNode dataNode = (DataNode) node;
-                    setupExporter(dataNode, nexusExporter, nodeType2Count, node2title);
-                    nexusExporter.export(w, workflow.getWorkingTaxaBlock(), dataNode.getDataBlock());
-                } else {
-                    final Connector connector = (Connector) node;
-                    setupExporter(connector, nexusExporter, nodeType2Count, node2title);
-                    nexusExporter.export(w, connector.getAlgorithm());
-                }
-                queue.addAll(node.getChildren());
-            }
+            queue.addAll(node.getChildren());
         }
 
         for (WorkflowNode node : workflow.dataNodes()) {
@@ -147,8 +161,7 @@ public class WorkflowNexusOutput {
         for (WorkflowNode node : workflow.connectors()) {
             node.setTitle(null);
         }
-
-        NotificationManager.showInformation("Saved " + splitsTree5Block.size() + " blocks to file: " + file.getPath());
+        return splitsTree5Block.size();
     }
 
     /**

@@ -86,7 +86,7 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
     public List<String> parse(NexusStreamParser np, TaxaBlock taxa, CharactersBlock charactersBlock) throws IOException {
         charactersBlock.clear();
 
-        final boolean hasTaxonNames = taxa.getNtax() > 0;
+        final boolean hasTaxonNames = taxa.getLabels().size() > 0;
 
         final CharactersNexusFormat format = (CharactersNexusFormat) charactersBlock.getFormat();
 

@@ -38,8 +38,9 @@
 
 package splitstree5.gui.utils;
 
-import jloda.fx.Alert;
+import jloda.fx.NotificationManager;
 import jloda.util.Basic;
+import jloda.util.CanceledException;
 import jloda.util.Pair;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DataBlock;
@@ -47,17 +48,17 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
 
+import java.io.IOException;
+
 public class CharactersUtilities {
 
     /**
      * Computes the frequencies matrix from *all* taxa
      *
      * @param chars  the chars
-     * @param warned Throw an alert if an unexpected symbol appears.
+     * @param warned Shows an alert if an unexpected symbol appears.
      * @return the frequencies matrix
      */
-
-    // todo alert from st5 or jloda?
 
     //TODO: Replace System.err with code throwing exceptions
     //ToDo: BaseFrequencies should be stored somewhere, perhaps characters.properties
@@ -89,9 +90,9 @@ public class CharactersUtilities {
 
                     if (state >= 0) {
                         Fcount[state] += 1.0;
-                    } else if (state < 0 && !warned) {
+                    } else if (!warned) {
 
-                        new Alert("Unknown symbol encountered in characters: " + c);
+                        NotificationManager.showWarning("Unknown symbol encountered in characters: " + c);
                         warned = true;
                     }
                 }
@@ -111,23 +112,12 @@ public class CharactersUtilities {
      *
      * @param taxa taxa to group
      * @param topBlock characters or distances block
+     * @return pair of new taxa and new topblock, if collapsed and null, else
      */
 
-    //todo return Pair of Blocks
     //todo test on: mash.dist, lugens-1.nex
-
-    static public Pair<TaxaBlock, DataBlock> collapseByType(TaxaBlock taxa, DataBlock topBlock) {
-
-        System.err.println();
-        System.err.println("Applied: Group identical haplotypes function");
-
-        if(!(topBlock instanceof CharactersBlock || topBlock instanceof DistancesBlock)){
-            System.err.println("Only applicable if top block is character or distances");
-            return null;
-        }
-
-        try {
-            int ntax = taxa.getNtax();
+    static public Pair<TaxaBlock, DataBlock> collapseByType(TaxaBlock taxa, DataBlock topBlock) throws IOException, CanceledException {
+        final int ntax = taxa.getNtax();
 
             int typecount = 0;
             int numNonSingleClasses = 0;
@@ -177,10 +167,15 @@ public class CharactersUtilities {
                 }
             }
 
+        if (newTaxa.getNtax() == taxa.getNtax())
+            return null;
+
             //Set up the new characters block, if one exists.
             if (topBlock instanceof CharactersBlock) {
-                CharactersBlock characters = (CharactersBlock) topBlock;
-                CharactersBlock newCharacters = new CharactersBlock();
+                final CharactersBlock characters = (CharactersBlock) topBlock;
+                final CharactersBlock newCharacters = new CharactersBlock();
+                newCharacters.copy(taxa, characters); // need to copy formating
+
                 newCharacters.setDimension(newTaxa.getNtax(), characters.getNchar());
                 for (int i = 1; i <= newTaxa.getNtax(); i++) {
                     int old_i = representatives[i];
@@ -189,10 +184,11 @@ public class CharactersUtilities {
                 }
                 return new Pair<>(newTaxa, newCharacters);
 
-            } else {
+            } else if (topBlock instanceof DistancesBlock) {
                 //Set up the new distances block
-                DistancesBlock distances = (DistancesBlock) topBlock;
-                DistancesBlock newDistances = new DistancesBlock();
+                final DistancesBlock distances = (DistancesBlock) topBlock;
+                final DistancesBlock newDistances = new DistancesBlock();
+                newDistances.copy(distances);
                 newDistances.setNtax(newTaxa.getNtax());
 
                 for (int i = 1; i <= newTaxa.getNtax(); i++) {
@@ -204,13 +200,12 @@ public class CharactersUtilities {
                         newDistances.set(j, i, val);
                     }
                 }
+
                 return new Pair<>(newTaxa, newDistances);
+            } else {
+                throw new IOException("Group haplotypes not implemented for: " + Basic.getShortName(topBlock.getClass()));
             }
 
-        } catch (Exception ex) {
-            Basic.caught(ex);
-            return new Pair<>(taxa, topBlock);
-        }
     }
 
     /**

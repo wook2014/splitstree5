@@ -72,6 +72,7 @@ public class DistancesBlock extends DataBlock {
 
     public void setNtax(int n) {
         distances = new double[n][n];
+        variances = null;
         setShortDescription(getInfo());
     }
 

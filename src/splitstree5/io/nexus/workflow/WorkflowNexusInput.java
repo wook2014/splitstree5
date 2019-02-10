@@ -47,6 +47,7 @@ import splitstree5.main.MainWindow;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -162,7 +163,7 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
     }
 
     /**
-     * input a work flow
+     * input a work flow from a file
      *
      * @param progress
      * @param workflow
@@ -171,8 +172,25 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
      * @throws CanceledException
      */
     public static void input(ProgressListener progress, Workflow workflow, ArrayList<ViewerBlock> viewerBlocks, String fileName) throws IOException, CanceledException {
-        try (NexusStreamParser np = new NexusStreamParser(Basic.getReaderPossiblyZIPorGZIP(fileName))) {
+        try (Reader reader = Basic.getReaderPossiblyZIPorGZIP(fileName)) {
             progress.setMaximum((new File(fileName).length() / (Basic.isZIPorGZIPFile(fileName) ? 100 : 20)));
+            input(progress, workflow, viewerBlocks, reader);
+        }
+    }
+
+
+    /**
+     * inpurt a work flow from a reader
+     *
+     * @param progress
+     * @param workflow
+     * @param viewerBlocks
+     * @param reader
+     * @throws IOException
+     * @throws CanceledException
+     */
+    public static void input(ProgressListener progress, Workflow workflow, ArrayList<ViewerBlock> viewerBlocks, Reader reader) throws IOException, CanceledException {
+        try (NexusStreamParser np = new NexusStreamParser(reader)) {
             np.matchIgnoreCase("#nexus");
             final SplitsTree5Block splitsTree5Block = new SplitsTree5Block();
             (new SplitsTree5NexusInput()).parse(np, splitsTree5Block);

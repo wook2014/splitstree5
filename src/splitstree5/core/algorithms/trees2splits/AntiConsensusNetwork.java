@@ -155,18 +155,6 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
             }
         }
 
-        final double minSpan;
-        {
-            double totalWeightNonTrivialReferenceSplits = 0;
-            {
-                for (ASplit split : referenceSplits.getSplits()) {
-                    if (split.size() > 1)
-                        totalWeightNonTrivialReferenceSplits += split.getWeight();
-                }
-            }
-            minSpan = (totalWeightNonTrivialReferenceSplits * getOptionMinSpanPercent()) / 100;
-        }
-
         // 2. consider each tree in turn:
         progress.setTasks("Anti-consensus", "Comparing majority tree with gene trees");
         progress.setMaximum(lastTreeToUse - firstTreeToUse + 1);
@@ -207,7 +195,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
                             final int distortion = Distortion.computeDistortionForSplit(referenceTree, split.getA(), split.getB());
 
                             final BitSet incompatibilities = new BitSet();
-                            final double incompatiblitySpan = computeTotalWeightOfIncompatibleReferenceSplits(split, referenceSplits, incompatibilities);
+                            final double incompatiblitySpan = 100 * computeTotalWeightOfIncompatibleReferenceSplits(split, referenceSplits, incompatibilities);
 
                             if (distortion > 0 && distortion <= getOptionMaxDistortion()) {
                                 split.setConfidence(incompatiblitySpan);
@@ -224,7 +212,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
                                 if (u.getInDegree() == 0) // is not covered by any other split
                                 {
                                     final ASplit splitU = (ASplit) u.getInfo();
-                                    if (splitU.getConfidence() >= minSpan) {
+                                    if (splitU.getConfidence() >= getOptionMinSpanPercent()) {
                                         final SIN sin = new SIN(t, treesBlock.getTree(t).getName(), splitU.getConfidence(), 1);
                                         sin.add(splitU);
                                         final Queue<Node> queue = new LinkedList<>();
@@ -254,7 +242,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
                                 if (u.getInDegree() == 0) // is not covered by any other split
                                 {
                                     final ASplit splitU = (ASplit) u.getInfo();
-                                    if (splitU.getConfidence() >= minSpan) {
+                                    if (splitU.getConfidence() >= getOptionMinSpanPercent()) {
                                         final int distortion = Distortion.computeDistortionForSplit(referenceTree, splitU.getA(), splitU.getB());
 
                                         final SIN sin = new SIN(t, treesBlock.getTree(t).getName(), splitU.getConfidence(), distortion);
@@ -684,7 +672,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         }
 
         public String toString() {
-            return String.format("SIN rank: %d, incompatib.: %f, weight: %f,  distortion: %d, splits: %d, tree: %d (%s)",
+            return String.format("SIN rank: %d, span: %.1f%%, weight: %.4f,  distortion: %d, splits: %d, tree: %d (%s)",
                     getRank(), spanPercent, totalWeight, distortion, splits.size(), treeId, treeName);
         }
     }

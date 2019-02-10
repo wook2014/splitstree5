@@ -31,6 +31,7 @@ import jloda.fx.RecentFilesManager;
 import jloda.util.Basic;
 import jloda.util.Pair;
 import jloda.util.ProgramProperties;
+import jloda.util.ProgressPercentage;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.characters2distances.*;
 import splitstree5.core.algorithms.characters2network.MedianJoining;
@@ -54,10 +55,7 @@ import splitstree5.core.algorithms.views.NetworkEmbedder;
 import splitstree5.core.algorithms.views.SplitsNetworkAlgorithm;
 import splitstree5.core.algorithms.views.TreeEmbedder;
 import splitstree5.core.datablocks.*;
-import splitstree5.core.workflow.DataNode;
-import splitstree5.core.workflow.Workflow;
-import splitstree5.core.workflow.WorkflowDataLoader;
-import splitstree5.core.workflow.WorkflowEditing;
+import splitstree5.core.workflow.*;
 import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.dialogs.importer.ImportDialog;
 import splitstree5.dialogs.importer.ImportMultipleTreeFilesDialog;
@@ -66,17 +64,16 @@ import splitstree5.dialogs.message.MessageWindow;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.utils.CharactersUtilities;
 import splitstree5.gui.utils.CheckForUpdate;
-import splitstree5.io.nexus.CharactersNexusOutput;
-import splitstree5.io.nexus.DistancesNexusOutput;
-import splitstree5.io.nexus.TaxaNexusOutput;
 import splitstree5.io.nexus.workflow.WorkflowNexusInput;
 import splitstree5.io.nexus.workflow.WorkflowNexusOutput;
 import splitstree5.menu.MenuController;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Optional;
 
 /**
@@ -95,43 +92,44 @@ public class MainWindowMenuController {
             final MainWindow newMainWindow = new MainWindow();
             newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50);
         });
-
         controller.getImportMenuItem().setOnAction((e) -> ImportDialog.show(mainWindow));
+
         controller.getImportMultipleTreeFilesMenuItem().setOnAction((e) -> ImportMultipleTreeFilesDialog.apply(mainWindow));
 
-        controller.getGroupIdenticalHaplotypesFilesMenuItem().disableProperty().
-                bind(mainWindow.getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().not());
         controller.getGroupIdenticalHaplotypesFilesMenuItem().setOnAction((e) -> {
+            try {
+                final Pair<TaxaBlock, DataBlock> pair = CharactersUtilities.collapseByType(mainWindow.getWorkflow().getTopTaxaNode().getDataBlock(),
+                        mainWindow.getWorkflow().getTopDataNode().getDataBlock());
 
-            Pair<TaxaBlock, DataBlock> p =
-                    CharactersUtilities.collapseByType(mainWindow.getWorkflow().getTopTaxaNode().getDataBlock(),
-                    mainWindow.getWorkflow().getTopDataNode().getDataBlock());
+                if (pair != null) {
+                    final StringWriter w = new StringWriter();
 
-            if (p != null) {
-                TaxaBlock newTaxa = p.get1();
-                DataBlock newTopBlock = p.get2();
+                    (new WorkflowNexusOutput()).save(mainWindow.getWorkflow(), w, true);
 
-                // Printing
-                final StringWriter w = new StringWriter();
-                try {
-                    new TaxaNexusOutput().write(w, newTaxa);
-                    if (newTopBlock instanceof CharactersBlock)
-                        new CharactersNexusOutput().write(w, newTaxa, (CharactersBlock) newTopBlock);
-                    else
-                        new DistancesNexusOutput().write(w, newTaxa, (DistancesBlock) newTopBlock);
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
+                    final MainWindow newMainWindow = new MainWindow();
 
-                if (mainWindow.getWorkflow().getTopTaxaNode().getDataBlock().getNtax() == newTaxa.getNtax()) {
-                    System.err.println("No identical haplotypes are found!");
-                    System.err.println(w);
-                } else {
-                    System.err.println("Updated Data after grouping:");
-                    System.err.println(w);
-                }
+                    final String workflowString = w.toString();
+                    System.err.println(workflowString);
+
+                    WorkflowNexusInput.input(new ProgressPercentage(), newMainWindow.getWorkflow(), new ArrayList<>(), new StringReader(workflowString));
+
+                    newMainWindow.getWorkflow().loadData(pair.getFirst(), pair.getSecond());
+                    newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50);
+                    NotificationManager.showInformation("Collapsed " + mainWindow.getWorkflow().getTopTaxaNode().getDataBlock().size() + " to " + pair.getFirst().size() + " haplotypes");
+
+                    newMainWindow.getWorkflow().getTopTaxaNode().setState(UpdateState.VALID);
+
+                } else
+                    NotificationManager.showInformation("All haplotypes different");
+            } catch (Exception ex) {
+                NotificationManager.showError("Group identical haplotypes failed: " + ex.getMessage());
             }
         });
+        mainWindow.getWorkflow().topDataNodeProperty().addListener((c, o, n) -> {
+            controller.getGroupIdenticalHaplotypesFilesMenuItem().setDisable(n == null || (!(n.getDataBlock() instanceof CharactersBlock)
+                    && !(n.getDataBlock() instanceof DistancesBlock)));
+        });
+
 
         controller.getOpenMenuItem().setOnAction((e) -> {
             final File previousDir = new File(ProgramProperties.get("InputDir", ""));

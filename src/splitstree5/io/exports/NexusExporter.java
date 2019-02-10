@@ -77,22 +77,29 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
     }
 
     @Override
-    public void export(Writer w, AnalysisBlock analysis) throws IOException {
+    public void export(Writer w, AnalysisBlock block) throws IOException {
         final AnalysisNexusOutput output = new AnalysisNexusOutput();
         output.setTitleAndLink(getTitle(), getLink());
-        output.write(w, analysis);
+        if (asWorkflowOnly)
+            output.write(w, new AnalysisBlock());
+        else
+            output.write(w, block);
     }
 
     @Override
-    public void export(Writer w, TaxaBlock taxa, CharactersBlock characters) throws IOException {
+    public void export(Writer w, TaxaBlock taxa, CharactersBlock block) throws IOException {
         if (prependTaxa)
             new TaxaNexusOutput().write(w, taxa);
         final CharactersNexusOutput output = new CharactersNexusOutput();
         output.setTitleAndLink(getTitle(), getLink());
-        if (asWorkflowOnly)
+        if (asWorkflowOnly) {
+            final CharactersBlock newBlock = new CharactersBlock();
+            newBlock.setDataType(block.getDataType());
+            newBlock.setFormat(block.getFormat());
             output.write(w, new TaxaBlock(), new CharactersBlock());
+        }
         else
-            output.write(w, taxa, characters);
+            output.write(w, taxa, block);
     }
 
     @Override
@@ -101,64 +108,85 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
             new TaxaNexusOutput().write(w, taxa);
         final DistancesNexusOutput output = new DistancesNexusOutput();
         output.setTitleAndLink(getTitle(), getLink());
-        if (asWorkflowOnly)
-            output.write(w, new TaxaBlock(), new DistancesBlock());
+        if (asWorkflowOnly) {
+            final DistancesBlock newBlock = new DistancesBlock();
+            newBlock.setFormat(distances.getFormat());
+            output.write(w, new TaxaBlock(), newBlock);
+        }
         else
             output.write(w, taxa, distances);
     }
 
     @Override
-    public void export(Writer w, TaxaBlock taxa, NetworkBlock network) throws IOException {
+    public void export(Writer w, TaxaBlock taxa, NetworkBlock block) throws IOException {
         if (prependTaxa)
             new TaxaNexusOutput().write(w, taxa);
         final NetworkNexusOutput output = new NetworkNexusOutput();
         output.setTitleAndLink(getTitle(), getLink());
-        output.write(w, taxa, network);
+        if (asWorkflowOnly) {
+            final NetworkBlock newBlock = new NetworkBlock();
+            newBlock.setFormat(block.getFormat());
+            output.write(w, new TaxaBlock(), newBlock);
+        } else
+            output.write(w, taxa, block);
+
     }
 
     @Override
-    public void export(Writer w, TaxaBlock taxa, SplitsBlock splitsBlock) throws IOException {
+    public void export(Writer w, TaxaBlock taxa, SplitsBlock block) throws IOException {
         if (prependTaxa)
             new TaxaNexusOutput().write(w, taxa);
         final SplitsNexusOutput output = new SplitsNexusOutput();
         output.setTitleAndLink(getTitle(), getLink());
-        if (asWorkflowOnly)
-            output.write(w, new TaxaBlock(), new SplitsBlock());
+        if (asWorkflowOnly) {
+            final SplitsBlock newBlock = new SplitsBlock();
+            newBlock.setFormat(block.getFormat());
+            output.write(w, new TaxaBlock(), newBlock);
+        }
         else
-            output.write(w, taxa, splitsBlock);
+            output.write(w, taxa, block);
     }
 
     @Override
-    public void export(Writer w, TaxaBlock taxa, TreesBlock trees) throws IOException {
+    public void export(Writer w, TaxaBlock taxa, TreesBlock block) throws IOException {
         if (prependTaxa)
             new TaxaNexusOutput().write(w, taxa);
         final TreesNexusOutput output = new TreesNexusOutput();
         output.setTitleAndLink(getTitle(), getLink());
-        if (asWorkflowOnly)
-            output.write(w, new TaxaBlock(), new TreesBlock());
+        if (asWorkflowOnly) {
+            final TreesBlock newBlock = new TreesBlock();
+            newBlock.setFormat(block.getFormat());
+            output.write(w, new TaxaBlock(), newBlock);
+        }
         else
-            output.write(w, taxa, trees);
+            output.write(w, taxa, block);
     }
 
     @Override
-    public void export(Writer w, TaxaBlock taxa, TraitsBlock traitsBlock) throws IOException {
+    public void export(Writer w, TaxaBlock taxa, TraitsBlock block) throws IOException {
         if (prependTaxa)
             new TaxaNexusOutput().write(w, taxa);
         final TraitsNexusOutput output = new TraitsNexusOutput();
         output.setTitleAndLink(getTitle(), getLink());
-        output.write(w, taxa, traitsBlock);
+        if (asWorkflowOnly) {
+            final TraitsBlock newBlock = new TraitsBlock();
+            newBlock.setFormat(block.getFormat());
+            output.write(w, taxa, newBlock);
+        } else
+            output.write(w, taxa, block);
+
     }
 
     @Override
-    public void export(Writer w, TaxaBlock taxa, ViewerBlock viewerBlock) throws IOException {
+    public void export(Writer w, TaxaBlock taxa, ViewerBlock block) throws IOException {
         if (prependTaxa)
             new TaxaNexusOutput().write(w, taxa);
         final ViewerNexusOutput output = new ViewerNexusOutput();
         output.setTitleAndLink(getTitle(), getLink());
         if (asWorkflowOnly) {
-            output.write(w, taxa, ViewerBlock.create(viewerBlock.getType()));
+            output.write(w, taxa, ViewerBlock.create(block.getType()));
         } else
-            output.write(w, taxa, viewerBlock);
+            output.write(w, taxa, block);
     }
 
     /**

@@ -162,6 +162,10 @@ abstract public class DataBlock extends NameableBase {
         return format;
     }
 
+    public void setFormat(INexusFormat format) {
+        this.format = format;
+    }
+
     /**
      * copy a datablock
      *
