@@ -18,7 +18,13 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Keeper for highlighting listeners
+ */
+
 public class CodeAreaStyler {
+
+    //todo change codearea highlighting color
 
     private Highlighter highlighter = new NexusHighlighter();
 
@@ -80,6 +86,8 @@ public class CodeAreaStyler {
                 int i = e.getCharacterIndex();
                 Point2D pos = e.getScreenPosition();
 
+                System.err.println("STYLErrrrr "+codeArea.getStyleAtPosition(i).toString());
+
                 if (codeArea.getStyleAtPosition(i).toString().contains("block")
                         || codeArea.getStyleAtPosition(i).toString().contains("collapsed")) {
                     codeArea.setCursor(Cursor.HAND);
@@ -132,7 +140,7 @@ public class CodeAreaStyler {
                         key = matcher.group(2);
                         codeArea.replaceText(cbStart, cbEnd, tmpBlocksKeeper.get(key));
                         tmpBlocksKeeper.remove(key);
-                        //codeArea.setParagraphGraphicFactory(MyLNF.get(codeArea));
+                        //codeArea.setParagraphGraphicFactory(MyLineNumberFactory.get(codeArea));
                         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
                     }
 
@@ -217,7 +225,7 @@ public class CodeAreaStyler {
             System.out.println("Block Nr. "+keyWord);
 
             //int[] replaceRange = {paragraphStart, linesCounter};
-            codeArea.setParagraphGraphicFactory(MyLNF.get(codeArea, replaceRange));
+            codeArea.setParagraphGraphicFactory(MyLineNumberFactory.get(codeArea, replaceRange));
         }
     }
 

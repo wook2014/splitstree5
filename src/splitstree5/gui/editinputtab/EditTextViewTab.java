@@ -79,7 +79,7 @@ public class EditTextViewTab extends ViewerTab {
         codeArea = new VirtualizedScrollPane<>(new CodeArea());
         //CodeArea codeArea = vsp.getContent();
         codeArea.getContent().setParagraphGraphicFactory(LineNumberFactory.get(codeArea.getContent()));
-        //codeArea.getContent().setParagraphGraphicFactory(MyLNF.get(codeArea.getContent()));
+        //codeArea.getContent().setParagraphGraphicFactory(MyLineNumberFactory.get(codeArea.getContent()));
         ////
         //new VirtualizedScrollPane<>(new CodeArea());
 
