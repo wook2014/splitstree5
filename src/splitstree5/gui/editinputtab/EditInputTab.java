@@ -179,7 +179,7 @@ public class EditInputTab extends EditTextViewTab {
                 }
                 if(newValue) {
                     System.err.println("Block collapsing is active");
-                    getCodeArea().setParagraphGraphicFactory(MyLNF.get(getCodeArea()));
+                    getCodeArea().setParagraphGraphicFactory(MyLineNumberFactory.get(getCodeArea()));
                     codeAreaStyler.setCollapsingActive(true);
                     ((NexusHighlighter) codeAreaStyler.getHighlighter()).setCollapsingActive(true);
                 }

@@ -1,5 +1,6 @@
 package splitstree5.gui.editinputtab;
 
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -12,12 +13,15 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import org.fxmisc.richtext.GenericStyledArea;
+import org.fxmisc.richtext.event.MouseOverTextEvent;
 import org.reactfx.collection.LiveList;
 import org.reactfx.value.Val;
 
+import java.awt.event.MouseEvent;
+import java.time.Duration;
 import java.util.function.IntFunction;
 
-public class MyLNF implements IntFunction<Node> {
+public class MyLineNumberFactory implements IntFunction<Node> {
 
     private static final Insets DEFAULT_INSETS = new Insets(0.0D, 5.0D, 0.0D, 5.0D);
     private static final Paint DEFAULT_TEXT_FILL = Color.web("#666");
@@ -38,23 +42,23 @@ public class MyLNF implements IntFunction<Node> {
     }
 
     public static IntFunction<Node> get(GenericStyledArea<?, ?, ?> area, IntFunction<String> format) {
-        return new MyLNF(area, format);
+        return new MyLineNumberFactory(area, format);
     }
 
     //+++
     public static IntFunction<Node> get(GenericStyledArea<?, ?, ?> area, int[] hide) {
-        return new MyLNF(area, (digits) -> {
+        return new MyLineNumberFactory(area, (digits) -> {
             return "%1$" + digits + "s";
         }, hide);
     }
 
-    private MyLNF(GenericStyledArea<?, ?, ?> area, IntFunction<String> format) {
+    private MyLineNumberFactory(GenericStyledArea<?, ?, ?> area, IntFunction<String> format) {
         this.nParagraphs = LiveList.sizeOf(area.getParagraphs());
         this.format = format;
     }
 
     //+++
-    private MyLNF(GenericStyledArea<?, ?, ?> area, IntFunction<String> format, int[] hide) {
+    private MyLineNumberFactory(GenericStyledArea<?, ?, ?> area, IntFunction<String> format, int[] hide) {
         this.nParagraphs = LiveList.sizeOf(area.getParagraphs());
         this.format = format;
         this.hide = hide;
@@ -102,6 +106,20 @@ public class MyLNF implements IntFunction<Node> {
                 lineNo.textProperty().bind(formatted.conditionOnShowing(lineNo));
             }
         }
+
+        // some basic mouse interaction with labels to make them clickable
+        lineNo.setOnMouseClicked(click -> {
+            System.err.println("Clicked on label! ");
+        });
+        lineNo.setOnMouseEntered(e -> {
+            System.err.println("Over label! ");
+            lineNo.setStyle("-fx-font-weight: bold; " +
+                    "-fx-font: 16px \"monospace\"; -fx-text-fill: black");
+        });
+        lineNo.setOnMouseExited(e -> {
+            System.err.println("Exited label! ");
+            lineNo.setStyle(DEFAULT_FONT.toString());
+        });
         return lineNo;
     }
 
