@@ -20,6 +20,8 @@
 package splitstree5.core.algorithms.filters;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import jloda.util.Basic;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
@@ -32,16 +34,14 @@ import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.algorithmtab.AlgorithmPane;
 import splitstree5.gui.algorithmtab.taxafilterview.TaxaFilterPane;
 
-import java.util.ArrayList;
-
 /**
  * taxa filter
  * Daniel Huson, 12/31/16.
  */
 public class TaxaFilter extends Algorithm<TaxaBlock, TaxaBlock> implements IFromTaxa, IToTaxa, IFilter {
 
-    private final ArrayList<Taxon> enabledTaxa = new ArrayList<>();
-    private final ArrayList<Taxon> disabledTaxa = new ArrayList<>();
+    private final ObservableList<Taxon> enabledTaxa = FXCollections.observableArrayList();
+    private final ObservableList<Taxon> disabledTaxa = FXCollections.observableArrayList();
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock ignored, TaxaBlock parent, TaxaBlock child) {
@@ -88,11 +88,11 @@ public class TaxaFilter extends Algorithm<TaxaBlock, TaxaBlock> implements IFrom
         disabledTaxa.clear();
     }
 
-    public ArrayList<Taxon> getEnabledTaxa() {
+    public ObservableList<Taxon> getEnabledTaxa() {
         return enabledTaxa;
     }
 
-    public ArrayList<Taxon> getDisabledTaxa() {
+    public ObservableList<Taxon> getDisabledTaxa() {
         return disabledTaxa;
     }
 

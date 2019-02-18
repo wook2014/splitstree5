@@ -20,6 +20,8 @@
 package splitstree5.core.algorithms.trees2trees;
 
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
@@ -35,7 +37,6 @@ import splitstree5.gui.algorithmtab.AlgorithmPane;
 import splitstree5.gui.algorithmtab.rootbyoutgroup.RootByOutGroupPane;
 import splitstree5.utils.RerootingUtils;
 
-import java.util.ArrayList;
 import java.util.BitSet;
 
 /**
@@ -44,8 +45,8 @@ import java.util.BitSet;
  */
 public class RootByOutGroupAlgorithm extends Algorithm<TreesBlock, TreesBlock> implements IFromTrees, IToTrees, IFilter {
 
-    private final ArrayList<Taxon> inGroupTaxa = new ArrayList<>();
-    private final ArrayList<Taxon> outGroupTaxa = new ArrayList<>();
+    private final ObservableList<Taxon> inGroupTaxa = FXCollections.observableArrayList();
+    private final ObservableList<Taxon> outGroupTaxa = FXCollections.observableArrayList();
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxa, TreesBlock parent, TreesBlock child) throws InterruptedException, CanceledException {
@@ -91,11 +92,11 @@ public class RootByOutGroupAlgorithm extends Algorithm<TreesBlock, TreesBlock> i
         outGroupTaxa.clear();
     }
 
-    public ArrayList<Taxon> getInGroupTaxa() {
+    public ObservableList<Taxon> getInGroupTaxa() {
         return inGroupTaxa;
     }
 
-    public ArrayList<Taxon> getOutGroupTaxa() {
+    public ObservableList<Taxon> getOutGroupTaxa() {
         return outGroupTaxa;
     }
 

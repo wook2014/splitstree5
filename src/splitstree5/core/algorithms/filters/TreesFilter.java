@@ -19,6 +19,8 @@
 
 package splitstree5.core.algorithms.filters;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
@@ -32,7 +34,6 @@ import splitstree5.gui.algorithmtab.AlgorithmPane;
 import splitstree5.gui.algorithmtab.treefilterview.TreeFilterPane;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,8 +42,8 @@ import java.util.Map;
  * Daniel Huson, 12/31/16.
  */
 public class TreesFilter extends Algorithm<TreesBlock, TreesBlock> implements IFromTrees, IToTrees, IFilter {
-    private final ArrayList<String> enabledTrees = new ArrayList<>();
-    private final ArrayList<String> disabledTrees = new ArrayList<>();
+    private final ObservableList<String> enabledTrees = FXCollections.observableArrayList();
+    private final ObservableList<String> disabledTrees = FXCollections.observableArrayList();
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock parent, TreesBlock child) throws CanceledException {
@@ -86,11 +87,11 @@ public class TreesFilter extends Algorithm<TreesBlock, TreesBlock> implements IF
         disabledTrees.clear();
     }
 
-    public ArrayList<String> getEnabledTrees() {
+    public ObservableList<String> getEnabledTrees() {
         return enabledTrees;
     }
 
-    public ArrayList<String> getDisabledTrees() {
+    public ObservableList<String> getDisabledTrees() {
         return disabledTrees;
     }
 
