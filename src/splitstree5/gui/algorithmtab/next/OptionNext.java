@@ -20,6 +20,7 @@
 package splitstree5.gui.algorithmtab.next;
 
 import javafx.beans.property.Property;
+import jloda.util.Basic;
 
 import java.util.ArrayList;
 
@@ -31,10 +32,7 @@ public class OptionNext<T> {
     private final Property<T> property;
     private final String name;
     private String toolTipText;
-
-
     private final ArrayList<String> legalValues;
-
 
     /**
      * constructs an option
@@ -46,7 +44,10 @@ public class OptionNext<T> {
     OptionNext(Property<T> property, String name, String toolTipText) {
         this.property = property;
         this.name = name;
-        this.toolTipText = toolTipText;
+        if (toolTipText != null && toolTipText.length() > 0)
+            this.toolTipText = toolTipText;
+        else
+            this.toolTipText = Basic.fromCamelCase(name);
 
         if (property.getValue().getClass().isEnum()) {
             legalValues = new ArrayList<>();
