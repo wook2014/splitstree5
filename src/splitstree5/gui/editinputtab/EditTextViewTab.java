@@ -95,8 +95,8 @@ public class EditTextViewTab extends ViewerTab {
         codeArea.getContent().textProperty().addListener((InvalidationListener) -> getUndoManager().clear());
 
         codeArea.getContent().selectionProperty().addListener((c, o, n) -> {
-            MainWindowManager.getInstance().getPreviousSelection().clear();
-            MainWindowManager.getInstance().getPreviousSelection().add(codeArea.getContent().getText(n.getStart(), n.getEnd()));
+            MainWindowManager.getPreviousSelection().clear();
+            MainWindowManager.getPreviousSelection().add(codeArea.getContent().getText(n.getStart(), n.getEnd()));
         });
 
         {

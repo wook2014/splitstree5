@@ -20,6 +20,8 @@
 package splitstree5.core.algorithms.trees2splits;
 
 import com.install4j.api.context.UserCanceledException;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import jloda.fx.NotificationManager;
 import jloda.fx.ProgramExecutorService;
 import jloda.graph.Edge;
@@ -61,6 +63,8 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
 
     private int optionMaxDistortion = 1;
 
+    private final BooleanProperty optionRequireSingleSPR = new SimpleBooleanProperty(false);
+
     private double optionMinWeight = 0.00001;
 
     private boolean optionOnePerTree = false;
@@ -69,7 +73,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
 
     @Override
     public List<String> listOptions() {
-        return Arrays.asList("optionSinRank", "optionAllSinsUpToRank", "optionMaxDistortion", "optionMinSpanPercent", "optionMinWeight", "optionReferenceTree", "optionMultipleSINsPerTree");
+        return Arrays.asList("optionSinRank", "optionAllSinsUpToRank", "optionMaxDistortion", "optionRequireSingleSPR", "optionMinSpanPercent", "optionMinWeight", "optionReferenceTree", "optionMultipleSINsPerTree");
     }
 
     @Override
@@ -197,10 +201,10 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
                             final BitSet incompatibilities = new BitSet();
                             final double incompatiblitySpan = 100 * computeTotalWeightOfIncompatibleReferenceSplits(split, referenceSplits, incompatibilities);
 
+
                             if (distortion > 0 && distortion <= getOptionMaxDistortion()) {
                                 split.setConfidence(incompatiblitySpan);
                                 splitsWithDistortion.add(split);
-                                // previous line also computes split2incompatibilities mapping
                                 splitSet2Incompatibilities.put(split.getSmallerPart(), incompatibilities);
                             }
                         }
@@ -212,6 +216,8 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
                                 if (u.getInDegree() == 0) // is not covered by any other split
                                 {
                                     final ASplit splitU = (ASplit) u.getInfo();
+                                    final int countIncompatibilities = computeNumberOfIncompatibleReferenceSplits(splitU, referenceSplits);
+
                                     if (splitU.getConfidence() >= getOptionMinSpanPercent()) {
                                         final SIN sin = new SIN(t, treesBlock.getTree(t).getName(), splitU.getConfidence(), 1);
                                         sin.add(splitU);
@@ -223,7 +229,8 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
                                             Node v = queue.remove();
                                             final ASplit split = (ASplit) v.getInfo();
 
-                                            sin.add(split);
+                                            if (!isOptionRequireSingleSPR() || computeNumberOfIncompatibleReferenceSplits(split, referenceSplits) == countIncompatibilities)
+                                                sin.add(split);
                                             for (Node w : v.children()) {
                                                 queue.add(w);
                                             }
@@ -451,6 +458,24 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
     }
 
     /**
+     * count then number of incompatible splis
+     *
+     * @param split
+     * @param referenceSplits
+     * @return count
+     */
+    public static int computeNumberOfIncompatibleReferenceSplits(ASplit split, SplitsBlock referenceSplits) {
+        int count = 0;
+        for (int s = 1; s <= referenceSplits.getNsplits(); s++) {
+            final ASplit other = referenceSplits.get(s);
+            if (other.size() > 1 && !Compatibility.areCompatible(split, other)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
      * determine all splits that are incompatible to the given split and return their total weight
      *
      * @param split
@@ -555,6 +580,23 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
     public String getShortDescriptionOnePerTree() {
         return "Report at most one SIN per input tree";
     }
+
+    public boolean isOptionRequireSingleSPR() {
+        return optionRequireSingleSPR.get();
+    }
+
+    public BooleanProperty optionRequireSingleSPRProperty() {
+        return optionRequireSingleSPR;
+    }
+
+    public void setOptionRequireSingleSPR(boolean optionRequireSingleSPR) {
+        this.optionRequireSingleSPR.set(optionRequireSingleSPR);
+    }
+
+    public String getShortDescriptionRequireSingleSPR() {
+        return "For distortion=1, require that all members of the SIN are reconciled using the same SPR";
+    }
+
 
     @Override
     public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent) {

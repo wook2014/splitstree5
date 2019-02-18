@@ -65,7 +65,7 @@ public class MainWindowManager {
 
     private final LongProperty changed = new SimpleLongProperty(0);
 
-    private final ObservableSet<String> previousSelection;
+    private static final ObservableSet<String> previousSelection = FXCollections.observableSet();
 
     private static MainWindowManager instance;
 
@@ -75,7 +75,6 @@ public class MainWindowManager {
     private MainWindowManager() {
         mainWindows = FXCollections.observableArrayList();
         mainWindows2AdditionalWindows = new HashMap<>();
-        previousSelection = FXCollections.observableSet();
     }
 
     /**
@@ -98,7 +97,7 @@ public class MainWindowManager {
      *
      * @return previous selection
      */
-    public ObservableSet<String> getPreviousSelection() {
+    public static ObservableSet<String> getPreviousSelection() {
         return previousSelection;
     }
 

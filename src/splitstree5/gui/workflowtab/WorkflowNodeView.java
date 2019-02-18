@@ -57,12 +57,10 @@
 
 package splitstree5.gui.workflowtab;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
 import javafx.scene.Group;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tooltip;
@@ -129,6 +127,7 @@ public class WorkflowNodeView extends Group {
         Tooltip.install(rectangle, tooltip);
 
         final Label label = new Label();
+        label.setMouseTransparent(true);
         label.textProperty().bind(workflowNode.nameProperty());
         label.setFont(Font.font("Helvetica", 12));
         label.setLayoutX(10);
@@ -138,6 +137,7 @@ public class WorkflowNodeView extends Group {
         if (workflowNode instanceof Connector) {
             final Label descriptionLabel = new Label();
             descriptionLabel.setFont(Font.font("Helvetica", 11));
+            descriptionLabel.setMouseTransparent(true);
 
             {
                 final ChangeListener<UpdateState> stateChangeListener = (c, o, n) -> descriptionLabel.setText(workflowNode.getShortDescription());
@@ -150,18 +150,11 @@ public class WorkflowNodeView extends Group {
             descriptionLabel.setLayoutY(24);
             getChildren().add(descriptionLabel);
 
-            final Button openButton = new Button("Open...");
-            openButton.setFont(Font.font("Helvetica", 10));
-            openButton.setOnAction((e) -> {
-                if (!((Connector) workflowNode).getAlgorithm().getName().endsWith("TopFilter"))
+            rectangle.setOnMouseClicked((e) -> {
+                if (e.getClickCount() == 2 && workflowNode.getState() == UpdateState.VALID
+                        && !((Connector) workflowNode).getAlgorithm().getName().endsWith("TopFilter"))
                     workflowView.getDocument().getMainWindow().showAlgorithmView((Connector) workflowNode);
             });
-            openButton.disableProperty().bind(Bindings.equal(UpdateState.VALID, workflowNode.stateProperty()).not());
-            openButton.setPrefWidth(50);
-            openButton.setPrefHeight(20);
-            openButton.setLayoutX(rectangle.getWidth() - 53);
-            openButton.setLayoutY(rectangle.getHeight() - 23);
-            getChildren().add(openButton);
 
             final ProgressBar progressBar = new ProgressBar();
             progressBar.setPrefWidth(70);
@@ -177,6 +170,8 @@ public class WorkflowNodeView extends Group {
                 rectangle.getTransforms().add(sh);
             }
             final Label sizeLabel = new Label();
+            sizeLabel.setMouseTransparent(true);
+
             sizeLabel.setFont(Font.font("Helvetica", 11));
             {
                 final ChangeListener<UpdateState> stateChangeListener = (c, o, n) -> sizeLabel.setText("Size=" + ((DataNode) workflowNode).getDataBlock().size());
@@ -188,16 +183,11 @@ public class WorkflowNodeView extends Group {
             sizeLabel.setLayoutY(24);
             getChildren().add(sizeLabel);
 
-            final Button openButton = new Button("Open...");
-            openButton.setFont(Font.font("Helvetica", 10));
-            openButton.setOnAction((e) -> workflowView.getDocument().getMainWindow().showDataView((DataNode) workflowNode));
-            openButton.disableProperty().bind(Bindings.equal(UpdateState.VALID, workflowNode.stateProperty()).not());
-
-            openButton.setPrefWidth(50);
-            openButton.setPrefHeight(20);
-            openButton.setLayoutX(rectangle.getWidth() - 58);
-            openButton.setLayoutY(rectangle.getHeight() - 23);
-            getChildren().add(openButton);
+            rectangle.setOnMouseClicked((e) -> {
+                if (e.getClickCount() == 2 && workflowNode.getState() == UpdateState.VALID) {
+                    workflowView.getDocument().getMainWindow().showDataView((DataNode) workflowNode);
+                }
+            });
         }
 
         WorkflowViewMouseHandler.install(workflowView, workflowView.getScrollPane().getContentGroup(), this);

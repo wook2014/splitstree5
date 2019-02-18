@@ -684,11 +684,11 @@ public class PhyloTree extends PhyloGraph {
             }
             writeRec(w, root, null, writeEdgeWeights, writeEdgeLabels, nodeId2Number, edgeId2Number, getLabelForWriting(root));
         } else if (getNumberOfNodes() == 1) {
-            w.write("(" + getLabelForWriting(getFirstNode()) + ");");
+            w.write("(" + getLabelForWriting(getFirstNode()) + ")");
             if (nodeId2Number != null)
                 nodeId2Number.put(getFirstNode().getId(), 1);
         } else
-            w.write("();");
+            w.write("()");
     }
 
     /**

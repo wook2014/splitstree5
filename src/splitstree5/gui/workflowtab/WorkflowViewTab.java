@@ -196,14 +196,17 @@ public class WorkflowViewTab extends ViewerTab {
 
         final double yDelta = 100;
         final double xDelta = 200;
-        node2NodeView.get(workflow.getTopTaxaNode()).setXY(20, 20);
-        node2NodeView.get(workflow.getTopDataNode()).setXY(20 + xDelta, 20);
-        node2NodeView.get(workflow.getTaxaFilter()).setXY(20, 20 + yDelta);
-        node2NodeView.get(workflow.getWorkingTaxaNode()).setXY(20, 20 + 2 * yDelta);
-        node2NodeView.get(workflow.getTopFilter()).setXY(20 + xDelta, 20 + 2 * yDelta);
-        node2NodeView.get(workflow.getWorkingDataNode()).setXY(20 + 2 * xDelta, 20 + yDelta);
 
-        assignNodeViewsAndCoordinatesForChildrenRec(this, workflow.getWorkingDataNode(), node2NodeView, xDelta, yDelta, true);
+
+        node2NodeView.get(workflow.getTopTaxaNode()).setXY(0, -2 * yDelta);
+        node2NodeView.get(workflow.getTaxaFilter()).setXY(0, -yDelta);
+        node2NodeView.get(workflow.getWorkingTaxaNode()).setXY(0, 0);
+
+        node2NodeView.get(workflow.getTopDataNode()).setXY(xDelta, -2 * yDelta);
+        node2NodeView.get(workflow.getTopFilter()).setXY(xDelta, 0);
+        node2NodeView.get(workflow.getWorkingDataNode()).setXY(2 * xDelta, 0);
+
+        assignNodeViewsAndCoordinatesForChildrenRec(this, workflow.getWorkingDataNode(), node2NodeView, xDelta, yDelta, 0);
 
         final ObservableList<WorkflowEdgeView> edgeViews = FXCollections.observableArrayList();
 
@@ -246,29 +249,21 @@ public class WorkflowViewTab extends ViewerTab {
      * @param node2nodeView
      * @param xDelta
      * @param yDelta
-     * @param horizontal
+     * @param leavesVisited
      */
-    private void assignNodeViewsAndCoordinatesForChildrenRec(WorkflowViewTab workflowView, WorkflowNode v, Map<WorkflowNode, WorkflowNodeView> node2nodeView, double xDelta, double yDelta, boolean horizontal) {
-        double x = node2nodeView.get(v).xProperty().get();
-        double y = node2nodeView.get(v).yProperty().get();
+    private int assignNodeViewsAndCoordinatesForChildrenRec(WorkflowViewTab workflowView, WorkflowNode v, Map<WorkflowNode, WorkflowNodeView> node2nodeView, double xDelta, double yDelta, int leavesVisited) {
+        if (v.getChildren().size() == 0) {
+            return leavesVisited + 1;
+        } else {
+            final double x = node2nodeView.get(v).xProperty().get() + xDelta;
 
-        int count = 0;
-        for (WorkflowNode w : v.getChildren()) {
-            if (count == 1)
-                horizontal = !horizontal;
-            else if (count == 2) {
-                x += (count - 1) * xDelta;
-                y += (count - 1) * yDelta;
+            for (WorkflowNode w : v.getChildren()) {
+                final WorkflowNodeView nodeView = node2nodeView.computeIfAbsent(w, k -> new WorkflowNodeView(workflowView, w));
+                nodeView.setX(x);
+                nodeView.setY(leavesVisited * yDelta);
+                leavesVisited = assignNodeViewsAndCoordinatesForChildrenRec(workflowView, w, node2nodeView, xDelta, yDelta, leavesVisited);
             }
-
-            final WorkflowNodeView nodeView = node2nodeView.computeIfAbsent(w, k -> new WorkflowNodeView(workflowView, w));
-            if (horizontal) {
-                nodeView.setXY(x + xDelta, y);
-            } else {
-                nodeView.setXY(x, y + yDelta);
-            }
-            assignNodeViewsAndCoordinatesForChildrenRec(workflowView, w, node2nodeView, xDelta, yDelta, horizontal);
-            count++;
+            return leavesVisited;
         }
     }
 

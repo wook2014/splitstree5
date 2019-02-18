@@ -36,6 +36,7 @@ import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.ViewerTab;
+import splitstree5.gui.algorithmtab.next.GenericAlgorithmPaneNext;
 import splitstree5.menu.MenuController;
 
 import java.util.ArrayList;
@@ -182,9 +183,14 @@ public class AlgorithmTab<P extends DataBlock, C extends DataBlock> extends View
         algorithmPane = algorithm2pane.get(currentAlgorithm);
         if (algorithmPane == null) {
             algorithmPane = currentAlgorithm.getAlgorithmPane(); // some algorithms have their own control pane
-            if (algorithmPane == null)
-                algorithmPane = new GenericAlgorithmPane<>(connector, currentAlgorithm);
-            algorithm2pane.put(currentAlgorithm, algorithmPane);
+            if (algorithmPane == null) {
+                final GenericAlgorithmPaneNext altPane = new GenericAlgorithmPaneNext<>(connector, currentAlgorithm);
+                if (altPane.hasOptions())
+                    algorithmPane = altPane;
+                else
+                    algorithmPane = new GenericAlgorithmPane<>(connector, currentAlgorithm);
+                algorithm2pane.put(currentAlgorithm, algorithmPane);
+            }
             algorithmPane.setDocument(document);
             algorithmPane.setUndoManager(getUndoManager());
             algorithmPane.setConnector(connector);

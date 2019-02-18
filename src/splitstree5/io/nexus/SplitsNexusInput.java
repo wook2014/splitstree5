@@ -179,7 +179,7 @@ public class SplitsNexusInput extends NexusIOBase implements INexusInput<SplitsB
             np.matchIgnoreCase("SPLITSLABELS");
             for (int s = 1; s <= nsplits; s++) {
                 final String label = (!np.peekMatchIgnoreCase(";") ? np.getWordRespectCase() : null); // string "null" may be in input
-                if (label.equals("null"))
+                if (label == null || label.equals("null"))
                     splitsBlock.getSplitLabels().put(s, null);
                 else
                     splitsBlock.getSplitLabels().put(s, label);

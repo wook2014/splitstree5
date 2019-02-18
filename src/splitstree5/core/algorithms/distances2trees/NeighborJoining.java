@@ -53,7 +53,6 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> imple
     /**
      * compute the neighbor joining tree
      *
-     * @throws InterruptedException
      */
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees)
             throws InterruptedException, CanceledException {
@@ -66,8 +65,7 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> imple
         progress.close();
     }
 
-    private PhyloTree computeNJTree(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances)
-            throws InterruptedException, CanceledException {
+    private PhyloTree computeNJTree(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances) throws CanceledException {
         final int nTax = distances.getNtax();
         final PhyloTree tree = new PhyloTree();
         final HashMap<String, Node> taxa2Nodes = new HashMap<>();

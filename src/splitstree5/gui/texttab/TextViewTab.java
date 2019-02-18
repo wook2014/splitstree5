@@ -78,8 +78,8 @@ public class TextViewTab extends ViewerTab {
         textArea.textProperty().addListener((InvalidationListener) -> getUndoManager().clear());
 
         textArea.selectionProperty().addListener((c, o, n) -> {
-            MainWindowManager.getInstance().getPreviousSelection().clear();
-            MainWindowManager.getInstance().getPreviousSelection().add(textArea.getText(n.getStart(), n.getEnd()));
+            MainWindowManager.getPreviousSelection().clear();
+            MainWindowManager.getPreviousSelection().add(textArea.getText(n.getStart(), n.getEnd()));
         });
 
         // setup find tool bar:

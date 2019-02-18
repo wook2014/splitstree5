@@ -258,7 +258,7 @@ public class EditInputTab extends EditTextViewTab {
         });
 
         controller.getSelectFromPreviousMenuItem().setOnAction((e) -> {
-            for (String word : MainWindowManager.getInstance().getPreviousSelection()) {
+            for (String word : MainWindowManager.getPreviousSelection()) {
                 final Pattern pattern = Pattern.compile(word);
                 String source = codeArea.getText();
                 Matcher matcher = pattern.matcher(source);
@@ -269,7 +269,7 @@ public class EditInputTab extends EditTextViewTab {
                 }
             }
         });
-        controller.getSelectFromPreviousMenuItem().disableProperty().bind(Bindings.isEmpty(MainWindowManager.getInstance().getPreviousSelection()));
+        controller.getSelectFromPreviousMenuItem().disableProperty().bind(Bindings.isEmpty(MainWindowManager.getPreviousSelection()));
 
         final MenuItem undoMenuItem = controller.getUndoMenuItem();
         undoMenuItem.setOnAction((e) -> codeArea.undo());

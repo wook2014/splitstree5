@@ -66,7 +66,9 @@ import javafx.scene.shape.Line;
  * Daniel Huson, 1.2017
  */
 public class WorkflowEdgeView extends Group {
-    private final Line line;
+    private final Line line1;
+    private final Line line2;
+
 
     /**
      * constructor
@@ -75,22 +77,43 @@ public class WorkflowEdgeView extends Group {
      * @param target
      */
     public WorkflowEdgeView(WorkflowNodeView source, WorkflowNodeView target) {
-        line = new Line();
+        line1 = new Line();
+        line2 = new Line();
 
-        line.startXProperty().bind(source.xProperty().add(source.widthProperty().divide(2)));
-        line.startYProperty().bind(source.yProperty().add(source.heightProperty().divide(2)));
-        line.endXProperty().bind(target.xProperty().add(target.widthProperty().divide(2)));
-        line.endYProperty().bind(target.yProperty().add(target.heightProperty().divide(2)));
 
-        final ArrowHead arrowHead = new ArrowHead();
-        arrowHead.update(line);
+        line1.startXProperty().bind(source.xProperty().add(source.widthProperty().divide(2)));
+        line1.startYProperty().bind(source.yProperty().add(source.heightProperty().divide(2)));
+        line1.endXProperty().bind(line1.startXProperty());
+        line1.endYProperty().bind(target.yProperty().add(target.heightProperty().divide(2)));
 
-        line.startXProperty().addListener((observable, oldValue, newValue) -> arrowHead.update(line));
-        line.startYProperty().addListener((observable, oldValue, newValue) -> arrowHead.update(line));
-        line.endXProperty().addListener((observable, oldValue, newValue) -> arrowHead.update(line));
-        line.endYProperty().addListener((observable, oldValue, newValue) -> arrowHead.update(line));
+        line2.startXProperty().bind(source.xProperty().add(source.widthProperty().divide(2)));
+        line2.endXProperty().bind(target.xProperty().add(target.widthProperty().divide(2)));
+        line2.endYProperty().bind(target.yProperty().add(target.heightProperty().divide(2)));
+        line2.startYProperty().bind(line2.endYProperty());
 
-        this.getChildren().addAll(line, arrowHead);
+
+        final ArrowHead arrowHead1 = new ArrowHead();
+
+        arrowHead1.update(line1);
+
+        line1.startXProperty().addListener((observable, oldValue, newValue) -> arrowHead1.update(line1));
+        line1.startYProperty().addListener((observable, oldValue, newValue) -> arrowHead1.update(line1));
+        line1.endXProperty().addListener((observable, oldValue, newValue) -> arrowHead1.update(line1));
+        line1.endYProperty().addListener((observable, oldValue, newValue) -> arrowHead1.update(line1));
+        arrowHead1.visibleProperty().bind(line1.startYProperty().isNotEqualTo(line1.endYProperty()));
+
+        final ArrowHead arrowHead2 = new ArrowHead();
+
+        arrowHead2.update(line2);
+
+        line2.startXProperty().addListener((observable, oldValue, newValue) -> arrowHead2.update(line2));
+        line2.startYProperty().addListener((observable, oldValue, newValue) -> arrowHead2.update(line2));
+        line2.endXProperty().addListener((observable, oldValue, newValue) -> arrowHead2.update(line2));
+        line2.endYProperty().addListener((observable, oldValue, newValue) -> arrowHead2.update(line2));
+        arrowHead2.visibleProperty().bind(line2.startXProperty().isNotEqualTo(line2.endXProperty()));
+
+
+        this.getChildren().addAll(line1, line2, arrowHead1, arrowHead2);
     }
 
 

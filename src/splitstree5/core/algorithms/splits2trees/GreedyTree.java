@@ -34,6 +34,7 @@ import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
+import splitstree5.utils.PhyloGraphUtils;
 import splitstree5.utils.RerootingUtils;
 
 import java.util.*;
@@ -116,14 +117,8 @@ public class GreedyTree extends Algorithm<SplitsBlock, TreesBlock> implements IF
                     break;
             }
             tree.addTaxon(v, t);
-            final String label = tree.getLabel(v);
-            if (label == null)
-                tree.setLabel(v, "" + t);
-            else if (!label.startsWith("<"))
-                tree.setLabel(v, "<" + label + "," + t + ">");
-            else
-                tree.setLabel(v, label.substring(0, label.length() - 1) + "," + t + ">");
         }
+        PhyloGraphUtils.addLabels(taxaBlock, tree);
 
         RerootingUtils.rerootByMidpoint(tree);
 

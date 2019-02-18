@@ -29,6 +29,7 @@ import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ASplit;
 import splitstree5.gui.graphtab.base.GeometryUtils;
+import splitstree5.utils.PhyloGraphUtils;
 import splitstree5.utils.SplitsUtilities;
 
 import java.util.*;
@@ -43,12 +44,12 @@ public class EqualAngle {
      *
      * @param progress
      * @param useWeights
-     * @param taxa
+     * @param taxaBlock
      * @param splits
      * @param graph
      * @param node2point
      */
-    public static void apply(ProgressListener progress, boolean useWeights, TaxaBlock taxa, SplitsBlock splits, SplitsGraph graph, NodeArray<Point2D> node2point, BitSet forbiddenSplits, BitSet usedSplits) throws CanceledException {
+    public static void apply(ProgressListener progress, boolean useWeights, TaxaBlock taxaBlock, SplitsBlock splits, SplitsGraph graph, NodeArray<Point2D> node2point, BitSet forbiddenSplits, BitSet usedSplits) throws CanceledException {
         //System.err.println("Running equal angle algorithm");
         graph.clear();
         usedSplits.clear();
@@ -62,7 +63,7 @@ public class EqualAngle {
 
         progress.setProgress(2);
 
-        initGraph(taxa, splits, cycle, graph);
+        initGraph(taxaBlock, splits, cycle, graph);
 
         final List<Integer> interiorSplits = getNonTrivialSplitsOrdered(splits);
 
@@ -72,8 +73,8 @@ public class EqualAngle {
         {
             int count = 0;
             for (Integer s : interiorSplits) {
-                if (SplitsUtilities.isCircular(taxa, cycle, splits.get(s))) {
-                    wrapSplit(taxa, splits, s, cycle, graph);
+                if (SplitsUtilities.isCircular(taxaBlock, cycle, splits.get(s))) {
+                    wrapSplit(taxaBlock, splits, s, cycle, graph);
                     usedSplits.set(s, true);
                     progress.setProgress(++count);
                 }
@@ -83,7 +84,7 @@ public class EqualAngle {
         progress.setProgress(-1);
         removeTemporaryTrivialEdges(graph);
 
-        assignAnglesToEdges(taxa.getNtax(), splits, cycle, graph, forbiddenSplits);
+        assignAnglesToEdges(taxaBlock.getNtax(), splits, cycle, graph, forbiddenSplits);
 
         progress.setProgress(90);
 
@@ -98,6 +99,7 @@ public class EqualAngle {
         if (node2point != null)
             assignCoordinatesToNodes(useWeights, graph, node2point); // need coordinates
 
+        PhyloGraphUtils.addLabels(taxaBlock, graph);
         progress.setProgress(100);   //set progress to 100%
     }
 
@@ -130,7 +132,6 @@ public class EqualAngle {
 
             Node v = graph.newNode();
 
-            graph.setLabel(v, taxa.getLabel(t));
             graph.addTaxon(v, t);
 
             Edge e = graph.newEdge(center, v);
@@ -317,13 +318,7 @@ public class EqualAngle {
             for (Integer t : graph.getTaxa(v)) {
                 graph.addTaxon(w, t);
             }
-
-            if (graph.getLabel(w) != null && graph.getLabel(w).length() > 0)
-                graph.setLabel(w, graph.getLabel(w) + ", " + graph.getLabel(v));
-            else
-                graph.setLabel(w, graph.getLabel(v));
             graph.clearTaxa(v);
-            graph.setLabel(v, null);
             graph.deleteNode(v);
         }
     }
@@ -440,4 +435,5 @@ public class EqualAngle {
             }
         }
     }
+
 }

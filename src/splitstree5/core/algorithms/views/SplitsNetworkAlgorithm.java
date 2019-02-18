@@ -29,6 +29,7 @@ import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import jloda.phylo.SplitsGraph;
+import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
@@ -141,7 +142,13 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
         // compute all views and put their parts into the appropriate groups
         final Font labelFont = Font.font(ProgramProperties.getDefaultFont().getFamily(), taxaBlock.getNtax() <= 64 ? 16 : Math.max(4, 12 - Math.log(taxaBlock.getNtax() - 64) / Math.log(2)));
         for (Node v : graph.nodes()) {
-            final String text = graph.getLabel(v);
+            final String text;
+            if (graph.getLabel(v) != null && graph.getLabel(v).length() > 0)
+                text = graph.getLabel(v);
+            else if (graph.getNumberOfTaxa(v) > 0)
+                text = Basic.toString(taxaBlock.getLabels(graph.getTaxa(v)), ",");
+            else text = null;
+
             final NodeViewBase nodeView = viewTab.createNodeView(v, node2point.getValue(v), text);
             viewTab.setupNodeView(nodeView);
 

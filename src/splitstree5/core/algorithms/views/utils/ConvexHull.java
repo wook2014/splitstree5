@@ -28,6 +28,7 @@ import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.utils.PhyloGraphUtils;
 
 import java.util.*;
 
@@ -53,12 +54,12 @@ public class ConvexHull {
      * assume that some splits have already been processed and applies convex hull algorithm to remaining splits
      *
      * @param progress
-     * @param taxa
+     * @param taxaBlock
      * @param splits
      * @param graph
      * @param usedSplits
      */
-    public static void apply(ProgressListener progress, TaxaBlock taxa, SplitsBlock splits, SplitsGraph graph, BitSet usedSplits) throws CanceledException {
+    public static void apply(ProgressListener progress, TaxaBlock taxaBlock, SplitsBlock splits, SplitsGraph graph, BitSet usedSplits) throws CanceledException {
 
         if (usedSplits.cardinality() == splits.getNsplits())
             return; // all nodes have been processed
@@ -74,12 +75,12 @@ public class ConvexHull {
                 graph.addTaxon(startNode, 1);
                 //graph.setLabel(startNode, taxa.getLabel(1));
 
-                for (int i = 2; i <= taxa.getNtax(); i++) {
+                for (int i = 2; i <= taxaBlock.getNtax(); i++) {
                     //graph.setLabel(startNode, (graph.getLabel(startNode)+", "+taxa.getLabel(i)));
                     graph.addTaxon(startNode, i);
                 }
             } else {
-                for (int t = 1; t <= taxa.getNtax(); t++) {
+                for (int t = 1; t <= taxaBlock.getNtax(); t++) {
                     if (graph.getTaxon2Node(t) == null)
                         System.err.println("Internal error: incomplete taxa");
                 }
@@ -136,7 +137,7 @@ public class ConvexHull {
                 Node start0 = null;
                 Node start1 = null;
 
-                for (int i = 1; i <= taxa.getNtax(); i++) {
+                for (int i = 1; i <= taxaBlock.getNtax(); i++) {
                     if (!currentSplitPartA.get(i)) {
                         start0 = graph.getTaxon2Node(i);
                     } else {
@@ -249,14 +250,10 @@ public class ConvexHull {
 
             progress.setProgress(-1);
             for (Node n : graph.nodes()) {
-                final StringBuilder buf = new StringBuilder();
-                for (Integer t : graph.getTaxa(n)) {
-                    if (buf.length() > 0)
-                        buf.append(", ");
-                    buf.append(taxa.getLabel(t));
-                }
-                graph.setLabel(n, buf.toString());
+                graph.setLabel(n, null);
             }
+            PhyloGraphUtils.addLabels(taxaBlock, graph);
+
 
             final BitSet seen = new BitSet();
             for (Edge e = graph.getFirstEdge(); e != null; e = e.getNext()) {

@@ -199,7 +199,7 @@ public class InputTab extends TextViewTab {
         });
 
         controller.getSelectFromPreviousMenuItem().setOnAction((e) -> {
-            for (String word : MainWindowManager.getInstance().getPreviousSelection()) {
+            for (String word : MainWindowManager.getPreviousSelection()) {
                 final Pattern pattern = Pattern.compile(word);
                 String source = textArea.getText();
                 Matcher matcher = pattern.matcher(source);
@@ -210,7 +210,8 @@ public class InputTab extends TextViewTab {
                 }
             }
         });
-        controller.getSelectFromPreviousMenuItem().disableProperty().bind(Bindings.isEmpty(MainWindowManager.getInstance().getPreviousSelection()));
+        // todo: do we need to unbind this then the tab is closed?
+        controller.getSelectFromPreviousMenuItem().disableProperty().bind(Bindings.isEmpty(MainWindowManager.getPreviousSelection()));
 
         final MenuItem undoMenuItem = controller.getUndoMenuItem();
         undoMenuItem.setOnAction((e) -> textArea.undo());

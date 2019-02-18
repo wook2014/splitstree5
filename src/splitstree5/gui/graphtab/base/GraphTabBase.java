@@ -394,25 +394,32 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
     public void selectByLabel(Collection<String> set) {
         System.err.println("Selecting by label...");
         for (Node node : getGraph().nodes()) {
-            String label = getGraph().getLabel(node);
+            final String label = getGraph().getLabel(node);
+            //System.err.println(label);
             if (label != null && set.contains(label))
                 nodeSelectionModel.select(node);
         }
         for (Edge edge : getGraph().edges()) {
-            String label = getGraph().getLabel(edge);
+            final String label = getGraph().getLabel(edge);
             if (label != null && set.contains(label))
                 edgeSelectionModel.select(edge);
         }
     }
 
     public void saveAsPreviousSelection() {
-        MainWindowManager.getInstance().getPreviousSelection().clear();
+        MainWindowManager.getPreviousSelection().clear();
         if (nodeSelectionModel.getSelectedItems().size() > 0) {
-            for (Node node : nodeSelectionModel.getSelectedItems()) {
-                if (node.getOwner() == getGraph()) {
-                    final String label = getGraph().getLabel(node);
-                    if (label != null)
-                        MainWindowManager.getInstance().getPreviousSelection().add(label);
+            final PhyloGraph graph = getGraph();
+            for (Node v : nodeSelectionModel.getSelectedItems()) {
+                if (v.getOwner() == graph) {
+                    final String label = graph.getLabel(v);
+                    if (label != null) {
+                        for (String one : label.split(",")) {
+                            one = one.trim();
+                            if (one.length() > 0)
+                                MainWindowManager.getPreviousSelection().add(one);
+                        }
+                    }
                 }
             }
         }
@@ -421,11 +428,10 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
                 if (edge.getOwner() == getGraph()) {
                     final String label = getGraph().getLabel(edge);
                     if (label != null)
-                        MainWindowManager.getInstance().getPreviousSelection().add(label);
+                        MainWindowManager.getPreviousSelection().add(label);
                 }
             }
         }
-        //System.err.println("Previous selection: "+Basic.toString(MainWindowManager.getInstance().getPreviousSelection(),", "));
     }
 
     public void addNodeLabelMovementSupport(NodeView2D nodeView) {
@@ -599,10 +605,11 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
         controller.getDeselectEdgesMenuItem().disableProperty().bind(edgeSelectionModel.emptyProperty());
 
         controller.getSelectFromPreviousMenuItem().setOnAction((e) -> {
-            selectByLabel(MainWindowManager.getInstance().getPreviousSelection());
+            selectByLabel(MainWindowManager.getPreviousSelection());
 
         });
-        controller.getSelectFromPreviousMenuItem().disableProperty().bind(Bindings.isEmpty(MainWindowManager.getInstance().getPreviousSelection()));
+        // todo: do we need to unbind this when this tab disappears?
+        controller.getSelectFromPreviousMenuItem().disableProperty().bind(Bindings.isEmpty(MainWindowManager.getPreviousSelection()));
 
         controller.getZoomInMenuItem().setOnAction((e) -> scrollPane.zoomBy(1.1, 1.1));
         controller.getZoomOutMenuItem().setOnAction((e) -> scrollPane.zoomBy(1 / 1.1, 1 / 1.1));

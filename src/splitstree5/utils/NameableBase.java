@@ -55,6 +55,16 @@ public class NameableBase extends ANamed implements INameable {
     }
 
     /**
+     * gets a tool tip for the named option
+     *
+     * @param optionName
+     * @return tool tip
+     */
+    public String getToolTip(String optionName) {
+        return optionName;
+    }
+
+    /**
      * gets customized control pane to get and set options
      *
      * @return pane or null

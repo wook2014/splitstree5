@@ -47,7 +47,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.text.Font;
 import jloda.graph.*;
 import jloda.phylo.PhyloTree;
-import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
@@ -191,28 +190,10 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
 
                 // compute all views and put their parts into the appropriate groups
                 for (Node v : tree.nodes()) {
-                    final StringBuilder buf = new StringBuilder();
                     final String text;
-                    final String label = tree.getLabel(v);
-                    if (label != null && (v.getOutDegree() == 0 || optionShowInternalNodeLabels.get())) {
-                        if (label.startsWith("<")) // multi-labeled node
-                        {
-                            final String[] tokens = Basic.split(label.substring(1, label.length() - 1), ',');
-                            for (String token : tokens) {
-                                if (Basic.isInteger(token)) {
-                                    if (buf.length() > 0)
-                                        buf.append(", ");
-                                    buf.append(taxaBlock.get(Basic.parseInt(token)));
-                                }
-
-                            }
-                        } else if (Basic.isInteger(label))
-                            buf.append(taxaBlock.get(Basic.parseInt(label)));
-                        else
-                            buf.append(label);
-                        text = buf.toString();
-                    } else
-                        text = null;
+                    if (tree.getLabel(v) != null && tree.getLabel(v).trim().length() > 0)
+                        text = tree.getLabel(v).trim();
+                    else text = null;
 
                     final NodeView2D nodeView = viewTab.createNodeView(v, node2point.getValue(v), null, 0, 0, text);
                     if (text != null && text.length() > 0 && viewTab.getNodeLabel2Style().containsKey(text)) {

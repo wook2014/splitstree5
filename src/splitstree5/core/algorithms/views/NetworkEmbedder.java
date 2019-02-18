@@ -82,7 +82,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
     }
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxa, NetworkBlock parent, ViewerBlock child) throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, NetworkBlock parent, ViewerBlock child) throws Exception {
         progress.setTasks("Network embedding", "Init.");
         final NetworkViewTab viewTab = (NetworkViewTab) child.getTab();
 
@@ -101,7 +101,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
 
         progress.setProgress(100);   //set progress to 100%
 
-        final TraitsBlock traitsBlock = taxa.getTraitsBlock();
+        final TraitsBlock traitsBlock = taxaBlock.getTraitsBlock();
 
         int maxCount = -1;
         if (traitsBlock != null) {
@@ -125,7 +125,29 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
 
         // compute all views and put their parts into the appropriate groups
         for (Node v : graph.nodes()) {
-            String text = graph.getLabel(v);
+            final String text;
+            final String label = graph.getLabel(v);
+            if (label != null) {
+                final StringBuilder buf = new StringBuilder();
+                if (label.startsWith("<")) // multi-labeled node
+                {
+                    final String[] tokens = Basic.split(label.substring(1, label.length() - 1), ',');
+                    for (String token : tokens) {
+                        if (Basic.isInteger(token)) {
+                            if (buf.length() > 0)
+                                buf.append(", ");
+                            buf.append(taxaBlock.get(Basic.parseInt(token)));
+                        }
+
+                    }
+                } else if (Basic.isInteger(label))
+                    buf.append(taxaBlock.get(Basic.parseInt(label)));
+                else
+                    buf.append(label);
+                text = buf.toString();
+            } else
+                text = null;
+
             //String text = (graph.getLabel(v) != null ? graph.getLabel(v) : "Node " + v.getId());
             final NodeView2D nodeView = viewTab.createNodeView(v, node2point.getValue(v), null, 0, 0, text);
 
@@ -146,7 +168,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
                         if (trait == 1) {
                             if (buf.length() > 0)
                                 buf.append(", ");
-                            buf.append(taxa.get(taxon));
+                            buf.append(taxaBlock.get(taxon));
                         }
                     }
                     pieChart.getData().add(new PieChart.Data(traitsBlock.getTraitLabel(trait), count));
@@ -207,7 +229,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
             if (edgeView.getLabel() != null)
                 viewTab.getEdgeLabelsGroup().getChildren().add(edgeView.getLabel());
         }
-        Platform.runLater(() -> viewTab.updateSelectionModels(graph, taxa, child.getDocument()));
+        Platform.runLater(() -> viewTab.updateSelectionModels(graph, taxaBlock, child.getDocument()));
         child.show();
 
         progress.close();

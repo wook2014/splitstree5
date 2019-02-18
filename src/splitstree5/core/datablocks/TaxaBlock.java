@@ -240,9 +240,22 @@ public class TaxaBlock extends DataBlock {
      * @return labels
      */
     public static ArrayList<String> getLabels(Collection<Taxon> taxa) {
-        final ArrayList<String> labels = new ArrayList<>(taxa.size());
+        final ArrayList<String> labels = new ArrayList<>();
         for (Taxon taxon : taxa) {
             labels.add(taxon.getName());
+        }
+        return labels;
+    }
+
+    /**
+     * get all taxon labels in the given collection
+     *
+     * @return labels
+     */
+    public ArrayList<String> getLabels(Iterable<Integer> taxa) {
+        final ArrayList<String> labels = new ArrayList<>();
+        for (Integer t : taxa) {
+            labels.add(getLabel(t));
         }
         return labels;
     }
