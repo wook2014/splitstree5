@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -63,7 +63,7 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
      */
     public GenericAlgorithmPaneNext(Connector<P, C> connector) {
         this.connector = connector;
-        options.addAll(OptionsAccessorNext.getAllOptions(connector.getAlgorithm()));
+        options.addAll(OptionNext.getAllOptions(connector.getAlgorithm()));
     }
 
     /**
@@ -73,7 +73,7 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
      */
     public GenericAlgorithmPaneNext(Connector<P, C> connector, Algorithm<P, C> algorithm) {
         this.connector = connector;
-        options.addAll(OptionsAccessorNext.getAllOptions(algorithm));
+        options.addAll(OptionNext.getAllOptions(algorithm));
     }
 
     @Override
