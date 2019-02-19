@@ -19,8 +19,8 @@ import splitstree5.core.models.K3STmodel;
 
 public class K3ST extends DNAdistance implements IFromChararacters, IToDistances {
 
-    private double[][] QMatrix; //Q Matrix provided by user for ML estimation.
-    private double tratio = 2.0;
+    //private double[][] QMatrix; //Q Matrix provided by user for ML estimation. //todo not used?
+    //private double tratio = 2.0;
     private double ACvsAT = 2.0;
     public final static String DESCRIPTION = "Calculates distances using the Kimura3ST model";
 
@@ -39,7 +39,7 @@ public class K3ST extends DNAdistance implements IFromChararacters, IToDistances
         progress.setTasks("K3ST Distance", "Init.");
         progress.setMaximum(taxaBlock.getNtax());
 
-        K3STmodel model = new K3STmodel(this.tratio, this.ACvsAT);
+        K3STmodel model = new K3STmodel(this.getOptionTRatio(), this.ACvsAT);
         model.setPinv(getOptionPInvar());
         model.setGamma(getOptionGamma());
 

@@ -280,7 +280,7 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
 
             /* Compute the "averaged" sums s_i from each cluster to every other cluster.
 
-     todo: 2x speedup by using symmetry */
+            todo: 2x speedup by using symmetry */
 
             for (p = netNodes.next; p != null; p = p.next)
                 p.Sx = 0.0;
@@ -553,8 +553,8 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
 
         /* Now do the rest of the expansions */
         while (!amalgs.empty()) {
-/* Find the three elements replacing u and v. Swap u and v around if v comes before u in the
-          circular ordering being built up */
+            /* Find the three elements replacing u and v. Swap u and v around if v comes before u in the
+            circular ordering being built up */
             u = (NetNode) (amalgs.pop());
             // System.err.println("POP: u="+u);
             v = u.nbr;

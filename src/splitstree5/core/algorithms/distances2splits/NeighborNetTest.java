@@ -66,4 +66,29 @@ public class NeighborNetTest {
         System.err.println(w.toString());
     }
 
+    @Test
+    public void testComputeII() throws IOException, CanceledException, InterruptedException {
+        TaxaBlock taxaBlock = new TaxaBlock();
+        DistancesBlock distancesBlock = new DistancesBlock();
+        try (NexusStreamParser np = new NexusStreamParser(new FileReader("test/nexus/distances7-taxa.nex"))) {
+            np.matchIgnoreCase("#nexus");
+            new TaxaNexusInput().parse(np, taxaBlock);
+            new DistancesNexusInput().parse(np, taxaBlock, distancesBlock);
+            assertEquals(taxaBlock.getNtax(), 7);
+            assertEquals(distancesBlock.getNtax(), 7);
+        }
+
+        final SplitsBlock splitsBlock = new SplitsBlock();
+
+        final NeighborNet algorithm = new NeighborNet();
+        algorithm.compute(new ProgressPercentage(), taxaBlock, distancesBlock, splitsBlock);
+
+        final StringWriter w = new StringWriter();
+        w.write("#nexus\n");
+        new TaxaNexusOutput().write(w, taxaBlock);
+        new DistancesNexusOutput().write(w, taxaBlock, distancesBlock);
+        new SplitsNexusOutput().write(w, taxaBlock, splitsBlock);
+        System.err.println(w.toString());
+    }
+
 }

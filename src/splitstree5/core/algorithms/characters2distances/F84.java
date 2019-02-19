@@ -19,7 +19,7 @@ import splitstree5.core.models.F84Model;
 
 public class F84 extends DNAdistance implements IFromChararacters, IToDistances {
 
-    private double tratio = 2.0;
+    //private double tratio = 2.0;
     private double A, B, C;
 
     public final static String DESCRIPTION = "Calculates distances using the Felsenstein84 model";
@@ -39,7 +39,7 @@ public class F84 extends DNAdistance implements IFromChararacters, IToDistances 
         progress.setTasks("F84 Distance", "Init.");
         progress.setMaximum(taxaBlock.getNtax());
 
-        F84Model model = new F84Model(this.getNormedBaseFreq(), this.tratio);
+        F84Model model = new F84Model(this.getNormedBaseFreq(), this.getOptionTRatio());
         model.setPinv(getOptionPInvar());
         model.setGamma(getOptionGamma());
 
@@ -73,11 +73,11 @@ public class F84 extends DNAdistance implements IFromChararacters, IToDistances 
         return DESCRIPTION;
     }
 
-    public void setOptionTRatio(double value) {
+    /*public void setOptionTRatio(double value) {
         this.tratio = value;
     }
 
     public double getOptionTRatio() {
         return this.tratio;
-    }
+    }*/
 }

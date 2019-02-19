@@ -1,5 +1,7 @@
 package splitstree5.core.algorithms.characters2distances;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
@@ -8,6 +10,9 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.models.HKY85model;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Computes the Hasegawa, Kishino and Yano distance for a set of characters.
@@ -19,7 +24,7 @@ import splitstree5.core.models.HKY85model;
 
 public class HKY85 extends DNAdistance implements IFromChararacters, IToDistances {
 
-    private double optionTsTvRatio = 2.0;
+    private final DoubleProperty optionTsTvRatio = new SimpleDoubleProperty(2.0);
     public final static String DESCRIPTION = "Calculates distances using the Hasegawa, Kishino and Yano model";
 
     @Override
@@ -31,7 +36,28 @@ public class HKY85 extends DNAdistance implements IFromChararacters, IToDistance
 
     public HKY85() {
         super();
-        setOptionMaximum_Likelihood(true);
+        setOptionMaximumLikelihood(true);
+    }
+
+    public List<String> listOptions() {
+        return Arrays.asList("PInvar", "Gamma", "TRatio", "UseML", "TsTvRatio");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        switch (optionName) {
+            case "PInvar":
+                return "PInvar";
+            case "Gamma":
+                return "Gamma";
+            case "TRatio":
+                return "TRatio";
+            case "UseML":
+                return "UseML";
+            case "TsTvRatio":
+                return "TsTvRatio";
+        }
+        return null;
     }
 
     @Override
@@ -40,11 +66,11 @@ public class HKY85 extends DNAdistance implements IFromChararacters, IToDistance
 
         progress.setTasks("HKY85 Distance", "Init.");
 
-        HKY85model model = new HKY85model(getNormedBaseFreq(), this.optionTsTvRatio);
+        HKY85model model = new HKY85model(getNormedBaseFreq(), this.optionTsTvRatio.getValue());
         model.setPinv(getOptionPInvar());
         model.setGamma(getOptionGamma());
 
-        setOptionMaximum_Likelihood(true);
+        setOptionMaximumLikelihood(true);
         distancesBlock.copy(fillDistanceMatrix(progress, charactersBlock, model));
     }
 
@@ -63,10 +89,12 @@ public class HKY85 extends DNAdistance implements IFromChararacters, IToDistance
     }
 
     public double getOptionTsTvRatio() {
+        return optionTsTvRatio.getValue();
+    }
+    public DoubleProperty optionTsTvRatioProperty() {
         return optionTsTvRatio;
     }
-
     public void setOptionTsTvRatio(double optionTsTvRatio) {
-        this.optionTsTvRatio = optionTsTvRatio;
+        this.optionTsTvRatio.setValue(optionTsTvRatio);
     }
 }

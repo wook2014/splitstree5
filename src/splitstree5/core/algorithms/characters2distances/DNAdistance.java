@@ -1,5 +1,9 @@
 package splitstree5.core.algorithms.characters2distances;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import jloda.fx.Alert;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
@@ -13,13 +17,23 @@ import splitstree5.core.models.NucleotideModel;
 import splitstree5.gui.utils.CharactersUtilities;
 import splitstree5.utils.SplitsException;
 
+import java.util.Arrays;
+import java.util.List;
+
 public abstract class DNAdistance extends SequenceBasedDistance {
+
     /* These are the parameters used for distance calculation */
-    private double optionPInvar;
-    private double optionGamma;
-    private double[] baseFreq;  //Base frequences (unnormalised)
-    private double tratio;
-    private boolean useML;
+
+    //private final DoubleProperty[] baseFreq;  //Base frequences (unnormalised)
+    private double[] baseFreq;
+
+    private final DoubleProperty optionPInvar = new SimpleDoubleProperty(0.0);
+    //Negative gamma corresponds to equal rates
+    private final DoubleProperty optionGamma = new SimpleDoubleProperty(-1);
+    //default is no difference between transitions and transversions
+    private final DoubleProperty optionTRatio = new SimpleDoubleProperty(2.0);
+    //Use the exact distance by default - transforms without exact distances should set useML = false
+    private final BooleanProperty optionUseML = new SimpleBooleanProperty(false);
 
     /* These are used in the panel to decide how to compute the above*/
 
@@ -38,14 +52,32 @@ public abstract class DNAdistance extends SequenceBasedDistance {
     private int whichBaseFreq;
 
     public DNAdistance() {
-        optionPInvar = 0.0;
         whichPInvar = DEFAULT;
-        optionGamma = -1;   //Negative gamma corresponds to equal rates
         whichGamma = DEFAULT;
         baseFreq = new double[]{0.25, 0.25, 0.25, 0.25};    //default is equal frequencies
+        /*this.baseFreq = new DoubleProperty[4];
+        for(DoubleProperty dp : baseFreq)
+            dp = new SimpleDoubleProperty(0.25); //.setValue(0.25);*/
         whichBaseFreq = DEFAULT;
-        tratio = 2.0; //default is no difference between transitions and transversions
-        useML = false; //Use the exact distance by default - transforms without exact distances should set useML = false
+    }
+
+    public List<String> listOptions() {
+        return Arrays.asList("PInvar", "Gamma", "TRatio", "UseML");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        switch (optionName) {
+            case "PInvar":
+                return "PInvar";
+            case "Gamma":
+                return "Gamma";
+            case "TRatio":
+                return "TRatio";
+            case "UseML":
+                return "UseML";
+        }
+        return null;
     }
 
     /**
@@ -65,7 +97,7 @@ public abstract class DNAdistance extends SequenceBasedDistance {
             setOptionGamma(characters.getGammaParam());
         }
         if (whichBaseFreq == FROMCHARS) {
-            setOptionBaseFreq(CharactersUtilities.computeFreqs(characters, false));
+            setBaseFreq(CharactersUtilities.computeFreqs(characters, false));
         }
     }
 
@@ -129,7 +161,7 @@ public abstract class DNAdistance extends SequenceBasedDistance {
                 final PairwiseCompare seqPair = new PairwiseCompare(characters, s, t);
                 double dist = 100.0;
 
-                if (this.useML) {
+                if (this.optionUseML.getValue()) {
                     //Maximum likelihood distance
                     try {
                         dist = seqPair.mlDistance(model);
@@ -174,53 +206,67 @@ public abstract class DNAdistance extends SequenceBasedDistance {
 
 
     public double getOptionPInvar() {
+        return optionPInvar.getValue();
+    }
+    public DoubleProperty optionPInvarProperty() {
         return optionPInvar;
     }
-
     public void setOptionPInvar(double pinvar) {
-        optionPInvar = pinvar;
+        optionPInvar.setValue(pinvar);
     }
 
     public double getOptionGamma() {
+        return optionGamma.getValue();
+    }
+    public DoubleProperty optionGammaProperty() {
         return optionGamma;
     }
-
     public void setOptionGamma(double gamma) {
-        optionGamma = gamma;
+        optionGamma.setValue(gamma);
     }
 
-    public double getOptionTratio() {
-        return tratio;
+    public double getOptionTRatio() {
+        return optionTRatio.getValue();
+    }
+    public DoubleProperty optionTRatioProperty() {
+        return optionTRatio;
+    }
+    public void setOptionTRatio(double tratio) {
+        this.optionTRatio.setValue(tratio);
     }
 
-    public void setOptionTratio(double tratio) {
-        this.tratio = tratio;
+    public boolean getOptionMaximumLikelihood() {
+        return optionUseML.getValue();
+    }
+    public BooleanProperty optionUseMLProperty() {
+        return optionUseML;
+    }
+    public void setOptionMaximumLikelihood(boolean useML) {
+        this.optionUseML.setValue(useML);
     }
 
-    public boolean getOptionMaximum_Likelihood() {
-        return useML;
-    }
-
-    public void setOptionMaximum_Likelihood(boolean useML) {
-        this.useML = useML;
-    }
-
-    public double[] getOptionBaseFreq() {
+    public double[] getBaseFreq() {
         return baseFreq;
     }
-
-    public void setOptionBaseFreq(double[] baseFreq) {
+    public void setBaseFreq(double [] baseFreq){
         this.baseFreq = baseFreq;
     }
+    /*public DoubleProperty[] optionBaseFreqProperty() {
+        return this.baseFreq;
+    }
+    public void setOptionBaseFreq(double[] baseFreq) {
+        for (int i = 0; i < baseFreq.length; i++)
+            this.baseFreq[i].setValue(baseFreq[i]);
+    }*/
 
     public double[] getNormedBaseFreq() {
         double[] freqs = new double[4];
         double sum = 0.0;
         for (int i = 0; i < 4; i++) {
-            sum += getOptionBaseFreq()[i];
+            sum += getBaseFreq()[i];
         }
         for (int i = 0; i < 4; i++) {
-            freqs[i] = getOptionBaseFreq()[i] / sum;
+            freqs[i] = getBaseFreq()[i] / sum;
         }
         return freqs;
     }
