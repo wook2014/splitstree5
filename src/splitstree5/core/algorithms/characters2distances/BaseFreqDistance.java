@@ -1,5 +1,7 @@
 package splitstree5.core.algorithms.characters2distances;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
@@ -7,6 +9,9 @@ import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Simple implementation of hamming distances
@@ -18,7 +23,8 @@ import splitstree5.core.datablocks.TaxaBlock;
 
 public class BaseFreqDistance extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
 
-    private boolean optionIgnoreGaps = true;
+    // todo does not do anything? also in sp4
+    private final BooleanProperty optionIgnoreGaps = new SimpleBooleanProperty(true);
 
     public final static String DESCRIPTION = "Calculates distances from differences in the base composition";
     private String TASK = "Base Frequency Distance";
@@ -28,6 +34,18 @@ public class BaseFreqDistance extends Algorithm<CharactersBlock, DistancesBlock>
         return "Hamming 1950; " +
                 "Hamming, Richard W. \"Error detecting and error correcting codes\". " +
                 "Bell System Technical Journal. 29 (2): 147–160. MR 0035935, 1950.";
+    }
+
+    public List<String> listOptions() {
+        return Arrays.asList("IgnoreGaps");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        if (optionName.equals("IgnoreGaps"))
+            return "Ignore gaps in the alignment";
+        else
+            return null;
     }
 
     @Override
@@ -47,7 +65,7 @@ public class BaseFreqDistance extends Algorithm<CharactersBlock, DistancesBlock>
         System.err.println("Base Frequencies");
 
         for (int s = 1; s <= ntax; s++) {
-            System.err.print(taxaBlock.getLabel(s) + "\t");
+            //System.err.print(taxaBlock.getLabel(s) + "\t");
             double count = 0;
             for (int i = 1; i < charactersBlock.getNchar(); i++) {
                 int x = symbols.indexOf(charactersBlock.get(s, i));
@@ -60,9 +78,9 @@ public class BaseFreqDistance extends Algorithm<CharactersBlock, DistancesBlock>
 
             for (int x = 0; x < nstates; x++) {
                 baseFreqs[s][x] /= count;
-                System.err.print("" + baseFreqs[s][x] + "\t");
+                //System.err.print("" + baseFreqs[s][x] + "\t");
             }
-            System.err.println("");
+            //System.err.println("");
         }
 
         for (int s = 1; s <= ntax; s++) {
@@ -90,6 +108,10 @@ public class BaseFreqDistance extends Algorithm<CharactersBlock, DistancesBlock>
      * @return true if gaps are ignored
      */
     public boolean getOptionIgnoreGaps() {
+        return optionIgnoreGaps.get();
+    }
+
+    public BooleanProperty optionIgnoreGapsProperty() {
         return optionIgnoreGaps;
     }
 
@@ -99,7 +121,7 @@ public class BaseFreqDistance extends Algorithm<CharactersBlock, DistancesBlock>
      * @param ignore
      */
     public void setOptionIgnoreGaps(boolean ignore) {
-        optionIgnoreGaps = ignore;
+        optionIgnoreGaps.setValue(ignore);
     }
 
     /**

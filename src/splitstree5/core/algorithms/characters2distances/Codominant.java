@@ -1,5 +1,7 @@
 package splitstree5.core.algorithms.characters2distances;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
@@ -7,6 +9,9 @@ import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Implementation of the Co-dominant genetic distance
@@ -26,11 +31,24 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
      * individual loci. This flag sets whether to use this square root, or just the averages
      * over the loci.
      */
-    protected boolean useSquareRoot;
+    //protected boolean useSquareRoot;
+    private final BooleanProperty optionUseSquareRoot = new SimpleBooleanProperty(true);
 
     @Override
     public String getCitation() {
         return "Smouse and Peakall 1999; Smouse PE, Peakall R. Spatial autocorrelation analysis of individual multiallele and multilocus genetic structure. Heredity, 82, 561-573, 1999.";
+    }
+
+    public List<String> listOptions() {
+        return Arrays.asList("UseSquareRoot");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        if (optionName.equals("UseSquareRoot"))
+            return "rrrrr";
+        else
+            return null;
     }
 
     @Override
@@ -145,7 +163,10 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
      * @return boolean flag that is true if we use the square root in the final calculation.
      */
     public boolean getOptionUseSquareRoot() {
-        return useSquareRoot;
+        return optionUseSquareRoot.getValue();
+    }
+    public BooleanProperty optionUseSquareRootProperty() {
+        return optionUseSquareRoot;
     }
 
     /**
@@ -155,6 +176,6 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
      * @param useSquareRoot flag that is true if we use the square root in the final calculation.
      */
     public void setOptionUseSquareRoot(boolean useSquareRoot) {
-        this.useSquareRoot = useSquareRoot;
+        this.optionUseSquareRoot.setValue(useSquareRoot);
     }
 }

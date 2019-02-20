@@ -1,5 +1,7 @@
 package splitstree5.core.algorithms.characters2distances;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
@@ -8,6 +10,9 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.models.K2Pmodel;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Computes the Kimura two parameter distance for a set of characters
@@ -19,7 +24,8 @@ import splitstree5.core.models.K2Pmodel;
 
 public class K2P extends DNAdistance implements IFromChararacters, IToDistances {
 
-    private double optionTsTvRatio = 2.0;
+    //default is no difference between transitions and transversions
+    private final DoubleProperty optionTsTvRatio = new SimpleDoubleProperty(2.0);
     public final static String DESCRIPTION = "Calculates distances using the Kimura2P model";
 
     @Override
@@ -30,13 +36,17 @@ public class K2P extends DNAdistance implements IFromChararacters, IToDistances 
                 "Sinauer Associates, Inc., 2nd edition, 1996.";
     }
 
+    public List<String> listOptions() {
+        return Arrays.asList("PInvar", "Gamma", "UseML","ParametersSet", "TsTvRatio");
+    }
+
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock) throws Exception {
 
         progress.setTasks("K2P Distance", "Init.");
         progress.setMaximum(taxaBlock.getNtax());
 
-        K2Pmodel model = new K2Pmodel(this.optionTsTvRatio);
+        K2Pmodel model = new K2Pmodel(this.optionTsTvRatio.getValue());
         model.setPinv(getOptionPInvar());
         model.setGamma(getOptionGamma());
 
@@ -58,10 +68,12 @@ public class K2P extends DNAdistance implements IFromChararacters, IToDistances 
     }
 
     public double getOptionTsTvRatio() {
+        return optionTsTvRatio.getValue();
+    }
+    public DoubleProperty optionTsTvRatioProperty() {
         return optionTsTvRatio;
     }
-
     public void setOptionTsTvRatio(double optionTsTvRatio) {
-        this.optionTsTvRatio = optionTsTvRatio;
+        this.optionTsTvRatio.setValue(optionTsTvRatio);
     }
 }

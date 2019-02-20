@@ -1,5 +1,8 @@
 package splitstree5.core.algorithms.characters2distances;
 
+import javafx.beans.property.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import jloda.fx.Alert;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
@@ -13,39 +16,65 @@ import splitstree5.core.models.NucleotideModel;
 import splitstree5.gui.utils.CharactersUtilities;
 import splitstree5.utils.SplitsException;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.List;
+
 public abstract class DNAdistance extends SequenceBasedDistance {
+
+    public enum ParametersSet {fromChars, defaultParameters};
+
+    public final double DEFAULT_P_INVAR = 0.0;
+    public final double DEFAULT_GAMMA = -1;        //Negative gamma corresponds to equal rates
+    public final double DEFAULT_BASE_FREQ = 0.25;  //Use the exact distance by default - transforms without exact distances should set useML = false
+
     /* These are the parameters used for distance calculation */
-    private double optionPInvar;
-    private double optionGamma;
-    private double[] baseFreq;  //Base frequences (unnormalised)
-    private double tratio;
-    private boolean useML;
 
-    /* These are used in the panel to decide how to compute the above*/
+    //private final DoubleProperty[] baseFreq;  //Base frequences (unnormalised)
+    private double[] baseFreq;
+    private final DoubleProperty optionPInvar = new SimpleDoubleProperty(DEFAULT_P_INVAR);
+    private final DoubleProperty optionGamma = new SimpleDoubleProperty(DEFAULT_GAMMA);
+    private final BooleanProperty optionUseML = new SimpleBooleanProperty(false);
 
-    /* These constant used to decide where to get parameter estimates from */
-    public static final int FROMCHARS = -1;
-    public static final int FROMUSER = -2;
-    public static final int DEFAULT = 0;
+    // Used in the panel to decide how to compute the above
+    private Property<ParametersSet> optionParametersSet
+            = new SimpleObjectProperty<>(ParametersSet.defaultParameters);
 
-    //The symbols in the character matrix can come in any order, however
-    //the order of states in the Q matrix is fixed. Here is the fixed order.
-    public static final String DNASTATES = "acgt";
-    public static final String RNASTATES = "acgu";
-
-    private int whichPInvar;
-    private int whichGamma;
-    private int whichBaseFreq;
 
     public DNAdistance() {
-        optionPInvar = 0.0;
-        whichPInvar = DEFAULT;
-        optionGamma = -1;   //Negative gamma corresponds to equal rates
-        whichGamma = DEFAULT;
         baseFreq = new double[]{0.25, 0.25, 0.25, 0.25};    //default is equal frequencies
-        whichBaseFreq = DEFAULT;
-        tratio = 2.0; //default is no difference between transitions and transversions
-        useML = false; //Use the exact distance by default - transforms without exact distances should set useML = false
+        /*this.baseFreq = new DoubleProperty[4];
+        for(DoubleProperty dp : baseFreq)
+            dp = new SimpleDoubleProperty(0.25); //.setValue(0.25);*/
+
+        //todo: connector = null, need access to charatersBlock for updateSetting function!
+        optionParametersSet.addListener(new ChangeListener<ParametersSet>() {
+            @Override
+            public void changed(ObservableValue<? extends ParametersSet> observable, ParametersSet oldValue, ParametersSet newValue) {
+                updateSettings();
+            }
+        });
+    }
+
+    public List<String> listOptions() {
+        return Arrays.asList("PInvar", "Gamma", "UseML", "ParametersSet");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        switch (optionName) {
+            case "PInvar":
+                return "Proportion of invariable sites";
+            case "Gamma":
+                return "Alpha parameter for gamma distribution. Negative gamma = Equal rates";
+            case "UseML":
+                return "Use maximum likelihood distances estimation";
+            case "ParametersSet":
+                return "Choose between default or in character block defined parameters ";
+            case "TsTvRatio":
+                return "Ratio between transitions and transversions";
+        }
+        return null;
     }
 
     /**
@@ -55,17 +84,19 @@ public abstract class DNAdistance extends SequenceBasedDistance {
      * The base frequencies are computed from scratch - but the others
      * are read from what is in Characters.properties (and assumed correct)
      *
-     * @param characters
+     * @param
      */
-    public void updateSettings(CharactersBlock characters) {
-        if (whichPInvar == FROMCHARS) {
-            setOptionPInvar(characters.getpInvar());
-        }
-        if (whichGamma == FROMCHARS) {
+    public void updateSettings(/*CharactersBlock characters*/) {
+        if (optionParametersSet.getValue().equals(ParametersSet.fromChars)) {
+            /*setOptionPInvar(characters.getpInvar());
             setOptionGamma(characters.getGammaParam());
+            setBaseFreq(CharactersUtilities.computeFreqs(characters, false));*/
+            setOptionPInvar(2222); //todo: get from characters!
+            setOptionGamma(1111);
         }
-        if (whichBaseFreq == FROMCHARS) {
-            setOptionBaseFreq(CharactersUtilities.computeFreqs(characters, false));
+        if (optionParametersSet.getValue().equals(ParametersSet.defaultParameters)){
+            setOptionPInvar(DEFAULT_P_INVAR);
+            setOptionGamma(DEFAULT_GAMMA);
         }
     }
 
@@ -129,7 +160,7 @@ public abstract class DNAdistance extends SequenceBasedDistance {
                 final PairwiseCompare seqPair = new PairwiseCompare(characters, s, t);
                 double dist = 100.0;
 
-                if (this.useML) {
+                if (this.optionUseML.getValue()) {
                     //Maximum likelihood distance
                     try {
                         dist = seqPair.mlDistance(model);
@@ -158,12 +189,8 @@ public abstract class DNAdistance extends SequenceBasedDistance {
                 distances.setVariance(s, t, var);
                 distances.setVariance(t, s, var);
             }
-            //if (doc != null)
-            //  doc.notifySetProgress(s * 100 / ntax);
             progressListener.incrementProgress();
         }
-        //if (doc != null)
-        //  doc.notifySetProgress(100); //set progress to 100%
         progressListener.close();
 
         if (numMissing > 0) {
@@ -173,80 +200,70 @@ public abstract class DNAdistance extends SequenceBasedDistance {
     }
 
 
+    // GETTERS AND SETTERS
+
     public double getOptionPInvar() {
+        return optionPInvar.getValue();
+    }
+    public DoubleProperty optionPInvarProperty() {
         return optionPInvar;
     }
-
     public void setOptionPInvar(double pinvar) {
-        optionPInvar = pinvar;
+        optionPInvar.setValue(pinvar);
     }
 
     public double getOptionGamma() {
+        return optionGamma.getValue();
+    }
+    public DoubleProperty optionGammaProperty() {
         return optionGamma;
     }
-
     public void setOptionGamma(double gamma) {
-        optionGamma = gamma;
+        optionGamma.setValue(gamma);
     }
 
-    public double getOptionTratio() {
-        return tratio;
+    public boolean getOptionMaximumLikelihood() {
+        return optionUseML.getValue();
+    }
+    public BooleanProperty optionUseMLProperty() {
+        return optionUseML;
+    }
+    public void setOptionMaximumLikelihood(boolean useML) {
+        this.optionUseML.setValue(useML);
     }
 
-    public void setOptionTratio(double tratio) {
-        this.tratio = tratio;
-    }
-
-    public boolean getOptionMaximum_Likelihood() {
-        return useML;
-    }
-
-    public void setOptionMaximum_Likelihood(boolean useML) {
-        this.useML = useML;
-    }
-
-    public double[] getOptionBaseFreq() {
+    public double[] getBaseFreq() {
         return baseFreq;
     }
-
-    public void setOptionBaseFreq(double[] baseFreq) {
+    public void setBaseFreq(double [] baseFreq){
         this.baseFreq = baseFreq;
+    }
+    /*public DoubleProperty[] optionBaseFreqProperty() {
+        return this.baseFreq;
+    }
+    public void setOptionBaseFreq(double[] baseFreq) {
+        for (int i = 0; i < baseFreq.length; i++)
+            this.baseFreq[i].setValue(baseFreq[i]);
+    }*/
+
+    public Property<ParametersSet> optionParametersSetProperty(){
+        return this.optionParametersSet;
+    }
+
+    public void setOptionParametersSet(ParametersSet parametersSet){
+        this.optionParametersSet.setValue(parametersSet);
     }
 
     public double[] getNormedBaseFreq() {
         double[] freqs = new double[4];
         double sum = 0.0;
         for (int i = 0; i < 4; i++) {
-            sum += getOptionBaseFreq()[i];
+            sum += getBaseFreq()[i];
         }
         for (int i = 0; i < 4; i++) {
-            freqs[i] = getOptionBaseFreq()[i] / sum;
+            freqs[i] = getBaseFreq()[i] / sum;
         }
         return freqs;
-    }
-
-    public int getWhichPInvar() {
-        return whichPInvar;
-    }
-
-    public void setWhichPInvar(int whichPInvar) {
-        this.whichPInvar = whichPInvar;
-    }
-
-    public int getWhichGamma() {
-        return whichGamma;
-    }
-
-    public void setWhichGamma(int whichGamma) {
-        this.whichGamma = whichGamma;
-    }
-
-    public int getWhichBaseFreq() {
-        return whichBaseFreq;
-    }
-
-    public void setWhichBaseFreq(int whichBaseFreq) {
-        this.whichBaseFreq = whichBaseFreq;
     }
 
     public boolean freqsOK(double[] freqs) {

@@ -21,7 +21,7 @@ import splitstree5.core.models.GTRmodel;
 
 public class GTR extends DNAdistance implements IFromChararacters, IToDistances {
 
-    private double[][] QMatrix; //Q Matrix provided by user for ML estimation.
+    private double[][] QMatrix; //Q Matrix provided by user for ML estimation. //todo option!
     public final static String DESCRIPTION = "Calculates distances using a General Time Reversible model";
 
     @Override
@@ -125,7 +125,7 @@ public class GTR extends DNAdistance implements IFromChararacters, IToDistances 
      *
      * @return double[][]
      */
-    public double[][] getOptionQMatrix() {
+    public double[][] getQMatrix() {
         return QMatrix;
     }
 
@@ -134,7 +134,7 @@ public class GTR extends DNAdistance implements IFromChararacters, IToDistances 
      *
      * @param QMatrix Sets the rate matrix
      */
-    public void setOptionQMatrix(double[][] QMatrix) {
+    public void setQMatrix(double[][] QMatrix) {
         this.QMatrix = QMatrix;
     }
 
