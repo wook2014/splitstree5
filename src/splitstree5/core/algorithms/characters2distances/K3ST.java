@@ -40,22 +40,7 @@ public class K3ST extends DNAdistance implements IFromChararacters, IToDistances
     }
 
     public List<String> listOptions() {
-        return Arrays.asList("PInvar", "Gamma", "UseML", "TsTvRatio");
-    }
-
-    @Override
-    public String getToolTip(String optionName) {
-        switch (optionName) {
-            case "PInvar":
-                return "Proportion of invariable sites";
-            case "Gamma":
-                return "Alpha parameter for gamma distribution. Negative gamma = Equal rates";
-            case "UseML":
-                return "Use maximum likelihood distances estimation";
-            case "TsTvRatio":
-                return "Ratio between transitions and transversions";
-        }
-        return null;
+        return Arrays.asList("PInvar", "Gamma", "UseML","ParametersSet", "TsTvRatio");
     }
 
     @Override
