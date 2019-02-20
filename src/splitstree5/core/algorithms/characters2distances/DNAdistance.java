@@ -30,8 +30,6 @@ public abstract class DNAdistance extends SequenceBasedDistance {
     private final DoubleProperty optionPInvar = new SimpleDoubleProperty(0.0);
     //Negative gamma corresponds to equal rates
     private final DoubleProperty optionGamma = new SimpleDoubleProperty(-1);
-    //default is no difference between transitions and transversions
-    private final DoubleProperty optionTRatio = new SimpleDoubleProperty(2.0);
     //Use the exact distance by default - transforms without exact distances should set useML = false
     private final BooleanProperty optionUseML = new SimpleBooleanProperty(false);
 
@@ -62,20 +60,18 @@ public abstract class DNAdistance extends SequenceBasedDistance {
     }
 
     public List<String> listOptions() {
-        return Arrays.asList("PInvar", "Gamma", "TRatio", "UseML");
+        return Arrays.asList("PInvar", "Gamma", "UseML");
     }
 
     @Override
     public String getToolTip(String optionName) {
         switch (optionName) {
             case "PInvar":
-                return "PInvar";
+                return "Proportion of invariable sites";
             case "Gamma":
-                return "Gamma";
-            case "TRatio":
-                return "TRatio";
+                return "Alpha parameter for gamma distribution. Negative gamma = Equal rates";
             case "UseML":
-                return "UseML";
+                return "Use maximum likelihood distances estimation";
         }
         return null;
     }
@@ -190,12 +186,8 @@ public abstract class DNAdistance extends SequenceBasedDistance {
                 distances.setVariance(s, t, var);
                 distances.setVariance(t, s, var);
             }
-            //if (doc != null)
-            //  doc.notifySetProgress(s * 100 / ntax);
             progressListener.incrementProgress();
         }
-        //if (doc != null)
-        //  doc.notifySetProgress(100); //set progress to 100%
         progressListener.close();
 
         if (numMissing > 0) {
@@ -223,16 +215,6 @@ public abstract class DNAdistance extends SequenceBasedDistance {
     }
     public void setOptionGamma(double gamma) {
         optionGamma.setValue(gamma);
-    }
-
-    public double getOptionTRatio() {
-        return optionTRatio.getValue();
-    }
-    public DoubleProperty optionTRatioProperty() {
-        return optionTRatio;
-    }
-    public void setOptionTRatio(double tratio) {
-        this.optionTRatio.setValue(tratio);
     }
 
     public boolean getOptionMaximumLikelihood() {

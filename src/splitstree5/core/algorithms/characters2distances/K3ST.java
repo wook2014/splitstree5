@@ -1,5 +1,7 @@
 package splitstree5.core.algorithms.characters2distances;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
@@ -8,6 +10,9 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.models.K3STmodel;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Calculates distances using the Kimura-3ST model
@@ -20,7 +25,9 @@ import splitstree5.core.models.K3STmodel;
 public class K3ST extends DNAdistance implements IFromChararacters, IToDistances {
 
     //private double[][] QMatrix; //Q Matrix provided by user for ML estimation. //todo not used?
-    //private double tratio = 2.0;
+
+    //default is no difference between transitions and transversions
+    private final DoubleProperty optionTsTvRatio = new SimpleDoubleProperty(2.0);
     private double ACvsAT = 2.0;
     public final static String DESCRIPTION = "Calculates distances using the Kimura3ST model";
 
@@ -32,6 +39,25 @@ public class K3ST extends DNAdistance implements IFromChararacters, IToDistances
                 "Sinauer Associates, Inc., 2nd edition, 1996.";
     }
 
+    public List<String> listOptions() {
+        return Arrays.asList("PInvar", "Gamma", "UseML", "TsTvRatio");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        switch (optionName) {
+            case "PInvar":
+                return "Proportion of invariable sites";
+            case "Gamma":
+                return "Alpha parameter for gamma distribution. Negative gamma = Equal rates";
+            case "UseML":
+                return "Use maximum likelihood distances estimation";
+            case "TsTvRatio":
+                return "Ratio between transitions and transversions";
+        }
+        return null;
+    }
+
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
@@ -39,7 +65,7 @@ public class K3ST extends DNAdistance implements IFromChararacters, IToDistances
         progress.setTasks("K3ST Distance", "Init.");
         progress.setMaximum(taxaBlock.getNtax());
 
-        K3STmodel model = new K3STmodel(this.getOptionTRatio(), this.ACvsAT);
+        K3STmodel model = new K3STmodel(optionTsTvRatio.getValue(), this.ACvsAT);
         model.setPinv(getOptionPInvar());
         model.setGamma(getOptionGamma());
 
@@ -78,5 +104,15 @@ public class K3ST extends DNAdistance implements IFromChararacters, IToDistances
      */
     public double getOptionAC_vs_ATRatio() {
         return this.ACvsAT;
+    }
+
+    public double getOptionTsTvRatio() {
+        return optionTsTvRatio.getValue();
+    }
+    public DoubleProperty optionTsTvRatioProperty() {
+        return optionTsTvRatio;
+    }
+    public void setOptionTsTvRatio(double optionTsTvRatio) {
+        this.optionTsTvRatio.setValue(optionTsTvRatio);
     }
 }

@@ -24,6 +24,7 @@ import java.util.List;
 
 public class HKY85 extends DNAdistance implements IFromChararacters, IToDistances {
 
+    //default is no difference between transitions and transversions
     private final DoubleProperty optionTsTvRatio = new SimpleDoubleProperty(2.0);
     public final static String DESCRIPTION = "Calculates distances using the Hasegawa, Kishino and Yano model";
 
@@ -40,22 +41,20 @@ public class HKY85 extends DNAdistance implements IFromChararacters, IToDistance
     }
 
     public List<String> listOptions() {
-        return Arrays.asList("PInvar", "Gamma", "TRatio", "UseML", "TsTvRatio");
+        return Arrays.asList("PInvar", "Gamma", "UseML", "TsTvRatio");
     }
 
     @Override
     public String getToolTip(String optionName) {
         switch (optionName) {
             case "PInvar":
-                return "PInvar";
+                return "Proportion of invariable sites";
             case "Gamma":
-                return "Gamma";
-            case "TRatio":
-                return "TRatio";
+                return "Alpha parameter for gamma distribution. Negative gamma = Equal rates";
             case "UseML":
-                return "UseML";
+                return "Use maximum likelihood distances estimation";
             case "TsTvRatio":
-                return "TsTvRatio";
+                return "Ratio between transitions and transversions";
         }
         return null;
     }
