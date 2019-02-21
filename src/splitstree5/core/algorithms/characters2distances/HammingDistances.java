@@ -19,6 +19,8 @@
 
 package splitstree5.core.algorithms.characters2distances;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import jloda.fx.Alert;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
@@ -29,15 +31,28 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * hamming distances
  *
  * @author Daniel Huson, 2003, 2017
  */
 public class HammingDistances extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-    private boolean optionNormalize = true;
+    private BooleanProperty optionNormalize = new SimpleBooleanProperty(true);
 
-    // todo new class HammingDistance with ambigous states
+    public List<String> listOptions() {
+        return Arrays.asList("Normalize");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        if (optionName.equals("Normalize"))
+            return "Normalize distances";
+        else
+            return null;
+    }
 
     @Override
     public String getCitation() {
@@ -80,10 +95,12 @@ public class HammingDistances extends Algorithm<CharactersBlock, DistancesBlock>
     }
 
     public boolean isOptionNormalize() {
+        return optionNormalize.getValue();
+    }
+    public BooleanProperty optionNormalizeProperty() {
         return optionNormalize;
     }
-
     public void setOptionNormalize(boolean optionNormalize) {
-        this.optionNormalize = optionNormalize;
+        this.optionNormalize.setValue(optionNormalize);
     }
 }

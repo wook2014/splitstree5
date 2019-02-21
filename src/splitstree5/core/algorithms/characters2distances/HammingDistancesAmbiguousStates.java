@@ -1,5 +1,9 @@
 package splitstree5.core.algorithms.characters2distances;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import jloda.fx.Alert;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
@@ -11,12 +15,31 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.AmbiguityCodes;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class HammingDistancesAmbiguousStates extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
 
     public enum AmbiguousOptions {Ignore, AverageStates, MatchStates};
 
-    private boolean optionNormalize = true;
-    private AmbiguousOptions optionHandleAmbiguousStates = AmbiguousOptions.Ignore;
+    private BooleanProperty optionNormalize = new SimpleBooleanProperty(true);
+    private Property<AmbiguousOptions> optionHandleAmbiguousStates = new SimpleObjectProperty<>(AmbiguousOptions.Ignore);
+
+    public List<String> listOptions() {
+        return Arrays.asList("Normalize", "HandleAmbiguousStates");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        switch (optionName) {
+            case "Normalize":
+                return "Normalize distances";
+            case "HandleAmbiguousStates":
+                return "Choose way to handle ambiguous nucleotides";
+        }
+        return null;
+    }
+
 
     @Override
     public String getCitation() {
@@ -29,7 +52,7 @@ public class HammingDistancesAmbiguousStates extends Algorithm<CharactersBlock, 
 
         distances.setNtax(characters.getNtax());
 
-        if (optionHandleAmbiguousStates.equals(AmbiguousOptions.MatchStates)
+        if (optionHandleAmbiguousStates.getValue().equals(AmbiguousOptions.MatchStates)
                 && characters.getDataType().isNucleotides() && characters.isHasAmbiguityCodes())
             computeMatchStatesHamming(progress, taxa, characters, distances);
         else {
@@ -38,7 +61,13 @@ public class HammingDistancesAmbiguousStates extends Algorithm<CharactersBlock, 
             final int ntax = taxa.getNtax();
             for (int s = 1; s <= ntax; s++) {
                 for (int t = s + 1; t <= ntax; t++) {
-                    final PairwiseCompare seqPair = new PairwiseCompare(characters, s, t);
+
+                    final PairwiseCompare seqPair;
+                    if (optionHandleAmbiguousStates.getValue().equals(AmbiguousOptions.Ignore))
+                        seqPair = new PairwiseCompare(characters, s, t, true);
+                    else
+                        seqPair = new PairwiseCompare(characters, s, t, false);
+
                     double p = 1.0;
 
                     final double[][] F = seqPair.getF();
@@ -149,18 +178,22 @@ public class HammingDistancesAmbiguousStates extends Algorithm<CharactersBlock, 
     // GETTERS AND SETTERS
 
     public boolean isOptionNormalize() {
+        return optionNormalize.getValue();
+    }
+    public BooleanProperty optionNormalizeProperty() {
         return optionNormalize;
     }
-
     public void setOptionNormalize(boolean optionNormalize) {
-        this.optionNormalize = optionNormalize;
+        this.optionNormalize.setValue(optionNormalize);
     }
 
     public AmbiguousOptions getOptionHandleAmbiguousStates(){
+        return this.optionHandleAmbiguousStates.getValue();
+    }
+    public Property<AmbiguousOptions> optionHandleAmbiguousStatesProperty(){
         return this.optionHandleAmbiguousStates;
     }
-
     public void setOptionHandleAmbiguousStates(AmbiguousOptions optionHandleAmbiguousStates) {
-        this.optionHandleAmbiguousStates = optionHandleAmbiguousStates;
+        this.optionHandleAmbiguousStates.setValue(optionHandleAmbiguousStates);
     }
 }

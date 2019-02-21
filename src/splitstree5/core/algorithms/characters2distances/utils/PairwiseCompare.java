@@ -44,19 +44,29 @@ public class PairwiseCompare { // todo: add support for character weights
      * @throws SplitsException
      */
 
-    // todo 2 constructor with/without ambig param
-    // todo group identical haplotypes
+    // TODO: SOMETHING SLOWS DOWN THE ALGORITHM WHILE OPEN AMBIG. CHARACTERS. NEED TO FIND OUT!
+
 
     public PairwiseCompare(final CharactersBlock characters, final int i, final int j) throws SplitsException {
+        numStates = characters.getSymbols().length();
+        // The fCount matrix has rows and columns for missing and gap states as well
+        fCount = new double[numStates + 2][numStates + 2];
+        calculatePairwiseCompare(characters, i, j, false);
+    }
+
+    public PairwiseCompare(final CharactersBlock characters, final int i, final int j, boolean isIgnoreAmbiguous)
+            throws SplitsException {
+        numStates = characters.getSymbols().length();
+        fCount = new double[numStates + 2][numStates + 2];
+        calculatePairwiseCompare(characters, i, j, isIgnoreAmbiguous);
+    }
+
+    public void calculatePairwiseCompare(final CharactersBlock characters, final int i, final int j, boolean isIgnoreAmbiguous)
+            throws SplitsException {
         final String states = characters.getSymbols();
         final char gapChar = characters.getGapCharacter();
         final char missingChar = characters.getMissingCharacter();
         final boolean isNucleotides = characters.getDataType().isNucleotides();
-
-        numStates = states.length();
-
-        /* The fCount matrix has rows and columns for missing and gap states as well */
-        fCount = new double[numStates + 2][numStates + 2];
 
         final int gapIndex = numStates;
         final int missingIndex = numStates + 1;
@@ -65,12 +75,7 @@ public class PairwiseCompare { // todo: add support for character weights
 
         for (int k = 1; k <= characters.getNchar(); k++) {
             char ci = characters.get(i, k); // todo use final?
-            char cj = characters.get(j, k);//todo replace ambig with missing
-
-            if (AmbiguityCodes.isAmbiguityCode(ci))
-                ci = characters.getMissingCharacter();//'?';
-            if (AmbiguityCodes.isAmbiguityCode(cj))
-                cj = characters.getMissingCharacter();
+            char cj = characters.get(j, k);
 
             final double charWeight = characters.getCharacterWeight(k);
 
@@ -79,7 +84,7 @@ public class PairwiseCompare { // todo: add support for character weights
 
             //Handle ambiguous states?
             final boolean ambigI, ambigJ;
-            if (isNucleotides) {
+            if (isNucleotides && !isIgnoreAmbiguous) {
                 ambigI = AmbiguityCodes.isAmbiguityCode(ci);
                 ambigJ = AmbiguityCodes.isAmbiguityCode(cj);
             } else {
@@ -87,6 +92,7 @@ public class PairwiseCompare { // todo: add support for character weights
             }
 
             if (ambigI || ambigJ) {
+
                 final String si = AmbiguityCodes.getNucleotides(ci);
                 final String sj = AmbiguityCodes.getNucleotides(cj);
 
@@ -124,7 +130,11 @@ public class PairwiseCompare { // todo: add support for character weights
                     }
                 }
             } else {
-                //todo: replace ambig with ? in SP4!!
+                if (AmbiguityCodes.isAmbiguityCode(ci))
+                    ci = characters.getMissingCharacter();
+                if (AmbiguityCodes.isAmbiguityCode(cj))
+                    cj = characters.getMissingCharacter();
+
                 int stateI = states.indexOf(ci);
                 int stateJ = states.indexOf(cj);
                 if (ci == gapChar)
