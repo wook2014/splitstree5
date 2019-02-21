@@ -104,6 +104,7 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
                     grid.add(control, 1, row);
                     if (option.getToolTipText() != null)
                         control.setTooltip(new Tooltip(option.getToolTipText()));
+                    control.setSelected(((Property<Boolean>) option.getProperty()).getValue());
 
                     control.selectedProperty().addListener((observable, oldValue, newValue) -> {
                         if (!inUpdate.get()) {

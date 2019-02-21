@@ -188,8 +188,10 @@ public class AlgorithmTab<P extends DataBlock, C extends DataBlock> extends View
                 if (altPane.hasOptions())
                     algorithmPane = altPane;
                 else {
-                    System.err.println("Algorithm " + currentAlgorithm.getName() + ": is using old pane");
-                    algorithmPane = new GenericAlgorithmPane<>(connector, currentAlgorithm);
+                    final GenericAlgorithmPane pane = new GenericAlgorithmPane<>(connector, currentAlgorithm);
+                    algorithmPane = pane;
+                    if (pane.hasOptions())
+                        System.err.println("Algorithm " + currentAlgorithm.getName() + ": is using old pane");
                 }
                 algorithm2pane.put(currentAlgorithm, algorithmPane);
             }

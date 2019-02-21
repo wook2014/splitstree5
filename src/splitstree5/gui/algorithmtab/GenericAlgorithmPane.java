@@ -77,6 +77,10 @@ public class GenericAlgorithmPane<P extends DataBlock, C extends DataBlock> exte
         this.undoManager = undoManager;
     }
 
+    public boolean hasOptions() {
+        return options.size() > 0;
+    }
+
     /**
      * setup controller
      */
