@@ -37,7 +37,7 @@ public class K2P extends DNAdistance implements IFromChararacters, IToDistances 
     }
 
     public List<String> listOptions() {
-        return Arrays.asList("PInvar", "Gamma", "UseML","ParametersSet", "TsTvRatio");
+        return Arrays.asList("PInvar", "Gamma", "UseML", "SetParameters", "TsTvRatio");
     }
 
     @Override
@@ -47,7 +47,7 @@ public class K2P extends DNAdistance implements IFromChararacters, IToDistances 
         progress.setMaximum(taxaBlock.getNtax());
 
         K2Pmodel model = new K2Pmodel(this.optionTsTvRatio.getValue());
-        model.setPinv(getOptionPInvar());
+        model.setPropInvariableSites(getOptionPropInvariableSites());
         model.setGamma(getOptionGamma());
 
         distancesBlock.copy(fillDistanceMatrix(progress, charactersBlock, model));

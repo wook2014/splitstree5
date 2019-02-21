@@ -61,7 +61,7 @@ public class CharactersBlock extends DataBlock {
     private Map<Integer, String> charLabeler; // manages character labels
 
     private float gammaParam = Float.MAX_VALUE;
-    private float pInvar = Float.MAX_VALUE;
+    private float propInvariableSites = Float.MAX_VALUE;
 
     /**
      * Number of colors used.
@@ -245,12 +245,12 @@ public class CharactersBlock extends DataBlock {
         this.gammaParam = gammaParam;
     }
 
-    public boolean hasPInvar() {
-        return pInvar != Float.MAX_VALUE;
+    public boolean hasPropInvariableSites() {
+        return propInvariableSites != Float.MAX_VALUE;
     }
 
-    public float getpInvar() {
-        return pInvar;
+    public float getPropInvariableSites() {
+        return propInvariableSites;
     }
 
     /**
@@ -258,8 +258,8 @@ public class CharactersBlock extends DataBlock {
      *
      * @param pInvar
      */
-    public void setPInvar(float pInvar) {
-        this.pInvar = pInvar;
+    public void setPropInvariableSites(float pInvar) {
+        this.propInvariableSites = pInvar;
     }
 
     public String getSymbolsForColor() {

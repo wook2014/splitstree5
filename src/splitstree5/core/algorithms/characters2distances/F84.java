@@ -39,7 +39,7 @@ public class F84 extends DNAdistance implements IFromChararacters, IToDistances 
     }
 
     public List<String> listOptions() {
-        return Arrays.asList("PInvar", "Gamma", "UseML","ParametersSet", "TsTvRatio");
+        return Arrays.asList("PInvar", "Gamma", "UseML", "SetParameters", "TsTvRatio");
     }
 
     @Override
@@ -50,7 +50,7 @@ public class F84 extends DNAdistance implements IFromChararacters, IToDistances 
         progress.setMaximum(taxaBlock.getNtax());
 
         F84Model model = new F84Model(this.getNormedBaseFreq(), optionTsTvRatio.getValue());
-        model.setPinv(getOptionPInvar());
+        model.setPropInvariableSites(getOptionPropInvariableSites());
         model.setGamma(getOptionGamma());
 
         double[] baseFreq = getNormedBaseFreq();

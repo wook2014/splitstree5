@@ -19,7 +19,6 @@
 package splitstree5.gui.algorithmtab.next;
 
 import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.beans.WeakInvalidationListener;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -113,14 +112,11 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
                             inUpdate.set(false);
                         }
                     });
-                    InvalidationListener invalidationListener = new InvalidationListener() {
-                        @Override
-                        public void invalidated(Observable observable) {
-                            if (!inUpdate.get()) {
-                                inUpdate.set(true);
-                                control.setSelected(((Property<Boolean>) option.getProperty()).getValue());
-                                inUpdate.set(false);
-                            }
+                    InvalidationListener invalidationListener = observable -> {
+                        if (!inUpdate.get()) {
+                            inUpdate.set(true);
+                            control.setSelected(((Property<Boolean>) option.getProperty()).getValue());
+                            inUpdate.set(false);
                         }
                     };
                     listeners.add(invalidationListener);
@@ -154,14 +150,11 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
                         }
                     });
 
-                    InvalidationListener invalidationListener = new InvalidationListener() {
-                        @Override
-                        public void invalidated(Observable observable) {
-                            if (!inUpdate.get()) {
-                                inUpdate.set(true);
-                                control.setText(option.getProperty().getValue().toString());
-                                inUpdate.set(false);
-                            }
+                    InvalidationListener invalidationListener = observable -> {
+                        if (!inUpdate.get()) {
+                            inUpdate.set(true);
+                            control.setText(option.getProperty().getValue().toString());
+                            inUpdate.set(false);
                         }
                     };
                     listeners.add(invalidationListener);
@@ -195,14 +188,11 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
                         }
                     });
 
-                    InvalidationListener invalidationListener = new InvalidationListener() {
-                        @Override
-                        public void invalidated(Observable observable) {
-                            if (!inUpdate.get()) {
-                                inUpdate.set(true);
-                                control.setText(option.getProperty().getValue().toString());
-                                inUpdate.set(false);
-                            }
+                    InvalidationListener invalidationListener = observable -> {
+                        if (!inUpdate.get()) {
+                            inUpdate.set(true);
+                            control.setText(String.format("%.8f", (Double) option.getProperty().getValue()));
+                            inUpdate.set(false);
                         }
                     };
                     listeners.add(invalidationListener);
@@ -236,14 +226,11 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
                         }
                     });
 
-                    InvalidationListener invalidationListener = new InvalidationListener() {
-                        @Override
-                        public void invalidated(Observable observable) {
-                            if (!inUpdate.get()) {
-                                inUpdate.set(true);
-                                control.setText(option.getProperty().getValue().toString());
-                                inUpdate.set(false);
-                            }
+                    InvalidationListener invalidationListener = observable -> {
+                        if (!inUpdate.get()) {
+                            inUpdate.set(true);
+                            control.setText(String.format("%.8f", (Float) option.getProperty().getValue()));
+                            inUpdate.set(false);
                         }
                     };
                     listeners.add(invalidationListener);
@@ -271,14 +258,11 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
                         }
                     });
 
-                    InvalidationListener invalidationListener = new InvalidationListener() {
-                        @Override
-                        public void invalidated(Observable observable) {
-                            if (!inUpdate.get()) {
-                                inUpdate.set(true);
-                                control.setText(option.getProperty().getValue().toString());
-                                inUpdate.set(false);
-                            }
+                    InvalidationListener invalidationListener = observable -> {
+                        if (!inUpdate.get()) {
+                            inUpdate.set(true);
+                            control.setText(option.getProperty().getValue().toString());
+                            inUpdate.set(false);
                         }
                     };
                     listeners.add(invalidationListener);
@@ -302,14 +286,11 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
                     });
                     grid.add(control, 1, row);
 
-                    InvalidationListener invalidationListener = new InvalidationListener() {
-                        @Override
-                        public void invalidated(Observable observable) {
-                            if (!inUpdate.get()) {
-                                inUpdate.set(true);
-                                control.setValue(option.getProperty().getValue().toString());
-                                inUpdate.set(false);
-                            }
+                    InvalidationListener invalidationListener = observable -> {
+                        if (!inUpdate.get()) {
+                            inUpdate.set(true);
+                            control.setValue(option.getProperty().getValue().toString());
+                            inUpdate.set(false);
                         }
                     };
                     listeners.add(invalidationListener);

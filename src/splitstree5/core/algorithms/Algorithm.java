@@ -19,6 +19,8 @@
 
 package splitstree5.core.algorithms;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import jloda.util.Basic;
 import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.DataBlock;
@@ -35,7 +37,7 @@ import splitstree5.utils.OptionsAccessor;
 abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extends NameableBase {
     public static final String BLOCK_NAME = "ALGORITHM";
 
-    private Connector<P, C> connector;
+    final private ObjectProperty<Connector<P, C>> connector = new SimpleObjectProperty<>();
 
     /**
      * constructor
@@ -116,16 +118,19 @@ abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extend
      * gets the associated connector
      */
     public Connector<P, C> getConnector() {
-        return connector;
+        return connector.getValue();
     }
 
     /**
      * sets the associated connector
      */
     public void setConnector(Connector<P, C> connector) {
-        this.connector = connector;
+        this.connector.setValue(connector);
     }
 
+    public ObjectProperty<Connector<P, C>> connectorProperty() {
+        return connector;
+    }
 
     /**
      * gets a new instance of this algorithm

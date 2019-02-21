@@ -6,9 +6,9 @@ import splitstree5.core.datablocks.DistancesBlock;
 
 public abstract class SequenceBasedDistance extends Algorithm<CharactersBlock, DistancesBlock> {
 
-    abstract public double getOptionPInvar();
+    abstract public double getOptionPropInvariableSites();
 
-    abstract public void setOptionPInvar(double pinvar);
+    abstract public void setOptionPropInvariableSites(double pinvar);
 
     abstract public double getOptionGamma();
 

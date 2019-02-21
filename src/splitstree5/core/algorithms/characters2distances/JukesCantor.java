@@ -9,6 +9,9 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.models.JCmodel;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Computes the Jukes Cantor distance for a set of characters
  * <p>
@@ -30,15 +33,20 @@ public class JukesCantor extends DNAdistance implements IFromChararacters, IToDi
     }
 
     @Override
+    public List<String> listOptions() {
+        return Arrays.asList("PropInvariableSites", "SetParameters", "UseML");
+    }
+
+    @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 
         progress.setTasks("Jukes-Cantor Distance", "Init.");
         progress.setMaximum(taxaBlock.getNtax());
 
-        JCmodel model = new JCmodel();
-        model.setPinv(getOptionPInvar());
-        model.setGamma(getOptionGamma());
+        final JCmodel model = new JCmodel();
+        model.setPropInvariableSites(getOptionPropInvariableSites());
+        //model.setGamma(getOptionGamma());
 
         distancesBlock.copy(fillDistanceMatrix(progress, charactersBlock, model));
     }

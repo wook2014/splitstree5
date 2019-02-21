@@ -116,7 +116,8 @@ public class OptionNext<T> {
                 final String optionName = methodName.replaceAll("^option", "").replaceAll("Property$", "");
 
                 try {
-                    final String toolTipText = (tooltipMethod != null ? tooltipMethod.invoke(optionable, optionName).toString() : null);
+                    final Object toolTip = (tooltipMethod != null ? tooltipMethod.invoke(optionable, optionName) : null);
+                    final String toolTipText = (toolTip != null ? toolTip.toString() : null);
                     final OptionNext option = new OptionNext((Property) method.invoke(optionable), optionName, toolTipText);
                     options.add(option);
                     name2AnOption.put(optionName, option);
@@ -145,10 +146,11 @@ public class OptionNext<T> {
                     }
                 }
                 // add other parameters not mentioned in the order
-                for (String name : name2AnOption.keySet()) {
-                    if (!set.contains(name))
-                        order.add(name);
-                }
+                if (false)
+                    for (String name : name2AnOption.keySet()) {
+                        if (!set.contains(name))
+                            order.add(name);
+                    }
 
             } catch (Exception e) {
                 order.clear();
@@ -157,7 +159,9 @@ public class OptionNext<T> {
         }
         options.clear();
         for (String name : order) {
-            options.add(name2AnOption.get(name));
+            OptionNext optionNext = name2AnOption.get(name);
+            if (optionNext != null)
+                options.add(optionNext);
         }
         return options;
     }

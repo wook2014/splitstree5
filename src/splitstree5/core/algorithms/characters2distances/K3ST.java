@@ -40,7 +40,7 @@ public class K3ST extends DNAdistance implements IFromChararacters, IToDistances
     }
 
     public List<String> listOptions() {
-        return Arrays.asList("PInvar", "Gamma", "UseML","ParametersSet", "TsTvRatio");
+        return Arrays.asList("PInvar", "Gamma", "UseML", "SetParameters", "TsTvRatio");
     }
 
     @Override
@@ -51,7 +51,7 @@ public class K3ST extends DNAdistance implements IFromChararacters, IToDistances
         progress.setMaximum(taxaBlock.getNtax());
 
         K3STmodel model = new K3STmodel(optionTsTvRatio.getValue(), this.ACvsAT);
-        model.setPinv(getOptionPInvar());
+        model.setPropInvariableSites(getOptionPropInvariableSites());
         model.setGamma(getOptionGamma());
 
         distancesBlock.copy(fillDistanceMatrix(progress, charactersBlock, model));

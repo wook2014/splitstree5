@@ -37,11 +37,11 @@ public class HKY85 extends DNAdistance implements IFromChararacters, IToDistance
 
     public HKY85() {
         super();
-        setOptionMaximumLikelihood(true);
+        setOptionUseML(true);
     }
 
     public List<String> listOptions() {
-        return Arrays.asList("PInvar", "Gamma", "UseML","ParametersSet", "TsTvRatio");
+        return Arrays.asList("PInvar", "Gamma", "UseML", "SetParameters", "TsTvRatio");
     }
 
     @Override
@@ -51,10 +51,10 @@ public class HKY85 extends DNAdistance implements IFromChararacters, IToDistance
         progress.setTasks("HKY85 Distance", "Init.");
 
         HKY85model model = new HKY85model(getNormedBaseFreq(), this.optionTsTvRatio.getValue());
-        model.setPinv(getOptionPInvar());
+        model.setPropInvariableSites(getOptionPropInvariableSites());
         model.setGamma(getOptionGamma());
 
-        setOptionMaximumLikelihood(true);
+        setOptionUseML(true);
         distancesBlock.copy(fillDistanceMatrix(progress, charactersBlock, model));
     }
 

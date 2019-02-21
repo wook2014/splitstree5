@@ -68,6 +68,14 @@ public class CharactersNexusOutput extends NexusIOBase implements INexusOutput<C
         w.write("\nBEGIN " + CharactersBlock.BLOCK_NAME + ";\n");
         writeTitleAndLink(w);
         w.write("DIMENSIONS ntax=" + characters.getNtax() + " nchar=" + characters.getNchar() + ";\n");
+        if (characters.hasGamma() || characters.hasPropInvariableSites()) {
+            w.write("PROPERTIES");
+            if (characters.hasGamma())
+                w.write(String.format(" gammaShape=%.8f", characters.getGammaParam()));
+            if (characters.hasPropInvariableSites())
+                w.write(String.format(" pInvar=%.8f", characters.getPropInvariableSites()));
+            w.write(";\n");
+        }
         w.write("FORMAT\n");
         w.write("\tdatatype='" + characters.getDataType().toString() + "'");
 

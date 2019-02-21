@@ -125,12 +125,12 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
         if (np.peekMatchIgnoreCase("PROPERTIES")) {
             final List<String> tokens = np.getTokensLowerCase("properties", ";");
             charactersBlock.setGammaParam(np.findIgnoreCase(tokens, "gammaShape=", Float.MAX_VALUE));
-            charactersBlock.setPInvar(np.findIgnoreCase(tokens, "PINVAR=", Float.MAX_VALUE));
+            charactersBlock.setPropInvariableSites(np.findIgnoreCase(tokens, "PINVAR=", Float.MAX_VALUE));
             if (tokens.size() != 0)
                 throw new IOExceptionWithLineNumber(np.lineno(), "'" + tokens + "' unexpected in PROPERTIES");
         } else {
             charactersBlock.setGammaParam(Float.MAX_VALUE);
-            charactersBlock.setPInvar(Float.MAX_VALUE);
+            charactersBlock.setPropInvariableSites(Float.MAX_VALUE);
         }
 
         if (np.peekMatchIgnoreCase("FORMAT")) {

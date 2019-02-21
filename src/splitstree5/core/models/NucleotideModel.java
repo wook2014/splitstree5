@@ -48,7 +48,7 @@ public abstract class NucleotideModel implements SubstitutionModel {
     private double[][] Pmatrix; /* Current P matrix */
     private double[][] Qmatrix; /* Current Q matrix */
     private double tval;
-    private double pinv; /* Proportion of invariant sites */
+    private double propInvariableSites; /* Proportion of invariant sites */
     private double gamma = 0.0;
 
     /*------------Constructors-----------------------*/
@@ -126,7 +126,6 @@ public abstract class NucleotideModel implements SubstitutionModel {
         tval = 0.0;
         for (int i = 0; i < 4; i++)
             Pmatrix[i][i] = 1.0;
-
     }
 
     /**
@@ -181,12 +180,12 @@ public abstract class NucleotideModel implements SubstitutionModel {
 
         //Handle invariant sites
 
-        if (pinv != 0.0) {
+        if (propInvariableSites != 0.0) {
             for (int i = 0; i < 4; i++) {
                 for (int j = 0; j < 4; j++) {
-                    Pmatrix[i][j] *= (1.0 - pinv);
+                    Pmatrix[i][j] *= (1.0 - propInvariableSites);
                 }
-                Pmatrix[i][i] += pinv;
+                Pmatrix[i][i] += propInvariableSites;
             }
         }
         tval = t;
@@ -230,8 +229,8 @@ public abstract class NucleotideModel implements SubstitutionModel {
      *
      * @return double proportion
      */
-    public double getPinv() {
-        return pinv;
+    public double getPropInvariableSites() {
+        return propInvariableSites;
     }
 
     /**
@@ -239,9 +238,9 @@ public abstract class NucleotideModel implements SubstitutionModel {
      *
      * @param p proportion  (double)
      */
-    public void setPinv(double p) {
-        if (p != pinv) {
-            pinv = p;
+    public void setPropInvariableSites(double p) {
+        if (p != propInvariableSites) {
+            propInvariableSites = p;
             if (tval != 0.0)
                 computeP(tval);
         }
@@ -286,7 +285,7 @@ public abstract class NucleotideModel implements SubstitutionModel {
      * Returns rate
      */
     public double getRate() {
-        return (1.0 - pinv);
+        return (1.0 - propInvariableSites);
     }
 
     /**

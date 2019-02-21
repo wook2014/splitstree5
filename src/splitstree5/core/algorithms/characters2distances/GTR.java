@@ -31,7 +31,7 @@ public class GTR extends DNAdistance implements IFromChararacters, IToDistances 
         progress.setTasks("GTR Distance", "Init.");
 
         GTRmodel model = new GTRmodel(QMatrix, getNormedBaseFreq());
-        model.setPinv(getOptionPInvar());
+        model.setPropInvariableSites(getOptionPropInvariableSites());
         model.setGamma(getOptionGamma());
 
         distancesBlock.copy(fillDistanceMatrix(progress, charactersBlock, model));

@@ -35,7 +35,7 @@ public class F81 extends DNAdistance implements IFromChararacters, IToDistances 
 
         progress.setTasks("F81 Distance", "computing...");
         F81model model = new F81model(this.getNormedBaseFreq());
-        model.setPinv(getOptionPInvar());
+        model.setPropInvariableSites(getOptionPropInvariableSites());
         model.setGamma(getOptionGamma());
 
         //System.out.println("A is: " + baseFreq[0]);

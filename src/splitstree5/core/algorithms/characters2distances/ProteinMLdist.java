@@ -60,7 +60,7 @@ public class ProteinMLdist extends SequenceBasedDistance implements IFromCharara
         progress.setMaximum(npairs);
 
         ProteinModel model = selectModel(optionModel.get());
-        model.setPinv(this.getOptionPInvar());
+        model.setPinv(this.getOptionPropInvariableSites());
         model.setGamma(this.getOptionGamma());
 
         /*if (model == null) {
@@ -157,11 +157,11 @@ public class ProteinMLdist extends SequenceBasedDistance implements IFromCharara
         this.optionModel.set(optionModel);
     }
 
-    public double getOptionPInvar() {
+    public double getOptionPropInvariableSites() {
         return optionPInvar;
     }
 
-    public void setOptionPInvar(double pinvar) {
+    public void setOptionPropInvariableSites(double pinvar) {
         optionPInvar = pinvar;
     }
 
