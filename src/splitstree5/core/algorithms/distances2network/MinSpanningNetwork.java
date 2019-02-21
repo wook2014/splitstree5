@@ -18,6 +18,10 @@
  */
 package splitstree5.core.algorithms.distances2network;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloGraph;
@@ -31,10 +35,7 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.NetworkBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * computes a minimum spanning network
@@ -43,9 +44,24 @@ public class MinSpanningNetwork extends Algorithm<DistancesBlock, NetworkBlock> 
 
     public final static String DESCRIPTION = "Computes the Minimum Spanning Network (Excoffier & Smouse, 1994)";
 
-    private double optionEpsilon = 0;
+    private DoubleProperty optionEpsilon = new SimpleDoubleProperty(0);
+    private BooleanProperty optionMinSpanningTree = new SimpleBooleanProperty(false);
 
-    private boolean optionMinSpanningTree = false;
+    public List<String> listOptions() {
+        return Arrays.asList("Epsilon", "MinSpanningTree");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        switch (optionName) {
+            case "Epsilon":
+                return "weighted genetic distance measure. Low: MedianJoining, High: full median network";
+            case "MinSpanningTree":
+                return "calculate MinSpanningTree ";
+            default:
+                return null;
+        }
+    }
 
     /**
      * Determine whether given method can be applied to given data.
@@ -104,11 +120,11 @@ public class MinSpanningNetwork extends Algorithm<DistancesBlock, NetworkBlock> 
                 final int a = pair.getFirst();
                 final int b = pair.getSecond();
 
-                if (!optionMinSpanningTree || component[a] != component[b]) {
+                if (!optionMinSpanningTree.getValue() || component[a] != component[b]) {
                     Edge e = graph.newEdge(node[a], node[b]);
                     graph.setWeight(e, parent.get(a, b));
 
-                    if (!optionMinSpanningTree)
+                    if (!optionMinSpanningTree.getValue())
                         mustUpdateMSNComponents = true;
                     else { // need to update immediately for tree
                         numComponentsMSN--;
@@ -138,7 +154,7 @@ public class MinSpanningNetwork extends Algorithm<DistancesBlock, NetworkBlock> 
                 }
             }
             if (numComponentsMSN == 1) {
-                if (optionMinSpanningTree)
+                if (optionMinSpanningTree.getValue())
                     return; // tree
                 if (maxValue == Double.MAX_VALUE)
                     maxValue = threshold + getOptionEpsilon(); // once network is connected, add all edges upto threshold+epsilon
@@ -147,19 +163,23 @@ public class MinSpanningNetwork extends Algorithm<DistancesBlock, NetworkBlock> 
     }
 
     public double getOptionEpsilon() {
+        return optionEpsilon.getValue();
+    }
+    public DoubleProperty optionEpsilonProperty() {
         return optionEpsilon;
     }
-
     public void setOptionEpsilon(double optionEpsilon) {
-        this.optionEpsilon = optionEpsilon;
+        this.optionEpsilon.setValue(optionEpsilon);
     }
 
     public boolean isOptionMinSpanningTree() {
+        return optionMinSpanningTree.getValue();
+    }
+    public BooleanProperty optionMinSpanningTreeProperty() {
         return optionMinSpanningTree;
     }
-
     public void setOptionMinSpanningTree(boolean optionMinSpanningTree) {
-        this.optionMinSpanningTree = optionMinSpanningTree;
+        this.optionMinSpanningTree.setValue(optionMinSpanningTree);
     }
 
 

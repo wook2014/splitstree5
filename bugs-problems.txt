@@ -1,6 +1,10 @@
- - Need to add citations for all methods.
-   distances2splits [done]
-   distances3trees  [done]
+
+ - MedianJoiningCalculator class do not extends Algorithm.
+   Connected with MedianJoining.
+   Have to add Properties options?
+
+ - Property options
+   todo: trees
 
  - Error by parsing partial trees in IO part :
    nexus blocks with partial trees have false "isPartial" value
@@ -23,22 +27,3 @@
  - optionLeastSquare in SuperNetwork is not used?
 
  - Nei Miller in ST4 doesn't work
-
- - todo : IO - formats :
-
-    IMPORTS :
-    GenAlEX
-    --Matlab
-    MrBayesPartitions
-    OldNexus ?
-    ReticulateNetworkImport
-
-    EXPORTS:
-    --CGViz
-    GML
-    --FastA (splits, unaligned)
-    LentoPlotData
-    ReticulateNetwork
-    Snap
-    --TabbedText
-    --TreeDistances

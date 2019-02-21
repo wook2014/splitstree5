@@ -2,6 +2,8 @@ package splitstree5.core.algorithms.distances2network;
 
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import jloda.graph.Node;
 import jloda.phylo.PhyloGraph;
 import jloda.util.Basic;
@@ -13,7 +15,9 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.NetworkBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,8 +37,24 @@ public class PCoA2D extends Algorithm<DistancesBlock, NetworkBlock> implements I
     private double[][] vectors;
     private boolean done = false;
 
-    private int optionFirstCoordinate = 1;
-    private int optionSecondCoordinate = 2;
+    private IntegerProperty optionFirstCoordinate = new SimpleIntegerProperty(1);
+    private IntegerProperty optionSecondCoordinate = new SimpleIntegerProperty(2);
+
+    public List<String> listOptions() {
+        return Arrays.asList("FirstCoordinate", "SecondCoordinate");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        switch (optionName) {
+            case "FirstCoordinate":
+                return "Choose principal component for the x Axis";
+            case "SecondCoordinate":
+                return "Choose principal component for the y Axis";
+            default:
+                return null;
+        }
+    }
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, DistancesBlock distancesBlock, NetworkBlock networkBlock) throws Exception {
@@ -288,21 +308,27 @@ public class PCoA2D extends Algorithm<DistancesBlock, NetworkBlock> implements I
     }
 
     public int getOptionFirstCoordinate() {
+        return optionFirstCoordinate.getValue();
+    }
+    public IntegerProperty optionFirstCoordinateProperty() {
         return optionFirstCoordinate;
     }
 
     public void setOptionFirstCoordinate(int optionFirstCoordinate) {
         if (optionFirstCoordinate > 0)
-            this.optionFirstCoordinate = optionFirstCoordinate;
+            this.optionFirstCoordinate.setValue(optionFirstCoordinate);
     }
 
     public int getOptionSecondCoordinate() {
+        return optionSecondCoordinate.getValue();
+    }
+    public IntegerProperty optionSecondCoordinateProperty() {
         return optionSecondCoordinate;
     }
 
     public void setOptionSecondCoordinate(int optionSecondCoordinate) {
         if (optionSecondCoordinate > 0)
-            this.optionSecondCoordinate = optionSecondCoordinate;
+            this.optionSecondCoordinate.setValue(optionSecondCoordinate);
     }
 
 

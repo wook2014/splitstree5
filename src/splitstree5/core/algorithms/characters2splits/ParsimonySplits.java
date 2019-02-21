@@ -1,5 +1,7 @@
 package splitstree5.core.algorithms.characters2splits;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
@@ -13,18 +15,33 @@ import splitstree5.core.misc.Compatibility;
 import splitstree5.utils.SplitsUtilities;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
+import java.util.List;
 
 /**
  * p-splits method
  * Daniel Huson, 2003
  */
 public class ParsimonySplits extends Algorithm<CharactersBlock, SplitsBlock> implements IFromChararacters, IToSplits {
-    private boolean optionGapsAsMissing = false;
+
+    private final BooleanProperty optionGapsAsMissing = new SimpleBooleanProperty(false);
 
     @Override
     public String getCitation() {
         return "Bandelt and Dress 1992; H.-J.Bandelt and A.W.M.Dress. A canonical decomposition theory for metrics on a finite set. Advances in Mathematics, 92:47–105, 1992.";
+    }
+
+    public List<String> listOptions() {
+        return Arrays.asList("GapsAsMissing");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        if (optionName.equals("GapsAsMissing"))
+            return "Treat gaps as missing characters";
+        else
+            return null;
     }
 
     @Override
@@ -48,7 +65,7 @@ public class ParsimonySplits extends Algorithm<CharactersBlock, SplitsBlock> imp
             At.set(t);
 
             //System.err.println("wgt1 stuff: t=" + t + " AT=" + At);
-            int wgt = pIndex(optionGapsAsMissing, t, At, chars);
+            int wgt = pIndex(optionGapsAsMissing.getValue(), t, At, chars);
             //System.err.println("wgt1: " + wgt);
             if (wgt > 0) {
                 currentSplits.add(new ASplit(At, t, wgt));
@@ -60,7 +77,7 @@ public class ParsimonySplits extends Algorithm<CharactersBlock, SplitsBlock> imp
                 final BitSet B = prevSplit.getB();
                 // is Au{t} vs B a split?
                 A.set(t);
-                wgt = Math.min((int) prevSplit.getWeight(), pIndex(optionGapsAsMissing, t, A, chars));
+                wgt = Math.min((int) prevSplit.getWeight(), pIndex(optionGapsAsMissing.getValue(), t, A, chars));
                 //System.err.println("wgt2: "+wgt);
                 if (wgt > 0) {
                     currentSplits.add(new ASplit(A, t, wgt));
@@ -69,7 +86,7 @@ public class ParsimonySplits extends Algorithm<CharactersBlock, SplitsBlock> imp
 
                 // is A vs Bu{t} a split?
                 B.set(t);
-                wgt = Math.min((int) prevSplit.getWeight(), pIndex(optionGapsAsMissing, t, B, chars));
+                wgt = Math.min((int) prevSplit.getWeight(), pIndex(optionGapsAsMissing.getValue(), t, B, chars));
                 //System.err.println("wgt3: "+wgt);
                 if (wgt > 0)
                     currentSplits.add(new ASplit(B, t, wgt));
@@ -187,10 +204,12 @@ public class ParsimonySplits extends Algorithm<CharactersBlock, SplitsBlock> imp
     }
 
     public boolean isOptionGapsAsMissing() {
-        return optionGapsAsMissing;
+        return optionGapsAsMissing.getValue();
     }
-
+    public BooleanProperty optionGapsAsMissingProperty() {
+        return this.optionGapsAsMissing;
+    }
     public void setOptionGapsAsMissing(boolean optionGapsAsMissing) {
-        this.optionGapsAsMissing = optionGapsAsMissing;
+        this.optionGapsAsMissing.setValue(optionGapsAsMissing);
     }
 }
