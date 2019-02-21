@@ -1,5 +1,7 @@
 package splitstree5.core.algorithms.characters2distances;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.characters2distances.utils.FixUndefinedDistances;
@@ -11,6 +13,9 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.CharactersType;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Implements the Upholt (1979) distance for restriction site data.
  *
@@ -18,14 +23,28 @@ import splitstree5.core.datablocks.characters.CharactersType;
  */
 
 public class Upholt extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-    private double optionRestrictionSiteLength = 6.0;
 
-    public final boolean EXPERT = false;
-    public final static String DESCRIPTION = "Calculates the Upholt (1979) distance for restriction site data";
+    //public final boolean EXPERT = false; todo: is not used, also in ST4
+    public final static String DESCRIPTION = "Calculates the Upholt (1977) distance for restriction site data";
+
+    private final DoubleProperty optionRestrictionSiteLength = new SimpleDoubleProperty(6.0);
+
+    public List<String> listOptions() {
+        return Arrays.asList("RestrictionSiteLength");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        if (optionName.equals("RestrictionSiteLength"))
+            return "Expected length of restriction site (~4-8 bp)";
+        else
+            return null;
+    }
 
     @Override
     public String getCitation() {
-        return "Upholt 1979;";
+        return "Upholt WB. Estimation of DNA sequence divergence " +
+                "from comparison of restriction endonuclease digests. Nucleic Acids Res. 1977;4(5):1257-65. ";
     }
 
     @Override
@@ -61,7 +80,7 @@ public class Upholt extends Algorithm<CharactersBlock, DistancesBlock> implement
                         dist = -1;
                     } else {
                         double s_hat = 2.0 * nst / (ns + nt);
-                        dist = -Math.log(s_hat) / optionRestrictionSiteLength;
+                        dist = -Math.log(s_hat) / getOptionRestrictionSiteLength();
                     }
 
                 }
@@ -87,10 +106,6 @@ public class Upholt extends Algorithm<CharactersBlock, DistancesBlock> implement
      * @return true, character block exists and has standard datatype.
      */
     public boolean isApplicable(TaxaBlock taxa, CharactersBlock c) {
-        /*if (taxa == null || c == null || !(c.getFormat().getDatatype()).equalsIgnoreCase(Characters.Datatypes.STANDARD))
-            return false;
-        return c.getFormat().getSymbols().equalsIgnoreCase(Characters.Datatypes.STANDARDSYMBOLS);
-        */
         return c.getDataType() == CharactersType.Standard;
     }
 
@@ -99,11 +114,13 @@ public class Upholt extends Algorithm<CharactersBlock, DistancesBlock> implement
     }
 
     public double getOptionRestrictionSiteLength() {
+        return this.optionRestrictionSiteLength.getValue();
+    }
+    public DoubleProperty optionRestrictionSiteLengthProperty() {
         return this.optionRestrictionSiteLength;
     }
-
     public void setOptionRestrictionSiteLength(double restrictionSiteLength) {
-        this.optionRestrictionSiteLength = restrictionSiteLength;
+        this.optionRestrictionSiteLength.setValue(restrictionSiteLength);
     }
 
 }

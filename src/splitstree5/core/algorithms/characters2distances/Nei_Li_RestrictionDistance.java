@@ -1,5 +1,7 @@
 package splitstree5.core.algorithms.characters2distances;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.characters2distances.utils.FixUndefinedDistances;
@@ -11,6 +13,9 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.CharactersType;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Implements the NeiLi (1979) distance for restriction site data.
  *
@@ -18,13 +23,26 @@ import splitstree5.core.datablocks.characters.CharactersType;
  */
 
 public class Nei_Li_RestrictionDistance extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-    public final boolean EXPERT = false;
+    //public final boolean EXPERT = false; todo: is not used, also in ST4
+
     private final String DESCRIPTION = "Calculates the Nei and Li (1979) distance for restriction site data";
-    private double optionRestrictionSiteLength = 6.0;
+    private final DoubleProperty optionRestrictionSiteLength = new SimpleDoubleProperty(6.0);
 
     @Override
     public String getCitation() {
         return "Nei and Li 1979;M Nei and W H Li. Mathematical model for studying genetic variation in terms of restriction endonucleases, PNAS 79(1):5269-5273, 1979.";
+    }
+
+    public List<String> listOptions() {
+        return Arrays.asList("RestrictionSiteLength");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        if (optionName.equals("RestrictionSiteLength"))
+            return "Expected length of restriction site (4-8 bp)";
+        else
+            return null;
     }
 
     @Override
@@ -59,7 +77,7 @@ public class Nei_Li_RestrictionDistance extends Algorithm<CharactersBlock, Dista
                         numUndefined++;
                     } else {
                         double s_hat = 2.0 * nst / (ns + nt);
-                        double a = (4.0 * Math.pow(s_hat, 1.0 / (2 * optionRestrictionSiteLength)) - 1.0) / 3.0;
+                        double a = (4.0 * Math.pow(s_hat, 1.0 / (2 * getOptionRestrictionSiteLength())) - 1.0) / 3.0;
                         if (a <= 0.0) {
                             dist = -1;
                             numUndefined++;
@@ -95,10 +113,12 @@ public class Nei_Li_RestrictionDistance extends Algorithm<CharactersBlock, Dista
 
 
     public double getOptionRestrictionSiteLength() {
+        return this.optionRestrictionSiteLength.getValue();
+    }
+    public DoubleProperty optionRestrictionSiteLengthProperty() {
         return this.optionRestrictionSiteLength;
     }
-
     public void setOptionRestrictionSiteLength(double restrictionSiteLength) {
-        this.optionRestrictionSiteLength = restrictionSiteLength;
+        this.optionRestrictionSiteLength.setValue(restrictionSiteLength);
     }
 }

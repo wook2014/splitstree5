@@ -1,6 +1,10 @@
 package splitstree5.core.algorithms.characters2distances;
 
 import Jama.Matrix;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import jloda.fx.Alert;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
@@ -10,6 +14,9 @@ import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Calculation of the LogDet transform.
@@ -68,13 +75,31 @@ import splitstree5.core.datablocks.TaxaBlock;
 
 public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
     public final static String DESCRIPTION = "Calculates the logdet- distance";
-    private boolean fudgeFactor = false;
-    private boolean fillZeros = false;
-    private double pInvar;
+
+    private final BooleanProperty optionFudgeFactor = new SimpleBooleanProperty(false);
+    private final BooleanProperty optionFillZeros = new SimpleBooleanProperty(false);
+    private final DoubleProperty optionPropInvariableSites = new SimpleDoubleProperty(0.0);;
 
     @Override
     public String getCitation() {
         return "Steel 1994; M.A. Steel. Recovering a tree from the leaf colorations it generates under a Markov model. Appl. Math. Lett., 7(2):19–24, 1994.";
+    }
+
+    public List<String> listOptions() {
+        return Arrays.asList("PropInvariableSites", "FudgeFactor", "FillZeros");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        switch (optionName) {
+            case "PropInvariableSites":
+                return "Proportion of invariable sites";
+            case "FudgeFactor":
+                return "Input missing matrix entries using LDDist method";
+            case "FillZeros":
+                return "Replace zeros with small numbers in rows/columns with values";
+        }
+        return null;
     }
 
     @Override
@@ -97,7 +122,7 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
                 if (F == null) {
                     numUndefined++;
                 } else {
-                    if (this.fudgeFactor) {
+                    if (this.optionFudgeFactor.getValue()) {
                         /* LDDist 1.2 implements some questionable tricks to avoid singluar matrices. To enable
                    comparisons, I've implemented these here. */
                         double[][] extF = seqPair.getfCount();
@@ -134,7 +159,7 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
                         for (int i = 0; i < r; i++) {
                             if (rowsum[i] == 0) continue;
                             for (int j = 0; j < r; j++) {
-                                if (this.fillZeros && colsum[j] != 0 && F[i][j] < 0.5) F[i][j] = 0.5;
+                                if (this.optionFillZeros.getValue() && colsum[j] != 0 && F[i][j] < 0.5) F[i][j] = 0.5;
                                 Fsum += F[i][j];
                             }
                         }
@@ -172,7 +197,7 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
                     /* Compute Log Det */
 
                     /* Incorporate proportion of invariable sites */
-                    double pinv = getOptionPInvar();
+                    double pinv = getOptionPropInvariableSites();
                     if (pinv > 0.0)
                         for (int i = 0; i < r; i++)
                             F[i][i] -= pinv * Pi[i];
@@ -204,7 +229,6 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
                 distancesBlock.set(t, s, dist);
 
             }
-            //doc.notifySetProgress(t * 100 / taxa.getNtax());
             progress.incrementProgress();
         }
 
@@ -218,14 +242,8 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
 
     public boolean isApplicable(TaxaBlock taxa, CharactersBlock characters) {
 
-        /*if (taxa == null || c == null)
-            return false;
-
-        /* We can apply as long as there is more than one symbol
-        return (c.getFormat().getSymbols().length() > 1);*/
-
-        //todo
-        return true;
+        /* We can apply as long as there is more than one symbol */
+        return characters.getSymbols().length() > 1;
     }
 
     /**
@@ -243,8 +261,11 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
      *
      * @return boolean
      */
-    public boolean getOptionImputeGaps() {
-        return fudgeFactor;
+    public boolean getOptionFudgeFactor() {
+        return optionFudgeFactor.getValue();
+    }
+    public BooleanProperty optionFudgeFactorProperty() {
+        return optionFudgeFactor;
     }
 
     /**
@@ -252,8 +273,8 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
      *
      * @param val
      */
-    public void setOptionImputeGaps(boolean val) {
-        fudgeFactor = val;
+    public void setOptionFudgeFactor(boolean val) {
+        this.optionFudgeFactor.setValue(val);
     }
 
     /**
@@ -261,8 +282,11 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
      *
      * @return double: proportion being used.
      */
-    public double getOptionPInvar() {
-        return pInvar;
+    public double getOptionPropInvariableSites() {
+        return this.optionPropInvariableSites.getValue();
+    }
+    public DoubleProperty optionPropInvariableSitesProperty() {
+        return this.optionPropInvariableSites;
     }
 
     /**
@@ -270,7 +294,18 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
      *
      * @param pInvar
      */
-    public void setOptionPInvar(double pInvar) {
-        this.pInvar = pInvar;
+    public void setOptionPropInvariableSites(double pInvar) {
+        this.optionPropInvariableSites.setValue(pInvar);
+    }
+
+
+    public boolean getOptionFillZeros() {
+        return optionFillZeros.getValue();
+    }
+    public BooleanProperty optionFillZerosProperty() {
+        return optionFillZeros;
+    }
+    public void setOptionFillZeros(boolean fillZeros) {
+        this.optionFillZeros.setValue(fillZeros);
     }
 }
