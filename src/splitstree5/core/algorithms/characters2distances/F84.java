@@ -24,8 +24,6 @@ import java.util.List;
 
 public class F84 extends DNAdistance implements IFromChararacters, IToDistances {
 
-    //default is no difference between transitions and transversions
-    private final DoubleProperty optionTsTvRatio = new SimpleDoubleProperty(2.0);
     private double A, B, C;
 
     public final static String DESCRIPTION = "Calculates distances using the Felsenstein84 model";
@@ -38,10 +36,6 @@ public class F84 extends DNAdistance implements IFromChararacters, IToDistances 
                 "Sinauer Associates, Inc., 2nd edition, 1996.";
     }
 
-    public List<String> listOptions() {
-        return Arrays.asList("PInvar", "Gamma", "UseML", "SetParameters", "TsTvRatio");
-    }
-
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
@@ -49,7 +43,7 @@ public class F84 extends DNAdistance implements IFromChararacters, IToDistances 
         progress.setTasks("F84 Distance", "Init.");
         progress.setMaximum(taxaBlock.getNtax());
 
-        F84Model model = new F84Model(this.getNormedBaseFreq(), optionTsTvRatio.getValue());
+        F84Model model = new F84Model(this.getNormedBaseFreq(), getOptionTsTvRatio());
         model.setPropInvariableSites(getOptionPropInvariableSites());
         model.setGamma(getOptionGamma());
 
@@ -81,23 +75,5 @@ public class F84 extends DNAdistance implements IFromChararacters, IToDistances 
 
     public String getDescription() {
         return DESCRIPTION;
-    }
-
-    /*public void setOptionTRatio(double value) {
-        this.tratio = value;
-    }
-
-    public double getOptionTRatio() {
-        return this.tratio;
-    }*/
-
-    public double getOptionTsTvRatio() {
-        return optionTsTvRatio.getValue();
-    }
-    public DoubleProperty optionTsTvRatioProperty() {
-        return optionTsTvRatio;
-    }
-    public void setOptionTsTvRatio(double optionTsTvRatio) {
-        this.optionTsTvRatio.setValue(optionTsTvRatio);
     }
 }

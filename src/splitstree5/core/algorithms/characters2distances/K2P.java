@@ -24,8 +24,6 @@ import java.util.List;
 
 public class K2P extends DNAdistance implements IFromChararacters, IToDistances {
 
-    //default is no difference between transitions and transversions
-    private final DoubleProperty optionTsTvRatio = new SimpleDoubleProperty(2.0);
     public final static String DESCRIPTION = "Calculates distances using the Kimura2P model";
 
     @Override
@@ -36,17 +34,13 @@ public class K2P extends DNAdistance implements IFromChararacters, IToDistances 
                 "Sinauer Associates, Inc., 2nd edition, 1996.";
     }
 
-    public List<String> listOptions() {
-        return Arrays.asList("PInvar", "Gamma", "UseML", "SetParameters", "TsTvRatio");
-    }
-
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock) throws Exception {
 
         progress.setTasks("K2P Distance", "Init.");
         progress.setMaximum(taxaBlock.getNtax());
 
-        K2Pmodel model = new K2Pmodel(this.optionTsTvRatio.getValue());
+        K2Pmodel model = new K2Pmodel(getOptionTsTvRatio());
         model.setPropInvariableSites(getOptionPropInvariableSites());
         model.setGamma(getOptionGamma());
 
@@ -67,13 +61,4 @@ public class K2P extends DNAdistance implements IFromChararacters, IToDistances 
         return DESCRIPTION;
     }
 
-    public double getOptionTsTvRatio() {
-        return optionTsTvRatio.getValue();
-    }
-    public DoubleProperty optionTsTvRatioProperty() {
-        return optionTsTvRatio;
-    }
-    public void setOptionTsTvRatio(double optionTsTvRatio) {
-        this.optionTsTvRatio.setValue(optionTsTvRatio);
-    }
 }

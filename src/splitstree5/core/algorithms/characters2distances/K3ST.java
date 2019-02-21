@@ -10,6 +10,7 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.models.K3STmodel;
+import splitstree5.gui.utils.CharactersUtilities;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,9 +27,10 @@ public class K3ST extends DNAdistance implements IFromChararacters, IToDistances
 
     //private double[][] QMatrix; //Q Matrix provided by user for ML estimation. //todo not used?
 
-    //default is no difference between transitions and transversions
-    private final DoubleProperty optionTsTvRatio = new SimpleDoubleProperty(2.0);
-    private double ACvsAT = 2.0;
+    // ACGT transversions vs ATGC transversions
+    private final double DEFAULT_AC_VS_AT = 2.0;
+    private final DoubleProperty optionACvsAT = new SimpleDoubleProperty(DEFAULT_AC_VS_AT);
+
     public final static String DESCRIPTION = "Calculates distances using the Kimura3ST model";
 
     @Override
@@ -40,7 +42,7 @@ public class K3ST extends DNAdistance implements IFromChararacters, IToDistances
     }
 
     public List<String> listOptions() {
-        return Arrays.asList("PInvar", "Gamma", "UseML", "SetParameters", "TsTvRatio");
+        return Arrays.asList("PropInvariableSites", "Gamma", "UseML", "SetParameters", "TsTvRatio", "ACvsAT");
     }
 
     @Override
@@ -50,7 +52,7 @@ public class K3ST extends DNAdistance implements IFromChararacters, IToDistances
         progress.setTasks("K3ST Distance", "Init.");
         progress.setMaximum(taxaBlock.getNtax());
 
-        K3STmodel model = new K3STmodel(optionTsTvRatio.getValue(), this.ACvsAT);
+        K3STmodel model = new K3STmodel(getOptionTsTvRatio(), this.optionACvsAT.getValue());
         model.setPropInvariableSites(getOptionPropInvariableSites());
         model.setGamma(getOptionGamma());
 
@@ -67,37 +69,33 @@ public class K3ST extends DNAdistance implements IFromChararacters, IToDistances
         return -1 / 4.0 * (Math.log(a + c - b - d) + Math.log(a + b - c - d) + Math.log(a + d - b - c));
     }
 
+    @Override
+    public void updateSettings(CharactersBlock characters, SetParameters value) {
+        if (value.equals(SetParameters.fromChars)) {
+            setOptionPropInvariableSites(characters.hasPropInvariableSites() ? characters.getPropInvariableSites() : DEFAULT_PROP_INVARIABLE_SITES);
+            setOptionGamma(characters.hasGamma() ? characters.getGammaParam() : DEFAULT_GAMMA);
+            setBaseFreq(CharactersUtilities.computeFreqs(characters, false));
+        } else if (value.equals(SetParameters.defaultParameters)) {
+            setOptionPropInvariableSites(DEFAULT_PROP_INVARIABLE_SITES);
+            setOptionGamma(DEFAULT_GAMMA);
+            setOptionTsTvRatio(DEFAULT_TSTV_RATIO);
+            setOptionAC_vs_ATRatio(DEFAULT_AC_VS_AT);
+        }
+    }
+
     // GETTER AND SETTER
 
     public String getDescription() {
         return DESCRIPTION;
     }
 
-    /**
-     * set ACvsAT (ACGT transversions vs ATGC transversions)
-     *
-     * @param value
-     */
     public void setOptionAC_vs_ATRatio(double value) {
-        this.ACvsAT = value;
+        this.optionACvsAT.setValue(value);
     }
-
-    /**
-     * get ACvsAT parameter
-     *
-     * @return ACvsAT (ACGT transversions vs ATGC transversions)
-     */
     public double getOptionAC_vs_ATRatio() {
-        return this.ACvsAT;
+        return this.optionACvsAT.getValue();
     }
-
-    public double getOptionTsTvRatio() {
-        return optionTsTvRatio.getValue();
-    }
-    public DoubleProperty optionTsTvRatioProperty() {
-        return optionTsTvRatio;
-    }
-    public void setOptionTsTvRatio(double optionTsTvRatio) {
-        this.optionTsTvRatio.setValue(optionTsTvRatio);
+    public DoubleProperty optionACvsATProperty() {
+        return this.optionACvsAT;
     }
 }

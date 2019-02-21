@@ -1,5 +1,7 @@
 package splitstree5.core.algorithms.characters2distances;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
@@ -9,7 +11,9 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.CharactersType;
 
+import java.util.Arrays;
 import java.util.BitSet;
+import java.util.List;
 
 /**
  * Gene content distance
@@ -19,12 +23,24 @@ import java.util.BitSet;
 public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
 
     public final static String DESCRIPTION = "Compute distances based on shared genes (Snel Bork et al 1999, Huson and Steel 2003)";
-    private boolean optionUseMLDistance = false;
+    private BooleanProperty optionUseMLDistance = new SimpleBooleanProperty(false);
 
     @Override
     public String getCitation() {
         return "Huson and Steel 2004; " +
                 "D.H. Huson  and  M. Steel. Phylogenetic  trees  based  on  gene  content. Bioinformatics, 20(13):2044–9, 2004.";
+    }
+
+    public List<String> listOptions() {
+        return Arrays.asList("UseMLDistance");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        if (optionName.equals("UseMLDistance"))
+            return "Use maximum likelihood distances estimation";
+        else
+            return null;
     }
 
     @Override
@@ -33,9 +49,11 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
 
         System.err.println("Not tested under construction");
         /*@todo: test this class
+
+        todo: don't work for useMLDistance! also in ST4
          */
         BitSet genes[] = computeGenes(charactersBlock);
-        if (!optionUseMLDistance)
+        if (!optionUseMLDistance.getValue())
             computeSnelBorkDistance(distancesBlock, taxaBlock.getNtax(), genes);
         else
             computeMLDistance(distancesBlock, taxaBlock.getNtax(), genes);
@@ -132,11 +150,13 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
     //GETTER AND SETTER
 
     public boolean getOptionUseMLDistance() {
+        return optionUseMLDistance.getValue();
+    }
+    public BooleanProperty optionUseMLDistanceProperty() {
         return optionUseMLDistance;
     }
-
     public void setOptionUseMLDistance(boolean useMLDistance) {
-        this.optionUseMLDistance = useMLDistance;
+        this.optionUseMLDistance.set(useMLDistance);
     }
 
     public String getDescription() {

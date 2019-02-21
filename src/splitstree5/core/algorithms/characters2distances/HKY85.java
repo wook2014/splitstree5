@@ -24,8 +24,6 @@ import java.util.List;
 
 public class HKY85 extends DNAdistance implements IFromChararacters, IToDistances {
 
-    //default is no difference between transitions and transversions
-    private final DoubleProperty optionTsTvRatio = new SimpleDoubleProperty(2.0);
     public final static String DESCRIPTION = "Calculates distances using the Hasegawa, Kishino and Yano model";
 
     @Override
@@ -40,17 +38,13 @@ public class HKY85 extends DNAdistance implements IFromChararacters, IToDistance
         setOptionUseML(true);
     }
 
-    public List<String> listOptions() {
-        return Arrays.asList("PInvar", "Gamma", "UseML", "SetParameters", "TsTvRatio");
-    }
-
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {
 
         progress.setTasks("HKY85 Distance", "Init.");
 
-        HKY85model model = new HKY85model(getNormedBaseFreq(), this.optionTsTvRatio.getValue());
+        HKY85model model = new HKY85model(getNormedBaseFreq(), getOptionTsTvRatio());
         model.setPropInvariableSites(getOptionPropInvariableSites());
         model.setGamma(getOptionGamma());
 
@@ -70,15 +64,5 @@ public class HKY85 extends DNAdistance implements IFromChararacters, IToDistance
      */
     public String getDescription() {
         return DESCRIPTION;
-    }
-
-    public double getOptionTsTvRatio() {
-        return optionTsTvRatio.getValue();
-    }
-    public DoubleProperty optionTsTvRatioProperty() {
-        return optionTsTvRatio;
-    }
-    public void setOptionTsTvRatio(double optionTsTvRatio) {
-        this.optionTsTvRatio.setValue(optionTsTvRatio);
     }
 }

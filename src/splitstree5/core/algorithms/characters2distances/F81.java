@@ -9,6 +9,9 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.models.F81model;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Implements the Felsenstein81 DNA distance model
  * <p>
@@ -28,6 +31,11 @@ public class F81 extends DNAdistance implements IFromChararacters, IToDistances 
                 "D.L. Swofford, G.J. Olsen, P.J. Waddell, and  D.M. Hillis. Chapter 11: Phylogenetic inference. " +
                 "In D. M. Hillis, C. Moritz, and B. K. Mable, editors, Molecular Systematics, pages 407–514. " +
                 "Sinauer Associates, Inc., 2nd edition, 1996.";
+    }
+
+    @Override
+    public List<String> listOptions() {
+        return Arrays.asList("PropInvariableSites", "Gamma", "UseML", "SetParameters");
     }
 
     @Override

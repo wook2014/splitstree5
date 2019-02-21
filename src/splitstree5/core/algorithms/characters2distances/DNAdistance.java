@@ -23,9 +23,10 @@ public abstract class DNAdistance extends SequenceBasedDistance {
 
     ;
 
-    public final double DEFAULT_PROP_INVARIABLE_SITES = 0.0;
-    public final double DEFAULT_GAMMA = -1;        //Negative gamma corresponds to equal rates
-    public final double DEFAULT_BASE_FREQ = 0.25;  //Use the exact distance by default - transforms without exact distances should set useML = false
+    final double DEFAULT_PROP_INVARIABLE_SITES = 0.0;
+    final double DEFAULT_GAMMA = -1;        //Negative gamma corresponds to equal rates
+    final double DEFAULT_BASE_FREQ = 0.25;  //Use the exact distance by default - transforms without exact distances should set useML = false
+    final double DEFAULT_TSTV_RATIO = 2.0;  //default is no difference between transitions and transversions
 
     /* These are the parameters used for distance calculation */
 
@@ -34,6 +35,7 @@ public abstract class DNAdistance extends SequenceBasedDistance {
     private final DoubleProperty optionPropInvariableSites = new SimpleDoubleProperty(DEFAULT_PROP_INVARIABLE_SITES);
     private final DoubleProperty optionGamma = new SimpleDoubleProperty(DEFAULT_GAMMA);
     private final BooleanProperty optionUseML = new SimpleBooleanProperty(false);
+    private final DoubleProperty optionTsTvRatio = new SimpleDoubleProperty(DEFAULT_TSTV_RATIO);
 
     // Used in the panel to decide how to compute the above
     private final Property<SetParameters> optionSetParameters = new SimpleObjectProperty<>(SetParameters.defaultParameters);
@@ -47,20 +49,27 @@ public abstract class DNAdistance extends SequenceBasedDistance {
 
         //todo: connector = null, need access to charatersBlock for updateSetting function!
 
+        if(connectorProperty().getValue() == null)
+            System.err.println("Connector null");
+        else
+            System.err.println("Connector != null");
+
         connectorProperty().addListener((c, o, n) -> {
-            if (n != null)
+            if (n != null) {
+                System.err.println("Connector Listener");
                 optionSetParameters.addListener((observable, oldValue, newValue) -> updateSettings(n.getParentDataBlock(), newValue));
+            }
         });
     }
 
     public List<String> listOptions() {
-        return Arrays.asList("PInvar", "Gamma", "UseML", "SetParameters");
+        return Arrays.asList("PropInvariableSites", "Gamma", "UseML", "SetParameters", "TsTvRatio");
     }
 
     @Override
     public String getToolTip(String optionName) {
         switch (optionName) {
-            case "PInvar":
+            case "PropInvariableSites":
                 return "Proportion of invariable sites";
             case "Gamma":
                 return "Alpha parameter for gamma distribution. Negative gamma = Equal rates";
@@ -70,6 +79,8 @@ public abstract class DNAdistance extends SequenceBasedDistance {
                 return "Choose between default or in character block defined parameters ";
             case "TsTvRatio":
                 return "Ratio between transitions and transversions";
+            case "ACvsAT":
+                return "Ratio between ACGT transversions and ATGC transversions";
         }
         return null;
     }
@@ -91,6 +102,7 @@ public abstract class DNAdistance extends SequenceBasedDistance {
         } else if (value.equals(SetParameters.defaultParameters)) {
             setOptionPropInvariableSites(DEFAULT_PROP_INVARIABLE_SITES);
             setOptionGamma(DEFAULT_GAMMA);
+            setOptionTsTvRatio(DEFAULT_TSTV_RATIO);
         }
     }
 
@@ -224,9 +236,18 @@ public abstract class DNAdistance extends SequenceBasedDistance {
     public BooleanProperty optionUseMLProperty() {
         return optionUseML;
     }
-
     public void setOptionUseML(boolean useML) {
         this.optionUseML.setValue(useML);
+    }
+
+    public double getOptionTsTvRatio() {
+        return optionTsTvRatio.getValue();
+    }
+    public DoubleProperty optionTsTvRatioProperty() {
+        return optionTsTvRatio;
+    }
+    public void setOptionTsTvRatio(double optionTsTvRatio) {
+        this.optionTsTvRatio.setValue(optionTsTvRatio);
     }
 
     public double[] getBaseFreq() {

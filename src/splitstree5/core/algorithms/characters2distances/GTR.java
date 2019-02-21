@@ -11,6 +11,9 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.models.GTRmodel;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Computes the distance matrix from a set of characters using the General Time Revisible model.
  * <p>
@@ -36,6 +39,11 @@ public class GTR extends DNAdistance implements IFromChararacters, IToDistances 
 
         distancesBlock.copy(fillDistanceMatrix(progress, charactersBlock, model));
     }
+
+    @Override
+    public List<String> listOptions() {
+        return Arrays.asList("PropInvariableSites", "Gamma", "UseML", "SetParameters");
+    }//todo add Qmatrix later
 
     @Override
     protected double exactDist(double[][] F) throws SaturatedDistancesException {

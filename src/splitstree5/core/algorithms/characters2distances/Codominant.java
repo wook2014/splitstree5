@@ -46,7 +46,7 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
     @Override
     public String getToolTip(String optionName) {
         if (optionName.equals("UseSquareRoot"))
-            return "rrrrr";
+            return "Use the final distance as square root of the loci contribution. Otherwise: loci averages";
         else
             return null;
     }
