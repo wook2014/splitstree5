@@ -35,10 +35,8 @@ public class K3ST extends DNAdistance implements IFromChararacters, IToDistances
 
     @Override
     public String getCitation() {
-        return "Swofford et al 1996; " +
-                "D.L. Swofford, G.J. Olsen, P.J. Waddell, and  D.M. Hillis. Chapter  11:  Phylogenetic inference. " +
-                "In D. M. Hillis, C. Moritz, and B. K. Mable, editors, Molecular Systematics, pages 407–514. " +
-                "Sinauer Associates, Inc., 2nd edition, 1996.";
+        return "Kimura 1981; M. Kimura, Estimation of evolutionary sequences between homologous nucleotide sequences, " +
+                "Proc. Natl. Acad. Sci. USA 78 (1981) 454–45";
     }
 
     public List<String> listOptions() {
@@ -46,9 +44,7 @@ public class K3ST extends DNAdistance implements IFromChararacters, IToDistances
     }
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
-            throws Exception {
-
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock) throws Exception {
         progress.setTasks("K3ST Distance", "Init.");
         progress.setMaximum(taxaBlock.getNtax());
 

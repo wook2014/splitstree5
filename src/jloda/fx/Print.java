@@ -97,7 +97,7 @@ public class Print {
                     job.endJob();
             }
         } else
-            new Alert("Failed to create Printer Job");
+            NotificationManager.showError("Failed to create Printer Job");
     }
 
     /**

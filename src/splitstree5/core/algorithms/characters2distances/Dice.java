@@ -12,7 +12,7 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.CharactersType;
 
 /**
- * Simple implementation of hamming distances
+ * Calculates distances using the Dice coefficient distance
  * <p>
  * Created on Nov 2007
  *
@@ -20,13 +20,11 @@ import splitstree5.core.datablocks.characters.CharactersType;
  */
 
 public class Dice extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-    public final static String DESCRIPTION = "Calculates distances using the Dice coefficient distance.";
+    public final static String DESCRIPTION = "Calculates distances using the Dice coefficient distance";
 
     @Override
     public String getCitation() { // is this the correct citation?
-        return "Hamming 1950; " +
-                "Hamming, Richard W. \"Error detecting and error correcting codes\". " +
-                "Bell System Technical Journal. 29 (2): 147–160. MR 0035935, 1950.";
+        return "Dice 1945; Dice, Lee R. (1945). Measures of the Amount of Ecologic Association Between Species. Ecology. 26 (3): 297–302.";
     }
 
     @Override

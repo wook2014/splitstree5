@@ -1,7 +1,7 @@
 package splitstree5.core.algorithms.characters2distances;
 
 import javafx.beans.property.*;
-import jloda.fx.Alert;
+import jloda.fx.NotificationManager;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
@@ -119,7 +119,7 @@ public class ProteinMLdist extends SequenceBasedDistance implements IFromCharara
 
         progress.close();
         if (hasSaturated) {
-            new Alert("Warning: saturated or missing entries in the distance matrix - proceed with caution ");
+            NotificationManager.showWarning("Proceed with caution: saturated or missing entries in the distance matrix");
         }
     }
 

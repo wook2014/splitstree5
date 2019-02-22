@@ -1,7 +1,5 @@
 package splitstree5.core.algorithms.characters2distances;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
@@ -10,11 +8,8 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
- * Simple implementation of hamming distances
+ * Calculates distances from differences in the base composition
  * <p>
  * Created on Sep 2008
  *
@@ -22,46 +17,21 @@ import java.util.List;
  */
 
 public class BaseFreqDistance extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-
-    // todo does not do anything? also in sp4
-    private final BooleanProperty optionIgnoreGaps = new SimpleBooleanProperty(true);
-
     public final static String DESCRIPTION = "Calculates distances from differences in the base composition";
-    private String TASK = "Base Frequency Distance";
 
     @Override
-    public String getCitation() { // todo: is this the correct citation?
-        return "Hamming 1950; " +
-                "Hamming, Richard W. \"Error detecting and error correcting codes\". " +
-                "Bell System Technical Journal. 29 (2): 147–160. MR 0035935, 1950.";
-    }
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock) throws Exception {
 
-    public List<String> listOptions() {
-        return Arrays.asList("IgnoreGaps");
-    }
+        final String symbols = charactersBlock.getSymbols();
+        final int nstates = symbols.length();
 
-    @Override
-    public String getToolTip(String optionName) {
-        if (optionName.equals("IgnoreGaps"))
-            return "Ignore gaps in the alignment";
-        else
-            return null;
-    }
-
-    @Override
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
-            throws Exception {
-
-        String symbols = charactersBlock.getSymbols();
-        int nstates = symbols.length();
-
-        int ntax = taxaBlock.getNtax();
+        final int ntax = taxaBlock.getNtax();
         distancesBlock.setNtax(ntax);
 
-        progress.setTasks(TASK, "Init.");
+        progress.setTasks("Base Frequency Distance", "Init.");
         progress.setMaximum(ntax);
 
-        double[][] baseFreqs = new double[ntax + 1][nstates];
+        final double[][] baseFreqs = new double[ntax + 1][nstates];
         System.err.println("Base Frequencies");
 
         for (int s = 1; s <= ntax; s++) {
@@ -100,30 +70,6 @@ public class BaseFreqDistance extends Algorithm<CharactersBlock, DistancesBlock>
         progress.close();
     }
 
-    // GETTER AND SETTER
-
-    /**
-     * ignore gaps?
-     *
-     * @return true if gaps are ignored
-     */
-    public boolean getOptionIgnoreGaps() {
-        return optionIgnoreGaps.get();
-    }
-
-    public BooleanProperty optionIgnoreGapsProperty() {
-        return optionIgnoreGaps;
-    }
-
-    /**
-     * set option ignore gaps
-     *
-     * @param ignore
-     */
-    public void setOptionIgnoreGaps(boolean ignore) {
-        optionIgnoreGaps.setValue(ignore);
-    }
-
     /**
      * Gets a short description of the algorithm
      *
@@ -131,9 +77,5 @@ public class BaseFreqDistance extends Algorithm<CharactersBlock, DistancesBlock>
      */
     public String getDescription() {
         return DESCRIPTION;
-    }
-
-    protected String getTask() {
-        return TASK;
     }
 }

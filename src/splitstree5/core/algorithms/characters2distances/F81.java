@@ -27,10 +27,7 @@ public class F81 extends DNAdistance implements IFromChararacters, IToDistances 
 
     @Override
     public String getCitation() {
-        return "Swofford et al 1996; " +
-                "D.L. Swofford, G.J. Olsen, P.J. Waddell, and  D.M. Hillis. Chapter 11: Phylogenetic inference. " +
-                "In D. M. Hillis, C. Moritz, and B. K. Mable, editors, Molecular Systematics, pages 407–514. " +
-                "Sinauer Associates, Inc., 2nd edition, 1996.";
+        return "Felsenstein 1981; Felsenstein J (1981). Evolutionary trees from DNA sequences: a maximum likelihood approach. Journal of Molecular Evolution. 17 (6): 368–376.";
     }
 
     @Override

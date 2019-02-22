@@ -21,7 +21,7 @@ package splitstree5.core.algorithms.characters2distances;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import jloda.fx.Alert;
+import jloda.fx.NotificationManager;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;
@@ -47,16 +47,17 @@ public class HammingDistances extends Algorithm<CharactersBlock, DistancesBlock>
     }
 
     @Override
+    public String getCitation() {
+        return "Hamming 1950; Hamming, Richard W. Error detecting and error correcting codes. Bell System Technical Journal. 29 (2): 147–160. MR 0035935, 1950.";
+    }
+
+
+    @Override
     public String getToolTip(String optionName) {
         if (optionName.equals("Normalize"))
             return "Normalize distances";
         else
             return null;
-    }
-
-    @Override
-    public String getCitation() {
-        return "Hamming 1950; Hamming, Richard W. Error detecting and error correcting codes. Bell System Technical Journal. 29 (2): 147–160. MR 0035935, 1950.";
     }
 
     @Override
@@ -90,8 +91,7 @@ public class HammingDistances extends Algorithm<CharactersBlock, DistancesBlock>
             progress.incrementProgress();
         }
         if (numMissing > 0)
-            new Alert("Warning: " + numMissing + " saturated or missing entries in the distance matrix - proceed with caution ");
-
+            NotificationManager.showWarning("Proceed with caution: " + numMissing + " saturated or missing entries in the distance matrix");
     }
 
     public boolean isOptionNormalize() {

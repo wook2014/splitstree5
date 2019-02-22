@@ -27,6 +27,12 @@ public class GTR extends DNAdistance implements IFromChararacters, IToDistances 
     private double[][] QMatrix; //Q Matrix provided by user for ML estimation. //todo option!
     public final static String DESCRIPTION = "Calculates distances using a General Time Reversible model";
 
+
+    @Override
+    public String getCitation() {
+        return "Tavaré 1986; Tavaré S (1986). Some Probabilistic and Statistical Problems in the Analysis of DNA Sequences. Lectures on Mathematics in the Life Sciences. 17: 57–86";
+    }
+
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
             throws Exception {

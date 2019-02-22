@@ -19,7 +19,7 @@
 
 package splitstree5.io.nexus;
 
-import jloda.fx.Alert;
+import jloda.fx.NotificationManager;
 import jloda.util.Basic;
 import jloda.util.IOExceptionWithLineNumber;
 import jloda.util.parse.NexusStreamParser;
@@ -265,7 +265,7 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
 
         if (unknownStates.size() > 0)  // warn that stuff has been replaced!
         {
-            new Alert("Unknown states encountered in matrix:\n" + Basic.toString(unknownStates, " ") + "\n"
+            NotificationManager.showWarning("Unknown states encountered in matrix:\n" + Basic.toString(unknownStates, " ") + "\n"
                     + "All replaced by the gap-char '" + charactersBlock.getGapCharacter() + "'");
         }
 

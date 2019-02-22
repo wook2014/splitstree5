@@ -12,16 +12,19 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.CharactersType;
 
 /**
- * Simple implementation of hamming distances
+ * Calculates distances using the Jaccard coefficient distance
  * <p>
  * Created on 2009-01-25
  *
  * @author bryant
  */
 public class Jaccard extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-    public final static String DESCRIPTION = "Calculates distances using the Jaccard coefficient distance.";
-    protected String TASK = "Jaccard Coefficient Distance";
+    public final static String DESCRIPTION = "Calculates distances using the Jaccard coefficient distance";
 
+    @Override
+    public String getCitation() {
+        return "Jaccard 1901; Jaccard, Paul (1901). Étude comparative de la distribution florale dans une portion des Alpes et des Jura, Bulletin de la Société Vaudoise des Sciences Naturelles, 37: 547–579.";
+    }
 
     @Override
     public boolean isApplicable(TaxaBlock taxa, CharactersBlock c) {
@@ -29,13 +32,9 @@ public class Jaccard extends Algorithm<CharactersBlock, DistancesBlock> implemen
     }
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
-            throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock) throws Exception {
 
-        char gapchar = charactersBlock.getGapCharacter();
-        char missingchar = charactersBlock.getMissingCharacter();
-
-        int ntax = taxaBlock.getNtax();
+        final int ntax = taxaBlock.getNtax();
         distancesBlock.setNtax(ntax);
 
         progress.setTasks("Jaccard distance", "Init.");
@@ -47,7 +46,7 @@ public class Jaccard extends Algorithm<CharactersBlock, DistancesBlock> implemen
         for (int s = 1; s <= ntax; s++) {
             for (int t = s + 1; t <= ntax; t++) {
                 //System.err.println(s+","+t);
-                PairwiseCompare seqPair = new PairwiseCompare(charactersBlock, s, t);
+                final PairwiseCompare seqPair = new PairwiseCompare(charactersBlock, s, t);
                 double[][] F = seqPair.getF();
 
                 double dist = -1.0;
@@ -83,9 +82,5 @@ public class Jaccard extends Algorithm<CharactersBlock, DistancesBlock> implemen
 
     final public String getDescription() {
         return DESCRIPTION;
-    }
-
-    public String getTASK() {
-        return TASK;
     }
 }

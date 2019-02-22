@@ -4,7 +4,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import jloda.fx.Alert;
+import jloda.fx.NotificationManager;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;
@@ -88,7 +88,7 @@ public class HammingDistancesAmbiguousStates extends Algorithm<CharactersBlock, 
                 progress.incrementProgress();
             }
             if (numMissing > 0)
-                new Alert("Warning: " + numMissing + " saturated or missing entries in the distance matrix - proceed with caution ");
+                NotificationManager.showWarning("Proceed with caution: " + numMissing + " saturated or missing entries in the distance matrix");
         }
     }
 

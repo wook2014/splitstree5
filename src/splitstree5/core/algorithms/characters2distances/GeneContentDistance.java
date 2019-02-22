@@ -11,8 +11,8 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.CharactersType;
 
-import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,7 +32,7 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
     }
 
     public List<String> listOptions() {
-        return Arrays.asList("UseMLDistance");
+        return Collections.singletonList("UseMLDistance");
     }
 
     @Override
@@ -44,15 +44,14 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
     }
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
-            throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock) throws Exception {
 
         System.err.println("Not tested under construction");
         /*@todo: test this class
 
         todo: don't work for useMLDistance! also in ST4
          */
-        BitSet genes[] = computeGenes(charactersBlock);
+        final BitSet[] genes = computeGenes(charactersBlock);
         if (!optionUseMLDistance.getValue())
             computeSnelBorkDistance(distancesBlock, taxaBlock.getNtax(), genes);
         else
@@ -60,7 +59,7 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
     }
 
     /**
-     * comnputes the SnelBork et al distance
+     * computes the SnelBork et al distance
      *
      * @param ntax
      * @param genes
@@ -81,7 +80,7 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
     }
 
     /**
-     * comnputes the maximum likelihood estimator distance Huson and Steel 2003
+     * computes the maximum likelihood estimator distance Huson and Steel 2003
      *
      * @param ntax
      * @param genes
@@ -96,8 +95,8 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
         }
         m /= ntax;
 
-        double ai[] = new double[ntax + 1];
-        double aij[][] = new double[ntax + 1][ntax + 1];
+        final double[] ai = new double[ntax + 1];
+        final double[][] aij = new double[ntax + 1][ntax + 1];
         for (int i = 1; i <= ntax; i++) {
             ai[i] = ((double) genes[i].cardinality()) / m;
         }
@@ -130,7 +129,7 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
      * @return sets of genes
      */
     static private BitSet[] computeGenes(CharactersBlock characters) {
-        BitSet genes[] = new BitSet[characters.getNtax() + 1];
+        final BitSet[] genes = new BitSet[characters.getNtax() + 1];
 
         for (int s = 1; s <= characters.getNtax(); s++) {
             genes[s] = new BitSet();

@@ -59,8 +59,7 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
         int[] char2class = new int[nchar + 1];        // Maps characters to enzyme classes
         int num_classes = 0;                    // Number of different classes
 
-
-        int maxProgress = 5 * taxaBlock.getNtax() + charactersBlock.getNchar();
+        final int maxProgress = 5 * taxaBlock.getNtax() + charactersBlock.getNchar();
 
         progress.setTasks("NeiMiller distance", "Init.");
         progress.setMaximum(maxProgress);
@@ -91,7 +90,7 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
 
         // Compute mij_k:
 
-        int[][][] mij_k = new int[ntax + 1][ntax + 1][num_classes + 1];
+        final int[][][] mij_k = new int[ntax + 1][ntax + 1][num_classes + 1];
 
         for (i = 1; i <= ntax; i++) {
             for (j = i; j <= ntax; j++) {
@@ -110,7 +109,7 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
 
         // Compute sij_k  (equation 2):
 
-        double[][][] sij_k = new double[ntax + 1][ntax + 1][num_classes + 1];
+        final double[][][] sij_k = new double[ntax + 1][ntax + 1][num_classes + 1];
         for (i = 1; i <= ntax; i++) {
             for (j = i + 1; j <= ntax; j++) {
                 for (k = 1; k <= num_classes; k++) {
@@ -134,7 +133,7 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
 
         // Compute dhij_k (i.e. dij_k_hat in equation (3)):
 
-        double[][][] dhij_k = new double[ntax + 1][ntax + 1][num_classes + 1];
+        final double[][][] dhij_k = new double[ntax + 1][ntax + 1][num_classes + 1];
 
         for (i = 1; i <= ntax; i++) {
             for (j = i + 1; j <= ntax; j++) {
@@ -157,7 +156,7 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
 
         // Compute mk_k (mk_bar=(mii_k+mjj_k)/2):
 
-        double[][][] mk_k = new double[ntax + 1][ntax + 1][num_classes + 1];
+        final double[][][] mk_k = new double[ntax + 1][ntax + 1][num_classes + 1];
 
         for (i = 1; i <= ntax; i++) {
             for (j = i; j <= ntax; j++) {
