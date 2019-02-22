@@ -1,7 +1,5 @@
 package splitstree5.core.algorithms.characters2distances;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
@@ -11,39 +9,26 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.models.F84Model;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * Implements the Felsenstein84 DNA distance model
- * <p>
- * Created on Jun 2004
- * <p>
- * todo : no authors
+ * David Bryant and Daniel Huson, 2004
  */
 
 public class F84 extends DNAdistance implements IFromChararacters, IToDistances {
-
     private double A, B, C;
-
-    public final static String DESCRIPTION = "Calculates distances using the Felsenstein84 model";
 
     @Override
     public String getCitation() {
-        return "Swofford et al 1996; " +
-                "D.L. Swofford, G.J. Olsen, P.J. Waddell, and  D.M. Hillis. Chapter 11: Phylogenetic inference. " +
-                "In D. M. Hillis, C. Moritz, and B. K. Mable, editors, Molecular Systematics, pages 407–514. " +
-                "Sinauer Associates, Inc., 2nd edition, 1996.";
+        return "Felsenstein & Churchill 1996; Felsenstein J, Churchill GA (1996). A Hidden Markov Model approach to variation among sites in rate of evolution, and the branching order in hominoidea. Molecular Biology and Evolution. 13 (1): 93–104.";
     }
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
-            throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock) throws Exception {
 
         progress.setTasks("F84 Distance", "Init.");
         progress.setMaximum(taxaBlock.getNtax());
 
-        F84Model model = new F84Model(this.getNormedBaseFreq(), getOptionTsTvRatio());
+        final F84Model model = new F84Model(this.getNormedBaseFreq(), getOptionTsTvRatio());
         model.setPropInvariableSites(getOptionPropInvariableSites());
         model.setGamma(getOptionGamma());
 
@@ -69,11 +54,5 @@ public class F84 extends DNAdistance implements IFromChararacters, IToDistances 
         double dist = -2.0 * A * Minv(1.0 - P / (2.0 * A) - (A - B) * Q / (2.0 * A * C));
         dist += 2.0 * (A - B - C) * Minv(1.0 - Q / (2.0 * C));
         return dist;
-    }
-
-    // GETTER AND SETTER
-
-    public String getDescription() {
-        return DESCRIPTION;
     }
 }

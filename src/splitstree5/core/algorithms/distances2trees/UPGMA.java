@@ -50,7 +50,6 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> implements IFro
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees) throws CanceledException {
-
         progress.setTasks("UPGMA", "Creating nodes...");
         progress.setMaximum(taxaBlock.getNtax());
 

@@ -21,15 +21,9 @@ import java.util.List;
  */
 
 public class JukesCantor extends DNAdistance implements IFromChararacters, IToDistances {
-
-    public final static String DESCRIPTION = "Calculates distances using the Jukes Cantor model";
-
     @Override
     public String getCitation() {
-        return "Swofford et al 1996; " +
-                "D.L. Swofford, G.J. Olsen, P.J. Waddell, and  D.M. Hillis. Chapter  11:  Phylogenetic inference. " +
-                "In D. M. Hillis, C. Moritz, and B. K. Mable, editors, Molecular Systematics, pages 407–514. " +
-                "Sinauer Associates, Inc., 2nd edition, 1996.";
+        return "Jukes and Cantor 1969; Jukes TH & Cantor CR (1969). Evolution of Protein Molecules. New York: Academic Press. pp. 21–132";
     }
 
     @Override
@@ -56,10 +50,5 @@ public class JukesCantor extends DNAdistance implements IFromChararacters, IToDi
         double D = 1 - (F[0][0] + F[1][1] + F[2][2] + F[3][3]);
         double B = 0.75;
         return -B * Minv(1 - D / B);
-    }
-
-    // GETTER AND SETTER
-    public String getDescription() {
-        return DESCRIPTION;
     }
 }

@@ -19,9 +19,9 @@ import splitstree5.utils.SplitMatrix;
  */
 
 public class BalancedConfidenceNetwork extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
+    public final static String DESCRIPTION = "Computes a confidence network using Beran's algorithm. cf Huson and Bryant (2006)";
 
     private double level = .95;
-    public final static String DESCRIPTION = "Computes a confidence network using Beran's algorithm. cf Huson and Bryant (2006)";
 
     @Override
     public String getCitation() {
@@ -39,10 +39,6 @@ public class BalancedConfidenceNetwork extends Algorithm<TreesBlock, SplitsBlock
         M.print();
 
         splitsBlock.copy(ConfidenceNetwork.getConfidenceNetwork(M, getOptionLevel(), taxaBlock.getNtax(), progress));
-    }
-
-    public String getDescription() {
-        return BalancedConfidenceNetwork.DESCRIPTION;
     }
 
     public double getOptionLevel() {

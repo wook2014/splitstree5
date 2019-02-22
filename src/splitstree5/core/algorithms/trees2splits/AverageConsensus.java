@@ -13,7 +13,7 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 
 /**
- * implements consensus networks
+ * average consensus
  * <p>
  * Created on 07.06.2017
  *
@@ -24,12 +24,10 @@ public class AverageConsensus extends Algorithm<TreesBlock, SplitsBlock> impleme
 
     private boolean analyseDistances = false;
 
-    public final static String DESCRIPTION = "Constructs a Neighbor-Net from the average pairwise distances in the trees";
 
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock)
-            throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock) throws Exception {
 
         progress.setMaximum(100);
 
@@ -42,16 +40,12 @@ public class AverageConsensus extends Algorithm<TreesBlock, SplitsBlock> impleme
         //dist.write(sw, taxa);
         //System.out.println(sw.toString());
 
-        NeighborNet nnet = new NeighborNet();
+        final NeighborNet nnet = new NeighborNet();
         ProgressListener pl = new ProgressPercentage();
         nnet.compute(pl, taxaBlock, pairwiseDistances, splitsBlock);
 
     }
 
-
-    public String getDescription() {
-        return DESCRIPTION;
-    }
 
     public boolean getOptionAnalyseDistances() {
         return analyseDistances;

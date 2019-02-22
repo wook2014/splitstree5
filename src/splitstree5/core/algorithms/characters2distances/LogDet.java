@@ -5,7 +5,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import jloda.fx.Alert;
+import jloda.fx.NotificationManager;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;
@@ -74,11 +74,9 @@ import java.util.List;
  */
 
 public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-    public final static String DESCRIPTION = "Calculates the logdet- distance";
-
     private final BooleanProperty optionFudgeFactor = new SimpleBooleanProperty(false);
     private final BooleanProperty optionFillZeros = new SimpleBooleanProperty(false);
-    private final DoubleProperty optionPropInvariableSites = new SimpleDoubleProperty(0.0);;
+    private final DoubleProperty optionPropInvariableSites = new SimpleDoubleProperty(0.0);
 
     @Override
     public String getCitation() {
@@ -104,8 +102,7 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock) throws Exception {
-
-        int ntax = charactersBlock.getNtax();
+        final int ntax = charactersBlock.getNtax();
         progress.setTasks("logDet distance", "Init.");
         progress.setMaximum(ntax);
         distancesBlock.setNtax(ntax);
@@ -202,7 +199,7 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
                         for (int i = 0; i < r; i++)
                             F[i][i] -= pinv * Pi[i];
 
-                    Matrix Fmatrix = new Matrix(F);
+                    final Matrix Fmatrix = new Matrix(F);
                     double[] Feigs = Fmatrix.eig().getRealEigenvalues();
                     double x = 0.0;
                     boolean thisIsSaturated = false;
@@ -232,9 +229,8 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
             progress.incrementProgress();
         }
 
-        if (numUndefined > 0) {
-            new Alert("Warning: there were saturated or missing distances in the matrix. These have been replaced with arbitrary large values - proceed with caution ");
-        }
+        if (numUndefined > 0)
+            NotificationManager.showWarning("Proceed with caution: " + numUndefined + " saturated or missing entries in the distance matrix. These have been replaced by very large values.");
 
         progress.close();
     }
@@ -244,15 +240,6 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
 
         /* We can apply as long as there is more than one symbol */
         return characters.getSymbols().length() > 1;
-    }
-
-    /**
-     * gets a short description of the algorithm
-     *
-     * @return a description
-     */
-    public String getDescription() {
-        return DESCRIPTION;
     }
 
     /**

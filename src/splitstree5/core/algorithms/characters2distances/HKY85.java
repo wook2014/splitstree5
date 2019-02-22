@@ -1,7 +1,5 @@
 package splitstree5.core.algorithms.characters2distances;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
@@ -10,9 +8,6 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.models.HKY85model;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Computes the Hasegawa, Kishino and Yano distance for a set of characters.
@@ -23,9 +18,6 @@ import java.util.List;
  */
 
 public class HKY85 extends DNAdistance implements IFromChararacters, IToDistances {
-
-    public final static String DESCRIPTION = "Calculates distances using the Hasegawa, Kishino and Yano model";
-
     @Override
     public String getCitation() {
         return "Hasegawa, Kishino, Yano 1985; " +
@@ -57,12 +49,4 @@ public class HKY85 extends DNAdistance implements IFromChararacters, IToDistance
         return 0.0;//We will never get here!
     }
 
-    /**
-     * gets a short description of the algorithm
-     *
-     * @return a description
-     */
-    public String getDescription() {
-        return DESCRIPTION;
-    }
 }

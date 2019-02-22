@@ -26,8 +26,6 @@ import java.util.Map;
  */
 
 public class PCoA2D extends Algorithm<DistancesBlock, NetworkBlock> implements IFromDistances, IToNetwork {
-
-    public final static String DESCRIPTION = "Performs Principle Coordinates Analysis (Gower, J.C. (1966))";
     private Matrix distanceMatrix;
     private double totalSquaredDistance;
     private int rank;
@@ -39,6 +37,12 @@ public class PCoA2D extends Algorithm<DistancesBlock, NetworkBlock> implements I
 
     private IntegerProperty optionFirstCoordinate = new SimpleIntegerProperty(1);
     private IntegerProperty optionSecondCoordinate = new SimpleIntegerProperty(2);
+
+
+    @Override
+    public String getCitation() {
+        return "Gower 1966; Gower, J. C. (1966). Some distance properties of latent root and vector methods used in multivariate analysis. Biometrika, 53(3-4), 325-338.";
+    }
 
     public List<String> listOptions() {
         return Arrays.asList("FirstCoordinate", "SecondCoordinate");
@@ -153,15 +157,6 @@ public class PCoA2D extends Algorithm<DistancesBlock, NetworkBlock> implements I
 
         progress.incrementProgress();
 
-    }
-
-    /**
-     * Gets a short description of the algorithm
-     *
-     * @return description
-     */
-    public String getDescription() {
-        return DESCRIPTION;
     }
 
     /**

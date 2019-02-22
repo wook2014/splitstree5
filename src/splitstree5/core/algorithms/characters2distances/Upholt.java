@@ -23,10 +23,6 @@ import java.util.List;
  */
 
 public class Upholt extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-
-    //public final boolean EXPERT = false; todo: is not used, also in ST4
-    public final static String DESCRIPTION = "Calculates the Upholt (1977) distance for restriction site data";
-
     private final DoubleProperty optionRestrictionSiteLength = new SimpleDoubleProperty(6.0);
 
     public List<String> listOptions() {
@@ -43,15 +39,13 @@ public class Upholt extends Algorithm<CharactersBlock, DistancesBlock> implement
 
     @Override
     public String getCitation() {
-        return "Upholt WB. Estimation of DNA sequence divergence " +
-                "from comparison of restriction endonuclease digests. Nucleic Acids Res. 1977;4(5):1257-65. ";
+        return "Upholt 1977; Upholt WB. Estimation of DNA sequence divergence from comparison of restriction endonuclease digests. " +
+                "Nucleic Acids Res. 1977;4(5):1257-65.";
     }
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
-            throws Exception {
-
-        int ntax = taxaBlock.getNtax();
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock) throws Exception {
+        final int ntax = taxaBlock.getNtax();
         distancesBlock.setNtax(ntax);
 
         progress.setTasks("Upholt distance", "Init.");
@@ -109,16 +103,14 @@ public class Upholt extends Algorithm<CharactersBlock, DistancesBlock> implement
         return c.getDataType() == CharactersType.Standard;
     }
 
-    final public String getDescription() {
-        return DESCRIPTION;
-    }
-
     public double getOptionRestrictionSiteLength() {
         return this.optionRestrictionSiteLength.getValue();
     }
+
     public DoubleProperty optionRestrictionSiteLengthProperty() {
         return this.optionRestrictionSiteLength;
     }
+
     public void setOptionRestrictionSiteLength(double restrictionSiteLength) {
         this.optionRestrictionSiteLength.setValue(restrictionSiteLength);
     }

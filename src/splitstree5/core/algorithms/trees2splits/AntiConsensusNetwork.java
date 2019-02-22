@@ -69,8 +69,6 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
 
     private boolean optionOnePerTree = false;
 
-    public final static String DESCRIPTION = "Computes the anti-consensus of trees";
-
     @Override
     public List<String> listOptions() {
         return Arrays.asList("optionSinRank", "optionAllSinsUpToRank", "optionMaxDistortion", "optionRequireSingleSPR", "optionMinSpanPercent", "optionMinWeight", "optionReferenceTree", "optionMultipleSINsPerTree");
@@ -78,7 +76,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
 
     @Override
     public String getCitation() {
-        return "Huson, Steel et al, 2018;D.H. Huson, M.A. Steel and [???]. Anti-consensus: manuscript in preparation";
+        return "Huson et al. 2019;D.H. Huson, B. Albrecht, P. Lockhart and M.A. Steel. Anti-consensus: manuscript in preparation";
     }
 
     /**

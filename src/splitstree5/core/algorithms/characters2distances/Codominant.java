@@ -15,17 +15,11 @@ import java.util.List;
 
 /**
  * Implementation of the Co-dominant genetic distance
- * <p>
- * Created on Nov 2009
  *
- * @author bryant
+ * @author David Bryant, 2009
  */
 
 public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-
-    protected String TASK = "Codominant Genetic Distance";
-    protected String DESCRIPTION = "Codominant Genetic Distance for diploid characters (Smouse & Peakall 1999)";
-
     /**
      * In Smouse and Peakall, the final distance is the square root of the contribution of the
      * individual loci. This flag sets whether to use this square root, or just the averages
@@ -36,7 +30,7 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
 
     @Override
     public String getCitation() {
-        return "Smouse and Peakall 1999; Smouse PE, Peakall R. Spatial autocorrelation analysis of individual multiallele and multilocus genetic structure. Heredity, 82, 561-573, 1999.";
+        return "Smouse & Peakall 1999; Smouse PE, Peakall R. Spatial autocorrelation analysis of individual multiallele and multilocus genetic structure. Heredity, 82, 561-573, 1999.";
     }
 
     public List<String> listOptions() {
@@ -66,7 +60,7 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
         int ntax = taxaBlock.getNtax();
         distancesBlock.setNtax(ntax);
 
-        progress.setTasks(TASK, "Init.");
+        progress.setTasks("Codominant Genetic Distance", "Init.");
         progress.setMaximum(ntax);
 
         for (int i = 0; i < ntax; i++) {
@@ -142,19 +136,6 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
     }
 
     // GETTER AND SETTER
-
-    /**
-     * gets a short description of the algorithm
-     *
-     * @return a description
-     */
-    public String getDescription() {
-        return DESCRIPTION;
-    }
-
-    protected String getTask() {
-        return TASK;
-    }
 
     /**
      * Get the flag indicating if the distance computed is the square root of the contributions

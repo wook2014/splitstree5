@@ -16,19 +16,17 @@ import splitstree5.core.datablocks.TaxaBlock;
  * @author bryant
  */
 public class GapDist extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-
     public final static String DESCRIPTION = "Calculates the gap distance from a set of sequences.";
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
-            throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock) throws Exception {
 
-        int nchar = charactersBlock.getNchar();
-        int ntax = charactersBlock.getNtax();
+        final int nchar = charactersBlock.getNchar();
+        final int ntax = charactersBlock.getNtax();
 
         distancesBlock.setNtax(ntax);
-        char missingchar = charactersBlock.getMissingCharacter();
-        char gapchar = charactersBlock.getGapCharacter();
+        final char missingchar = charactersBlock.getMissingCharacter();
+        final char gapchar = charactersBlock.getGapCharacter();
         int c, s, t;
 
         progress.setTasks("Gap distance", "Init.");
@@ -66,9 +64,5 @@ public class GapDist extends Algorithm<CharactersBlock, DistancesBlock> implemen
             progress.incrementProgress();
         }
         progress.close();
-    }
-
-    public String getDescription() {
-        return DESCRIPTION;
     }
 }

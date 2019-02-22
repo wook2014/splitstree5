@@ -1,16 +1,18 @@
 package splitstree5.core.algorithms.characters2distances;
 
 import javafx.beans.property.*;
-import jloda.fx.Alert;
+import jloda.fx.NotificationManager;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
 import splitstree5.core.datablocks.CharactersBlock;
+import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.CharactersType;
 import splitstree5.core.models.NucleotideModel;
+import splitstree5.core.workflow.Connector;
 import splitstree5.gui.utils.CharactersUtilities;
 import splitstree5.utils.SplitsException;
 
@@ -20,8 +22,6 @@ import java.util.List;
 public abstract class DNAdistance extends SequenceBasedDistance {
 
     public enum SetParameters {fromChars, defaultParameters}
-
-    ;
 
     final double DEFAULT_PROP_INVARIABLE_SITES = 0.0;
     final double DEFAULT_GAMMA = -1;        //Negative gamma corresponds to equal rates
@@ -54,11 +54,10 @@ public abstract class DNAdistance extends SequenceBasedDistance {
         else
             System.err.println("Connector != null");
 
-        connectorProperty().addListener((c, o, n) -> {
-            if (n != null) {
+        connectorProperty().addListener((c) -> {
                 System.err.println("Connector Listener");
-                optionSetParameters.addListener((observable, oldValue, newValue) -> updateSettings(n.getParentDataBlock(), newValue));
-            }
+            final Connector<CharactersBlock, ? extends DataBlock> connector = connectorProperty().get();
+            optionSetParameters.addListener((observable, oldValue, newValue) -> updateSettings(connector != null ? connector.getParentDataBlock() : null, newValue));
         });
     }
 
@@ -106,7 +105,13 @@ public abstract class DNAdistance extends SequenceBasedDistance {
         }
     }
 
-
+    /**
+     * only applicable to nucleotide data
+     *
+     * @param taxa
+     * @param charactersBlock
+     * @return
+     */
     public boolean isApplicable(TaxaBlock taxa, CharactersBlock charactersBlock) {
         return charactersBlock.getDataType() == CharactersType.DNA || charactersBlock.getDataType() == CharactersType.RNA;
     }
@@ -117,7 +122,6 @@ public abstract class DNAdistance extends SequenceBasedDistance {
      * @param x
      * @return double
      */
-
     protected double Minv(double x) throws SaturatedDistancesException {
         if (x <= 0.0)
             throw new SaturatedDistancesException();
@@ -200,7 +204,7 @@ public abstract class DNAdistance extends SequenceBasedDistance {
         progressListener.close();
 
         if (numMissing > 0) {
-            new Alert("Warning: " + numMissing + " saturated or missing entries in the distance matrix - proceed with caution ");
+            NotificationManager.showWarning("Proceed with caution: " + numMissing + " saturated or missing entries in the distance matrix");
         }
         return distances;
     }

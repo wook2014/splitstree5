@@ -1,7 +1,6 @@
 package splitstree5.core.algorithms.trees2splits;
 
 import javafx.beans.property.SimpleObjectProperty;
-import jloda.fx.Alert;
 import jloda.fx.NotificationManager;
 import jloda.graph.Edge;
 import jloda.graph.Node;
@@ -38,7 +37,6 @@ import java.util.*;
 public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
     public enum EdgeWeights {AverageRelative, Mean, TreeSizeWeightedMean, Sum, Min, None}
 
-    public final static String DESCRIPTION = "Z-closure super-network from partial trees (Huson, Dezulian, Kloepper and Steel 2004)";
     private boolean optionZRule = true;
     private boolean optionLeastSquare = false; // todo ???
     private boolean optionSuperTree = false;
@@ -210,7 +208,7 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
         // todo how do we get here ?
         if (getNoOptionLeastSquare()) {
             if (!TreesUtilities.hasAllPairs(taxaBlock, treesBlock)) {
-                new Alert("Partial trees don't have the 'All Pairs' property, can't apply Least Squares");
+                NotificationManager.showWarning("Partial trees don't have the 'All Pairs' property, can't apply Least Squares");
                 setNoOptionLeastSquare(false);
             } else {
                 DistancesBlock distances = new DistancesBlock();

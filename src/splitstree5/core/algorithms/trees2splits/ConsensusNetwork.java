@@ -56,8 +56,6 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
 
     private final Object sync = new Object();
 
-    public final static String DESCRIPTION = "Computes the consensus splits of trees (Holland and Moulton 2003)";
-
     @Override
     public String getCitation() {
         return "Holland and Moulton 2003; B. Holland and V. Moulton. Consensus networks:  A method for visualizing incompatibilities in  collections  of  trees. " +
