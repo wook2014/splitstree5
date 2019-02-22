@@ -20,8 +20,6 @@ import java.util.List;
  */
 
 public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-    protected String DESCRIPTION = "Codominant genetic distance for diploid characters (Smouse & Peakall 1999)";
-
     /**
      * In Smouse and Peakall, the final distance is the square root of the contribution of the
      * individual loci. This flag sets whether to use this square root, or just the averages
@@ -138,15 +136,6 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
     }
 
     // GETTER AND SETTER
-
-    /**
-     * gets a short description of the algorithm
-     *
-     * @return a description
-     */
-    public String getDescription() {
-        return DESCRIPTION;
-    }
 
     /**
      * Get the flag indicating if the distance computed is the square root of the contributions

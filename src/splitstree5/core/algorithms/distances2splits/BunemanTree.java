@@ -23,13 +23,9 @@ import java.util.BitSet;
  */
 
 public class BunemanTree extends Algorithm<DistancesBlock, SplitsBlock> implements IFromDistances, IToSplits {
-
-    public final static String DESCRIPTION = "Computes the Buneman tree (Buneman 1971)";
-
     @Override
     public String getCitation() {
-        return "Bandelt and Dress 1992; " +
-                "H.-J. Bandelt and A.W.M.Dress. A canonical decomposition theory for metrics on a finite set. " +
+        return "Bandelt and Dress 1992; H.-J. Bandelt and A.W.M.Dress. A canonical decomposition theory for metrics on a finite set. " +
                 "Advances in Mathematics, 92:47–105, 1992.";
     }
 
@@ -154,11 +150,6 @@ public class BunemanTree extends Algorithm<DistancesBlock, SplitsBlock> implemen
         for (int t = A.nextClearBit(1); t != -1 && t <= ntax; t = A.nextClearBit(t + 1))
             result.set(t);
         return result;
-    }
-
-    // GETTER AND SETTER
-    public String getDescription() {
-        return DESCRIPTION;
     }
 
     @Override

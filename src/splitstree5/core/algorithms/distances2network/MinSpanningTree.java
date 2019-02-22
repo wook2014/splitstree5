@@ -38,8 +38,10 @@ import java.util.TreeSet;
  * Daniel Huson, 2018
  */
 public class MinSpanningTree extends Algorithm<DistancesBlock, NetworkBlock> implements IFromDistances, IToNetwork {
-
-    public final static String DESCRIPTION = "Kruskal's Algorithm";
+    @Override
+    public String getCitation() {
+        return "Kruskal 1956;  Kruskal, J. B. (1956). On the shortest spanning subtree of a graph and the traveling salesman problem. Proceedings of the American Mathematical Society. 7: 48–50";
+    }
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, DistancesBlock parent, NetworkBlock child) throws Exception {

@@ -21,7 +21,6 @@ public class LeastSquaresWeights extends Algorithm<SplitsBlock, SplitsBlock> imp
 
     // todo make dist2splits
 
-    public final static String DESCRIPTION = "Compute least squares weights";
     private boolean optionConstrain = true;
     private DistancesBlock distancesBlock = new DistancesBlock();
 
@@ -64,15 +63,6 @@ public class LeastSquaresWeights extends Algorithm<SplitsBlock, SplitsBlock> imp
     @Override
     public boolean isApplicable(TaxaBlock taxaBlock, SplitsBlock parent) {
         return !parent.isPartial();
-    }
-
-    /**
-     * Gets a short description of the algorithm
-     *
-     * @return description
-     */
-    public String getDescription() {
-        return DESCRIPTION;
     }
 
     /**

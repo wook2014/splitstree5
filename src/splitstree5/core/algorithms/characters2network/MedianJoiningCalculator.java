@@ -30,11 +30,7 @@ import jloda.util.ProgressListener;
 import java.util.*;
 
 public class MedianJoiningCalculator extends QuasiMedianBase {
-
-    public final static String DESCRIPTION = "Median Joining algorithm (Bandelt et al, 1999)";
-
     private int optionEpsilon = 0;
-
 
     /**
      * runs the median joining algorithm
@@ -387,15 +383,6 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
             }
         }
         return (String[]) median.toArray(new String[median.size()]);
-    }
-
-    /**
-     * Gets a short description of the algorithm
-     *
-     * @return description
-     */
-    public String getDescription() {
-        return DESCRIPTION;
     }
 
     public int getOptionEpsilon() {

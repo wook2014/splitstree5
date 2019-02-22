@@ -15,10 +15,7 @@ import splitstree5.core.models.F84Model;
  */
 
 public class F84 extends DNAdistance implements IFromChararacters, IToDistances {
-
     private double A, B, C;
-
-    public final static String DESCRIPTION = "Calculates distances using the Felsenstein84 model";
 
     @Override
     public String getCitation() {
@@ -57,9 +54,5 @@ public class F84 extends DNAdistance implements IFromChararacters, IToDistances 
         double dist = -2.0 * A * Minv(1.0 - P / (2.0 * A) - (A - B) * Q / (2.0 * A * C));
         dist += 2.0 * (A - B - C) * Minv(1.0 - Q / (2.0 * C));
         return dist;
-    }
-
-    public String getDescription() {
-        return DESCRIPTION;
     }
 }

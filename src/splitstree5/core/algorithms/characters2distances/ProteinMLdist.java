@@ -169,10 +169,6 @@ public class ProteinMLdist extends SequenceBasedDistance implements IFromCharara
 
     // GETTER AND SETTER
 
-    public String getDescription() {
-        return DESCRIPTION;
-    }
-
     public Model getOptionModel() {
         return this.optionModel.getValue();
     }

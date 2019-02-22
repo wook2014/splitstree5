@@ -21,8 +21,6 @@ import java.util.List;
  */
 
 public class F81 extends DNAdistance implements IFromChararacters, IToDistances {
-
-    public final static String DESCRIPTION = "Calculates distances using the Felsenstein81 model";
     private double B;
 
     @Override
@@ -66,9 +64,5 @@ public class F81 extends DNAdistance implements IFromChararacters, IToDistances 
     protected double exactDist(double[][] F) throws SaturatedDistancesException {
         double D = 1 - (F[0][0] + F[1][1] + F[2][2] + F[3][3]);
         return -B * Minv(1 - D / B);
-    }
-
-    public String getDescription() {
-        return DESCRIPTION;
     }
 }

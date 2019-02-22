@@ -19,8 +19,6 @@ import splitstree5.core.datablocks.characters.CharactersType;
  * @author bryant
  */
 public class Jaccard extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-    public final static String DESCRIPTION = "Calculates distances using the Jaccard coefficient distance";
-
     @Override
     public String getCitation() {
         return "Jaccard 1901; Jaccard, Paul (1901). Étude comparative de la distribution florale dans une portion des Alpes et des Jura, Bulletin de la Société Vaudoise des Sciences Naturelles, 37: 547–579.";
@@ -78,9 +76,5 @@ public class Jaccard extends Algorithm<CharactersBlock, DistancesBlock> implemen
             FixUndefinedDistances.apply(ntax, maxDist, distancesBlock);
 
         progress.close();
-    }
-
-    final public String getDescription() {
-        return DESCRIPTION;
     }
 }

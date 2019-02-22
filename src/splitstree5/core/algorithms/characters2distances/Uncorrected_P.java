@@ -1,15 +1,8 @@
 package splitstree5.core.algorithms.characters2distances;
 
+/**
+ * uncorrected-p is just another name for Hamming distances
+ * Daniel Huson, 2006
+ */
 public class Uncorrected_P extends HammingDistances {
-
-    public final static String DESCRIPTION = "Calculates uncorrected (observed, \"P\") distances.";
-
-    /**
-     * gets a short description of the algorithm
-     *
-     * @return a description
-     */
-    public String getDescription() {
-        return DESCRIPTION;
-    }
 }

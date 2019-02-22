@@ -157,8 +157,4 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
     public void setOptionUseMLDistance(boolean useMLDistance) {
         this.optionUseMLDistance.set(useMLDistance);
     }
-
-    public String getDescription() {
-        return DESCRIPTION;
-    }
 }

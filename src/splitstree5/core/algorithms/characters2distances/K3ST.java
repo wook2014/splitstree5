@@ -31,8 +31,6 @@ public class K3ST extends DNAdistance implements IFromChararacters, IToDistances
     private final double DEFAULT_AC_VS_AT = 2.0;
     private final DoubleProperty optionACvsAT = new SimpleDoubleProperty(DEFAULT_AC_VS_AT);
 
-    public final static String DESCRIPTION = "Calculates distances using the Kimura3ST model";
-
     @Override
     public String getCitation() {
         return "Kimura 1981; M. Kimura, Estimation of evolutionary sequences between homologous nucleotide sequences, " +
@@ -80,10 +78,6 @@ public class K3ST extends DNAdistance implements IFromChararacters, IToDistances
     }
 
     // GETTER AND SETTER
-
-    public String getDescription() {
-        return DESCRIPTION;
-    }
 
     public void setOptionAC_vs_ATRatio(double value) {
         this.optionACvsAT.setValue(value);

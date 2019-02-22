@@ -25,7 +25,6 @@ import java.util.List;
 public class Nei_Li_RestrictionDistance extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
     //public final boolean EXPERT = false; todo: is not used, also in ST4
 
-    private final String DESCRIPTION = "Calculates the Nei and Li (1979) distance for restriction site data";
     private final DoubleProperty optionRestrictionSiteLength = new SimpleDoubleProperty(6.0);
 
     @Override
@@ -105,12 +104,6 @@ public class Nei_Li_RestrictionDistance extends Algorithm<CharactersBlock, Dista
     public boolean isApplicable(TaxaBlock taxa, CharactersBlock c) {
         return c.getDataType().equals(CharactersType.Standard);
     }
-
-
-    public String getDESCRIPTION() {
-        return DESCRIPTION;
-    }
-
 
     public double getOptionRestrictionSiteLength() {
         return this.optionRestrictionSiteLength.getValue();

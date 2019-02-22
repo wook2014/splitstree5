@@ -23,8 +23,6 @@ import java.util.List;
  */
 
 public class Upholt extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-    public final static String DESCRIPTION = "Calculates the Upholt (1977) distance for restriction site data";
-
     private final DoubleProperty optionRestrictionSiteLength = new SimpleDoubleProperty(6.0);
 
     public List<String> listOptions() {
@@ -103,10 +101,6 @@ public class Upholt extends Algorithm<CharactersBlock, DistancesBlock> implement
      */
     public boolean isApplicable(TaxaBlock taxa, CharactersBlock c) {
         return c.getDataType() == CharactersType.Standard;
-    }
-
-    final public String getDescription() {
-        return DESCRIPTION;
     }
 
     public double getOptionRestrictionSiteLength() {

@@ -18,9 +18,6 @@ import splitstree5.core.models.K2Pmodel;
  */
 
 public class K2P extends DNAdistance implements IFromChararacters, IToDistances {
-
-    public final static String DESCRIPTION = "Calculates distances using the Kimura2P model";
-
     @Override
     public String getCitation() {
         return "Kimura 1980; Kimura M (1980). A simple method for estimating evolutionary rates of base substitutions through comparative studies of nucleotide sequences. Journal of Molecular Evolution. 16 (2): 111–120.";
@@ -48,9 +45,4 @@ public class K2P extends DNAdistance implements IFromChararacters, IToDistances 
         dist += 0.25 * Minv(1 / (1 - (2 * Q)));
         return dist;
     }
-
-    public String getDescription() {
-        return DESCRIPTION;
-    }
-
 }

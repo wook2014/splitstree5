@@ -17,9 +17,6 @@ import splitstree5.core.datablocks.characters.CharactersType;
  * @author bryant
  */
 public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-
-    public final static String DESCRIPTION = "Calculate distances from restriction-sites using Nei and Miller (1990).";
-
     @Override
     public String getCitation() {
         return "Nei and Miller 1990; " +
@@ -198,10 +195,5 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
             progress.incrementProgress();
         }
         progress.close();
-    }
-
-    // GETTER AND SETTER
-    public String getDescription() {
-        return DESCRIPTION;
     }
 }

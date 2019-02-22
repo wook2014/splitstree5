@@ -17,8 +17,6 @@ import splitstree5.core.datablocks.TaxaBlock;
  */
 
 public class BaseFreqDistance extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-    public final static String DESCRIPTION = "Calculates distances from differences in the base composition";
-
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock) throws Exception {
 
@@ -68,14 +66,5 @@ public class BaseFreqDistance extends Algorithm<CharactersBlock, DistancesBlock>
             progress.incrementProgress();
         }
         progress.close();
-    }
-
-    /**
-     * Gets a short description of the algorithm
-     *
-     * @return description
-     */
-    public String getDescription() {
-        return DESCRIPTION;
     }
 }

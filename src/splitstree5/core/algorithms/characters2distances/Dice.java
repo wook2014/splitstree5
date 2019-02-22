@@ -20,8 +20,6 @@ import splitstree5.core.datablocks.characters.CharactersType;
  */
 
 public class Dice extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-    public final static String DESCRIPTION = "Calculates distances using the Dice coefficient distance";
-
     @Override
     public String getCitation() { // is this the correct citation?
         return "Dice 1945; Dice, Lee R. (1945). Measures of the Amount of Ecologic Association Between Species. Ecology. 26 (3): 297–302.";
@@ -79,10 +77,6 @@ public class Dice extends Algorithm<CharactersBlock, DistancesBlock> implements 
             FixUndefinedDistances.apply(ntax, maxDist, distancesBlock);
 
         progress.close();
-    }
-
-    final public String getDescription() {
-        return DESCRIPTION;
     }
 }
 

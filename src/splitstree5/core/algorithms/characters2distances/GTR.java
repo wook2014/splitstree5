@@ -25,8 +25,6 @@ import java.util.List;
 public class GTR extends DNAdistance implements IFromChararacters, IToDistances {
 
     private double[][] QMatrix; //Q Matrix provided by user for ML estimation. //todo option!
-    public final static String DESCRIPTION = "Calculates distances using a General Time Reversible model";
-
 
     @Override
     public String getCitation() {
@@ -110,14 +108,6 @@ public class GTR extends DNAdistance implements IFromChararacters, IToDistances 
 
     // GETTER AND SETTER
 
-    /**
-     * gets a short description of the algorithm
-     *
-     * @return a description
-     */
-    public String getDescription() {
-        return DESCRIPTION;
-    }
 
     public GTR() {
         super();

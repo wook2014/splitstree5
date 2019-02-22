@@ -48,7 +48,7 @@ public class ParsimonySplits extends Algorithm<CharactersBlock, SplitsBlock> imp
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock chars, SplitsBlock splitsBlock) throws Exception {
         ArrayList<ASplit> previousSplits = new ArrayList<>(); // list of previously computed splits
         ArrayList<ASplit> currentSplits = new ArrayList<>(); // current list of splits
-        BitSet taxaPrevious = new BitSet(); // taxa already processed
+        final BitSet taxaPrevious = new BitSet(); // taxa already processed
 
         progress.setMaximum(taxaBlock.getNtax());
         progress.setProgress(0);
@@ -61,14 +61,16 @@ public class ParsimonySplits extends Algorithm<CharactersBlock, SplitsBlock> imp
             }
 
             // Does t vs previous set of taxa form a split?
-            BitSet At = new BitSet();
+            final BitSet At = new BitSet();
             At.set(t);
 
             //System.err.println("wgt1 stuff: t=" + t + " AT=" + At);
-            int wgt = pIndex(optionGapsAsMissing.getValue(), t, At, chars);
-            //System.err.println("wgt1: " + wgt);
-            if (wgt > 0) {
-                currentSplits.add(new ASplit(At, t, wgt));
+            {
+                final int wgt = pIndex(optionGapsAsMissing.getValue(), t, At, chars);
+                //System.err.println("wgt1: " + wgt);
+                if (wgt > 0) {
+                    currentSplits.add(new ASplit(At, t, wgt));
+                }
             }
 
             // consider all previously computed splits:
@@ -77,19 +79,23 @@ public class ParsimonySplits extends Algorithm<CharactersBlock, SplitsBlock> imp
                 final BitSet B = prevSplit.getB();
                 // is Au{t} vs B a split?
                 A.set(t);
-                wgt = Math.min((int) prevSplit.getWeight(), pIndex(optionGapsAsMissing.getValue(), t, A, chars));
-                //System.err.println("wgt2: "+wgt);
-                if (wgt > 0) {
-                    currentSplits.add(new ASplit(A, t, wgt));
+                {
+                    final int wgt = Math.min((int) prevSplit.getWeight(), pIndex(optionGapsAsMissing.getValue(), t, A, chars));
+                    //System.err.println("wgt2: "+wgt);
+                    if (wgt > 0) {
+                        currentSplits.add(new ASplit(A, t, wgt));
+                    }
                 }
                 A.set(t, false);
 
                 // is A vs Bu{t} a split?
                 B.set(t);
-                wgt = Math.min((int) prevSplit.getWeight(), pIndex(optionGapsAsMissing.getValue(), t, B, chars));
-                //System.err.println("wgt3: "+wgt);
-                if (wgt > 0)
-                    currentSplits.add(new ASplit(B, t, wgt));
+                {
+                    final int wgt = Math.min((int) prevSplit.getWeight(), pIndex(optionGapsAsMissing.getValue(), t, B, chars));
+                    //System.err.println("wgt3: "+wgt);
+                    if (wgt > 0)
+                        currentSplits.add(new ASplit(B, t, wgt));
+                }
                 B.set(t, false);
             }
 
@@ -122,19 +128,17 @@ public class ParsimonySplits extends Algorithm<CharactersBlock, SplitsBlock> imp
      */
     private int pIndex(boolean gapsAsMissing, int t, BitSet A, CharactersBlock characters) {
         int value = Integer.MAX_VALUE;
-        int a1, a2, b1, b2;
 
-        a1 = t;
-        if (!A.get(a1))
-            System.err.println("pIndex(): a1=" + a1 + " not in A");
+        if (!A.get(t)) // a1==t
+            System.err.println("pIndex(): a1=" + t + " not in A");
 
-        for (a2 = 1; a2 <= t; a2++) {
+        for (int a2 = 1; a2 <= t; a2++) {
             if (A.get(a2))
-                for (b1 = 1; b1 <= t; b1++) {
+                for (int b1 = 1; b1 <= t; b1++) {
                     if (!A.get(b1))
-                        for (b2 = b1; b2 <= t; b2++) {
+                        for (int b2 = b1; b2 <= t; b2++) {
                             if (!A.get(b2)) {
-                                int val_a1a2b1b2 = pScore(gapsAsMissing, a1, a2, b1, b2, characters);
+                                int val_a1a2b1b2 = pScore(gapsAsMissing, t, a2, b1, b2, characters);
                                 //System.err.println(" a1, a2, b1, b2 = "+ a1+"; "+ a2+"; " +b1+"; "+ b2);
                                 if (val_a1a2b1b2 != 0)
                                     value = Math.min(value, val_a1a2b1b2);

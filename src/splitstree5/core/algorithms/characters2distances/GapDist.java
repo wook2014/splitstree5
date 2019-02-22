@@ -16,7 +16,6 @@ import splitstree5.core.datablocks.TaxaBlock;
  * @author bryant
  */
 public class GapDist extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-
     public final static String DESCRIPTION = "Calculates the gap distance from a set of sequences.";
 
     @Override
@@ -65,9 +64,5 @@ public class GapDist extends Algorithm<CharactersBlock, DistancesBlock> implemen
             progress.incrementProgress();
         }
         progress.close();
-    }
-
-    public String getDescription() {
-        return DESCRIPTION;
     }
 }

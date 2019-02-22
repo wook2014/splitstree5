@@ -74,11 +74,9 @@ import java.util.List;
  */
 
 public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-    public final static String DESCRIPTION = "Calculates the logdet- distance";
-
     private final BooleanProperty optionFudgeFactor = new SimpleBooleanProperty(false);
     private final BooleanProperty optionFillZeros = new SimpleBooleanProperty(false);
-    private final DoubleProperty optionPropInvariableSites = new SimpleDoubleProperty(0.0);;
+    private final DoubleProperty optionPropInvariableSites = new SimpleDoubleProperty(0.0);
 
     @Override
     public String getCitation() {
@@ -242,15 +240,6 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
 
         /* We can apply as long as there is more than one symbol */
         return characters.getSymbols().length() > 1;
-    }
-
-    /**
-     * gets a short description of the algorithm
-     *
-     * @return a description
-     */
-    public String getDescription() {
-        return DESCRIPTION;
     }
 
     /**
