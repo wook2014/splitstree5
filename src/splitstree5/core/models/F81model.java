@@ -44,7 +44,6 @@ public class F81model extends NucleotideModel {
                 }
             }
         }
-        setFreqs(basefreqs);
 
         setRateMatrix(Q, basefreqs);
         normaliseQ();

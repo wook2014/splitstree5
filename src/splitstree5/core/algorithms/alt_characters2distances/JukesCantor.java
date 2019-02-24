@@ -111,7 +111,7 @@ import java.util.List;
  * implements the Jukes Cantor transformation
  * Daniel Huson, 2.2019
  */
-public class JukesCantorNext extends Nucleotides2DistancesAlgorithm implements IFromChararacters, IToDistances {
+public class JukesCantor extends Nucleotides2DistancesAlgorithm implements IFromChararacters, IToDistances {
     @Override
     public String getCitation() {
         return "Jukes and Cantor 1969; Jukes TH & Cantor CR (1969). Evolution of Protein Molecules. New York: Academic Press. pp. 21–132";
@@ -119,7 +119,7 @@ public class JukesCantorNext extends Nucleotides2DistancesAlgorithm implements I
 
     @Override
     public List<String> listOptions() {
-        return Arrays.asList("PropInvariableSites", "SetParameters", "UseML");
+        return Arrays.asList("PropInvariableSites", "Gamma", "optionBaseFrequencies", "UseML", "SetParameters");
     }
 
     @Override

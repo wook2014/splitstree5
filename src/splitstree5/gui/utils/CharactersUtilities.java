@@ -60,14 +60,13 @@ public class CharactersUtilities {
      * @return the frequencies matrix
      */
 
-    //ToDo: BaseFrequencies should be stored somewhere, perhaps characters.properties
     static public double[] computeFreqs(CharactersBlock chars, boolean warned) {
         int numNotMissing = 0;
         final String symbols = chars.getSymbols();
         final int numStates = symbols.length();
-        double[] Fcount = new double[numStates];
-        char missingchar = chars.getMissingCharacter();
-        char gapchar = chars.getGapCharacter();
+        final double[] Fcount = new double[numStates];
+        final char missingchar = chars.getMissingCharacter();
+        final char gapchar = chars.getGapCharacter();
 
         for (int i = 1; i < chars.getNtax(); i++) {
             //char[] seq = chars.getRow(i); // todo can do this?

@@ -25,8 +25,6 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.util.converter.DoubleStringConverter;
@@ -126,12 +124,6 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
                         final Single<Boolean> inUpdate = new Single<>(false);
                         final TextField control = new TextField();
                         control.setPrefColumnCount(6);
-                        control.addEventFilter(KeyEvent.ANY, e -> {
-                            if (e.getCode() == KeyCode.Z && e.isShortcutDown()) {
-                                e.consume();
-                                control.getParent().fireEvent(e);
-                            }
-                        });
                         control.setText(OptionValueType.toStringType(type, option.getProperty().getValue()));
 
                         if (option.getToolTipText() != null)
@@ -175,7 +167,7 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
                             control.setPrefColumnCount(6);
                             control.setPrefWidth(60);
                             control.setTextFormatter(new TextFormatter<>(new DoubleStringConverter()));
-                            control.setText(String.format("%.6f", array[i]));
+                            control.setText(String.format("%.4f", array[i]).replaceAll("0+$", "0"));
                             if (option.getToolTipText() != null)
                                 control.setTooltip(new Tooltip(option.getToolTipText()));
 
@@ -199,7 +191,7 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
                                     inUpdate.set(true);
                                     final double[] values = ((double[]) option.getProperty().getValue());
                                     for (int j = 0; j < length; j++) {
-                                        controls[j].setText(String.format("%.6f", values[j]));
+                                        controls[j].setText(String.format("%.4f", values[j]).replaceAll("0+$", "0"));
                                     }
                                     inUpdate.set(false);
                                 }
@@ -218,12 +210,7 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
                         final Single<Boolean> inUpdate = new Single<>(false);
                         TextField control = new TextField();
                         control.setPrefColumnCount(6);
-                        control.addEventFilter(KeyEvent.ANY, e -> {
-                            if (e.getCode() == KeyCode.Z && e.isShortcutDown()) {
-                                e.consume();
-                                control.getParent().fireEvent(e);
-                            }
-                        });
+
                         if (option.getToolTipText() != null)
                             control.setTooltip(new Tooltip(option.getToolTipText()));
 

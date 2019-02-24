@@ -31,14 +31,11 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Implements the Felsenstein81 DNA distance model
- * <p>
- * Created on Jun 2004
- * <p>
- * todo : no authors
+ * Implements the Felsenstein 1981 DNA distance model
+ * Dave Bryant, 2004
  */
 
-public class F81Next extends Nucleotides2DistancesAlgorithm implements IFromChararacters, IToDistances {
+public class F81 extends Nucleotides2DistancesAlgorithm implements IFromChararacters, IToDistances {
     private double B;
 
     @Override

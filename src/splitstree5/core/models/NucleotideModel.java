@@ -78,13 +78,13 @@ public abstract class NucleotideModel implements SubstitutionModel {
      * Set the rate matrix and base frequencies and compute diagonalisation
      *
      * @param Q rate matrix (0..3 x 0..3). Diagonal values are ignored
-     * @param f frequencies (0..3)
+     * @param baseFrequencies  (0..3)
      */
-    public void setRateMatrix(double[][] Q, double[] f) {
+    public void setRateMatrix(double[][] Q, double[] baseFrequencies) {
         //Test GTR property.
         for (int i = 0; i < 4; i++) {
             for (int j = i + 1; j < 4; j++) {
-                if (Math.abs(f[i] * Q[i][j] - f[j] * Q[j][i]) > EPSILON)
+                if (Math.abs(baseFrequencies[i] * Q[i][j] - baseFrequencies[j] * Q[j][i]) > EPSILON)
                     throw new IllegalArgumentException("Rate matrix and frequencies do not satisfy detailed balance condition");
             }
         }
@@ -92,8 +92,8 @@ public abstract class NucleotideModel implements SubstitutionModel {
         freqs = new double[4];
         sqrtf = new double[4];
         for (int i = 0; i < 4; i++) {
-            freqs[i] = f[i];
-            sqrtf[i] = Math.sqrt(freqs[i]);
+            freqs[i] = baseFrequencies[i];
+            this.sqrtf[i] = Math.sqrt(freqs[i]);
         }
 
         Qmatrix = new double[4][4];
@@ -109,7 +109,7 @@ public abstract class NucleotideModel implements SubstitutionModel {
             Qmatrix[i][i] = -qsum;
         }
 
-        Matrix M = new Matrix(4, 4);
+        final Matrix M = new Matrix(4, 4);
 
         /* The matrix \Pi Q is symmetric, so the matrix M = \Pi^{1/2} Q \Pi^{-1/2} will also
   be symmetric and hence easier to diagonalise*/
@@ -124,7 +124,7 @@ public abstract class NucleotideModel implements SubstitutionModel {
             }
         }
 
-        EigenvalueDecomposition EX = new EigenvalueDecomposition(M);
+        final EigenvalueDecomposition EX = new EigenvalueDecomposition(M);
         evals = EX.getRealEigenvalues();
         evecs = (EX.getV().getArrayCopy());
 

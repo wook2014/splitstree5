@@ -118,16 +118,16 @@ public enum OptionValueType {Integer, Float, Double, String, Boolean, doubleArra
             case Integer:
                 return java.lang.String.format("%d", (Integer) object);
             case Float:
-                return java.lang.String.format("%.6f", (Float) object);
+                return java.lang.String.format("%.6f", (Float) object).replaceAll("0+$", "0");
             case Double:
-                return java.lang.String.format("%.8f", (Double) object);
+                return java.lang.String.format("%.8f", (Double) object).replaceAll("0+$", "0");
             case doubleArray: {
                 StringBuilder buf = new StringBuilder();
                 final double[] array = (double[]) object;
                 for (double value : array) {
                     if (buf.length() > 0)
                         buf.append(" ");
-                    buf.append(java.lang.String.format("%.8f", value));
+                    buf.append(java.lang.String.format("%.4f", value).replaceAll("0+$", "0"));
                 }
                 return buf.toString();
             }
