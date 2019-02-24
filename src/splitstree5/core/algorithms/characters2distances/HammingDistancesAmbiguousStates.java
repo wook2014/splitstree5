@@ -40,7 +40,6 @@ public class HammingDistancesAmbiguousStates extends Algorithm<CharactersBlock, 
         return null;
     }
 
-
     @Override
     public String getCitation() {
         return "Hamming 1950; Hamming, Richard W. Error detecting and error correcting codes. Bell System Technical Journal. 29 (2): 147–160. MR 0035935, 1950.";
@@ -54,7 +53,7 @@ public class HammingDistancesAmbiguousStates extends Algorithm<CharactersBlock, 
 
         if (optionHandleAmbiguousStates.getValue().equals(AmbiguousOptions.MatchStates)
                 && characters.getDataType().isNucleotides() && characters.isHasAmbiguityCodes())
-            computeMatchStatesHamming(progress, taxa, characters, distances);
+            computeMatchStatesHamming(taxa, characters, distances);
         else {
             // all the same here
             int numMissing = 0;
@@ -95,18 +94,16 @@ public class HammingDistancesAmbiguousStates extends Algorithm<CharactersBlock, 
 
     /**
      * Computes 'Best match' Hamming distances with a given characters block.
-     *
-     * @param taxa       the taxa
+     *  @param taxa       the taxa
      * @param characters the input characters
      */
-    private void computeMatchStatesHamming(ProgressListener progressListener, TaxaBlock taxa, CharactersBlock characters, DistancesBlock distances) throws Exception {
-
+    private void computeMatchStatesHamming(TaxaBlock taxa, CharactersBlock characters, DistancesBlock distances) {
         final String ALLSTATES = "acgt" + AmbiguityCodes.CODES;
-        int ntax = taxa.getNtax();
-        int nstates = ALLSTATES.length();
+        final int ntax = taxa.getNtax();
+        final int nstates = ALLSTATES.length();
 
         /* Fill in the costs ascribed to comparing different allele combinations */
-        double[][] weights = new double[nstates][nstates];
+        final double[][] weights = new double[nstates][nstates];
         for (int s1 = 0; s1 < nstates; s1++)
             for (int s2 = 0; s2 < nstates; s2++)
                 weights[s1][s2] = stringDiff(AmbiguityCodes.getNucleotides(ALLSTATES.charAt(s1)),

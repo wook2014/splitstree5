@@ -754,6 +754,31 @@ public class Basic {
     }
 
     /**
+     * returns true, if string can be parsed as int
+     *
+     * @param next
+     * @return true, if int
+     */
+    public static boolean isBoolean(String next) {
+        next = next.trim();
+        return next.length() >= 4 && next.substring(0, 4).toLowerCase().startsWith("true")
+                || next.length() >= 5 && next.substring(0, 5).toLowerCase().startsWith("false");
+    }
+
+    /**
+     * returns true, if string can be parsed as int
+     *
+     * @param next
+     * @return true, if int
+     */
+    public static boolean parseBoolean(String next) {
+        next = next.trim();
+        return next.length() >= 4 && next.substring(0, 4).toLowerCase().startsWith("true");
+    }
+
+
+
+    /**
      * returns true, if string can be parsed as long
      *
      * @param next

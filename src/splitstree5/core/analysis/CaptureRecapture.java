@@ -20,6 +20,8 @@
 package splitstree5.core.analysis;
 
 
+import jloda.util.CanceledException;
+import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.CharactersBlock;
 
 import java.util.Arrays;
@@ -30,7 +32,7 @@ import java.util.Random;
  */
 public class CaptureRecapture {
     public static String DESCRIPTION = "Estimation of invariant sites using capture-recapture method (Lockhart, Huson, Steel, 2000)";
-    int optionTaxaCutoff = 20; //Cut off before we switch to sampling
+    int optionTaxaCutoff = 20; // Cut off before we switch to sampling
 
     /**
      * gets a description of the method
@@ -51,7 +53,7 @@ public class CaptureRecapture {
      * @return array of size with numbers from [1...n]
      */
     private static int[] randomSubset(int size, int n, Random random) {
-        int[] s = new int[size];
+        final int[] s = new int[size];
         for (int i = 0; i < size; i++) {
             int x = random.nextInt(n - i) + 1; //random integer from 1 to n-i
             for (int j = 0; j < i; j++) {      //Make sure that its unique
@@ -64,7 +66,6 @@ public class CaptureRecapture {
         return s;
     }
 
-
     /**
      * Checks to see that, for site m, the taxa in q are not missing, gaps, etc.
      *
@@ -74,10 +75,8 @@ public class CaptureRecapture {
      * @return true iff all not missing, not gaps, and site not masked
      */
     private static boolean goodSite(CharactersBlock block, int[] q, int m) {
-        char ch;
-
         for (int aQ : q) {
-            ch = block.get(aQ, m);
+            char ch = block.get(aQ, m);
             if (ch == block.getMissingCharacter())
                 return false;
             if (ch == block.getGapCharacter())
@@ -106,7 +105,7 @@ public class CaptureRecapture {
 
         int nconst = 0;
 
-        char[] s = new char[4];
+        final char[] s = new char[4];
 
         for (int m = 1; m <= nsites; m++) {
             if (!goodSite(block, q, m))
@@ -162,27 +161,27 @@ public class CaptureRecapture {
      * @param chars
      * @return proportion assumed invariant
      */
-    public double estimatePropInvariableSites(CharactersBlock chars) {
-        int n = chars.getNtax();
-        int maxsample = (n * (n - 1) * (n - 2) * (n - 3)) / 24;
+    public double estimatePropInvariableSites(ProgressListener progress, CharactersBlock chars) throws CanceledException {
+        final int nchar = chars.getNtax();
+        final int maxsample = (nchar * (nchar - 1) * (nchar - 2) * (nchar - 3)) / 24;
 
-        double vsum;
-        int count;
+        double vsum = 0.0;
+        int count = 0;
 
-        if (n > optionTaxaCutoff) {
+        if (nchar > optionTaxaCutoff) {
             //Sampling          - we do a minimum of 1000, and stop once |sd| is less than 0.05 |mean|
+            progress.setMaximum(2000);
+            progress.setProgress(0);
 
-            Random random = new Random();
+            final Random random = new Random();
             int[] q = new int[4];
             double sum2 = 0.0;
-            count = 0;
-            vsum = 0.0;
             boolean done = false;
             int iter = 0;
 
             while (!done) {
                 iter++;
-                q = randomSubset(4, n, random);
+                q = randomSubset(4, nchar, random);
                 double v = vscore(q, chars);
                 if (v > 1.0)
                     continue; //Invalid quartet.
@@ -201,16 +200,15 @@ public class CaptureRecapture {
                 if (iter > maxsample) {
                     done = true; //Safety check to prevent infinite loop
                 }
+                progress.incrementProgress();
             }
-        } else {
-            //Exact count
-            vsum = 0.0;
-            count = 0;
-
-            for (int i = 1; i <= n; i++) {
-                for (int j = i + 1; j <= n; j++) {
-                    for (int k = j + 1; k <= n; k++) {
-                        for (int l = k + 1; l <= n; l++) {
+        } else { //Exact count
+            progress.setMaximum(nchar);
+            progress.setProgress(0);
+            for (int i = 1; i <= nchar; i++) {
+                for (int j = i + 1; j <= nchar; j++) {
+                    for (int k = j + 1; k <= nchar; k++) {
+                        for (int l = k + 1; l <= nchar; l++) {
                             int[] q = new int[4];
                             q[0] = i;
                             q[1] = j;
@@ -221,6 +219,7 @@ public class CaptureRecapture {
                         }
                     }
                 }
+                progress.incrementProgress();
             }
         }
 

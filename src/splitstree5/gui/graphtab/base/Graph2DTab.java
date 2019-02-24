@@ -27,6 +27,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.shape.PathElement;
+import jloda.fx.ProgramExecutorService;
 import jloda.fx.ZoomableScrollPane;
 import jloda.fx.shapes.NodeShape;
 import jloda.graph.*;
@@ -44,7 +45,6 @@ import splitstree5.undo.CompositeCommand;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.Executors;
 
 /**
  * tree and split network two-dimensional graph
@@ -132,7 +132,7 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
                 edgeSelectionModel.clearSelection();
             } finally {
                 if (!isSkipNextLabelLayout()) {
-                    Executors.newSingleThreadExecutor().submit(() -> {
+                    ProgramExecutorService.getInstance().submit(() -> {
                         try {
                             Thread.sleep(100);
                         } catch (InterruptedException e) {

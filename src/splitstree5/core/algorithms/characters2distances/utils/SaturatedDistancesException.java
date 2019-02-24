@@ -19,7 +19,7 @@
 
 package splitstree5.core.algorithms.characters2distances.utils;
 
-public class SaturatedDistancesException extends Exception {
+public class SaturatedDistancesException extends RuntimeException {
 
     /**
      * Constructor for the exception

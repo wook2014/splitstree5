@@ -39,6 +39,8 @@
 package splitstree5.io.nexus;
 
 import splitstree5.core.algorithms.Algorithm;
+import splitstree5.gui.algorithmtab.next.OptionNext;
+import splitstree5.gui.algorithmtab.next.OptionValueType;
 import splitstree5.utils.Option;
 import splitstree5.utils.OptionsAccessor;
 
@@ -62,18 +64,36 @@ public class AlgorithmNexusOutput extends NexusIOBase {
         writeTitleAndLink(w);
         w.write("ALGORITHM " + algorithm.getName() + ";\n");
 
-        final ArrayList<Option> options = OptionsAccessor.getAllOptions(algorithm);
-        if (options.size() > 0) {
+        final ArrayList<OptionNext> optionsNext = new ArrayList<>(OptionNext.getAllOptions(algorithm));
+        if (optionsNext.size() > 0) {
             w.write("OPTIONS\n");
             boolean first = true;
-            for (Option option : options) {
+            for (OptionNext option : optionsNext) {
                 if (first)
                     first = false;
                 else
                     w.write(",\n");
-                w.write("\t" + option.getName() + " = " + option.getValue().toString());
+                final Object value = option.getProperty().getValue();
+
+                w.write("\t" + option.getName() + " = " + OptionValueType.toStringType(option.getOptionValueType(), value));
             }
             w.write(";\n");
+        } else {
+
+            final ArrayList<Option> options = OptionsAccessor.getAllOptions(algorithm);
+            if (options.size() > 0) {
+                System.err.println("Writing using old-style options"); // todo: this shouldn't happen
+                w.write("OPTIONS\n");
+                boolean first = true;
+                for (Option option : options) {
+                    if (first)
+                        first = false;
+                    else
+                        w.write(",\n");
+                    w.write("\t" + option.getName() + " = " + option.getValue().toString());
+                }
+                w.write(";\n");
+            }
         }
         w.write("END; [" + Algorithm.BLOCK_NAME + "]\n");
     }

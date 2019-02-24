@@ -69,6 +69,16 @@ abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extend
     }
 
     /**
+     * setup properties here, called just before algorithm pane is displayed
+     *
+     * @param taxaBlock
+     * @param parent
+     * @throws Exception
+     */
+    public void setupBeforeDisplay(TaxaBlock taxaBlock, P parent) {
+    }
+
+    /**
      * perform the computation
      */
     abstract public void compute(ProgressListener progress, TaxaBlock taxaBlock, P parent, C child) throws Exception;

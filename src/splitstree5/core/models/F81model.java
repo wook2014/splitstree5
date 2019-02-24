@@ -25,13 +25,9 @@
 package splitstree5.core.models;
 
 /**
- * @author Mig
- * <p/>
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * F81 model
  */
 public class F81model extends NucleotideModel {
-
     /**
      * Constructor taking the base frequencies and building the
      * Q matrix of Felsenstein's F81 model (1981).
@@ -39,9 +35,8 @@ public class F81model extends NucleotideModel {
      * @param basefreqs
      */
     public F81model(double[] basefreqs) {
-        super();
 
-        double[][] Q = new double[4][4];
+        final double[][] Q = new double[4][4];
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 if (i != j) {
@@ -49,10 +44,27 @@ public class F81model extends NucleotideModel {
                 }
             }
         }
+        setFreqs(basefreqs);
 
         setRateMatrix(Q, basefreqs);
         normaliseQ();
+    }
 
+    /**
+     * get exact distance
+     *
+     * @param F
+     * @return exact distance
+     */
+    public double exactDistance(double[][] F) {
+        final double[] freq = getNormedBaseFreq();
+        final double piA = freq[0],
+                piC = freq[1],
+                piG = freq[2],
+                piT = freq[3];
 
+        final double B = 1.0 - ((piA * piA) + (piC * piC) + (piG * piG) + (piT * piT));
+        double D = 1 - (F[0][0] + F[1][1] + F[2][2] + F[3][3]);
+        return -B * mInverse(1 - D / B, getPropInvariableSites(), getGamma());
     }
 }

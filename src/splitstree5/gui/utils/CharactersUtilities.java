@@ -60,13 +60,11 @@ public class CharactersUtilities {
      * @return the frequencies matrix
      */
 
-    //TODO: Replace System.err with code throwing exceptions
     //ToDo: BaseFrequencies should be stored somewhere, perhaps characters.properties
     static public double[] computeFreqs(CharactersBlock chars, boolean warned) {
-        int ncolors = chars.getNcolors();
         int numNotMissing = 0;
-        String symbols = chars.getSymbols();
-        int numStates = symbols.length();
+        final String symbols = chars.getSymbols();
+        final int numStates = symbols.length();
         double[] Fcount = new double[numStates];
         char missingchar = chars.getMissingCharacter();
         char gapchar = chars.getGapCharacter();

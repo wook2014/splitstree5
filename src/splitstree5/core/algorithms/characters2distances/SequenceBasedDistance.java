@@ -13,5 +13,4 @@ public abstract class SequenceBasedDistance extends Algorithm<CharactersBlock, D
     abstract public double getOptionGamma();
 
     abstract public void setOptionGamma(double gamma);
-
 }

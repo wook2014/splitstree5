@@ -184,7 +184,7 @@ public class AlgorithmTab<P extends DataBlock, C extends DataBlock> extends View
         if (algorithmPane == null) {
             algorithmPane = currentAlgorithm.getAlgorithmPane(); // some algorithms have their own control pane
             if (algorithmPane == null) {
-                final GenericAlgorithmPaneNext altPane = new GenericAlgorithmPaneNext<>(connector, currentAlgorithm);
+                final GenericAlgorithmPaneNext altPane = new GenericAlgorithmPaneNext<>(document.getWorkflow().getWorkingTaxaBlock(), connector, currentAlgorithm);
                 if (altPane.hasOptions())
                     algorithmPane = altPane;
                 else {

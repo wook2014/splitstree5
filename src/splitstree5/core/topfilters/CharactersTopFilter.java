@@ -23,6 +23,7 @@ package splitstree5.core.topfilters;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
+import jloda.util.ProgressPercentage;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.analysis.CaptureRecapture;
@@ -89,7 +90,9 @@ public class CharactersTopFilter extends ATopFilter<CharactersBlock> {
                     setShortDescription("using " + modifiedTaxaBlock.size() + " of " + getOriginalTaxaBlock().size() + " sequences");
 
                 if (getChildDataBlock().getDataType().equals(CharactersType.DNA) || getChildDataBlock().getDataType().equals(CharactersType.RNA))
-                    getChildDataBlock().setPropInvariableSites((float) (new CaptureRecapture()).estimatePropInvariableSites(getChildDataBlock()));
+                    try (ProgressPercentage progressPercentage = new ProgressPercentage(CaptureRecapture.DESCRIPTION)) {
+                        getChildDataBlock().setPropInvariableSites((float) (new CaptureRecapture()).estimatePropInvariableSites(progress, getChildDataBlock()));
+                    }
             }
         });
     }

@@ -27,14 +27,14 @@ import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.util.converter.DoubleStringConverter;
-import javafx.util.converter.FloatStringConverter;
-import javafx.util.converter.IntegerStringConverter;
 import jloda.util.Basic;
 import jloda.util.Single;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.DataBlock;
+import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.algorithmtab.AlgorithmPane;
@@ -58,20 +58,11 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
     /**
      * constructor
      *
-     * @param connector
-     */
-    public GenericAlgorithmPaneNext(Connector<P, C> connector) {
-        this.connector = connector;
-        options.addAll(OptionNext.getAllOptions(connector.getAlgorithm()));
-    }
-
-    /**
-     * constructor
-     *
      * @param algorithm
      */
-    public GenericAlgorithmPaneNext(Connector<P, C> connector, Algorithm<P, C> algorithm) {
+    public GenericAlgorithmPaneNext(TaxaBlock taxaBlock, Connector<P, C> connector, Algorithm<P, C> algorithm) {
         this.connector = connector;
+        algorithm.setupBeforeDisplay(taxaBlock, connector.getParent().getDataBlock());
         options.addAll(OptionNext.getAllOptions(algorithm));
     }
 
@@ -98,204 +89,199 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
                 label.setTooltip(new Tooltip(option.getToolTipText()));
                 grid.add(label, 0, row);
 
-                if (option.getProperty().getValue() instanceof Boolean) {
-                    final Single<Boolean> inUpdate = new Single<>(false);
-                    final CheckBox control = new CheckBox("");
-                    grid.add(control, 1, row);
-                    if (option.getToolTipText() != null)
-                        control.setTooltip(new Tooltip(option.getToolTipText()));
-                    control.setSelected(((Property<Boolean>) option.getProperty()).getValue());
+                final OptionValueType type = option.getOptionValueType();
 
-                    control.selectedProperty().addListener((observable, oldValue, newValue) -> {
-                        if (!inUpdate.get()) {
-                            inUpdate.set(true);
-                            option.getProperty().setValue(newValue);
-                            inUpdate.set(false);
-                        }
-                    });
-                    InvalidationListener invalidationListener = observable -> {
-                        if (!inUpdate.get()) {
-                            inUpdate.set(true);
-                            control.setSelected(((Property<Boolean>) option.getProperty()).getValue());
-                            inUpdate.set(false);
-                        }
-                    };
-                    listeners.add(invalidationListener);
-                    option.getProperty().addListener(new WeakInvalidationListener(invalidationListener));
-                } else if (option.getProperty().getValue() instanceof Integer) {
-                    final Single<Boolean> inUpdate = new Single<>(false);
-                    TextField control = new TextField();
-                    control.setPrefColumnCount(6);
-                    control.addEventFilter(KeyEvent.ANY, e -> {
-                        if (e.getCode() == KeyCode.Z && e.isShortcutDown()) {
-                            e.consume();
-                            control.getParent().fireEvent(e);
-                        }
-                    });
-                    grid.add(control, 1, row);
-                    if (option.getToolTipText() != null)
-                        control.setTooltip(new Tooltip(option.getToolTipText()));
+                switch (type) {
+                    case Boolean: {
+                        final Single<Boolean> inUpdate = new Single<>(false);
+                        final CheckBox control = new CheckBox("");
 
-                    control.setTextFormatter(new TextFormatter<>(new IntegerStringConverter()));
-                    control.setText(option.getProperty().getValue().toString());
+                        if (option.getToolTipText() != null)
+                            control.setTooltip(new Tooltip(option.getToolTipText()));
+                        control.setSelected(((Property<Boolean>) option.getProperty()).getValue());
 
-                    control.textProperty().addListener((observable, oldValue, newValue) -> {
-                        if (newValue.length() == 0)
-                            newValue = "0";
-                        if (Basic.isInteger(newValue)) {
+                        control.selectedProperty().addListener((observable, oldValue, newValue) -> {
                             if (!inUpdate.get()) {
                                 inUpdate.set(true);
-                                option.getProperty().setValue(Basic.parseInt(newValue));
+                                option.getProperty().setValue(newValue);
                                 inUpdate.set(false);
                             }
-                        }
-                    });
-
-                    InvalidationListener invalidationListener = observable -> {
-                        if (!inUpdate.get()) {
-                            inUpdate.set(true);
-                            control.setText(option.getProperty().getValue().toString());
-                            inUpdate.set(false);
-                        }
-                    };
-                    listeners.add(invalidationListener);
-                    option.getProperty().addListener(new WeakInvalidationListener(invalidationListener));
-                } else if (option.getProperty().getValue() instanceof Double) {
-                    final Single<Boolean> inUpdate = new Single<>(false);
-                    TextField control = new TextField();
-                    control.setPrefColumnCount(6);
-                    control.addEventFilter(KeyEvent.ANY, e -> {
-                        if (e.getCode() == KeyCode.Z && e.isShortcutDown()) {
-                            e.consume();
-                            control.getParent().fireEvent(e);
-                        }
-                    });
-                    grid.add(control, 1, row);
-                    if (option.getToolTipText() != null)
-                        control.setTooltip(new Tooltip(option.getToolTipText()));
-
-                    control.setTextFormatter(new TextFormatter<>(new DoubleStringConverter()));
-                    control.setText(option.getProperty().getValue().toString());
-
-                    control.textProperty().addListener((observable, oldValue, newValue) -> {
-                        if (newValue.length() == 0)
-                            newValue = "0";
-                        if (Basic.isDouble(newValue)) {
+                        });
+                        InvalidationListener invalidationListener = observable -> {
                             if (!inUpdate.get()) {
                                 inUpdate.set(true);
-                                option.getProperty().setValue(Basic.parseDouble(newValue));
+                                control.setSelected(((Property<Boolean>) option.getProperty()).getValue());
                                 inUpdate.set(false);
                             }
-                        }
-                    });
+                        };
+                        listeners.add(invalidationListener);
+                        option.getProperty().addListener(new WeakInvalidationListener(invalidationListener));
 
-                    InvalidationListener invalidationListener = observable -> {
-                        if (!inUpdate.get()) {
-                            inUpdate.set(true);
-                            control.setText(String.format("%.8f", (Double) option.getProperty().getValue()));
-                            inUpdate.set(false);
-                        }
-                    };
-                    listeners.add(invalidationListener);
-                    option.getProperty().addListener(new WeakInvalidationListener(invalidationListener));
-                } else if (option.getProperty().getValue() instanceof Float) {
-                    final Single<Boolean> inUpdate = new Single<>(false);
-                    TextField control = new TextField();
-                    control.setPrefColumnCount(6);
-                    control.addEventFilter(KeyEvent.ANY, e -> {
-                        if (e.getCode() == KeyCode.Z && e.isShortcutDown()) {
-                            e.consume();
-                            control.getParent().fireEvent(e);
-                        }
-                    });
-                    grid.add(control, 1, row);
-                    if (option.getToolTipText() != null)
-                        control.setTooltip(new Tooltip(option.getToolTipText()));
+                        grid.add(control, 1, row);
+                        break;
+                    }
+                    case Double:
+                    case Integer:
+                    case Float: {
+                        final Single<Boolean> inUpdate = new Single<>(false);
+                        final TextField control = new TextField();
+                        control.setPrefColumnCount(6);
+                        control.addEventFilter(KeyEvent.ANY, e -> {
+                            if (e.getCode() == KeyCode.Z && e.isShortcutDown()) {
+                                e.consume();
+                                control.getParent().fireEvent(e);
+                            }
+                        });
+                        control.setText(OptionValueType.toStringType(type, option.getProperty().getValue()));
 
-                    control.setTextFormatter(new TextFormatter<>(new FloatStringConverter()));
-                    control.setText(option.getProperty().getValue().toString());
+                        if (option.getToolTipText() != null)
+                            control.setTooltip(new Tooltip(option.getToolTipText()));
 
-                    control.textProperty().addListener((observable, oldValue, newValue) -> {
-                        if (newValue.length() == 0)
-                            newValue = "0";
-                        if (Basic.isFloat(newValue)) {
+                        control.textProperty().addListener((observable, oldValue, newValue) -> {
+                            if (newValue.length() == 0)
+                                newValue = "0";
+                            if (OptionValueType.isType(type, newValue)) {
+                                if (!inUpdate.get()) {
+                                    inUpdate.set(true);
+                                    option.getProperty().setValue(OptionValueType.parseType(type, newValue));
+                                    inUpdate.set(false);
+                                }
+                            }
+                        });
+
+                        InvalidationListener invalidationListener = observable -> {
                             if (!inUpdate.get()) {
                                 inUpdate.set(true);
-                                option.getProperty().setValue(Basic.parseFloat(newValue));
+                                control.setText(OptionValueType.toStringType(type, option.getProperty().getValue()));
                                 inUpdate.set(false);
                             }
-                        }
-                    });
+                        };
+                        listeners.add(invalidationListener);
+                        option.getProperty().addListener(new WeakInvalidationListener(invalidationListener));
 
-                    InvalidationListener invalidationListener = observable -> {
-                        if (!inUpdate.get()) {
-                            inUpdate.set(true);
-                            control.setText(String.format("%.8f", (Float) option.getProperty().getValue()));
-                            inUpdate.set(false);
-                        }
-                    };
-                    listeners.add(invalidationListener);
-                    option.getProperty().addListener(new WeakInvalidationListener(invalidationListener));
-                } else if (option.getProperty().getValue() instanceof String) {
-                    final Single<Boolean> inUpdate = new Single<>(false);
-                    TextField control = new TextField();
-                    control.setPrefColumnCount(6);
-                    control.addEventFilter(KeyEvent.ANY, e -> {
-                        if (e.getCode() == KeyCode.Z && e.isShortcutDown()) {
-                            e.consume();
-                            control.getParent().fireEvent(e);
-                        }
-                    });
-                    if (option.getToolTipText() != null)
-                        control.setTooltip(new Tooltip(option.getToolTipText()));
+                        grid.add(control, 1, row);
+                        break;
+                    }
+                    case doubleArray: {
+                        final Single<Boolean> inUpdate = new Single<>(false);
 
-                    control.setText(option.getProperty().getValue().toString());
+                        final double[] array = ((double[]) option.getProperty().getValue());
+                        final int length = array.length;
 
-                    control.textProperty().addListener((observable, oldValue, newValue) -> {
-                        if (!inUpdate.get()) {
-                            inUpdate.set(true);
-                            option.getProperty().setValue(newValue);
-                            inUpdate.set(false);
+                        final TextField[] controls = new TextField[length];
+                        for (int i = 0; i < length; i++) {
+                            final TextField control = new TextField();
+                            controls[i] = control;
+                            control.setPrefColumnCount(6);
+                            control.setPrefWidth(60);
+                            control.setTextFormatter(new TextFormatter<>(new DoubleStringConverter()));
+                            control.setText(String.format("%.6f", array[i]));
+                            if (option.getToolTipText() != null)
+                                control.setTooltip(new Tooltip(option.getToolTipText()));
+
+                            control.textProperty().addListener((observable, oldValue, newValue) -> {
+                                if (newValue.length() == 0)
+                                    newValue = "0";
+                                if (OptionValueType.isType(type, newValue)) {
+                                    if (!inUpdate.get()) {
+                                        inUpdate.set(true);
+                                        for (int j = 0; j < length; j++) {
+                                            array[j] = Basic.parseDouble(controls[j].getText());
+                                        }
+                                        option.getProperty().setValue(array);
+                                        inUpdate.set(false);
+                                    }
+                                }
+                            });
+
+                            final InvalidationListener invalidationListener = observable -> {
+                                if (!inUpdate.get()) {
+                                    inUpdate.set(true);
+                                    final double[] values = ((double[]) option.getProperty().getValue());
+                                    for (int j = 0; j < length; j++) {
+                                        controls[j].setText(String.format("%.6f", values[j]));
+                                    }
+                                    inUpdate.set(false);
+                                }
+                            };
+                            listeners.add(invalidationListener);
+                            option.getProperty().addListener(new WeakInvalidationListener(invalidationListener));
                         }
-                    });
 
-                    InvalidationListener invalidationListener = observable -> {
-                        if (!inUpdate.get()) {
-                            inUpdate.set(true);
-                            control.setText(option.getProperty().getValue().toString());
-                            inUpdate.set(false);
-                        }
-                    };
-                    listeners.add(invalidationListener);
-                    option.getProperty().addListener(new WeakInvalidationListener(invalidationListener));
-                    grid.add(control, 1, row);
-                } else if (option.getProperty().getValue() instanceof Enum) {
-                    final Single<Boolean> inUpdate = new Single<>(false);
+                        final FlowPane flowPane = new FlowPane(controls);
+                        flowPane.setMaxWidth(250);
 
-                    final ChoiceBox<String> control = new ChoiceBox<>();
-                    control.getItems().addAll(option.getLegalValues());
-                    control.setValue(option.getProperty().getValue().toString());
-                    if (option.getToolTipText() != null)
-                        control.setTooltip(new Tooltip(option.getToolTipText()));
+                        grid.add(flowPane, 1, row);
+                        break;
+                    }
+                    case String: {
+                        final Single<Boolean> inUpdate = new Single<>(false);
+                        TextField control = new TextField();
+                        control.setPrefColumnCount(6);
+                        control.addEventFilter(KeyEvent.ANY, e -> {
+                            if (e.getCode() == KeyCode.Z && e.isShortcutDown()) {
+                                e.consume();
+                                control.getParent().fireEvent(e);
+                            }
+                        });
+                        if (option.getToolTipText() != null)
+                            control.setTooltip(new Tooltip(option.getToolTipText()));
 
-                    control.valueProperty().addListener((observable, oldValue, newValue) -> {
-                        if (!inUpdate.get()) {
-                            inUpdate.set(true);
-                            option.getProperty().setValue(option.getEnumValueForName(newValue)); // need to convert to enum
-                            inUpdate.set(false);
-                        }
-                    });
-                    grid.add(control, 1, row);
+                        control.setText(option.getProperty().getValue().toString());
 
-                    InvalidationListener invalidationListener = observable -> {
-                        if (!inUpdate.get()) {
-                            inUpdate.set(true);
-                            control.setValue(option.getProperty().getValue().toString());
-                            inUpdate.set(false);
-                        }
-                    };
-                    listeners.add(invalidationListener);
-                    option.getProperty().addListener(new WeakInvalidationListener(invalidationListener));
+                        control.textProperty().addListener((observable, oldValue, newValue) -> {
+                            if (!inUpdate.get()) {
+                                inUpdate.set(true);
+                                option.getProperty().setValue(newValue);
+                                inUpdate.set(false);
+                            }
+                        });
+
+                        InvalidationListener invalidationListener = observable -> {
+                            if (!inUpdate.get()) {
+                                inUpdate.set(true);
+                                control.setText(option.getProperty().getValue().toString());
+                                inUpdate.set(false);
+                            }
+                        };
+                        listeners.add(invalidationListener);
+                        option.getProperty().addListener(new WeakInvalidationListener(invalidationListener));
+
+                        grid.add(control, 1, row);
+                        break;
+                    }
+                    case Enum: {
+                        final Single<Boolean> inUpdate = new Single<>(false);
+
+                        final ChoiceBox<String> control = new ChoiceBox<>();
+                        control.getItems().addAll(option.getLegalValues());
+                        control.setValue(option.getProperty().getValue().toString());
+                        if (option.getToolTipText() != null)
+                            control.setTooltip(new Tooltip(option.getToolTipText()));
+
+                        control.valueProperty().addListener((observable, oldValue, newValue) -> {
+                            if (!inUpdate.get()) {
+                                inUpdate.set(true);
+                                option.getProperty().setValue(option.getEnumValueForName(newValue)); // need to convert to enum
+                                inUpdate.set(false);
+                            }
+                        });
+
+                        InvalidationListener invalidationListener = observable -> {
+                            if (!inUpdate.get()) {
+                                inUpdate.set(true);
+                                control.setValue(option.getProperty().getValue().toString());
+                                inUpdate.set(false);
+                            }
+                        };
+                        listeners.add(invalidationListener);
+                        option.getProperty().addListener(new WeakInvalidationListener(invalidationListener));
+
+                        grid.add(control, 1, row);
+                        break;
+                    }
+                    default:
+                        continue;
                 }
                 row++;
             }

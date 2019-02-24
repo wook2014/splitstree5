@@ -26,6 +26,14 @@ package splitstree5.core.models;
 
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
+import jloda.fx.NotificationManager;
+import jloda.util.CanceledException;
+import jloda.util.ProgressListener;
+import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;
+import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
+import splitstree5.core.datablocks.CharactersBlock;
+import splitstree5.core.datablocks.DistancesBlock;
+import splitstree5.utils.SplitsException;
 
 import java.util.Random;
 
@@ -73,7 +81,6 @@ public abstract class NucleotideModel implements SubstitutionModel {
      * @param f frequencies (0..3)
      */
     public void setRateMatrix(double[][] Q, double[] f) {
-
         //Test GTR property.
         for (int i = 0; i < 4; i++) {
             for (int j = i + 1; j < 4; j++) {
@@ -348,6 +355,16 @@ public abstract class NucleotideModel implements SubstitutionModel {
     }
 
     /**
+     * computes the exact distance
+     *
+     * @param F
+     * @return exact distance
+     */
+    public double exactDistance(double[][] F) {
+        throw new RuntimeException("exactDistance: not implemented");
+    }
+
+    /**
      * is this a group valued model
      *
      * @return true, if group valued model
@@ -356,4 +373,105 @@ public abstract class NucleotideModel implements SubstitutionModel {
         return false;
     }
 
+    public double[] getFreqs() {
+        return freqs;
+    }
+
+    public void setFreqs(double[] freqs) {
+        this.freqs = freqs;
+    }
+
+    /**
+     * gets normalized base frequencies
+     *
+     * @return noramlized base frequencies
+     * todo: is this really necessary?
+     */
+    public double[] getNormedBaseFreq() {
+        double sum = 0.0;
+        for (int i = 0; i < 4; i++) {
+            sum += freqs[i];
+        }
+        for (int i = 0; i < 4; i++) {
+            freqs[i] = freqs[i] / sum;
+        }
+        return freqs;
+    }
+
+    /**
+     * Return the inverse of the moment generating function
+     *
+     * @param x
+     * @return double
+     */
+    public static double mInverse(double x, double propInvariableSites, final double gamma) throws SaturatedDistancesException {
+        if (x <= 0.0)
+            throw new SaturatedDistancesException();
+        final double p = (propInvariableSites < 0.0 || propInvariableSites > 1.0 ? 0 : propInvariableSites);
+
+        if (x - p <= 0.0)
+            throw new SaturatedDistancesException();
+        if (gamma > 0.0) {
+            return gamma * (1.0 - Math.pow((x - p) / (1.0 - p), -1.0 / gamma));
+        } else
+            return Math.log((x - p) / (1 - p));
+    }
+
+    /**
+     * apply the model and fill the distance
+     *
+     * @param progress   used to display the progress
+     * @param characters
+     * @return
+     * @throws SplitsException
+     * @throws CanceledException
+     */
+    public void apply(ProgressListener progress, CharactersBlock characters, DistancesBlock distances, boolean useML) throws SplitsException, CanceledException {
+        final int ntax = characters.getNtax();
+        distances.setNtax(ntax);
+        progress.setMaximum(ntax);
+
+        int numMissing = 0;
+
+        for (int s = 1; s <= ntax; s++) {
+            for (int t = s + 1; t <= ntax; t++) {
+                final PairwiseCompare seqPair = new PairwiseCompare(characters, s, t);
+                double dist = 100.0;
+
+                if (useML) {
+                    //Maximum likelihood distance
+                    try {
+                        dist = seqPair.mlDistance(this);
+                    } catch (SaturatedDistancesException e) {
+                        numMissing++;
+                    }
+                } else {
+                    //Exact distance
+                    double[][] F = seqPair.getF();
+                    if (F == null)
+                        numMissing++;
+                    else {
+                        try {
+                            dist = exactDistance(F);
+                        } catch (SaturatedDistancesException e) {
+                            numMissing++;
+                        }
+                    }
+                }
+
+                distances.set(s, t, dist);
+                distances.set(t, s, dist);
+
+                final double var = seqPair.bulmerVariance(dist, 0.75);
+                distances.setVariance(s, t, var);
+                distances.setVariance(t, s, var);
+            }
+            progress.incrementProgress();
+        }
+        progress.close();
+
+        if (numMissing > 0) {
+            NotificationManager.showWarning("Proceed with caution: " + numMissing + " saturated or missing entries in the distance matrix");
+        }
+    }
 }

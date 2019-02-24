@@ -37,6 +37,7 @@ public class OptionNext<T> {
     private String toolTipText;
     private final ArrayList<String> legalValues;
 
+
     /**
      * constructs an option
      *
@@ -165,4 +166,14 @@ public class OptionNext<T> {
         }
         return options;
     }
+
+    /**
+     * gets the type of this option
+     *
+     * @return option value type
+     */
+    public OptionValueType getOptionValueType() {
+        return OptionValueType.getValueType(property.getValue());
+    }
+
 }

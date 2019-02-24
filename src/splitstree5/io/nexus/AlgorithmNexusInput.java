@@ -23,13 +23,13 @@ import jloda.util.IOExceptionWithLineNumber;
 import jloda.util.PluginClassLoader;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.algorithms.Algorithm;
+import splitstree5.gui.algorithmtab.next.OptionNext;
+import splitstree5.gui.algorithmtab.next.OptionValueType;
 import splitstree5.utils.Option;
 import splitstree5.utils.OptionsAccessor;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * algorithm nexus input
@@ -75,26 +75,65 @@ public class AlgorithmNexusInput extends NexusIOBase {
             np.matchIgnoreCase("OPTIONS");
 
             if (!np.peekMatchIgnoreCase(";")) {
-                final List<Option> options = OptionsAccessor.getAllOptions(algorithm);
-                Set<String> legalOptions = new HashSet<>();
-                for (Option option : options) {
-                    legalOptions.add(option.getName());
-                }
+                final ArrayList<OptionNext> optionsNext = new ArrayList<>(OptionNext.getAllOptions(algorithm));
+                if (optionsNext.size() > 0) {
+                    final Map<String, OptionNext> legalOptions = new HashMap<>();
+                    for (OptionNext option : optionsNext) {
+                        legalOptions.put(option.getName(), option);
+                    }
+                    while (true) {
+                        final String name = np.getWordRespectCase();
+                        np.matchIgnoreCase("=");
+                        final OptionNext option = legalOptions.get(name);
+                        if (option != null) {
+                            if (option.getOptionValueType() == OptionValueType.doubleArray) {
+                                final double[] array = (double[]) option.getProperty().getValue();
+                                for (int i = 0; i < array.length; i++) {
+                                    array[i] = np.getDouble();
+                                }
+                            } else {
+                                option.getProperty().setValue(OptionValueType.parseType(option.getOptionValueType(), np.getWordRespectCase()));
+                            }
 
-                while (true) {
-                    final String name = np.getWordRespectCase();
-                    np.matchIgnoreCase("=");
-                    final String value = np.getWordRespectCase();
+                        } else {
 
-                    if (legalOptions.contains(name))
-                        OptionsAccessor.setOptionValue(options, name, value);
-                    else
-                        System.err.println("WARNING: skipped unknown option for algorithm '" + algorithmName + "': '" + name + "' in line " + np.lineno());
+                            final StringBuilder buf = new StringBuilder();
+                            while (!np.peekMatchIgnoreCase(",") && !np.peekMatchIgnoreCase(";"))
+                                buf.append(" ").append(np.getWordRespectCase());
+                            System.err.println("WARNING: skipped unknown option for algorithm '" + algorithmName + "': '" + name + "=" + buf.toString() + "' in line " + np.lineno());
 
-                    if (np.peekMatchIgnoreCase(";"))
-                        break;
-                    else
-                        np.matchIgnoreCase(",");
+                        }
+                        if (np.peekMatchIgnoreCase(";"))
+                            break; // finished reading options
+                        else
+                            np.matchIgnoreCase(",");
+                    }
+                } else {
+                    // todo: remove this
+                    final List<Option> options = OptionsAccessor.getAllOptions(algorithm);
+                    if (options.size() > 0)
+                        System.err.println("Reading using old-style options"); // todo: this shouldn't happen
+
+                    Set<String> legalOptions = new HashSet<>();
+                    for (Option option : options) {
+                        legalOptions.add(option.getName());
+                    }
+
+                    while (true) {
+                        final String name = np.getWordRespectCase();
+                        np.matchIgnoreCase("=");
+                        final String value = np.getWordRespectCase();
+
+                        if (legalOptions.contains(name))
+                            OptionsAccessor.setOptionValue(options, name, value);
+                        else
+                            System.err.println("WARNING: skipped unknown option for algorithm '" + algorithmName + "': '" + name + "' in line " + np.lineno());
+
+                        if (np.peekMatchIgnoreCase(";"))
+                            break;
+                        else
+                            np.matchIgnoreCase(",");
+                    }
                 }
             }
             np.matchIgnoreCase(";");
