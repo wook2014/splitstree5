@@ -55,6 +55,8 @@ import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * A connector between data nodes. This is where algorithms are run
@@ -262,14 +264,25 @@ public class Connector<P extends DataBlock, C extends DataBlock> extends Workflo
     }
 
     /**
-     * gets all algorithms that can be associated with this connector
+     * gets all algorithms that can be associated with this connector, in alphabetical order
      *
      * @return instances of all algorithms
      */
     public ArrayList<Algorithm<P, C>> getAllAlgorithms() {
-        final ArrayList<Algorithm<P, C>> list = new ArrayList<>();
+        final Map<String, Algorithm> name2algorithm = new TreeMap<>();
+
         for (Object object : PluginClassLoader.getInstances(getParent().getDataBlock().getFromInterface(), getChild().getDataBlock().getToInterface(), "splitstree5.core.algorithms")) {
-            list.add((Algorithm) object);
+            final Algorithm algorithm = (Algorithm) object;
+            String name = algorithm.getName();
+            while (name2algorithm.containsKey(name)) {
+                System.err.println("Warning: algorithm with name " + algorithm.getName() + " occurs multiple times");
+                name += "+";
+            }
+            name2algorithm.put(name, algorithm);
+        }
+        final ArrayList<Algorithm<P, C>> list = new ArrayList<>(name2algorithm.size());
+        for (Object name : name2algorithm.keySet()) {
+            list.add(name2algorithm.get(name));
         }
         return list;
     }

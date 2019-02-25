@@ -124,6 +124,7 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
                         final Single<Boolean> inUpdate = new Single<>(false);
                         final TextField control = new TextField();
                         control.setPrefColumnCount(6);
+                        control.setMaxWidth(60);
                         control.setText(OptionValueType.toStringType(type, option.getProperty().getValue()));
 
                         if (option.getToolTipText() != null)
@@ -201,7 +202,7 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
                         }
 
                         final FlowPane flowPane = new FlowPane(controls);
-                        flowPane.setMaxWidth(250);
+                        flowPane.setPrefWidth(250);
 
                         grid.add(flowPane, 1, row);
                         break;
@@ -259,7 +260,7 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
                         }
 
                         final GridPane gridPane = new GridPane();
-                        gridPane.setMaxWidth(250);
+                        gridPane.setPrefWidth(250);
                         for (int i = 0; i < length; i++) {
                             for (int j = 0; j < length; j++) {
                                 final TextField control = controls[i][j];

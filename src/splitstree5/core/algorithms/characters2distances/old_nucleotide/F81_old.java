@@ -44,7 +44,7 @@ public class F81_old extends DNAdistance implements IFromChararacters, IToDistan
 
     @Override
     public List<String> listOptions() {
-        return Arrays.asList("PropInvariableSites", "Gamma", "UseML", "SetParameters");
+        return Arrays.asList("Gamma", "PropInvariableSites", "UseML_Distances", "SetParameters");
     }
 
     @Override

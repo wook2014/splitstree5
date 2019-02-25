@@ -51,7 +51,7 @@ public class K3ST extends Nucleotides2DistancesBase implements IFromChararacters
     }
 
     public List<String> listOptions() {
-        return Arrays.asList("TsTvRatio", "ACvATRatio", "PropInvariableSites", "Gamma", "optionBaseFrequencies", "UseML", "SetParameters");
+        return Arrays.asList("TsTvRatio", "ACvATRatio", "Gamma", "PropInvariableSites", "SetSiteVarParams", "UseML_Distances");
     }
 
     @Override
@@ -63,7 +63,7 @@ public class K3ST extends Nucleotides2DistancesBase implements IFromChararacters
         model.setPropInvariableSites(getOptionPropInvariableSites());
         model.setGamma(getOptionGamma());
 
-        model.apply(progress, charactersBlock, distancesBlock, isOptionUseML());
+        model.apply(progress, charactersBlock, distancesBlock, isOptionUseML_Distances());
     }
     // GETTER AND SETTER
 }

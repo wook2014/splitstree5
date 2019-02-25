@@ -119,7 +119,7 @@ public class JukesCantor extends Nucleotides2DistancesBase implements IFromChara
 
     @Override
     public List<String> listOptions() {
-        return Arrays.asList("PropInvariableSites", "Gamma", "optionBaseFrequencies", "UseML", "SetParameters");
+        return Arrays.asList("PropInvariableSites", "SetSiteVarParams", "UseML_Distances");
     }
 
     @Override
@@ -128,8 +128,8 @@ public class JukesCantor extends Nucleotides2DistancesBase implements IFromChara
         final NucleotideModel model = new JCmodel();
 
         model.setPropInvariableSites(getOptionPropInvariableSites());
-        model.setGamma(getOptionGamma());
+        model.setGamma(DEFAULT_GAMMA);
 
-        model.apply(progress, parent, child, isOptionUseML());
+        model.apply(progress, parent, child, isOptionUseML_Distances());
     }
 }

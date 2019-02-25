@@ -57,7 +57,7 @@ public class GeneContentDistanceTest {
         taxaBlock.addTaxaByNames(taxonNames2);
         DistancesBlock distancesBlock2 = new DistancesBlock();
 
-        geneContentDistance.setOptionUseMLDistance(true);
+        geneContentDistance.setOptionUseML_DistancesDistance(true);
         geneContentDistance.compute(pl, taxaBlock, charactersBlock, distancesBlock2);
 
         final TaxaBlock taxaFromSplitsTree4_2 = new TaxaBlock();

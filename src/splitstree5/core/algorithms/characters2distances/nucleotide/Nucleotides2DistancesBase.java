@@ -30,42 +30,43 @@ import splitstree5.core.analysis.CaptureRecapture;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.gui.utils.CharactersUtilities;
+import splitstree5.core.models.NucleotideModel;
 
 /**
  * nucleotides to distances algorithms base class
  * Dave Bryant 2005, Daniel Huson 2019
  */
 public abstract class Nucleotides2DistancesBase extends Algorithm<CharactersBlock, DistancesBlock> {
-    public enum SetParameters {fromChars, defaultParameters}
+    public enum SetParameters {fromChars, defaultValues}
 
-    final static double DEFAULT_PROP_INVARIABLE_SITES = 0.0;
-    final static double DEFAULT_GAMMA = -1;        //Negative gamma corresponds to equal rates
-    final static double[] DEFAULT_BASE_FREQ = {0.25, 0.25, 0.25, 0.25};  //Use the exact distance by default - transforms without exact distances should set useML = false
-    final static double DEFAULT_TSTV_RATIO = 2.0;  //default is no difference between transitions and transversions
-    final static double[][] DEFAULT_QMATRIX = {{-3, 1, 1, 1}, {1, -3, 1, 1}, {1, 1, -3, 1}, {1, 1, 1, -3}};
-    private final static double DEFAULT_AC_VS_AT = 2.0;
-    private final static boolean DEFAULT_USE_ML = false;
+    protected final static double DEFAULT_GAMMA = -1;        //Negative gamma corresponds to equal rates
+    protected final static double DEFAULT_PROP_INVARIABLE_SITES = 0.0;
 
-    private final DoubleProperty optionACvATRatio = new SimpleDoubleProperty(DEFAULT_AC_VS_AT);
+    protected final static double[] DEFAULT_BASE_FREQ = {0.25, 0.25, 0.25, 0.25};  //Use the exact distance by default - transforms without exact distances should set useML = false
 
-    private final DoubleProperty optionPropInvariableSites = new SimpleDoubleProperty(DEFAULT_PROP_INVARIABLE_SITES);
+    protected final static double DEFAULT_TSTV_RATIO = 2.0;  //default is no difference between transitions and transversions
+    protected final static double DEFAULT_AC_VS_AT = 2.0;
+    protected final static double[][] DEFAULT_RATE_MATRIX = {{-3, 1, 1, 1}, {1, -3, 1, 1}, {1, 1, -3, 1}, {1, 1, 1, -3}};
+
+    protected final static boolean DEFAULT_USE_ML = false;
+
     private final DoubleProperty optionGamma = new SimpleDoubleProperty(DEFAULT_GAMMA);
-    private final BooleanProperty optionUseML = new SimpleBooleanProperty(DEFAULT_USE_ML);
-    private final DoubleProperty optionTsTvRatio = new SimpleDoubleProperty(DEFAULT_TSTV_RATIO);
-
-    // Used in the panel to decide how to compute the above
-    private final Property<SetParameters> optionSetParameters = new SimpleObjectProperty<>(SetParameters.defaultParameters);
+    private final DoubleProperty optionPropInvariableSites = new SimpleDoubleProperty(DEFAULT_PROP_INVARIABLE_SITES);
 
     private final ObjectProperty<double[]> optionBaseFrequencies = new SimpleObjectProperty<>(DEFAULT_BASE_FREQ);
 
-    private final ObjectProperty<double[][]> optionRateMatrix = new SimpleObjectProperty<>(DEFAULT_QMATRIX);
+    private final DoubleProperty optionTsTvRatio = new SimpleDoubleProperty(DEFAULT_TSTV_RATIO);
+    private final DoubleProperty optionACvATRatio = new SimpleDoubleProperty(DEFAULT_AC_VS_AT);
+    private final ObjectProperty<double[][]> optionRateMatrix = new SimpleObjectProperty<>(DEFAULT_RATE_MATRIX);
 
-    private ChangeListener<SetParameters> listener = null;
+    private final BooleanProperty optionUseML_Distances = new SimpleBooleanProperty(DEFAULT_USE_ML);
 
-    public Nucleotides2DistancesBase() {
+    private final ObjectProperty<SetParameters> optionSetBaseFrequencies = new SimpleObjectProperty<>(SetParameters.defaultValues);
+    private final ObjectProperty<SetParameters> optionSetSiteVarParams = new SimpleObjectProperty<>(SetParameters.defaultValues);
 
-    }
+    private ChangeListener<SetParameters> listenerSetBaseFrequencies = null;
+    private ChangeListener<SetParameters> listenerSetSiteVarParams = null;
+
 
     @Override
     public String getToolTip(String optionName) {
@@ -74,16 +75,18 @@ public abstract class Nucleotides2DistancesBase extends Algorithm<CharactersBloc
                 return "Proportion of invariable sites";
             case "Gamma":
                 return "Alpha value for the Gamma distribution";
-            case "UseML":
+            case "UseML_Distances":
                 return "Use maximum likelihood estimation of distances (rather than exact distances)";
             case "TsTvRatio":
                 return "Ratio of transitions vs transversions";
             case "BaseFrequencies":
-                return "Base frequencies (in order ATGC)";
+                return "Base frequencies (in order ACGT/U)";
             case "RateMatrix":
-                return "Rate matrix for GTR (in order ATGC)";
-            case "SetParameters":
-                return "Set parameters to default values or to estimations from data (using Capture-recapture for invariable sites)";
+                return "Rate matrix for GTR (in order ACGT/U)";
+            case "SetBaseFrequencies":
+                return "Set base frequencies to default values, or to estimations from characters (using Capture-recapture for invariable sites)";
+            case "SetSiteVarParams":
+                return "Set site variation parameters to default values, or to estimations from characters";
         }
         return optionName;
     }
@@ -96,53 +99,62 @@ public abstract class Nucleotides2DistancesBase extends Algorithm<CharactersBloc
      * @throws Exception
      */
     public void setupBeforeDisplay(TaxaBlock taxaBlock, CharactersBlock parent) {
-        if (listener != null)
-            optionSetParametersProperty().removeListener(listener);
+        if (listenerSetSiteVarParams != null)
+            optionSetSiteVarParamsProperty().removeListener(listenerSetSiteVarParams);
         // setup set Parameters control:
-        listener = (c, o, n) -> {
+        listenerSetSiteVarParams = (c, o, n) -> {
             switch (n) {
-                case defaultParameters: {
+                case defaultValues: {
                     setOptionPropInvariableSites(DEFAULT_PROP_INVARIABLE_SITES);
-                    setOptionBaseFrequencies(DEFAULT_BASE_FREQ);
-                    setOptionRateMatrix(DEFAULT_QMATRIX);
-
                     setOptionGamma(DEFAULT_GAMMA);
-
-                    setOptionTsTvRatio(DEFAULT_TSTV_RATIO);
-                    setOptionACvATRatio(DEFAULT_AC_VS_AT);
                     break;
                 }
                 case fromChars: {
-                    final CallableService<Double> service1 = new CallableService<>(() -> {
+                    final CallableService<Double> service = new CallableService<>(() -> {
                         // todo: want this to run in foot pane
                         try (ProgressPercentage progress = new ProgressPercentage(CaptureRecapture.DESCRIPTION)) {
                             final CaptureRecapture captureRecapture = new CaptureRecapture();
                             return captureRecapture.estimatePropInvariableSites(progress, parent);
                         }
                     });
-                    service1.setOnSucceeded((e) -> setOptionPropInvariableSites(service1.getValue()));
-                    service1.setOnFailed((e) -> {
-                        NotificationManager.showError("Calculation of proportion of invariable sites failed: " + service1.getException().getMessage());
+                    service.setOnSucceeded((e) -> setOptionPropInvariableSites(service.getValue()));
+                    service.setOnFailed((e) -> {
+                        NotificationManager.showError("Calculation of proportion of invariable sites failed: " + service.getException().getMessage());
                     });
-                    service1.start();
-
-                    final CallableService<double[]> service2 = new CallableService<>(() -> {
-                        return CharactersUtilities.computeFreqs(parent, false);
-                    });
-                    service2.setOnSucceeded((e) -> setOptionBaseFrequencies(service2.getValue()));
-                    service2.setOnFailed((e) -> {
-                        NotificationManager.showError("Calculation of base frequencies failed: " + service2.getException().getMessage());
-                    });
-                    service2.start();
-
-
-                    // todo: don't know how to estimate QMatrix from data, ask Dave!
-                    setOptionRateMatrix(DEFAULT_QMATRIX);
+                    service.start();
                     break;
                 }
             }
         };
-        optionSetParametersProperty().addListener(listener);
+        optionSetSiteVarParamsProperty().addListener(listenerSetSiteVarParams);
+
+        if (listenerSetBaseFrequencies != null)
+            optionSetBaseFrequenciesProperty().removeListener(listenerSetBaseFrequencies);
+        // setup set Parameters control:
+        listenerSetBaseFrequencies = (c, o, n) -> {
+            switch (n) {
+                case defaultValues: {
+                    setOptionBaseFrequencies(DEFAULT_BASE_FREQ);
+                    setOptionRateMatrix(DEFAULT_RATE_MATRIX);
+                    setOptionTsTvRatio(DEFAULT_TSTV_RATIO);
+                    setOptionACvATRatio(DEFAULT_AC_VS_AT);
+                    break;
+                }
+                case fromChars: {
+                    final CallableService<double[]> service = new CallableService<>(() -> NucleotideModel.computeFreqs(parent, false));
+                    service.setOnSucceeded((e) -> setOptionBaseFrequencies(service.getValue()));
+                    service.setOnFailed((e) -> {
+                        NotificationManager.showError("Calculation of base frequencies failed: " + service.getException().getMessage());
+                    });
+                    service.start();
+
+                    // todo: don't know how to estimate QMatrix from data, ask Dave!
+                    setOptionRateMatrix(DEFAULT_RATE_MATRIX);
+                    break;
+                }
+            }
+        };
+        optionSetBaseFrequenciesProperty().addListener(listenerSetBaseFrequencies);
     }
 
     @Override
@@ -172,16 +184,16 @@ public abstract class Nucleotides2DistancesBase extends Algorithm<CharactersBloc
         this.optionGamma.set(optionGamma);
     }
 
-    public boolean isOptionUseML() {
-        return optionUseML.get();
+    public boolean isOptionUseML_Distances() {
+        return optionUseML_Distances.get();
     }
 
-    public BooleanProperty optionUseMLProperty() {
-        return optionUseML;
+    public BooleanProperty optionUseML_DistancesProperty() {
+        return optionUseML_Distances;
     }
 
-    public void setOptionUseML(boolean optionUseML) {
-        this.optionUseML.set(optionUseML);
+    public void setOptionUseML_Distances(boolean optionUseML_Distances) {
+        this.optionUseML_Distances.set(optionUseML_Distances);
     }
 
     public double getOptionTsTvRatio() {
@@ -194,18 +206,6 @@ public abstract class Nucleotides2DistancesBase extends Algorithm<CharactersBloc
 
     public void setOptionTsTvRatio(double optionTsTvRatio) {
         this.optionTsTvRatio.set(optionTsTvRatio);
-    }
-
-    public SetParameters getOptionSetParameters() {
-        return optionSetParameters.getValue();
-    }
-
-    public Property<SetParameters> optionSetParametersProperty() {
-        return optionSetParameters;
-    }
-
-    public void setOptionSetParameters(SetParameters optionSetParameters) {
-        this.optionSetParameters.setValue(optionSetParameters);
     }
 
     public double[] getOptionBaseFrequencies() {
@@ -242,5 +242,29 @@ public abstract class Nucleotides2DistancesBase extends Algorithm<CharactersBloc
 
     public void setOptionRateMatrix(double[][] optionRateMatrix) {
         this.optionRateMatrix.set(optionRateMatrix);
+    }
+
+    public SetParameters getOptionSetBaseFrequencies() {
+        return optionSetBaseFrequencies.get();
+    }
+
+    public ObjectProperty<SetParameters> optionSetBaseFrequenciesProperty() {
+        return optionSetBaseFrequencies;
+    }
+
+    public void setOptionSetBaseFrequencies(SetParameters optionSetBaseFrequencies) {
+        this.optionSetBaseFrequencies.set(optionSetBaseFrequencies);
+    }
+
+    public SetParameters getOptionSetSiteVarParams() {
+        return optionSetSiteVarParams.get();
+    }
+
+    public ObjectProperty<SetParameters> optionSetSiteVarParamsProperty() {
+        return optionSetSiteVarParams;
+    }
+
+    public void setOptionSetSiteVarParams(SetParameters optionSetSiteVarParams) {
+        this.optionSetSiteVarParams.set(optionSetSiteVarParams);
     }
 }

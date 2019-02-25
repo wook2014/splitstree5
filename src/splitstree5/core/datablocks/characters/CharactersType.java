@@ -25,8 +25,8 @@ package splitstree5.core.datablocks.characters;
  */
 public enum CharactersType {
     Standard("01"),
-    DNA("atgc"),
-    RNA("augc"),
+    DNA("acgt"), // todo: have changed this to acgt from atgc 25Feb2019, does this break anything?
+    RNA("acgu"),
     Protein("arndcqeghilkmfpstwyvz"),
     Microsat(""),
     Unknown("");

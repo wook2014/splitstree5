@@ -48,7 +48,6 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
             "\t[TITLE title;]\n" +
             "\t[LINK name = title;]\n" +
             "\tDIMENSIONS [NTAX=number-of-taxa] NCHAR=number-of-characters;\n" +
-            "\t[PROPERTIES [GAMMASHAPE=shape-parameter] [PINVAR=proportion-invar];]\n" +
             "\t[FORMAT\n" +
             "\t\t[DATATYPE={STANDARD|DNA|RNA|PROTEIN|MICROSAT}]\n" +
             "\t\t[RESPECTCASE]\n" +
@@ -122,15 +121,12 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
         }
 
 
-        if (np.peekMatchIgnoreCase("PROPERTIES")) {
+        if (np.peekMatchIgnoreCase("PROPERTIES")) { // legacy: SPlitsTree4 might report this, we ignore it
             final List<String> tokens = np.getTokensLowerCase("properties", ";");
-            charactersBlock.setGammaParam(np.findIgnoreCase(tokens, "gammaShape=", Float.MAX_VALUE));
-            charactersBlock.setPropInvariableSites(np.findIgnoreCase(tokens, "PINVAR=", Float.MAX_VALUE));
+            np.findIgnoreCase(tokens, "gammaShape=", Float.MAX_VALUE);
+            np.findIgnoreCase(tokens, "PINVAR=", Float.MAX_VALUE);
             if (tokens.size() != 0)
                 throw new IOExceptionWithLineNumber(np.lineno(), "'" + tokens + "' unexpected in PROPERTIES");
-        } else {
-            charactersBlock.setGammaParam(Float.MAX_VALUE);
-            charactersBlock.setPropInvariableSites(Float.MAX_VALUE);
         }
 
         if (np.peekMatchIgnoreCase("FORMAT")) {

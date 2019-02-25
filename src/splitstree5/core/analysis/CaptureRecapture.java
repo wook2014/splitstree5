@@ -29,6 +29,7 @@ import java.util.Random;
 
 /**
  * Estimates the proportion of invariant sites using capture-recapture
+ * Daniel Huson, 2005
  */
 public class CaptureRecapture {
     public static String DESCRIPTION = "Estimation of invariant sites using capture-recapture method (Lockhart, Huson, Steel, 2000)";
@@ -94,14 +95,10 @@ public class CaptureRecapture {
      */
 
     private static double vscore(int[] q, CharactersBlock block) {
-
-        int nsites = block.getNchar();
+        final int nsites = block.getNchar();
         int ngood = 0; //Number of sites without gaps in all four
 
-        int f_ij_kl, f_ik_jl, f_il_jk;
-        int f_ij, f_ik, f_il, f_jk, f_jl, f_kl;
-        f_ij_kl = f_ik_jl = f_il_jk = 0;
-        f_ij = f_ik = f_il = f_jk = f_jl = f_kl = 0;
+        int f_ij_kl = 0, f_ik_jl = 0, f_il_jk = 0, f_ij = 0, f_ik = 0, f_il = 0, f_jk = 0, f_jl = 0, f_kl = 0;
 
         int nconst = 0;
 
@@ -153,7 +150,6 @@ public class CaptureRecapture {
         //System.err.println(q+"\tv = "+ v);
         return v;
     }
-
 
     /**
      * Computes the proportion of Invariance sites using Steel et al.'s method
@@ -224,7 +220,6 @@ public class CaptureRecapture {
         }
 
         return vsum / count;
-
     }
 
     public int getOptionTaxaCutoff() {

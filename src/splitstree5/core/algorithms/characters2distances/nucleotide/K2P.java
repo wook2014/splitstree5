@@ -46,7 +46,7 @@ public class K2P extends Nucleotides2DistancesBase implements IFromChararacters,
 
     @Override
     public List<String> listOptions() {
-        return Arrays.asList("TsTvRatio", "PropInvariableSites", "Gamma", "optionBaseFrequencies", "UseML", "SetParameters");
+        return Arrays.asList("TsTvRatio", "Gamma", "PropInvariableSites", "SetSiteVarParams", "UseML_Distances");
     }
 
     @Override
@@ -61,6 +61,6 @@ public class K2P extends Nucleotides2DistancesBase implements IFromChararacters,
         model.setGamma(getOptionGamma());
 
 
-        model.apply(progress, charactersBlock, distancesBlock, isOptionUseML());
+        model.apply(progress, charactersBlock, distancesBlock, isOptionUseML_Distances());
     }
 }

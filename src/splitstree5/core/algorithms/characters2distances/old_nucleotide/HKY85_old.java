@@ -41,7 +41,7 @@ public class HKY85_old extends DNAdistance implements IFromChararacters, IToDist
 
     public HKY85_old() {
         super();
-        setOptionUseML(true);
+        setOptionUseML_Distances(true);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class HKY85_old extends DNAdistance implements IFromChararacters, IToDist
         model.setPropInvariableSites(getOptionPropInvariableSites());
         model.setGamma(getOptionGamma());
 
-        setOptionUseML(true);
+        setOptionUseML_Distances(true);
         distancesBlock.copy(fillDistanceMatrix(progress, charactersBlock, model));
     }
 

@@ -43,7 +43,7 @@ public class F84 extends Nucleotides2DistancesBase implements IFromChararacters,
 
     @Override
     public List<String> listOptions() {
-        return Arrays.asList("PropInvariableSites", "Gamma", "optionBaseFrequencies", "UseML", "SetParameters");
+        return Arrays.asList("optionBaseFrequencies", "SetBaseFrequencies", "PropInvariableSites", "SetSiteVarParams", "UseML_Distances");
     }
 
 
@@ -55,8 +55,8 @@ public class F84 extends Nucleotides2DistancesBase implements IFromChararacters,
 
         final F84Model model = new F84Model(getOptionBaseFrequencies(), getOptionTsTvRatio());
         model.setPropInvariableSites(getOptionPropInvariableSites());
-        model.setGamma(getOptionGamma());
+        model.setGamma(DEFAULT_GAMMA);
 
-        model.apply(progress, charactersBlock, distancesBlock, isOptionUseML());
+        model.apply(progress, charactersBlock, distancesBlock, isOptionUseML_Distances());
     }
 }

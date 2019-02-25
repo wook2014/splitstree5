@@ -665,15 +665,20 @@ public class Basic {
         StringBuilder buf = new StringBuilder();
         for (int pos = 0; pos < string.length(); pos++) {
             final char ch = string.charAt(pos);
-            if (Character.isUpperCase(ch)) {
-                if (!afterWhiteSpace && !afterCapital) {
-                    buf.append(" ");
-                }
-                afterCapital = true;
-            } else
-                afterCapital = false;
-            buf.append(ch);
-            afterWhiteSpace = (Character.isWhitespace(ch));
+            if (ch == '_' && !afterWhiteSpace) {
+                buf.append(" ");
+                afterWhiteSpace = true;
+            } else {
+                if (Character.isUpperCase(ch)) {
+                    if (!afterWhiteSpace && !afterCapital) {
+                        buf.append(" ");
+                    }
+                    afterCapital = true;
+                } else
+                    afterCapital = false;
+                buf.append(ch);
+                afterWhiteSpace = (Character.isWhitespace(ch));
+            }
         }
         return buf.toString();
     }

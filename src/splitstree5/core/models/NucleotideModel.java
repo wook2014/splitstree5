@@ -467,4 +467,52 @@ public abstract class NucleotideModel implements SubstitutionModel {
             NotificationManager.showWarning("Proceed with caution: " + numMissing + " saturated or missing entries in the distance matrix");
         }
     }
+
+    /**
+     * Computes the frequencies matrix from *all* taxa
+     *
+     * @param chars  the chars
+     * @param warned Shows an alert if an unexpected symbol appears.
+     * @return the frequencies matrix
+     */
+
+    static public double[] computeFreqs(CharactersBlock chars, boolean warned) {
+        int numNotMissing = 0;
+        final String symbols = chars.getSymbols();
+        final int numStates = symbols.length();
+        final double[] Fcount = new double[numStates];
+        final char missingChar = chars.getMissingCharacter();
+        final char gapChar = chars.getGapCharacter();
+
+        for (int i = 1; i < chars.getNtax(); i++) {
+            char[] seq = chars.getMatrix()[i];
+            for (int k = 1; k < chars.getNchar(); k++) {
+                char c = seq[k];
+
+                //Convert to lower case if the respectCase option is not set
+                if (!chars.isRespectCase()) {
+                    if (c != missingChar && c != gapChar)
+                        c = Character.toLowerCase(c);
+                }
+                if (c != missingChar && c != gapChar) {
+                    numNotMissing = numNotMissing + 1;
+
+                    int state = symbols.indexOf(c);
+
+                    if (state >= 0) {
+                        Fcount[state] += 1.0;
+                    } else if (!warned) {
+
+                        NotificationManager.showWarning("Unknown symbol encountered in characters: " + c);
+                        warned = true;
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < numStates; i++) {
+            Fcount[i] = Fcount[i] / (double) numNotMissing;
+        }
+        return Fcount;
+    }
 }

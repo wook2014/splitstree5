@@ -23,7 +23,7 @@ import java.util.List;
 public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
 
     public final static String DESCRIPTION = "Compute distances based on shared genes (Snel Bork et al 1999, Huson and Steel 2003)";
-    private BooleanProperty optionUseMLDistance = new SimpleBooleanProperty(false);
+    private BooleanProperty optionUseML_DistancesDistance = new SimpleBooleanProperty(false);
 
     @Override
     public String getCitation() {
@@ -52,7 +52,7 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
         todo: don't work for useMLDistance! also in ST4
          */
         final BitSet[] genes = computeGenes(charactersBlock);
-        if (!optionUseMLDistance.getValue())
+        if (!optionUseML_DistancesDistance.getValue())
             computeSnelBorkDistance(distancesBlock, taxaBlock.getNtax(), genes);
         else
             computeMLDistance(distancesBlock, taxaBlock.getNtax(), genes);
@@ -148,13 +148,15 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
 
     //GETTER AND SETTER
 
-    public boolean getOptionUseMLDistance() {
-        return optionUseMLDistance.getValue();
+    public boolean getOptionUseML_DistancesDistance() {
+        return optionUseML_DistancesDistance.getValue();
     }
-    public BooleanProperty optionUseMLDistanceProperty() {
-        return optionUseMLDistance;
+
+    public BooleanProperty optionUseML_DistancesDistanceProperty() {
+        return optionUseML_DistancesDistance;
     }
-    public void setOptionUseMLDistance(boolean useMLDistance) {
-        this.optionUseMLDistance.set(useMLDistance);
+
+    public void setOptionUseML_DistancesDistance(boolean useMLDistance) {
+        this.optionUseML_DistancesDistance.set(useMLDistance);
     }
 }

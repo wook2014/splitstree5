@@ -29,7 +29,7 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.models.K3STmodel;
-import splitstree5.gui.utils.CharactersUtilities;
+import splitstree5.core.models.NucleotideModel;
 
 import java.util.Arrays;
 import java.util.List;
@@ -52,7 +52,7 @@ public class K3ST_old extends DNAdistance implements IFromChararacters, IToDista
     }
 
     public List<String> listOptions() {
-        return Arrays.asList("PropInvariableSites", "Gamma", "UseML", "SetParameters", "TsTvRatio", "ACvsAT");
+        return Arrays.asList("Gamma", "PropInvariableSites", "UseML_Distances", "SetParameters", "TsTvRatio", "ACvsAT");
     }
 
     @Override
@@ -80,9 +80,7 @@ public class K3ST_old extends DNAdistance implements IFromChararacters, IToDista
     @Override
     public void updateSettings(CharactersBlock characters, SetParameters value) {
         if (value.equals(SetParameters.fromChars)) {
-            setOptionPropInvariableSites(characters.hasPropInvariableSites() ? characters.getPropInvariableSites() : DEFAULT_PROP_INVARIABLE_SITES);
-            setOptionGamma(characters.hasGamma() ? characters.getGammaParam() : DEFAULT_GAMMA);
-            setBaseFreq(CharactersUtilities.computeFreqs(characters, false));
+            setBaseFreq(NucleotideModel.computeFreqs(characters, false));
         } else if (value.equals(SetParameters.defaultParameters)) {
             setOptionPropInvariableSites(DEFAULT_PROP_INVARIABLE_SITES);
             setOptionGamma(DEFAULT_GAMMA);

@@ -91,7 +91,6 @@ public class CharactersFilter extends Algorithm<CharactersBlock, CharactersBlock
         child.setStateLabeler(parent.getStateLabeler());
         child.setDataType(parent.getDataType());
         child.setDiploid(parent.isDiploid());
-        child.setGammaParam(parent.getGammaParam());
         child.setGapCharacter(parent.getGapCharacter());
         child.setMissingCharacter(parent.getMissingCharacter());
         child.setSymbols(parent.getSymbols());

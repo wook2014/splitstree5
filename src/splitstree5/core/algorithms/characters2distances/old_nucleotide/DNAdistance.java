@@ -33,7 +33,6 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.CharactersType;
 import splitstree5.core.models.NucleotideModel;
 import splitstree5.core.workflow.Connector;
-import splitstree5.gui.utils.CharactersUtilities;
 import splitstree5.utils.SplitsException;
 
 import java.util.Arrays;
@@ -57,7 +56,7 @@ public abstract class DNAdistance extends SequenceBasedDistance {
     private double[] baseFreq;
     private final DoubleProperty optionPropInvariableSites = new SimpleDoubleProperty(DEFAULT_PROP_INVARIABLE_SITES);
     private final DoubleProperty optionGamma = new SimpleDoubleProperty(DEFAULT_GAMMA);
-    private final BooleanProperty optionUseML = new SimpleBooleanProperty(false);
+    private final BooleanProperty optionUseML_Distances = new SimpleBooleanProperty(false);
     private final DoubleProperty optionTsTvRatio = new SimpleDoubleProperty(DEFAULT_TSTV_RATIO);
 
     // Used in the panel to decide how to compute the above
@@ -72,11 +71,6 @@ public abstract class DNAdistance extends SequenceBasedDistance {
 
         //todo: connector = null, need access to charatersBlock for updateSetting function!
 
-        if(connectorProperty().getValue() == null)
-            System.err.println("Connector null");
-        else
-            System.err.println("Connector != null");
-
         connectorProperty().addListener((c) -> {
             System.err.println("Connector Listener");
             final Connector<CharactersBlock, ? extends DataBlock> connector = connectorProperty().get();
@@ -85,7 +79,7 @@ public abstract class DNAdistance extends SequenceBasedDistance {
     }
 
     public List<String> listOptions() {
-        return Arrays.asList("PropInvariableSites", "Gamma", "UseML", "SetParameters", "TsTvRatio");
+        return Arrays.asList("Gamma", "PropInvariableSites", "UseML_Distances", "SetParameters", "TsTvRatio");
     }
 
     @Override
@@ -95,7 +89,7 @@ public abstract class DNAdistance extends SequenceBasedDistance {
                 return "Proportion of invariable sites";
             case "Gamma":
                 return "Alpha parameter for gamma distribution. Negative gamma = Equal rates";
-            case "UseML":
+            case "UseML_Distances":
                 return "Use maximum likelihood distances estimation";
             case "SetParameters":
                 return "Choose between default or in character block defined parameters ";
@@ -118,9 +112,7 @@ public abstract class DNAdistance extends SequenceBasedDistance {
      */
     public void updateSettings(CharactersBlock characters, SetParameters value) {
         if (value.equals(SetParameters.fromChars)) {
-            setOptionPropInvariableSites(characters.hasPropInvariableSites() ? characters.getPropInvariableSites() : DEFAULT_PROP_INVARIABLE_SITES);
-            setOptionGamma(characters.hasGamma() ? characters.getGammaParam() : DEFAULT_GAMMA);
-            setBaseFreq(CharactersUtilities.computeFreqs(characters, false));
+            setBaseFreq(NucleotideModel.computeFreqs(characters, false));
         } else if (value.equals(SetParameters.defaultParameters)) {
             setOptionPropInvariableSites(DEFAULT_PROP_INVARIABLE_SITES);
             setOptionGamma(DEFAULT_GAMMA);
@@ -193,7 +185,7 @@ public abstract class DNAdistance extends SequenceBasedDistance {
                 final PairwiseCompare seqPair = new PairwiseCompare(characters, s, t);
                 double dist = 100.0;
 
-                if (this.optionUseML.getValue()) {
+                if (this.optionUseML_Distances.getValue()) {
                     //Maximum likelihood distance
                     try {
                         dist = seqPair.mlDistance(model);
@@ -259,16 +251,16 @@ public abstract class DNAdistance extends SequenceBasedDistance {
         optionGamma.setValue(gamma);
     }
 
-    public boolean getOptionUseML() {
-        return optionUseML.getValue();
+    public boolean getOptionUseML_Distances() {
+        return optionUseML_Distances.getValue();
     }
 
-    public BooleanProperty optionUseMLProperty() {
-        return optionUseML;
+    public BooleanProperty optionUseML_DistancesProperty() {
+        return optionUseML_Distances;
     }
 
-    public void setOptionUseML(boolean useML) {
-        this.optionUseML.setValue(useML);
+    public void setOptionUseML_Distances(boolean useML) {
+        this.optionUseML_Distances.setValue(useML);
     }
 
     public double getOptionTsTvRatio() {

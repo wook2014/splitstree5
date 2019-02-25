@@ -62,8 +62,8 @@ public class GTR extends Nucleotides2DistancesBase implements IFromChararacters,
 
     @Override
     public List<String> listOptions() {
-        return Arrays.asList("PropInvariableSites", "Gamma", "RateMatrix", "UseML", "SetParameters");
-    }//todo add Qmatrix later
+        return Arrays.asList("PropInvariableSites", "SetSiteVarParams", "RateMatrix", "UseML_Distances");
+    }
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock) throws Exception {
@@ -72,8 +72,8 @@ public class GTR extends Nucleotides2DistancesBase implements IFromChararacters,
 
         GTRmodel model = new GTRmodel(getOptionRateMatrix(), getOptionBaseFrequencies());
         model.setPropInvariableSites(getOptionPropInvariableSites());
-        model.setGamma(getOptionGamma());
+        model.setGamma(DEFAULT_GAMMA);
 
-        model.apply(progress, charactersBlock, distancesBlock, isOptionUseML());
+        model.apply(progress, charactersBlock, distancesBlock, isOptionUseML_Distances());
     }
 }

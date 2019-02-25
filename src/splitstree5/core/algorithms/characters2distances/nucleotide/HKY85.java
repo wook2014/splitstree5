@@ -41,33 +41,32 @@ import java.util.List;
 public class HKY85 extends Nucleotides2DistancesBase implements IFromChararacters, IToDistances {
     @Override
     public String getCitation() {
-        return "Hasegawa, Kishino, Yano 1985; " +
-                "Hasegawa M, Kishino H, Yano T. \"Dating of human-ape splitting by a molecular clock of mitochondrial DNA\". " +
-                "Journal of Molecular Evolution. 22 (2): 160–174. PMID 3934395. doi:10.1007/BF02101694, 1985.";
+        return "Hasegawa, Kishino, Yano 1985;" +
+                " Hasegawa M, Kishino H, Yano T. Dating of human-ape splitting by a molecular clock of mitochondrial DNA." +
+                " Journal of Molecular Evolution. 22 (2): 160–174. PMID 3934395. doi:10.1007/BF02101694, 1985.";
     }
 
     @Override
     public List<String> listOptions() {
-        return Arrays.asList("TsTvRatio", "PropInvariableSites", "Gamma", "optionBaseFrequencies", "SetParameters");
+        return Arrays.asList("TsTvRatio", "optionBaseFrequencies", "SetBaseFrequencies", "PropInvariableSites", "SetSiteVarParams");
     }
-
 
     public HKY85() {
         super();
-        setOptionUseML(true);
+        setOptionUseML_Distances(true);
     }
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock) throws Exception {
 
-        progress.setTasks("HKY85 Distance", "Init.");
+        progress.setTasks("HKY85 distance", "Computing...");
 
         HKY85model model = new HKY85model(getOptionBaseFrequencies(), getOptionTsTvRatio());
         model.setPropInvariableSites(getOptionPropInvariableSites());
-        model.setGamma(getOptionGamma());
+        model.setGamma(DEFAULT_GAMMA);
 
-        setOptionUseML(true);
-        model.apply(progress, charactersBlock, distancesBlock, isOptionUseML());
+        setOptionUseML_Distances(true);
+        model.apply(progress, charactersBlock, distancesBlock, isOptionUseML_Distances());
         // there is no exact formular
     }
 }
