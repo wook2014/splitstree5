@@ -58,7 +58,7 @@ public class MSFExporter implements IExportCharacters {
             for (int t = 1; t <= ntax; t++) {
                 StringBuilder sequence = new StringBuilder("");
                 for (int j = startIndex; j <= optionLineLength * i && j <= nchar; j++) {
-                    StringBuilder append = sequence.append(characters.get(t, j));
+                    sequence.append(characters.get(t, j));
                 }
                 w.write(taxa.get(t) + " \t" + sequence.toString().toUpperCase()+"\n");
             }
