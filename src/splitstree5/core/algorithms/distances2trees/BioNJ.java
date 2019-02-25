@@ -60,7 +60,7 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
         final HashMap<String, Node> taxaHashMap = new HashMap<>();
         final int nTax = distances.getNtax();
 
-        final StringBuffer tax[] = new StringBuffer[nTax + 1];
+        final StringBuffer[] tax = new StringBuffer[nTax + 1];
 
         for (int t = 1; t <= nTax; t++) {
             tax[t] = new StringBuffer();
@@ -71,12 +71,12 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
             tree.addTaxon(v, t);
         }
 
-        final double h[][] = new double[nTax + 1][nTax + 1];// distance matrix
+        final double[][] h = new double[nTax + 1][nTax + 1];// distance matrix
 
         final BitSet active = new BitSet();
 
-        double var[][] = new double[nTax + 1][nTax + 1]; // variances matrix. This really should be upper diag of h.
-        double b[] = new double[nTax + 1];// the b variable in Neighbor Joining
+        final double[][] var = new double[nTax + 1][nTax + 1]; // variances matrix. This really should be upper diag of h.
+        final double[] b = new double[nTax + 1];// the b variable in Neighbor Joining
         int i_min = 0, j_min = 0; // needed for manipulation of h and b
         double temp, dist_e, dist_f;//new edge weights
         StringBuffer tax_old_i; //labels of taxa that are being merged

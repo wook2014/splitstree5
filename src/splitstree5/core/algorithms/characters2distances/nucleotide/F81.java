@@ -43,7 +43,7 @@ public class F81 extends Nucleotides2DistancesBase implements IFromChararacters,
 
     @Override
     public List<String> listOptions() {
-        return Arrays.asList("PropInvariableSites", "optionBaseFrequencies", "SetBaseFrequencies", "UseML_Distances");
+        return Arrays.asList("optionBaseFrequencies", "SetBaseFrequencies", "PropInvariableSites", "SetSiteVarParams", "UseML_Distances");
     }
 
     @Override

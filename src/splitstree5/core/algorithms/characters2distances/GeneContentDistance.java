@@ -21,8 +21,8 @@ import java.util.List;
  */
 
 public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-
     public final static String DESCRIPTION = "Compute distances based on shared genes (Snel Bork et al 1999, Huson and Steel 2003)";
+
     private BooleanProperty optionUseML_DistancesDistance = new SimpleBooleanProperty(false);
 
     @Override
@@ -38,7 +38,7 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
     @Override
     public String getToolTip(String optionName) {
         if (optionName.equals("UseMLDistance"))
-            return "Use maximum likelihood distances estimation";
+            return "Use maximum likelihood distance estimation";
         else
             return null;
     }

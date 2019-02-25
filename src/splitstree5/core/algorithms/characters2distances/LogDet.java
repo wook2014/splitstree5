@@ -20,10 +20,8 @@ import java.util.List;
 
 /**
  * Calculation of the LogDet transform.
- * <p>
- * Created on  2008-03-17
  *
- * @author bryant
+ * @author Dave Bryant, 2008
  * <p>
  * <p>
  * The standard formula that we use for computing log det distances is

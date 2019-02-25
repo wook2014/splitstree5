@@ -135,16 +135,16 @@ public enum OptionValueType {Integer, Float, Double, String, Boolean, doubleArra
             case Integer:
                 return java.lang.String.format("%d", (Integer) object);
             case Float:
-                return java.lang.String.format("%.6f", (Float) object).replaceAll("0+$", "0");
+                return Basic.removeTrailingZerosAfterDot(java.lang.String.format("%.6f", (Float) object));
             case Double:
-                return java.lang.String.format("%.8f", (Double) object).replaceAll("0+$", "0");
+                return Basic.removeTrailingZerosAfterDot(java.lang.String.format("%.8f", (Double) object));
             case doubleArray: {
                 StringBuilder buf = new StringBuilder();
                 final double[] array = (double[]) object;
                 for (double value : array) {
                     if (buf.length() > 0)
                         buf.append(" ");
-                    buf.append(java.lang.String.format("%.4f", value).replaceAll("0+$", "0"));
+                    buf.append(Basic.removeTrailingZerosAfterDot(java.lang.String.format("%.4f", value)));
                 }
                 return buf.toString();
             }
@@ -155,7 +155,7 @@ public enum OptionValueType {Integer, Float, Double, String, Boolean, doubleArra
                     for (int j = 0; j < matrix.length; j++) {
                         if (j > 0)
                             buf.append(" ");
-                        buf.append(java.lang.String.format("%.4f", row[j]).replaceAll("0+$", "0"));
+                        buf.append(Basic.removeTrailingZerosAfterDot(java.lang.String.format("%.4f", row[j])));
                     }
                     buf.append(" "); // could also put \n here
                 }

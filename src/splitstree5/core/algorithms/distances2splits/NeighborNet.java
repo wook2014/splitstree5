@@ -56,7 +56,7 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
 
     @Override
     public String getCitation() {
-        return "Bryant and Moulton 2004; " +
+        return "Bryant & Moulton 2004; " +
                 "D. Bryant and V. Moulton. Neighbor-net: An agglomerative method for the construction of phylogenetic networks. " +
                 "Molecular Biology and Evolution, 21(2):255– 265, 2004.";
     }

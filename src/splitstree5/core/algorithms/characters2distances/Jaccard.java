@@ -13,10 +13,8 @@ import splitstree5.core.datablocks.characters.CharactersType;
 
 /**
  * Calculates distances using the Jaccard coefficient distance
- * <p>
- * Created on 2009-01-25
  *
- * @author bryant
+ * @author Dave Bryant, 2009
  */
 public class Jaccard extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
     @Override

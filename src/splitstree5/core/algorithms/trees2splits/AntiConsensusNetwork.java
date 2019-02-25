@@ -20,8 +20,7 @@
 package splitstree5.core.algorithms.trees2splits;
 
 import com.install4j.api.context.UserCanceledException;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.*;
 import jloda.fx.NotificationManager;
 import jloda.fx.ProgramExecutorService;
 import jloda.graph.Edge;
@@ -55,19 +54,19 @@ import java.util.concurrent.ExecutorService;
 public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
     public enum Reference {MajorityConsensus, FirstInputTree, LastInputTree}
 
-    private Reference optionReferenceTree = Reference.MajorityConsensus;
+    private final ObjectProperty<Reference> optionReferenceTree = new SimpleObjectProperty<>(Reference.MajorityConsensus);
 
-    private int optionSinRank = 1;
-    private boolean optionAllSinsUpToRank = false;
-    private double optionMinSpanPercent = 1;
+    private final IntegerProperty optionSinRank = new SimpleIntegerProperty(1);
+    private final BooleanProperty optionAllSinsUpToRank = new SimpleBooleanProperty(false);
+    private final DoubleProperty optionMinSpanPercent = new SimpleDoubleProperty(1);
 
-    private int optionMaxDistortion = 1;
+    private final IntegerProperty optionMaxDistortion = new SimpleIntegerProperty(1);
 
     private final BooleanProperty optionRequireSingleSPR = new SimpleBooleanProperty(false);
 
-    private double optionMinWeight = 0.00001;
+    private final DoubleProperty optionMinWeight = new SimpleDoubleProperty(0.00001);
 
-    private boolean optionOnePerTree = false;
+    private final BooleanProperty optionOnePerTree = new SimpleBooleanProperty(false);
 
     @Override
     public List<String> listOptions() {
@@ -78,6 +77,30 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
     public String getCitation() {
         return "Huson et al. 2019;D.H. Huson, B. Albrecht, P. Lockhart and M.A. Steel. Anti-consensus: manuscript in preparation";
     }
+
+    @Override
+    public String getToolTip(String optionName) {
+        switch (optionName) {
+            case "SinSplitsRank":
+                return "The rank of the set of strongly incompatible splits to be shown";
+            case "SinsUpToRank":
+                return "Show all SINs up to selected rank";
+            case "MinSpanPercent":
+                return "Set the minimum amount of the consensus tree that an incompatible split must span";
+            case "MaxDistortion":
+                return "Set the max-distortion. Uses the single-event heuristic, when set to 1, else the multi-event heuristic\n(see the paper for details)";
+            case "MinWeight":
+                return "Set the minimum weight for a SIN to be reported";
+            case "ReferenceTree":
+                return "By default, uses the majority consensus as the reference 'species' tree. Alternatively, the first or last input tree can be used";
+            case "RequireSingleSPR":
+                return "For distortion=1, require that all members of the SIN are reconciled using the same SPR";
+        }
+        return optionName;
+    }
+
+
+
 
     /**
      * compute the consensus splits
@@ -494,89 +517,64 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         return weight;
     }
 
-    public int getOptionSinRank() {
-        return optionSinRank;
-    }
-
-    public void setOptionSinRank(int optionSinsRank) {
-        this.optionSinRank = Math.max(1, optionSinsRank);
-    }
-
-    public String getShortDescriptionSinSplitsRank() {
-        return "The rank of the set of strongly incompatible splits to be shown";
-    }
-
-
-    public boolean isOptionAllSinsUpToRank() {
-        return optionAllSinsUpToRank;
-    }
-
-    public void setOptionAllSinsUpToRank(boolean optionAllSinsUpToRank) {
-        this.optionAllSinsUpToRank = optionAllSinsUpToRank;
-    }
-
-    public String getShortDescriptionAllSinsUpToRank() {
-        return "Show all SINs up to selected rank";
-    }
-
-    public double getOptionMinSpanPercent() {
-        return optionMinSpanPercent;
-    }
-
-    public void setOptionMinSpanPercent(double optionMinSpanPercent) {
-        this.optionMinSpanPercent = Math.max(0, Math.min(100, optionMinSpanPercent));
-    }
-
-    public String getShortDescriptionMinSpanPercent() {
-        return "Set the minimum amount of the consensus tree that an incompatible split must span";
-    }
-
-    public int getOptionMaxDistortion() {
-        return optionMaxDistortion;
-    }
-
-    public void setOptionMaxDistortion(int optionMaxDistortion) {
-        this.optionMaxDistortion = Math.max(1, optionMaxDistortion);
-    }
-
-    public String getShortDescriptionMaxDistortion() {
-        return "Set the max-distortion. Uses the single-event heuristic, when set to 1, else the multi-event heuristic\n(see the paper for details)";
-    }
-
-    public double getOptionMinWeight() {
-        return optionMinWeight;
-    }
-
-    public void setOptionMinWeight(double optionMinWeight) {
-        this.optionMinWeight = optionMinWeight;
-    }
-
-    public String getShortDescriptionMinWeight() {
-        return "Set the minimum weight for a SIN to be reported";
-    }
-
     public Reference getOptionReferenceTree() {
+        return optionReferenceTree.get();
+    }
+
+    public ObjectProperty<Reference> optionReferenceTreeProperty() {
         return optionReferenceTree;
     }
 
     public void setOptionReferenceTree(Reference optionReferenceTree) {
-        this.optionReferenceTree = optionReferenceTree;
+        this.optionReferenceTree.set(optionReferenceTree);
     }
 
-    public String getShortDescriptionReferenceTree() {
-        return "By default, uses the majority consensus as the reference 'species' tree. Alternatively, the first or last input tree can be used";
+    public int getOptionSinRank() {
+        return optionSinRank.get();
     }
 
-    public boolean isOptionOnePerTree() {
-        return optionOnePerTree;
+    public IntegerProperty optionSinRankProperty() {
+        return optionSinRank;
     }
 
-    public void setOptionOnePerTree(boolean optionOnePerTree) {
-        this.optionOnePerTree = optionOnePerTree;
+    public void setOptionSinRank(int optionSinRank) {
+        this.optionSinRank.set(optionSinRank);
     }
 
-    public String getShortDescriptionOnePerTree() {
-        return "Report at most one SIN per input tree";
+    public boolean isOptionAllSinsUpToRank() {
+        return optionAllSinsUpToRank.get();
+    }
+
+    public BooleanProperty optionAllSinsUpToRankProperty() {
+        return optionAllSinsUpToRank;
+    }
+
+    public void setOptionAllSinsUpToRank(boolean optionAllSinsUpToRank) {
+        this.optionAllSinsUpToRank.set(optionAllSinsUpToRank);
+    }
+
+    public double getOptionMinSpanPercent() {
+        return optionMinSpanPercent.get();
+    }
+
+    public DoubleProperty optionMinSpanPercentProperty() {
+        return optionMinSpanPercent;
+    }
+
+    public void setOptionMinSpanPercent(double optionMinSpanPercent) {
+        this.optionMinSpanPercent.set(optionMinSpanPercent);
+    }
+
+    public int getOptionMaxDistortion() {
+        return optionMaxDistortion.get();
+    }
+
+    public IntegerProperty optionMaxDistortionProperty() {
+        return optionMaxDistortion;
+    }
+
+    public void setOptionMaxDistortion(int optionMaxDistortion) {
+        this.optionMaxDistortion.set(optionMaxDistortion);
     }
 
     public boolean isOptionRequireSingleSPR() {
@@ -591,10 +589,29 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         this.optionRequireSingleSPR.set(optionRequireSingleSPR);
     }
 
-    public String getShortDescriptionRequireSingleSPR() {
-        return "For distortion=1, require that all members of the SIN are reconciled using the same SPR";
+    public double getOptionMinWeight() {
+        return optionMinWeight.get();
     }
 
+    public DoubleProperty optionMinWeightProperty() {
+        return optionMinWeight;
+    }
+
+    public void setOptionMinWeight(double optionMinWeight) {
+        this.optionMinWeight.set(optionMinWeight);
+    }
+
+    public boolean isOptionOnePerTree() {
+        return optionOnePerTree.get();
+    }
+
+    public BooleanProperty optionOnePerTreeProperty() {
+        return optionOnePerTree;
+    }
+
+    public void setOptionOnePerTree(boolean optionOnePerTree) {
+        this.optionOnePerTree.set(optionOnePerTree);
+    }
 
     @Override
     public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent) {

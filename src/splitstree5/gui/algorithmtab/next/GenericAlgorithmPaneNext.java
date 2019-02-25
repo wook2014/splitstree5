@@ -192,7 +192,7 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
                                     inUpdate.set(true);
                                     final double[] values = ((double[]) option.getProperty().getValue());
                                     for (int j = 0; j < length; j++) {
-                                        controls[j].setText(String.format("%.4f", values[j]).replaceAll("0+$", "0"));
+                                        controls[j].setText(Basic.removeTrailingZerosAfterDot(String.format("%.4f", values[j])));
                                     }
                                     inUpdate.set(false);
                                 }
@@ -221,7 +221,7 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
                                 control.setPrefColumnCount(6);
                                 control.setPrefWidth(60);
                                 control.setTextFormatter(new TextFormatter<>(new DoubleStringConverter()));
-                                control.setText(String.format("%.4f", matrix[i][j]).replaceAll("0+$", "0"));
+                                control.setText(Basic.removeTrailingZerosAfterDot(String.format("%.4f", matrix[i][j])));
                                 if (option.getToolTipText() != null)
                                     control.setTooltip(new Tooltip(option.getToolTipText()));
 
@@ -248,7 +248,7 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
                                         final double[][] values = ((double[][]) option.getProperty().getValue());
                                         for (int i1 = 0; i1 < length; i1++) {
                                             for (int j1 = 0; j1 < length; j1++) {
-                                                controls[i1][j1].setText(String.format("%.4f", values[i1][j1]).replaceAll("0+$", "0"));
+                                                controls[i1][j1].setText(Basic.removeTrailingZerosAfterDot(String.format("%.4f", values[i1][j1])));
                                             }
                                         }
                                         inUpdate.set(false);

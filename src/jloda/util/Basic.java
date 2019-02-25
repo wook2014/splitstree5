@@ -1414,6 +1414,13 @@ public class Basic {
         }
         return result;
     }
+
+    public static String removeTrailingZerosAfterDot(String text) {
+        if (text.contains("."))
+            return text.replaceAll("([0-9])0*$", "$1");
+        else
+            return text;
+    }
 }
 
 /**

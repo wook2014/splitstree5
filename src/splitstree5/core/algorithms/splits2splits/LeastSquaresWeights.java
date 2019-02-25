@@ -1,5 +1,7 @@
 package splitstree5.core.algorithms.splits2splits;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import jloda.util.Basic;
 import jloda.util.ProgressListener;
 import jloda.util.ProgressPercentage;
@@ -21,7 +23,8 @@ public class LeastSquaresWeights extends Algorithm<SplitsBlock, SplitsBlock> imp
 
     // todo make dist2splits
 
-    private boolean optionConstrain = true;
+    private final BooleanProperty optionConstrain = new SimpleBooleanProperty(true);
+
     private DistancesBlock distancesBlock = new DistancesBlock();
 
     @Override
@@ -41,7 +44,7 @@ public class LeastSquaresWeights extends Algorithm<SplitsBlock, SplitsBlock> imp
         progress.incrementProgress();
         try {
             child.copy(parent);
-            LeastSquares.optimizeLS(child, distancesBlock, getOptionConstrain());
+            LeastSquares.optimizeLS(child, distancesBlock, isOptionConstrain());
             SplitsUtilities.computeFits(true, parent, distancesBlock, new ProgressPercentage());
         } catch (Exception ex) {
             Basic.caught(ex);
@@ -65,22 +68,16 @@ public class LeastSquaresWeights extends Algorithm<SplitsBlock, SplitsBlock> imp
         return !parent.isPartial();
     }
 
-    /**
-     * get constrained optimization?
-     *
-     * @return flag indicating whether to use constrained least squares.(true = constrained)
-     */
-    public boolean getOptionConstrain() {
+    public boolean isOptionConstrain() {
+        return optionConstrain.get();
+    }
+
+    public BooleanProperty optionConstrainProperty() {
         return optionConstrain;
     }
 
-    /**
-     * set constrained optimization
-     *
-     * @param optionConstrain, flag indicating whether to use constrained least squares (true = constrained)
-     */
     public void setOptionConstrain(boolean optionConstrain) {
-        this.optionConstrain = optionConstrain;
+        this.optionConstrain.set(optionConstrain);
     }
 
     public void setDistancesBlock(DistancesBlock dist) {

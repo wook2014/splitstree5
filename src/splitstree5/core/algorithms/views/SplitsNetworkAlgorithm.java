@@ -78,8 +78,8 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
 
     @Override
     public String getCitation() {
-        return "Dress and Huson 2004; " +
-                "A.W.M. Dress and D.H. Huson, \"Constructing splits graphs,\" " +
+        return "Dress & Huson 2004; " +
+                "A.W.M. Dress and D.H. Huson, Constructing splits graphs, " +
                 "in IEEE/ACM Transactions on Computational Biology and Bioinformatics, vol. 1, no. 3, pp. 109-115, July-Sept. 2004.";
     }
 

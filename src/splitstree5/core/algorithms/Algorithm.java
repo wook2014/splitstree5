@@ -149,7 +149,7 @@ abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extend
                         first = false;
                     else
                         buf.append(", ");
-                    buf.append(option.getName()).append(" = ").append(OptionValueType.toStringType(option.getOptionValueType(), option.getProperty().getValue()));
+                    buf.append(option.getName()).append("=").append(OptionValueType.toStringType(option.getOptionValueType(), option.getProperty().getValue()));
                 }
             }
         }
@@ -157,7 +157,7 @@ abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extend
             for (Option option : OptionsAccessor.getAllOptions(this)) {
                 if (buf.length() > 0)
                     buf.append(", ");
-                buf.append(option.getName()).append(" = ").append(option.getValue().toString());
+                buf.append(option.getName()).append("=").append(option.getValue().toString());
             }
         }
         return buf.toString();

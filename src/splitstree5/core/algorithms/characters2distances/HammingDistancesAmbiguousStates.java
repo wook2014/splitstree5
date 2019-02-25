@@ -91,7 +91,6 @@ public class HammingDistancesAmbiguousStates extends Algorithm<CharactersBlock, 
         }
     }
 
-
     /**
      * Computes 'Best match' Hamming distances with a given characters block.
      *  @param taxa       the taxa

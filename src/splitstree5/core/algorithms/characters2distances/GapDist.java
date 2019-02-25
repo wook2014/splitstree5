@@ -25,8 +25,8 @@ public class GapDist extends Algorithm<CharactersBlock, DistancesBlock> implemen
         final int ntax = charactersBlock.getNtax();
 
         distancesBlock.setNtax(ntax);
-        final char missingchar = charactersBlock.getMissingCharacter();
-        final char gapchar = charactersBlock.getGapCharacter();
+        //final char missingChar = charactersBlock.getMissingCharacter();
+        final char gapChar = charactersBlock.getGapCharacter();
         int c, s, t;
 
         progress.setTasks("Gap distance", "Init.");
@@ -34,7 +34,7 @@ public class GapDist extends Algorithm<CharactersBlock, DistancesBlock> implemen
 
         //todo get row
         for (t = 0; t < ntax; t++) {
-            char[] row_t = charactersBlock.getRow0(t);
+            final char[] row_t = charactersBlock.getRow0(t);
             //char[] row_t = new char[charactersBlock.getMatrix()[t].length];
             //System.arraycopy(charactersBlock.getMatrix()[t], 0, row_t, 0, charactersBlock.getMatrix()[t].length);
 
@@ -52,8 +52,8 @@ public class GapDist extends Algorithm<CharactersBlock, DistancesBlock> implemen
 
                     double weight = charactersBlock.getCharacterWeight(c);
                     len += weight;
-                    if (((sc == gapchar && tc == gapchar) ||
-                            (sc != gapchar && tc != gapchar)))
+                    if (((sc == gapChar && tc == gapChar) ||
+                            (sc != gapChar && tc != gapChar)))
                         sim += weight;
                 }
                 double v = 1.0;

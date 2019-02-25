@@ -23,7 +23,7 @@ import javafx.beans.property.*;
 import jloda.fx.NotificationManager;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
-import splitstree5.core.algorithms.characters2distances.SequenceBasedDistance;
+import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
 import splitstree5.core.datablocks.CharactersBlock;
@@ -41,7 +41,7 @@ import java.util.List;
 /**
  * @deprecated
  */
-public abstract class DNAdistance extends SequenceBasedDistance {
+public abstract class DNAdistance extends Algorithm<CharactersBlock, DistancesBlock> {
 
     public enum SetParameters {fromChars, defaultParameters}
 
