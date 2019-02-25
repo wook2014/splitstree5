@@ -157,7 +157,7 @@ public enum OptionValueType {Integer, Float, Double, String, Boolean, doubleArra
                             buf.append(" ");
                         buf.append(java.lang.String.format("%.4f", row[j]).replaceAll("0+$", "0"));
                     }
-                    buf.append("\n");
+                    buf.append(" "); // could also put \n here
                 }
                 return buf.toString();
             }

@@ -86,13 +86,31 @@ public class AlgorithmNexusInput extends NexusIOBase {
                         np.matchIgnoreCase("=");
                         final OptionNext option = legalOptions.get(name);
                         if (option != null) {
-                            if (option.getOptionValueType() == OptionValueType.doubleArray) {
-                                final double[] array = (double[]) option.getProperty().getValue();
-                                for (int i = 0; i < array.length; i++) {
-                                    array[i] = np.getDouble();
+                            final OptionValueType type = option.getOptionValueType();
+                            switch (type) {
+                                case doubleArray: {
+                                    final double[] array = (double[]) option.getProperty().getValue();
+                                    for (int i = 0; i < array.length; i++) {
+                                        array[i] = np.getDouble();
+                                    }
+                                    break;
                                 }
-                            } else {
-                                option.getProperty().setValue(OptionValueType.parseType(option.getOptionValueType(), np.getWordRespectCase()));
+                                case doubleSquareMatrix: {
+                                    final double[][] matrix = (double[][]) option.getProperty().getValue();
+                                    for (int i = 0; i < matrix.length; i++) {
+                                        for (int j = 0; j < matrix.length; j++)
+                                            matrix[i][j] = np.getDouble();
+                                    }
+                                    break;
+                                }
+                                case Enum: {
+                                    option.getProperty().setValue(option.getEnumValueForName(np.getWordRespectCase()));
+                                    break;
+                                }
+                                default: {
+                                    option.getProperty().setValue(OptionValueType.parseType(option.getOptionValueType(), np.getWordRespectCase()));
+                                    break;
+                                }
                             }
 
                         } else {

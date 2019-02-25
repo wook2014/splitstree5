@@ -26,6 +26,8 @@ import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.Connector;
+import splitstree5.gui.algorithmtab.next.OptionNext;
+import splitstree5.gui.algorithmtab.next.OptionValueType;
 import splitstree5.utils.NameableBase;
 import splitstree5.utils.Option;
 import splitstree5.utils.OptionsAccessor;
@@ -116,10 +118,19 @@ abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extend
      */
     final public String getParameters() {
         final StringBuilder buf = new StringBuilder();
-        for (Option option : OptionsAccessor.getAllOptions(this)) {
-            if (buf.length() > 0)
-                buf.append(", ");
-            buf.append(option.getName()).append(" = ").append(option.getValue().toString());
+        {
+            for (OptionNext option : OptionNext.getAllOptions(this)) {
+                if (buf.length() > 0)
+                    buf.append(", ");
+                buf.append(option.getName()).append(" = ").append(OptionValueType.toStringType(option.getOptionValueType(), option.getProperty().getValue()));
+            }
+        }
+        if (buf.length() == 0) { // todo: stop using this
+            for (Option option : OptionsAccessor.getAllOptions(this)) {
+                if (buf.length() > 0)
+                    buf.append(", ");
+                buf.append(option.getName()).append(" = ").append(option.getValue().toString());
+            }
         }
         return buf.toString();
     }
