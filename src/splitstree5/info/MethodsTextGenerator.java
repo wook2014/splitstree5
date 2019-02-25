@@ -141,8 +141,8 @@ public class MethodsTextGenerator {
                         if (algorithm instanceof IFilter) {
                             if (((IFilter) algorithm).isActive()) {
                                 final String name = Basic.fromCamelCase(algorithm.getName());
-                                final String parameters = (algorithm.getParameters().length() > 0 ? " (parameters: " + algorithm.getParameters() + ")" : "");
-                                final String line = String.format(filterTemplate, name, parameters, algorithm.getShortDescription());
+                                final String optionsReport = algorithm.getOptionsReport();
+                                final String line = String.format(filterTemplate, name, optionsReport.length() > 0 ? " (" + optionsReport + ")" : "", algorithm.getShortDescription());
                                 if (!set.contains(line)) {
                                     buf.append(line);
                                     set.add(line);
@@ -156,12 +156,12 @@ public class MethodsTextGenerator {
                                     allKeysAndPapers.addAll(keysAndPapers);
                                 final String name = Basic.fromCamelCase(algorithm.getName());
 
-                                final String parameters = (algorithm.getParameters().length() > 0 ? " (parameters: " + algorithm.getParameters() + ")" : "");
+                                final String optionsReport = algorithm.getOptionsReport();
                                 final String line;
                                 if (w != null) {
-                                    line = String.format(methodWithOutputTemplate, name, keys, parameters, w.getDataBlock().getInfo());
+                                    line = String.format(methodWithOutputTemplate, name, keys, optionsReport.length() > 0 ? " (" + optionsReport + ")" : "", w.getDataBlock().getInfo());
                                 } else {
-                                    line = String.format(methodTemplate, name, keys, parameters);
+                                    line = String.format(methodTemplate, name, keys, optionsReport.length() > 0 ? " (" + optionsReport + ")" : "");
                                 }
                                 if (!set.contains(line)) {
                                     buf.append(line);

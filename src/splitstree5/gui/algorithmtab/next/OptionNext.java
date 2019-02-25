@@ -168,6 +168,20 @@ public class OptionNext<T> {
     }
 
     /**
+     * gets a mapping of names to options
+     *
+     * @param optionable
+     * @return map
+     */
+    public static Map<String, OptionNext> getName2Options(IOptionable optionable) {
+        final Map<String, OptionNext> name2options = new TreeMap<>();
+        for (OptionNext option : getAllOptions(optionable)) {
+            name2options.put(option.getName(), option);
+        }
+        return name2options;
+    }
+
+    /**
      * gets the type of this option
      *
      * @return option value type

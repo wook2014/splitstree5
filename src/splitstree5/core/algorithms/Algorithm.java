@@ -32,6 +32,8 @@ import splitstree5.utils.NameableBase;
 import splitstree5.utils.Option;
 import splitstree5.utils.OptionsAccessor;
 
+import java.util.Map;
+
 /**
  * An algorithm
  * Daniel Huson 12.2016
@@ -112,17 +114,43 @@ abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extend
     }
 
     /**
-     * reports the parameters used by this algorithm
+     * reports the options used by this algorithm
      *
-     * @return parameters
+     * @return options
      */
-    final public String getParameters() {
+    final public String getOptionsReport() {
         final StringBuilder buf = new StringBuilder();
         {
+            final Map<String, OptionNext> name2defaultOptions = OptionNext.getName2Options(newInstance());
+
+            boolean hasOption = false;
+            boolean hasDefaultOption = false;
+            boolean hasNonDefaultOption = false;
             for (OptionNext option : OptionNext.getAllOptions(this)) {
-                if (buf.length() > 0)
-                    buf.append(", ");
-                buf.append(option.getName()).append(" = ").append(OptionValueType.toStringType(option.getOptionValueType(), option.getProperty().getValue()));
+                hasOption = true;
+                if (option.getProperty().getValue().equals(name2defaultOptions.get(option.getName()).getProperty().getValue()))
+                    hasDefaultOption = true;
+                else
+                    hasNonDefaultOption = true;
+            }
+            if (hasOption) {
+                if (hasDefaultOption && !hasNonDefaultOption) {
+                    return "default options";
+                } else if (hasDefaultOption) {
+                    buf.append("default options, except ");
+                } else
+                    buf.append("options: ");
+            }
+
+            boolean first = true;
+            for (OptionNext option : OptionNext.getAllOptions(this)) {
+                if (!option.getProperty().getValue().equals(name2defaultOptions.get(option.getName()).getProperty().getValue())) {
+                    if (first)
+                        first = false;
+                    else
+                        buf.append(", ");
+                    buf.append(option.getName()).append(" = ").append(OptionValueType.toStringType(option.getOptionValueType(), option.getProperty().getValue()));
+                }
             }
         }
         if (buf.length() == 0) { // todo: stop using this
