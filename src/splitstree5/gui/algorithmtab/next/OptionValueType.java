@@ -25,7 +25,7 @@ import jloda.util.Basic;
  * possible value types of options
  * Daniel Huson, 2.2019
  */
-public enum OptionValueType {Integer, Float, Double, String, Boolean, doubleArray, Enum;
+public enum OptionValueType {Integer, Float, Double, String, Boolean, doubleArray, doubleSquareMatrix, Enum;
 
     /**
      * get the type of a value
@@ -46,6 +46,8 @@ public enum OptionValueType {Integer, Float, Double, String, Boolean, doubleArra
             return String;
         else if (value instanceof double[])
             return doubleArray;
+        else if (value instanceof double[][])
+            return doubleSquareMatrix;
         else if (value instanceof Enum)
             return Enum;
         else
@@ -67,6 +69,7 @@ public enum OptionValueType {Integer, Float, Double, String, Boolean, doubleArra
                 return Basic.isFloat(text);
             case Double:
             case doubleArray:
+            case doubleSquareMatrix:
                 return Basic.isDouble(text);
             case Boolean:
                 return Basic.isBoolean(text);
@@ -98,6 +101,20 @@ public enum OptionValueType {Integer, Float, Double, String, Boolean, doubleArra
                     array[i] = Basic.parseDouble(tokens[i]);
                 return array;
             }
+            case doubleSquareMatrix: {
+                final String[] tokens = text.split("\\s+");
+                final int length = (int) Math.round(Math.sqrt(tokens.length));
+                if (length * length != tokens.length)
+                    throw new RuntimeException("doubleSquareMatrix: wrong number of tokens: " + tokens.length);
+                final double[][] matrix = new double[length][length];
+                int count = 0;
+                for (int i = 0; i < length; i++) {
+                    for (int j = 0; j < length; j++) {
+                        matrix[i][j] = Basic.parseDouble(tokens[count++]);
+                    }
+                }
+                return matrix;
+            }
             case Boolean:
                 return Basic.parseBoolean(text);
             case String:
@@ -128,6 +145,19 @@ public enum OptionValueType {Integer, Float, Double, String, Boolean, doubleArra
                     if (buf.length() > 0)
                         buf.append(" ");
                     buf.append(java.lang.String.format("%.4f", value).replaceAll("0+$", "0"));
+                }
+                return buf.toString();
+            }
+            case doubleSquareMatrix: {
+                StringBuilder buf = new StringBuilder();
+                final double[][] matrix = (double[][]) object;
+                for (double[] row : matrix) {
+                    for (int j = 0; j < matrix.length; j++) {
+                        if (j > 0)
+                            buf.append(" ");
+                        buf.append(java.lang.String.format("%.4f", row[j]).replaceAll("0+$", "0"));
+                    }
+                    buf.append("\n");
                 }
                 return buf.toString();
             }

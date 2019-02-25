@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.algorithms.alt_characters2distances;
+package splitstree5.core.algorithms.characters2distances.nucleotide;
 
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
@@ -35,9 +35,7 @@ import java.util.List;
  * Dave Bryant, 2004
  */
 
-public class F81 extends Nucleotides2DistancesAlgorithm implements IFromChararacters, IToDistances {
-    private double B;
-
+public class F81 extends Nucleotides2DistancesBase implements IFromChararacters, IToDistances {
     @Override
     public String getCitation() {
         return "Felsenstein 1981; Felsenstein J (1981). Evolutionary trees from DNA sequences: a maximum likelihood approach. Journal of Molecular Evolution. 17 (6): 368–376.";
@@ -49,9 +47,9 @@ public class F81 extends Nucleotides2DistancesAlgorithm implements IFromChararac
     }
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock parent, DistancesBlock child) throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock) throws Exception {
 
-        progress.setTasks("F81 Distance", "computing...");
+        progress.setTasks("Felsenstein 1981 distance", "Computing...");
 
         final F81model model = new F81model(getOptionBaseFrequencies());
 
@@ -59,6 +57,6 @@ public class F81 extends Nucleotides2DistancesAlgorithm implements IFromChararac
         model.setGamma(getOptionGamma());
 
 
-        model.apply(progress, parent, child, isOptionUseML());
+        model.apply(progress, charactersBlock, distancesBlock, isOptionUseML());
     }
 }

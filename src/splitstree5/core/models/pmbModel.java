@@ -25,10 +25,9 @@
 package splitstree5.core.models;
 
 /**
- * @author bryant
- * <p/>
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * pmbModel
+ * Dave Bryant, 2005?
+ *
  */
 public class pmbModel extends ProteinModel {
 

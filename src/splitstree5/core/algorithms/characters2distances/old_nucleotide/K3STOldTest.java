@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.algorithms.alt_characters2distances;
+package splitstree5.core.algorithms.characters2distances.old_nucleotide;
 
 import jloda.util.ProgressListener;
 import jloda.util.ProgressPercentage;
@@ -35,13 +35,11 @@ import java.util.List;
 import static org.junit.Assert.assertArrayEquals;
 
 /**
- * Created on 21.02.2017.
- *
- * @author Daria
+ * @deprecated
  */
-public class F81Test {
+public class K3STOldTest {
 
-    final F81 f81 = new F81();
+    final K3ST_old k3st = new K3ST_old();
 
     @Test
     public void testCompute() throws Exception {
@@ -56,19 +54,19 @@ public class F81Test {
         taxaBlock.addTaxaByNames(taxonNames);
         DistancesBlock distancesBlock = new DistancesBlock();
 
-        f81.compute(pl, taxaBlock, charactersBlock, distancesBlock);
+        k3st.compute(pl, taxaBlock, charactersBlock, distancesBlock);
 
         double[][] must_dist = {
-                {0.0, 0.09599253481571762, 0.11125592197089967, 0.10273794284816345, 0.004444457450660452, 0.0793897539017834},
-                {0.09599253481571762, 0.0, 0.09935765543591227, 0.09599253481571743, 0.09935765543591227, 0.10783711263212005},
-                {0.11125592197089967, 0.09935765543591227, 0.0, 0.12683640148525838, 0.11469038704527285, 0.11125592197089948},
-                {0.10273794284816345, 0.09599253481571743, 0.12683640148525838, 0.0, 0.10613353438688591, 0.10613353438688591},
-                {0.004444457450660452, 0.09935765543591227, 0.11469038704527285, 0.10613353438688591, 0.0, 0.08268103729669674},
-                {0.0793897539017834, 0.10783711263212005, 0.11125592197089948, 0.10613353438688591, 0.08268103729669674, 0.0}
+                {0.0, 0.0967723421908579, 0.11220615824438582, 0.1034787707423884, 0.004446665311971478, 0.0797950825537583},
+                {0.0967723421908579, 0.0, 0.10004624722026152, 0.09666471236750854, 0.10013064058521373, 0.10856623425492845},
+                {0.11220615824438582, 0.10004624722026152, 0.0, 0.12835208842522264, 0.11562608582130386, 0.11204633576482913},
+                {0.1034787707423884, 0.09666471236750854, 0.12835208842522264, 0.0, 0.10686803596558568, 0.10703297756108343},
+                {0.004446665311971478, 0.10013064058521373, 0.11562608582130386, 0.10686803596558568, 0.0, 0.08307394961774711},
+                {0.0797950825537583, 0.10856623425492845, 0.11204633576482913, 0.10703297756108343, 0.08307394961774711, 0.0}
         };
 
         for (int i = 0; i < distancesBlock.getDistances().length; i++) {
-            assertArrayEquals(must_dist[i], distancesBlock.getDistances()[i], 0.000001);
+            assertArrayEquals(must_dist[i], distancesBlock.getDistances()[i], 0);
         }
     }
 

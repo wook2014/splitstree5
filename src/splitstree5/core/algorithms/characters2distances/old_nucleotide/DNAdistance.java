@@ -1,9 +1,29 @@
-package splitstree5.core.algorithms.characters2distances;
+/*
+ *  Copyright (C) 2018 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package splitstree5.core.algorithms.characters2distances.old_nucleotide;
 
 import javafx.beans.property.*;
 import jloda.fx.NotificationManager;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
+import splitstree5.core.algorithms.characters2distances.SequenceBasedDistance;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
 import splitstree5.core.datablocks.CharactersBlock;
@@ -19,6 +39,9 @@ import splitstree5.utils.SplitsException;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * @deprecated
+ */
 public abstract class DNAdistance extends SequenceBasedDistance {
 
     public enum SetParameters {fromChars, defaultParameters}
@@ -55,7 +78,7 @@ public abstract class DNAdistance extends SequenceBasedDistance {
             System.err.println("Connector != null");
 
         connectorProperty().addListener((c) -> {
-                System.err.println("Connector Listener");
+            System.err.println("Connector Listener");
             final Connector<CharactersBlock, ? extends DataBlock> connector = connectorProperty().get();
             optionSetParameters.addListener((observable, oldValue, newValue) -> updateSettings(connector != null ? connector.getParentDataBlock() : null, newValue));
         });
@@ -227,9 +250,11 @@ public abstract class DNAdistance extends SequenceBasedDistance {
     public double getOptionGamma() {
         return optionGamma.getValue();
     }
+
     public DoubleProperty optionGammaProperty() {
         return optionGamma;
     }
+
     public void setOptionGamma(double gamma) {
         optionGamma.setValue(gamma);
     }
@@ -237,9 +262,11 @@ public abstract class DNAdistance extends SequenceBasedDistance {
     public boolean getOptionUseML() {
         return optionUseML.getValue();
     }
+
     public BooleanProperty optionUseMLProperty() {
         return optionUseML;
     }
+
     public void setOptionUseML(boolean useML) {
         this.optionUseML.setValue(useML);
     }
@@ -247,9 +274,11 @@ public abstract class DNAdistance extends SequenceBasedDistance {
     public double getOptionTsTvRatio() {
         return optionTsTvRatio.getValue();
     }
+
     public DoubleProperty optionTsTvRatioProperty() {
         return optionTsTvRatio;
     }
+
     public void setOptionTsTvRatio(double optionTsTvRatio) {
         this.optionTsTvRatio.setValue(optionTsTvRatio);
     }
@@ -257,6 +286,7 @@ public abstract class DNAdistance extends SequenceBasedDistance {
     public double[] getBaseFreq() {
         return baseFreq;
     }
+
     public void setBaseFreq(double [] baseFreq){
         this.baseFreq = baseFreq;
     }

@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.algorithms.alt_characters2distances;
+package splitstree5.core.algorithms.characters2distances.nucleotide;
 
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
@@ -32,25 +32,40 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.gui.utils.CharactersUtilities;
 
-public abstract class Nucleotides2DistancesAlgorithm extends Algorithm<CharactersBlock, DistancesBlock> {
+/**
+ * nucleotides to distances algorithms base class
+ * Dave Bryant 2005, Daniel Huson 2019
+ */
+public abstract class Nucleotides2DistancesBase extends Algorithm<CharactersBlock, DistancesBlock> {
     public enum SetParameters {fromChars, defaultParameters}
 
-    final double DEFAULT_PROP_INVARIABLE_SITES = 0.0;
-    final double DEFAULT_GAMMA = -1;        //Negative gamma corresponds to equal rates
-    final double[] DEFAULT_BASE_FREQ = {0.25, 0.25, 0.25, 0.25};  //Use the exact distance by default - transforms without exact distances should set useML = false
-    final double DEFAULT_TSTV_RATIO = 2.0;  //default is no difference between transitions and transversions
+    final static double DEFAULT_PROP_INVARIABLE_SITES = 0.0;
+    final static double DEFAULT_GAMMA = -1;        //Negative gamma corresponds to equal rates
+    final static double[] DEFAULT_BASE_FREQ = {0.25, 0.25, 0.25, 0.25};  //Use the exact distance by default - transforms without exact distances should set useML = false
+    final static double DEFAULT_TSTV_RATIO = 2.0;  //default is no difference between transitions and transversions
+    final static double[][] DEFAULT_QMATRIX = {{-3, 1, 1, 1}, {1, -3, 1, 1}, {1, 1, -3, 1}, {1, 1, 1, -3}};
+    private final static double DEFAULT_AC_VS_AT = 2.0;
+    private final static boolean DEFAULT_USE_ML = false;
+
+    private final DoubleProperty optionACvATRatio = new SimpleDoubleProperty(DEFAULT_AC_VS_AT);
 
     private final DoubleProperty optionPropInvariableSites = new SimpleDoubleProperty(DEFAULT_PROP_INVARIABLE_SITES);
     private final DoubleProperty optionGamma = new SimpleDoubleProperty(DEFAULT_GAMMA);
-    private final BooleanProperty optionUseML = new SimpleBooleanProperty(false);
+    private final BooleanProperty optionUseML = new SimpleBooleanProperty(DEFAULT_USE_ML);
     private final DoubleProperty optionTsTvRatio = new SimpleDoubleProperty(DEFAULT_TSTV_RATIO);
 
     // Used in the panel to decide how to compute the above
     private final Property<SetParameters> optionSetParameters = new SimpleObjectProperty<>(SetParameters.defaultParameters);
 
-    private final ObjectProperty<double[]> optionBaseFrequencies = new SimpleObjectProperty<>(new double[]{0.25, 0.25, 0.25, 0.25});
+    private final ObjectProperty<double[]> optionBaseFrequencies = new SimpleObjectProperty<>(DEFAULT_BASE_FREQ);
+
+    private final ObjectProperty<double[][]> optionRateMatrix = new SimpleObjectProperty<>(DEFAULT_QMATRIX);
 
     private ChangeListener<SetParameters> listener = null;
+
+    public Nucleotides2DistancesBase() {
+
+    }
 
     @Override
     public String getToolTip(String optionName) {
@@ -65,6 +80,8 @@ public abstract class Nucleotides2DistancesAlgorithm extends Algorithm<Character
                 return "Ratio of transitions vs transversions";
             case "BaseFrequencies":
                 return "Base frequencies (in order ATGC)";
+            case "RateMatrix":
+                return "Rate matrix for GTR (in order ATGC)";
             case "SetParameters":
                 return "Set parameters to default values or to estimations from data (using Capture-recapture for invariable sites)";
         }
@@ -87,7 +104,12 @@ public abstract class Nucleotides2DistancesAlgorithm extends Algorithm<Character
                 case defaultParameters: {
                     setOptionPropInvariableSites(DEFAULT_PROP_INVARIABLE_SITES);
                     setOptionBaseFrequencies(DEFAULT_BASE_FREQ);
+                    setOptionRateMatrix(DEFAULT_QMATRIX);
+
                     setOptionGamma(DEFAULT_GAMMA);
+
+                    setOptionTsTvRatio(DEFAULT_TSTV_RATIO);
+                    setOptionACvATRatio(DEFAULT_AC_VS_AT);
                     break;
                 }
                 case fromChars: {
@@ -112,6 +134,10 @@ public abstract class Nucleotides2DistancesAlgorithm extends Algorithm<Character
                         NotificationManager.showError("Calculation of base frequencies failed: " + service2.getException().getMessage());
                     });
                     service2.start();
+
+
+                    // todo: don't know how to estimate QMatrix from data, ask Dave!
+                    setOptionRateMatrix(DEFAULT_QMATRIX);
                     break;
                 }
             }
@@ -192,5 +218,29 @@ public abstract class Nucleotides2DistancesAlgorithm extends Algorithm<Character
 
     public void setOptionBaseFrequencies(double[] optionBaseFrequencies) {
         this.optionBaseFrequencies.set(optionBaseFrequencies);
+    }
+
+    public void setOptionACvATRatio(double value) {
+        this.optionACvATRatio.setValue(value);
+    }
+
+    public double getOptionACvATRatio() {
+        return this.optionACvATRatio.getValue();
+    }
+
+    public DoubleProperty optionACvATRatioProperty() {
+        return this.optionACvATRatio;
+    }
+
+    public double[][] getOptionRateMatrix() {
+        return optionRateMatrix.get();
+    }
+
+    public ObjectProperty<double[][]> optionRateMatrixProperty() {
+        return optionRateMatrix;
+    }
+
+    public void setOptionRateMatrix(double[][] optionRateMatrix) {
+        this.optionRateMatrix.set(optionRateMatrix);
     }
 }

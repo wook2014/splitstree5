@@ -27,10 +27,8 @@ package splitstree5.core.models;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
 
 /**
- * @author Mig
- * <p/>
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * K2P model
+ * Miguel and David Bryant, 2005
  */
 public class K2Pmodel extends NucleotideModel {
 

@@ -21,11 +21,11 @@
  */
 package splitstree5.core.models;
 
+import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
+
 /**
- * @author Mig
- * <p/>
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * K3ST  model
+ * Miguel and David Bryant, 2005
  */
 public class K3STmodel extends NucleotideModel {
 
@@ -56,7 +56,6 @@ public class K3STmodel extends NucleotideModel {
      * @param AC_GT
      */
     public K3STmodel(double AG_CT, double AT_CG, double AC_GT) {
-        super();
         InitK3ST(AG_CT, AT_CG, AC_GT);
     }
 
@@ -78,8 +77,25 @@ public class K3STmodel extends NucleotideModel {
 
         setRateMatrix(Q, basefreqs);
         normaliseQ();
-
     }
+
+
+    /**
+     * compute exact value
+     *
+     * @param F
+     * @return exact value
+     * @throws SaturatedDistancesException
+     */
+    @Override
+    public double exactDistance(double[][] F) throws SaturatedDistancesException {
+        final double a = F[0][0] + F[1][1] + F[2][2] + F[3][3];
+        final double b = F[0][1] + F[1][0] + F[2][3] + F[3][2];
+        final double c = F[0][2] + F[2][0] + F[1][3] + F[3][1];
+        final double d = 1.0 - a - b - c;
+        return -1 / 4.0 * (Math.log(a + c - b - d) + Math.log(a + b - c - d) + Math.log(a + d - b - c));
+    }
+
 
     /**
      * is this a group valued model

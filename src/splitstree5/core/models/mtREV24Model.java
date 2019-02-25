@@ -21,10 +21,8 @@
 package splitstree5.core.models;
 
 /**
- * @author bryant
- * <p/>
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * mtREV24Model
+ * Dave Bryant, 2005?
  */
 public class mtREV24Model extends ProteinModel {
 

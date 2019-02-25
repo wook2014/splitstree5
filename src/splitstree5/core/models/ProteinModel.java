@@ -27,11 +27,10 @@ package splitstree5.core.models;
 import java.util.Random;
 
 /**
- * @author bryant
- * <p/>
- * To change the template for this generated type comment go to
+ * ProteinModel
+ * Dave Bryant, 2005?
+ *
  */
-
 //ToDO: Copy changes and java doc from Nucleotide Model
 
 public abstract class ProteinModel implements SubstitutionModel {

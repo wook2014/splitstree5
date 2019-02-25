@@ -25,32 +25,29 @@
 package splitstree5.core.models;
 
 /**
- * @author Miguel Jette
+ * @author Miguel Jette, 2004
  */
 public class HKY85model extends NucleotideModel {
-
     /**
      * Constructor taking the expected rate of transitions versus transversions (rather
      * than the parameter kappa in Swofford et al, pg 436.)
-     * We first compute the corresponding kappa, fill in Q according to the standard model/.
+     * We first compute the corresponding kappa, fill in Q according to the standard model.
      *
      * @param basefreqs
      * @param TsTv
      */
     public HKY85model(double[] basefreqs, double TsTv) {
-        super();
-
-        double a = basefreqs[0] * basefreqs[2] + basefreqs[1] * basefreqs[3];
-        double b = basefreqs[0] * basefreqs[1] + basefreqs[0] * basefreqs[3];
-        b += basefreqs[1] * basefreqs[2] + basefreqs[2] * basefreqs[3];
+        final double a = basefreqs[0] * basefreqs[2] + basefreqs[1] * basefreqs[3];
+        final double b = (basefreqs[0] * basefreqs[1] + basefreqs[0] * basefreqs[3])
+                + (basefreqs[1] * basefreqs[2] + basefreqs[2] * basefreqs[3]);
 
         /* We have the identity
          *    a * kappa =  TsTv * b
          * which we solve to get kappa
          */
-        double kappa = (TsTv * b) / a;
+        final double kappa = (TsTv * b) / a;
 
-        double[][] Q = new double[4][4];
+        final double[][] Q = new double[4][4];
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 if (i != j) {
@@ -65,8 +62,16 @@ public class HKY85model extends NucleotideModel {
 
         setRateMatrix(Q, basefreqs);
         normaliseQ();
-
     }
 
+    /**
+     * no exact distance associated with this model
+     *
+     * @param F
+     * @throws RuntimeException
+     */
+    public double exactDistance(double[][] F) {
+        throw new RuntimeException("exactDistance: not implemented");
+    }
 }
 

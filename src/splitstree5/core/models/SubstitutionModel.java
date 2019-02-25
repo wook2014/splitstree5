@@ -27,11 +27,9 @@ package splitstree5.core.models;
 import java.util.Random;
 
 /**
- * SubstitutionModel
- * <p/>
  * Abstract substitution model
  *
- * @author bryant
+ * @author Dave Bryant, 2005?
  */
 public interface SubstitutionModel {
 

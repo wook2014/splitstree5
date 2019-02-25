@@ -1,6 +1,7 @@
 package splitstree5.core.algorithms.characters2distances;
 
 import jloda.util.ProgressListener;
+import splitstree5.core.algorithms.characters2distances.old_nucleotide.DNAdistance;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
 import splitstree5.core.algorithms.interfaces.IToDistances;

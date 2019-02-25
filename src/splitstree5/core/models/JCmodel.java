@@ -18,8 +18,6 @@
  */
 package splitstree5.core.models;
 
-import java.util.function.Function;
-
 /**
  * @author Miguel Jett�
  * June 10th 2004
@@ -47,12 +45,10 @@ public class JCmodel extends NucleotideModel {
 
     }
 
-    public Function<double[][], Double> exactDist() {
-        return (F) -> {
+    public double exactDistance(double[][] F) {
             final double D = 1 - (F[0][0] + F[1][1] + F[2][2] + F[3][3]);
             final double B = 0.75;
             return -B * mInverse(1 - D / B, getPropInvariableSites(), getGamma());
-        };
     }
 
 

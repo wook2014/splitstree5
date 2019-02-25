@@ -206,6 +206,71 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
                         grid.add(flowPane, 1, row);
                         break;
                     }
+                    case doubleSquareMatrix: {
+                        final Single<Boolean> inUpdate = new Single<>(false);
+
+                        final double[][] matrix = ((double[][]) option.getProperty().getValue());
+                        final int length = matrix.length;
+
+                        final TextField[][] controls = new TextField[length][length];
+                        for (int i = 0; i < length; i++) {
+                            for (int j = 0; j < length; j++) {
+                                final TextField control = new TextField();
+                                controls[i][j] = control;
+                                control.setPrefColumnCount(6);
+                                control.setPrefWidth(60);
+                                control.setTextFormatter(new TextFormatter<>(new DoubleStringConverter()));
+                                control.setText(String.format("%.4f", matrix[i][j]).replaceAll("0+$", "0"));
+                                if (option.getToolTipText() != null)
+                                    control.setTooltip(new Tooltip(option.getToolTipText()));
+
+                                control.textProperty().addListener((observable, oldValue, newValue) -> {
+                                    if (newValue.length() == 0)
+                                        newValue = "0";
+                                    if (OptionValueType.isType(type, newValue)) {
+                                        if (!inUpdate.get()) {
+                                            inUpdate.set(true);
+                                            for (int i1 = 0; i1 < length; i1++) {
+                                                for (int j1 = 0; j1 < length; j1++) {
+                                                    matrix[i1][j1] = Basic.parseDouble(controls[i1][j1].getText());
+                                                }
+                                            }
+                                            option.getProperty().setValue(matrix);
+                                            inUpdate.set(false);
+                                        }
+                                    }
+                                });
+
+                                final InvalidationListener invalidationListener = observable -> {
+                                    if (!inUpdate.get()) {
+                                        inUpdate.set(true);
+                                        final double[][] values = ((double[][]) option.getProperty().getValue());
+                                        for (int i1 = 0; i1 < length; i1++) {
+                                            for (int j1 = 0; j1 < length; j1++) {
+                                                controls[i1][j1].setText(String.format("%.4f", values[i1][j1]).replaceAll("0+$", "0"));
+                                            }
+                                        }
+                                        inUpdate.set(false);
+                                    }
+                                };
+                                listeners.add(invalidationListener);
+                                option.getProperty().addListener(new WeakInvalidationListener(invalidationListener));
+                            }
+                        }
+
+                        final GridPane gridPane = new GridPane();
+                        gridPane.setMaxWidth(250);
+                        for (int i = 0; i < length; i++) {
+                            for (int j = 0; j < length; j++) {
+                                final TextField control = controls[i][j];
+                                GridPane.setConstraints(control, j, i);
+                            }
+                            gridPane.getChildren().addAll(controls[i]);
+                        }
+
+                        grid.add(gridPane, 1, row);
+                        break;
+                    }
                     case String: {
                         final Single<Boolean> inUpdate = new Single<>(false);
                         TextField control = new TextField();

@@ -65,8 +65,8 @@ public class CharactersUtilities {
         final String symbols = chars.getSymbols();
         final int numStates = symbols.length();
         final double[] Fcount = new double[numStates];
-        final char missingchar = chars.getMissingCharacter();
-        final char gapchar = chars.getGapCharacter();
+        final char missingChar = chars.getMissingCharacter();
+        final char gapChar = chars.getGapCharacter();
 
         for (int i = 1; i < chars.getNtax(); i++) {
             //char[] seq = chars.getRow(i); // todo can do this?
@@ -77,10 +77,10 @@ public class CharactersUtilities {
 
                 //Convert to lower case if the respectCase option is not set
                 if (!chars.isRespectCase()) {
-                    if (c != missingchar && c != gapchar)
+                    if (c != missingChar && c != gapChar)
                         c = Character.toLowerCase(c);
                 }
-                if (c != missingchar && c != gapchar) {
+                if (c != missingChar && c != gapChar) {
                     numNotMissing = numNotMissing + 1;
 
                     int state = symbols.indexOf(c);
@@ -97,11 +97,10 @@ public class CharactersUtilities {
             }
         }
 
-        for (int i = 0; i < numStates; i++)
+        for (int i = 0; i < numStates; i++) {
             Fcount[i] = Fcount[i] / (double) numNotMissing;
-
+        }
         return Fcount;
-
     }
 
     /**

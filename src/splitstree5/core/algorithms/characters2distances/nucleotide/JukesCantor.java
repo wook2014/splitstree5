@@ -93,7 +93,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.algorithms.alt_characters2distances;
+package splitstree5.core.algorithms.characters2distances.nucleotide;
 
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IFromChararacters;
@@ -111,7 +111,7 @@ import java.util.List;
  * implements the Jukes Cantor transformation
  * Daniel Huson, 2.2019
  */
-public class JukesCantor extends Nucleotides2DistancesAlgorithm implements IFromChararacters, IToDistances {
+public class JukesCantor extends Nucleotides2DistancesBase implements IFromChararacters, IToDistances {
     @Override
     public String getCitation() {
         return "Jukes and Cantor 1969; Jukes TH & Cantor CR (1969). Evolution of Protein Molecules. New York: Academic Press. pp. 21–132";

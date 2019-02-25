@@ -59,10 +59,13 @@ public abstract class NucleotideModel implements SubstitutionModel {
     private double propInvariableSites; /* Proportion of invariant sites */
     private double gamma = 0.0;
 
-    /*------------Constructors-----------------------*/
-    NucleotideModel() {
-        //NULL constructor...
-    }
+    /**
+     * computes the exact distance.
+     *
+     * @param F
+     * @return exact distance
+     */
+    abstract public double exactDistance(double[][] F);
 
     /**
      * Get the base frequency for state i (ranging from 0 to 3)
@@ -149,7 +152,7 @@ public abstract class NucleotideModel implements SubstitutionModel {
     }
 
     /**
-     * Get an entry in the Q matrix (can involve computation)
+     * Get an entry in the Q matrix
      *
      * @param i first state
      * @param j second state
@@ -199,7 +202,7 @@ public abstract class NucleotideModel implements SubstitutionModel {
     }
 
     /**
-     * COmpute the X_ij value for this distance. This is the probability of observing state i at the beginning
+     * Compute the X_ij value for this distance. This is the probability of observing state i at the beginning
      * and state j at the end, or pi_i P_{ij}(t).
      *
      * @param i first state (0..3)
@@ -355,16 +358,6 @@ public abstract class NucleotideModel implements SubstitutionModel {
     }
 
     /**
-     * computes the exact distance
-     *
-     * @param F
-     * @return exact distance
-     */
-    public double exactDistance(double[][] F) {
-        throw new RuntimeException("exactDistance: not implemented");
-    }
-
-    /**
      * is this a group valued model
      *
      * @return true, if group valued model
@@ -447,7 +440,7 @@ public abstract class NucleotideModel implements SubstitutionModel {
                     }
                 } else {
                     //Exact distance
-                    double[][] F = seqPair.getF();
+                    final double[][] F = seqPair.getF();
                     if (F == null)
                         numMissing++;
                     else {

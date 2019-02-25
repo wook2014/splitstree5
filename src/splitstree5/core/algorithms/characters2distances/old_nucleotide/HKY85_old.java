@@ -1,4 +1,23 @@
-package splitstree5.core.algorithms.characters2distances;
+/*
+ *  Copyright (C) 2018 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package splitstree5.core.algorithms.characters2distances.old_nucleotide;
 
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
@@ -10,14 +29,9 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.models.HKY85model;
 
 /**
- * Computes the Hasegawa, Kishino and Yano distance for a set of characters.
- * <p>
- * Created on 12-Jun-2004
- *
- * @author Mig
+ * @deprecated
  */
-
-public class HKY85 extends DNAdistance implements IFromChararacters, IToDistances {
+public class HKY85_old extends DNAdistance implements IFromChararacters, IToDistances {
     @Override
     public String getCitation() {
         return "Hasegawa, Kishino, Yano 1985; " +
@@ -25,7 +39,7 @@ public class HKY85 extends DNAdistance implements IFromChararacters, IToDistance
                 "Journal of Molecular Evolution. 22 (2): 160–174. PMID 3934395. doi:10.1007/BF02101694, 1985.";
     }
 
-    public HKY85() {
+    public HKY85_old() {
         super();
         setOptionUseML(true);
     }

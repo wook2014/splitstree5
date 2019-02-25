@@ -24,6 +24,8 @@
  */
 package splitstree5.core.models;
 
+import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
+
 /**
  * @author bryant
  * <p/>
@@ -31,8 +33,6 @@ package splitstree5.core.models;
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class F84Model extends NucleotideModel {
-
-
     /**
      * Constructor taking the expected rate of transitions versus transversions (rather
      * than the parameter K in Swofford et al, pg 436.)
@@ -44,12 +44,9 @@ public class F84Model extends NucleotideModel {
     public F84Model(double[] baseFreqs, double TsTv) {
         super();
 
-
-        double a = baseFreqs[0] * baseFreqs[2] + baseFreqs[1] * baseFreqs[3];
-        double b = baseFreqs[0] * baseFreqs[2] / (baseFreqs[0] + baseFreqs[2]);
-        b += baseFreqs[1] * baseFreqs[3] / (baseFreqs[1] + baseFreqs[3]);
-        double c = baseFreqs[0] * baseFreqs[1] + baseFreqs[0] * baseFreqs[3];
-        c += baseFreqs[1] * baseFreqs[2] + baseFreqs[2] * baseFreqs[3];
+        final double a = baseFreqs[0] * baseFreqs[2] + baseFreqs[1] * baseFreqs[3];
+        final double b = (baseFreqs[0] * baseFreqs[2] / (baseFreqs[0] + baseFreqs[2])) + (baseFreqs[1] * baseFreqs[3] / (baseFreqs[1] + baseFreqs[3]));
+        final double c = (baseFreqs[0] * baseFreqs[1] + baseFreqs[0] * baseFreqs[3]) + (baseFreqs[1] * baseFreqs[2] + baseFreqs[2] * baseFreqs[3]);
 
         /* We have the identity
          *    a + bK =  TsTv * c
@@ -74,8 +71,25 @@ public class F84Model extends NucleotideModel {
 
         setRateMatrix(Q, baseFreqs);
         normaliseQ();
-
-
     }
 
+    @Override
+    public double exactDistance(double[][] F) throws SaturatedDistancesException {
+        final double[] baseFreq = getNormedBaseFreq();
+        final double piA = baseFreq[0],
+                piC = baseFreq[1],
+                piG = baseFreq[2],
+                piT = baseFreq[3];
+        final double piR = piA + piG; //frequency of purines
+        final double piY = piC + piT; //frequency of pyrimidines
+        final double A = piC * piT / piY + piA * piG / piR;
+        final double B = piC * piT + piA * piG;
+        final double C = piR * piY;
+
+        final double P = F[0][2] + F[1][3] + F[2][0] + F[3][1];
+        final double Q = (F[0][1] + F[0][3] + F[1][0] + F[1][2]) + (F[2][1] + F[2][3] + F[3][0] + F[3][2]);
+
+        return (-2.0 * A * mInverse(1.0 - P / (2.0 * A) - (A - B) * Q / (2.0 * A * C), getPropInvariableSites(), getGamma()))
+                + (2.0 * (A - B - C) * mInverse((1.0 - Q / (2.0 * C)), getPropInvariableSites(), getGamma()));
+    }
 }

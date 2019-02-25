@@ -25,10 +25,8 @@
 package splitstree5.core.models;
 
 /**
- * @author bryant
- * <p/>
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * The JTT model
+ * Dave Bryant, 2005
  */
 public class JTTmodel extends ProteinModel {
 
