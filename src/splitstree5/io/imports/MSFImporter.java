@@ -13,11 +13,13 @@ import java.io.IOException;
 import java.util.*;
 
 public class MSFImporter extends CharactersFormat implements IToCharacters, IImportCharacters {
+
+    private CharactersType dataType = CharactersType.Unknown;
+
     @Override
     public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxaBlock, CharactersBlock dataBlock) throws CanceledException, IOException {
 
         taxaBlock.clear();
-        dataBlock.clear();
 
         Map<String, String> taxa2seq = new LinkedHashMap<>();
         boolean charStarted = false;
@@ -26,21 +28,32 @@ public class MSFImporter extends CharactersFormat implements IToCharacters, IImp
 
             progressListener.setMaximum(it.getMaximumProgress());
             progressListener.setProgress(0);
+            int linesCounter = 0;
 
             while (it.hasNext()) {
+
+                linesCounter += 1;
                 final String line = it.next();
+                final String line_no_spaces = line.replaceAll(" ", "");
+
+                if (line_no_spaces.startsWith("!!NA"))
+                    dataType = CharactersType.DNA;
+                if (line_no_spaces.startsWith("!!AA"))
+                    dataType = CharactersType.Protein;
 
                 if (!charStarted && line.contains("Name:")){
                     StringTokenizer tokens = new StringTokenizer(line);
                     tokens.nextToken();
                     String taxon = tokens.nextToken();
 
+                    if (taxa2seq.keySet().contains(taxon))
+                        throw new IOExceptionWithLineNumber("Repeated taxon name", linesCounter);
+
                     taxaBlock.add(new Taxon(taxon));
                     taxa2seq.put(taxon, "");
-                    //System.err.println(taxon);
                 }
 
-                if (line.replaceAll(" ", "").equals("//")){
+                if (line_no_spaces.equals("//")){
                     charStarted = true;
                 }
 
@@ -55,31 +68,37 @@ public class MSFImporter extends CharactersFormat implements IToCharacters, IImp
 
                 progressListener.setProgress(it.getProgress());
             }
-
         }
 
         String firstKey = (String) taxa2seq.keySet().toArray()[0];
         int nchars = taxa2seq.get(firstKey).length();
         int ntax = taxa2seq.size();
 
-        // todo bring together 2 loops?, use setCharacters function
-        for (String t : taxa2seq.keySet()){
-            if (taxa2seq.get(t).length() != nchars)
-                throw new IOException("The sequences in the alignment have different lengths!" +
-                        "Length of sequence: "+t+" differ from previous sequences.");
-        }
+        setCharacters(taxa2seq, ntax, nchars, dataBlock);
 
-        // set characters
-        dataBlock.setDimension(ntax, nchars);
-        String[] seqs = taxa2seq.values().toArray(new String[taxa2seq.size()]);
-        for (int i = 1; i <= ntax; i++){
-            for (int j = 1; j <= nchars; j++){
-                dataBlock.set(i, j, seqs[i-1].charAt(j-1));
+    }
+
+    private void setCharacters(Map<String, String> taxa2seq, int ntax, int nchar, CharactersBlock characters)
+            throws IOException {
+
+        characters.clear();
+        characters.setDimension(ntax, nchar);
+        characters.setDataType(this.dataType);
+        characters.setMissingCharacter('.'); //todo estimate??
+
+        int labelsCounter = 1;
+
+        for (String label : taxa2seq.keySet()) {
+            if (taxa2seq.get(label).length() != nchar)
+                throw new IOException("The sequences in the alignment have different lengths! " +
+                        "Length of sequence: "+label+" differ from the length of previous sequences :"+nchar);
+
+            for (int j = 1; j <= nchar; j++) {
+                char symbol = Character.toLowerCase(taxa2seq.get(label).charAt(j - 1));
+                characters.set(labelsCounter, j, symbol);
             }
+            labelsCounter++;
         }
-        dataBlock.setDataType(CharactersType.DNA); //todo estimate!
-        dataBlock.setMissingCharacter('.'); //todo estimate??
-
     }
 
     private String cutTaxonFromLine(String line, Set<String> taxaKeys){
@@ -98,6 +117,8 @@ public class MSFImporter extends CharactersFormat implements IToCharacters, IImp
     @Override
     public boolean isApplicable(String fileName) throws IOException {
         String line = Basic.getFirstLineFromFile(new File(fileName));
-        return line != null && line.toUpperCase().equals("!!NA_MULTIPLE_ALIGNMENT 1.0");
+        return line != null &&
+                (line.toUpperCase().equals("!!NA_MULTIPLE_ALIGNMENT 1.0")
+                || line.toUpperCase().equals("!!AA_MULTIPLE_ALIGNMENT 1.0") );
     }
 }
