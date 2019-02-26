@@ -59,18 +59,16 @@ import java.util.List;
  * Daniel Huson, 11.2017
  */
 public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implements IFromSplits, IToViewer {
-    private final SplitsGraph graph = new SplitsGraph();
-
-    private ChangeListener<UpdateState> changeListener;
-
     public enum Algorithm {EqualAngleConvexHull, EqualAngleOnly, ConvexHullOnly}
 
     private final ObjectProperty<Algorithm> optionAlgorithm = new SimpleObjectProperty<>(Algorithm.EqualAngleConvexHull);
     private final BooleanProperty optionUseWeights = new SimpleBooleanProperty(true);
-
     private final IntegerProperty optionDaylightIterations = new SimpleIntegerProperty(0);
-
     private final IntegerProperty optionBoxOpenIterations = new SimpleIntegerProperty(0);
+
+    private final SplitsGraph graph = new SplitsGraph();
+
+    private ChangeListener<UpdateState> changeListener;
 
     public List<String> listOptions() {
         return Arrays.asList("optionAlgorithm", "optionUseWeights", "optionBoxOpenIterations", "optionDaylightIterations");

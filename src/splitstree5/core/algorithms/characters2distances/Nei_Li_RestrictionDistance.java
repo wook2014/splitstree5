@@ -13,17 +13,13 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.CharactersType;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * Implements the NeiLi (1979) distance for restriction site data.
  *
- * @author bryant
+ * @author David Bryant, 2008?
  */
 
 public class Nei_Li_RestrictionDistance extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
-    //public final boolean EXPERT = false; todo: is not used, also in ST4
 
     private final DoubleProperty optionRestrictionSiteLength = new SimpleDoubleProperty(6.0);
 
@@ -32,23 +28,17 @@ public class Nei_Li_RestrictionDistance extends Algorithm<CharactersBlock, Dista
         return "Nei and Li 1979;M Nei and W H Li. Mathematical model for studying genetic variation in terms of restriction endonucleases, PNAS 79(1):5269-5273, 1979.";
     }
 
-    public List<String> listOptions() {
-        return Arrays.asList("RestrictionSiteLength");
-    }
-
     @Override
     public String getToolTip(String optionName) {
         if (optionName.equals("RestrictionSiteLength"))
             return "Expected length of restriction site (4-8 bp)";
         else
-            return null;
+            return optionName;
     }
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
-            throws Exception {
-
-        int ntax = taxaBlock.getNtax();
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock) throws Exception {
+        final int ntax = taxaBlock.getNtax();
         distancesBlock.setNtax(ntax);
 
         progress.setTasks("Nei Li (1979) Restriction Site Distance", "Init.");
@@ -61,22 +51,21 @@ public class Nei_Li_RestrictionDistance extends Algorithm<CharactersBlock, Dista
             for (int t = s + 1; t <= ntax; t++) {
 
                 PairwiseCompare seqPair = new PairwiseCompare(charactersBlock, s, t);
-                double[][] F = seqPair.getF();
+                final double[][] F = seqPair.getF();
                 double dist = -1.0;
                 if (F == null)
                     numUndefined++;
                 else {
-
-                    double ns = F[1][0] + F[1][1];
-                    double nt = F[0][1] + F[1][1];
-                    double nst = F[1][1];
+                    final double ns = F[1][0] + F[1][1];
+                    final double nt = F[0][1] + F[1][1];
+                    final double nst = F[1][1];
 
                     if (nst == 0) {
                         dist = -1;
                         numUndefined++;
                     } else {
-                        double s_hat = 2.0 * nst / (ns + nt);
-                        double a = (4.0 * Math.pow(s_hat, 1.0 / (2 * getOptionRestrictionSiteLength())) - 1.0) / 3.0;
+                        final double s_hat = 2.0 * nst / (ns + nt);
+                        final double a = (4.0 * Math.pow(s_hat, 1.0 / (2 * getOptionRestrictionSiteLength())) - 1.0) / 3.0;
                         if (a <= 0.0) {
                             dist = -1;
                             numUndefined++;
@@ -96,9 +85,7 @@ public class Nei_Li_RestrictionDistance extends Algorithm<CharactersBlock, Dista
             FixUndefinedDistances.apply(ntax, maxDist, distancesBlock);
 
         progress.close();
-
     }
-
 
     @Override
     public boolean isApplicable(TaxaBlock taxa, CharactersBlock c) {

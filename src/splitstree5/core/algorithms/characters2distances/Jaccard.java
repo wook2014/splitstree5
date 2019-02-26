@@ -23,11 +23,6 @@ public class Jaccard extends Algorithm<CharactersBlock, DistancesBlock> implemen
     }
 
     @Override
-    public boolean isApplicable(TaxaBlock taxa, CharactersBlock c) {
-        return c.getDataType().equals(CharactersType.Standard);
-    }
-
-    @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock) throws Exception {
 
         final int ntax = taxaBlock.getNtax();
@@ -74,5 +69,10 @@ public class Jaccard extends Algorithm<CharactersBlock, DistancesBlock> implemen
             FixUndefinedDistances.apply(ntax, maxDist, distancesBlock);
 
         progress.close();
+    }
+
+    @Override
+    public boolean isApplicable(TaxaBlock taxa, CharactersBlock c) {
+        return c.getDataType().equals(CharactersType.Standard);
     }
 }

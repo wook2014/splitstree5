@@ -56,7 +56,7 @@ public class PCoA2D extends Algorithm<DistancesBlock, NetworkBlock> implements I
             case "SecondCoordinate":
                 return "Choose principal component for the y Axis";
             default:
-                return null;
+                return optionName;
         }
     }
 

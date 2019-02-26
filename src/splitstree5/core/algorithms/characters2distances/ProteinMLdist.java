@@ -72,8 +72,7 @@ public class ProteinMLdist extends Algorithm<CharactersBlock, DistancesBlock> im
     }
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock)
-            throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock) throws Exception {
 
         boolean hasSaturated = false;
 
@@ -115,7 +114,6 @@ public class ProteinMLdist extends Algorithm<CharactersBlock, DistancesBlock> im
                 k++;
                 progress.incrementProgress();
             }
-
         }
 
         progress.close();
@@ -127,7 +125,6 @@ public class ProteinMLdist extends Algorithm<CharactersBlock, DistancesBlock> im
     @Override
     public boolean isApplicable(TaxaBlock taxa, CharactersBlock ch) {
         return ch.getDataType() == CharactersType.Protein;
-
     }
 
     public ProteinModel selectModel(Model model) {

@@ -62,6 +62,22 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
                 "In  G.  Benson  and  R.  Page,  editors, Proceedings  of  “Workshop  on Algorithms in Bioinformatics, volume 2812 of LNBI, pages 165–176. Springer, 2003.";
     }
 
+    public List<String> listOptions() {
+        return Arrays.asList("EdgeWeights", "ThresholdPercent");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        switch (optionName) {
+            case "EdgeWeights":
+                return "Determine how to calculate edge weights in resulting network";
+            case "ThresholdPercent":
+                return "Determine threshold for percent of input trees that split has to occur in for it to appear in the output";
+            default:
+                return optionName;
+        }
+    }
+
     /**
      * compute the consensus splits
      *
@@ -235,10 +251,6 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
         return parent.size() > 0 && !parent.isPartial();
     }
 
-    @Override
-    public List<String> listOptions() {
-        return Arrays.asList("Consensus", "Threshold", "EdgeWeights");
-    }
 
     public EdgeWeights getOptionEdgeWeights() {
         return optionEdgeWeights.get();

@@ -69,7 +69,7 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> imple
         final int nTax = distances.getNtax();
         final PhyloTree tree = new PhyloTree();
         final HashMap<String, Node> taxa2Nodes = new HashMap<>();
-        final StringBuilder taxaLabels[] = new StringBuilder[nTax + 1];
+        final StringBuilder[] taxaLabels = new StringBuilder[nTax + 1];
 
         initialize(nTax, taxaBlock, tree, taxa2Nodes, taxaLabels);
 

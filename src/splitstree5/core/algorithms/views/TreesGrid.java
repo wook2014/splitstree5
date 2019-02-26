@@ -75,6 +75,11 @@ public class TreesGrid extends Algorithm<TreesBlock, ViewerBlock> implements IFr
         return "Huson et al 2012;D.H. Huson, R. Rupp and C. Scornavacca, Phylogenetic Networks, Cambridge, 2012.";
     }
 
+
+    public List<String> listOptions() {
+        return Arrays.asList("optionRows", "optionCols", "optionFirstTree", "optionLayout", "optionEdgeLengths", "optionEdgeShape");
+    }
+
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock parent, ViewerBlock child) throws Exception {
         progress.setTasks("Trees Grid", "Init.");
@@ -251,10 +256,6 @@ public class TreesGrid extends Algorithm<TreesBlock, ViewerBlock> implements IFr
 
     public void setOptionShowInternalNodeLabels(boolean optionShowInternalNodeLabels) {
         this.optionShowInternalNodeLabels.set(optionShowInternalNodeLabels);
-    }
-
-    public List<String> listOptions() {
-        return Arrays.asList("optionRows", "optionCols", "optionFirstTree", "optionLayout", "optionEdgeLengths", "optionEdgeShape");
     }
 
     public int getOptionRows() {

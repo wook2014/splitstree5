@@ -57,7 +57,7 @@ public class HammingDistances extends Algorithm<CharactersBlock, DistancesBlock>
         if (optionName.equals("Normalize"))
             return "Normalize distances";
         else
-            return null;
+            return optionName;
     }
 
     @Override

@@ -26,11 +26,6 @@ public class Dice extends Algorithm<CharactersBlock, DistancesBlock> implements 
     }
 
     @Override
-    public boolean isApplicable(TaxaBlock taxaBlock, CharactersBlock parent) {
-        return parent.getDataType().equals(CharactersType.Standard);
-    }
-
-    @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, CharactersBlock charactersBlock, DistancesBlock distancesBlock) throws Exception {
 
         int ntax = taxaBlock.getNtax();
@@ -77,6 +72,11 @@ public class Dice extends Algorithm<CharactersBlock, DistancesBlock> implements 
             FixUndefinedDistances.apply(ntax, maxDist, distancesBlock);
 
         progress.close();
+    }
+
+    @Override
+    public boolean isApplicable(TaxaBlock taxaBlock, CharactersBlock parent) {
+        return parent.getDataType().equals(CharactersType.Standard);
     }
 }
 

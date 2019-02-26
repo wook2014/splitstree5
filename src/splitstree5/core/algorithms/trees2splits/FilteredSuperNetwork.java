@@ -44,6 +44,13 @@ public class FilteredSuperNetwork extends SuperNetwork implements IFromTrees, IT
 
 
     @Override
+    public String getCitation() {
+        return "Whitfield et al.;James B. Whitfield, Sydney A. Cameron, Daniel H. Huson, Mike A. Steel. " +
+                "Filtered Z-Closure Supernetworks for Extracting and Visualizing Recurrent Signal from Incongruent Gene Trees, " +
+                "Systematic Biology, Volume 57, Issue 6, 1 December 2008, Pages 939–947.";
+    }
+
+    @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock trees, SplitsBlock child) throws Exception {
         // first compute splits using Z-closure method:
         SplitsBlock splits = new SplitsBlock();
@@ -173,12 +180,5 @@ public class FilteredSuperNetwork extends SuperNetwork implements IFromTrees, IT
 
     public void setOptionUseTotalScore(boolean optionUseTotalScore) {
         this.optionUseTotalScore = optionUseTotalScore;
-    }
-
-    @Override
-    public String getCitation() {
-        return "Whitfield et al.;James B. Whitfield, Sydney A. Cameron, Daniel H. Huson, Mike A. Steel. " +
-                "Filtered Z-Closure Supernetworks for Extracting and Visualizing Recurrent Signal from Incongruent Gene Trees, " +
-                "Systematic Biology, Volume 57, Issue 6, 1 December 2008, Pages 939–947.";
     }
 }

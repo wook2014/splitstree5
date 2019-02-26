@@ -37,7 +37,7 @@ public class HammingDistancesAmbiguousStates extends Algorithm<CharactersBlock, 
             case "HandleAmbiguousStates":
                 return "Choose way to handle ambiguous nucleotides";
         }
-        return null;
+        return optionName;
     }
 
     @Override

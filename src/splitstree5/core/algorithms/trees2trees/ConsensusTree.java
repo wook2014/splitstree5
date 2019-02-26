@@ -44,6 +44,23 @@ public class ConsensusTree extends Algorithm<TreesBlock, TreesBlock> implements 
     private final SimpleObjectProperty<ConsensusNetwork.EdgeWeights> optionEdgeWeights = new SimpleObjectProperty<>(ConsensusNetwork.EdgeWeights.TreeSizeWeightedMean);
 
     @Override
+    public List<String> listOptions() {
+        return Arrays.asList("Consensus", "EdgeWeights");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        switch (optionName) {
+            case "EdgeWeights":
+                return "Determine how to calculate edge weights in resulting network";
+            case "Consensus":
+                return "Consensus method to use";
+            default:
+                return optionName;
+        }
+    }
+
+    @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock parent, TreesBlock child) throws Exception {
         if (parent.getNTrees() <= 1)
             child.getTrees().addAll(parent.getTrees());
@@ -61,11 +78,6 @@ public class ConsensusTree extends Algorithm<TreesBlock, TreesBlock> implements 
     @Override
     public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent) {
         return !parent.isPartial();
-    }
-
-    @Override
-    public List<String> listOptions() {
-        return Arrays.asList("consensus", "edgeWeights");
     }
 
     public ConsensusTreeSplits.Consensus getOptionConsensus() {

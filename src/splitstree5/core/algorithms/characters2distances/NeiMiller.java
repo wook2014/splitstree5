@@ -11,16 +11,14 @@ import splitstree5.core.datablocks.characters.CharactersType;
 
 /**
  * Computes the Nei and Miller (1990) distance from a set of characters
- * <p>
- * Created on 2008-03-17
  *
- * @author bryant
+ * @author David Bryant, 2008
  */
 public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
     @Override
     public String getCitation() {
-        return "Nei and Miller 1990; " +
-                "M. Nei and J.C. Miller. A simple method for estimating average number of nucleotide substitutions within and between populations from restriction data. " +
+        return "Nei and Miller 1990; M. Nei and J.C. Miller. " +
+                "A simple method for estimating average number of nucleotide substitutions within and between populations from restriction data. " +
                 "Genetics, 125:873–879, 1990.";
     }
 
@@ -43,7 +41,6 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
 
         distancesBlock.setNtax(ntax);
 
-        int c, i, j, k;
 
         //distancesBlock.setNtax(ntax);
 
@@ -61,10 +58,10 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
         progress.setTasks("NeiMiller distance", "Init.");
         progress.setMaximum(maxProgress);
 
-        for (c = 1; c <= nchar; c++) {
+        for (int c = 1; c <= nchar; c++) {
             //if (!characters.isMasked(c)) {
             boolean found = false;
-            for (k = 1; k <= num_classes; k++) {
+            for (int k = 1; k <= num_classes; k++) {
                 if (class_value[k] == charactersBlock.getCharacterWeight(c)) {// belongs to class already encountered
                     char2class[c] = k;
                     class_size[k]++;
@@ -89,9 +86,9 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
 
         final int[][][] mij_k = new int[ntax + 1][ntax + 1][num_classes + 1];
 
-        for (i = 1; i <= ntax; i++) {
-            for (j = i; j <= ntax; j++) {
-                for (c = 1; c <= nchar; c++) {
+        for (int i = 1; i <= ntax; i++) {
+            for (int j = i; j <= ntax; j++) {
+                for (int c = 1; c <= nchar; c++) {
                     //if (!characters.isMasked(c)) {
                     if (charactersBlock.get(i, c) == '1' && charactersBlock.get(j, c) == '1') {
                         mij_k[i][j][char2class[c]]++;
@@ -107,9 +104,9 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
         // Compute sij_k  (equation 2):
 
         final double[][][] sij_k = new double[ntax + 1][ntax + 1][num_classes + 1];
-        for (i = 1; i <= ntax; i++) {
-            for (j = i + 1; j <= ntax; j++) {
-                for (k = 1; k <= num_classes; k++) {
+        for (int i = 1; i <= ntax; i++) {
+            for (int j = i + 1; j <= ntax; j++) {
+                for (int k = 1; k <= num_classes; k++) {
                     double bot = mij_k[i][i][k] + mij_k[j][j][k];
 
                     if (bot != 0)
@@ -132,9 +129,9 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
 
         final double[][][] dhij_k = new double[ntax + 1][ntax + 1][num_classes + 1];
 
-        for (i = 1; i <= ntax; i++) {
-            for (j = i + 1; j <= ntax; j++) {
-                for (k = 1; k <= num_classes; k++) {
+        for (int i = 1; i <= ntax; i++) {
+            for (int j = i + 1; j <= ntax; j++) {
+                for (int k = 1; k <= num_classes; k++) {
                     if (class_value[k] == 0) {
                         dhij_k[i][j][k] = 100000;
                         if (!warned_dhij) {
@@ -155,9 +152,9 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
 
         final double[][][] mk_k = new double[ntax + 1][ntax + 1][num_classes + 1];
 
-        for (i = 1; i <= ntax; i++) {
-            for (j = i; j <= ntax; j++) {
-                for (k = 1; k <= num_classes; k++) {
+        for (int i = 1; i <= ntax; i++) {
+            for (int j = i; j <= ntax; j++) {
+                for (int k = 1; k <= num_classes; k++) {
                     mk_k[i][j][k] = (mij_k[i][i][k] + mij_k[j][j][k]) / 2.0;
                 }
             }
@@ -168,16 +165,16 @@ public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implem
 
         // Computes the distances as described in equation (4):
 
-        for (i = 1; i <= ntax; i++) {
-            for (j = i + 1; j <= ntax; j++) {
+        for (int i = 1; i <= ntax; i++) {
+            for (int j = i + 1; j <= ntax; j++) {
                 // Computes the bottom of equation 4:
                 double bottom = 0;
-                for (k = 1; k <= num_classes; k++)
+                for (int k = 1; k <= num_classes; k++)
                     bottom += mk_k[i][j][k] * class_value[k];
 
                 // Computes the top of equation 4:
                 double top = 0;
-                for (k = 1; k <= num_classes; k++)
+                for (int k = 1; k <= num_classes; k++)
                     top += mk_k[i][j][k] * class_value[k] * dhij_k[i][j][k];
 
                 if (bottom != 0)

@@ -53,13 +53,6 @@ import java.util.List;
  */
 public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implements IFromNetwork, IToViewer {
     public enum MutationView {Hatches, Labels, Count, None}
-
-    private final PhyloGraph graph = new PhyloGraph();
-    private final NodeArray<NetworkBlock.NodeData> node2data = new NodeArray<>(graph);
-    private final EdgeArray<NetworkBlock.EdgeData> edge2data = new EdgeArray<>(graph);
-
-    private ChangeListener<UpdateState> changeListener;
-
     public enum Algorithm {SpringEmbedder}
 
     private final ObjectProperty<Algorithm> optionAlgorithm = new SimpleObjectProperty<>(Algorithm.SpringEmbedder);
@@ -70,16 +63,17 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
 
     private final BooleanProperty optionScaleNodes = new SimpleBooleanProperty();
 
-    private MutationView optionShowMutations = MutationView.None;
+    private final ObjectProperty<MutationView> optionShowMutations = new SimpleObjectProperty<>(MutationView.None);
 
     public List<String> listOptions() {
-        return Arrays.asList("optionAlgorithm", "optionIterations");
+        return Arrays.asList("optionAlgorithm", "optionIterations", "optionShowPieCharts", "optionScaleNodes", "optionShowMutations");
     }
 
-    @Override
-    public String getCitation() {
-        return null;
-    }
+    private final PhyloGraph graph = new PhyloGraph();
+    private final NodeArray<NetworkBlock.NodeData> node2data = new NodeArray<>(graph);
+    private final EdgeArray<NetworkBlock.EdgeData> edge2data = new EdgeArray<>(graph);
+
+    private ChangeListener<UpdateState> changeListener;
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, NetworkBlock parent, ViewerBlock child) throws Exception {
@@ -413,6 +407,10 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
         return optionShowPieCharts.get();
     }
 
+
+    public boolean isOptionShowPieCharts() {
+        return optionShowPieCharts.get();
+    }
     public BooleanProperty optionShowPieChartsProperty() {
         return optionShowPieCharts;
     }
@@ -433,11 +431,16 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
         this.optionScaleNodes.set(optionScaleNodes);
     }
 
+
     public MutationView getOptionShowMutations() {
+        return optionShowMutations.get();
+    }
+
+    public ObjectProperty<MutationView> optionShowMutationsProperty() {
         return optionShowMutations;
     }
 
-    public void setOptionShowMutations(MutationView mutationView) {
-        optionShowMutations = mutationView;
+    public void setOptionShowMutations(MutationView optionShowMutations) {
+        this.optionShowMutations.set(optionShowMutations);
     }
 }

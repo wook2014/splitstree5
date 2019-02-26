@@ -61,7 +61,7 @@ public class MinSpanningNetwork extends Algorithm<DistancesBlock, NetworkBlock> 
             case "MinSpanningTree":
                 return "calculate MinSpanningTree ";
             default:
-                return null;
+                return optionName;
         }
     }
 
@@ -182,11 +182,5 @@ public class MinSpanningNetwork extends Algorithm<DistancesBlock, NetworkBlock> 
     }
     public void setOptionMinSpanningTree(boolean optionMinSpanningTree) {
         this.optionMinSpanningTree.setValue(optionMinSpanningTree);
-    }
-
-
-    @Override
-    public boolean isApplicable(TaxaBlock taxaBlock, DistancesBlock parent) {
-        return parent.getNtax() > 0;
     }
 }

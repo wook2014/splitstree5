@@ -47,6 +47,31 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
     private final BooleanProperty optionUseAllTraits = new SimpleBooleanProperty();
 
     @Override
+    public String getCitation() {
+        return "Hoppe et al (2018);Anica Hoppe, Sonja Türpitz, Mike Steel. Species notions that combine phylogenetic trees and phenotypic partitions. arXiv:1711.08145v1.";
+    }
+
+    @Override
+    public List<String> listOptions() {
+        return Arrays.asList("SpeciesDefinition", "TraitNumber", "UseAllTraits");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        switch (optionName) {
+            case "SpeciesDefinition":
+                return "Species definition to use";
+            case "TraitNumber":
+                return "Number of specific trait to use";
+            case "UseAllTraits":
+                return "Use all traits";
+            default:
+                return optionName;
+        }
+    }
+
+
+    @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock parent, TreesBlock child) throws Exception {
         final TraitsBlock traitsBlock = taxaBlock.getTraitsBlock();
 
@@ -331,14 +356,8 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
     }
 
     @Override
-    public String getCitation() {
-        return "Hoppe et al (2018);Anica Hoppe, Sonja Türpitz, Mike Steel. Species notions that combine phylogenetic trees and phenotypic partitions. arXiv:1711.08145v1.";
-    }
-
-    @Override
     public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent) {
         return taxaBlock.getTraitsBlock() != null && taxaBlock.getTraitsBlock().getNTraits() > 0 && parent.getNTrees() > 0;
-
     }
 
     public SpeciesDefinition getOptionSpeciesDefinition() {

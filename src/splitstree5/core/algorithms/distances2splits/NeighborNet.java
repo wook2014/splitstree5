@@ -61,12 +61,6 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
                 "Molecular Biology and Evolution, 21(2):255– 265, 2004.";
     }
 
-    /**
-     * constructor
-     */
-    public NeighborNet() {
-    }
-
     public List<String> listOptions() {
         return Arrays.asList("CutOff", "LeastSquares", "Regularization", "LambdaFrac");
     }
@@ -83,7 +77,7 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
             case "LambdaFrac":
                 return "Lambda fraction";
         }
-        return null;
+        return optionName;
     }
 
     /**

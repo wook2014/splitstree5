@@ -95,7 +95,7 @@ public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implement
             case "FillZeros":
                 return "Replace zeros with small numbers in rows/columns with values";
         }
-        return null;
+        return optionName;
     }
 
     @Override

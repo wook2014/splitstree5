@@ -100,16 +100,21 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
     private ChangeListener<UpdateState> changeListener;
 
 
+    @Override
+    public String getCitation() {
+        return "Huson et al 2012;D.H. Huson, R. Rupp and C. Scornavacca, Phylogenetic Networks, Cambridge, 2012.";
+    }
+
+    public List<String> listOptions() {
+        return Arrays.asList("optionLayout", "optionEdgeLengths", "optionEdgeShape", "optionParentPlacement",
+                "optionLeafGroupGapProperty", "optionCublicCurveChildControl", "optionCubicCurveParentControl");
+    }
+
     public TreeEmbedder() {
         optionLayout.addListener((c, o, n) -> {
             if (n == GraphLayout.Radial)
                 setOptionParentPlacement(ParentPlacement.LeafAverage);
         });
-    }
-
-    @Override
-    public String getCitation() {
-        return "Huson et al 2012;D.H. Huson, R. Rupp and C. Scornavacca, Phylogenetic Networks, Cambridge, 2012.";
     }
 
     @Override
@@ -641,9 +646,5 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
         this.optionShowInternalNodeLabels.set(optionShowInternalNodeLabels);
     }
 
-    public List<String> listOptions() {
-        return Arrays.asList("optionLayout", "optionEdgeLengths", "optionEdgeShape", "optionParentPlacement",
-                "optionLeafGroupGapProperty", "optionCublicCurveChildControl", "optionCubicCurveParentControl");
-    }
 }
 

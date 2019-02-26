@@ -47,6 +47,23 @@ public class ConsensusTreeSplits extends Algorithm<TreesBlock, SplitsBlock> impl
     private final SimpleObjectProperty<Consensus> optionConsensus = new SimpleObjectProperty<>(Consensus.Majority);
     private final SimpleObjectProperty<ConsensusNetwork.EdgeWeights> optionEdgeWeights = new SimpleObjectProperty<>(ConsensusNetwork.EdgeWeights.TreeSizeWeightedMean);
 
+    @Override
+    public List<String> listOptions() {
+        return Arrays.asList("Consensus", "EdgeWeights");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        switch (optionName) {
+            case "Consensus":
+                return "Select consensus method";
+            case "EdgeWeights":
+                return "Determine how to calculate edge weights in resulting network";
+            default:
+                return optionName;
+        }
+    }
+
     /**
      * compute the consensus splits
      *
@@ -96,11 +113,6 @@ public class ConsensusTreeSplits extends Algorithm<TreesBlock, SplitsBlock> impl
     @Override
     public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent) {
         return !parent.isPartial();
-    }
-
-    @Override
-    public List<String> listOptions() {
-        return Arrays.asList("consensus", "edgeWeights");
     }
 
     public Consensus getOptionConsensus() {

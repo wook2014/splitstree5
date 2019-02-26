@@ -1,5 +1,7 @@
 package splitstree5.core.algorithms.trees2splits;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import jloda.phylo.PhyloTree;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
@@ -22,25 +24,21 @@ import java.util.BitSet;
  * @author Daniel Huson
  */
 public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
-    private int optionWhich = 1; // which tree is selected?
-
-    public TreeSelector() {
-        setName("TreeSelector");
-    }
+    private final IntegerProperty optionWhich = new SimpleIntegerProperty(1); // which tree is selected?
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock trees, SplitsBlock splits) throws Exception {
         progress.setTasks("Tree selector", "Init.");
 
-        if (optionWhich < 1)
-            optionWhich = 1;
-        if (optionWhich > trees.getNTrees())
-            optionWhich = trees.getNTrees();
+        if (getOptionWhich() < 1)
+            setOptionWhich(1);
+        if (getOptionWhich() > trees.getNTrees())
+            setOptionWhich(trees.getNTrees());
 
         if (trees.getNTrees() == 0)
             return;
 
-        final PhyloTree tree = trees.getTrees().get(optionWhich - 1);
+        final PhyloTree tree = trees.getTrees().get(getOptionWhich() - 1);
 
         if (tree.getNumberOfNodes() == 0)
             return;
@@ -60,15 +58,19 @@ public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> implements 
 
     @Override
     public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent) {
-        return 1 <= optionWhich && optionWhich <= parent.getTrees().size() && !parent.isPartial();
+        return 1 <= getOptionWhich() && getOptionWhich() <= parent.getTrees().size() && !parent.isPartial();
     }
 
     public int getOptionWhich() {
+        return optionWhich.get();
+    }
+
+    public IntegerProperty optionWhichProperty() {
         return optionWhich;
     }
 
-    public void setOptionWhich(int which) {
-        this.optionWhich = which;
+    public void setOptionWhich(int optionWhich) {
+        this.optionWhich.set(optionWhich);
     }
 
     @Override

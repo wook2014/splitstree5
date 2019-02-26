@@ -20,6 +20,8 @@
 package splitstree5.core.algorithms.trees2trees;
 
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import jloda.phylo.PhyloTree;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
@@ -36,8 +38,7 @@ import splitstree5.utils.RerootingUtils;
  * Daniel Huson, 5.2018
  */
 public class RootByMidpointAlgorithm extends Algorithm<TreesBlock, TreesBlock> implements IFromTrees, IToTrees, IFilter {
-    private boolean optionUseMidpoint = true;
-
+    private final BooleanProperty optionUseMidpoint = new SimpleBooleanProperty(true);
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxa, TreesBlock parent, TreesBlock child) throws InterruptedException, CanceledException {
@@ -69,14 +70,18 @@ public class RootByMidpointAlgorithm extends Algorithm<TreesBlock, TreesBlock> i
 
     @Override
     public boolean isActive() {
-        return optionUseMidpoint;
+        return isOptionUseMidpoint();
     }
 
     public boolean isOptionUseMidpoint() {
+        return optionUseMidpoint.get();
+    }
+
+    public BooleanProperty optionUseMidpointProperty() {
         return optionUseMidpoint;
     }
 
     public void setOptionUseMidpoint(boolean optionUseMidpoint) {
-        this.optionUseMidpoint = optionUseMidpoint;
+        this.optionUseMidpoint.set(optionUseMidpoint);
     }
 }

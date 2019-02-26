@@ -21,11 +21,6 @@ import splitstree5.core.datablocks.TreesBlock;
  */
 
 public class AverageConsensus extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
-
-    private boolean analyseDistances = false;
-
-
-
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock) throws Exception {
 
@@ -44,15 +39,6 @@ public class AverageConsensus extends Algorithm<TreesBlock, SplitsBlock> impleme
         ProgressListener pl = new ProgressPercentage();
         nnet.compute(pl, taxaBlock, pairwiseDistances, splitsBlock);
 
-    }
-
-
-    public boolean getOptionAnalyseDistances() {
-        return analyseDistances;
-    }
-
-    public void setOptionAnalyseDistances(boolean analyseDistances) {
-        this.analyseDistances = analyseDistances;
     }
 
     @Override

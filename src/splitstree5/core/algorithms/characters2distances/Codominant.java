@@ -10,9 +10,6 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * Implementation of the Co-dominant genetic distance
  *
@@ -33,16 +30,12 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
         return "Smouse & Peakall 1999; Smouse PE, Peakall R. Spatial autocorrelation analysis of individual multiallele and multilocus genetic structure. Heredity, 82, 561-573, 1999.";
     }
 
-    public List<String> listOptions() {
-        return Arrays.asList("UseSquareRoot");
-    }
-
     @Override
     public String getToolTip(String optionName) {
         if (optionName.equals("UseSquareRoot"))
             return "Use the final distance as square root of the loci contribution. Otherwise: loci averages";
         else
-            return null;
+            return optionName;
     }
 
     @Override

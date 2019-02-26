@@ -1,6 +1,6 @@
 package splitstree5.core.algorithms.trees2splits;
 
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import jloda.fx.NotificationManager;
 import jloda.graph.Edge;
 import jloda.graph.Node;
@@ -37,12 +37,12 @@ import java.util.*;
 public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
     public enum EdgeWeights {AverageRelative, Mean, TreeSizeWeightedMean, Sum, Min, None}
 
-    private boolean optionZRule = true;
-    private boolean optionLeastSquare = false; // todo ???
-    private boolean optionSuperTree = false;
-    private int optionNumberOfRuns = 1;
-    private boolean optionApplyRefineHeuristic = false;
-    private int optionSeed = 0;
+    private final BooleanProperty optionZRule = new SimpleBooleanProperty(true);
+    private final BooleanProperty noOptionLeastSquare = new SimpleBooleanProperty(false); // todo this needs work
+    private final BooleanProperty optionSuperTree = new SimpleBooleanProperty(false);
+    private final IntegerProperty optionNumberOfRuns = new SimpleIntegerProperty(1);
+    private final BooleanProperty optionApplyRefineHeuristic = new SimpleBooleanProperty(false);
+    private final IntegerProperty optionSeed = new SimpleIntegerProperty(0);
 
     private final SimpleObjectProperty<EdgeWeights> optionEdgeWeights = new SimpleObjectProperty<>(EdgeWeights.TreeSizeWeightedMean);
 
@@ -50,6 +50,33 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
     public String getCitation() {
         return "Huson et al 2004;D.H. Huson, T. Dezulian, T. Kloepper, and M. A. Steel. Phylogenetic super-networks from partial trees. " +
                 "IEEE/ACM Transactions in Computational Biology and Bioinformatics, 1(4):151–158, 2004.";
+    }
+
+    @Override
+    public List<String> listOptions() {
+        return Arrays.asList("EdgeWeights", "ZRule", "SuperTree", "NumberOfRuns", "ApplyRefineHeuristic", "LeastSquare", "Seed");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        switch (optionName) {
+            case "EdgeWeights":
+                return "Determine how to calculate edge weights in resulting network";
+            case "LeastSquare":
+                return "Use least squares";
+            case "ZRule":
+                return "Apply the Z-closure rule";
+            case "SuperTree":
+                return "Enforce the strong induction property, which results in a super tree";
+            case "NumberOfRuns":
+                return "Number of runs using random permutations of the input splits";
+            case "ApplyRefineHeuristic":
+                return "Apply a simple refinement heuristic";
+            case "Seed":
+                return "Set seed used for random permutations";
+            default:
+                return optionName;
+        }
     }
 
     @Override
@@ -151,11 +178,11 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
         }
         SplitsBlock splits = new SplitsBlock();
 
-        if (getOptionZRule()) {
+        if (isOptionZRule()) {
             computeClosureOuterLoop(progress, allPSplits);
         }
 
-        if (getOptionApplyRefineHeuristic()) {
+        if (isOptionApplyRefineHeuristic()) {
             progress.setSubtask("Refinement heuristic");
             applyRefineHeuristic(allPSplits);
         }
@@ -168,7 +195,7 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
             // for now, keep all splits of correct size
             if (size == taxaBlock.getNtax()) {
                 boolean ok = true;
-                if (getOptionSuperTree()) {
+                if (isOptionSuperTree()) {
                     for (int t = 1; ok && t <= treesBlock.getNTrees(); t++) {
                         Map pSplits = (pSplitsOfTrees[t]);
                         BitSet support = supportSet[t];
@@ -390,11 +417,11 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
      * @throws CanceledException
      */
     private void computeClosureOuterLoop(ProgressListener progress, Set<PartialSplit> partialSplits) throws CanceledException {
-        this.rand = new Random(this.optionSeed);
+        this.rand = new Random(getOptionSeed());
 
         final Set<PartialSplit> allEverComputed = new HashSet<>(partialSplits);
 
-            for (int i = 0; i < this.optionNumberOfRuns; i++) {
+        for (int i = 0; i < getOptionNumberOfRuns(); i++) {
                 ////doc.notifySubtask("compute closure" + (i == 0 ? "" : "(" + (i + 1) + ")"));
 
                 Set<PartialSplit> clone = new LinkedHashSet<>(partialSplits);
@@ -592,83 +619,87 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
         }
     }
 
+    public boolean isOptionZRule() {
+        return optionZRule.get();
+    }
 
-    public boolean getOptionZRule() {
+    public BooleanProperty optionZRuleProperty() {
         return optionZRule;
     }
 
     public void setOptionZRule(boolean optionZRule) {
-        this.optionZRule = optionZRule;
+        this.optionZRule.set(optionZRule);
     }
 
     public boolean getNoOptionLeastSquare() {
-        return optionLeastSquare;
+        return noOptionLeastSquare.get();
     }
 
-    public void setNoOptionLeastSquare(boolean optionLeastSquare) {
-        this.optionLeastSquare = optionLeastSquare;
+    public BooleanProperty noOptionLeastSquareProperty() {
+        return noOptionLeastSquare;
     }
 
-    /**
-     * which seed it to be used for the random runs ?
-     *
-     * @return optionRandomRunSeed
-     */
-    public int getNoOptionSeed() {
-        return this.optionSeed;
+    public void setNoOptionLeastSquare(boolean noOptionLeastSquare) {
+        this.noOptionLeastSquare.set(noOptionLeastSquare);
     }
 
-    public void setNoOptionSeed(int optionSeed) {
-        this.optionSeed = optionSeed;
+    public boolean isOptionSuperTree() {
+        return optionSuperTree.get();
     }
 
-
-    /**
-     * how many runs with random permutations of the input splits shall be done ?
-     *
-     * @return number of runs to be done
-     */
-    public int getOptionNumberOfRuns() {
-        return this.optionNumberOfRuns;
-    }
-
-    public void setOptionNumberOfRuns(int optionNumberOfRuns) {
-        this.optionNumberOfRuns = Math.max(1, optionNumberOfRuns);
-    }
-
-
-    /**
-     * do we want to force the resulting split system to have the strong nduction proerty?
-     * The strong induction property is that if an output split induces a proper split on some input
-     * taxon set, then that induced split is contained in the input tree
-     *
-     * @return true, if option is set
-     */
-    public boolean getOptionSuperTree() {
+    public BooleanProperty optionSuperTreeProperty() {
         return optionSuperTree;
     }
 
     public void setOptionSuperTree(boolean optionSuperTree) {
-        this.optionSuperTree = optionSuperTree;
+        this.optionSuperTree.set(optionSuperTree);
     }
 
-    public EdgeWeights getOptionEdgeWeights() {
-        return this.optionEdgeWeights.get();
+    public int getOptionNumberOfRuns() {
+        return optionNumberOfRuns.get();
     }
 
-    public SimpleObjectProperty<EdgeWeights> optionEdgeWeightsProperty() {
-        return this.optionEdgeWeights;
+    public IntegerProperty optionNumberOfRunsProperty() {
+        return optionNumberOfRuns;
     }
 
-    public void setOptionEdgeWeights(EdgeWeights optionEdgeWeights) {
-        this.optionEdgeWeights.set(optionEdgeWeights);
+    public void setOptionNumberOfRuns(int optionNumberOfRuns) {
+        this.optionNumberOfRuns.set(optionNumberOfRuns);
     }
 
-    public boolean getOptionApplyRefineHeuristic() {
+    public boolean isOptionApplyRefineHeuristic() {
+        return optionApplyRefineHeuristic.get();
+    }
+
+    public BooleanProperty optionApplyRefineHeuristicProperty() {
         return optionApplyRefineHeuristic;
     }
 
     public void setOptionApplyRefineHeuristic(boolean optionApplyRefineHeuristic) {
-        this.optionApplyRefineHeuristic = optionApplyRefineHeuristic;
+        this.optionApplyRefineHeuristic.set(optionApplyRefineHeuristic);
+    }
+
+    public int getOptionSeed() {
+        return optionSeed.get();
+    }
+
+    public IntegerProperty optionSeedProperty() {
+        return optionSeed;
+    }
+
+    public void setOptionSeed(int optionSeed) {
+        this.optionSeed.set(optionSeed);
+    }
+
+    public EdgeWeights getOptionEdgeWeights() {
+        return optionEdgeWeights.get();
+    }
+
+    public SimpleObjectProperty<EdgeWeights> optionEdgeWeightsProperty() {
+        return optionEdgeWeights;
+    }
+
+    public void setOptionEdgeWeights(EdgeWeights optionEdgeWeights) {
+        this.optionEdgeWeights.set(optionEdgeWeights);
     }
 }

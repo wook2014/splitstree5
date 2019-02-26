@@ -15,9 +15,7 @@ import splitstree5.core.misc.Compatibility;
 import splitstree5.utils.SplitsUtilities;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.BitSet;
-import java.util.List;
 
 /**
  * p-splits method
@@ -32,16 +30,13 @@ public class ParsimonySplits extends Algorithm<CharactersBlock, SplitsBlock> imp
         return "Bandelt and Dress 1992; H.-J.Bandelt and A.W.M.Dress. A canonical decomposition theory for metrics on a finite set. Advances in Mathematics, 92:47–105, 1992.";
     }
 
-    public List<String> listOptions() {
-        return Arrays.asList("GapsAsMissing");
-    }
 
     @Override
     public String getToolTip(String optionName) {
         if (optionName.equals("GapsAsMissing"))
             return "Treat gaps as missing characters";
         else
-            return null;
+            return optionName;
     }
 
     @Override

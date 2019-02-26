@@ -27,8 +27,7 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
 
     @Override
     public String getCitation() {
-        return "Huson and Steel 2004; " +
-                "D.H. Huson  and  M. Steel. Phylogenetic  trees  based  on  gene  content. Bioinformatics, 20(13):2044–9, 2004.";
+        return "Huson and Steel 2004; D.H. Huson  and  M. Steel. Phylogenetic  trees  based  on  gene  content. Bioinformatics, 20(13):2044–9, 2004.";
     }
 
     public List<String> listOptions() {
@@ -40,7 +39,7 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
         if (optionName.equals("UseMLDistance"))
             return "Use maximum likelihood distance estimation";
         else
-            return null;
+            return optionName;
     }
 
     @Override

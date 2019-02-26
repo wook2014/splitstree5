@@ -1,5 +1,7 @@
 package splitstree5.core.algorithms.trees2splits;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
@@ -21,7 +23,7 @@ import splitstree5.utils.SplitMatrix;
 public class BalancedConfidenceNetwork extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
     public final static String DESCRIPTION = "Computes a confidence network using Beran's algorithm. cf Huson and Bryant (2006)";
 
-    private double level = .95;
+    private final DoubleProperty optionLevel = new SimpleDoubleProperty(.95);
 
     @Override
     public String getCitation() {
@@ -42,11 +44,15 @@ public class BalancedConfidenceNetwork extends Algorithm<TreesBlock, SplitsBlock
     }
 
     public double getOptionLevel() {
-        return level;
+        return optionLevel.get();
     }
 
-    public void setOptionLevel(double level) {
-        this.level = level;
+    public DoubleProperty optionLevelProperty() {
+        return optionLevel;
+    }
+
+    public void setOptionLevel(double optionLevel) {
+        this.optionLevel.set(optionLevel);
     }
 
     @Override

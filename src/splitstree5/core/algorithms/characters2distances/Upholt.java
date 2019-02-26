@@ -13,9 +13,6 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.CharactersType;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * Implements the Upholt (1979) distance for restriction site data.
  *
@@ -24,10 +21,6 @@ import java.util.List;
 
 public class Upholt extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
     private final DoubleProperty optionRestrictionSiteLength = new SimpleDoubleProperty(6.0);
-
-    public List<String> listOptions() {
-        return Arrays.asList("RestrictionSiteLength");
-    }
 
     @Override
     public String getToolTip(String optionName) {
