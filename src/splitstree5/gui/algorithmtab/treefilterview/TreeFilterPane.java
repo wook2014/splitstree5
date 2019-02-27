@@ -198,15 +198,15 @@ public class TreeFilterPane extends AlgorithmPane {
             activeList.getItems().clear();
             inactiveList.getItems().clear();
 
-            if (treesFilter.getEnabledTrees().size() == 0 && treesFilter.getDisabledTrees().size() == 0) {
+            if (treesFilter.getOptionEnabledTrees().size() == 0 && treesFilter.getOptionDisabledTrees().size() == 0) {
                 for (PhyloTree phyloTree : ((TreesBlock) connector.getParent().getDataBlock()).getTrees()) {
                     activeList.getItems().add(phyloTree.getName());
                 }
             } else {
-                for (String name : treesFilter.getEnabledTrees()) {
+                for (String name : treesFilter.getOptionEnabledTrees()) {
                     activeList.getItems().add(name);
                 }
-                for (String name : treesFilter.getDisabledTrees()) {
+                for (String name : treesFilter.getOptionDisabledTrees()) {
                     inactiveList.getItems().add(name);
                 }
             }
@@ -219,10 +219,10 @@ public class TreeFilterPane extends AlgorithmPane {
      * sync controller to model
      */
     public void syncController2Model() {
-        treesFilter.getEnabledTrees().clear();
-        treesFilter.getEnabledTrees().addAll(controller.getActiveList().getItems());
-        treesFilter.getDisabledTrees().clear();
-        treesFilter.getDisabledTrees().addAll(controller.getInactiveList().getItems());
+        treesFilter.getOptionEnabledTrees().clear();
+        treesFilter.getOptionEnabledTrees().addAll(controller.getActiveList().getItems());
+        treesFilter.getOptionDisabledTrees().clear();
+        treesFilter.getOptionDisabledTrees().addAll(controller.getInactiveList().getItems());
         connector.setState(UpdateState.INVALID);
     }
 }

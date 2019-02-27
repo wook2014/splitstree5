@@ -38,7 +38,6 @@ public class AverageConsensus extends Algorithm<TreesBlock, SplitsBlock> impleme
         final NeighborNet nnet = new NeighborNet();
         ProgressListener pl = new ProgressPercentage();
         nnet.compute(pl, taxaBlock, pairwiseDistances, splitsBlock);
-
     }
 
     @Override

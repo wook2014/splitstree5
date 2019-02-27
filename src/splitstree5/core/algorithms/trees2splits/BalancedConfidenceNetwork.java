@@ -12,6 +12,9 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.utils.SplitMatrix;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Implements confidence networks using Beran's algorithm
  * <p>
@@ -31,6 +34,20 @@ public class BalancedConfidenceNetwork extends Algorithm<TreesBlock, SplitsBlock
                 "Daniel H. Huson and David Bryant. Application of Phylogenetic Networks in Evolutionary Studies. " +
                 "Mol. Biol. Evol. 23(2):254–267. 2006";
     }
+
+    @Override
+    public List<String> listOptions() {
+        return Collections.singletonList("Level");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        if ("Level".equals(optionName)) {
+            return "Set the level";
+        }
+        return optionName;
+    }
+
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock) throws Exception {

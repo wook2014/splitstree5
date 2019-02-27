@@ -58,10 +58,7 @@ import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
 import splitstree5.utils.SplitsUtilities;
 
-import java.util.BitSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * heuristic dimension filter
@@ -71,7 +68,20 @@ public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> impleme
     private final IntegerProperty optionMaxDimension = new SimpleIntegerProperty(4);
     private boolean active;
 
-    private final int COMPUTE_DSUBGRAPH_MAXDIMENSION = 5;
+    private final static int COMPUTE_DSUBGRAPH_MAXDIMENSION = 5;
+
+    @Override
+    public List<String> listOptions() {
+        return Collections.singletonList("MaxDimension");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        if ("MaxDimension".equals(optionName)) {
+            return "Heuristically remove splits that create configurations of a higher dimension than this threshold";
+        }
+        return optionName;
+    }
 
     /**
      * heuristically remove high-dimension configurations in split graph

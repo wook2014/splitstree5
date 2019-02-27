@@ -13,6 +13,9 @@ import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.utils.SplitsUtilities;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * wrapper for the least squares computations
  *
@@ -20,12 +23,25 @@ import splitstree5.utils.SplitsUtilities;
  * Date: 17-Feb-2004
  */
 public class LeastSquaresWeights extends Algorithm<SplitsBlock, SplitsBlock> implements IFromSplits, IToSplits {
+    final DistancesBlock distancesBlock = new DistancesBlock();
 
     // todo make dist2splits
 
     private final BooleanProperty optionConstrain = new SimpleBooleanProperty(true);
 
-    private DistancesBlock distancesBlock = new DistancesBlock();
+    @Override
+    public List<String> listOptions() {
+        return Collections.singletonList("Constrain");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        if ("Constrain".equals(optionName)) {
+            return "Use constrained least squares";
+        }
+        return optionName;
+    }
+
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, SplitsBlock parent, SplitsBlock child) throws Exception {

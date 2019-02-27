@@ -46,7 +46,25 @@ public class TreesFilter2 extends Algorithm<TreesBlock, TreesBlock> implements I
 
 
     public List<String> listOptions() {
-        return Arrays.asList("optionRequireAllTaxa", "optionMinNumberOfTaxa", "optionMinTotalTreeLength", "optionMinEdgeLength", "optionUniformEdgeLengths");
+        return Arrays.asList("RequireAllTaxa", "MinNumberOfTaxa", "MinTotalTreeLength", "MinEdgeLength", "UniformEdgeLengths");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        switch (optionName) {
+            case "RequireAllTaxa":
+                return "Keep only trees that have the full set of taxa";
+            case "MinNumberOfTaxa":
+                return "Keep only trees that have at least this number of taxa";
+            case "MinTotalTreeLength":
+                return "Keep only trees that have at least this total length";
+            case "MinEdgeLength":
+                return "Keep only edges that have this minimum length";
+            case "UniformEdgeLengths":
+                return "Change all edge weights to 1";
+            default:
+                return optionName;
+        }
     }
 
     @Override

@@ -22,6 +22,7 @@ import java.util.BitSet;
  */
 
 public class AverageDistances extends Algorithm<TreesBlock, DistancesBlock> implements IFromTrees, IToDistances {
+
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock treesBlock, DistancesBlock distancesBlock)
             throws Exception {

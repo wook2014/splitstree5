@@ -304,11 +304,11 @@ public class RootByOutGroupPane extends AlgorithmPane {
             activeList.getItems().clear();
             inactiveList.getItems().clear();
 
-            if (rootByOutGroup.getInGroupTaxa().size() == 0 && rootByOutGroup.getOutGroupTaxa().size() == 0) {
+            if (rootByOutGroup.getOptionInGroupTaxa().size() == 0 && rootByOutGroup.getOptionOutGroupTaxa().size() == 0) {
                 activeList.getItems().addAll(document.getWorkflow().getWorkingTaxaBlock().getTaxa());
             } else {
-                activeList.getItems().addAll(rootByOutGroup.getInGroupTaxa());
-                inactiveList.getItems().addAll(rootByOutGroup.getOutGroupTaxa());
+                activeList.getItems().addAll(rootByOutGroup.getOptionInGroupTaxa());
+                inactiveList.getItems().addAll(rootByOutGroup.getOptionOutGroupTaxa());
             }
 
             select(document.getTaxaSelectionModel().getSelectedItems(), true);
@@ -321,10 +321,10 @@ public class RootByOutGroupPane extends AlgorithmPane {
      * sync controller to model
      */
     public void syncController2Model() {
-        rootByOutGroup.getInGroupTaxa().clear();
-        rootByOutGroup.getInGroupTaxa().addAll(controller.getActiveList().getItems());
-        rootByOutGroup.getOutGroupTaxa().clear();
-        rootByOutGroup.getOutGroupTaxa().addAll(controller.getInactiveList().getItems());
+        rootByOutGroup.getOptionInGroupTaxa().clear();
+        rootByOutGroup.getOptionInGroupTaxa().addAll(controller.getActiveList().getItems());
+        rootByOutGroup.getOptionOutGroupTaxa().clear();
+        rootByOutGroup.getOptionOutGroupTaxa().addAll(controller.getInactiveList().getItems());
         connector.setState(UpdateState.INVALID);
     }
 

@@ -33,44 +33,51 @@ import splitstree5.gui.algorithmtab.AlgorithmPane;
 import splitstree5.gui.algorithmtab.treeselector.TreeSelectorPane;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Tree selector
  * Daniel Huson, 1/2018
  */
 public class TreeSelector extends Algorithm<TreesBlock, TreesBlock> implements IFromTrees, IToTrees, IFilter {
-    private final IntegerProperty optionSelected = new SimpleIntegerProperty(1); // 1-based
-    private boolean active;
+    private final IntegerProperty optionWhich = new SimpleIntegerProperty(1); // 1-based
 
     @Override
+    public List<String> listOptions() {
+        return Collections.singletonList("Which");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        if ("Which".equals(optionName)) {
+            return "Which tree to use";
+        }
+        return optionName;
+    }
+    @Override
     public void compute(ProgressListener progress, TaxaBlock ignored, TreesBlock parent, TreesBlock child) throws CanceledException {
-        int which = Math.max(0, Math.min(parent.size(), optionSelected.get()));
-        child.getTrees().add(parent.getTree(which));
+        setOptionWhich(Math.max(1, Math.min(parent.size(), optionWhich.get())));
+        child.getTrees().add(parent.getTree(getOptionWhich()));
         child.setRooted(parent.isRooted());
         child.setPartial(parent.isPartial());
-        active = parent.getNTrees() > 1;
-        setShortDescription("using tree " + which + " of " + parent.size() + " trees");
+        setShortDescription("using tree " + getConnector() + " of " + parent.size() + " trees");
     }
 
     @Override
     public void clear() {
     }
 
-    @Override
-    public String getShortDescription() {
-        return "using tree " + optionSelected.get();
+    public int getOptionWhich() {
+        return optionWhich.get();
     }
 
-    public int getOptionSelected() {
-        return optionSelected.get();
+    public IntegerProperty optionWhichProperty() {
+        return optionWhich;
     }
 
-    public IntegerProperty optionSelectedProperty() {
-        return optionSelected;
-    }
-
-    public void setOptionSelected(int optionSelected) {
-        this.optionSelected.set(optionSelected);
+    public void setOptionWhich(int optionWhich) {
+        this.optionWhich.set(optionWhich);
     }
 
     public AlgorithmPane getAlgorithmPane() {
@@ -82,9 +89,8 @@ public class TreeSelector extends Algorithm<TreesBlock, TreesBlock> implements I
         }
     }
 
-
     @Override
     public boolean isActive() {
-        return active;
+        return optionWhich.get() > 0;
     }
 }

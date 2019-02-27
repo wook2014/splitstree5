@@ -19,6 +19,7 @@
 
 package splitstree5.core.algorithms.filters;
 
+import javafx.beans.property.*;
 import jloda.fx.NotificationManager;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
@@ -43,17 +44,34 @@ import java.util.*;
 public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements IFromSplits, IToSplits, IFilter {
     public enum FilterAlgorithm {DimensionFilter, ClosestTree, GreedyCompatible, GreedyWeaklyCompatible, None}
 
-    private boolean optionModifyWeightsUsingLeastSquares = false;
-    private FilterAlgorithm optionFilterAlgorithm = FilterAlgorithm.DimensionFilter;
+    private final ObjectProperty<FilterAlgorithm> optionFilterAlgorithm = new SimpleObjectProperty<>(FilterAlgorithm.DimensionFilter);
 
-    private float optionWeightThreshold = 0;
-    private float optionConfidenceThreshold = 0;
-    private int optionMaximumDimension = 4;
+    private final FloatProperty optionWeightThreshold = new SimpleFloatProperty(0);
+    private final FloatProperty optionConfidenceThreshold = new SimpleFloatProperty(0);
+    private final IntegerProperty optionMaximumDimension = new SimpleIntegerProperty(4);
+
+    private final BooleanProperty optionModifyWeightsUsingLeastSquares = new SimpleBooleanProperty(false);
 
     private boolean active = false;
 
     public List<String> listOptions() {
-        return Arrays.asList("optionFilterAlgorithm", "optionWeightThreshold", "optionConfidenceThreshold", "optionMaximumDimension");
+        return Arrays.asList("FilterAlgorithm", "WeightThreshold", "ConfidenceThreshold", "MaximumDimension");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        switch (optionName) {
+            case "FilterAlgorithm":
+                return "Set the filter algorithm";
+            case "WeightThreshold":
+                return "Set minimum split weight threshold";
+            case "ConfidenceThreshold":
+                return "Set the minimum split confidence threshold";
+            case "MaximumDimension":
+                return "Set the maximum threshold used by the dimension filter";
+            default:
+                return optionName;
+        }
     }
 
     /**
@@ -70,7 +88,7 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
 
         ArrayList<ASplit> splits = new ArrayList<>(parent.getSplits());
 
-        if (optionModifyWeightsUsingLeastSquares) {
+        if (isOptionModifyWeightsUsingLeastSquares()) {
             NotificationManager.showWarning("optionModifyWeightsUsingLeastSquares: not implemented");
             // modify weights least squares
             //active = true;
@@ -83,7 +101,7 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
 
         Compatibility compatibility = Compatibility.unknown;
 
-        switch (optionFilterAlgorithm) {
+        switch (getOptionFilterAlgorithm()) {
             case GreedyCompatible: {
                 final int oldSize = splits.size();
                 splits = GreedyCompatible.apply(progress, splits);
@@ -112,7 +130,7 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
             final int oldSize = splits.size();
             ArrayList<ASplit> tmp = new ArrayList<>(splits.size());
             for (ASplit split : splits) {
-                if (split.getWeight() >= optionWeightThreshold)
+                if (split.getWeight() >= getOptionWeightThreshold())
                     tmp.add(split);
             }
             splits = tmp;
@@ -124,7 +142,7 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
             final int oldSize = splits.size();
             final ArrayList<ASplit> tmp = new ArrayList<>(splits.size());
             for (ASplit split : splits) {
-                if (split.getConfidence() >= optionConfidenceThreshold)
+                if (split.getConfidence() >= getOptionConfidenceThreshold())
                     tmp.add(split);
             }
             splits = tmp;
@@ -132,13 +150,13 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
                 active = true;
         }
 
-        if (getOptionMaximumDimension() > 0 && optionFilterAlgorithm == FilterAlgorithm.GreedyCompatible && parent.getCompatibility() != Compatibility.compatible && parent.getCompatibility() != Compatibility.cyclic && parent.getCompatibility() != Compatibility.weaklyCompatible) {
+        if (getOptionMaximumDimension() > 0 && getOptionFilterAlgorithm() == FilterAlgorithm.GreedyCompatible && parent.getCompatibility() != Compatibility.compatible && parent.getCompatibility() != Compatibility.cyclic && parent.getCompatibility() != Compatibility.weaklyCompatible) {
             final int oldSize = splits.size();
 
             final DimensionFilter dimensionFilter = new DimensionFilter();
             ArrayList<ASplit> existing = new ArrayList<>(splits);
             splits.clear();
-            dimensionFilter.apply(progress, optionMaximumDimension, existing, splits);
+            dimensionFilter.apply(progress, getOptionMaximumDimension(), existing, splits);
             if (splits.size() != oldSize)
                 active = true;
         }
@@ -179,49 +197,68 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
         return !parent.isPartial();
     }
 
-
-    public boolean isOptionModifyWeightsUsingLeastSquares() {
-        return optionModifyWeightsUsingLeastSquares;
-    }
-
-    public void setOptionModifyWeightsUsingLeastSquares(boolean optionModifyWeightsUsingLeastSquares) {
-        this.optionModifyWeightsUsingLeastSquares = optionModifyWeightsUsingLeastSquares;
+    @Override
+    public boolean isActive() {
+        return active;
     }
 
     public FilterAlgorithm getOptionFilterAlgorithm() {
+        return optionFilterAlgorithm.get();
+    }
+
+    public ObjectProperty<FilterAlgorithm> optionFilterAlgorithmProperty() {
         return optionFilterAlgorithm;
     }
 
     public void setOptionFilterAlgorithm(FilterAlgorithm optionFilterAlgorithm) {
-        this.optionFilterAlgorithm = optionFilterAlgorithm;
+        this.optionFilterAlgorithm.set(optionFilterAlgorithm);
     }
 
     public float getOptionWeightThreshold() {
+        return optionWeightThreshold.get();
+    }
+
+    public FloatProperty optionWeightThresholdProperty() {
         return optionWeightThreshold;
     }
 
     public void setOptionWeightThreshold(float optionWeightThreshold) {
-        this.optionWeightThreshold = optionWeightThreshold;
+        this.optionWeightThreshold.set(optionWeightThreshold);
     }
 
     public float getOptionConfidenceThreshold() {
+        return optionConfidenceThreshold.get();
+    }
+
+    public FloatProperty optionConfidenceThresholdProperty() {
         return optionConfidenceThreshold;
     }
 
     public void setOptionConfidenceThreshold(float optionConfidenceThreshold) {
-        this.optionConfidenceThreshold = optionConfidenceThreshold;
+        this.optionConfidenceThreshold.set(optionConfidenceThreshold);
     }
 
     public int getOptionMaximumDimension() {
+        return optionMaximumDimension.get();
+    }
+
+    public IntegerProperty optionMaximumDimensionProperty() {
         return optionMaximumDimension;
     }
 
     public void setOptionMaximumDimension(int optionMaximumDimension) {
-        this.optionMaximumDimension = optionMaximumDimension;
+        this.optionMaximumDimension.set(optionMaximumDimension);
     }
 
-    @Override
-    public boolean isActive() {
-        return active;
+    public boolean isOptionModifyWeightsUsingLeastSquares() {
+        return optionModifyWeightsUsingLeastSquares.get();
+    }
+
+    public BooleanProperty optionModifyWeightsUsingLeastSquaresProperty() {
+        return optionModifyWeightsUsingLeastSquares;
+    }
+
+    public void setOptionModifyWeightsUsingLeastSquares(boolean optionModifyWeightsUsingLeastSquares) {
+        this.optionModifyWeightsUsingLeastSquares.set(optionModifyWeightsUsingLeastSquares);
     }
 }

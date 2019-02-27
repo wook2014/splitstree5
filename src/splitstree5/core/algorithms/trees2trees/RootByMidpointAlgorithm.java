@@ -33,12 +33,28 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.utils.RerootingUtils;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * tree rerooting by midpoint
  * Daniel Huson, 5.2018
  */
 public class RootByMidpointAlgorithm extends Algorithm<TreesBlock, TreesBlock> implements IFromTrees, IToTrees, IFilter {
     private final BooleanProperty optionUseMidpoint = new SimpleBooleanProperty(true);
+
+    @Override
+    public List<String> listOptions() {
+        return Collections.singletonList("UseMidpoint");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        if ("UseMidpoint".equals(optionName)) {
+            return "Determine whether to apply midpoint rooting";
+        }
+        return optionName;
+    }
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxa, TreesBlock parent, TreesBlock child) throws InterruptedException, CanceledException {

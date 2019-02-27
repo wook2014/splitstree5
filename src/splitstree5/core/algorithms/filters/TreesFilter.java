@@ -42,12 +42,24 @@ import java.util.Map;
  * Daniel Huson, 12/31/16.
  */
 public class TreesFilter extends Algorithm<TreesBlock, TreesBlock> implements IFromTrees, IToTrees, IFilter {
-    private final ObservableList<String> enabledTrees = FXCollections.observableArrayList();
-    private final ObservableList<String> disabledTrees = FXCollections.observableArrayList();
+    private final ObservableList<String> optionEnabledTrees = FXCollections.observableArrayList();
+    private final ObservableList<String> OptionDisabledTrees = FXCollections.observableArrayList();
+
+    @Override
+    public String getToolTip(String optionName) {
+        switch (optionName) {
+            case "EnabledTrees":
+                return "List of trees currently enabled";
+            case "DisabledTrees":
+                return "List of trees currently disabled";
+            default:
+                return optionName;
+        }
+    }
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock parent, TreesBlock child) throws CanceledException {
-        if (enabledTrees.size() == 0 && disabledTrees.size() == 0) // nothing has been explicitly set, copy everything
+        if (optionEnabledTrees.size() == 0 && OptionDisabledTrees.size() == 0) // nothing has been explicitly set, copy everything
         {
             progress.setMaximum(1);
             child.getTrees().setAll(parent.getTrees());
@@ -57,13 +69,13 @@ public class TreesFilter extends Algorithm<TreesBlock, TreesBlock> implements IF
             final int totalTaxa = taxaBlock.getNtax();
             boolean partial = false;
 
-            progress.setMaximum(enabledTrees.size());
+            progress.setMaximum(optionEnabledTrees.size());
             final Map<String, PhyloTree> name2tree = new HashMap<>();
             for (PhyloTree tree : parent.getTrees()) {
                 name2tree.put(tree.getName(), tree);
             }
-            for (String name : enabledTrees) {
-                if (!disabledTrees.contains(name)) {
+            for (String name : optionEnabledTrees) {
+                if (!OptionDisabledTrees.contains(name)) {
                     final PhyloTree tree = name2tree.get(name);
                     child.getTrees().add(tree);
                     if (tree.getNumberOfTaxa() != totalTaxa)
@@ -73,26 +85,26 @@ public class TreesFilter extends Algorithm<TreesBlock, TreesBlock> implements IF
             }
             child.setPartial(partial);
         }
-        if (disabledTrees.size() == 0)
+        if (OptionDisabledTrees.size() == 0)
             setShortDescription("using all " + parent.size() + " trees");
         else
-            setShortDescription("using " + enabledTrees.size() + " of " + parent.size() + " trees");
+            setShortDescription("using " + optionEnabledTrees.size() + " of " + parent.size() + " trees");
 
         child.setRooted(parent.isRooted());
     }
 
     @Override
     public void clear() {
-        enabledTrees.clear();
-        disabledTrees.clear();
+        optionEnabledTrees.clear();
+        OptionDisabledTrees.clear();
     }
 
-    public ObservableList<String> getEnabledTrees() {
-        return enabledTrees;
+    public ObservableList<String> getOptionEnabledTrees() {
+        return optionEnabledTrees;
     }
 
-    public ObservableList<String> getDisabledTrees() {
-        return disabledTrees;
+    public ObservableList<String> getOptionDisabledTrees() {
+        return OptionDisabledTrees;
     }
 
     public AlgorithmPane getAlgorithmPane() {
@@ -106,6 +118,6 @@ public class TreesFilter extends Algorithm<TreesBlock, TreesBlock> implements IF
 
     @Override
     public boolean isActive() {
-        return disabledTrees.size() > 0;
+        return OptionDisabledTrees.size() > 0;
     }
 }

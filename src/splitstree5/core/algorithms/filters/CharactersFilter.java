@@ -19,6 +19,8 @@
 
 package splitstree5.core.algorithms.filters;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
@@ -37,13 +39,37 @@ import java.util.*;
 public class CharactersFilter extends Algorithm<CharactersBlock, CharactersBlock> implements IFromChararacters, IToCharacters, IFilter {
     private final BitSet columnMask = new BitSet(); // positions set here are ignored
 
-    private boolean optionExcludeGapSites = false;
-    private boolean optionExcludeParsimonyUninformativeSites = false;
-    private boolean optionExcludeConstantSites = false;
+    private final BooleanProperty optionExcludeGapSites = new SimpleBooleanProperty(false);
+    private final BooleanProperty optionExcludeParsimonyUninformativeSites = new SimpleBooleanProperty(false);
+    private final BooleanProperty optionExcludeConstantSites = new SimpleBooleanProperty(false);
 
-    private boolean optionExcludeFirstCodonPosition = false;
-    private boolean optionExcludeSecondCodonPosition = false;
-    private boolean optionExcludeThirdCodonPosition = false;
+    private final BooleanProperty optionExcludeFirstCodonPosition = new SimpleBooleanProperty(false);
+    private final BooleanProperty optionExcludeSecondCodonPosition = new SimpleBooleanProperty(false);
+    private final BooleanProperty optionExcludeThirdCodonPosition = new SimpleBooleanProperty(false);
+
+    public List<String> listOptions() {
+        return Arrays.asList("ExcludeGapSites", "ExcludeConstantSites", "ExcludeParsimonyUninformativeSites", "ExcludeFirstCodonPosition", "ExcludeSecondCodonPosition", "ExcludeThirdCodonPosition");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        switch (optionName) {
+            case "ExcludeGapSites":
+                return "Exclude all sites that contain a gap";
+            case "ExcludeConstantSites":
+                return "Exclude all sites that are constant";
+            case "ExcludeParsimonyUninformativeSites":
+                return "Exclude all sites that are parsimony uninformative";
+            case "ExcludeFirstCodonPosition":
+                return "Exclude first and then every third site";
+            case "ExcludeSecondCodonPosition":
+                return "Exclude second and then every third site";
+            case "ExcludeThirdCodonPosition":
+                return "Exclude third and then every third site";
+            default:
+                return optionName;
+        }
+    }
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxa, CharactersBlock parent, CharactersBlock child) throws InterruptedException, CanceledException {
@@ -135,55 +161,75 @@ public class CharactersFilter extends Algorithm<CharactersBlock, CharactersBlock
     }
 
     public boolean isOptionExcludeGapSites() {
+        return optionExcludeGapSites.get();
+    }
+
+    public BooleanProperty optionExcludeGapSitesProperty() {
         return optionExcludeGapSites;
     }
 
     public void setOptionExcludeGapSites(boolean optionExcludeGapSites) {
-        this.optionExcludeGapSites = optionExcludeGapSites;
+        this.optionExcludeGapSites.set(optionExcludeGapSites);
     }
 
     public boolean isOptionExcludeParsimonyUninformativeSites() {
+        return optionExcludeParsimonyUninformativeSites.get();
+    }
+
+    public BooleanProperty optionExcludeParsimonyUninformativeSitesProperty() {
         return optionExcludeParsimonyUninformativeSites;
     }
 
     public void setOptionExcludeParsimonyUninformativeSites(boolean optionExcludeParsimonyUninformativeSites) {
-        this.optionExcludeParsimonyUninformativeSites = optionExcludeParsimonyUninformativeSites;
+        this.optionExcludeParsimonyUninformativeSites.set(optionExcludeParsimonyUninformativeSites);
     }
 
     public boolean isOptionExcludeConstantSites() {
+        return optionExcludeConstantSites.get();
+    }
+
+    public BooleanProperty optionExcludeConstantSitesProperty() {
         return optionExcludeConstantSites;
     }
 
     public void setOptionExcludeConstantSites(boolean optionExcludeConstantSites) {
-        this.optionExcludeConstantSites = optionExcludeConstantSites;
+        this.optionExcludeConstantSites.set(optionExcludeConstantSites);
     }
 
     public boolean isOptionExcludeFirstCodonPosition() {
+        return optionExcludeFirstCodonPosition.get();
+    }
+
+    public BooleanProperty optionExcludeFirstCodonPositionProperty() {
         return optionExcludeFirstCodonPosition;
     }
 
     public void setOptionExcludeFirstCodonPosition(boolean optionExcludeFirstCodonPosition) {
-        this.optionExcludeFirstCodonPosition = optionExcludeFirstCodonPosition;
+        this.optionExcludeFirstCodonPosition.set(optionExcludeFirstCodonPosition);
     }
 
     public boolean isOptionExcludeSecondCodonPosition() {
+        return optionExcludeSecondCodonPosition.get();
+    }
+
+    public BooleanProperty optionExcludeSecondCodonPositionProperty() {
         return optionExcludeSecondCodonPosition;
     }
 
     public void setOptionExcludeSecondCodonPosition(boolean optionExcludeSecondCodonPosition) {
-        this.optionExcludeSecondCodonPosition = optionExcludeSecondCodonPosition;
+        this.optionExcludeSecondCodonPosition.set(optionExcludeSecondCodonPosition);
     }
 
     public boolean isOptionExcludeThirdCodonPosition() {
+        return optionExcludeThirdCodonPosition.get();
+    }
+
+    public BooleanProperty optionExcludeThirdCodonPositionProperty() {
         return optionExcludeThirdCodonPosition;
     }
 
     public void setOptionExcludeThirdCodonPosition(boolean optionExcludeThirdCodonPosition) {
-        this.optionExcludeThirdCodonPosition = optionExcludeThirdCodonPosition;
-    }
-
-    public List<String> listOptions() {
-        return Arrays.asList("optionExcludeGapSites", "optionExcludeConstantSites", "optionExcludeParsimonyUninformativeSites", "optionExcludeFirstCodonPosition", "optionExcludeSecondCodonPosition", "optionExcludeThirdCodonPosition");
+        this.optionExcludeThirdCodonPosition.set(optionExcludeThirdCodonPosition);
     }
 
     @Override

@@ -69,13 +69,13 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
     private final BooleanProperty optionOnePerTree = new SimpleBooleanProperty(false);
 
     @Override
-    public List<String> listOptions() {
-        return Arrays.asList("optionSinRank", "optionAllSinsUpToRank", "optionMaxDistortion", "optionRequireSingleSPR", "optionMinSpanPercent", "optionMinWeight", "optionReferenceTree", "optionMultipleSINsPerTree");
+    public String getCitation() {
+        return "Huson et al. 2019;D.H. Huson, B. Albrecht, P. Lockhart and M.A. Steel. Anti-consensus: manuscript in preparation";
     }
 
     @Override
-    public String getCitation() {
-        return "Huson et al. 2019;D.H. Huson, B. Albrecht, P. Lockhart and M.A. Steel. Anti-consensus: manuscript in preparation";
+    public List<String> listOptions() {
+        return Arrays.asList("SinRank", "AllSinsUpToRank", "MaxDistortion", "RequireSingleSPR", "MinSpanPercent", "MinWeight", "ReferenceTree", "MultipleSINsPerTree");
     }
 
     @Override

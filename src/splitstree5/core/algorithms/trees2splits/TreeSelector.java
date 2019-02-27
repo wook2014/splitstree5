@@ -15,6 +15,8 @@ import splitstree5.utils.SplitsUtilities;
 import splitstree5.utils.TreesUtilities;
 
 import java.util.BitSet;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Obtains splits from a selected tree
@@ -25,6 +27,19 @@ import java.util.BitSet;
  */
 public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
     private final IntegerProperty optionWhich = new SimpleIntegerProperty(1); // which tree is selected?
+
+    @Override
+    public List<String> listOptions() {
+        return Collections.singletonList("Which");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        if ("Which".equals(optionName)) {
+            return "Which tree to use";
+        }
+        return optionName;
+    }
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock trees, SplitsBlock splits) throws Exception {

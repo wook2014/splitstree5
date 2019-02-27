@@ -297,11 +297,11 @@ public class TaxaFilterPane extends AlgorithmPane {
             activeList.getItems().clear();
             inactiveList.getItems().clear();
 
-            if (taxaFilter.getEnabledTaxa().size() == 0 && taxaFilter.getDisabledTaxa().size() == 0) {
+            if (taxaFilter.getOptionEnabledTaxa().size() == 0 && taxaFilter.getOptionDisabledTaxa().size() == 0) {
                 activeList.getItems().addAll(((TaxaBlock) connector.getParent().getDataBlock()).getTaxa());
             } else {
-                activeList.getItems().addAll(taxaFilter.getEnabledTaxa());
-                inactiveList.getItems().addAll(taxaFilter.getDisabledTaxa());
+                activeList.getItems().addAll(taxaFilter.getOptionEnabledTaxa());
+                inactiveList.getItems().addAll(taxaFilter.getOptionDisabledTaxa());
             }
 
 
@@ -315,10 +315,10 @@ public class TaxaFilterPane extends AlgorithmPane {
      * sync controller to model
      */
     public void syncController2Model() {
-        taxaFilter.getEnabledTaxa().clear();
-        taxaFilter.getEnabledTaxa().addAll(controller.getActiveList().getItems());
-        taxaFilter.getDisabledTaxa().clear();
-        taxaFilter.getDisabledTaxa().addAll(controller.getInactiveList().getItems());
+        taxaFilter.getOptionEnabledTaxa().clear();
+        taxaFilter.getOptionEnabledTaxa().addAll(controller.getActiveList().getItems());
+        taxaFilter.getOptionDisabledTaxa().clear();
+        taxaFilter.getOptionDisabledTaxa().addAll(controller.getInactiveList().getItems());
         connector.setState(UpdateState.INVALID);
     }
 

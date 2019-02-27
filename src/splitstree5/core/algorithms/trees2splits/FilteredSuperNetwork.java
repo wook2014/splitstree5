@@ -19,7 +19,12 @@
 
 package splitstree5.core.algorithms.trees2splits;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import jloda.phylo.PhyloTree;
+import jloda.util.Basic;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToSplits;
@@ -30,17 +35,19 @@ import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Distortion;
 import splitstree5.utils.TreesUtilities;
 
+import java.util.Arrays;
 import java.util.BitSet;
+import java.util.List;
 
 /**
  * filtered super network
  * Daniel Huson, 2006, 3.2018
  */
 public class FilteredSuperNetwork extends SuperNetwork implements IFromTrees, IToSplits {
-    private int optionMinNumberTrees = 1;
-    private int optionMaxDistortionScore = 0;
-    private boolean optionAllTrivial = true;
-    private boolean optionUseTotalScore = false;
+    private final IntegerProperty optionMinNumberTrees = new SimpleIntegerProperty(1);
+    private final IntegerProperty optionMaxDistortionScore = new SimpleIntegerProperty(0);
+    private final BooleanProperty optionAllTrivial = new SimpleBooleanProperty(true);
+    private BooleanProperty optionUseTotalScore = new SimpleBooleanProperty(false);
 
 
     @Override
@@ -48,6 +55,15 @@ public class FilteredSuperNetwork extends SuperNetwork implements IFromTrees, IT
         return "Whitfield et al.;James B. Whitfield, Sydney A. Cameron, Daniel H. Huson, Mike A. Steel. " +
                 "Filtered Z-Closure Supernetworks for Extracting and Visualizing Recurrent Signal from Incongruent Gene Trees, " +
                 "Systematic Biology, Volume 57, Issue 6, 1 December 2008, Pages 939–947.";
+    }
+
+    public List<String> listOptions() {
+        return Arrays.asList("MinNumberTrees", "MaxDistortionScore", "AllTrivial", "UseTotalScore");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        return "Set the " + Basic.fromCamelCase(optionName).toLowerCase();
     }
 
     @Override
@@ -71,7 +87,7 @@ public class FilteredSuperNetwork extends SuperNetwork implements IFromTrees, IT
         progress.setProgress(0);
 
         System.err.println("Filtering splits:");
-        if (getOptionUseTotalScore()) {
+        if (isOptionUseTotalScore()) {
             for (int s = 1; s <= splits.getNsplits(); s++) {
                 int totalScore = 0;
                 BitSet A = splits.get(s).getA();
@@ -126,7 +142,7 @@ public class FilteredSuperNetwork extends SuperNetwork implements IFromTrees, IT
                     progress.incrementProgress();
                 }
                 //System.err.println(" sum=" + count);
-                if ((getOptionAllTrivial() && (A.cardinality() == 1 || B.cardinality() == 1))
+                if ((isOptionAllTrivial() && (A.cardinality() == 1 || B.cardinality() == 1))
                         || count >= getOptionMinNumberTrees()) {
                     final ASplit aSplit = splits.get(s);
                     child.getSplits().add(new ASplit(aSplit.getA(), aSplit.getB(), aSplit.getWeight(), (float) count / (float) trees.getNTrees()));
@@ -136,49 +152,51 @@ public class FilteredSuperNetwork extends SuperNetwork implements IFromTrees, IT
         System.err.println("Splits: " + splits.getNsplits() + " -> " + child.getNsplits());
     }
 
-    /**
-     * * gets the threshold (value between 0 and 1)
-     * * @return the threshold
-     */
     public int getOptionMinNumberTrees() {
+        return optionMinNumberTrees.get();
+    }
+
+    public IntegerProperty optionMinNumberTreesProperty() {
         return optionMinNumberTrees;
     }
 
-    /**
-     * sets the mininum number of trees for which a split but have a good enough score
-     *
-     * @param optionMinNumberTrees
-     */
     public void setOptionMinNumberTrees(int optionMinNumberTrees) {
-        this.optionMinNumberTrees = Math.max(1, optionMinNumberTrees);
+        this.optionMinNumberTrees.set(optionMinNumberTrees);
     }
 
     public int getOptionMaxDistortionScore() {
+        return optionMaxDistortionScore.get();
+    }
+
+    public IntegerProperty optionMaxDistortionScoreProperty() {
         return optionMaxDistortionScore;
     }
 
-    /**
-     * set the max homoplasy score that we will allows per tree
-     *
-     * @param optionMaxDistortionScore
-     */
     public void setOptionMaxDistortionScore(int optionMaxDistortionScore) {
-        this.optionMaxDistortionScore = Math.max(0, optionMaxDistortionScore);
+        this.optionMaxDistortionScore.set(optionMaxDistortionScore);
     }
 
-    public boolean getOptionAllTrivial() {
+    public boolean isOptionAllTrivial() {
+        return optionAllTrivial.get();
+    }
+
+    public BooleanProperty optionAllTrivialProperty() {
         return optionAllTrivial;
     }
 
     public void setOptionAllTrivial(boolean optionAllTrivial) {
-        this.optionAllTrivial = optionAllTrivial;
+        this.optionAllTrivial.set(optionAllTrivial);
     }
 
-    public boolean getOptionUseTotalScore() {
+    public boolean isOptionUseTotalScore() {
+        return optionUseTotalScore.get();
+    }
+
+    public BooleanProperty optionUseTotalScoreProperty() {
         return optionUseTotalScore;
     }
 
     public void setOptionUseTotalScore(boolean optionUseTotalScore) {
-        this.optionUseTotalScore = optionUseTotalScore;
+        this.optionUseTotalScore.set(optionUseTotalScore);
     }
 }

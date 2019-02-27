@@ -45,19 +45,32 @@ import java.util.BitSet;
  */
 public class RootByOutGroupAlgorithm extends Algorithm<TreesBlock, TreesBlock> implements IFromTrees, IToTrees, IFilter {
 
-    private final ObservableList<Taxon> inGroupTaxa = FXCollections.observableArrayList();
-    private final ObservableList<Taxon> outGroupTaxa = FXCollections.observableArrayList();
+    private final ObservableList<Taxon> optionInGroupTaxa = FXCollections.observableArrayList();
+    private final ObservableList<Taxon> optionOutGroupTaxa = FXCollections.observableArrayList();
+
+    @Override
+    public String getToolTip(String optionName) {
+        switch (optionName) {
+            case "InGroupTaxa":
+                return "List of taxa belonging to the in-group";
+            case "GroupTaxa":
+                return "List of taxa belonging to the out-group";
+            default:
+                return optionName;
+        }
+    }
+
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxa, TreesBlock parent, TreesBlock child) throws InterruptedException, CanceledException {
-        if (inGroupTaxa.size() == 0 || outGroupTaxa.size() == 0) // nothing has been explicitly set, copy everything
+        if (optionInGroupTaxa.size() == 0 || optionOutGroupTaxa.size() == 0) // nothing has been explicitly set, copy everything
         {
             child.getTrees().setAll(parent.getTrees());
         } else { // reroot using outgroup
             // System.err.println("Outgroup taxa: "+Basic.toString(outGroupTaxa," "));
 
             final BitSet outGroupTaxonSet = new BitSet();
-            for (Taxon taxon : outGroupTaxa) {
+            for (Taxon taxon : optionOutGroupTaxa) {
                 outGroupTaxonSet.set(taxa.indexOf(taxon));
             }
 
@@ -78,26 +91,26 @@ public class RootByOutGroupAlgorithm extends Algorithm<TreesBlock, TreesBlock> i
             child.setRooted(true);
         }
 
-        if (inGroupTaxa.size() == 0 || outGroupTaxa.size() == 0)
+        if (optionInGroupTaxa.size() == 0 || optionOutGroupTaxa.size() == 0)
             setShortDescription(Basic.fromCamelCase(Basic.getShortName(this.getClass())));
         else
-            setShortDescription("using " + outGroupTaxa.size() + " of " + (taxa.getNtax() + " for tree rooting"));
+            setShortDescription("using " + optionOutGroupTaxa.size() + " of " + (taxa.getNtax() + " for tree rooting"));
 
     }
 
     @Override
     public void clear() {
         super.clear();
-        inGroupTaxa.clear();
-        outGroupTaxa.clear();
+        optionInGroupTaxa.clear();
+        optionOutGroupTaxa.clear();
     }
 
-    public ObservableList<Taxon> getInGroupTaxa() {
-        return inGroupTaxa;
+    public ObservableList<Taxon> getOptionInGroupTaxa() {
+        return optionInGroupTaxa;
     }
 
-    public ObservableList<Taxon> getOutGroupTaxa() {
-        return outGroupTaxa;
+    public ObservableList<Taxon> getOptionOutGroupTaxa() {
+        return optionOutGroupTaxa;
     }
 
     public AlgorithmPane getAlgorithmPane() {
@@ -106,7 +119,7 @@ public class RootByOutGroupAlgorithm extends Algorithm<TreesBlock, TreesBlock> i
 
     @Override
     public boolean isActive() {
-        return outGroupTaxa.size() > 0;
+        return optionOutGroupTaxa.size() > 0;
     }
 
 }

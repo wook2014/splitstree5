@@ -40,19 +40,31 @@ import splitstree5.gui.algorithmtab.taxafilterview.TaxaFilterPane;
  */
 public class TaxaFilter extends Algorithm<TaxaBlock, TaxaBlock> implements IFromTaxa, IToTaxa, IFilter {
 
-    private final ObservableList<Taxon> enabledTaxa = FXCollections.observableArrayList();
-    private final ObservableList<Taxon> disabledTaxa = FXCollections.observableArrayList();
+    private final ObservableList<Taxon> optionEnabledTaxa = FXCollections.observableArrayList();
+    private final ObservableList<Taxon> optionDisabledTaxa = FXCollections.observableArrayList();
+
+    @Override
+    public String getToolTip(String optionName) {
+        switch (optionName) {
+            case "EnabledTaxa":
+                return "List of taxa currently enabled";
+            case "DisabledTaxa":
+                return "List of taxa currently disabled";
+            default:
+                return optionName;
+        }
+    }
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock ignored, TaxaBlock parent, TaxaBlock child) {
         child.getTaxa().clear();
 
-        if (enabledTaxa.size() == 0 && disabledTaxa.size() == 0) // nothing has been explicitly set, copy everything
+        if (optionEnabledTaxa.size() == 0 && optionDisabledTaxa.size() == 0) // nothing has been explicitly set, copy everything
         {
             child.getTaxa().setAll(parent.getTaxa());
         } else {
-            for (Taxon taxon : enabledTaxa) {
-                if (!disabledTaxa.contains(taxon)) {
+            for (Taxon taxon : optionEnabledTaxa) {
+                if (!optionDisabledTaxa.contains(taxon)) {
                     child.getTaxa().add(taxon);
                 }
             }
@@ -72,28 +84,28 @@ public class TaxaFilter extends Algorithm<TaxaBlock, TaxaBlock> implements IFrom
             }
         }
 
-        if (enabledTaxa.size() == 0 && disabledTaxa.size() == 0)
+        if (optionEnabledTaxa.size() == 0 && optionDisabledTaxa.size() == 0)
             setShortDescription(Basic.fromCamelCase(Basic.getShortName(this.getClass())));
-        else if (disabledTaxa.size() == 0)
-            setShortDescription("using all " + enabledTaxa.size() + " taxa");
+        else if (optionDisabledTaxa.size() == 0)
+            setShortDescription("using all " + optionEnabledTaxa.size() + " taxa");
         else
-            setShortDescription("using " + enabledTaxa.size() + " of " + (parent.getNtax() + " taxa"));
+            setShortDescription("using " + optionEnabledTaxa.size() + " of " + (parent.getNtax() + " taxa"));
 
     }
 
     @Override
     public void clear() {
         super.clear();
-        enabledTaxa.clear();
-        disabledTaxa.clear();
+        optionEnabledTaxa.clear();
+        optionDisabledTaxa.clear();
     }
 
-    public ObservableList<Taxon> getEnabledTaxa() {
-        return enabledTaxa;
+    public ObservableList<Taxon> getOptionEnabledTaxa() {
+        return optionEnabledTaxa;
     }
 
-    public ObservableList<Taxon> getDisabledTaxa() {
-        return disabledTaxa;
+    public ObservableList<Taxon> getOptionDisabledTaxa() {
+        return optionDisabledTaxa;
     }
 
     public AlgorithmPane getAlgorithmPane() {
@@ -102,6 +114,6 @@ public class TaxaFilter extends Algorithm<TaxaBlock, TaxaBlock> implements IFrom
 
     @Override
     public boolean isActive() {
-        return disabledTaxa.size() > 0;
+        return optionDisabledTaxa.size() > 0;
     }
 }

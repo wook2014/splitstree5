@@ -46,7 +46,23 @@ public class TreesFilter3 extends Algorithm<TreesBlock, TreesBlock> implements I
     private final BooleanProperty optionPreferFullTaxa = new SimpleBooleanProperty(true);
 
     public List<String> listOptions() {
-        return Arrays.asList("optionBestTaxonSubset", "optionFilterTaxa", "optionPreferFullTaxa");
+        return Arrays.asList("BestTaxonSubset", "FilterTaxa", "PreferFullTaxa");
+    }
+
+    @Override
+    public String getToolTip(String optionName) {
+        switch (optionName) {
+            case "BestTaxonSubset":
+                return "Determine the best taxon subset contained in any tree.\n" +
+                        "It maximizes size of taxon set times number of trees that contain the taxa.\n" +
+                        "Subtrees are then induced on that taxon set.";
+            case "FilterTaxa":
+                return "Use the best taxon subset to filter all taxa";
+            case "PreferFullTaxa":
+                return "Prefer full taxon set: this ensure that running the filter multiple times doesn't choose smaller and smaller taxon sets";
+            default:
+                return optionName;
+        }
     }
 
     @Override
@@ -140,15 +156,15 @@ public class TreesFilter3 extends Algorithm<TreesBlock, TreesBlock> implements I
 
                 if (isOptionFilterTaxa() && best.cardinality() < workflow.getTopTaxaNode().getDataBlock().getNtax()) {
                     TaxaFilter taxaFilter = (TaxaFilter) workflow.getTaxaFilter().getAlgorithm();
-                    taxaFilter.getEnabledTaxa().clear();
-                    taxaFilter.getDisabledTaxa().clear();
+                    taxaFilter.getOptionEnabledTaxa().clear();
+                    taxaFilter.getOptionDisabledTaxa().clear();
                     final TaxaBlock topTaxaBlock = workflow.getTopTaxaNode().getDataBlock();
                     for (int t = 1; t <= topTaxaBlock.getNtax(); t++) {
                         final int index = taxaBlock.indexOf(topTaxaBlock.get(t));
                         if (index > 0 && best.get(index))
-                            taxaFilter.getEnabledTaxa().add(topTaxaBlock.get(t));
+                            taxaFilter.getOptionEnabledTaxa().add(topTaxaBlock.get(t));
                         else
-                            taxaFilter.getDisabledTaxa().add(topTaxaBlock.get(t));
+                            taxaFilter.getOptionDisabledTaxa().add(topTaxaBlock.get(t));
                     }
                     setOptionFilterTaxa(false);
                     workflow.getTaxaFilter().forceRecompute();

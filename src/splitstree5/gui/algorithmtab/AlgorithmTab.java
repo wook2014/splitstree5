@@ -191,7 +191,7 @@ public class AlgorithmTab<P extends DataBlock, C extends DataBlock> extends View
                     final GenericAlgorithmPane pane = new GenericAlgorithmPane<>(connector, currentAlgorithm);
                     algorithmPane = pane;
                     if (pane.hasOptions())
-                        System.err.println("Algorithm " + currentAlgorithm.getName() + ": is using old pane");
+                        throw new RuntimeException("Algorithm " + currentAlgorithm.getName() + ": is using old pane");
                 }
                 algorithm2pane.put(currentAlgorithm, algorithmPane);
             }

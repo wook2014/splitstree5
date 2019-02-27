@@ -128,7 +128,7 @@ public class TreeSelectorPane extends AlgorithmPane {
     @Override
     public void setup() {
         numberOfTrees.set(connector.getParent().getDataBlock().getNTrees());
-        currentTree.set(Math.min(treeSelector.getOptionSelected(), numberOfTrees.get()));
+        currentTree.set(Math.min(treeSelector.getOptionWhich(), numberOfTrees.get()));
         controller.getTreeIdTextField().setText("" + currentTree.get());
 
 
@@ -197,7 +197,7 @@ public class TreeSelectorPane extends AlgorithmPane {
 
     @Override
     public void syncController2Model() {
-        treeSelector.setOptionSelected(currentTree.get());
+        treeSelector.setOptionWhich(currentTree.get());
         connector.setState(UpdateState.INVALID);
     }
 
