@@ -19,9 +19,10 @@
 /*
 
  */
-package splitstree5.core.models;
+package splitstree5.core.models.nucleotideModels;
 
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
+import splitstree5.core.models.nucleotideModels.NucleotideModel;
 
 /**
  * K3ST  model

@@ -22,30 +22,21 @@
  * To change the template for this generated file go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-package splitstree5.core.models;
+package splitstree5.core.models.nucleotideModels;
+
+import splitstree5.core.models.nucleotideModels.NucleotideModel;
 
 /**
- * @author Miguel Jette, 2004
+ * F81 model
  */
-public class HKY85model extends NucleotideModel {
+public class F81model extends NucleotideModel {
     /**
-     * Constructor taking the expected rate of transitions versus transversions (rather
-     * than the parameter kappa in Swofford et al, pg 436.)
-     * We first compute the corresponding kappa, fill in Q according to the standard model.
+     * Constructor taking the base frequencies and building the
+     * Q matrix of Felsenstein's F81 model (1981).
      *
      * @param basefreqs
-     * @param TsTv
      */
-    public HKY85model(double[] basefreqs, double TsTv) {
-        final double a = basefreqs[0] * basefreqs[2] + basefreqs[1] * basefreqs[3];
-        final double b = (basefreqs[0] * basefreqs[1] + basefreqs[0] * basefreqs[3])
-                + (basefreqs[1] * basefreqs[2] + basefreqs[2] * basefreqs[3]);
-
-        /* We have the identity
-         *    a * kappa =  TsTv * b
-         * which we solve to get kappa
-         */
-        final double kappa = (TsTv * b) / a;
+    public F81model(double[] basefreqs) {
 
         final double[][] Q = new double[4][4];
         for (int i = 0; i < 4; i++) {
@@ -55,23 +46,26 @@ public class HKY85model extends NucleotideModel {
                 }
             }
         }
-        Q[0][2] *= kappa;
-        Q[1][3] *= kappa;
-        Q[3][1] *= kappa;
-        Q[2][0] *= kappa;
 
         setRateMatrix(Q, basefreqs);
         normaliseQ();
     }
 
     /**
-     * no exact distance associated with this model
+     * get exact distance
      *
      * @param F
-     * @throws RuntimeException
+     * @return exact distance
      */
     public double exactDistance(double[][] F) {
-        throw new RuntimeException("exactDistance: not implemented");
+        final double[] freq = getNormedBaseFreq();
+        final double piA = freq[0],
+                piC = freq[1],
+                piG = freq[2],
+                piT = freq[3];
+
+        final double B = 1.0 - ((piA * piA) + (piC * piC) + (piG * piG) + (piT * piT));
+        double D = 1 - (F[0][0] + F[1][1] + F[2][2] + F[3][3]);
+        return -B * mInverse(1 - D / B, getPropInvariableSites(), getGamma());
     }
 }
-

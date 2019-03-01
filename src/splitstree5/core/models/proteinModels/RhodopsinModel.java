@@ -18,7 +18,9 @@
  */
 /*
  */
-package splitstree5.core.models;
+package splitstree5.core.models.proteinModels;
+
+import splitstree5.core.models.proteinModels.ProteinModel;
 
 /**
  * RhodopsinModel

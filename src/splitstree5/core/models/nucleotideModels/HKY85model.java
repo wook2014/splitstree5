@@ -22,31 +22,32 @@
  * To change the template for this generated file go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-package splitstree5.core.models;
+package splitstree5.core.models.nucleotideModels;
 
-import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
+import splitstree5.core.models.nucleotideModels.NucleotideModel;
 
 /**
- * K2P model
- * Miguel and David Bryant, 2005
+ * @author Miguel Jette, 2004
  */
-public class K2Pmodel extends NucleotideModel {
-
+public class HKY85model extends NucleotideModel {
     /**
      * Constructor taking the expected rate of transitions versus transversions (rather
-     * than the parameter kappa in Swofford et al, pg 435.)
+     * than the parameter kappa in Swofford et al, pg 436.)
      * We first compute the corresponding kappa, fill in Q according to the standard model.
      *
+     * @param basefreqs
      * @param TsTv
      */
-    public K2Pmodel(double TsTv) {
-        final double[] basefreqs = {0.25, 0.25, 0.25, 0.25};
+    public HKY85model(double[] basefreqs, double TsTv) {
+        final double a = basefreqs[0] * basefreqs[2] + basefreqs[1] * basefreqs[3];
+        final double b = (basefreqs[0] * basefreqs[1] + basefreqs[0] * basefreqs[3])
+                + (basefreqs[1] * basefreqs[2] + basefreqs[2] * basefreqs[3]);
 
         /* We have the identity
-         *    TsTv = kappa/2
+         *    a * kappa =  TsTv * b
          * which we solve to get kappa
          */
-        final double kappa = TsTv * 2;
+        final double kappa = (TsTv * b) / a;
 
         final double[][] Q = new double[4][4];
         for (int i = 0; i < 4; i++) {
@@ -56,7 +57,6 @@ public class K2Pmodel extends NucleotideModel {
                 }
             }
         }
-
         Q[0][2] *= kappa;
         Q[1][3] *= kappa;
         Q[3][1] *= kappa;
@@ -64,28 +64,16 @@ public class K2Pmodel extends NucleotideModel {
 
         setRateMatrix(Q, basefreqs);
         normaliseQ();
-
     }
 
     /**
-     * is this a group valued model
+     * no exact distance associated with this model
      *
-     * @return true, if group valued model
+     * @param F
+     * @throws RuntimeException
      */
-    public boolean isGroupBased() {
-        return true;
+    public double exactDistance(double[][] F) {
+        throw new RuntimeException("exactDistance: not implemented");
     }
-
-
-    @Override
-    public double exactDistance(double[][] F) throws SaturatedDistancesException {
-        double P = F[0][2] + F[1][3] + F[2][0] + F[3][1];
-        double Q = F[0][1] + F[0][3] + F[1][0] + F[1][2];
-        Q += F[2][1] + F[2][3] + F[3][0] + F[3][2];
-        double dist = 0.5 * mInverse(1 / (1 - (2 * P) - Q), getPropInvariableSites(), getGamma());
-        dist += 0.25 * mInverse(1 / (1 - (2 * Q)), getPropInvariableSites(), getGamma());
-        return dist;
-    }
-
 }
 

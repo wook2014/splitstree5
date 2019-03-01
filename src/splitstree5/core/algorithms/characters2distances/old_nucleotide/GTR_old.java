@@ -28,7 +28,7 @@ import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.models.GTRmodel;
+import splitstree5.core.models.nucleotideModels.GTRmodel;
 
 import java.util.Arrays;
 import java.util.List;

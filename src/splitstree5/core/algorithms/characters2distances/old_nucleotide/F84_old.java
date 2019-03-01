@@ -26,7 +26,7 @@ import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.models.F84Model;
+import splitstree5.core.models.nucleotideModels.F84Model;
 
 /**
  * @deprecated

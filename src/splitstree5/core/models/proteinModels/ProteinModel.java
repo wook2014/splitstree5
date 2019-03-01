@@ -22,7 +22,9 @@
  * To change the template for this generated file go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
-package splitstree5.core.models;
+package splitstree5.core.models.proteinModels;
+
+import splitstree5.core.models.SubstitutionModel;
 
 import java.util.Random;
 

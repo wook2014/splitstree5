@@ -22,7 +22,7 @@
  * To change the template for this generated file go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
-package splitstree5.core.models;
+package splitstree5.core.models.nucleotideModels;
 
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
@@ -33,6 +33,7 @@ import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
+import splitstree5.core.models.SubstitutionModel;
 import splitstree5.utils.SplitsException;
 
 import java.util.Random;
@@ -321,41 +322,41 @@ public abstract class NucleotideModel implements SubstitutionModel {
         computeP(this.tval);
     }
 
-    /**
-     * Computes a random value according to probabilities in the base frequency vector
-     *
-     * @param random random generator
-     * @return int random state (0..3)
-     */
-    public int randomPi(Random random) {
-        double x = random.nextDouble();
-        int i = 0;
-        x -= getPi(i);
-        while (x >= 0.0) {
-            i++;
-            x -= getPi(i);
-        }
-        return i;
-    }
-
-    /**
-     * Given a start state, computes a random end state
-     *
-     * @param start  state (0..3)
-     * @param t      double (length of branch)
-     * @param random random number generator
-     * @return int (0..3) state
-     */
-    public int randomEndState(int start, double t, Random random) {
-        double x = random.nextDouble();
-        int i = 0;
-        x -= getP(start, i, t);
-        while (x >= 0.0) {
-            i++;
-            x -= getP(start, i, t);
-        }
-        return i;
-    }
+//    /**
+//     * Computes a random value according to probabilities in the base frequency vector
+//     *
+//     * @param random random generator
+//     * @return int random state (0..3)
+//     */
+//    public int randomPi(Random random) {
+//        double x = random.nextDouble();
+//        int i = 0;
+//        x -= getPi(i);
+//        while (x >= 0.0) {
+//            i++;
+//            x -= getPi(i);
+//        }
+//        return i;
+//    }
+//
+//    /**
+//     * Given a start state, computes a random end state
+//     *
+//     * @param start  state (0..3)
+//     * @param t      double (length of branch)
+//     * @param random random number generator
+//     * @return int (0..3) state
+//     */
+//    public int randomEndState(int start, double t, Random random) {
+//        double x = random.nextDouble();
+//        int i = 0;
+//        x -= getP(start, i, t);
+//        while (x >= 0.0) {
+//            i++;
+//            x -= getP(start, i, t);
+//        }
+//        return i;
+//    }
 
     /**
      * is this a group valued model

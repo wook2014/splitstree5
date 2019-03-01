@@ -31,7 +31,7 @@ import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.CharactersType;
-import splitstree5.core.models.NucleotideModel;
+import splitstree5.core.models.nucleotideModels.NucleotideModel;
 import splitstree5.core.workflow.Connector;
 import splitstree5.utils.SplitsException;
 

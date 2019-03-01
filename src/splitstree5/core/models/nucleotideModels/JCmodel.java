@@ -16,7 +16,9 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package splitstree5.core.models;
+package splitstree5.core.models.nucleotideModels;
+
+import splitstree5.core.models.nucleotideModels.NucleotideModel;
 
 /**
  * @author Miguel Jett�

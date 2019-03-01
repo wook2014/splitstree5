@@ -70,23 +70,23 @@ public interface SubstitutionModel {
      */
     double getPi(int i);
 
-    /**
-     * Returns a state random selected from the base frequencies.
-     *
-     * @param random
-     * @return state (int 0...nstates-1)
-     */
-    int randomPi(Random random);
-
-    /**
-     * Returns a state j from the distribution P_ij(t) with i = start.
-     *
-     * @param start
-     * @param t
-     * @param random
-     * @return Returns a state j from the distribution P_ij(t) with i = start.
-     */
-    int randomEndState(int start, double t, Random random);
+//    /**
+//     * Returns a state random selected from the base frequencies.
+//     *
+//     * @param random
+//     * @return state (int 0...nstates-1)
+//     */
+//    int randomPi(Random random);
+//
+//    /**
+//     * Returns a state j from the distribution P_ij(t) with i = start.
+//     *
+//     * @param start
+//     * @param t
+//     * @param random
+//     * @return Returns a state j from the distribution P_ij(t) with i = start.
+//     */
+//    int randomEndState(int start, double t, Random random);
 
     /**
      * Returns, the rate \sum \pi_i Q_ii
@@ -107,6 +107,6 @@ public interface SubstitutionModel {
      *
      * @return true if model is group based.
      */
-    boolean isGroupBased();
+    //boolean isGroupBased();
 }
 

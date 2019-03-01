@@ -22,11 +22,12 @@
  * To change the template for this generated file go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-package splitstree5.core.models;
+package splitstree5.core.models.nucleotideModels;
 
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
+import splitstree5.core.models.nucleotideModels.NucleotideModel;
 
 /**
  * @author Mig

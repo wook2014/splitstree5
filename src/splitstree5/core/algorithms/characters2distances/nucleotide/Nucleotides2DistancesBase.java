@@ -30,7 +30,7 @@ import splitstree5.core.analysis.CaptureRecapture;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.models.NucleotideModel;
+import splitstree5.core.models.nucleotideModels.NucleotideModel;
 
 /**
  * nucleotides to distances algorithms base class
