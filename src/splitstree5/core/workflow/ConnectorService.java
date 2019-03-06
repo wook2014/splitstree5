@@ -42,10 +42,11 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import jloda.fx.NotificationManager;
 import jloda.fx.ProgramExecutorService;
+import jloda.fx.ProgressPane;
+import jloda.fx.TaskWithProgressListener;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
 import splitstree5.core.datablocks.DataBlock;
-import splitstree5.dialogs.ProgressPane;
 
 /**
  * Service used by connector nodes to run algorithms

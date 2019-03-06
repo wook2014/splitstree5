@@ -35,10 +35,10 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import jloda.fx.ExtendedFXMLLoader;
 import jloda.fx.RecentFilesManager;
+import jloda.fx.ResourceManagerFX;
 import jloda.util.Basic;
 import jloda.util.Pair;
 import jloda.util.ProgramProperties;
-import jloda.util.ResourceManager;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.ViewerBlock;
 import splitstree5.core.workflow.Connector;
@@ -106,6 +106,7 @@ public class MainWindow {
         this.document = new Document();
         this.workflow = document.getWorkflow();
         document.setMainWindow(this);
+        document.setMainWindow(this);
         aNode2ViewerTab = FXCollections.observableHashMap();
 
         Platform.setImplicitExit(false);
@@ -172,7 +173,7 @@ public class MainWindow {
             final TreeItem<String> rootItem = new TreeItem<>("");
             Label label = new Label();
             label.textProperty().bind(document.nameProperty());
-            label.setGraphic(new ImageView(ResourceManager.getIcon("Document16.gif")));
+            label.setGraphic(new ImageView(ResourceManagerFX.getIcon("Document16.gif")));
             rootItem.setGraphic(label);
             final ContextMenu contextMenu = new ContextMenu();
             MenuItem openItem = new MenuItem("Open...");

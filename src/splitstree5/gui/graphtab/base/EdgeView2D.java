@@ -28,10 +28,10 @@ import javafx.scene.control.Labeled;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
+import jloda.fx.SelectionEffect;
 import jloda.graph.Edge;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
-import splitstree5.gui.utils.SelectionEffect;
 
 import java.util.ArrayList;
 

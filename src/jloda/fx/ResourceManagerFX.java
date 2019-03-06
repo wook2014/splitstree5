@@ -1,4 +1,4 @@
-/**
+/*
  * ResourceManager.java
  * Copyright (C) 2019 Daniel H. Huson
  * <p>
@@ -17,10 +17,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jloda.util;
+package jloda.fx;
 
 
 import javafx.scene.image.Image;
+import jloda.util.Basic;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -39,7 +40,7 @@ import java.util.jar.JarFile;
  * get icons and  cursors from resources
  * Daniel Huson and others, 2003, 2018
  */
-public class ResourceManager {
+public class ResourceManagerFX {
     public static final String iconPackagePath = "resources.icons";
     public static final String imagePackagePath = "resources.images";
     public static final String filePackagePath = "resources.files";
@@ -172,7 +173,7 @@ public class ResourceManager {
     public static Image getImageResource(String packageName, String fileName) {
         String resname = "/" + packageName.replace('.', '/') + "/" + fileName;
         resname = resname.replaceAll(" ", "\\ ");
-        try (InputStream is = ResourceManager.class.getResourceAsStream(resname)) {
+        try (InputStream is = ResourceManagerFX.class.getResourceAsStream(resname)) {
             byte[] buffer = new byte[0];
             byte[] tmpbuf = new byte[1024];
             while (true) {
@@ -199,7 +200,7 @@ public class ResourceManager {
     public static File getFileResource(String packageName, String fileName) {
         try {
             final String resourceName = ("/" + packageName.replace('.', '/') + "/" + fileName).replaceAll(" ", "\\ ");
-            final URL url = ResourceManager.class.getResource(resourceName);
+            final URL url = ResourceManagerFX.class.getResource(resourceName);
             return new File(url.getFile());
         } catch (Exception exc) {
             return null;
@@ -215,7 +216,7 @@ public class ResourceManager {
     public static URL getFileURL(String packageName, String fileName) {
         try {
             final String resourceName = ("/" + packageName.replace('.', '/') + "/" + fileName).replaceAll(" ", "\\ ");
-            return ResourceManager.class.getResource(resourceName);
+            return ResourceManagerFX.class.getResource(resourceName);
         } catch (Exception exc) {
             return null;
         }
@@ -230,7 +231,7 @@ public class ResourceManager {
     public static InputStream getFileResourceAsStream(String packageName, String fileName) {
         try {
             final String resourceName = ("/" + packageName.replace('.', '/') + "/" + fileName).replace(" ", "\\ ");
-            return ResourceManager.class.getResourceAsStream(resourceName);
+            return ResourceManagerFX.class.getResourceAsStream(resourceName);
         } catch (Exception ex) {
             return null;
         }
@@ -243,7 +244,7 @@ public class ResourceManager {
      * @return true if file exists
      */
     public static boolean resourceFileExists(String fileName) {
-        try (InputStream ins = ResourceManager.class.getResourceAsStream("/resources/files/" + fileName)) {
+        try (InputStream ins = ResourceManagerFX.class.getResourceAsStream("/resources/files/" + fileName)) {
             return (ins != null);
         } catch (Exception e) {
             return false;
@@ -299,7 +300,7 @@ public class ResourceManager {
     }
 
     public static void setWarnMissing(boolean warnMissing) {
-        ResourceManager.warnMissing = warnMissing;
+        ResourceManagerFX.warnMissing = warnMissing;
     }
 
     public static boolean isWarnMissing() {

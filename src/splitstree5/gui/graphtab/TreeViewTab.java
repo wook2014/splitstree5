@@ -25,11 +25,11 @@ import javafx.geometry.Point2D;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import jloda.fx.ASelectionModel;
+import jloda.fx.ResourceManagerFX;
 import jloda.fx.shapes.NodeShape;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
-import jloda.util.ResourceManager;
 import splitstree5.gui.graphtab.base.EdgeView2D;
 import splitstree5.gui.graphtab.base.Graph2DTab;
 import splitstree5.gui.graphtab.base.GraphLayout;
@@ -53,7 +53,7 @@ public class TreeViewTab extends Graph2DTab<PhyloTree> {
     public TreeViewTab(boolean withScrollPane) {
         super(withScrollPane);
         setName("TreeViewer");
-        setIcon(ResourceManager.getIcon("TreeViewer16.gif"));
+        setIcon(ResourceManagerFX.getIcon("TreeViewer16.gif"));
     }
 
     /**

@@ -23,6 +23,8 @@ import javafx.application.Platform;
 import javafx.stage.FileChooser;
 import jloda.fx.CallableService;
 import jloda.fx.NotificationManager;
+import jloda.fx.ProgressPane;
+import jloda.fx.TaskWithProgressListener;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
@@ -31,8 +33,6 @@ import jloda.util.ProgramProperties;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.Taxon;
-import splitstree5.core.workflow.TaskWithProgressListener;
-import splitstree5.dialogs.ProgressPane;
 import splitstree5.io.imports.NewickTreeImporter;
 import splitstree5.main.MainWindow;
 

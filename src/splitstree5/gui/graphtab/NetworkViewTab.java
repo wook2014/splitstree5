@@ -25,11 +25,11 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
 import jloda.fx.ASelectionModel;
+import jloda.fx.ResourceManagerFX;
 import jloda.fx.shapes.NodeShape;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloGraph;
-import jloda.util.ResourceManager;
 import splitstree5.core.algorithms.views.NetworkEmbedder;
 import splitstree5.gui.graphtab.base.*;
 import splitstree5.gui.graphtab.commands.MoveNodesCommand;
@@ -51,7 +51,7 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
      */
     public NetworkViewTab() {
         this.setName("NetworkViewer");
-        setIcon(ResourceManager.getIcon("NetworkViewer16.gif"));
+        setIcon(ResourceManagerFX.getIcon("NetworkViewer16.gif"));
 
         setLayout(GraphLayout.Radial);
         getScaleBar().setVisible(false);

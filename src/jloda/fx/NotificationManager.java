@@ -24,7 +24,6 @@ import javafx.geometry.Pos;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 import jloda.util.ProgramProperties;
-import jloda.util.ResourceManager;
 import org.controlsfx.control.Notifications;
 
 import java.net.URL;
@@ -263,7 +262,7 @@ public class NotificationManager {
      * @return
      */
     public static String getControlStylesheetURL() {
-        final URL url = ResourceManager.getCssURL("notificationpopup.css");
+        final URL url = ResourceManagerFX.getCssURL("notificationpopup.css");
         if (url != null) {
             return url.toExternalForm();
         }

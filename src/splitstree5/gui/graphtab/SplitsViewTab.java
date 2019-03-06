@@ -26,11 +26,11 @@ import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
 import jloda.fx.ASelectionModel;
+import jloda.fx.ResourceManagerFX;
 import jloda.fx.shapes.NodeShape;
 import jloda.graph.*;
 import jloda.phylo.SplitsGraph;
 import jloda.util.Pair;
-import jloda.util.ResourceManager;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.views.SplitsNetworkAlgorithm;
 import splitstree5.core.datablocks.DataBlock;
@@ -59,7 +59,7 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
      */
     public SplitsViewTab() {
         setName("SplitsNetworkViewer");
-        setIcon(ResourceManager.getIcon("SplitsNetworkViewer16.gif"));
+        setIcon(ResourceManagerFX.getIcon("SplitsNetworkViewer16.gif"));
 
         setLayout(GraphLayout.Radial);
 

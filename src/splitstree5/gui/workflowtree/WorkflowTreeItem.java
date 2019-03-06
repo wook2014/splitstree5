@@ -32,7 +32,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
-import jloda.util.ResourceManager;
+import jloda.fx.ResourceManagerFX;
 import splitstree5.core.Document;
 import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.DataNode;
@@ -73,7 +73,7 @@ public class WorkflowTreeItem extends TreeItem<String> {
 
             if (workflowNode instanceof Connector) {
                 disable.bind(((Connector) workflowNode).applicableProperty().not().and(workflowNode.stateProperty().isEqualTo(UpdateState.VALID).not()).or(new ReadOnlyBooleanWrapper(workflowNode.getName().endsWith("TopFilter"))));
-                final Image icon = ResourceManager.getIcon(workflowNode.getName().endsWith("Filter") ? "Filter16.gif" : "Algorithm16.gif");
+                final Image icon = ResourceManagerFX.getIcon(workflowNode.getName().endsWith("Filter") ? "Filter16.gif" : "Algorithm16.gif");
                 if (icon != null) {
                     final ImageView imageView = new ImageView(icon);
                     rotateTransition = new RotateTransition(Duration.millis(1000), imageView);
@@ -85,7 +85,7 @@ public class WorkflowTreeItem extends TreeItem<String> {
                     rotateTransition = null;
             } else { // a data node
                 disable.bind(workflowNode.stateProperty().isEqualTo(UpdateState.VALID).not());
-                Image icon = ResourceManager.getIcon(workflowNode.getName().replaceAll("Input", "").replaceAll(".*]", "") + "16.gif");
+                Image icon = ResourceManagerFX.getIcon(workflowNode.getName().replaceAll("Input", "").replaceAll(".*]", "") + "16.gif");
                 if (icon != null) {
                     label.setGraphic(new ImageView(icon));
                 }

@@ -1,4 +1,23 @@
 /*
+ *  Copyright (C) 2018 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
  *  Copyright (C) 2016 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
@@ -17,7 +36,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.dialogs;
+package jloda.fx;
 
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -36,7 +55,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
-import jloda.fx.ProgramExecutorService;
 
 /**
  * A progress pane with cancel button
@@ -107,7 +125,7 @@ public class ProgressPane extends StackPane {
             }
         });
 
-        ProgramExecutorService.getInstance().submit(() -> { // wait three seconds before showing the progress pane
+        (new Thread(() -> { // wait three seconds before showing the progress pane
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
@@ -117,6 +135,6 @@ public class ProgressPane extends StackPane {
                     setVisible(true);
                 }
             });
-        });
+        })).start();
     }
 }

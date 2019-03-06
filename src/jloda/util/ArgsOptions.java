@@ -19,6 +19,8 @@
 
 package jloda.util;
 
+import jloda.fx.ResourceManagerFX;
+
 import java.util.*;
 
 /**
@@ -96,7 +98,7 @@ public class ArgsOptions {
 
         this.programName = programName;
         if (main != null)
-            this.version = ResourceManager.getVersion(main.getClass(), programName);
+            this.version = ResourceManagerFX.getVersion(main.getClass(), programName);
         this.description = description;
 
         usage = new LinkedList<>();

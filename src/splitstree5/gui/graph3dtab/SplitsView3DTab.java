@@ -47,15 +47,15 @@ import javafx.geometry.Point3D;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Rotate;
 import jloda.fx.ASelectionModel;
+import jloda.fx.ProgressPane;
+import jloda.fx.ResourceManagerFX;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import jloda.phylo.SplitsGraph;
 import jloda.util.Pair;
-import jloda.util.ResourceManager;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.dialogs.ProgressPane;
 import splitstree5.gui.graphtab.ISplitsViewTab;
 import splitstree5.gui.graphtab.SplitsViewTab;
 import splitstree5.gui.graphtab.base.GeometryUtils;
@@ -82,7 +82,7 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
     public SplitsView3DTab() {
         super();
         this.setName("SplitsNetwork3DViewer");
-        setIcon(ResourceManager.getIcon("SplitsNetworkViewer16.gif"));
+        setIcon(ResourceManagerFX.getIcon("SplitsNetworkViewer16.gif"));
         setLayout(GraphLayout.Radial);
 
         splitsSelectionModel.getSelectedItems().addListener((ListChangeListener<Integer>) c -> {

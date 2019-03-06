@@ -23,11 +23,11 @@ import com.briksoftware.javafx.platform.osx.OSXIntegration;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import jloda.fx.ProgramExecutorService;
+import jloda.fx.ResourceManagerFX;
 import jloda.fx.SplashScreen;
 import jloda.util.ArgsOptions;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
-import jloda.util.ResourceManager;
 import splitstree5.dialogs.importer.FileOpener;
 
 import java.io.File;
@@ -61,8 +61,8 @@ public class SplitsTree5 extends Application {
     public static void parseArguments(String[] args) throws Exception {
         Basic.restoreSystemOut(System.err); // send system out to system err
         Basic.startCollectionStdErr();
-        ProgramProperties.getProgramIcons().setAll(ResourceManager.getIcon("SplitsTree5-16.png"), ResourceManager.getIcon("SplitsTree5-32.png"),
-                ResourceManager.getIcon("SplitsTree5-64.png"), ResourceManager.getIcon("SplitsTree5-128.png"));
+        ProgramProperties.getProgramIcons().setAll(ResourceManagerFX.getIcon("SplitsTree5-16.png"), ResourceManagerFX.getIcon("SplitsTree5-32.png"),
+                ResourceManagerFX.getIcon("SplitsTree5-64.png"), ResourceManagerFX.getIcon("SplitsTree5-128.png"));
         ProgramProperties.setProgramName(Version.NAME);
         ProgramProperties.setProgramVersion(Version.SHORT_DESCRIPTION);
         ProgramProperties.setUseGUI(true);
@@ -103,7 +103,6 @@ public class SplitsTree5 extends Application {
             System.err.println("Java version: " + System.getProperty("java.version"));
         }
     }
-
 
     @Override
     public void start(Stage primaryStage) {

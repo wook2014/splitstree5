@@ -30,10 +30,13 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import jloda.util.ResourceManager;
 
 import java.time.Duration;
 
+/**
+ * shows a splash screen
+ * Daniel Huson, 3.2019
+ */
 public class SplashScreen {
     public final Stage stage;
 
@@ -58,7 +61,7 @@ public class SplashScreen {
         final Scene scene = new Scene(stackPane);
         stage.setScene(scene);
 
-        final Image image = ResourceManager.getImage(imageResourceName);
+        final Image image = ResourceManagerFX.getImage(imageResourceName);
         if (image != null) {
             final ImageView imageView = new ImageView(image);
             imageView.setScaleX(0.5);

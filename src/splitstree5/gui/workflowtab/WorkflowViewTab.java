@@ -72,16 +72,12 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import jloda.fx.ASelectionModel;
-import jloda.fx.Print;
-import jloda.fx.ZoomableScrollPane;
-import jloda.util.ResourceManager;
+import jloda.fx.*;
 import splitstree5.core.Document;
 import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.Workflow;
 import splitstree5.core.workflow.WorkflowNode;
 import splitstree5.gui.ViewerTab;
-import splitstree5.gui.utils.SelectionEffect;
 import splitstree5.menu.MenuController;
 import splitstree5.undo.UndoableChangeList;
 import splitstree5.undo.UndoableRedoableCommand;
@@ -111,7 +107,7 @@ public class WorkflowViewTab extends ViewerTab {
     public WorkflowViewTab(Document document) {
         this.document = document;
         setText("Workflow");
-        setIcon(ResourceManager.getIcon("sun/toolbarButtonGraphics/general/Preferences16.gif"));
+        setIcon(ResourceManagerFX.getIcon("sun/toolbarButtonGraphics/general/Preferences16.gif"));
 
         centerPane = new Pane(new StackPane(edgeViews, nodeViews));
 

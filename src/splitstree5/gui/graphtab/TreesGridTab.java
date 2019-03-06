@@ -27,9 +27,9 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.GridPane;
+import jloda.fx.ResourceManagerFX;
 import jloda.fx.ZoomableScrollPane;
 import jloda.phylo.PhyloTree;
-import jloda.util.ResourceManager;
 import splitstree5.gui.graphtab.base.GraphLayout;
 import splitstree5.gui.graphtab.base.GraphTabBase;
 import splitstree5.gui.graphtab.commands.ZoomCommand;
@@ -52,7 +52,7 @@ public class TreesGridTab extends GraphTabBase<PhyloTree> {
      */
     public TreesGridTab() {
         setName("TreesGrid");
-        setIcon(ResourceManager.getIcon("TreeViewer16.gif"));
+        setIcon(ResourceManagerFX.getIcon("TreeViewer16.gif"));
     }
 
     /**

@@ -30,9 +30,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import jloda.fx.ASelectionModel;
+import jloda.fx.SelectionEffect;
 import jloda.graph.NodeArray;
 import splitstree5.gui.graphtab.base.NodeViewBase;
-import splitstree5.gui.utils.SelectionEffect;
 
 import java.util.HashMap;
 import java.util.Map;

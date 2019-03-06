@@ -24,11 +24,10 @@ import com.install4j.api.update.ApplicationDisplayMode;
 import com.install4j.api.update.UpdateChecker;
 import com.install4j.api.update.UpdateDescriptor;
 import com.install4j.api.update.UpdateDescriptorEntry;
+import javafx.application.Platform;
 import jloda.fx.NotificationManager;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
-
-import javax.swing.*;
 
 /**
  * check for update and install, if present
@@ -60,7 +59,7 @@ public class CheckForUpdate {
             return;
         }
 
-        SwingUtilities.invokeLater(() -> {
+        Platform.runLater(() -> {
             ApplicationLauncher.launchApplicationInProcess("1691242391", null, new ApplicationLauncher.Callback() {
                 public void exited(int exitValue) {
                     //TODO add your code here (not invoked on event dispatch thread)

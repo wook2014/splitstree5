@@ -26,18 +26,13 @@ import javafx.beans.value.WeakChangeListener;
 import javafx.scene.control.Labeled;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import jloda.util.ResourceManager;
-import org.reactfx.Subscription;
+import jloda.fx.ResourceManagerFX;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.editinputtab.EditTextViewTab;
-import splitstree5.gui.editinputtab.highlighters.NexusHighlighter;
-import splitstree5.gui.texttab.TextViewTab;
-
-import java.time.Duration;
 
 /**
  * a data block viewer tab
@@ -84,7 +79,7 @@ public class DataViewTab extends EditTextViewTab {
 
         setMainWindow(document.getMainWindow());
         if (getGraphic() instanceof Labeled) {
-            Image icon = ResourceManager.getIcon(dataNode.getName().replaceAll("^Input", "").replaceAll(".*]", "") + "16.gif");
+            Image icon = ResourceManagerFX.getIcon(dataNode.getName().replaceAll("^Input", "").replaceAll(".*]", "") + "16.gif");
             if (icon != null) {
                 ((Labeled) getGraphic()).setGraphic(new ImageView(icon));
             }

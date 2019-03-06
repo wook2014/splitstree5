@@ -33,10 +33,10 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import jloda.fx.NotificationManager;
 import jloda.fx.RecentFilesManager;
+import jloda.fx.ResourceManagerFX;
 import jloda.util.Basic;
 import jloda.util.IOExceptionWithLineNumber;
 import jloda.util.ProgramProperties;
-import jloda.util.ResourceManager;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.reactfx.Subscription;
@@ -72,7 +72,7 @@ public class EditInputTab extends EditTextViewTab {
      */
     public EditInputTab(MainWindow mainWindow) {
         super(new SimpleStringProperty("Input"));
-        setIcon(ResourceManager.getIcon("sun/toolbarButtonGraphics/general/Import16.gif"));
+        setIcon(ResourceManagerFX.getIcon("sun/toolbarButtonGraphics/general/Import16.gif"));
         setMainWindow(mainWindow);
 
         final CodeArea codeArea = getCodeArea();

@@ -29,10 +29,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import jloda.fx.SelectionEffect;
 import jloda.fx.shapes.NodeShape;
 import jloda.util.ProgramProperties;
 import splitstree5.gui.formattab.FormatItem;
-import splitstree5.gui.utils.SelectionEffect;
 
 /**
  * node view

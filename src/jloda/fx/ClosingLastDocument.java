@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  Copyright (C) 2018 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -16,8 +16,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package splitstree5.dialogs;
+package jloda.fx;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
@@ -27,6 +26,10 @@ import jloda.util.ProgramProperties;
 
 import java.util.Optional;
 
+/**
+ * closing last document dialog
+ * Daniel Huson, 3.2019
+ */
 public class ClosingLastDocument {
 
     /**
