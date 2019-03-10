@@ -2,7 +2,9 @@ package splitstree5.gui.editinputtab.highlighters;
 
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+import splitstree5.gui.editinputtab.collapsing.NexusBlockCollapseInfo;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.regex.Matcher;
@@ -11,6 +13,9 @@ import java.util.regex.Pattern;
 public class NexusHighlighter implements Highlighter {
 
     private boolean collapsingActive = false;
+    private ArrayList<NexusBlockCollapseInfo> nexusBlockCollapseInfos;
+    private int nexusBlockStart = 0;
+    private int nexusBlockEnd = 0;
 
     private static final String[] KEYWORDS = new String[] {
             "begin", "end", "endblock",
@@ -39,6 +44,7 @@ public class NexusHighlighter implements Highlighter {
     private static final String PAREN_PATTERN = "[()]";
     private static final String COMMENT_PATTERN = "\\[(.|\\R)*?]";
     private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
+    private static final String NEW_LINE_PATTERN = "[\\r\\n]+";
 
     private static final Pattern PATTERN = Pattern.compile(
             "(" + KEYWORD_PATTERN + ")"
@@ -48,10 +54,13 @@ public class NexusHighlighter implements Highlighter {
                     + "|(?<BLOCK>" + BLOCK_PATTERN + ")"
                     + "|(?<NK>" + NETWORK_KEYWORDS_PATTERN + ")"
                     + "|(?<COLLAPSED><< Collapsed \\w+Block >>)"
+                    + "|(?<NEWLINE>Taxa)"
     );
 
     @Override
     public StyleSpans<Collection<String>> computeHighlighting(String text) {
+
+        nexusBlockCollapseInfos = new ArrayList<>();
 
         String collapsing = "";
         if (collapsingActive)
@@ -65,6 +74,19 @@ public class NexusHighlighter implements Highlighter {
                 = new StyleSpansBuilder<>();
 
         while(matcher.find()) {
+
+            //System.err.println(matcher.group(0));
+            if(matcher.group(0).toLowerCase().equals("begin")) {
+                System.err.println(matcher.group(0) + matcher.start(0));
+                nexusBlockStart = matcher.start(0);
+
+            }
+            if(matcher.group(0).toLowerCase().equals("end;")) { //todo add endblock
+                System.err.println(matcher.group(0) + matcher.end(0));
+                nexusBlockEnd = matcher.end(0);
+                nexusBlockCollapseInfos.add(new NexusBlockCollapseInfo(nexusBlockStart, nexusBlockEnd));
+            }
+
             String styleClass =
                     matcher.group("KEYWORDSLINE") != null ? "keyword" :
                     matcher.group("BLOCK") != null ? "block"+collapsing :
@@ -95,5 +117,9 @@ public class NexusHighlighter implements Highlighter {
 
     public void setCollapsingActive(boolean active){
         this.collapsingActive = active;
+    }
+
+    public ArrayList<NexusBlockCollapseInfo> getNexusBlockCollapseInfos(){
+        return this.nexusBlockCollapseInfos;
     }
 }

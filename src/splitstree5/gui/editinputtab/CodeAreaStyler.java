@@ -1,18 +1,13 @@
 package splitstree5.gui.editinputtab;
 
 import javafx.beans.value.ObservableValue;
-import javafx.geometry.Point2D;
-import javafx.scene.Cursor;
 import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.LineNumberFactory;
-import org.fxmisc.richtext.event.MouseOverTextEvent;
 import org.reactfx.value.Val;
 import splitstree5.gui.editinputtab.highlighters.Highlighter;
 import splitstree5.gui.editinputtab.highlighters.NexusHighlighter;
 import splitstree5.gui.editinputtab.highlighters.UniversalHighlighter;
 import splitstree5.gui.editinputtab.highlighters.XMLHighlighter;
 
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -79,14 +74,12 @@ public class CodeAreaStyler {
          * Block collapsing
          */
 
-        codeArea.setMouseOverTextDelay(Duration.ofMillis(200));
+        /*codeArea.setMouseOverTextDelay(Duration.ofMillis(200));
         codeArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e -> {
 
             if (collapsingActive){
                 int i = e.getCharacterIndex();
                 Point2D pos = e.getScreenPosition();
-
-                System.err.println("STYLErrrrr "+codeArea.getStyleAtPosition(i).toString());
 
                 if (codeArea.getStyleAtPosition(i).toString().contains("block")
                         || codeArea.getStyleAtPosition(i).toString().contains("collapsed")) {
@@ -140,7 +133,7 @@ public class CodeAreaStyler {
                         key = matcher.group(2);
                         codeArea.replaceText(cbStart, cbEnd, tmpBlocksKeeper.get(key));
                         tmpBlocksKeeper.remove(key);
-                        //codeArea.setParagraphGraphicFactory(MyLineNumberFactory.get(codeArea));
+                        //codeArea.setParagraphGraphicFactory(LineNumberFactoryWithCollapsing.get(codeArea));
                         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
                     }
 
@@ -163,11 +156,11 @@ public class CodeAreaStyler {
                         String key = matcher.group(2);
                         codeArea.replaceText(cbStart, cbEnd, tmpBlocksKeeper22.get(key));
                         tmpBlocksKeeper22.remove(key);
-                    }*/
+                    }<------- end of block comment!!!
                 }
                 hold = false; // prevents double collapsing after continuous clicks
             }
-        });
+        });*/
 
 
     }
@@ -225,7 +218,7 @@ public class CodeAreaStyler {
             System.out.println("Block Nr. "+keyWord);
 
             //int[] replaceRange = {paragraphStart, linesCounter};
-            codeArea.setParagraphGraphicFactory(MyLineNumberFactory.get(codeArea, replaceRange));
+            // todo delete? -- codeArea.setParagraphGraphicFactory(LineNumberFactoryWithCollapsing.get(codeArea, replaceRange));
         }
     }
 

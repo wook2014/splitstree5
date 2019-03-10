@@ -43,6 +43,9 @@ import org.reactfx.Subscription;
 import org.reactfx.value.Val;
 import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.dialogs.importer.ImporterManager;
+import splitstree5.gui.editinputtab.collapsing.LineNumberFactoryWithCollapsing;
+import splitstree5.gui.editinputtab.collapsing.NexusBlockCollapseInfo;
+import splitstree5.gui.editinputtab.collapsing.NexusBlockCollapser;
 import splitstree5.gui.editinputtab.highlighters.NexusHighlighter;
 import splitstree5.io.nexus.workflow.WorkflowNexusInput;
 import splitstree5.main.MainWindow;
@@ -51,6 +54,7 @@ import splitstree5.menu.MenuController;
 
 import java.io.*;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -179,7 +183,22 @@ public class EditInputTab extends EditTextViewTab {
                 }
                 if(newValue) {
                     System.err.println("Block collapsing is active");
-                    getCodeArea().setParagraphGraphicFactory(MyLineNumberFactory.get(getCodeArea()));
+
+                    ArrayList<NexusBlockCollapseInfo> info =
+                            ((NexusHighlighter) codeAreaStyler.getHighlighter()).getNexusBlockCollapseInfos();
+                    System.err.println("number ob blocks: "+info.size());
+                    NexusBlockCollapser nexusBlockCollapser = new NexusBlockCollapser(getCodeArea(), info);
+                    for(NexusBlockCollapseInfo i : info){
+                        //int[] a = CodeAreaStyler.getLinesRangeByIndex(i.getStartPosition(), i.getEndPosition(), codeArea);
+                        //System.err.println("lines" + a[0]+ a[1]);
+                        System.err.println("block: "+i.getStartPosition()+"-"+i.getEndPosition()+" lines: "+
+                                i.getStartLine()+"-"+i.getEndLine());
+                    }
+                    System.err.println("Indices!");
+                    for(Integer i : nexusBlockCollapser.getLineIndices())
+                        System.err.print(i+"-");
+
+                    getCodeArea().setParagraphGraphicFactory(LineNumberFactoryWithCollapsing.get(getCodeArea(), nexusBlockCollapser));
                     codeAreaStyler.setCollapsingActive(true);
                     ((NexusHighlighter) codeAreaStyler.getHighlighter()).setCollapsingActive(true);
                 }

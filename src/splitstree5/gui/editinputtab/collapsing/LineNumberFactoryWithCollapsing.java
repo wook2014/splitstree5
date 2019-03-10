@@ -1,6 +1,5 @@
-package splitstree5.gui.editinputtab;
+package splitstree5.gui.editinputtab.collapsing;
 
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -13,15 +12,12 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import org.fxmisc.richtext.GenericStyledArea;
-import org.fxmisc.richtext.event.MouseOverTextEvent;
 import org.reactfx.collection.LiveList;
 import org.reactfx.value.Val;
 
-import java.awt.event.MouseEvent;
-import java.time.Duration;
 import java.util.function.IntFunction;
 
-public class MyLineNumberFactory implements IntFunction<Node> {
+public class LineNumberFactoryWithCollapsing implements IntFunction<Node> {
 
     private static final Insets DEFAULT_INSETS = new Insets(0.0D, 5.0D, 0.0D, 5.0D);
     private static final Paint DEFAULT_TEXT_FILL = Color.web("#666");
@@ -32,7 +28,8 @@ public class MyLineNumberFactory implements IntFunction<Node> {
 
     ///
     private boolean style = false;
-    private int[] hide = {Integer.MAX_VALUE, Integer.MAX_VALUE};
+    //private int[] hide = {Integer.MAX_VALUE, Integer.MAX_VALUE};
+    private NexusBlockCollapser nexusBlockCollapser;
     ///
 
     public static IntFunction<Node> get(GenericStyledArea<?, ?, ?> area) {
@@ -42,31 +39,64 @@ public class MyLineNumberFactory implements IntFunction<Node> {
     }
 
     public static IntFunction<Node> get(GenericStyledArea<?, ?, ?> area, IntFunction<String> format) {
-        return new MyLineNumberFactory(area, format);
+        return new LineNumberFactoryWithCollapsing(area, format);
     }
 
     //+++
-    public static IntFunction<Node> get(GenericStyledArea<?, ?, ?> area, int[] hide) {
-        return new MyLineNumberFactory(area, (digits) -> {
+    /*public static IntFunction<Node> get(GenericStyledArea<?, ?, ?> area, int[] hide) {
+        return new LineNumberFactoryWithCollapsing(area, (digits) -> {
             return "%1$" + digits + "s";
         }, hide);
+    }*/
+    //+++
+    public static IntFunction<Node> get(GenericStyledArea<?, ?, ?> area, NexusBlockCollapser nexusBlockCollapser) {
+        return new LineNumberFactoryWithCollapsing(area, (digits) -> {
+            return "%1$" + digits + "s";
+        }, nexusBlockCollapser);
     }
 
-    private MyLineNumberFactory(GenericStyledArea<?, ?, ?> area, IntFunction<String> format) {
+    private LineNumberFactoryWithCollapsing(GenericStyledArea<?, ?, ?> area, IntFunction<String> format) {
         this.nParagraphs = LiveList.sizeOf(area.getParagraphs());
         this.format = format;
     }
 
     //+++
-    private MyLineNumberFactory(GenericStyledArea<?, ?, ?> area, IntFunction<String> format, int[] hide) {
+    /*private LineNumberFactoryWithCollapsing(GenericStyledArea<?, ?, ?> area, IntFunction<String> format, int[] hide) {
         this.nParagraphs = LiveList.sizeOf(area.getParagraphs());
         this.format = format;
         this.hide = hide;
+    }*/
+    //+++
+    private LineNumberFactoryWithCollapsing(GenericStyledArea<?, ?, ?> area, IntFunction<String> format,
+                                            NexusBlockCollapser nexusBlockCollapser) {
+        this.nParagraphs = LiveList.sizeOf(area.getParagraphs());
+        this.format = format;
+        this.nexusBlockCollapser = nexusBlockCollapser;
     }
 
     public Node apply(int idx) {
         Label lineNo;
-        if (idx < hide[0]) {
+        Val<String> formatted = this.nParagraphs.map((n) -> {
+            //System.err.println("line--- " + idx);
+            //return this.format(idx + 1, n);
+            int x = nexusBlockCollapser.getLineIndices().get(nexusBlockCollapser.getLineIndices().size()-1);
+            /*if(idx !=-1) {
+                System.err.println("line" + nexusBlockCollapser.getLineIndices().get(idx));
+                return this.format(nexusBlockCollapser.getLineIndices().get(idx), x-1);
+            }else
+            //System.err.println("line"+idx);
+                return this.format(0, x-1);*/
+            return this.format(nexusBlockCollapser.getIndexFromList(idx), x-1);
+        });
+        lineNo = new Label();
+        lineNo.setFont(DEFAULT_FONT);
+        lineNo.setBackground(DEFAULT_BACKGROUND);
+        lineNo.setTextFill(DEFAULT_TEXT_FILL);
+        lineNo.setPadding(DEFAULT_INSETS);
+        lineNo.setAlignment(Pos.TOP_RIGHT);
+        lineNo.getStyleClass().add("lineno");
+        lineNo.textProperty().bind(formatted.conditionOnShowing(lineNo));
+        /*if (idx < hide[0]) {
             Val<String> formatted = this.nParagraphs.map((n) -> {
                 return this.format(idx + 1, n);
             });
@@ -105,11 +135,15 @@ public class MyLineNumberFactory implements IntFunction<Node> {
                 lineNo.getStyleClass().add("lineno");
                 lineNo.textProperty().bind(formatted.conditionOnShowing(lineNo));
             }
-        }
+        }*/
 
-        // some basic mouse interaction with labels to make them clickable
+        // mouse interactions with labels to make them clickable
         lineNo.setOnMouseClicked(click -> {
-            System.err.println("Clicked on label! ");
+            System.err.println("Clicked on label! "+lineNo.getText());
+            nexusBlockCollapser.collapseBlock(Integer.parseInt(lineNo.getText().replaceAll(" ","")));
+            System.err.println("Indices!");
+            for(Integer i : nexusBlockCollapser.getLineIndices())
+                System.err.print(i+"-");
         });
         lineNo.setOnMouseEntered(e -> {
             System.err.println("Over label! ");
