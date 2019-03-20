@@ -37,7 +37,9 @@ import splitstree5.gui.algorithmtab.AlgorithmPane;
 import splitstree5.gui.algorithmtab.rootbyoutgroup.RootByOutGroupPane;
 import splitstree5.utils.RerootingUtils;
 
+import java.util.Arrays;
 import java.util.BitSet;
+import java.util.List;
 
 /**
  * tree rerooting by outgroup
@@ -47,6 +49,11 @@ public class RootByOutGroupAlgorithm extends Algorithm<TreesBlock, TreesBlock> i
 
     private final ObservableList<Taxon> optionInGroupTaxa = FXCollections.observableArrayList();
     private final ObservableList<Taxon> optionOutGroupTaxa = FXCollections.observableArrayList();
+
+    @Override
+    public List<String> listOptions() {
+        return Arrays.asList("InGroupTaxa", "OutGroupTaxa");
+    }
 
     @Override
     public String getToolTip(String optionName) {

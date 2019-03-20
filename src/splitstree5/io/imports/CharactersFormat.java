@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Import characters in FastA format
+ * Import characters data in different formats
  * Daria Evseeva,15.08.2017.
  */
 public abstract class CharactersFormat {

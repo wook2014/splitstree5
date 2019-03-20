@@ -24,7 +24,6 @@ import java.util.List;
  */
 
 public class BalancedConfidenceNetwork extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
-    public final static String DESCRIPTION = "Computes a confidence network using Beran's algorithm. cf Huson and Bryant (2006)";
 
     private final DoubleProperty optionLevel = new SimpleDoubleProperty(.95);
 
