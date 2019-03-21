@@ -3,8 +3,10 @@
    Connected with MedianJoining.
    Have to add Properties options?
 
- - Property options
-   todo: trees
+ - Splits B set from parser = A set
+   see example in BunemanTree
+
+ - negative 0 values from HammingDistance algorithm
 
  - Error by parsing partial trees in IO part :
    nexus blocks with partial trees have false "isPartial" value

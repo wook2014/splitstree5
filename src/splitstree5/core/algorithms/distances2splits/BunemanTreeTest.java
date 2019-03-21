@@ -109,10 +109,14 @@ public class BunemanTreeTest {
             ASplit aSplit = splitsBlock2.getSplits().get(i);
             ASplit aSplitST4 = splitsFromST42.getSplits().get(i);
             //System.err.println("split" + i+aSplit.getB());
-            System.err.println("split from st4 A" + i+aSplitST4.getA());
-            System.err.println("split from st4 B" + i+aSplitST4.getB());
+            System.err.println("split A"+i+" from st4" + aSplitST4.getA());
+            System.err.println("split B"+i+" from st4" + aSplitST4.getB());
+            System.err.println("split A"+i+" from st5" + aSplit.getA());
+            System.err.println("split B"+i+" from st5" + aSplit.getB());
             assertEquals(aSplit.getA(), aSplitST4.getA());
-            //assertEquals(aSplit.getB(), aSplitST4.getB());//todo problem in parser? the readed from ST4 is wrong!
+
+            //todo problem in parser: the read B set from ST4 is a complete set
+            //assertEquals(aSplit.getB(), aSplitST4.getB());
             assertEquals(aSplit.getWeight(), aSplitST4.getWeight(), 0.000001);
             assertEquals(aSplit.getConfidence(), aSplitST4.getConfidence(), 0.0);
             assertEquals(aSplit.getLabel(), aSplitST4.getLabel());
