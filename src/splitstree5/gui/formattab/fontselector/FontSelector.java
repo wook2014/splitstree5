@@ -33,7 +33,7 @@ import javafx.stage.Popup;
 import javafx.util.converter.IntegerStringConverter;
 import jloda.fx.ExtendedFXMLLoader;
 import jloda.fx.FontUtils;
-import jloda.util.ProgramProperties;
+import jloda.fx.ProgramProperties;
 
 import java.util.Set;
 import java.util.TreeSet;

@@ -35,12 +35,12 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import jloda.find.EdgeLabelSearcher;
-import jloda.find.FindToolBar;
-import jloda.find.NodeLabelSearcher;
 import jloda.fx.ASelectionModel;
 import jloda.fx.Print;
 import jloda.fx.ZoomableScrollPane;
+import jloda.fx.find.EdgeLabelSearcher;
+import jloda.fx.find.FindToolBar;
+import jloda.fx.find.NodeLabelSearcher;
 import jloda.graph.Edge;
 import jloda.graph.EdgeArray;
 import jloda.graph.Node;
@@ -259,13 +259,13 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
             document.getTaxaSelectionModel().getSelectedItems().removeListener(weakDocumentTaxonSelectionChangeListener);
 
         try {
-            nodeSelectionModel.setSuspendListeners(true);
-            edgeSelectionModel.setSuspendListeners(true);
+            nodeSelectionModel.setListenersSuspended(true);
+            edgeSelectionModel.setListenersSuspended(true);
             nodeSelectionModel.setItems(graph.getNodesAsSet().toArray(new Node[graph.getNumberOfNodes()]));
             edgeSelectionModel.setItems(graph.getEdgesAsSet().toArray(new Edge[graph.getNumberOfEdges()]));
         } finally {
-            nodeSelectionModel.setSuspendListeners(false);
-            edgeSelectionModel.setSuspendListeners(false);
+            nodeSelectionModel.setListenersSuspended(false);
+            edgeSelectionModel.setListenersSuspended(false);
         }
 
         nodeSelectionChangeListener = (c -> {

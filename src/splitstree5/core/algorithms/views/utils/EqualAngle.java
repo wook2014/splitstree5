@@ -20,15 +20,15 @@
 package splitstree5.core.algorithms.views.utils;
 
 import javafx.geometry.Point2D;
+import jloda.fx.GeometryUtilsFX;
 import jloda.graph.*;
-import jloda.phylo.SplitsGraph;
+import jloda.phylo.PhyloSplitsGraph;
 import jloda.util.CanceledException;
 import jloda.util.Pair;
 import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ASplit;
-import splitstree5.gui.graphtab.base.GeometryUtils;
 import splitstree5.utils.PhyloGraphUtils;
 import splitstree5.utils.SplitsUtilities;
 
@@ -49,7 +49,7 @@ public class EqualAngle {
      * @param graph
      * @param node2point
      */
-    public static void apply(ProgressListener progress, boolean useWeights, TaxaBlock taxaBlock, SplitsBlock splits, SplitsGraph graph, NodeArray<Point2D> node2point, BitSet forbiddenSplits, BitSet usedSplits) throws CanceledException {
+    public static void apply(ProgressListener progress, boolean useWeights, TaxaBlock taxaBlock, SplitsBlock splits, PhyloSplitsGraph graph, NodeArray<Point2D> node2point, BitSet forbiddenSplits, BitSet usedSplits) throws CanceledException {
         //System.err.println("Running equal angle algorithm");
         graph.clear();
         usedSplits.clear();
@@ -91,9 +91,9 @@ public class EqualAngle {
         // rotateAbout so that edge leaving first taxon ist pointing at 9 o'clock
         if (graph.getNumberOfNodes() > 0 && graph.getNumberOfEdges() > 0) {
             Node v = graph.getTaxon2Node(1);
-            double angle = GeometryUtils.modulo360(180 + graph.getAngle(v.getFirstAdjacentEdge())); // add 180 to be consist with Embed
+            double angle = GeometryUtilsFX.modulo360(180 + graph.getAngle(v.getFirstAdjacentEdge())); // add 180 to be consist with Embed
             for (Edge e : graph.edges()) {
-                graph.setAngle(e, GeometryUtils.modulo360(graph.getAngle(e) - angle));
+                graph.setAngle(e, GeometryUtilsFX.modulo360(graph.getAngle(e) - angle));
             }
         }
         if (node2point != null)
@@ -112,7 +112,7 @@ public class EqualAngle {
      * @param posOfTaxonInCycle
      * @param graph
      */
-    private static void initGraph(TaxaBlock taxa, SplitsBlock splits, int[] posOfTaxonInCycle, SplitsGraph graph) {
+    private static void initGraph(TaxaBlock taxa, SplitsBlock splits, int[] posOfTaxonInCycle, PhyloSplitsGraph graph) {
         graph.clear();
 
         // map from each taxon to it's trivial split in splits
@@ -204,7 +204,7 @@ public class EqualAngle {
      * @param s
      * @param graph
      */
-    private static void wrapSplit(TaxaBlock taxa, SplitsBlock splits, int s, int[] cycle, SplitsGraph graph) throws IllegalStateException {
+    private static void wrapSplit(TaxaBlock taxa, SplitsBlock splits, int s, int[] cycle, PhyloSplitsGraph graph) throws IllegalStateException {
         final BitSet part = splits.get(s).getPartNotContaining(1);
 
         int xp = 0; // first member of split part not containing taxon 1
@@ -299,7 +299,7 @@ public class EqualAngle {
      *
      * @param graph
      */
-    private static void removeTemporaryTrivialEdges(SplitsGraph graph) {
+    private static void removeTemporaryTrivialEdges(PhyloSplitsGraph graph) {
         final EdgeSet tempEdges = new EdgeSet(graph);
         for (Edge e : graph.edges()) {
             if (graph.getSplit(e) == -1) // temporary leaf edge
@@ -331,7 +331,7 @@ public class EqualAngle {
      * @param graph
      * @param forbiddenSplits : set of all the splits such as their edges won't have their angles changed
      */
-    public static void assignAnglesToEdges(int ntaxa, SplitsBlock splits, int[] cycle, SplitsGraph graph, BitSet forbiddenSplits) {
+    public static void assignAnglesToEdges(int ntaxa, SplitsBlock splits, int[] cycle, PhyloSplitsGraph graph, BitSet forbiddenSplits) {
         //We create the list of angles representing the taxas on a circle.
         double[] TaxaAngles = new double[ntaxa + 1];
         for (int t = 1; t < ntaxa + 1; t++) {
@@ -379,12 +379,12 @@ public class EqualAngle {
             // split thus appears 2 times (once per intersection)
             double TaxaAngleP;
             double TaxaAngleQ;
-            TaxaAngleP = GeometryUtils.midAngle(TaxaAngles[xp], TaxaAngles[xpNeighbor]);
-            TaxaAngleQ = GeometryUtils.midAngle(TaxaAngles[xq], TaxaAngles[xqNeighbor]);
+            TaxaAngleP = GeometryUtilsFX.midAngle(TaxaAngles[xp], TaxaAngles[xpNeighbor]);
+            TaxaAngleQ = GeometryUtilsFX.midAngle(TaxaAngles[xq], TaxaAngles[xqNeighbor]);
 
-            split2angle[s] = GeometryUtils.modulo360((TaxaAngleQ + TaxaAngleP) / 2);
+            split2angle[s] = GeometryUtilsFX.modulo360((TaxaAngleQ + TaxaAngleP) / 2);
             if (xqNeighbor == 1) {
-                split2angle[s] = GeometryUtils.modulo360(split2angle[s] + 180);
+                split2angle[s] = GeometryUtilsFX.modulo360(split2angle[s] + 180);
             }
             //System.out.println("split from "+xp+","+xpneighbour+" ("+TaxaAngleP+") to "+xq+","+xqneighbour+" ("+TaxaAngleQ+") -> "+split2angle[s]+" $ "+(180 * (xp + xq)) / (double) ntaxa);s
         }
@@ -397,7 +397,7 @@ public class EqualAngle {
      * @param useWeights
      * @param graph
      */
-    public static void assignCoordinatesToNodes(boolean useWeights, SplitsGraph graph, NodeArray<Point2D> node2point) {
+    public static void assignCoordinatesToNodes(boolean useWeights, PhyloSplitsGraph graph, NodeArray<Point2D> node2point) {
         if (graph.getNumberOfNodes() == 0)
             return;
         final Node v = graph.getTaxon2Node(1);
@@ -419,14 +419,14 @@ public class EqualAngle {
      * @param nodesVisited
      * @param graph
      */
-    private static void assignCoordinatesToNodesRec(boolean useWeights, Node v, BitSet splitsInPath, NodeSet nodesVisited, SplitsGraph graph, NodeArray<Point2D> node2point) {
+    private static void assignCoordinatesToNodesRec(boolean useWeights, Node v, BitSet splitsInPath, NodeSet nodesVisited, PhyloSplitsGraph graph, NodeArray<Point2D> node2point) {
         if (!nodesVisited.contains(v)) {
             nodesVisited.add(v);
             for (Edge e : v.adjacentEdges()) {
                 int s = graph.getSplit(e);
                 if (!splitsInPath.get(s)) {
                     Node w = graph.getOpposite(v, e);
-                    Point2D p = GeometryUtils.translateByAngle(node2point.getValue(v), graph.getAngle(e), useWeights ? graph.getWeight(e) : 1);
+                    Point2D p = GeometryUtilsFX.translateByAngle(node2point.getValue(v), graph.getAngle(e), useWeights ? graph.getWeight(e) : 1);
                     node2point.setValue(w, p);
                     splitsInPath.set(s, true);
                     assignCoordinatesToNodesRec(useWeights, w, splitsInPath, nodesVisited, graph, node2point);

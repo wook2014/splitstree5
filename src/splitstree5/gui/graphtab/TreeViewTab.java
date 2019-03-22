@@ -201,7 +201,8 @@ public class TreeViewTab extends Graph2DTab<PhyloTree> {
                 }
                 final Clipboard clipboard = Clipboard.getSystemClipboard();
                 final ClipboardContent content = new ClipboardContent();
-                content.putString(graph.toString(true, translate) + ";");
+                // todo: need to implement
+                //content.putString(graph.toString(true, translate) + ";");
                 clipboard.setContent(content);
             } else copyLabels.handle(e);
         });

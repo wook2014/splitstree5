@@ -26,10 +26,11 @@ import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
 import jloda.fx.ASelectionModel;
+import jloda.fx.GeometryUtilsFX;
 import jloda.fx.ResourceManagerFX;
 import jloda.fx.shapes.NodeShape;
 import jloda.graph.*;
-import jloda.phylo.SplitsGraph;
+import jloda.phylo.PhyloSplitsGraph;
 import jloda.util.Pair;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.views.SplitsNetworkAlgorithm;
@@ -50,7 +51,7 @@ import java.util.*;
  * The split network view tab
  * Daniel Huson, 11.2017
  */
-public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsViewTab {
+public class SplitsViewTab extends Graph2DTab<PhyloSplitsGraph> implements ISplitsViewTab {
     private final ASelectionModel<Integer> splitsSelectionModel = new ASelectionModel<>();
     private boolean inSelection;
 
@@ -73,7 +74,7 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
                         addedSplits.addAll(c.getAddedSubList());
                         removedSplits.addAll(c.getRemoved());
                     }
-                    final SplitsGraph graph = getGraph();
+                    final PhyloSplitsGraph graph = getGraph();
                     for (Edge e : graph.edges()) {
                         if (addedSplits.contains(graph.getSplit(e)))
                             edgeSelectionModel.select(e);
@@ -119,7 +120,7 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
     }
 
     @Override
-    public void updateSelectionModels(SplitsGraph graph, TaxaBlock taxa, Document document) {
+    public void updateSelectionModels(PhyloSplitsGraph graph, TaxaBlock taxa, Document document) {
         super.updateSelectionModels(graph, taxa, document);
         splitsSelectionModel.setItems(graph.getSplitIds());
 
@@ -166,7 +167,7 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
                 final Point2D center = computeAnchorCenter(edgeSelectionModel.getSelectedItems(), selectedNodesSet, (NodeArray) getNode2view());
                 final Point2D prevPoint = group.localToParent(group.screenToLocal(mouseX, mouseY));
                 final Point2D newPoint = group.localToParent(group.screenToLocal(e.getScreenX(), e.getScreenY()));
-                final double angle = GeometryUtils.computeObservedAngle(center, prevPoint, newPoint);
+                final double angle = GeometryUtilsFX.computeObservedAngle(center, prevPoint, newPoint);
                 applySplitRotation(angle, edgeSelectionModel.getSelectedItems(), selectedNodesSet, (NodeArray) getNode2view(), (EdgeArray) getEdge2view());
             }
             mouseX = e.getScreenX();
@@ -272,7 +273,7 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
             }
             final Point2D anchorPoint = node2view.get(anchorNode).getLocation();
             final Point2D selectedPoint = node2view.get(selectedNode).getLocation();
-            Point2D newSelectedPoint = GeometryUtils.rotateAbout(selectedPoint, angle, anchorPoint);
+            Point2D newSelectedPoint = GeometryUtilsFX.rotateAbout(selectedPoint, angle, anchorPoint);
             Point2D translate = newSelectedPoint.subtract(selectedPoint);
 
             getUndoManager().doAndAdd(new MoveNodesCommand(node2view, edge2view, selectedNodes, translate.getX(), translate.getY()));
@@ -313,7 +314,7 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
     /**
      * select by split associated with given edge
      */
-    public static void selectBySplit(SplitsGraph graph, Edge e, ASelectionModel<Integer> splitsSelectionModel, ASelectionModel<Node> nodeSelectionModel, boolean useLargerSide) {
+    public static void selectBySplit(PhyloSplitsGraph graph, Edge e, ASelectionModel<Integer> splitsSelectionModel, ASelectionModel<Node> nodeSelectionModel, boolean useLargerSide) {
         final int splitId = graph.getSplit(e);
         selectAllNodesOnOneSide(graph, e, nodeSelectionModel, useLargerSide);
         splitsSelectionModel.select((Integer) splitId);
@@ -323,7 +324,7 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
     /**
      * select all nodes on smaller side of graph separated by e
      */
-    private static void selectAllNodesOnOneSide(SplitsGraph graph, Edge e, ASelectionModel<Node> nodeSelectionModel, boolean useLargerSide) {
+    private static void selectAllNodesOnOneSide(PhyloSplitsGraph graph, Edge e, ASelectionModel<Node> nodeSelectionModel, boolean useLargerSide) {
         nodeSelectionModel.clearSelection();
         final NodeSet visited = new NodeSet(graph);
         visitRec(graph, e.getSource(), null, graph.getSplit(e), visited);
@@ -341,7 +342,7 @@ public class SplitsViewTab extends Graph2DTab<SplitsGraph> implements ISplitsVie
     /**
      * recursively visit all nodes on one side of a given split
      */
-    private static void visitRec(SplitsGraph graph, Node v, Edge e, int splitId, NodeSet visited) {
+    private static void visitRec(PhyloSplitsGraph graph, Node v, Edge e, int splitId, NodeSet visited) {
         if (!visited.contains(v)) {
             visited.add(v);
             for (Edge f : v.adjacentEdges()) {

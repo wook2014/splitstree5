@@ -22,12 +22,8 @@ package splitstree5.main;
 import com.briksoftware.javafx.platform.osx.OSXIntegration;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import jloda.fx.ProgramExecutorService;
-import jloda.fx.ResourceManagerFX;
-import jloda.fx.SplashScreen;
-import jloda.util.ArgsOptions;
+import jloda.fx.*;
 import jloda.util.Basic;
-import jloda.util.ProgramProperties;
 import splitstree5.dialogs.importer.FileOpener;
 
 import java.io.File;

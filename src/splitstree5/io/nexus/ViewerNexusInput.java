@@ -20,8 +20,8 @@ package splitstree5.io.nexus;
 
 import jloda.graph.Node;
 import jloda.phylo.PhyloGraph;
+import jloda.phylo.PhyloSplitsGraph;
 import jloda.phylo.PhyloTree;
-import jloda.phylo.SplitsGraph;
 import jloda.util.Basic;
 import jloda.util.IOExceptionWithLineNumber;
 import jloda.util.parse.NexusStreamParser;
@@ -121,8 +121,8 @@ public class ViewerNexusInput extends NexusIOBase {
             switch (type) {
                 case SplitsNetworkViewer: {
                     final SplitsViewTab graphTab = (SplitsViewTab) viewerBlock.getTab();
-                    graphTab.init(new SplitsGraph());
-                    final SplitsGraph graph = graphTab.getGraph();
+                    graphTab.init(new PhyloSplitsGraph());
+                    final PhyloSplitsGraph graph = graphTab.getGraph();
 
                     if (!np.peekMatchIgnoreCase(";")) {
                         while (true) {

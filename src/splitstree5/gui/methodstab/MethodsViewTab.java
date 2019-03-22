@@ -20,8 +20,8 @@
 package splitstree5.gui.methodstab;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
+import jloda.fx.ProgramProperties;
 import jloda.fx.ResourceManagerFX;
-import jloda.util.ProgramProperties;
 import splitstree5.core.Document;
 import splitstree5.gui.texttab.TextViewTab;
 

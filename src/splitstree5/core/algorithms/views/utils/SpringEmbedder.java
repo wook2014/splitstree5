@@ -22,15 +22,15 @@ package splitstree5.core.algorithms.views.utils;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import jloda.fx.GeometryUtilsFX;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import jloda.graph.NodeDoubleArray;
 import jloda.phylo.PhyloGraph;
-import jloda.phylo.SplitsGraph;
+import jloda.phylo.PhyloSplitsGraph;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
-import splitstree5.gui.graphtab.base.GeometryUtils;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -194,7 +194,7 @@ public class SpringEmbedder {
      * @param graph
      * @param node2point
      */
-    public void computeAverageSplitAngles(SplitsGraph graph, NodeArray<Point2D> node2point) {
+    public void computeAverageSplitAngles(PhyloSplitsGraph graph, NodeArray<Point2D> node2point) {
         final Map<Integer, ArrayList<Double>> split2angles = new HashMap<>();
         visitAnglesRec(graph, graph.getFirstNode(), null, node2point, split2angles, new BitSet());
 
@@ -215,7 +215,7 @@ public class SpringEmbedder {
      * @param split2angles
      * @param splitsInPath
      */
-    private void visitAnglesRec(SplitsGraph graph, Node v, Edge e, NodeArray<Point2D> node2point, Map<Integer, ArrayList<Double>> split2angles, BitSet splitsInPath) {
+    private void visitAnglesRec(PhyloSplitsGraph graph, Node v, Edge e, NodeArray<Point2D> node2point, Map<Integer, ArrayList<Double>> split2angles, BitSet splitsInPath) {
         for (Edge f : v.adjacentEdges()) {
             if (f != e) {
                 Node w = f.getOpposite(v);
@@ -223,7 +223,7 @@ public class SpringEmbedder {
                 double angle;
                 if (!splitsInPath.get(splitId)) {
                     splitsInPath.set(splitId);
-                    angle = GeometryUtils.computeAngle(node2point.get(w).subtract(node2point.get(v)));
+                    angle = GeometryUtilsFX.computeAngle(node2point.get(w).subtract(node2point.get(v)));
                     final ArrayList<Double> array = split2angles.computeIfAbsent(splitId, k -> new ArrayList<>());
                     array.add(angle);
                     visitAnglesRec(graph, w, f, node2point, split2angles, splitsInPath);

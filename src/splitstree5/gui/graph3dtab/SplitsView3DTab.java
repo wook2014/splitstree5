@@ -47,18 +47,18 @@ import javafx.geometry.Point3D;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Rotate;
 import jloda.fx.ASelectionModel;
+import jloda.fx.GeometryUtilsFX;
 import jloda.fx.ProgressPane;
 import jloda.fx.ResourceManagerFX;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;
-import jloda.phylo.SplitsGraph;
+import jloda.phylo.PhyloSplitsGraph;
 import jloda.util.Pair;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.gui.graphtab.ISplitsViewTab;
 import splitstree5.gui.graphtab.SplitsViewTab;
-import splitstree5.gui.graphtab.base.GeometryUtils;
 import splitstree5.gui.graphtab.base.GraphLayout;
 import splitstree5.gui.graphtab.base.NodeViewBase;
 import splitstree5.menu.MenuController;
@@ -72,7 +72,7 @@ import java.util.Set;
  * The split network view tab for 3D viewer
  * Daniel Huson, 11.2017
  */
-public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsViewTab {
+public class SplitsView3DTab extends Graph3DTab<PhyloSplitsGraph> implements ISplitsViewTab {
     private final ASelectionModel<Integer> splitsSelectionModel = new ASelectionModel<>();
     private boolean inSelection;
 
@@ -95,7 +95,7 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
                         addedSplits.addAll(c.getAddedSubList());
                         removedSplits.addAll(c.getRemoved());
                     }
-                    final SplitsGraph graph = getGraph();
+                    final PhyloSplitsGraph graph = getGraph();
                     for (Edge e : graph.edges()) {
                         if (addedSplits.contains(graph.getSplit(e)))
                             edgeSelectionModel.select(e);
@@ -141,7 +141,7 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
     }
 
     @Override
-    public void updateSelectionModels(SplitsGraph graph, TaxaBlock taxa, Document document) {
+    public void updateSelectionModels(PhyloSplitsGraph graph, TaxaBlock taxa, Document document) {
         super.updateSelectionModels(graph, taxa, document);
         splitsSelectionModel.setItems(graph.getSplitIds());
 
@@ -277,7 +277,7 @@ public class SplitsView3DTab extends Graph3DTab<SplitsGraph> implements ISplitsV
      * create an edge view
      */
     public EdgeView3D createEdgeView(final Edge e, final Point2D start, final Point2D end, String text) {
-        final EdgeView3D edgeView = new EdgeView3D(e, GeometryUtils.from2Dto3D(start), GeometryUtils.from2Dto3D(end));
+        final EdgeView3D edgeView = new EdgeView3D(e, GeometryUtilsFX.from2Dto3D(start), GeometryUtilsFX.from2Dto3D(end));
         // todo: setLabel(text): not implementyed
 
         final EventHandler<? super MouseEvent> handler = (EventHandler<MouseEvent>) x -> {

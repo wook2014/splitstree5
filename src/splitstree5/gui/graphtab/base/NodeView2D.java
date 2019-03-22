@@ -29,9 +29,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import jloda.fx.GeometryUtilsFX;
+import jloda.fx.ProgramProperties;
 import jloda.fx.SelectionEffect;
 import jloda.fx.shapes.NodeShape;
-import jloda.util.ProgramProperties;
 import splitstree5.gui.formattab.FormatItem;
 
 /**
@@ -212,10 +213,10 @@ public class NodeView2D extends NodeViewBase {
      */
     public void rotateCoordinates(double angle) {
         final Point2D oldLocation = location;
-        location = GeometryUtils.rotate(location, angle);
+        location = GeometryUtilsFX.rotate(location, angle);
 
         if (shapeGroup != null) {
-            final Point2D pos = GeometryUtils.rotate(shapeGroup.getTranslateX(), shapeGroup.getTranslateY(), angle);
+            final Point2D pos = GeometryUtilsFX.rotate(shapeGroup.getTranslateX(), shapeGroup.getTranslateY(), angle);
             shapeGroup.setTranslateX(pos.getX());
             shapeGroup.setTranslateY(pos.getY());
         }

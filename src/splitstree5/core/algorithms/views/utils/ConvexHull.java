@@ -23,7 +23,7 @@ import jloda.graph.Edge;
 import jloda.graph.EdgeIntegerArray;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;
-import jloda.phylo.SplitsGraph;
+import jloda.phylo.PhyloSplitsGraph;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.SplitsBlock;
@@ -45,7 +45,7 @@ public class ConvexHull {
      * @param splits
      * @param splitsGraph
      */
-    public static void apply(ProgressListener progress, TaxaBlock taxa, SplitsBlock splits, SplitsGraph splitsGraph) throws CanceledException {
+    public static void apply(ProgressListener progress, TaxaBlock taxa, SplitsBlock splits, PhyloSplitsGraph splitsGraph) throws CanceledException {
         splitsGraph.clear();
         apply(progress, taxa, splits, splitsGraph, new BitSet());
     }
@@ -59,7 +59,7 @@ public class ConvexHull {
      * @param graph
      * @param usedSplits
      */
-    public static void apply(ProgressListener progress, TaxaBlock taxaBlock, SplitsBlock splits, SplitsGraph graph, BitSet usedSplits) throws CanceledException {
+    public static void apply(ProgressListener progress, TaxaBlock taxaBlock, SplitsBlock splits, PhyloSplitsGraph graph, BitSet usedSplits) throws CanceledException {
 
         if (usedSplits.cardinality() == splits.getNsplits())
             return; // all nodes have been processed
@@ -281,7 +281,7 @@ public class ConvexHull {
      * @param intersectionNodes
      * @param side
      */
-    private static void convexHullPath(SplitsGraph g, Node start, EdgeIntegerArray visited, NodeArray<Integer> hulls, BitSet allowedSplits, ArrayList<Node> intersectionNodes, int side) {
+    private static void convexHullPath(PhyloSplitsGraph g, Node start, EdgeIntegerArray visited, NodeArray<Integer> hulls, BitSet allowedSplits, ArrayList<Node> intersectionNodes, int side) {
         final Stack<Node> todo = new Stack<>();
         todo.push(start);
 

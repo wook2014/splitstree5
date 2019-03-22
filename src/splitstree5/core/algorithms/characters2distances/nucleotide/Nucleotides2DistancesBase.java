@@ -21,7 +21,7 @@ package splitstree5.core.algorithms.characters2distances.nucleotide;
 
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
-import jloda.fx.CallableService;
+import jloda.fx.AService;
 import jloda.fx.NotificationManager;
 import jloda.util.ProgressListener;
 import jloda.util.ProgressPercentage;
@@ -110,7 +110,7 @@ public abstract class Nucleotides2DistancesBase extends Algorithm<CharactersBloc
                     break;
                 }
                 case fromChars: {
-                    final CallableService<Double> service = new CallableService<>(() -> {
+                    final AService<Double> service = new AService<>(() -> {
                         // todo: want this to run in foot pane
                         try (ProgressPercentage progress = new ProgressPercentage(CaptureRecapture.DESCRIPTION)) {
                             final CaptureRecapture captureRecapture = new CaptureRecapture();
@@ -141,7 +141,7 @@ public abstract class Nucleotides2DistancesBase extends Algorithm<CharactersBloc
                     break;
                 }
                 case fromChars: {
-                    final CallableService<double[]> service = new CallableService<>(() -> NucleotideModel.computeFreqs(parent, false));
+                    final AService<double[]> service = new AService<>(() -> NucleotideModel.computeFreqs(parent, false));
                     service.setOnSucceeded((e) -> setOptionBaseFrequencies(service.getValue()));
                     service.setOnFailed((e) -> {
                         NotificationManager.showError("Calculation of base frequencies failed: " + service.getException().getMessage());

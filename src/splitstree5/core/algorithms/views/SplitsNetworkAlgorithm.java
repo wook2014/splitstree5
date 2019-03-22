@@ -25,12 +25,12 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
 import javafx.geometry.Point2D;
 import javafx.scene.text.Font;
+import jloda.fx.ProgramProperties;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;
-import jloda.phylo.SplitsGraph;
+import jloda.phylo.PhyloSplitsGraph;
 import jloda.util.Basic;
-import jloda.util.ProgramProperties;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromSplits;
@@ -66,7 +66,7 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
     private final IntegerProperty optionDaylightIterations = new SimpleIntegerProperty(0);
     private final IntegerProperty optionBoxOpenIterations = new SimpleIntegerProperty(0);
 
-    private final SplitsGraph graph = new SplitsGraph();
+    private final PhyloSplitsGraph graph = new PhyloSplitsGraph();
 
     private ChangeListener<UpdateState> changeListener;
 

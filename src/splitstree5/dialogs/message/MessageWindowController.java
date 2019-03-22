@@ -22,8 +22,8 @@ package splitstree5.dialogs.message;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import jloda.fx.ProgramProperties;
 import jloda.fx.SplashScreen;
-import jloda.util.ProgramProperties;
 
 import java.time.Duration;
 

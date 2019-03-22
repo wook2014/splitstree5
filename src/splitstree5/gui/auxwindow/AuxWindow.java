@@ -29,7 +29,7 @@ import javafx.scene.control.Tab;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import jloda.fx.ExtendedFXMLLoader;
-import jloda.util.ProgramProperties;
+import jloda.fx.ProgramProperties;
 import splitstree5.core.Document;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.graphtab.SplitsViewTab;

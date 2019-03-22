@@ -26,7 +26,7 @@ import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import jloda.graph.NodeSet;
-import jloda.phylo.SplitsGraph;
+import jloda.phylo.PhyloSplitsGraph;
 import splitstree5.gui.graphtab.base.NodeViewBase;
 
 import java.util.*;
@@ -38,7 +38,7 @@ import java.util.*;
  */
 public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
 
-    private final SplitsGraph graph;
+    private final PhyloSplitsGraph graph;
     private final HashMap<Integer, List<Edge>> split2edges;
 
     private double maxDist;
@@ -58,7 +58,7 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
      * @param linear
      * @param withZpush
      */
-    public ForceCalculatorTask(SplitsGraph graph, NodeArray<NodeViewBase> node2view, int numOfSteps, boolean linear, boolean withZpush) {
+    public ForceCalculatorTask(PhyloSplitsGraph graph, NodeArray<NodeViewBase> node2view, int numOfSteps, boolean linear, boolean withZpush) {
         this.graph = graph;
         this.withZpush = withZpush;
         this.linear = linear;

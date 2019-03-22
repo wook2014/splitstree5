@@ -28,7 +28,7 @@ import jloda.graph.Edge;
 import jloda.graph.EdgeArray;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;
-import jloda.phylo.SplitsGraph;
+import jloda.phylo.PhyloSplitsGraph;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.DataNode;
@@ -38,7 +38,7 @@ import splitstree5.gui.graphtab.base.NodeViewBase;
 import splitstree5.menu.MenuController;
 
 public interface ISplitsViewTab {
-    void init(SplitsGraph graph);
+    void init(PhyloSplitsGraph graph);
 
     Dimension2D getTargetDimensions();
 
@@ -60,7 +60,7 @@ public interface ISplitsViewTab {
 
     EdgeViewBase createEdgeView(final Edge e, final Point2D start, final Point2D end, String text);
 
-    SplitsGraph getGraph();
+    PhyloSplitsGraph getGraph();
 
     ASelectionModel<Node> getNodeSelectionModel();
 
@@ -72,7 +72,7 @@ public interface ISplitsViewTab {
 
     void setToolBar(ToolBar toolBar);
 
-    void updateSelectionModels(SplitsGraph graph, TaxaBlock taxa, Document document);
+    void updateSelectionModels(PhyloSplitsGraph graph, TaxaBlock taxa, Document document);
 
     int size();
 

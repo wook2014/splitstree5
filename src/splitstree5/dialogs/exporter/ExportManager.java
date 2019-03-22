@@ -106,7 +106,7 @@ public class ExportManager {
      * @return file with suffix added, if necessary
      */
     public File ensureFileSuffix(File selectedFile, String exporterName) {
-        String suffix = Basic.getSuffix(selectedFile.getName());
+        String suffix = Basic.getFileSuffix(selectedFile.getName());
         if (suffix == null) {
             IExporter exporter = getExporterByName(exporterName);
             if (exporter != null && exporter.getExtensions().size() > 0) {

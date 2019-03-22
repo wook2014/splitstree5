@@ -45,9 +45,10 @@ import javafx.beans.value.WeakChangeListener;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
 import javafx.scene.text.Font;
+import jloda.fx.GeometryUtilsFX;
+import jloda.fx.ProgramProperties;
 import jloda.graph.*;
 import jloda.phylo.PhyloTree;
-import jloda.util.ProgramProperties;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
@@ -356,7 +357,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
         node2point.setValue(v, vPoint);
         for (Edge e : v.outEdges()) {
             final Node w = e.getTarget();
-            final Point2D wLocation = GeometryUtils.translateByAngle(vPoint, edgeAngles.getValue(e), edgeLengths.getValue(e));
+            final Point2D wLocation = GeometryUtilsFX.translateByAngle(vPoint, edgeAngles.getValue(e), edgeLengths.getValue(e));
             node2point.setValue(w, wLocation);
             computeNodeLocationsForRadialRec(w, wLocation, edgeLengths, edgeAngles, node2point);
         }
@@ -373,7 +374,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
         node2point.setValue(root, rootLocation);
         for (Edge e : root.outEdges()) {
             final Node w = e.getTarget();
-            final Point2D wLocation = GeometryUtils.translateByAngle(rootLocation, edgeAngles.getValue(e), edgeLengths.getValue(e));
+            final Point2D wLocation = GeometryUtilsFX.translateByAngle(rootLocation, edgeAngles.getValue(e), edgeLengths.getValue(e));
             node2point.setValue(w, wLocation);
             computeNodeLocationAndViewForCicularRec(rootLocation, w, wLocation, e, edgeLengths, edgeAngles, node2point);
         }
@@ -391,8 +392,8 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
                                                         EdgeFloatArray edgeAngles, NodeArray<Point2D> node2point) {
         for (Edge f : v.outEdges()) {
             final Node w = f.getTarget();
-            final Point2D b = GeometryUtils.rotateAbout(vLocation, edgeAngles.getValue(f) - edgeAngles.getValue(e), origin);
-            final Point2D c = GeometryUtils.translateByAngle(b, edgeAngles.getValue(f), edgeLengths.getValue(f));
+            final Point2D b = GeometryUtilsFX.rotateAbout(vLocation, edgeAngles.getValue(f) - edgeAngles.getValue(e), origin);
+            final Point2D c = GeometryUtilsFX.translateByAngle(b, edgeAngles.getValue(f), edgeLengths.getValue(f));
             node2point.setValue(w, c);
             computeNodeLocationAndViewForCicularRec(origin, w, c, f, edgeLengths, edgeAngles, node2point);
         }
@@ -417,7 +418,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
             double distance = Math.max(1, end.magnitude() - start.magnitude());
             final Point2D control1 = start.multiply(1 + cubicCurveParentControl * distance / (100 * start.magnitude()));
             final Point2D control2 = end.multiply(1 - cubicCurveChildControl * distance / (100 * end.magnitude()));
-            final Point2D mid = GeometryUtils.rotate(start, wAngle - vAngle);
+            final Point2D mid = GeometryUtilsFX.rotate(start, wAngle - vAngle);
             final EdgeControlPoints edgeControlPoints = new EdgeControlPoints(control1, mid, control2);
             edge2controlPoints.put(e, edgeControlPoints);
 

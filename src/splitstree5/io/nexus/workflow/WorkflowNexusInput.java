@@ -62,8 +62,8 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
      * @param parentWindow
      * @param fileName
      */
-    public static CallableService<MainWindow> open(MainWindow parentWindow, String fileName) {
-        final CallableService<MainWindow> service = new CallableService<>();
+    public static AService<MainWindow> open(MainWindow parentWindow, String fileName) {
+        final AService<MainWindow> service = new AService<>();
         service.setExecutor(Platform::runLater); // todo: make this runnable in a separate thread
         service.setCallable(new WorkflowNexusInput(parentWindow, fileName));
         service.setOnCancelled((e) -> NotificationManager.showWarning("User canceled 'open file'"));

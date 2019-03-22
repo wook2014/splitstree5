@@ -21,7 +21,7 @@ package splitstree5.io.nexus.utils;
 
 import jloda.graph.Edge;
 import jloda.graph.Node;
-import jloda.phylo.SplitsGraph;
+import jloda.phylo.PhyloSplitsGraph;
 import jloda.util.Basic;
 import jloda.util.parse.NexusStreamParser;
 
@@ -46,7 +46,7 @@ public class UnrootedNetworkNexusIO {
      * @param edge2attributes optional additional edge attributes
      * @throws IOException
      */
-    public static void write(Writer w, SplitsGraph graph, boolean saveTaxonIds, boolean saveSplitIds, Map<Node, Map<String, String>> node2attributes, Map<Edge, Map<String, String>> edge2attributes) throws IOException {
+    public static void write(Writer w, PhyloSplitsGraph graph, boolean saveTaxonIds, boolean saveSplitIds, Map<Node, Map<String, String>> node2attributes, Map<Edge, Map<String, String>> edge2attributes) throws IOException {
         w.write("\n\t{GRAPH\n");
         // report nodes:
         w.write("\t\t{NODES ");
@@ -119,7 +119,7 @@ public class UnrootedNetworkNexusIO {
      * @param edge2attributes
      * @throws IOException
      */
-    public static void read(NexusStreamParser np, SplitsGraph graph, Map<Node, Map<String, String>> node2attributes, Map<Edge, Map<String, String>> edge2attributes) throws IOException {
+    public static void read(NexusStreamParser np, PhyloSplitsGraph graph, Map<Node, Map<String, String>> node2attributes, Map<Edge, Map<String, String>> edge2attributes) throws IOException {
         graph.clear();
 
         np.matchIgnoreCase("{GRAPH");

@@ -47,7 +47,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
-import jloda.find.FindToolBar;
+import jloda.fx.find.FindToolBar;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.main.MainWindow;
 import splitstree5.menu.MenuController;

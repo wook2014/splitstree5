@@ -24,13 +24,13 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Point2D;
+import jloda.fx.GeometryUtilsFX;
 import jloda.graph.*;
-import jloda.phylo.SplitsGraph;
+import jloda.phylo.PhyloSplitsGraph;
 import jloda.util.CanceledException;
 import jloda.util.Pair;
 import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.gui.graphtab.base.GeometryUtils;
 
 import java.util.*;
 
@@ -60,7 +60,7 @@ public class BoxOptimizer {
      * @param graph
      * @param node2point
      */
-    public void apply(ProgressListener progress, TaxaBlock taxaBlock, int numberOfSplits, SplitsGraph graph, NodeArray<Point2D> node2point) throws CanceledException {
+    public void apply(ProgressListener progress, TaxaBlock taxaBlock, int numberOfSplits, PhyloSplitsGraph graph, NodeArray<Point2D> node2point) throws CanceledException {
         this.progress = progress;
         System.err.println("Running box optimizer");
         Node start = null;
@@ -73,14 +73,14 @@ public class BoxOptimizer {
         if (start != null) {
             // convert all angles to rad:
             for (Edge e : graph.edges()) {
-                graph.setAngle(e, GeometryUtils.deg2rad(graph.getAngle(e)));
+                graph.setAngle(e, GeometryUtilsFX.deg2rad(graph.getAngle(e)));
             }
             try {
                 runOptimizeBoxes(start, graph, numberOfSplits, node2point, new HashSet<BitSet>());
             } finally {
                 // convert all angles back to deg:
                 for (Edge e : graph.edges()) {
-                    graph.setAngle(e, GeometryUtils.rad2deg(graph.getAngle(e)));
+                    graph.setAngle(e, GeometryUtilsFX.rad2deg(graph.getAngle(e)));
                 }
             }
         }
@@ -92,7 +92,7 @@ public class BoxOptimizer {
      *
      * @param graph
      */
-    private void runOptimizeBoxes(Node start, SplitsGraph graph, int numberOfSplits, NodeArray<Point2D> node2point, HashSet forbiddenSplits) throws CanceledException {
+    private void runOptimizeBoxes(Node start, PhyloSplitsGraph graph, int numberOfSplits, NodeArray<Point2D> node2point, HashSet forbiddenSplits) throws CanceledException {
         //We first build EdgeSplits, where each split is linked with the set containing all its edges
         final HashMap<Integer, List<Edge>> edgeSplits = getEdgeSplits(graph);
 
@@ -195,7 +195,7 @@ public class BoxOptimizer {
      * @param minAngle
      * @param maxAngle
      */
-    public Pair<Double, Double> maximizeArea(List<Edge> splitEdges, SplitsGraph graph, double minAngle, double maxAngle) {
+    public Pair<Double, Double> maximizeArea(List<Edge> splitEdges, PhyloSplitsGraph graph, double minAngle, double maxAngle) {
         //We will first express the area of the split as A cos x + B sin x, x being the split angle
         double alpha = 0;
         double beta = 0;
@@ -203,7 +203,7 @@ public class BoxOptimizer {
 
         final Iterator<Edge> edgeIt = splitEdges.iterator();
         Edge currentEdge = edgeIt.next();
-        double splitAngle = GeometryUtils.moduloTwoPI(graph.getAngle(currentEdge));
+        double splitAngle = GeometryUtilsFX.moduloTwoPI(graph.getAngle(currentEdge));
 
         double resultAngle = 0;
 
@@ -218,7 +218,7 @@ public class BoxOptimizer {
                 }
 
                 final Edge uncompEdge = nodeA.getCommonEdge(nodeB);
-                if (GeometryUtils.moduloTwoPI(graph.getAngle(uncompEdge) - splitAngle) < Math.PI) {
+                if (GeometryUtilsFX.moduloTwoPI(graph.getAngle(uncompEdge) - splitAngle) < Math.PI) {
                     alpha = alpha + Math.sin(graph.getAngle(uncompEdge)) * graph.getWeight(uncompEdge);
                     beta = beta - Math.cos(graph.getAngle(uncompEdge)) * graph.getWeight(uncompEdge);
                 } else {
@@ -236,7 +236,7 @@ public class BoxOptimizer {
             if (alpha * Math.cos(Math.atan(beta / alpha)) + beta * Math.sin(Math.atan(beta / alpha)) < 0) {
                 delta = delta + Math.PI;
             }
-            double shiftedD = minAngle + GeometryUtils.moduloTwoPI(delta - minAngle);
+            double shiftedD = minAngle + GeometryUtilsFX.moduloTwoPI(delta - minAngle);
             if (shiftedD > maxAngle) {
                 //We affect "almost" maxAngle to the split
                 if (gamma * Math.cos(minAngle - delta) > gamma * Math.cos(maxAngle - delta)) {
@@ -269,10 +269,10 @@ public class BoxOptimizer {
      * @param SplitEdges sorted list of the split edges
      * @param graph
      */
-    public Pair<Double, Double> trigClockAngles(List<Edge> SplitEdges, SplitsGraph graph, NodeArray<Point2D> node2point) {
+    public Pair<Double, Double> trigClockAngles(List<Edge> SplitEdges, PhyloSplitsGraph graph, NodeArray<Point2D> node2point) {
         Iterator edgeIt = SplitEdges.iterator();
         Edge currentEdge = (Edge) edgeIt.next();
-        double splitAngle = GeometryUtils.moduloTwoPI(graph.getAngle(currentEdge));
+        double splitAngle = GeometryUtilsFX.moduloTwoPI(graph.getAngle(currentEdge));
         if (splitAngle >= Math.PI) {
             splitAngle -= Math.PI;
         }
@@ -291,30 +291,30 @@ public class BoxOptimizer {
             }
 
             double angleAB = graph.getAngle(NodeA.getCommonEdge(NodeB));
-            double diffAngle = GeometryUtils.moduloTwoPI(angleAB - splitAngle);
+            double diffAngle = GeometryUtilsFX.moduloTwoPI(angleAB - splitAngle);
             if (diffAngle < Math.PI) {
                 //AngleAB is candidate for Trig, AngleAB-180 for Clock
-                if (!(GeometryUtils.moduloTwoPI(angleAB - currentTrig) < Math.PI)) {
+                if (!(GeometryUtilsFX.moduloTwoPI(angleAB - currentTrig) < Math.PI)) {
                     currentTrig = angleAB;
                 }
-                if (!(GeometryUtils.moduloTwoPI(currentClock - angleAB + Math.PI) < Math.PI)) {
+                if (!(GeometryUtilsFX.moduloTwoPI(currentClock - angleAB + Math.PI) < Math.PI)) {
                     currentClock = angleAB - Math.PI;
                 }
             } else {
                 //AngleAB-180 is candidate for Trig, AngleAB for Clock
-                if (!(GeometryUtils.moduloTwoPI(angleAB - Math.PI - currentTrig) < Math.PI)) {
+                if (!(GeometryUtilsFX.moduloTwoPI(angleAB - Math.PI - currentTrig) < Math.PI)) {
                     currentTrig = angleAB - Math.PI;
                 }
-                if (!(GeometryUtils.moduloTwoPI(currentClock - angleAB) < Math.PI)) {
+                if (!(GeometryUtilsFX.moduloTwoPI(currentClock - angleAB) < Math.PI)) {
                     currentClock = angleAB;
                 }
             }
-            onlyOneEdge = GeometryUtils.squaredDistance(node2point.get(NodeA), node2point.get(firstNodeA)) < 0.0000000000001;
+            onlyOneEdge = GeometryUtilsFX.squaredDistance(node2point.get(NodeA), node2point.get(firstNodeA)) < 0.0000000000001;
         }
         if (onlyOneEdge) {
             return new Pair<>(2 * Math.PI, -2 * Math.PI);
         } else {
-            return new Pair<>(GeometryUtils.moduloTwoPI(currentTrig - splitAngle), -GeometryUtils.moduloTwoPI(splitAngle - currentClock));
+            return new Pair<>(GeometryUtilsFX.moduloTwoPI(currentTrig - splitAngle), -GeometryUtilsFX.moduloTwoPI(splitAngle - currentClock));
         }
     }
 
@@ -323,7 +323,7 @@ public class BoxOptimizer {
      *
      * @param graph
      */
-    public HashMap<Integer, List<Edge>> getEdgeSplits(SplitsGraph graph) {
+    public HashMap<Integer, List<Edge>> getEdgeSplits(PhyloSplitsGraph graph) {
         final HashMap<Integer, List<Edge>> edgeSplits = new HashMap<>();
         Edge CurrentEdge = graph.getFirstEdge();
         List<Edge> currentEdges;
@@ -446,7 +446,7 @@ public class BoxOptimizer {
      * @param SplitEdges sorted list of the split edges
      * @param Angle      we want to affect to the split
      */
-    public Pair<Double, Double> createsCollisions(Node start, SplitsGraph graph, double trigAngle, double clockAngle, double oldAngle, List SplitEdges, double Angle, NodeArray<Point2D> node2point) {
+    public Pair<Double, Double> createsCollisions(Node start, PhyloSplitsGraph graph, double trigAngle, double clockAngle, double oldAngle, List SplitEdges, double Angle, NodeArray<Point2D> node2point) {
         double newTrigAngle = trigAngle;
         double newClockAngle = clockAngle;
         boolean clockBlocked = false;
@@ -485,7 +485,7 @@ public class BoxOptimizer {
             previousNode2 = currentNode2;
         }
         assignCoordinatesToNodes(start, getOptionUseWeights(), graph, node2point); // we need this to detect collisions
-        double firstBoxAngle = GeometryUtils.deg2rad(GeometryUtils.basicComputeAngle(node2point.get(zeNode1), node2point.get(zeNode2), node2point.get((previousNode1))));
+        double firstBoxAngle = GeometryUtilsFX.deg2rad(GeometryUtilsFX.basicComputeAngle(node2point.get(zeNode1), node2point.get(zeNode2), node2point.get((previousNode1))));
 
         //We go through the 2 parts of the graph to find "defender" and "striker" nodes
         if (firstBoxAngle < Math.PI) {
@@ -592,7 +592,7 @@ public class BoxOptimizer {
      * @param visited
      * @param foundParameters angle1 angle2
      */
-    private void visitComponentRec2(Node v, Edge e, int specialNode, double previousAngle1, double previousAngle2, Node angle1in, Node angle1out, Node angle2in, Node angle2out, SplitsGraph graph, NodeArray<Point2D> node2point, NodeSet visited, double[] foundParameters, boolean dontCompute) {// throws CanceledException {
+    private void visitComponentRec2(Node v, Edge e, int specialNode, double previousAngle1, double previousAngle2, Node angle1in, Node angle1out, Node angle2in, Node angle2out, PhyloSplitsGraph graph, NodeArray<Point2D> node2point, NodeSet visited, double[] foundParameters, boolean dontCompute) {// throws CanceledException {
         double newAngle1 = 2 * Math.PI;
         double newAngle2 = 2 * Math.PI;
         boolean localDontCompute;
@@ -601,9 +601,9 @@ public class BoxOptimizer {
             if (!dontCompute) {
                 if (v != angle1in) {
                     if ((specialNode == 1) || (specialNode == 3)) {
-                        newAngle1 = GeometryUtils.deg2rad(GeometryUtils.basicComputeAngle(node2point.get(angle1in), node2point.get(v), node2point.get(angle1out)));
+                        newAngle1 = GeometryUtilsFX.deg2rad(GeometryUtilsFX.basicComputeAngle(node2point.get(angle1in), node2point.get(v), node2point.get(angle1out)));
                     } else {
-                        newAngle1 = previousAngle1 + GeometryUtils.deg2rad(GeometryUtils.signedDiffAngle(GeometryUtils.basicComputeAngle(node2point.get(angle1in), node2point.get(v), node2point.get(angle1out)), previousAngle1));
+                        newAngle1 = previousAngle1 + GeometryUtilsFX.deg2rad(GeometryUtilsFX.signedDiffAngle(GeometryUtilsFX.basicComputeAngle(node2point.get(angle1in), node2point.get(v), node2point.get(angle1out)), previousAngle1));
                     }
                     if (newAngle1 < foundParameters[0]) {
                         foundParameters[0] = newAngle1;
@@ -612,9 +612,9 @@ public class BoxOptimizer {
 
                 if (v != angle2in) {
                     if ((specialNode == 2) || (specialNode == 3)) {
-                        newAngle2 = GeometryUtils.deg2rad(GeometryUtils.basicComputeAngle(node2point.get(angle2in), node2point.get(angle2out), node2point.get(v)));
+                        newAngle2 = GeometryUtilsFX.deg2rad(GeometryUtilsFX.basicComputeAngle(node2point.get(angle2in), node2point.get(angle2out), node2point.get(v)));
                     } else {
-                        newAngle2 = previousAngle2 + GeometryUtils.deg2rad(GeometryUtils.signedDiffAngle(GeometryUtils.basicComputeAngle(node2point.get(angle2in), node2point.get(angle2out), node2point.get(v)), previousAngle2));
+                        newAngle2 = previousAngle2 + GeometryUtilsFX.deg2rad(GeometryUtilsFX.signedDiffAngle(GeometryUtilsFX.basicComputeAngle(node2point.get(angle2in), node2point.get(angle2out), node2point.get(v)), previousAngle2));
                     }
                     if (newAngle2 < foundParameters[1]) {
                         foundParameters[1] = newAngle2;
@@ -625,13 +625,13 @@ public class BoxOptimizer {
             for (Edge f : v.adjacentEdges()) {
                 if (f != e) {
                     Node w = graph.getOpposite(v, f);
-                    localDontCompute = GeometryUtils.squaredDistance(node2point.get(w), node2point.get(v)) <= 0.0000000000001;
+                    localDontCompute = GeometryUtilsFX.squaredDistance(node2point.get(w), node2point.get(v)) <= 0.0000000000001;
                     if (v == angle1in) {
                         if (dontCompute) {
                             visitComponentRec2(w, f, specialNode, previousAngle1, previousAngle2, angle1in, angle1out, angle2in, angle2out, graph, node2point, visited, foundParameters, localDontCompute);
                         } else {
                             //If the two extreme nodes are together, notice it:
-                            if (GeometryUtils.squaredDistance(node2point.get(angle1in), node2point.get(angle2in)) > 0.0000000000001) {
+                            if (GeometryUtilsFX.squaredDistance(node2point.get(angle1in), node2point.get(angle2in)) > 0.0000000000001) {
                                 visitComponentRec2(w, f, 1, newAngle1, newAngle2, angle1in, angle1out, angle2in, angle2out, graph, node2point, visited, foundParameters, localDontCompute);
                             } else {
                                 visitComponentRec2(w, f, 3, newAngle1, newAngle2, angle1in, angle1out, angle2in, angle2out, graph, node2point, visited, foundParameters, localDontCompute);
@@ -643,7 +643,7 @@ public class BoxOptimizer {
                                 visitComponentRec2(w, f, specialNode, previousAngle1, previousAngle2, angle1in, angle1out, angle2in, angle2out, graph, node2point, visited, foundParameters, localDontCompute);
                             } else {
                                 //If the two extreme nodes are together, notice it
-                                if (GeometryUtils.squaredDistance(node2point.get(angle1in), node2point.get(angle2in)) > 0.0000000000001) {
+                                if (GeometryUtilsFX.squaredDistance(node2point.get(angle1in), node2point.get(angle2in)) > 0.0000000000001) {
                                     visitComponentRec2(w, f, 2, newAngle1, newAngle2, angle1in, angle1out, angle2in, angle2out, graph, node2point, visited, foundParameters, localDontCompute);
                                 } else {
                                     visitComponentRec2(w, f, 3, newAngle1, newAngle2, angle1in, angle1out, angle2in, angle2out, graph, node2point, visited, foundParameters, localDontCompute);
@@ -676,16 +676,16 @@ public class BoxOptimizer {
      * @param visited
      * @param foundParameters xmin ymin xmax ymax angle1 angle2
      */
-    private void visitComponentRec1(Node v, Edge e, double previousAngle1, double previousAngle2, Node angle1in, Node angle1out, Node angle2in, Node angle2out, SplitsGraph graph, NodeArray<Point2D> node2point, NodeSet visited, double[] foundParameters) {
+    private void visitComponentRec1(Node v, Edge e, double previousAngle1, double previousAngle2, Node angle1in, Node angle1out, Node angle2in, Node angle2out, PhyloSplitsGraph graph, NodeArray<Point2D> node2point, NodeSet visited, double[] foundParameters) {
         if (!visited.contains(v)) {
             visited.add(v);
 
-            double newAngle1 = previousAngle1 + GeometryUtils.deg2rad(GeometryUtils.signedDiffAngle(GeometryUtils.basicComputeAngle(node2point.get(angle1in), node2point.get(v), node2point.get(angle1out)), previousAngle1 + Math.PI));
+            double newAngle1 = previousAngle1 + GeometryUtilsFX.deg2rad(GeometryUtilsFX.signedDiffAngle(GeometryUtilsFX.basicComputeAngle(node2point.get(angle1in), node2point.get(v), node2point.get(angle1out)), previousAngle1 + Math.PI));
             if (newAngle1 > foundParameters[0]) {
                 foundParameters[0] = newAngle1;
             }
 
-            double newAngle2 = previousAngle2 + GeometryUtils.deg2rad(GeometryUtils.signedDiffAngle(GeometryUtils.basicComputeAngle(node2point.get(angle2in), node2point.get(angle2out), node2point.get(v)), previousAngle2 + Math.PI));
+            double newAngle2 = previousAngle2 + GeometryUtilsFX.deg2rad(GeometryUtilsFX.signedDiffAngle(GeometryUtilsFX.basicComputeAngle(node2point.get(angle2in), node2point.get(angle2out), node2point.get(v)), previousAngle2 + Math.PI));
             if (newAngle2 > foundParameters[1]) {
                 foundParameters[1] = newAngle2;
             }
@@ -705,7 +705,7 @@ public class BoxOptimizer {
      * @param useWeights
      * @param graph
      */
-    private void assignCoordinatesToNodes(Node start, boolean useWeights, SplitsGraph graph, NodeArray<Point2D> node2point) {
+    private void assignCoordinatesToNodes(Node start, boolean useWeights, PhyloSplitsGraph graph, NodeArray<Point2D> node2point) {
         node2point.put(start, new Point2D(0, 0));
         final BitSet splitsInPath = new BitSet();
         final NodeSet nodesVisited = new NodeSet(graph);
@@ -722,7 +722,7 @@ public class BoxOptimizer {
      * @param nodesVisited
      * @param useWeights
      */
-    private void assignCoordinatesToNodesRec(Node v, BitSet splitsInPath, NodeSet nodesVisited, boolean useWeights, SplitsGraph graph, NodeArray<Point2D> node2point) {
+    private void assignCoordinatesToNodesRec(Node v, BitSet splitsInPath, NodeSet nodesVisited, boolean useWeights, PhyloSplitsGraph graph, NodeArray<Point2D> node2point) {
         if (!nodesVisited.contains(v)) {
             //Deleted so that the user can cancel and it doesn't destroy everything: doc.getProgressListener().checkForCancel();
             nodesVisited.add(v);
@@ -730,7 +730,7 @@ public class BoxOptimizer {
                 int s = graph.getSplit(e);
                 if (!splitsInPath.get(s)) {
                     Node w = graph.getOpposite(v, e);
-                    Point2D p = GeometryUtils.translateByAngle(node2point.get(v), GeometryUtils.rad2deg(graph.getAngle(e)), useWeights ? graph.getWeight(e) : 1);
+                    Point2D p = GeometryUtilsFX.translateByAngle(node2point.get(v), GeometryUtilsFX.rad2deg(graph.getAngle(e)), useWeights ? graph.getWeight(e) : 1);
                     node2point.put(w, p);
                     splitsInPath.set(s, true);
                     assignCoordinatesToNodesRec(w, splitsInPath, nodesVisited, useWeights, graph, node2point);

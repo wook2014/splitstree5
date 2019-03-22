@@ -27,10 +27,11 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
 import javafx.stage.FileChooser;
 import jloda.fx.NotificationManager;
+import jloda.fx.ProgramProperties;
 import jloda.fx.RecentFilesManager;
+import jloda.swing.util.BasicSwing;
 import jloda.util.Basic;
 import jloda.util.Pair;
-import jloda.util.ProgramProperties;
 import jloda.util.ProgressPercentage;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.characters2distances.GeneContentDistance;
@@ -257,7 +258,7 @@ public class MainWindowMenuController {
 
         controller.getCommunityWebsiteMenuItem().setOnAction((e) -> {
             try {
-                Basic.openWebPage(new URL("http://splitstree.informatik.uni-tuebingen.de"));
+                BasicSwing.openWebPage(new URL("http://splitstree.informatik.uni-tuebingen.de"));
             } catch (IOException ex) {
                 Basic.caught(ex);
             }

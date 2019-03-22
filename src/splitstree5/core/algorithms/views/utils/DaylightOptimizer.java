@@ -24,14 +24,14 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Point2D;
+import jloda.fx.GeometryUtilsFX;
 import jloda.graph.*;
-import jloda.phylo.SplitsGraph;
+import jloda.phylo.PhyloSplitsGraph;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.Pair;
 import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.gui.graphtab.base.GeometryUtils;
 
 /**
  * run the daylight optimizer
@@ -58,7 +58,7 @@ public class DaylightOptimizer {
      * @param phyloGraph
      * @param node2point
      */
-    public void apply(ProgressListener progress, TaxaBlock taxa, SplitsGraph phyloGraph, NodeArray<javafx.geometry.Point2D> node2point) throws CanceledException {
+    public void apply(ProgressListener progress, TaxaBlock taxa, PhyloSplitsGraph phyloGraph, NodeArray<javafx.geometry.Point2D> node2point) throws CanceledException {
         this.progress = progress;
         System.err.println("Running daylight optimizer");
         runOptimizeDayLight(taxa, phyloGraph, node2point);
@@ -69,7 +69,7 @@ public class DaylightOptimizer {
      *
      * @param taxa
      */
-    private void runOptimizeDayLight(TaxaBlock taxa, SplitsGraph graph, NodeArray<javafx.geometry.Point2D> node2point) throws CanceledException {
+    private void runOptimizeDayLight(TaxaBlock taxa, PhyloSplitsGraph graph, NodeArray<javafx.geometry.Point2D> node2point) throws CanceledException {
         NodeSet ignore = new NodeSet(graph);
 
         progress.setTasks("Optimize daylight", "iterating");
@@ -103,7 +103,7 @@ public class DaylightOptimizer {
      *
      * @param v
      */
-    private boolean optimizeDaylightNode(int ntax, SplitsGraph graph, Node v, NodeArray<javafx.geometry.Point2D> node2point) throws NotOwnerException, CanceledException {
+    private boolean optimizeDaylightNode(int ntax, PhyloSplitsGraph graph, Node v, NodeArray<javafx.geometry.Point2D> node2point) throws NotOwnerException, CanceledException {
         int numComp = 0;
         EdgeIntegerArray edge2comp = new EdgeIntegerArray(graph);
         double[] comp2MinAngle = new double[ntax + 1];
@@ -122,7 +122,7 @@ public class DaylightOptimizer {
                 {
                     Point2D vp = node2point.get(v);
                     Point2D wp = node2point.get(w);
-                    angle = GeometryUtils.computeAngle(wp.subtract(vp));
+                    angle = GeometryUtilsFX.computeAngle(wp.subtract(vp));
                 }
                 Pair<Double, Double> minMaxAngle = new Pair<>(angle, angle); // will contain min and max angles of component
 
@@ -152,7 +152,7 @@ public class DaylightOptimizer {
                 }
                 for (Edge e : graph.edges()) {
                     int c = edge2comp.getValue(e);
-                    graph.setAngle(e, GeometryUtils.modulo360(graph.getAngle(e) + comp2epsilon[c]));
+                    graph.setAngle(e, GeometryUtilsFX.modulo360(graph.getAngle(e) + comp2epsilon[c]));
                 }
             }
         }
@@ -171,7 +171,7 @@ public class DaylightOptimizer {
      * @param visited
      * @param minMaxAngle
      */
-    private void visitComponentRec(Node root, Node v, Edge e, EdgeIntegerArray edge2comp, int numComp, SplitsGraph graph, NodeArray<javafx.geometry.Point2D> node2point, NodeSet visited,
+    private void visitComponentRec(Node root, Node v, Edge e, EdgeIntegerArray edge2comp, int numComp, PhyloSplitsGraph graph, NodeArray<javafx.geometry.Point2D> node2point, NodeSet visited,
                                    double angle, Pair<Double, Double> minMaxAngle) throws CanceledException {
 
         if (v != root && !visited.contains(v)) {
@@ -182,7 +182,7 @@ public class DaylightOptimizer {
                 if (f != e && edge2comp.getValue(f) == 0) {
                     edge2comp.set(f, numComp);
                     Node w = graph.getOpposite(v, f);
-                    double newAngle = angle + GeometryUtils.computeObservedAngle(node2point.get(root), node2point.get(v), node2point.get(w));
+                    double newAngle = angle + GeometryUtilsFX.computeObservedAngle(node2point.get(root), node2point.get(v), node2point.get(w));
                     if (newAngle < minMaxAngle.getFirst())
                         minMaxAngle.setFirst(newAngle);
                     if (newAngle > minMaxAngle.getSecond())

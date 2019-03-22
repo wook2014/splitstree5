@@ -99,7 +99,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
         progress.setProgress(0);
 
         {
-            final int numberOfThreads = Math.max(1, Basic.min(trees.size(), ProgramExecutorService.getMaxNumberOfTheadsForParallelAlgorithm(), Runtime.getRuntime().availableProcessors()));
+            final int numberOfThreads = Math.max(1, Basic.min(trees.size(), ProgramExecutorService.getMaxNumberOfThreadsForParallelAlgorithm(), Runtime.getRuntime().availableProcessors()));
             final CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
             final Single<CanceledException> exception = new Single<>();
 

@@ -24,6 +24,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import jloda.fx.GeometryUtilsFX;
 import jloda.graph.Edge;
 import jloda.util.Basic;
 import splitstree5.core.algorithms.views.NetworkEmbedder;
@@ -58,8 +59,8 @@ public class EdgeView2DWithMutations extends EdgeView2D {
         for (Node node : shapeGroup.getChildren()) {
             if (node instanceof Line) {
                 final Line line = (Line) node;
-                final Point2D start = GeometryUtils.rotate(line.getStartX(), (line).getStartY(), angle);
-                final Point2D end = GeometryUtils.rotate((line).getEndX(), (line).getEndY(), angle);
+                final Point2D start = GeometryUtilsFX.rotate(line.getStartX(), (line).getStartY(), angle);
+                final Point2D end = GeometryUtilsFX.rotate((line).getEndX(), (line).getEndY(), angle);
                 line.setStartX(start.getX());
                 line.setStartY(start.getY());
                 line.setEndX(end.getX());
@@ -67,7 +68,7 @@ public class EdgeView2DWithMutations extends EdgeView2D {
             }
         }
         if (label != null) {
-            Point2D p = GeometryUtils.rotate(label.getTranslateX(), label.getTranslateY(), angle);
+            Point2D p = GeometryUtilsFX.rotate(label.getTranslateX(), label.getTranslateY(), angle);
             label.setTranslateX(p.getX());
             label.setTranslateY(p.getY());
         }
@@ -126,16 +127,16 @@ public class EdgeView2DWithMutations extends EdgeView2D {
                     break;
                 case Hatches: {
                     final double dist = start.distance(mid);
-                    final double angle = GeometryUtils.computeAngle(end.subtract(start));
+                    final double angle = GeometryUtilsFX.computeAngle(end.subtract(start));
 
                     final int gapBetweenHatches = 3;
 
-                    Point2D point = GeometryUtils.translateByAngle(mid, angle, -0.5 * gapBetweenHatches * mutations.length);
+                    Point2D point = GeometryUtilsFX.translateByAngle(mid, angle, -0.5 * gapBetweenHatches * mutations.length);
                     for (int mutation : mutations) {
-                        point = GeometryUtils.translateByAngle(point, angle, gapBetweenHatches);
+                        point = GeometryUtilsFX.translateByAngle(point, angle, gapBetweenHatches);
                         if (point.distance(mid) < dist) {
-                            Point2D left = GeometryUtils.translateByAngle(point, angle + 90, 5);
-                            Point2D right = GeometryUtils.translateByAngle(point, angle + 270, 5);
+                            Point2D left = GeometryUtilsFX.translateByAngle(point, angle + 90, 5);
+                            Point2D right = GeometryUtilsFX.translateByAngle(point, angle + 270, 5);
                             Line hatch = new Line(left.getX(), left.getY(), right.getX(), right.getY());
                             hatch.setStroke(Color.BLACK);
                             getShapeGroup().getChildren().add(hatch);

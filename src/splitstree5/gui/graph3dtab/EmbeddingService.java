@@ -24,7 +24,7 @@ import javafx.concurrent.Task;
 import javafx.geometry.Point3D;
 import jloda.fx.ProgramExecutorService;
 import jloda.graph.NodeArray;
-import jloda.phylo.SplitsGraph;
+import jloda.phylo.PhyloSplitsGraph;
 import splitstree5.gui.graphtab.base.NodeViewBase;
 
 /**
@@ -32,7 +32,7 @@ import splitstree5.gui.graphtab.base.NodeViewBase;
  * Daniel Huson, 1.2018
  */
 public class EmbeddingService extends Service<NodeArray<Point3D>> {
-    private SplitsGraph splitsGraph;
+    private PhyloSplitsGraph splitsGraph;
     private NodeArray<NodeViewBase> node2view;
     private int numOfSteps;
     private boolean linear;
@@ -51,7 +51,7 @@ public class EmbeddingService extends Service<NodeArray<Point3D>> {
      * @param linear
      * @param withZpush
      */
-    public void setup(SplitsGraph splitsGraph, NodeArray<NodeViewBase> node2view, int numOfSteps, boolean linear, boolean withZpush) {
+    public void setup(PhyloSplitsGraph splitsGraph, NodeArray<NodeViewBase> node2view, int numOfSteps, boolean linear, boolean withZpush) {
         this.splitsGraph = splitsGraph;
         this.node2view = node2view;
         this.numOfSteps = numOfSteps;

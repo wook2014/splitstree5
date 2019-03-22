@@ -28,10 +28,11 @@ import javafx.scene.control.Labeled;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
+import jloda.fx.GeometryUtilsFX;
+import jloda.fx.ProgramProperties;
 import jloda.fx.SelectionEffect;
 import jloda.graph.Edge;
 import jloda.util.Basic;
-import jloda.util.ProgramProperties;
 
 import java.util.ArrayList;
 
@@ -130,8 +131,8 @@ public class EdgeView2D extends EdgeViewBase {
             case Angular: {
                 if (layout == GraphLayout.Radial) {
                     double radius = mid.magnitude();
-                    double startAngle = GeometryUtils.computeAngle(start);
-                    double endAngle = GeometryUtils.computeAngle(mid);
+                    double startAngle = GeometryUtilsFX.computeAngle(start);
+                    double endAngle = GeometryUtilsFX.computeAngle(mid);
 
                     final MoveTo moveTo = new MoveTo(start.getX(), start.getY());
                     final ArcTo arcTo = new ArcTo(radius, radius, 0, mid.getX(), mid.getY(), false, endAngle > startAngle);
@@ -278,33 +279,33 @@ public class EdgeView2D extends EdgeViewBase {
                 final ArrayList<PathElement> elements = new ArrayList<>(path.getElements().size());
                 for (PathElement element : path.getElements()) {
                     if (element instanceof MoveTo) {
-                        final Point2D p = GeometryUtils.rotate(((MoveTo) element).getX(), ((MoveTo) element).getY(), angle);
+                        final Point2D p = GeometryUtilsFX.rotate(((MoveTo) element).getX(), ((MoveTo) element).getY(), angle);
                         elements.add(new MoveTo(p.getX(), p.getY()));
                     } else if (element instanceof LineTo) {
-                        final Point2D p = GeometryUtils.rotate(((LineTo) element).getX(), ((LineTo) element).getY(), angle);
+                        final Point2D p = GeometryUtilsFX.rotate(((LineTo) element).getX(), ((LineTo) element).getY(), angle);
                         elements.add(new LineTo(p.getX(), p.getY()));
                     } else if (element instanceof ArcTo) {
                         final ArcTo arcTo = (ArcTo) element;
-                        final Point2D p = GeometryUtils.rotate(arcTo.getX(), arcTo.getY(), angle);
+                        final Point2D p = GeometryUtilsFX.rotate(arcTo.getX(), arcTo.getY(), angle);
                         final ArcTo newArcTo = new ArcTo(arcTo.getRadiusX(), arcTo.getRadiusY(), 0, p.getX(), p.getY(), arcTo.isLargeArcFlag(), arcTo.isSweepFlag());
                         elements.add(newArcTo);
                     } else if (element instanceof QuadCurveTo) {
                         final QuadCurveTo quadCurveTo = (QuadCurveTo) element;
-                        final Point2D c = GeometryUtils.rotate(quadCurveTo.getControlX(), quadCurveTo.getControlY(), angle);
-                        final Point2D p = GeometryUtils.rotate(quadCurveTo.getX(), quadCurveTo.getY(), angle);
+                        final Point2D c = GeometryUtilsFX.rotate(quadCurveTo.getControlX(), quadCurveTo.getControlY(), angle);
+                        final Point2D p = GeometryUtilsFX.rotate(quadCurveTo.getX(), quadCurveTo.getY(), angle);
                         elements.add(new QuadCurveTo(c.getX(), c.getY(), p.getX(), p.getY()));
                     } else if (element instanceof CubicCurveTo) {
                         final CubicCurveTo cubicCurveTo = (CubicCurveTo) element;
-                        final Point2D c1 = GeometryUtils.rotate(cubicCurveTo.getControlX1(), cubicCurveTo.getControlY1(), angle);
-                        final Point2D c2 = GeometryUtils.rotate(cubicCurveTo.getControlX2(), cubicCurveTo.getControlY2(), angle);
-                        final Point2D p = GeometryUtils.rotate(cubicCurveTo.getX(), cubicCurveTo.getY(), angle);
+                        final Point2D c1 = GeometryUtilsFX.rotate(cubicCurveTo.getControlX1(), cubicCurveTo.getControlY1(), angle);
+                        final Point2D c2 = GeometryUtilsFX.rotate(cubicCurveTo.getControlX2(), cubicCurveTo.getControlY2(), angle);
+                        final Point2D p = GeometryUtilsFX.rotate(cubicCurveTo.getX(), cubicCurveTo.getY(), angle);
                         elements.add(new CubicCurveTo(c1.getX(), c1.getY(), c2.getX(), c2.getY(), p.getX(), p.getY()));
                     }
                 }
                 path.getElements().setAll(elements);
             } else if (shape instanceof Line) {
-                final Point2D start = GeometryUtils.rotate(((Line) shape).getStartX(), ((Line) shape).getStartY(), angle);
-                final Point2D end = GeometryUtils.rotate(((Line) shape).getEndX(), ((Line) shape).getEndY(), angle);
+                final Point2D start = GeometryUtilsFX.rotate(((Line) shape).getStartX(), ((Line) shape).getStartY(), angle);
+                final Point2D end = GeometryUtilsFX.rotate(((Line) shape).getEndX(), ((Line) shape).getEndY(), angle);
                 final Line line = (Line) shape;
                 line.setStartX(start.getX());
                 line.setEndX(end.getX());
@@ -315,11 +316,11 @@ public class EdgeView2D extends EdgeViewBase {
             }
         }
         if (label != null) {
-            Point2D p = GeometryUtils.rotate(label.getTranslateX(), label.getTranslateY(), angle);
+            Point2D p = GeometryUtilsFX.rotate(label.getTranslateX(), label.getTranslateY(), angle);
             label.setTranslateX(p.getX());
             label.setTranslateY(p.getY());
         }
-        referencePoint = GeometryUtils.rotate(referencePoint, angle);
+        referencePoint = GeometryUtilsFX.rotate(referencePoint, angle);
     }
 
     /**

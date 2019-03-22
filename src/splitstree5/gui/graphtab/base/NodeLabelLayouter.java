@@ -102,6 +102,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import jloda.fx.GeometryUtilsFX;
 import jloda.graph.Edge;
 import jloda.graph.EdgeArray;
 import jloda.graph.Node;
@@ -152,12 +153,12 @@ public class NodeLabelLayouter {
                 if (v.getDegree() == 1) {
                     Edge e = v.getFirstAdjacentEdge();
                     EdgeView2D ev = (EdgeView2D) edge2view.getValue(e);
-                    angle = GeometryUtils.computeAngle(nv.getLocation().subtract(ev.getReferencePoint()));
+                    angle = GeometryUtilsFX.computeAngle(nv.getLocation().subtract(ev.getReferencePoint()));
                 } else {
                     final ArrayList<Integer> array = new ArrayList<>(v.getDegree());
                     for (Edge e : v.adjacentEdges()) {
                         EdgeView2D ev = (EdgeView2D) edge2view.getValue(e);
-                        final double alpha = GeometryUtils.modulo360(GeometryUtils.computeAngle(ev.getReferencePoint().subtract(nv.getLocation())));
+                        final double alpha = GeometryUtilsFX.modulo360(GeometryUtilsFX.computeAngle(ev.getReferencePoint().subtract(nv.getLocation())));
                         array.add((int) Math.round(alpha));
                     }
                     array.sort(Comparator.naturalOrder());
@@ -165,7 +166,7 @@ public class NodeLabelLayouter {
                     int gap = 0;
                     int best = 0;
                     for (int next = 0; next < array.size() - 1; next++) {
-                        final int nextGap = (int) Math.round(GeometryUtils.modulo360(array.get(next + 1) - array.get(next)));
+                        final int nextGap = (int) Math.round(GeometryUtilsFX.modulo360(array.get(next + 1) - array.get(next)));
                         if (nextGap > gap) {
                             best = next;
                             gap = nextGap;
@@ -214,7 +215,7 @@ public class NodeLabelLayouter {
                                     break;
                                 }
 
-                                location = GeometryUtils.translateByAngle(location, angle, 0.2 * bbox.getHeight());
+                                location = GeometryUtilsFX.translateByAngle(location, angle, 0.2 * bbox.getHeight());
                                 bbox = new BoundingBox(location.getX(), location.getY(), Math.max(1, label.getLayoutBounds().getWidth()), Math.max(1, label.getLayoutBounds().getHeight()));
                                 ok = false;
                                 if (false)// debugging
