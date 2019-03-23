@@ -24,7 +24,7 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ComboBoxBase;
 import javafx.scene.layout.Pane;
-import jloda.fx.ProgramProperties;
+import jloda.fx.util.ProgramProperties;
 import splitstree5.gui.formattab.fontselector.FontSelector;
 
 public class FormatTabController {

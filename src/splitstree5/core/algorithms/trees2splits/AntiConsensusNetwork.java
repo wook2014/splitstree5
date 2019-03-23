@@ -21,8 +21,8 @@ package splitstree5.core.algorithms.trees2splits;
 
 import com.install4j.api.context.UserCanceledException;
 import javafx.beans.property.*;
-import jloda.fx.NotificationManager;
-import jloda.fx.ProgramExecutorService;
+import jloda.fx.util.NotificationManager;
+import jloda.fx.util.ProgramExecutorService;
 import jloda.graph.Edge;
 import jloda.graph.Graph;
 import jloda.graph.Node;

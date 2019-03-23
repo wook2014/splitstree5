@@ -38,8 +38,8 @@
 
 package splitstree5.dialogs.exporter;
 
-import jloda.fx.NotificationManager;
-import jloda.fx.RecentFilesManager;
+import jloda.fx.util.NotificationManager;
+import jloda.fx.util.RecentFilesManager;
 import jloda.util.Basic;
 import jloda.util.PluginClassLoader;
 import splitstree5.core.datablocks.*;

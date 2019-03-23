@@ -19,7 +19,7 @@
 
 package splitstree5.core.algorithms.characters2distances.utils;
 
-import jloda.fx.NotificationManager;
+import jloda.fx.util.NotificationManager;
 import splitstree5.core.datablocks.DistancesBlock;
 
 /**

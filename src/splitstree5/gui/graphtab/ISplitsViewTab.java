@@ -23,7 +23,7 @@ import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.ToolBar;
-import jloda.fx.ASelectionModel;
+import jloda.fx.util.ASelectionModel;
 import jloda.graph.Edge;
 import jloda.graph.EdgeArray;
 import jloda.graph.Node;

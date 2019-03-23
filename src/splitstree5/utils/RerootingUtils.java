@@ -19,7 +19,7 @@
 
 package splitstree5.utils;
 
-import jloda.fx.NotificationManager;
+import jloda.fx.util.NotificationManager;
 import jloda.graph.*;
 import jloda.phylo.PhyloTree;
 import jloda.util.Pair;

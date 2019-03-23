@@ -31,9 +31,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Popup;
 import javafx.util.converter.IntegerStringConverter;
-import jloda.fx.ExtendedFXMLLoader;
-import jloda.fx.FontUtils;
-import jloda.fx.ProgramProperties;
+import jloda.fx.util.ExtendedFXMLLoader;
+import jloda.fx.util.FontUtils;
+import jloda.fx.util.ProgramProperties;
 
 import java.util.Set;
 import java.util.TreeSet;

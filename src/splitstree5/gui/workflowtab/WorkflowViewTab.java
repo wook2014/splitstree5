@@ -72,7 +72,7 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import jloda.fx.*;
+import jloda.fx.util.*;
 import splitstree5.core.Document;
 import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.Workflow;

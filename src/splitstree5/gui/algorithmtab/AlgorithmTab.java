@@ -29,7 +29,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
-import jloda.fx.ExtendedFXMLLoader;
+import jloda.fx.util.ExtendedFXMLLoader;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.DataBlock;

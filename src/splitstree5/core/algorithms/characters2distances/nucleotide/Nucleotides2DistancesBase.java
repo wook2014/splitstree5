@@ -21,8 +21,8 @@ package splitstree5.core.algorithms.characters2distances.nucleotide;
 
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
-import jloda.fx.AService;
-import jloda.fx.NotificationManager;
+import jloda.fx.util.AService;
+import jloda.fx.util.NotificationManager;
 import jloda.util.ProgressListener;
 import jloda.util.ProgressPercentage;
 import splitstree5.core.algorithms.Algorithm;

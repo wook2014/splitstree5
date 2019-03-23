@@ -28,9 +28,9 @@ import javafx.scene.control.Labeled;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
-import jloda.fx.GeometryUtilsFX;
-import jloda.fx.ProgramProperties;
-import jloda.fx.SelectionEffect;
+import jloda.fx.util.GeometryUtilsFX;
+import jloda.fx.util.ProgramProperties;
+import jloda.fx.util.SelectionEffect;
 import jloda.graph.Edge;
 import jloda.util.Basic;
 

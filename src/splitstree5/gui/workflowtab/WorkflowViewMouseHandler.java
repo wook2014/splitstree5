@@ -62,7 +62,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import jloda.fx.ASelectionModel;
+import jloda.fx.util.ASelectionModel;
 import jloda.util.Basic;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.WorkflowNode;

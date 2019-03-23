@@ -22,7 +22,7 @@ package splitstree5.main;
 import com.briksoftware.javafx.platform.osx.OSXIntegration;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import jloda.fx.*;
+import jloda.fx.util.*;
 import jloda.util.Basic;
 import splitstree5.dialogs.importer.FileOpener;
 
@@ -102,36 +102,41 @@ public class SplitsTree5 extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        // setup and show splash screen:
-        SplashScreen.setVersionString(ProgramProperties.getProgramVersion());
-        SplashScreen.setImageResourceName("SplitsTree5-splash.png");
-        SplashScreen.getInstance().showSplash(Duration.ofSeconds(5));
+        try {
+            // setup and show splash screen:
+            SplashScreen.setVersionString(ProgramProperties.getProgramVersion());
+            SplashScreen.setImageResourceName("SplitsTree5-splash.png");
+            SplashScreen.getInstance().showSplash(Duration.ofSeconds(5));
 
-        final MainWindow mainWindow = new MainWindow();
+            final MainWindow mainWindow = new MainWindow();
 
-        mainWindow.show(primaryStage, 100, 100);
+            mainWindow.show(primaryStage, 100, 100);
 
-        if (showMessageWindow) {
-            mainWindow.getMenuController().getShowMessageWindowMenuItem().fire();
-            System.err.println(Basic.stopCollectingStdErr()); // collected lines will be sent to message window
-        }
-
-        if (inputFilesAtStartup != null && inputFilesAtStartup.length > 0) {
-            System.err.println("NOT IMPLEMENTED: load files from command line");
-            // todo: implement
-        }
-
-        // setup about and preferences menu for apple:
-        OSXIntegration.init();
-        OSXIntegration.populateAppleMenu(() -> SplashScreen.getInstance().showSplash(Duration.ofMinutes(1)), () -> System.err.println("Preferences"));
-
-        // open files by double-click under Mac OS: // untested
-        OSXIntegration.setOpenFilesHandler(files -> {
-            for (File file : files) {
-                if (FileOpener.isOpenable(file.getPath()))
-                    FileOpener.open(false, MainWindowManager.getInstance().getLastFocusedMainWindow(), file.getPath(), null);
+            if (showMessageWindow) {
+                mainWindow.getMenuController().getShowMessageWindowMenuItem().fire();
+                System.err.println(Basic.stopCollectingStdErr()); // collected lines will be sent to message window
             }
-        });
+
+            if (inputFilesAtStartup != null && inputFilesAtStartup.length > 0) {
+                System.err.println("NOT IMPLEMENTED: load files from command line");
+                // todo: implement
+            }
+
+            // setup about and preferences menu for apple:
+            OSXIntegration.init();
+            OSXIntegration.populateAppleMenu(() -> SplashScreen.getInstance().showSplash(Duration.ofMinutes(1)), () -> System.err.println("Preferences"));
+
+            // open files by double-click under Mac OS: // untested
+            OSXIntegration.setOpenFilesHandler(files -> {
+                for (File file : files) {
+                    if (FileOpener.isOpenable(file.getPath()))
+                        FileOpener.open(false, MainWindowManager.getInstance().getLastFocusedMainWindow(), file.getPath(), null);
+                }
+            });
+        } catch (Exception ex) {
+            Basic.caught(ex);
+            throw ex;
+        }
     }
 
     public void stop() {

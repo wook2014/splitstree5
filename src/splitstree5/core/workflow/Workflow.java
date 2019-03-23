@@ -27,7 +27,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
-import jloda.fx.ASelectionModel;
+import jloda.fx.util.ASelectionModel;
 import jloda.util.Basic;
 import jloda.util.Pair;
 import jloda.util.Single;

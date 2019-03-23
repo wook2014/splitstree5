@@ -1,6 +1,6 @@
 package splitstree5.io.imports;
 
-import jloda.fx.NotificationManager;
+import jloda.fx.util.NotificationManager;
 import jloda.util.*;
 import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.DistancesBlock;

@@ -29,8 +29,8 @@ import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import jloda.fx.ASelectionModel;
-import jloda.fx.SelectionEffect;
+import jloda.fx.util.ASelectionModel;
+import jloda.fx.util.SelectionEffect;
 import jloda.graph.NodeArray;
 import splitstree5.gui.graphtab.base.NodeViewBase;
 

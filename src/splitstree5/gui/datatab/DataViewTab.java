@@ -26,7 +26,7 @@ import javafx.beans.value.WeakChangeListener;
 import javafx.scene.control.Labeled;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import jloda.fx.ResourceManagerFX;
+import jloda.fx.util.ResourceManagerFX;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;

@@ -64,7 +64,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.WeakListChangeListener;
 import javafx.scene.control.ListView;
-import jloda.fx.ExtendedFXMLLoader;
+import jloda.fx.util.ExtendedFXMLLoader;
 import jloda.util.Triplet;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.trees2trees.RootByOutGroupAlgorithm;

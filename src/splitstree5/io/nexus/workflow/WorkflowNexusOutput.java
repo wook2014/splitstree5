@@ -38,8 +38,8 @@
 
 package splitstree5.io.nexus.workflow;
 
-import jloda.fx.NotificationManager;
-import jloda.fx.ProgramProperties;
+import jloda.fx.util.NotificationManager;
+import jloda.fx.util.ProgramProperties;
 import jloda.util.Basic;
 import jloda.util.Pair;
 import splitstree5.core.datablocks.SplitsTree5Block;

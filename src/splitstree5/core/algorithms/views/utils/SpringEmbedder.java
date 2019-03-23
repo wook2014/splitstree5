@@ -22,7 +22,7 @@ package splitstree5.core.algorithms.views.utils;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
-import jloda.fx.GeometryUtilsFX;
+import jloda.fx.util.GeometryUtilsFX;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;

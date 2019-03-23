@@ -23,7 +23,7 @@ import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
 import javafx.collections.ListChangeListener;
-import jloda.fx.ASelectionModel;
+import jloda.fx.util.ASelectionModel;
 import jloda.util.Basic;
 import splitstree5.core.misc.Taxon;
 import splitstree5.core.workflow.Workflow;

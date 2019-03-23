@@ -1,7 +1,7 @@
 package splitstree5.core.algorithms.characters2distances;
 
 import javafx.beans.property.*;
-import jloda.fx.NotificationManager;
+import jloda.fx.util.NotificationManager;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;

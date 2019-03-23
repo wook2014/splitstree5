@@ -40,10 +40,10 @@ package splitstree5.core.workflow;
 
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import jloda.fx.NotificationManager;
-import jloda.fx.ProgramExecutorService;
-import jloda.fx.ProgressPane;
-import jloda.fx.TaskWithProgressListener;
+import jloda.fx.util.NotificationManager;
+import jloda.fx.util.ProgramExecutorService;
+import jloda.fx.util.ProgressPane;
+import jloda.fx.util.TaskWithProgressListener;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
 import splitstree5.core.datablocks.DataBlock;

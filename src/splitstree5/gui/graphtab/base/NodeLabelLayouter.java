@@ -102,7 +102,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import jloda.fx.GeometryUtilsFX;
+import jloda.fx.util.GeometryUtilsFX;
 import jloda.graph.Edge;
 import jloda.graph.EdgeArray;
 import jloda.graph.Node;

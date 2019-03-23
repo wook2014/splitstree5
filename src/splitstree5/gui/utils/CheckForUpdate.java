@@ -25,8 +25,8 @@ import com.install4j.api.update.UpdateChecker;
 import com.install4j.api.update.UpdateDescriptor;
 import com.install4j.api.update.UpdateDescriptorEntry;
 import javafx.application.Platform;
-import jloda.fx.NotificationManager;
-import jloda.fx.ProgramProperties;
+import jloda.fx.util.NotificationManager;
+import jloda.fx.util.ProgramProperties;
 import jloda.util.Basic;
 
 /**

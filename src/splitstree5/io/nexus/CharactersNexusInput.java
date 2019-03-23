@@ -19,7 +19,7 @@
 
 package splitstree5.io.nexus;
 
-import jloda.fx.NotificationManager;
+import jloda.fx.util.NotificationManager;
 import jloda.util.Basic;
 import jloda.util.IOExceptionWithLineNumber;
 import jloda.util.parse.NexusStreamParser;

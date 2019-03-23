@@ -24,7 +24,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import jloda.fx.GeometryUtilsFX;
+import jloda.fx.util.GeometryUtilsFX;
 import jloda.graph.Edge;
 import jloda.util.Basic;
 import splitstree5.core.algorithms.views.NetworkEmbedder;

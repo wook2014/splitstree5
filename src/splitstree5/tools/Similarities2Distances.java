@@ -19,8 +19,8 @@
 
 package splitstree5.tools;
 
-import jloda.fx.ArgsOptions;
-import jloda.fx.ProgramProperties;
+import jloda.fx.util.ArgsOptions;
+import jloda.fx.util.ProgramProperties;
 import jloda.util.*;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;

@@ -30,7 +30,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import jloda.fx.ExtendedFXMLLoader;
+import jloda.fx.util.ExtendedFXMLLoader;
 import jloda.util.Pair;
 
 
@@ -166,7 +166,7 @@ public class AlignmentView extends Pane {
                 change.next();
                 if (change.wasReplaced() && !suspended) {
                     this.suspended = true;
-                    table.getColumns().setAll(columns);
+                    table.getColumns().setAll((Object[]) columns);
                     this.suspended = false;
                 }
             }

@@ -29,7 +29,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
 import javafx.stage.Stage;
-import jloda.fx.ClosingLastDocument;
+import jloda.fx.util.ClosingLastDocument;
 
 import java.util.ArrayList;
 import java.util.HashMap;

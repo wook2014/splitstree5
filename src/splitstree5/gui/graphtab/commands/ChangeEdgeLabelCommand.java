@@ -21,7 +21,7 @@ package splitstree5.gui.graphtab.commands;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
-import jloda.fx.ProgramProperties;
+import jloda.fx.util.ProgramProperties;
 import splitstree5.gui.graphtab.base.EdgeViewBase;
 import splitstree5.undo.UndoableRedoableCommand;
 

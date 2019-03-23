@@ -21,7 +21,7 @@ package splitstree5.core.algorithms.filters;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import jloda.fx.NotificationManager;
+import jloda.fx.util.NotificationManager;
 import jloda.phylo.PhyloTree;
 import jloda.util.BitSetUtils;
 import jloda.util.CanceledException;

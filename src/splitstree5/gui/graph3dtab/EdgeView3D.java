@@ -26,7 +26,7 @@ import javafx.scene.control.Labeled;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import jloda.fx.SelectionEffect;
+import jloda.fx.util.SelectionEffect;
 import jloda.graph.Edge;
 import splitstree5.gui.graphtab.base.EdgeViewBase;
 

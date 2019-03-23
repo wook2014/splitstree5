@@ -25,7 +25,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
 import javafx.geometry.Point2D;
 import javafx.scene.text.Font;
-import jloda.fx.ProgramProperties;
+import jloda.fx.util.ProgramProperties;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;

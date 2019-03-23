@@ -20,7 +20,7 @@
 package splitstree5.core.algorithms.filters;
 
 import javafx.beans.property.*;
-import jloda.fx.NotificationManager;
+import jloda.fx.util.NotificationManager;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;

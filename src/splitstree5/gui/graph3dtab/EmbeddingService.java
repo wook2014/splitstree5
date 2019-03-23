@@ -22,7 +22,7 @@ package splitstree5.gui.graph3dtab;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.geometry.Point3D;
-import jloda.fx.ProgramExecutorService;
+import jloda.fx.util.ProgramExecutorService;
 import jloda.graph.NodeArray;
 import jloda.phylo.PhyloSplitsGraph;
 import splitstree5.gui.graphtab.base.NodeViewBase;

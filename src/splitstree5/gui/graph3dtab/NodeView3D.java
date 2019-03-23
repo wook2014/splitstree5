@@ -37,7 +37,7 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape3D;
 import javafx.scene.shape.Sphere;
-import jloda.fx.SelectionEffect;
+import jloda.fx.util.SelectionEffect;
 import jloda.graph.Node;
 import splitstree5.gui.formattab.FormatItem;
 import splitstree5.gui.graphtab.base.NodeViewBase;

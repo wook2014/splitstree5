@@ -50,7 +50,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import jloda.fx.SelectionEffect;
+import jloda.fx.util.SelectionEffect;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

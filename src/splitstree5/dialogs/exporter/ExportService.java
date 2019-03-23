@@ -21,8 +21,8 @@ package splitstree5.dialogs.exporter;
 
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import jloda.fx.ProgramExecutorService;
-import jloda.fx.TaskWithProgressListener;
+import jloda.fx.util.ProgramExecutorService;
+import jloda.fx.util.TaskWithProgressListener;
 import jloda.util.CanceledException;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;

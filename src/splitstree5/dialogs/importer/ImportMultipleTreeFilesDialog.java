@@ -21,7 +21,7 @@ package splitstree5.dialogs.importer;
 
 import javafx.application.Platform;
 import javafx.stage.FileChooser;
-import jloda.fx.*;
+import jloda.fx.util.*;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;

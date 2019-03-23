@@ -21,7 +21,7 @@ package splitstree5.io.nexus.workflow;
 
 import javafx.application.Platform;
 import javafx.stage.Stage;
-import jloda.fx.*;
+import jloda.fx.util.*;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.Pair;

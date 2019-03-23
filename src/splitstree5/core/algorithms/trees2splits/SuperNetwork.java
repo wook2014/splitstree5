@@ -1,7 +1,7 @@
 package splitstree5.core.algorithms.trees2splits;
 
 import javafx.beans.property.*;
-import jloda.fx.NotificationManager;
+import jloda.fx.util.NotificationManager;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
