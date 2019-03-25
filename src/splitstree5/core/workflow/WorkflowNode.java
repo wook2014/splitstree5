@@ -22,18 +22,16 @@ package splitstree5.core.workflow;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
-import splitstree5.core.misc.ANamed;
+import splitstree5.utils.NameableBase;
 
 /**
  * A Workflow node
  * Daniel Huson, 12/21/16.
  */
-abstract public class WorkflowNode extends ANamed {
+abstract public class WorkflowNode extends NameableBase {
     private static int created = 0;
     private static final Object lock = new Object();
     private final int uid;
-
-    private int pathId;
 
     private final ObjectProperty<UpdateState> state = new SimpleObjectProperty<>(UpdateState.VALID);
 
@@ -78,22 +76,6 @@ abstract public class WorkflowNode extends ANamed {
      * @return children
      */
     abstract public ObservableList<? extends WorkflowNode> getChildren();
-
-    public int getPathId() {
-        return pathId;
-    }
-
-    public void setPathId(int id) {
-        pathId = id;
-        int pos = getName().indexOf("]");
-        if (id <= 1) {
-            if (pos != -1)
-                this.setName(getName().substring(pos + 1));
-        } else if (pos == -1)
-            this.setName("[" + id + "]" + getName());
-        else
-            this.setName("[" + id + "]" + getName().substring(0, pos));
-    }
 
     abstract public WorkflowNode getParent();
 }

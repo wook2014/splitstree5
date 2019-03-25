@@ -26,7 +26,7 @@ import javafx.stage.Stage;
 import jloda.fx.util.ArgsOptions;
 import jloda.fx.util.NotificationManager;
 import jloda.fx.util.ProgramExecutorService;
-import jloda.fx.util.ProgramProperties;
+import jloda.fx.util.ProgramPropertiesFX;
 import jloda.util.Basic;
 import jloda.util.PeakMemoryUsageMonitor;
 import jloda.util.ProgressListener;
@@ -59,8 +59,8 @@ RunWorkflow extends Application {
 
     @Override
     public void init() {
-        ProgramProperties.setProgramName("RunWorkflow");
-        ProgramProperties.setProgramVersion(Version.SHORT_DESCRIPTION);
+        ProgramPropertiesFX.setProgramName("RunWorkflow");
+        ProgramPropertiesFX.setProgramVersion(Version.SHORT_DESCRIPTION);
         NotificationManager.setEchoToConsole(false);
 
         PeakMemoryUsageMonitor.start();
@@ -96,7 +96,7 @@ RunWorkflow extends Application {
 
     private void run(String[] args) throws Exception {
         final ArgsOptions options = new ArgsOptions(args, RunWorkflow.class, "Exports data from a SplitsTree5 workflow");
-        options.setVersion(ProgramProperties.getProgramVersion());
+        options.setVersion(ProgramPropertiesFX.getProgramVersion());
         options.setLicense("Copyright (C) 2019 Daniel H. Huson. This program comes with ABSOLUTELY NO WARRANTY.");
         options.setAuthors("Daniel H. Huson");
 

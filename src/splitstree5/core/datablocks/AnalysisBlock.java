@@ -34,7 +34,6 @@ public class AnalysisBlock extends DataBlock {
     public static final String BLOCK_NAME = "ANALYSIS";
 
     public AnalysisBlock() {
-        super(BLOCK_NAME);
     }
 
     private final StringProperty info = new SimpleStringProperty("analysis results");
@@ -70,5 +69,10 @@ public class AnalysisBlock extends DataBlock {
 
     public void setInfo(String info) {
         this.info.set(info);
+    }
+
+    @Override
+    public String getBlockName() {
+        return BLOCK_NAME;
     }
 }

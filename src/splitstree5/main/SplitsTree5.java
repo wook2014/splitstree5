@@ -57,17 +57,17 @@ public class SplitsTree5 extends Application {
     public static void parseArguments(String[] args) throws Exception {
         Basic.restoreSystemOut(System.err); // send system out to system err
         Basic.startCollectionStdErr();
-        ProgramProperties.getProgramIcons().setAll(ResourceManagerFX.getIcon("SplitsTree5-16.png"), ResourceManagerFX.getIcon("SplitsTree5-32.png"),
+        ProgramPropertiesFX.getProgramIcons().setAll(ResourceManagerFX.getIcon("SplitsTree5-16.png"), ResourceManagerFX.getIcon("SplitsTree5-32.png"),
                 ResourceManagerFX.getIcon("SplitsTree5-64.png"), ResourceManagerFX.getIcon("SplitsTree5-128.png"));
-        ProgramProperties.setProgramName(Version.NAME);
-        ProgramProperties.setProgramVersion(Version.SHORT_DESCRIPTION);
-        ProgramProperties.setUseGUI(true);
+        ProgramPropertiesFX.setProgramName(Version.NAME);
+        ProgramPropertiesFX.setProgramVersion(Version.SHORT_DESCRIPTION);
+        ProgramPropertiesFX.setUseGUI(true);
 
         final ArgsOptions options = new ArgsOptions(args, SplitsTree5.class, "Interactive computation of phylogenetic trees and networks");
         options.setAuthors("Daniel H. Huson and David J. Bryant. Some code by Daria Evseeva and others.");
         // options.setLicense("This is free software, licensed under the terms of the GNU General Public License, Version 3.");
         options.setLicense("This is an early (BETA) version of SplitsTree5, made available for testing purposes. Source code will be released wih first official version");
-        options.setVersion(ProgramProperties.getProgramVersion());
+        options.setVersion(ProgramPropertiesFX.getProgramVersion());
 
         options.comment("Input:");
         inputFilesAtStartup = options.getOption("-i", "input", "Input file(s)", new String[0]);
@@ -75,7 +75,7 @@ public class SplitsTree5 extends Application {
         options.comment("Configuration:");
         showMessageWindow = options.getOption("-w", "messageWindow", "Show the message window", true);
         final String defaultPreferenceFile;
-        if (ProgramProperties.isMacOS())
+        if (ProgramPropertiesFX.isMacOS())
             defaultPreferenceFile = System.getProperty("user.home") + "/Library/Preferences/SplitsTree5.def";
         else
             defaultPreferenceFile = System.getProperty("user.home") + File.separator + ".SplitsTree5.def";
@@ -85,7 +85,7 @@ public class SplitsTree5 extends Application {
         ProgramExecutorService.setMaxNumberOfTheadsForParallelAlgorithm(options.getOption("-t", "threads", "Maximum number of threads to use in a parallel algorithm (0=all available)", 0));
         options.done();
 
-        ProgramProperties.load(propertiesFile);
+        ProgramPropertiesFX.load(propertiesFile);
 
         if (silentMode) {
             Basic.stopCollectingStdErr();
@@ -94,8 +94,8 @@ public class SplitsTree5 extends Application {
         }
 
         if (showVersion) {
-            System.err.println(ProgramProperties.getProgramVersion());
-            System.err.println(jloda.util.Version.getVersion(SplitsTree5.class, ProgramProperties.getProgramName()));
+            System.err.println(ProgramPropertiesFX.getProgramVersion());
+            System.err.println(jloda.util.Version.getVersion(SplitsTree5.class, ProgramPropertiesFX.getProgramName()));
             System.err.println("Java version: " + System.getProperty("java.version"));
         }
     }
@@ -104,7 +104,7 @@ public class SplitsTree5 extends Application {
     public void start(Stage primaryStage) {
         try {
             // setup and show splash screen:
-            SplashScreen.setVersionString(ProgramProperties.getProgramVersion());
+            SplashScreen.setVersionString(ProgramPropertiesFX.getProgramVersion());
             SplashScreen.setImageResourceName("SplitsTree5-splash.png");
             SplashScreen.getInstance().showSplash(Duration.ofSeconds(5));
 
@@ -140,7 +140,7 @@ public class SplitsTree5 extends Application {
     }
 
     public void stop() {
-        ProgramProperties.store();
+        ProgramPropertiesFX.store();
         System.exit(0);
     }
 }

@@ -38,8 +38,8 @@ import java.util.List;
  */
 public class SplitsNexusInput extends NexusIOBase implements INexusInput<SplitsBlock> {
     public static final String SYNTAX = "BEGIN " + SplitsBlock.BLOCK_NAME + ";\n" +
-            "\t[TITLE title;]\n" +
-            "\t[LINK name = title;]\n" +
+            "\t[TITLE {title};]\n" +
+            "\t[LINK {type} = {title};]\n" +
             "\t[DIMENSIONS [NTAX=number-of-taxa] [NSPLITS=number-of-splits];]\n" +
             "\t[FORMAT\n" +
             "\t\t[Labels={LEFT|NO}]\n" +

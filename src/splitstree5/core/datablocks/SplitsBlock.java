@@ -60,21 +60,10 @@ public class SplitsBlock extends DataBlock {
      * default constructor
      */
     public SplitsBlock() {
-        super(BLOCK_NAME);
         splits = FXCollections.observableArrayList();
         format = new SplitsNexusFormat();
 
         splitLabels = FXCollections.observableMap(new TreeMap<>());
-    }
-
-    /**
-     * named constructor
-     *
-     * @param name
-     */
-    public SplitsBlock(String name) {
-        this();
-        setName(name);
         getSplits().addListener((InvalidationListener) observable -> setShortDescription(getInfo()));
     }
 
@@ -91,7 +80,8 @@ public class SplitsBlock extends DataBlock {
         fit = that.getFit();
         threshold = that.getThreshold();
         partial = that.isPartial();
-        cycle = that.getCycle().clone();
+        if (that.getCycle() != null)
+            cycle = that.getCycle().clone();
         splitLabels.putAll(that.splitLabels);
     }
 
@@ -245,5 +235,10 @@ public class SplitsBlock extends DataBlock {
     @Override
     public String getInfo() {
         return getNsplits() + " splits" + (compatibility != Compatibility.unknown ? ", " + Basic.fromCamelCase(compatibility.toString()).toLowerCase() : "");
+    }
+
+    @Override
+    public String getBlockName() {
+        return BLOCK_NAME;
     }
 }

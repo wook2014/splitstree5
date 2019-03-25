@@ -39,14 +39,8 @@ public class TreesBlock extends DataBlock {
     private boolean rooted = false; // are the trees explicitly rooted?
 
     public TreesBlock() {
-        super(BLOCK_NAME);
         trees = FXCollections.observableArrayList();
         format = new TreesNexusFormat();
-    }
-
-    public TreesBlock(String name) {
-        this();
-        setName(name);
         trees.addListener((ListChangeListener<? super PhyloTree>) c -> setShortDescription(getInfo()));
     }
 
@@ -140,5 +134,10 @@ public class TreesBlock extends DataBlock {
      */
     public PhyloTree getTree(int t) {
         return trees.get(t - 1);
+    }
+
+    @Override
+    public String getBlockName() {
+        return BLOCK_NAME;
     }
 }

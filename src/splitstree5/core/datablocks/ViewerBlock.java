@@ -33,8 +33,7 @@ import splitstree5.gui.graphtab.base.GraphTabBase;
  * Daniel Huson, 2.2018
  */
 public class ViewerBlock extends DataBlock {
-    public static final String BLOCK_NAME = "VIEWER";
-
+    public final static String BLOCK_NAME = "VIEWER";
     public enum Type {TreeViewer, TreesGrid, SplitsNetworkViewer, SplitsNetwork3DViewer, NetworkViewer}
 
     private final GraphTabBase viewerTab;
@@ -46,10 +45,9 @@ public class ViewerBlock extends DataBlock {
      * @param viewerTab
      */
     private ViewerBlock(GraphTabBase viewerTab, Type type) {
-        super(BLOCK_NAME);
         this.viewerTab = viewerTab;
         this.type = type;
-        setTitle(viewerTab.getName());
+        //setTitle(viewerTab.getName());
         setName(viewerTab.getName());
         viewerTab.setDataNode(getDataNode()); // todo: do we need this?
     }
@@ -183,5 +181,10 @@ public class ViewerBlock extends DataBlock {
             default:
                 throw new RuntimeException("Unknown type: " + type);
         }
+    }
+
+    @Override
+    public String getBlockName() {
+        return BLOCK_NAME;
     }
 }

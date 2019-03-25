@@ -54,7 +54,6 @@ public class TaxaBlock extends DataBlock {
      * constructor
      */
     public TaxaBlock() {
-        super(BLOCK_NAME);
         taxa = FXCollections.observableArrayList();
         taxon2index = FXCollections.observableHashMap();
         name2taxon = FXCollections.observableHashMap();
@@ -73,16 +72,6 @@ public class TaxaBlock extends DataBlock {
         });
 
         hasTaxa.bind(Bindings.isNotEmpty(taxa));
-    }
-
-    /**
-     * named constructor
-     *
-     * @param name
-     */
-    public TaxaBlock(String name) {
-        this();
-        setName(name);
     }
 
     @Override
@@ -327,5 +316,10 @@ public class TaxaBlock extends DataBlock {
         name2taxon.clear();
         name2taxon.putAll(src.name2taxon);
         traitsBlock.set(src.traitsBlock.get());
+    }
+
+    @Override
+    public String getBlockName() {
+        return BLOCK_NAME;
     }
 }

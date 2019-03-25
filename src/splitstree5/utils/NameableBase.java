@@ -19,30 +19,117 @@
 
 package splitstree5.utils;
 
-import splitstree5.core.misc.ANamed;
-import splitstree5.gui.algorithmtab.AlgorithmPane;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import jloda.util.Basic;
 
 import java.util.List;
 
 /**
- * A base class to help implement INameable
+ * A base class for names and descriptions
  * Daniel Huson, 8/1/17.
  */
-public class NameableBase extends ANamed implements INameable {
+public class NameableBase {
+    private StringProperty name;
+    private StringProperty shortDescription;
 
+    private StringProperty title;
+
+    /**
+     * constructor
+     */
     public NameableBase() {
     }
 
-    public NameableBase(String name) {
-        if (name != null)
-            setName(name);
-    }
-
+    /**
+     * constructor
+     *
+     * @param name
+     * @param shortDescription
+     */
     public NameableBase(String name, String shortDescription) {
         if (name != null)
             setName(name);
         if (shortDescription != null)
             setShortDescription(shortDescription);
+    }
+
+
+    /**
+     * gets the name. E.g., the name associated with the Neighbor-joining Algorithm class is NeighborJoining
+     *
+     * @return name
+     */
+    public String getName() {
+        return nameProperty().get();
+    }
+
+    public StringProperty nameProperty() {
+        if (name == null)
+            name = new SimpleStringProperty(Basic.getShortName(this.getClass()));
+        return name;
+    }
+
+    public void setName(String name) {
+        nameProperty().set(name);
+    }
+
+    public StringProperty shortDescriptionProperty() {
+        if (shortDescription == null)
+            shortDescription = new SimpleStringProperty(Basic.fromCamelCase(Basic.getShortName(this.getClass())));
+        return shortDescription;
+    }
+
+    /**
+     * gets a short description e.g. for a tooltip
+     *
+     * @return short description
+     */
+    public String getShortDescription() {
+        return shortDescriptionProperty().get();
+    }
+
+    /**
+     * sets a short description
+     *
+     * @param shortDescription
+     */
+    public void setShortDescription(String shortDescription) {
+        if (shortDescription == null)
+            shortDescription = Basic.fromCamelCase(Basic.getShortName(this.getClass()));
+        shortDescriptionProperty().set(shortDescription);
+    }
+
+    public StringProperty titleProperty() {
+        if (title == null)
+            title = new SimpleStringProperty();
+        return title;
+    }
+
+    /**
+     * gets the title of a block. This is used during IO
+     *
+     * @return title
+     */
+    public String getTitle() {
+        return titleProperty().get();
+    }
+
+    /**
+     * sets the title of a block. This is used during IO
+     *
+     * @param title
+     */
+    public void setTitle(String title) {
+        titleProperty().set(title);
+    }
+
+    /**
+     * clear title and links
+     */
+    public void clear() {
+        title = null;
+        setShortDescription(Basic.fromCamelCase(Basic.getShortName(this.getClass())));
     }
 
     /**
@@ -64,12 +151,4 @@ public class NameableBase extends ANamed implements INameable {
         return optionName;
     }
 
-    /**
-     * gets customized control pane to get and set options
-     *
-     * @return pane or null
-     */
-    public AlgorithmPane getAlgorithmPane() {
-        return null;
-    }
 }

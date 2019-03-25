@@ -37,8 +37,8 @@ import java.util.*;
  */
 public class TreesNexusInput extends NexusIOBase implements INexusInput<TreesBlock> {
     public static final String SYNTAX = "BEGIN " + TreesBlock.BLOCK_NAME + ";\n" +
-            "\t[TITLE title;]\n" +
-            "\t[LINK name = title;]\n" +
+            "\t[TITLE {title};]\n" +
+            "\t[LINK {type} = {title};]\n" +
             "[PROPERTIES PARTIALTREES={YES|NO} ROOTED={YES|NO};]\n" +
             "[TRANSLATE\n" +
             "    nodeLabel1 taxon1,\n" +

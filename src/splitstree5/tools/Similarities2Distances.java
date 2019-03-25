@@ -20,7 +20,7 @@
 package splitstree5.tools;
 
 import jloda.fx.util.ArgsOptions;
-import jloda.fx.util.ProgramProperties;
+import jloda.fx.util.ProgramPropertiesFX;
 import jloda.util.*;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -46,8 +46,8 @@ public class Similarities2Distances {
      */
     public static void main(String[] args) throws Exception {
         try {
-            ProgramProperties.setProgramName("Similarities2Distances");
-            ProgramProperties.setProgramVersion(splitstree5.main.Version.SHORT_DESCRIPTION);
+            ProgramPropertiesFX.setProgramName("Similarities2Distances");
+            ProgramPropertiesFX.setProgramVersion(splitstree5.main.Version.SHORT_DESCRIPTION);
 
             PeakMemoryUsageMonitor.start();
             (new Similarities2Distances()).run(args);
@@ -67,7 +67,7 @@ public class Similarities2Distances {
      */
     public void run(String[] args) throws Exception {
         final ArgsOptions options = new ArgsOptions(args, this.getClass(), "Converts a list of similarties to a matrix of distances");
-        options.setVersion(ProgramProperties.getProgramVersion());
+        options.setVersion(ProgramPropertiesFX.getProgramVersion());
         options.setLicense("This is free software, licensed under the terms of the GNU General Public License, Version 3.");
         options.setAuthors("Daniel H. Huson");
 

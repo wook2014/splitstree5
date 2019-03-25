@@ -33,7 +33,7 @@ import javafx.stage.Popup;
 import javafx.util.converter.IntegerStringConverter;
 import jloda.fx.util.ExtendedFXMLLoader;
 import jloda.fx.util.FontUtils;
-import jloda.fx.util.ProgramProperties;
+import jloda.fx.util.ProgramPropertiesFX;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -52,7 +52,7 @@ public class FontSelector extends ComboBox<String> {
     private boolean fontChanging = false;
 
     public FontSelector() {
-        this(ProgramProperties.getDefaultFont());
+        this(ProgramPropertiesFX.getDefaultFont());
     }
 
     public FontSelector(Font font) {

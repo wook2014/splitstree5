@@ -31,7 +31,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import jloda.fx.shapes.NodeShape;
 import jloda.fx.util.GeometryUtilsFX;
-import jloda.fx.util.ProgramProperties;
+import jloda.fx.util.ProgramPropertiesFX;
 import jloda.fx.util.SelectionEffect;
 import splitstree5.gui.formattab.FormatItem;
 
@@ -74,7 +74,7 @@ public class NodeView2D extends NodeViewBase {
 
             label = new Label(text);
             label.setStyle("");
-            label.setFont(ProgramProperties.getDefaultFont());
+            label.setFont(ProgramPropertiesFX.getDefaultFont());
             label.setTranslateX(location.getX() + shapeWidth + 2);
             label.setTranslateY(location.getY());
             labelGroup.getChildren().add(label);

@@ -34,7 +34,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import jloda.fx.util.ExtendedFXMLLoader;
-import jloda.fx.util.ProgramProperties;
+import jloda.fx.util.ProgramPropertiesFX;
 import jloda.fx.util.RecentFilesManager;
 import jloda.fx.util.ResourceManagerFX;
 import jloda.util.Basic;
@@ -166,7 +166,7 @@ public class MainWindow {
             dirtyStar.set(n ? "*" : "");
         });
 
-        titleProperty.bind(Bindings.concat("Main Window - ").concat(document.nameProperty()).concat(dirtyStar).concat(" - " + ProgramProperties.getProgramName()));
+        titleProperty.bind(Bindings.concat("Main Window - ").concat(document.nameProperty()).concat(dirtyStar).concat(" - " + ProgramPropertiesFX.getProgramName()));
 
         // setup work flow tree view:
         {
@@ -230,7 +230,7 @@ public class MainWindow {
             this.stage = stage0;
         else {
             this.stage = new Stage();
-            stage.getIcons().setAll(ProgramProperties.getProgramIcons());
+            stage.getIcons().setAll(ProgramPropertiesFX.getProgramIcons());
 
             stage.focusedProperty().addListener((c, o, n) -> {
                 if (!n && mainTabPane.getSelectionModel().getSelectedItem() instanceof ISavesPreviousSelection)

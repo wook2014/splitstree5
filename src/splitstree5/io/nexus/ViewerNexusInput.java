@@ -46,8 +46,8 @@ import java.util.Map;
  */
 public class ViewerNexusInput extends NexusIOBase {
     public static final String SYNTAX = "BEGIN " + ViewerBlock.BLOCK_NAME + ";\n" +
-            "\t[TITLE title;]\n" +
-            "\t[LINK name = title;]\n" +
+            "\t[TITLE {title};]\n" +
+            "\t[LINK {type} = {title};]\n" +
             "\t[DIMENSIONS NNODES=number-of-nodes NEDGES=number-of-edges [NLABELS=number-of-labels];]\n" +
             "\tFORMAT type={" + Basic.toString(ViewerBlock.Type.values(), "|") + "}\n" +
             "\tNODES\n" +

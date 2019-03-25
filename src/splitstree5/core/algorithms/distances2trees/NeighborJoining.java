@@ -19,7 +19,6 @@
 
 package splitstree5.core.algorithms.distances2trees;
 
-
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;

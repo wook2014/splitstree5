@@ -37,12 +37,12 @@ import java.util.*;
  */
 public class AlgorithmNexusInput extends NexusIOBase {
     public static final String SYNTAX = "BEGIN " + Algorithm.BLOCK_NAME + ";\n" +
-            "\t[TITLE title;]\n" +
-            "\t[LINK name = title;]\n" +
-            "\tALGORITHM name;\n" +
-            "\t\t[OPTIONS name=value," +
+            "\t[TITLE <title>;]\n" +
+            "\t[LINK <parent-block-type> = <parent-title>;]\n" +
+            "\tALGORITHM <name>;\n" +
+            "\t\t[OPTIONS <name>=<value>," +
             "\t\t ..." +
-            "\t\tname=value\n" +
+            "\t\t<name>=<value>\n" +
             "\t;\n" +
             "END;\n";
 
@@ -63,7 +63,7 @@ public class AlgorithmNexusInput extends NexusIOBase {
         np.matchBeginBlock(Algorithm.BLOCK_NAME);
         parseTitleAndLink(np);
 
-        np.matchIgnoreCase("ALGORITHM ");
+        np.matchIgnoreCase("ALGORITHM");
         final String algorithmName = np.getWordRespectCase();
         np.matchIgnoreCase(";");
 

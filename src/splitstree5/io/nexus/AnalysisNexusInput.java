@@ -30,8 +30,8 @@ import java.util.ArrayList;
  */
 public class AnalysisNexusInput extends NexusIOBase {
     public static final String SYNTAX = "BEGIN ST_ANALYSIS;\n" +
-            "\t[TITLE title;]\n" +
-            "\t[LINK name = title;]\n" +
+            "\t[TITLE {title};]\n" +
+            "\t[LINK {type} = {title};]\n" +
             "\t[DIMENSIONS [NLINES=number-of-lines];]\n" +
             "\tRESULT\n" +
             "\t\tresults...\n" +

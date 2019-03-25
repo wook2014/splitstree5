@@ -128,7 +128,7 @@ public class WorkflowNodeView extends Group {
 
         final Label label = new Label();
         label.setMouseTransparent(true);
-        label.textProperty().bind(workflowNode.nameProperty());
+        label.textProperty().bind(workflowNode.titleProperty());
         label.setFont(Font.font("Helvetica", 12));
         label.setLayoutX(10);
         label.setLayoutY(4);
@@ -139,13 +139,8 @@ public class WorkflowNodeView extends Group {
             descriptionLabel.setFont(Font.font("Helvetica", 11));
             descriptionLabel.setMouseTransparent(true);
 
-            {
-                final ChangeListener<UpdateState> stateChangeListener = (c, o, n) -> descriptionLabel.setText(workflowNode.getShortDescription());
-                workflowNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
-                stateChangeListeners.add(stateChangeListener);
-            }
-
-            descriptionLabel.setText(workflowNode.getShortDescription());
+            // todo: uncomment the next line, if the description says something interesting...
+            //descriptionLabel.textProperty().bind(workflowNode.shortDescriptionProperty());
             descriptionLabel.setLayoutX(10);
             descriptionLabel.setLayoutY(24);
             getChildren().add(descriptionLabel);

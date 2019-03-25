@@ -36,8 +36,8 @@ import java.util.List;
 public class DistancesNexusInput extends NexusIOBase implements INexusInput<DistancesBlock> {
     public static final String SYNTAX = "BEGIN " + DistancesBlock.BLOCK_NAME + ";\n" +
 
-            "\t[TITLE title;]\n" +
-            "\t[LINK name = title;]\n" +
+            "\t[TITLE {title};]\n" +
+            "\t[LINK {type} = {title};]\n" +
             "\t[DIMENSIONS NTAX=number-of-taxa;]\n" +
             "\t[FORMAT\n" +
             "\t\t[TRIANGLE={LOWER|UPPER|BOTH}]\n" +

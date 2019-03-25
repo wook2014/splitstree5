@@ -37,19 +37,8 @@ public class DistancesBlock extends DataBlock {
      * constructor
      */
     public DistancesBlock() {
-        super(BLOCK_NAME);
         distances = new double[0][0];
         format = new DistancesNexusFormat();
-    }
-
-    /**
-     * named constructor
-     *
-     * @param name
-     */
-    public DistancesBlock(String name) {
-        this();
-        setName(name);
     }
 
     /**
@@ -212,5 +201,10 @@ public class DistancesBlock extends DataBlock {
     @Override
     public String getInfo() {
         return "a " + getNtax() + "x" + getNtax() + " distance matrix";
+    }
+
+    @Override
+    public String getBlockName() {
+        return BLOCK_NAME;
     }
 }

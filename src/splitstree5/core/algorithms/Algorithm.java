@@ -26,8 +26,10 @@ import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.Connector;
+import splitstree5.gui.algorithmtab.AlgorithmPane;
 import splitstree5.gui.algorithmtab.next.OptionNext;
 import splitstree5.gui.algorithmtab.next.OptionValueType;
+import splitstree5.utils.IOptionable;
 import splitstree5.utils.NameableBase;
 import splitstree5.utils.Option;
 import splitstree5.utils.OptionsAccessor;
@@ -38,7 +40,7 @@ import java.util.Map;
  * An algorithm
  * Daniel Huson 12.2016
  */
-abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extends NameableBase {
+abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extends NameableBase implements IOptionable {
     public static final String BLOCK_NAME = "ALGORITHM";
 
     final private ObjectProperty<Connector<P, C>> connector = new SimpleObjectProperty<>();
@@ -47,11 +49,6 @@ abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extend
      * constructor
      */
     public Algorithm() {
-        setName(Basic.getShortName(getClass()));
-        if (getName().endsWith("Filter"))
-            setShortDescription(Basic.fromCamelCase(getName()).replaceAll("Filter", "filter"));
-        else
-            setShortDescription(Basic.fromCamelCase(getName()) + " algorithm");
     }
 
     /**
@@ -60,7 +57,9 @@ abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extend
      * @param name
      */
     public Algorithm(String name) {
-        setName(name);
+        this(name, name.endsWith("Filter") ?
+                Basic.fromCamelCase(name).replaceAll("Filter", "filter") :
+                Basic.fromCamelCase(name) + " algorithm");
     }
 
     /**
@@ -206,7 +205,23 @@ abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extend
         return null;
     }
 
+    /**
+     * gets the block name
+     *
+     * @return block name
+     */
     public String getBlockName() {
         return BLOCK_NAME;
     }
+
+
+    /**
+     * gets customized control pane to get and set options
+     *
+     * @return pane or null
+     */
+    public AlgorithmPane getAlgorithmPane() {
+        return null;
+    }
+
 }

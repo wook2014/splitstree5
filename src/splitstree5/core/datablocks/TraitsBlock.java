@@ -39,8 +39,10 @@ public class TraitsBlock extends DataBlock implements IAdditionalBlock {
     private float[] traitLatitude = null;
     private float[] traitLongitude = null;
 
+    /**
+     * default constructor
+     */
     public TraitsBlock() {
-        super(BLOCK_NAME);
         format = new TraitsNexusFormat();
     }
 
@@ -167,5 +169,10 @@ public class TraitsBlock extends DataBlock implements IAdditionalBlock {
             }
             tarTaxonIdx++;
         }
+    }
+
+    @Override
+    public String getBlockName() {
+        return BLOCK_NAME;
     }
 }

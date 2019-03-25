@@ -29,14 +29,12 @@ import splitstree5.main.Version;
 public class SplitsTree5Block extends DataBlock implements IAdditionalBlock {
     public static final String BLOCK_NAME = "SPLITSTREE5";
 
-    final private IntegerProperty optionNumberOfDataNodes = new SimpleIntegerProperty();
-    final private IntegerProperty optionNumberOfAlgorithms = new SimpleIntegerProperty();
-    final private StringProperty optionVersion = new SimpleStringProperty();
-    final private LongProperty optionCreationDate = new SimpleLongProperty();
+    final private IntegerProperty optionNumberOfDataNodes = new SimpleIntegerProperty(0);
+    final private IntegerProperty optionNumberOfAlgorithms = new SimpleIntegerProperty(0);
+    final private StringProperty optionVersion = new SimpleStringProperty(Version.SHORT_DESCRIPTION);
+    final private LongProperty optionCreationDate = new SimpleLongProperty(System.currentTimeMillis());
 
     public SplitsTree5Block() {
-        super(BLOCK_NAME);
-        clear();
     }
 
     public void clear() {
@@ -113,5 +111,10 @@ public class SplitsTree5Block extends DataBlock implements IAdditionalBlock {
     @Override
     public String getInfo() {
         return "Workflow of size " + size();
+    }
+
+    @Override
+    public String getBlockName() {
+        return BLOCK_NAME;
     }
 }

@@ -28,7 +28,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import jloda.fx.util.ExtendedFXMLLoader;
 import jloda.fx.util.NotificationManager;
-import jloda.fx.util.ProgramProperties;
+import jloda.fx.util.ProgramPropertiesFX;
 import splitstree5.io.imports.interfaces.IImporter;
 import splitstree5.main.MainWindow;
 
@@ -57,7 +57,7 @@ public class ImportDialog {
         importService = new ImportService();
 
         stage = new Stage();
-        stage.getIcons().setAll(ProgramProperties.getProgramIcons());
+        stage.getIcons().setAll(ProgramPropertiesFX.getProgramIcons());
 
         stage.setScene(new Scene(extendedFXMLLoader.getRoot()));
         stage.sizeToScene();
@@ -65,7 +65,7 @@ public class ImportDialog {
         stage.setX(parentMainWindow.getStage().getX() + 50);
         stage.setY(parentMainWindow.getStage().getY() + 50);
 
-        stage.setTitle("Import - " + ProgramProperties.getProgramName());
+        stage.setTitle("Import - " + ProgramPropertiesFX.getProgramName());
 
         controller.getDataTypeComboBox().getItems().addAll(ImporterManager.getInstance().getAllDataTypes());
         controller.getDataTypeComboBox().disableProperty().bind(importService.runningProperty());
@@ -78,7 +78,7 @@ public class ImportDialog {
 
         final ObjectProperty<FileChooser.ExtensionFilter> selectedExtensionFilter = new SimpleObjectProperty<>();
         controller.getBrowseButton().setOnAction((e) -> {
-            final File previousDir = new File(ProgramProperties.get("ImportDir", ""));
+            final File previousDir = new File(ProgramPropertiesFX.get("ImportDir", ""));
             final FileChooser fileChooser = new FileChooser();
             if (previousDir.isDirectory())
                 fileChooser.setInitialDirectory(previousDir);
@@ -90,7 +90,7 @@ public class ImportDialog {
             final File selectedFile = fileChooser.showOpenDialog(stage);
             if (selectedFile != null) {
                 if (selectedFile.getParentFile().isDirectory())
-                    ProgramProperties.put("ImportDir", selectedFile.getParent());
+                    ProgramPropertiesFX.put("ImportDir", selectedFile.getParent());
                 controller.getFileTextField().setText(selectedFile.getPath());
                 selectedExtensionFilter.set(fileChooser.getSelectedExtensionFilter());
 

@@ -40,8 +40,8 @@ import java.util.TreeMap;
  */
 public class NetworkNexusInput extends NexusIOBase implements INexusInput<NetworkBlock> {
     public static final String SYNTAX = "BEGIN " + NetworkBlock.BLOCK_NAME + ";\n" +
-            "\t[TITLE title;]\n" +
-            "\t[LINK name = title;]\n" +
+            "\t[TITLE {title};]\n" +
+            "\t[LINK {type} = {title};]\n" +
             "\t[DIMENSIONS [NNODES=number-of-nodes] [NEDGES=number-of-edges];]\n" +
             "\t\t[NETWORK={" + Basic.toString(NetworkBlock.Type.values(), "|") + "};]\n" +
             "\t[FORMAT\n" +

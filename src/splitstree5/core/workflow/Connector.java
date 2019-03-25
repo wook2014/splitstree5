@@ -43,7 +43,6 @@ import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.WeakChangeListener;
@@ -170,20 +169,16 @@ public class Connector<P extends DataBlock, C extends DataBlock> extends Workflo
     }
 
     public void setAlgorithm(Algorithm<P, C> algorithm) {
-        if (this.algorithm != null) {
-            shortDescriptionProperty().unbind();
-        }
         this.algorithm = algorithm;
 
-        if (algorithm != null)
+        if (algorithm == null) {
+            shortDescriptionProperty().unbind();
+            setShortDescription("undefined");
+        } else {
             shortDescriptionProperty().bind(algorithm.shortDescriptionProperty());
-
-        applicable.set(algorithm != null && algorithm.isApplicable(taxaBlock, parent.getDataBlock()));
-        if (algorithm != null)
             setName(algorithm.getName());
-        else
-            setName("Connector");
-        setPathId(getPathId());
+        }
+        applicable.set(algorithm != null && algorithm.isApplicable(taxaBlock, parent.getDataBlock()));
     }
 
     public void changeParent(DataNode<P> newParent) {
@@ -253,11 +248,6 @@ public class Connector<P extends DataBlock, C extends DataBlock> extends Workflo
         return ReadOnlyBooleanProperty.readOnlyBooleanProperty(applicable);
     }
 
-
-    @Override
-    public StringProperty shortDescriptionProperty() {
-        return super.shortDescriptionProperty();
-    }
 
     public ConnectorService<P, C> getService() {
         return service;

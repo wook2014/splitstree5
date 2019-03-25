@@ -38,7 +38,6 @@
 
 package splitstree5.core.workflow;
 
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import splitstree5.core.datablocks.DataBlock;
@@ -66,6 +65,8 @@ public class DataNode<D extends DataBlock> extends WorkflowNode {
         this.dataBlock.setDataNode(this);
         this.children = FXCollections.observableArrayList();
         this.shortDescriptionProperty().bind(dataBlock.shortDescriptionProperty());
+        nameProperty().bindBidirectional(dataBlock.nameProperty());
+        titleProperty().bindBidirectional(dataBlock.titleProperty());
     }
 
     public D getDataBlock() {
@@ -86,21 +87,6 @@ public class DataNode<D extends DataBlock> extends WorkflowNode {
                     node.setState(UpdateState.INVALID);
             }
         }
-    }
-
-    @Override
-    public String getName() {
-        return dataBlock.getName();
-    }
-
-    @Override
-    public void setName(String name) {
-        if (dataBlock != null)
-            dataBlock.setName(name);
-    }
-
-    public StringProperty nameProperty() {
-        return dataBlock.nameProperty();
     }
 
     public void clear() {

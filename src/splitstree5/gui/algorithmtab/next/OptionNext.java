@@ -21,7 +21,7 @@ package splitstree5.gui.algorithmtab.next;
 
 import javafx.beans.property.Property;
 import jloda.util.Basic;
-import splitstree5.utils.IOptionable;
+import splitstree5.core.algorithms.Algorithm;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -98,7 +98,7 @@ public class OptionNext<T> {
      * @param optionable
      * @return options
      */
-    public static ArrayList<OptionNext> getAllOptions(IOptionable optionable) {
+    public static ArrayList<OptionNext> getAllOptions(Algorithm optionable) {
         final Map<String, OptionNext> name2AnOption = new TreeMap<>();
 
         Method listMethod = null;
@@ -173,7 +173,7 @@ public class OptionNext<T> {
      * @param optionable
      * @return map
      */
-    public static Map<String, OptionNext> getName2Options(IOptionable optionable) {
+    public static Map<String, OptionNext> getName2Options(Algorithm optionable) {
         final Map<String, OptionNext> name2options = new TreeMap<>();
         for (OptionNext option : getAllOptions(optionable)) {
             name2options.put(option.getName(), option);

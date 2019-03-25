@@ -78,7 +78,7 @@ public class AlgorithmTab<P extends DataBlock, C extends DataBlock> extends View
         final Label label = new Label();
         setText("");
         setGraphic(label);
-        label.textProperty().bind(connector.nameProperty());
+        label.textProperty().bind(connector.titleProperty());
 
         {
             final ExtendedFXMLLoader<AlgorithmTabController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());

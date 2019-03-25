@@ -29,7 +29,7 @@ import javafx.scene.control.Tab;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import jloda.fx.util.ExtendedFXMLLoader;
-import jloda.fx.util.ProgramProperties;
+import jloda.fx.util.ProgramPropertiesFX;
 import splitstree5.core.Document;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.graphtab.SplitsViewTab;
@@ -65,7 +65,7 @@ public class AuxWindow implements IStageSupplier {
         }
 
         final Stage stage = new Stage();
-        stage.getIcons().setAll(ProgramProperties.getProgramIcons());
+        stage.getIcons().setAll(ProgramPropertiesFX.getProgramIcons());
 
         menuController.setupFullScreenMenuSupport(stage);
 
@@ -89,11 +89,11 @@ public class AuxWindow implements IStageSupplier {
                         buf.append(" ").append(aTab.getText());
                 }
                 buf.append(" - ");
-                stage.titleProperty().bind(Bindings.concat(buf.toString()).concat(document.nameProperty()).concat(" - " + ProgramProperties.getProgramName()));
+                stage.titleProperty().bind(Bindings.concat(buf.toString()).concat(document.nameProperty()).concat(" - " + ProgramPropertiesFX.getProgramName()));
             });
             stage.titleProperty().bind(Bindings.concat("Aux Window - ").concat(document.nameProperty()).concat(" SplitsTree5"));
         } else {
-            stage.setTitle("Aux Window - " + ((Labeled) tab.getGraphic()).getText() + " - " + ProgramProperties.getProgramName());
+            stage.setTitle("Aux Window - " + ((Labeled) tab.getGraphic()).getText() + " - " + ProgramPropertiesFX.getProgramName());
         }
 
         controller.getTabPane().getTabs().add(tab);

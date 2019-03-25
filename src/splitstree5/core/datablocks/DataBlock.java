@@ -42,24 +42,20 @@ import java.util.ArrayList;
  * Daniel Huson, 12/21/16.
  */
 abstract public class DataBlock extends NameableBase {
-    private final String blockName;
     private Document document; // the document associated with this datablock
     private DataNode dataNode; // the node associated with this datablock
+    // todo: remove the two above
     protected INexusFormat format; // text display format
     private final ChangeListener<UpdateState> stateChangeListener;
 
-    /**
-     * default constructor
-     */
-    public DataBlock(String blockName) {
-        this.blockName = blockName;
-        setName(Basic.getShortName(this.getClass()).replaceAll("Block$", ""));
+    public DataBlock() {
         stateChangeListener = (c, o, n) -> {
             if (n == UpdateState.VALID) {
                 setShortDescription(getInfo());
             } else
                 setShortDescription(getName());
         };
+        setName(Basic.getShortName(getClass()).replaceAll("Block$", ""));
     }
 
     /**
@@ -97,10 +93,6 @@ abstract public class DataBlock extends NameableBase {
             list.add((DataBlock) object);
         }
         return list;
-    }
-
-    public String getName() {
-        return super.getName();
     }
 
     /**
@@ -157,7 +149,6 @@ abstract public class DataBlock extends NameableBase {
         return w.toString();
     }
 
-
     public INexusFormat getFormat() {
         return format;
     }
@@ -185,7 +176,5 @@ abstract public class DataBlock extends NameableBase {
         }
     }
 
-    public String getBlockName() {
-        return blockName;
-    }
+    abstract public String getBlockName();
 }

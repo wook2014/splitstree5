@@ -84,9 +84,9 @@ public class Workflow {
 
     private final LongProperty topologyChanged = new SimpleLongProperty(0);
 
-    private final BitSet pathIds = new BitSet();
-
     private final Document document;
+
+    private final Map<String, Integer> name2count = new HashMap<>(); // keeps track of how many blocks of each type have been created so as to number nodes
 
     /**
      * constructor
@@ -107,7 +107,20 @@ public class Workflow {
             if (change.wasAdded() || change.wasRemoved()) {
                 updateSelectionModel();
             }
+
+            if (change.wasAdded()) {
+                final Connector connector = change.getElementAdded();
+                final String name = connector.getName();
+                synchronized (name2count) {
+                    final int count = name2count.merge(name, 1, (a, b) -> a + b);
+                    if (count == 1)
+                        connector.setTitle(name);
+                    else
+                        connector.setTitle(String.format("%s-%d", name, count - 1));
+                }
+            }
         });
+
         dataNodes.addListener((SetChangeListener<DataNode>) change -> {
             size.set(connectorNodes.size() + dataNodes.size());
 
@@ -116,16 +129,29 @@ public class Workflow {
                 nodeSelectionModel.selectItems(selected);
                 updateSelectionModel();
             }
+
+            if (change.wasAdded()) {
+                final DataNode dataNode = change.getElementAdded();
+
+                if (dataNode.getTitle() == null || (!dataNode.getTitle().startsWith("Input") && !dataNode.getTitle().startsWith("Working"))) {
+                    final String name;
+                    if (dataNode.getDataBlock() instanceof ViewerBlock)
+                        name = ((ViewerBlock) dataNode.getDataBlock()).getType().toString();
+                    else
+                        name = dataNode.getName();
+                    synchronized (name2count) {
+                        final int count = name2count.merge(name, 1, (a, b) -> a + b);
+                        if (count == 1)
+                            dataNode.setTitle(name);
+                        else
+                            dataNode.setTitle(String.format("%s-%d", name, count - 1));
+                    }
+                }
+            }
+            // todo: remove number from name2used when node is removed
         });
 
         // updatingProperty().addListener((observable, oldValue, newValue) -> System.err.println("UPDATING: " + newValue));
-
-        topologyChanged.addListener(observable -> {
-            WorkflowNode root = topDataNode.get();
-            if (root != null) {
-                setPathIdsRec(root, pathIds.nextClearBit(1), pathIds);
-            }
-        });
 
         topTaxaNode.addListener((c, o, n) -> {
             if (o != null) {
@@ -175,31 +201,6 @@ public class Workflow {
     }
 
     /**
-     * recursively update the pathIds
-     *
-     * @param v
-     * @param currentId
-     * @param pathIds
-     */
-    private void setPathIdsRec(WorkflowNode v, int currentId, BitSet pathIds) {
-        if (v.getPathId() == 0) {
-            v.setPathId(currentId);
-            pathIds.set(currentId);
-        } else
-            currentId = v.getPathId();
-
-        boolean first = true;
-        for (Object obj : v.getChildren()) {
-            final WorkflowNode w = (WorkflowNode) obj;
-            if (first) {
-                setPathIdsRec(w, currentId, pathIds);
-                first = false;
-            } else
-                setPathIdsRec(w, pathIds.nextClearBit(currentId + 1), pathIds);
-        }
-    }
-
-    /**
      * setup the top nodes, taxa filter, top filter and working nodes
      *
      * @param topTaxaBlock
@@ -211,7 +212,8 @@ public class Workflow {
         taxaFilter.set(new Connector<>(getTopTaxaNode().getDataBlock(), getTopTaxaNode(), getWorkingTaxaNode(), new splitstree5.core.algorithms.filters.TaxaFilter()));
         register(taxaFilter.get());
         setTopDataNode(createDataNode(topDataBlock));
-        setWorkingDataNode(createDataNode(topDataBlock.newInstance()));
+        final DataNode workingDataNode = createDataNode(topDataBlock.newInstance());
+        setWorkingDataNode(workingDataNode);
 
         createTopFilter(getTopDataNode(), getWorkingDataNode());
     }
@@ -308,9 +310,9 @@ public class Workflow {
     }
 
     public void setTopTaxaNode(DataNode<TaxaBlock> topTaxaNode) {
-        if (topTaxaNode != null)
-            topTaxaNode.getDataBlock().setName("InputTaxa");
         this.topTaxaNode.set(topTaxaNode);
+        if (topTaxaNode != null)
+            topTaxaNode.setTitle("InputTaxa");
     }
 
     public DataNode<TaxaBlock> getWorkingTaxaNode() {
@@ -323,6 +325,8 @@ public class Workflow {
 
     public void setWorkingTaxaNode(DataNode<TaxaBlock> workingTaxaNode) {
         this.workingTaxaNode.set(workingTaxaNode);
+        if (workingTaxaNode != null)
+            workingTaxaNode.setTitle("WorkingTaxa");
     }
 
     public DataNode<TraitsBlock> getTopTraitsNode() {
@@ -330,8 +334,6 @@ public class Workflow {
     }
 
     public void setTopTraitsNode(DataNode<TraitsBlock> topTraitsNode) {
-        if (topTraitsNode != null)
-            topTraitsNode.getDataBlock().setName("InputTraits");
         this.topTraitsNode.set(topTraitsNode);
     }
 
@@ -344,9 +346,9 @@ public class Workflow {
     }
 
     public void setTopDataNode(DataNode topDataNode) {
-        if (topDataNode != null && !topDataNode.getDataBlock().getName().startsWith("Input"))
-            topDataNode.getDataBlock().setName("Input" + topDataNode.getName());
         this.topDataNode.set(topDataNode);
+        if (topDataNode != null)
+            topDataNode.setTitle("Input" + topDataNode.getName());
     }
 
     public ReadOnlyObjectProperty<DataNode> topDataNodeProperty() {
@@ -359,6 +361,8 @@ public class Workflow {
 
     public void setWorkingDataNode(DataNode workingDataNode) {
         this.workingDataNode.set(workingDataNode);
+        if (workingDataNode != null)
+            workingDataNode.titleProperty().bind((new SimpleStringProperty("Working")).concat(workingDataNode.nameProperty()));
     }
 
     public Connector<TaxaBlock, TaxaBlock> getTaxaFilter() {

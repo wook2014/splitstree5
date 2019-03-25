@@ -45,8 +45,8 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
     private boolean treatUnknownAsError = false;
 
     public static final String SYNTAX = "BEGIN " + CharactersBlock.BLOCK_NAME + ";\n" +
-            "\t[TITLE title;]\n" +
-            "\t[LINK name = title;]\n" +
+            "\t[TITLE {title};]\n" +
+            "\t[LINK {type} = {title};]\n" +
             "\tDIMENSIONS [NTAX=number-of-taxa] NCHAR=number-of-characters;\n" +
             "\t[FORMAT\n" +
             "\t\t[DATATYPE={STANDARD|DNA|RNA|PROTEIN|MICROSAT}]\n" +

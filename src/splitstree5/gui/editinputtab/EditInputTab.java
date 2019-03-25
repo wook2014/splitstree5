@@ -32,7 +32,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import jloda.fx.util.NotificationManager;
-import jloda.fx.util.ProgramProperties;
+import jloda.fx.util.ProgramPropertiesFX;
 import jloda.fx.util.RecentFilesManager;
 import jloda.fx.util.ResourceManagerFX;
 import jloda.util.Basic;
@@ -240,7 +240,7 @@ public class EditInputTab extends EditTextViewTab {
         final CodeArea codeArea = getCodeArea();
 
         controller.getOpenMenuItem().setOnAction((e) -> {
-            final File previousDir = new File(ProgramProperties.get("InputDir", ""));
+            final File previousDir = new File(ProgramPropertiesFX.get("InputDir", ""));
 
             final FileChooser fileChooser = new FileChooser();
             if (previousDir.isDirectory())
@@ -250,7 +250,7 @@ public class EditInputTab extends EditTextViewTab {
             final File selectedFile = fileChooser.showOpenDialog(getMainWindow().getStage());
             if (selectedFile != null) {
                 if (selectedFile.getParentFile().isDirectory())
-                    ProgramProperties.put("InputDir", selectedFile.getParent());
+                    ProgramPropertiesFX.put("InputDir", selectedFile.getParent());
 
                 // todo check running time
                 long startTime = System.nanoTime() / (long) Math.pow(10, 9);

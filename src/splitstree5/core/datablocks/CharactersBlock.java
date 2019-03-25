@@ -75,21 +75,10 @@ public class CharactersBlock extends DataBlock {
      * constructor
      */
     public CharactersBlock() {
-        super(BLOCK_NAME);
         matrix = new char[0][0];
         symbol2color = new HashMap<>();
         color2symbols = new HashMap<>();
         format = new CharactersNexusFormat();
-    }
-
-    /**
-     * named constructor
-     *
-     * @param name
-     */
-    public CharactersBlock(String name) {
-        this();
-        setName(name);
     }
 
     @Override
@@ -407,6 +396,10 @@ public class CharactersBlock extends DataBlock {
         this.hasAmbiguityCodes = hasAmbiguityCodes;
     }
 
+    @Override
+    public String getBlockName() {
+        return BLOCK_NAME;
+    }
 }
 
 

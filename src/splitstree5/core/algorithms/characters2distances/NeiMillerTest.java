@@ -28,13 +28,18 @@ public class NeiMillerTest {
     @Test
     public void compute() throws Exception {
 
-        String inputFile = "test//characters//dolphins_weighted.nex";
+        String inputFile = "test/characters/dolphins_weighted.nex";
         ProgressListener pl = new ProgressPercentage();
         TaxaBlock taxaBlock = new TaxaBlock();
         CharactersBlock charactersBlock = new CharactersBlock();
 
-        CharactersNexusFormat format = new CharactersNexusFormat();
-        List<String> taxonNames = new CharactersNexusInput().parse(new NexusStreamParser(new FileReader(inputFile)), taxaBlock, charactersBlock);
+        List<String> taxonNames;
+        try (NexusStreamParser np = new NexusStreamParser(new FileReader(inputFile))) {
+            np.matchIgnoreCase("#nexus");
+            np.skipBlock();
+            CharactersNexusFormat format = new CharactersNexusFormat();
+            taxonNames = new CharactersNexusInput().parse(np, taxaBlock, charactersBlock);
+        }
         taxaBlock.addTaxaByNames(taxonNames);
         DistancesBlock distancesBlock = new DistancesBlock();
 

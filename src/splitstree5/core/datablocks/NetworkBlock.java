@@ -45,7 +45,6 @@ public class NetworkBlock extends DataBlock {
     private Type networkType;
 
     public NetworkBlock() {
-        super(BLOCK_NAME);
         this.graph = new PhyloGraph();
         node2data = new NodeArray<>(graph);
         edge2data = new EdgeArray<>(graph);
@@ -135,5 +134,10 @@ public class NetworkBlock extends DataBlock {
 
     public void setNetworkType(Type networkType) {
         this.networkType = networkType;
+    }
+
+    @Override
+    public String getBlockName() {
+        return BLOCK_NAME;
     }
 }

@@ -37,7 +37,7 @@ import java.util.Map;
  */
 public class TraitsNexusInput extends NexusIOBase implements INexusInput<TraitsBlock> {
     public static final String SYNTAX = "BEGIN " + TraitsBlock.BLOCK_NAME + ";\n" +
-            "\t[TITLE title;]\n" +
+            "\t[TITLE {title};]\n" +
             "\tDIMENSIONS [NTAX=number-of-taxa] NTRAITS=number-of-traits;\n" +
             "\t[FORMAT\n" +
             "\t\t[LABELS={YES|NO}]\n" +
@@ -148,7 +148,7 @@ public class TraitsNexusInput extends NexusIOBase implements INexusInput<TraitsB
                         np.matchIgnoreCase(format.getSeparatorString());
                 }
                 if (np.peekMatchIgnoreCase("" + format.getOptionMissingCharacter())) {
-                    np.peekMatchIgnoreCase("" + format.getOptionMissingCharacter());
+                    np.matchIgnoreCase("" + format.getOptionMissingCharacter());
                     traitsBlock.setTraitValue(taxonId, traitId, Integer.MAX_VALUE);
                 } else {
                     final String word = np.getWordRespectCase();
