@@ -48,6 +48,8 @@ public class TreesNexusOutput extends NexusIOBase implements INexusOutput<TreesB
 
         w.write("\nBEGIN " + TreesBlock.BLOCK_NAME + ";\n");
         writeTitleAndLink(w);
+        if (treesBlock.size() > 0)
+            w.write(String.format("[Number of trees: %,d]\n", treesBlock.getNTrees()));
         if (treesBlock.isPartial() || treesBlock.isRooted()) {
             w.write("PROPERTIES");
             w.write(" partialTrees=" + (treesBlock.isPartial() ? "yes" : "no"));
