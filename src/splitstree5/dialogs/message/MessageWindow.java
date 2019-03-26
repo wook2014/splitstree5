@@ -29,9 +29,9 @@ import javafx.stage.Stage;
 import jloda.fx.util.ExtendedFXMLLoader;
 import jloda.fx.util.NotificationManager;
 import jloda.fx.util.ProgramPropertiesFX;
+import jloda.fx.window.IMainWindow;
+import jloda.fx.window.MainWindowManager;
 import jloda.util.Basic;
-import splitstree5.main.MainWindow;
-import splitstree5.main.MainWindowManager;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -59,7 +59,7 @@ public class MessageWindow {
 
         stage.setScene(new Scene(extendedFXMLLoader.getRoot()));
         //stage.sizeToScene();
-        final MainWindow parentMainWindow = MainWindowManager.getInstance().getLastFocusedMainWindow();
+        final IMainWindow parentMainWindow = MainWindowManager.getInstance().getLastFocusedMainWindow();
         if (parentMainWindow != null) {
             stage.setX(parentMainWindow.getStage().getX());
             stage.setY(parentMainWindow.getStage().getY() + parentMainWindow.getStage().getHeight() - 10);

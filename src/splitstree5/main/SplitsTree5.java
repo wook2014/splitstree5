@@ -22,7 +22,13 @@ package splitstree5.main;
 import com.briksoftware.javafx.platform.osx.OSXIntegration;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import jloda.fx.util.*;
+import jloda.fx.util.ArgsOptions;
+import jloda.fx.util.ProgramExecutorService;
+import jloda.fx.util.ProgramPropertiesFX;
+import jloda.fx.util.ResourceManagerFX;
+import jloda.fx.window.MainWindowManager;
+import jloda.fx.window.SplashScreen;
+import jloda.fx.window.WindowGeometry;
 import jloda.util.Basic;
 import splitstree5.dialogs.importer.FileOpener;
 
@@ -110,7 +116,9 @@ public class SplitsTree5 extends Application {
 
             final MainWindow mainWindow = new MainWindow();
 
-            mainWindow.show(primaryStage, 100, 100);
+            final WindowGeometry windowGeometry = new WindowGeometry(ProgramPropertiesFX.get("WindowGeometry", "50 50 800 800"));
+
+            mainWindow.show(primaryStage, windowGeometry.getX(), windowGeometry.getY(), windowGeometry.getWidth(), windowGeometry.getHeight());
 
             if (showMessageWindow) {
                 mainWindow.getMenuController().getShowMessageWindowMenuItem().fire();
@@ -130,12 +138,11 @@ public class SplitsTree5 extends Application {
             OSXIntegration.setOpenFilesHandler(files -> {
                 for (File file : files) {
                     if (FileOpener.isOpenable(file.getPath()))
-                        FileOpener.open(false, MainWindowManager.getInstance().getLastFocusedMainWindow(), file.getPath(), null);
+                        FileOpener.open(false, (MainWindow) MainWindowManager.getInstance().getLastFocusedMainWindow(), file.getPath(), null);
                 }
             });
         } catch (Exception ex) {
             Basic.caught(ex);
-            throw ex;
         }
     }
 

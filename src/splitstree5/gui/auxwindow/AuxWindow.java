@@ -30,13 +30,13 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import jloda.fx.util.ExtendedFXMLLoader;
 import jloda.fx.util.ProgramPropertiesFX;
+import jloda.fx.window.MainWindowManager;
 import splitstree5.core.Document;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.graphtab.SplitsViewTab;
 import splitstree5.gui.graphtab.TreeViewTab;
 import splitstree5.gui.texttab.TextViewTab;
 import splitstree5.main.MainWindow;
-import splitstree5.main.MainWindowManager;
 import splitstree5.menu.MenuController;
 
 /**

@@ -41,6 +41,7 @@ import jloda.fx.find.NodeLabelSearcher;
 import jloda.fx.util.ASelectionModel;
 import jloda.fx.util.Print;
 import jloda.fx.util.ZoomableScrollPane;
+import jloda.fx.window.MainWindowManager;
 import jloda.graph.Edge;
 import jloda.graph.EdgeArray;
 import jloda.graph.Node;
@@ -60,7 +61,6 @@ import splitstree5.gui.graphtab.commands.ChangeEdgeLabelCommand;
 import splitstree5.gui.graphtab.commands.ChangeNodeLabelCommand;
 import splitstree5.gui.graphtab.commands.MoveEdgeLabelCommand;
 import splitstree5.gui.graphtab.commands.MoveNodeLabelCommand;
-import splitstree5.main.MainWindowManager;
 import splitstree5.menu.MenuController;
 
 import java.util.*;

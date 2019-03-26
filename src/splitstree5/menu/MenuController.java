@@ -26,11 +26,12 @@ import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 import jloda.fx.util.ProgramPropertiesFX;
 import jloda.fx.util.RecentFilesManager;
-import jloda.fx.util.SplashScreen;
+import jloda.fx.window.IMainWindow;
+import jloda.fx.window.MainWindowManager;
+import jloda.fx.window.SplashScreen;
 import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.io.nexus.workflow.WorkflowNexusInput;
 import splitstree5.main.MainWindow;
-import splitstree5.main.MainWindowManager;
 
 import java.time.Duration;
 import java.util.HashSet;
@@ -874,7 +875,7 @@ public class MenuController {
             windowMenu.getItems().clear();
             windowMenu.getItems().add(getShowMessageWindowMenuItem());
             int count = 0;
-            for (MainWindow mainWindow : MainWindowManager.getInstance().getMainWindows()) {
+            for (IMainWindow mainWindow : MainWindowManager.getInstance().getMainWindows()) {
                 if (count == 0)
                     windowMenu.getItems().add(new SeparatorMenuItem());
                 if (mainWindow.getStage() != null) {

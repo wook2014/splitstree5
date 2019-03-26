@@ -32,6 +32,7 @@ import javafx.stage.StageStyle;
 import jloda.fx.find.FindToolBar;
 import jloda.fx.util.Print;
 import jloda.fx.util.ProgramPropertiesFX;
+import jloda.fx.window.MainWindowManager;
 import jloda.util.Basic;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
@@ -39,7 +40,6 @@ import org.fxmisc.richtext.LineNumberFactory;
 import org.reactfx.value.Val;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.editinputtab.highlighters.NexusHighlighter;
-import splitstree5.main.MainWindowManager;
 import splitstree5.menu.MenuController;
 
 import java.util.Optional;

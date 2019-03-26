@@ -33,9 +33,9 @@ import jloda.fx.find.FindToolBar;
 import jloda.fx.find.TextAreaSearcher;
 import jloda.fx.util.Print;
 import jloda.fx.util.ProgramPropertiesFX;
+import jloda.fx.window.MainWindowManager;
 import jloda.util.Basic;
 import splitstree5.gui.ViewerTab;
-import splitstree5.main.MainWindowManager;
 import splitstree5.menu.MenuController;
 
 import java.util.Optional;

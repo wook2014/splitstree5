@@ -161,7 +161,7 @@ public class DataLoader {
             if (mainWindow == parentWindow) // are using an existing window
                 mainWindow.getStage().toFront();
             else // is new window
-                mainWindow.show(new Stage(), parentWindow.getStage().getX() + 50, parentWindow.getStage().getY() + 50);
+                mainWindow.show(new Stage(), parentWindow.getStage().getX() + 50, parentWindow.getStage().getY() + 50, parentWindow.getStage().getWidth(), parentWindow.getStage().getHeight());
             final String shortDescription = workflow.getTopTaxaNode() != null ? workflow.getTopDataNode().getShortDescription() : "null";
             NotificationManager.showInformation("Opened file: " + Basic.getFileNameWithoutPath(fileName) + (shortDescription.length() > 0 ? "\nLoaded " + shortDescription : ""));
         });

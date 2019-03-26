@@ -119,7 +119,7 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
         Platform.runLater(() -> {
             try {
                 if (usingNewWindow)
-                    mainWindow.show(new Stage(), parentWindow.getStage().getX() + 50, parentWindow.getStage().getY() + 50);
+                    mainWindow.show(new Stage(), parentWindow.getStage().getX() + 50, parentWindow.getStage().getY() + 50, parentWindow.getStage().getWidth(), parentWindow.getStage().getHeight());
                 if (!fileName.endsWith(".tmp"))
                     RecentFilesManager.getInstance().insertRecentFile(fileName);
                 if (mainWindow.getStage() != null)

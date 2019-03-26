@@ -29,6 +29,7 @@ import javafx.stage.FileChooser;
 import jloda.fx.util.NotificationManager;
 import jloda.fx.util.ProgramPropertiesFX;
 import jloda.fx.util.RecentFilesManager;
+import jloda.fx.window.MainWindowManager;
 import jloda.swing.util.BasicSwing;
 import jloda.util.Basic;
 import jloda.util.Pair;
@@ -95,7 +96,7 @@ public class MainWindowMenuController {
 
         controller.getNewMenuItem().setOnAction((e) -> {
             final MainWindow newMainWindow = new MainWindow();
-            newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50);
+            newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50, mainWindow.getStage().getWidth(), mainWindow.getStage().getHeight());
         });
         controller.getImportMenuItem().setOnAction((e) -> ImportDialog.show(mainWindow));
 
@@ -119,7 +120,7 @@ public class MainWindowMenuController {
                     WorkflowNexusInput.input(new ProgressPercentage(), newMainWindow.getWorkflow(), new ArrayList<>(), new StringReader(workflowString));
 
                     newMainWindow.getWorkflow().loadData(pair.getFirst(), pair.getSecond());
-                    newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50);
+                    newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50, mainWindow.getStage().getWidth(), mainWindow.getStage().getHeight());
                     NotificationManager.showInformation("Collapsed " + mainWindow.getWorkflow().getTopTaxaNode().getDataBlock().size() + " to " + pair.getFirst().size() + " haplotypes");
 
                     newMainWindow.getWorkflow().getTopTaxaNode().setState(UpdateState.VALID);
@@ -169,7 +170,7 @@ public class MainWindowMenuController {
                     mainWindow.showInputTab();
                 } else {
                     final MainWindow newMainWindow = new MainWindow();
-                    newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50);
+                    newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50, mainWindow.getStage().getWidth(), mainWindow.getStage().getHeight());
                     newMainWindow.showInputTab();
                 }
             } else {
@@ -177,7 +178,7 @@ public class MainWindowMenuController {
                     mainWindow.showEditInputTab();
                 } else {
                     final MainWindow newMainWindow = new MainWindow();
-                    newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50);
+                    newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50, mainWindow.getStage().getWidth(), mainWindow.getStage().getHeight());
                     newMainWindow.showEditInputTab();
                 }
             }
@@ -248,7 +249,7 @@ public class MainWindowMenuController {
 
         controller.getQuitMenuItem().setOnAction((e) -> {
             while (MainWindowManager.getInstance().size() > 0) {
-                final MainWindow window = MainWindowManager.getInstance().getMainWindow(MainWindowManager.getInstance().size() - 1);
+                final MainWindow window = (MainWindow) MainWindowManager.getInstance().getMainWindow(MainWindowManager.getInstance().size() - 1);
                 if (!window.clear(true, true))
                     break;
             }

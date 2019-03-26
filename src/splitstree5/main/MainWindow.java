@@ -37,6 +37,9 @@ import jloda.fx.util.ExtendedFXMLLoader;
 import jloda.fx.util.ProgramPropertiesFX;
 import jloda.fx.util.RecentFilesManager;
 import jloda.fx.util.ResourceManagerFX;
+import jloda.fx.window.IMainWindow;
+import jloda.fx.window.MainWindowManager;
+import jloda.fx.window.WindowGeometry;
 import jloda.util.Basic;
 import jloda.util.Pair;
 import splitstree5.core.Document;
@@ -64,7 +67,7 @@ import splitstree5.undo.UndoManager;
 
 import java.io.IOException;
 
-public class MainWindow {
+public class MainWindow implements IMainWindow {
     private final Document document;
     private final Workflow workflow;
 
@@ -225,7 +228,7 @@ public class MainWindow {
     /**
      * show this view
      */
-    public void show(Stage stage0, double screenX, double screenY) {
+    public void show(Stage stage0, double screenX, double screenY, double width, double height) {
         if (stage != null)
             this.stage = stage0;
         else {
@@ -259,7 +262,7 @@ public class MainWindow {
         }
 
         stage.titleProperty().bind(titleProperty);
-        stage.setScene(new Scene(root, 800, 600));
+        stage.setScene(new Scene(root, width, height));
 
         stage.setX(screenX);
         stage.setY(screenY);
@@ -271,6 +274,7 @@ public class MainWindow {
         stage.show();
         stage.sizeToScene();
         stage.toFront();
+
 
         add(methodsViewTab);
         add(workflowViewTab);
@@ -458,6 +462,8 @@ public class MainWindow {
             workflowViewTab.clear();
             document.updateMethodsText();
         }
+        if (result)
+            ProgramPropertiesFX.put("WindowGeometry", (new WindowGeometry(getStage())).toString());
         return result;
     }
 
@@ -559,5 +565,16 @@ public class MainWindow {
             mainTabPane.getTabs().remove(inputTab);
             inputTab = null;
         }
+    }
+
+    @Override
+    public IMainWindow createNew() {
+        return new MainWindow();
+    }
+
+
+    @Override
+    public boolean isEmpty() {
+        return document.getWorkflow().getTopTaxaNode() == null || document.getWorkflow().getTopTaxaNode().getDataBlock().getNtax() == 0;
     }
 }

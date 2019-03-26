@@ -33,13 +33,13 @@ import jloda.fx.util.NotificationManager;
 import jloda.fx.util.ProgramPropertiesFX;
 import jloda.fx.util.RecentFilesManager;
 import jloda.fx.util.ResourceManagerFX;
+import jloda.fx.window.MainWindowManager;
 import jloda.util.Basic;
 import jloda.util.IOExceptionWithLineNumber;
 import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.dialogs.importer.ImporterManager;
 import splitstree5.gui.texttab.TextViewTab;
 import splitstree5.main.MainWindow;
-import splitstree5.main.MainWindowManager;
 import splitstree5.menu.MenuController;
 
 import java.io.*;

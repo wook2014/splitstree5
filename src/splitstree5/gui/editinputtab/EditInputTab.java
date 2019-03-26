@@ -35,6 +35,7 @@ import jloda.fx.util.NotificationManager;
 import jloda.fx.util.ProgramPropertiesFX;
 import jloda.fx.util.RecentFilesManager;
 import jloda.fx.util.ResourceManagerFX;
+import jloda.fx.window.MainWindowManager;
 import jloda.util.Basic;
 import jloda.util.IOExceptionWithLineNumber;
 import org.fxmisc.richtext.CodeArea;
@@ -49,7 +50,6 @@ import splitstree5.gui.editinputtab.collapsing.NexusBlockCollapser;
 import splitstree5.gui.editinputtab.highlighters.NexusHighlighter;
 import splitstree5.io.nexus.workflow.WorkflowNexusInput;
 import splitstree5.main.MainWindow;
-import splitstree5.main.MainWindowManager;
 import splitstree5.menu.MenuController;
 
 import java.io.*;
