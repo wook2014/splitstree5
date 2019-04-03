@@ -66,6 +66,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -107,7 +108,8 @@ public class WorkflowViewTab extends ViewerTab {
     public WorkflowViewTab(Document document) {
         this.document = document;
         setText("Workflow");
-        setIcon(ResourceManagerFX.getIcon("sun/toolbarButtonGraphics/general/Preferences16.gif"));
+        setGraphic(new ImageView(ResourceManagerFX.getIcon("sun/toolbarButtonGraphics/general/Preferences16.gif")));
+        setClosable(false);
 
         centerPane = new Pane(new StackPane(edgeViews, nodeViews));
 

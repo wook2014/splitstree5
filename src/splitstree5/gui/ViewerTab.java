@@ -39,12 +39,8 @@
 package splitstree5.gui;
 
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
 import javafx.scene.control.Tab;
 import javafx.scene.control.ToolBar;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import jloda.fx.find.FindToolBar;
@@ -77,31 +73,6 @@ public abstract class ViewerTab extends Tab {
                 setContent(borderPane);
             }
         });
-    }
-
-    public void setName(String text) {
-        if (getGraphic() != null && getGraphic() instanceof Labeled)
-            ((Labeled) getGraphic()).setText(text);
-        else {
-            super.setText(null);
-            setGraphic(new Label(text));
-        }
-    }
-
-    public String getName() {
-        if (getGraphic() != null && getGraphic() instanceof Labeled)
-            return ((Labeled) getGraphic()).getText();
-        else
-            return getText();
-    }
-
-    public void setIcon(Image icon) {
-        if (getGraphic() == null) {
-            setGraphic(new Label(getText()));
-            setText(null);
-        }
-        if (getGraphic() instanceof Label)
-            ((Label) getGraphic()).setGraphic(new ImageView(icon));
     }
 
     /**

@@ -48,7 +48,7 @@ public class ViewerBlock extends DataBlock {
         this.viewerTab = viewerTab;
         this.type = type;
         //setTitle(viewerTab.getName());
-        setName(viewerTab.getName());
+        setName(viewerTab.getText());
         viewerTab.setDataNode(getDataNode()); // todo: do we need this?
     }
 

@@ -25,6 +25,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.GridPane;
 import jloda.fx.util.ResourceManagerFX;
@@ -51,8 +52,8 @@ public class TreesGridTab extends GraphTabBase<PhyloTree> {
      * constructor
      */
     public TreesGridTab() {
-        setName("TreesGrid");
-        setIcon(ResourceManagerFX.getIcon("TreeViewer16.gif"));
+        setText("TreesGrid");
+        setGraphic(new ImageView(ResourceManagerFX.getIcon("TreeViewer16.gif")));
     }
 
     /**

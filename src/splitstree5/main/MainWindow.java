@@ -33,6 +33,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import jloda.SplittableTabPane;
 import jloda.fx.util.ExtendedFXMLLoader;
 import jloda.fx.util.ProgramPropertiesFX;
 import jloda.fx.util.RecentFilesManager;
@@ -52,8 +53,6 @@ import splitstree5.dialogs.SaveChangesDialog;
 import splitstree5.gui.ISavesPreviousSelection;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.algorithmtab.AlgorithmTab;
-import splitstree5.gui.auxwindow.AuxWindow;
-import splitstree5.gui.auxwindow.TabPaneDragAndDropSupport;
 import splitstree5.gui.datatab.DataViewTab;
 import splitstree5.gui.editinputtab.EditInputTab;
 import splitstree5.gui.formattab.FormatTab;
@@ -78,8 +77,8 @@ public class MainWindow implements IMainWindow {
 
     private final WorkflowTreeSupport workflowTreeSupport;
 
-    private final TabPane mainTabPane;
-    private final TabPane algorithmsTabPane;
+    private final SplittableTabPane mainTabPane;
+    private final SplittableTabPane algorithmsTabPane;
 
     private FormatTab formatTab;
 
@@ -119,6 +118,27 @@ public class MainWindow implements IMainWindow {
             root = extendedFXMLLoader.getRoot();
             root.getStylesheets().add("resources/css/styles.css");
             mainWindowController = extendedFXMLLoader.getController();
+
+            // todo: remove old main tab pane and algorithm pane, leaving only splittable ones
+            {
+                int pos = mainWindowController.getSplitPane().getItems().indexOf(mainWindowController.getOriginalMainTabPane());
+                if (pos != -1)
+                    mainWindowController.getSplitPane().getItems().set(pos, mainWindowController.getMainTabPane());
+                else
+                    mainWindowController.getSplitPane().getItems().add(mainWindowController.getMainTabPane());
+
+            }
+
+            {
+                int pos = mainWindowController.getRightVBox().getChildren().indexOf(mainWindowController.getOriginalAlgorithmTabPane());
+                if (pos != -1)
+                    mainWindowController.getRightVBox().getChildren().set(pos, mainWindowController.getAlgorithmTabPane());
+                else
+                    mainWindowController.getRightVBox().getChildren().add(mainWindowController.getAlgorithmTabPane());
+                mainWindowController.getAlgorithmTabPane().prefHeightProperty().bind(mainWindowController.getRightVBox().heightProperty().subtract(30));
+                mainWindowController.getAlgorithmTabPane().prefWidthProperty().bind(mainWindowController.getRightVBox().widthProperty());
+            }
+
         }
         {
             final ExtendedFXMLLoader<MenuController> extendedFXMLLoader = new ExtendedFXMLLoader<>(MenuController.class);
@@ -267,10 +287,6 @@ public class MainWindow implements IMainWindow {
         stage.setX(screenX);
         stage.setY(screenY);
 
-        new TabPaneDragAndDropSupport(mainWindowController.getMainTabPane(), new AuxWindow());
-
-        new TabPaneDragAndDropSupport(mainWindowController.getAlgorithmTabPane(), new AuxWindow());
-
         stage.show();
         stage.sizeToScene();
         stage.toFront();
@@ -301,7 +317,10 @@ public class MainWindow implements IMainWindow {
         });
 
         MainWindowManager.getInstance().addMainWindow(this);
+
         getMainWindowController().openCloseLeft(false);
+
+        updateMenus(null, menuController);
     }
 
     /**
@@ -376,12 +395,10 @@ public class MainWindow implements IMainWindow {
                     mainTabPane.getTabs().add(viewerTab);
                     aNode2ViewerTab.put(workflowNode, viewerTab);
                 }
-                TabPane tabPane = viewerTab.getTabPane(); // might be in an auxilary window
-                if (tabPane == null)
-                    tabPane = mainTabPane;
-                tabPane.getSelectionModel().select(viewerTab);
-                if (tabPane.getScene() != null && tabPane.getScene().getWindow() != null) {
-                    final Stage stage = (Stage) tabPane.getScene().getWindow();
+
+                mainTabPane.getSelectionModel().select(viewerTab);
+                if (mainTabPane.getScene() != null && mainTabPane.getScene().getWindow() != null) {
+                    final Stage stage = (Stage) mainTabPane.getScene().getWindow();
                     if (stage != null) {
                         stage.toFront();
                     }
@@ -418,18 +435,14 @@ public class MainWindow implements IMainWindow {
                 aNode2ViewerTab.put(connector, viewerTab);
                 algorithmsTabPane.getTabs().add(0, viewerTab);
             }
-            TabPane tabPane = viewerTab.getTabPane(); // might be in an auxilary window
-            if (tabPane == null) {
-                if (!algorithmsTabPane.getTabs().contains(viewerTab))
-                    algorithmsTabPane.getTabs().add(viewerTab);
-                tabPane = algorithmsTabPane;
-            }
 
-            tabPane.getSelectionModel().select(viewerTab);
+            algorithmsTabPane.getSelectionModel().select(viewerTab);
 
-            final Stage stage = (Stage) tabPane.getScene().getWindow();
-            if (stage != null) {
-                stage.toFront();
+            if (false) {
+                final Stage stage = (Stage) algorithmsTabPane.getScene().getWindow();
+                if (stage != null) {
+                    stage.toFront();
+                }
             }
             getMainWindowController().ensureAlgorithmsTabPaneIsOpen();
         }

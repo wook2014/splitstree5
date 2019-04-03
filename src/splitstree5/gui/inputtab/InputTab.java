@@ -25,6 +25,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -62,7 +63,7 @@ public class InputTab extends TextViewTab {
      */
     public InputTab(MainWindow mainWindow) {
         super(new SimpleStringProperty("Input"));
-        setIcon(ResourceManagerFX.getIcon("sun/toolbarButtonGraphics/general/Import16.gif"));
+        setGraphic(new ImageView(ResourceManagerFX.getIcon("sun/toolbarButtonGraphics/general/Import16.gif")));
         setMainWindow(mainWindow);
 
         final TextArea textArea = getTextArea();

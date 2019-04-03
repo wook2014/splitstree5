@@ -81,7 +81,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
         final NetworkViewTab viewTab = (NetworkViewTab) child.getTab();
 
         Platform.runLater(() -> {
-            child.getTab().setName(child.getName());
+            child.getTab().setText(child.getName());
         });
 
         copyDataFromParent(parent, graph, node2data, edge2data);

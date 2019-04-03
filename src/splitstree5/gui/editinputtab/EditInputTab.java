@@ -27,6 +27,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -76,7 +77,7 @@ public class EditInputTab extends EditTextViewTab {
      */
     public EditInputTab(MainWindow mainWindow) {
         super(new SimpleStringProperty("Input"));
-        setIcon(ResourceManagerFX.getIcon("sun/toolbarButtonGraphics/general/Import16.gif"));
+        setGraphic(new ImageView(ResourceManagerFX.getIcon("sun/toolbarButtonGraphics/general/Import16.gif")));
         setMainWindow(mainWindow);
 
         final CodeArea codeArea = getCodeArea();

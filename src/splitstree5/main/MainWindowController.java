@@ -29,6 +29,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import jloda.SplittableTabPane;
 import jloda.fx.util.MemoryUsage;
 import splitstree5.gui.workflowtree.WorkflowTreeItem;
 
@@ -68,6 +69,7 @@ public class MainWindowController {
 
     @FXML
     private TabPane algorithmTabPane;
+
     @FXML
     private ToolBar algorithmToolBar;
 
@@ -96,12 +98,20 @@ public class MainWindowController {
         return topVBox;
     }
 
-    public TabPane getMainTabPane() {
+    public TabPane getOriginalMainTabPane() {
         return mainTabPane;
     }
 
-    public TabPane getAlgorithmTabPane() {
+    public SplittableTabPane getMainTabPane() {
+        return splittableMainTabPane;
+    }
+
+    public TabPane getOriginalAlgorithmTabPane() {
         return algorithmTabPane;
+    }
+
+    public SplittableTabPane getAlgorithmTabPane() {
+        return splittableAlgorithmTabPane;
     }
 
     public ToolBar getTopToolBar() {
@@ -125,6 +135,15 @@ public class MainWindowController {
         return progressBarPane;
     }
 
+    public VBox getRightVBox() {
+        return rightVBox;
+    }
+
+    // we override the tab panes provided by the FXML file:
+
+    private final SplittableTabPane splittableMainTabPane = new SplittableTabPane();
+
+    private final SplittableTabPane splittableAlgorithmTabPane = new SplittableTabPane();
 
     @FXML
     void initialize() {

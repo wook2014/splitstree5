@@ -44,6 +44,7 @@ import javafx.concurrent.Worker;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Rotate;
 import jloda.fx.util.ASelectionModel;
@@ -81,8 +82,8 @@ public class SplitsView3DTab extends Graph3DTab<PhyloSplitsGraph> implements ISp
      */
     public SplitsView3DTab() {
         super();
-        this.setName("SplitsNetwork3DViewer");
-        setIcon(ResourceManagerFX.getIcon("SplitsNetworkViewer16.gif"));
+        this.setText("SplitsNetwork3DViewer");
+        setGraphic(new ImageView(ResourceManagerFX.getIcon("SplitsNetworkViewer16.gif")));
         setLayout(GraphLayout.Radial);
 
         splitsSelectionModel.getSelectedItems().addListener((ListChangeListener<Integer>) c -> {

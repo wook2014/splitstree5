@@ -203,7 +203,6 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
                 }
             }
         });
-        setClosable(false);
     }
 
     public G getGraph() {

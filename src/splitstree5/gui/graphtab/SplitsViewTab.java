@@ -24,6 +24,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import jloda.fx.shapes.NodeShape;
 import jloda.fx.util.ASelectionModel;
@@ -59,8 +60,8 @@ public class SplitsViewTab extends Graph2DTab<PhyloSplitsGraph> implements ISpli
      * constructor
      */
     public SplitsViewTab() {
-        setName("SplitsNetworkViewer");
-        setIcon(ResourceManagerFX.getIcon("SplitsNetworkViewer16.gif"));
+        setText("SplitsNetworkViewer");
+        setGraphic(new ImageView(ResourceManagerFX.getIcon("SplitsNetworkViewer16.gif")));
 
         setLayout(GraphLayout.Radial);
 

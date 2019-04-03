@@ -90,7 +90,7 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
         //splitsViewTab.setNodeLabel2Style(nodeLabel2Style);
 
         Platform.runLater(() -> {
-            child.getTab().setName(child.getName());
+            child.getTab().setText(child.getName());
         });
 
         graph.clear();

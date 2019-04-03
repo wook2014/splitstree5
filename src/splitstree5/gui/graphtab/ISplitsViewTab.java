@@ -78,7 +78,7 @@ public interface ISplitsViewTab {
 
     void setLayout(GraphLayout graphLayout);
 
-    void setName(String name);
+    void setText(String name);
 
     void updateMenus(MenuController controller);
 

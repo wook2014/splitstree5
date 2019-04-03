@@ -127,7 +127,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
         viewTab.setDataNode(child.getDataNode());
 
         Platform.runLater(() -> {
-            child.getTab().setName(child.getName());
+            child.getTab().setText(child.getName());
             viewTab.setLayout(getOptionLayout());
         });
 
