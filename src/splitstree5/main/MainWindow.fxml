@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
@@ -20,8 +20,8 @@
         </VBox>
     </top>
     <center>
-        <SplitPane fx:id="splitPane" dividerPositions="0.0" maxHeight="1.7976931348623157E308"
-                   maxWidth="1.7976931348623157E308" pickOnBounds="false" BorderPane.alignment="CENTER">
+        <SplitPane fx:id="splitPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                   pickOnBounds="false" BorderPane.alignment="CENTER">
             <BorderPane.margin>
                 <Insets left="2.0" right="2.0"/>
             </BorderPane.margin>
@@ -85,21 +85,10 @@
                             <children>
                                 <ToolBar fx:id="algorithmToolBar" minHeight="0.0" minWidth="0.0" prefHeight="30.0"
                                          VBox.vgrow="NEVER"/>
-                                <TabPane fx:id="algorithmTabPane" maxHeight="1.7976931348623157E308"
-                                         maxWidth="1.7976931348623157E308" side="TOP" tabClosingPolicy="UNAVAILABLE"/>
                             </children>
                         </VBox>
                     </items>
                 </SplitPane>
-                <TabPane fx:id="mainTabPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-                         tabClosingPolicy="UNAVAILABLE">
-                    <opaqueInsets>
-                        <Insets/>
-                    </opaqueInsets>
-                    <padding>
-                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
-                    </padding>
-                </TabPane>
             </items>
         </SplitPane>
     </center>

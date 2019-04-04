@@ -62,13 +62,7 @@ public class MainWindowController {
     private TreeView<String> treeView;
 
     @FXML
-    private TabPane mainTabPane;
-
-    @FXML
     private SplitPane algorithmSplitPane;
-
-    @FXML
-    private TabPane algorithmTabPane;
 
     @FXML
     private ToolBar algorithmToolBar;
@@ -98,20 +92,13 @@ public class MainWindowController {
         return topVBox;
     }
 
-    public TabPane getOriginalMainTabPane() {
+
+    public SplittableTabPane getMainTabPane() {
         return mainTabPane;
     }
 
-    public SplittableTabPane getMainTabPane() {
-        return splittableMainTabPane;
-    }
-
-    public TabPane getOriginalAlgorithmTabPane() {
-        return algorithmTabPane;
-    }
-
     public SplittableTabPane getAlgorithmTabPane() {
-        return splittableAlgorithmTabPane;
+        return algorithmTabPane;
     }
 
     public ToolBar getTopToolBar() {
@@ -141,9 +128,9 @@ public class MainWindowController {
 
     // we override the tab panes provided by the FXML file:
 
-    private final SplittableTabPane splittableMainTabPane = new SplittableTabPane();
+    private final SplittableTabPane mainTabPane = new SplittableTabPane();
 
-    private final SplittableTabPane splittableAlgorithmTabPane = new SplittableTabPane();
+    private final SplittableTabPane algorithmTabPane = new SplittableTabPane();
 
     @FXML
     void initialize() {
@@ -179,6 +166,12 @@ public class MainWindowController {
 
         final MemoryUsage memoryUsage = MemoryUsage.getInstance();
         memoryUsageLabel.textProperty().bind(memoryUsage.memoryUsageStringProperty());
+
+        getSplitPane().getItems().add(getMainTabPane());
+        getRightVBox().getChildren().add(getAlgorithmTabPane());
+        getAlgorithmTabPane().prefHeightProperty().bind(getRightVBox().heightProperty().subtract(30));
+        getAlgorithmTabPane().prefWidthProperty().bind(getRightVBox().widthProperty());
+
     }
 
 

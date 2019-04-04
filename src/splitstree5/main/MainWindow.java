@@ -118,28 +118,8 @@ public class MainWindow implements IMainWindow {
             root = extendedFXMLLoader.getRoot();
             root.getStylesheets().add("resources/css/styles.css");
             mainWindowController = extendedFXMLLoader.getController();
-
-            // todo: remove old main tab pane and algorithm pane, leaving only splittable ones
-            {
-                int pos = mainWindowController.getSplitPane().getItems().indexOf(mainWindowController.getOriginalMainTabPane());
-                if (pos != -1)
-                    mainWindowController.getSplitPane().getItems().set(pos, mainWindowController.getMainTabPane());
-                else
-                    mainWindowController.getSplitPane().getItems().add(mainWindowController.getMainTabPane());
-
-            }
-
-            {
-                int pos = mainWindowController.getRightVBox().getChildren().indexOf(mainWindowController.getOriginalAlgorithmTabPane());
-                if (pos != -1)
-                    mainWindowController.getRightVBox().getChildren().set(pos, mainWindowController.getAlgorithmTabPane());
-                else
-                    mainWindowController.getRightVBox().getChildren().add(mainWindowController.getAlgorithmTabPane());
-                mainWindowController.getAlgorithmTabPane().prefHeightProperty().bind(mainWindowController.getRightVBox().heightProperty().subtract(30));
-                mainWindowController.getAlgorithmTabPane().prefWidthProperty().bind(mainWindowController.getRightVBox().widthProperty());
-            }
-
         }
+
         {
             final ExtendedFXMLLoader<MenuController> extendedFXMLLoader = new ExtendedFXMLLoader<>(MenuController.class);
             menuController = extendedFXMLLoader.getController();
@@ -278,6 +258,8 @@ public class MainWindow implements IMainWindow {
                 formatTab = new FormatTab(this);
 
                 getMenuController().setupFullScreenMenuSupport(stage);
+
+                mainWindowController.getSplitPane().setDividerPositions(250 / mainWindowController.getBorderPane().getWidth());
             });
         }
 
