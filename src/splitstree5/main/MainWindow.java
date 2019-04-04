@@ -33,7 +33,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
-import jloda.SplittableTabPane;
+import jloda.fx.control.SplittableTabPane;
 import jloda.fx.util.ExtendedFXMLLoader;
 import jloda.fx.util.ProgramPropertiesFX;
 import jloda.fx.util.RecentFilesManager;

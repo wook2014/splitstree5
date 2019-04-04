@@ -29,7 +29,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-import jloda.SplittableTabPane;
+import jloda.fx.control.SplittableTabPane;
 import jloda.fx.util.MemoryUsage;
 import splitstree5.gui.workflowtree.WorkflowTreeItem;
 

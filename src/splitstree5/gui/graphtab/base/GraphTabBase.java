@@ -35,12 +35,12 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import jloda.fx.control.AMultipleSelectionModel;
+import jloda.fx.control.ZoomableScrollPane;
 import jloda.fx.find.EdgeLabelSearcher;
 import jloda.fx.find.FindToolBar;
 import jloda.fx.find.NodeLabelSearcher;
-import jloda.fx.util.ASelectionModel;
 import jloda.fx.util.Print;
-import jloda.fx.util.ZoomableScrollPane;
 import jloda.fx.window.MainWindowManager;
 import jloda.graph.Edge;
 import jloda.graph.EdgeArray;
@@ -78,8 +78,8 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
     protected final Group nodesGroup = new Group();
     protected final Group edgeLabelsGroup = new Group();
     protected final Group nodeLabelsGroup = new Group();
-    protected final ASelectionModel<Node> nodeSelectionModel = new ASelectionModel<>();
-    protected final ASelectionModel<Edge> edgeSelectionModel = new ASelectionModel<>();
+    protected final AMultipleSelectionModel<Node> nodeSelectionModel = new AMultipleSelectionModel<>();
+    protected final AMultipleSelectionModel<Edge> edgeSelectionModel = new AMultipleSelectionModel<>();
 
     protected final BorderPane borderPane = new BorderPane();
     protected G graph;
@@ -229,11 +229,11 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
         return nodeLabelsGroup;
     }
 
-    public ASelectionModel<Node> getNodeSelectionModel() {
+    public AMultipleSelectionModel<Node> getNodeSelectionModel() {
         return nodeSelectionModel;
     }
 
-    public ASelectionModel<Edge> getEdgeSelectionModel() {
+    public AMultipleSelectionModel<Edge> getEdgeSelectionModel() {
         return edgeSelectionModel;
     }
 

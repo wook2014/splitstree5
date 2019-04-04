@@ -23,7 +23,7 @@ import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
 import javafx.collections.ListChangeListener;
-import jloda.fx.util.ASelectionModel;
+import jloda.fx.control.AMultipleSelectionModel;
 import jloda.util.Basic;
 import splitstree5.core.misc.Taxon;
 import splitstree5.core.workflow.Workflow;
@@ -44,7 +44,7 @@ public class Document {
 
     private final StringProperty fileName = new SimpleStringProperty();
     private final StringProperty name = new SimpleStringProperty();
-    private final ASelectionModel<Taxon> taxaSelectionModel = new ASelectionModel<>();
+    private final AMultipleSelectionModel<Taxon> taxaSelectionModel = new AMultipleSelectionModel<>();
 
     private final StringProperty methodsText = new SimpleStringProperty();
 
@@ -108,7 +108,7 @@ public class Document {
         return workflow.updatingProperty();
     }
 
-    public ASelectionModel<Taxon> getTaxaSelectionModel() {
+    public AMultipleSelectionModel<Taxon> getTaxaSelectionModel() {
         return taxaSelectionModel;
     }
 

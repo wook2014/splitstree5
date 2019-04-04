@@ -25,8 +25,8 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.image.ImageView;
+import jloda.fx.control.AMultipleSelectionModel;
 import jloda.fx.shapes.NodeShape;
-import jloda.fx.util.ASelectionModel;
 import jloda.fx.util.ResourceManagerFX;
 import jloda.graph.Edge;
 import jloda.graph.Node;
@@ -205,7 +205,7 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
      * @param v
      * @param nodeSelectionModel
      */
-    private void selectAllBelowRec(Node v, ASelectionModel<Node> nodeSelectionModel, ASelectionModel<Edge> edgeSelectionModel) {
+    private void selectAllBelowRec(Node v, AMultipleSelectionModel<Node> nodeSelectionModel, AMultipleSelectionModel<Edge> edgeSelectionModel) {
         for (Edge e : v.outEdges()) {
             nodeSelectionModel.select(e.getTarget());
             edgeSelectionModel.select(e);

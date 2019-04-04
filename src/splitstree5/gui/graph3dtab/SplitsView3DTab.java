@@ -47,9 +47,9 @@ import javafx.geometry.Point3D;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Rotate;
-import jloda.fx.util.ASelectionModel;
+import jloda.fx.control.AMultipleSelectionModel;
+import jloda.fx.control.ProgressPane;
 import jloda.fx.util.GeometryUtilsFX;
-import jloda.fx.util.ProgressPane;
 import jloda.fx.util.ResourceManagerFX;
 import jloda.graph.Edge;
 import jloda.graph.Node;
@@ -74,7 +74,7 @@ import java.util.Set;
  * Daniel Huson, 11.2017
  */
 public class SplitsView3DTab extends Graph3DTab<PhyloSplitsGraph> implements ISplitsViewTab {
-    private final ASelectionModel<Integer> splitsSelectionModel = new ASelectionModel<>();
+    private final AMultipleSelectionModel<Integer> splitsSelectionModel = new AMultipleSelectionModel<>();
     private boolean inSelection;
 
     /**
@@ -242,7 +242,7 @@ public class SplitsView3DTab extends Graph3DTab<PhyloSplitsGraph> implements ISp
      * @param node2view
      * @return anchor and mover
      */
-    private Pair<Point3D, Point3D> getAnchorAndMover(ASelectionModel<Node> nodeSelectionModel, ASelectionModel<Edge> edgeSelectionModel, NodeArray<NodeViewBase> node2view) {
+    private Pair<Point3D, Point3D> getAnchorAndMover(AMultipleSelectionModel<Node> nodeSelectionModel, AMultipleSelectionModel<Edge> edgeSelectionModel, NodeArray<NodeViewBase> node2view) {
         Edge e = edgeSelectionModel.getSelectedItem();
         if (!nodeSelectionModel.getSelectedItems().contains(e.getSource()))
             return new Pair<>(((NodeView3D) node2view.get(e.getSource())).getLocation(), ((NodeView3D) node2view.get(e.getTarget())).getLocation());

@@ -27,7 +27,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
-import jloda.fx.util.ASelectionModel;
+import jloda.fx.control.AMultipleSelectionModel;
 import jloda.util.Basic;
 import jloda.util.Pair;
 import jloda.util.Single;
@@ -80,7 +80,7 @@ public class Workflow {
     private final BooleanProperty updating = new SimpleBooleanProperty();
     private final ObservableSet<WorkflowNode> invalidNodes = FXCollections.observableSet();
 
-    private final ASelectionModel<WorkflowNode> nodeSelectionModel = new ASelectionModel<>();
+    private final AMultipleSelectionModel<WorkflowNode> nodeSelectionModel = new AMultipleSelectionModel<>();
 
     private final LongProperty topologyChanged = new SimpleLongProperty(0);
 
@@ -618,7 +618,7 @@ public class Workflow {
         return ReadOnlyIntegerProperty.readOnlyIntegerProperty(size);
     }
 
-    public ASelectionModel<WorkflowNode> getNodeSelectionModel() {
+    public AMultipleSelectionModel<WorkflowNode> getNodeSelectionModel() {
         return nodeSelectionModel;
     }
 

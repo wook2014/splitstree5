@@ -62,7 +62,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import jloda.fx.util.ASelectionModel;
+import jloda.fx.control.AMultipleSelectionModel;
 import jloda.util.Basic;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.WorkflowNode;
@@ -139,7 +139,7 @@ public class WorkflowViewMouseHandler {
                 if (!controlDown) {
                     dragged = true;
 
-                    final ASelectionModel<WorkflowNode> selectionModel = workflowView.getWorkflow().getNodeSelectionModel();
+                    final AMultipleSelectionModel<WorkflowNode> selectionModel = workflowView.getWorkflow().getNodeSelectionModel();
 
                     if (!selectionModel.getSelectedItems().contains(nodeView.getANode())) {
                         if (!e.isShiftDown())
@@ -178,7 +178,7 @@ public class WorkflowViewMouseHandler {
                     if (nodeView == lock) {
                         if (dragged) {
                             if (!controlDown) {
-                                final ASelectionModel<WorkflowNode> selectionModel = workflowView.getWorkflow().getNodeSelectionModel();
+                                final AMultipleSelectionModel<WorkflowNode> selectionModel = workflowView.getWorkflow().getNodeSelectionModel();
                                 for (WorkflowNode node : selectionModel.getSelectedItems()) {
                                     final WorkflowNodeView selectedNodeView = workflowView.getNodeView(node);
                                     UndoableChangePropertyPair pair = node2change.get(node);
@@ -190,7 +190,7 @@ public class WorkflowViewMouseHandler {
                                 }
                             }
                         } else {
-                            final ASelectionModel<WorkflowNode> selectionModel = workflowView.getWorkflow().getNodeSelectionModel();
+                            final AMultipleSelectionModel<WorkflowNode> selectionModel = workflowView.getWorkflow().getNodeSelectionModel();
                             if (!e.isShiftDown()) {
                                 selectionModel.clearSelection();
                             }

@@ -29,7 +29,7 @@ import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import jloda.fx.util.ASelectionModel;
+import jloda.fx.control.AMultipleSelectionModel;
 import jloda.fx.util.SelectionEffect;
 import jloda.graph.NodeArray;
 import splitstree5.gui.graphtab.base.NodeViewBase;
@@ -52,7 +52,7 @@ public class BoundingBoxes2D {
      * @param node2view
      * @param properties
      */
-    public BoundingBoxes2D(Pane bottomPane, NodeArray<NodeViewBase> node2view, ASelectionModel<jloda.graph.Node> nodeSelectionModel, ReadOnlyProperty... properties) {
+    public BoundingBoxes2D(Pane bottomPane, NodeArray<NodeViewBase> node2view, AMultipleSelectionModel<jloda.graph.Node> nodeSelectionModel, ReadOnlyProperty... properties) {
         changeListener = c -> {
             while (c.next()) {
                 for (jloda.graph.Node node : c.getRemoved()) {

@@ -73,7 +73,11 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import jloda.fx.util.*;
+import jloda.fx.control.AMultipleSelectionModel;
+import jloda.fx.control.ZoomableScrollPane;
+import jloda.fx.util.Print;
+import jloda.fx.util.ResourceManagerFX;
+import jloda.fx.util.SelectionEffect;
 import splitstree5.core.Document;
 import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.Workflow;
@@ -314,7 +318,7 @@ public class WorkflowViewTab extends ViewerTab {
         controller.getPageSetupMenuItem().setOnAction((e) -> Print.showPageLayout(getMainWindow().getStage()));
         controller.getPrintMenuitem().setOnAction((e) -> Print.print(getMainWindow().getStage(), centerPane));
 
-        final ASelectionModel<WorkflowNode> selectionModel = getWorkflow().getNodeSelectionModel();
+        final AMultipleSelectionModel<WorkflowNode> selectionModel = getWorkflow().getNodeSelectionModel();
 
         controller.getUndoMenuItem().setOnAction((e) -> getUndoManager().undo());
         controller.getUndoMenuItem().disableProperty().bind(new SimpleBooleanProperty(false).isEqualTo(getUndoManager().canUndoProperty()));
