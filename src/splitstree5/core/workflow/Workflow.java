@@ -658,7 +658,10 @@ public class Workflow {
     }
 
     public void updateSelectionModel() {
-        getNodeSelectionModel().setItems(dataNodes, connectorNodes);
+        final ArrayList<WorkflowNode> allNodes = new ArrayList<>(dataNodes.size() + connectorNodes.size());
+        allNodes.addAll(dataNodes);
+        allNodes.addAll(connectorNodes);
+        getNodeSelectionModel().setItems(allNodes);
     }
 
     public void cancelAll() {
