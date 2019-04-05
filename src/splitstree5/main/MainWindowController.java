@@ -169,11 +169,10 @@ public class MainWindowController {
 
         getSplitPane().getItems().add(getMainTabPane());
         getRightVBox().getChildren().add(getAlgorithmTabPane());
-        getAlgorithmTabPane().prefHeightProperty().bind(getRightVBox().heightProperty().subtract(30));
-        getAlgorithmTabPane().prefWidthProperty().bind(getRightVBox().widthProperty());
 
+        getAlgorithmTabPane().prefHeightProperty().bind(getRightVBox().heightProperty().subtract(20));
+        getAlgorithmTabPane().prefWidthProperty().bind(getAlgorithmSplitPane().widthProperty());
     }
-
 
     public void openCloseLeft(boolean animate) {
         if (splitPane.getDividerPositions()[0] <= 0.01)
@@ -192,7 +191,6 @@ public class MainWindowController {
     public void ensureTreeViewIsOpen() {
         if (splitPane.getDividerPositions()[0] <= 0.01)
             animateSplitPane(splitPane, 300 / splitPane.getWidth(), () -> openCloseLeft.setText(("<")), true);
-
     }
 
     public void ensureAlgorithmsTabPaneIsOpen() {

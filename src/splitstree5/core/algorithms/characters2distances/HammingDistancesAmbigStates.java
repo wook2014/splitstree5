@@ -18,7 +18,7 @@ import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import java.util.Arrays;
 import java.util.List;
 
-public class HammingDistancesAmbiguousStates extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
+public class HammingDistancesAmbigStates extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
 
     public enum AmbiguousOptions {Ignore, AverageStates, MatchStates};
 

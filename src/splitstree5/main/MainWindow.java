@@ -341,6 +341,9 @@ public class MainWindow implements IMainWindow {
      */
     private void add(ViewerTab viewerTab) {
         mainWindowController.getMainTabPane().getTabs().add(0, viewerTab);
+        viewerTab.setOnClosed((e) -> {
+            workflow.delete(viewerTab.getDataNode().getParent(), true, true);
+        });
         mainWindowController.getMainTabPane().getSelectionModel().select(0);
         viewerTab.setMainWindow(this);
     }
@@ -453,12 +456,15 @@ public class MainWindow implements IMainWindow {
             //     getMainWindowController().getMainTabPane().getTabs().remove(inputTab);
 
             mainWindowController.getTreeView().getRoot().getChildren().clear();
+            mainTabPane.closeAllAuxiliaryWindows();
+            algorithmsTabPane.closeAllAuxiliaryWindows();
 
             workflowViewTab.clear();
             document.updateMethodsText();
         }
-        if (result)
+        if (result) {
             ProgramPropertiesFX.put("WindowGeometry", (new WindowGeometry(getStage())).toString());
+        }
         return result;
     }
 

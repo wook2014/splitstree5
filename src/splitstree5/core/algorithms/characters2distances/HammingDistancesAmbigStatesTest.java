@@ -8,17 +8,15 @@ import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.imports.FastaImporter;
-import splitstree5.io.nexus.CharactersNexusInput;
 import splitstree5.io.nexus.DistancesNexusInput;
 import splitstree5.io.nexus.DistancesNexusOutput;
-import splitstree5.io.nexus.TaxaNexusInput;
 
 import java.io.FileReader;
 import java.io.StringWriter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-public class HammingDistancesAmbiguousStatesTest {
+public class HammingDistancesAmbigStatesTest {
 
     @Test
     public void compute() throws Exception{
@@ -30,7 +28,7 @@ public class HammingDistancesAmbiguousStatesTest {
         final CharactersBlock characters = new CharactersBlock();
         final DistancesBlock distances = new DistancesBlock();
 
-        final HammingDistancesAmbiguousStates hammingDistances = new HammingDistancesAmbiguousStates();
+        final HammingDistancesAmbigStates hammingDistances = new HammingDistancesAmbigStates();
         final FastaImporter fastaImporter = new FastaImporter();
         final ProgressListener progressListener = new ProgressPercentage();
 
@@ -38,7 +36,7 @@ public class HammingDistancesAmbiguousStatesTest {
                 "test/PRLR pyramidum complex final haplotypes edited labels.fas",
                 taxa, characters);
 
-        hammingDistances.setOptionHandleAmbiguousStates(HammingDistancesAmbiguousStates.AmbiguousOptions.MatchStates);
+        hammingDistances.setOptionHandleAmbiguousStates(HammingDistancesAmbigStates.AmbiguousOptions.MatchStates);
         hammingDistances.compute(new ProgressPercentage(), taxa, characters, distances);
 
         StringWriter w = new StringWriter();
@@ -71,7 +69,7 @@ public class HammingDistancesAmbiguousStatesTest {
         final CharactersBlock characters = new CharactersBlock();
         final DistancesBlock distances = new DistancesBlock();
 
-        final HammingDistancesAmbiguousStates hammingDistances = new HammingDistancesAmbiguousStates();
+        final HammingDistancesAmbigStates hammingDistances = new HammingDistancesAmbigStates();
         final FastaImporter fastaImporter = new FastaImporter();
         final ProgressListener progressListener = new ProgressPercentage();
 
@@ -79,7 +77,7 @@ public class HammingDistancesAmbiguousStatesTest {
                 "test/PRLR pyramidum complex final haplotypes edited labels.fas",
                 taxa, characters);
 
-        hammingDistances.setOptionHandleAmbiguousStates(HammingDistancesAmbiguousStates.AmbiguousOptions.Ignore);
+        hammingDistances.setOptionHandleAmbiguousStates(HammingDistancesAmbigStates.AmbiguousOptions.Ignore);
         hammingDistances.compute(new ProgressPercentage(), taxa, characters, distances);
 
         StringWriter w = new StringWriter();
