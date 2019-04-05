@@ -456,8 +456,8 @@ public class MainWindow implements IMainWindow {
             //     getMainWindowController().getMainTabPane().getTabs().remove(inputTab);
 
             mainWindowController.getTreeView().getRoot().getChildren().clear();
-            mainTabPane.closeAllAuxiliaryWindows();
-            algorithmsTabPane.closeAllAuxiliaryWindows();
+            mainTabPane.redockAll();
+            algorithmsTabPane.redockAll();
 
             workflowViewTab.clear();
             document.updateMethodsText();
