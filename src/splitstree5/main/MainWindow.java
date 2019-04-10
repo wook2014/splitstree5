@@ -456,8 +456,6 @@ public class MainWindow implements IMainWindow {
             //     getMainWindowController().getMainTabPane().getTabs().remove(inputTab);
 
             mainWindowController.getTreeView().getRoot().getChildren().clear();
-            mainTabPane.redockAll();
-            algorithmsTabPane.redockAll();
 
             workflowViewTab.clear();
             document.updateMethodsText();
@@ -577,5 +575,11 @@ public class MainWindow implements IMainWindow {
     @Override
     public boolean isEmpty() {
         return document.getWorkflow().getTopTaxaNode() == null || document.getWorkflow().getTopTaxaNode().getDataBlock().getNtax() == 0;
+    }
+
+    @Override
+    public void close() {
+        mainTabPane.redockAll();
+        algorithmsTabPane.redockAll();
     }
 }

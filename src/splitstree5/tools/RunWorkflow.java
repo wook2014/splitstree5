@@ -131,7 +131,7 @@ RunWorkflow extends Application {
         if (inputFiles.length == 1) {
             final File input = new File(inputFiles[0]);
             if (input.isDirectory()) {
-                final ArrayList<File> inputList = Basic.getAllFilesInDirectory(input, inputFileExtension, inputRecursively);
+                final ArrayList<File> inputList = Basic.getAllFilesInDirectory(input, inputRecursively, inputFileExtension);
                 inputFiles = new String[inputList.size()];
                 for (int i = 0; i < inputList.size(); i++) {
                     inputFiles[i] = inputList.get(i).getPath();
