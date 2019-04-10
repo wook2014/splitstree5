@@ -532,7 +532,8 @@ public class MainWindow implements IMainWindow {
     /**
      * show the enter data tab
      */
-    public void showEditInputTab() { //todo : delete after testing
+    public void showEditInputTab() {
+        //todo : delete after testing
         if (editInputTab == null) {
             editInputTab = new EditInputTab(this);
             getDocument().dirtyProperty().addListener((observable, oldValue, newValue) -> {
