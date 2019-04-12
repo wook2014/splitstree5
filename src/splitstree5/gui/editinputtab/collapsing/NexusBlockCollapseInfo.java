@@ -2,7 +2,13 @@ package splitstree5.gui.editinputtab.collapsing;
 
 import org.fxmisc.richtext.CodeArea;
 
-import java.util.Arrays;
+/**
+ * Information about position of a Nexus block in the CodeArea. Used for block collapsing.
+ * <p>
+ * Created on Mar 2019
+ *
+ * @author Daria
+ */
 
 public class NexusBlockCollapseInfo {
 
@@ -58,6 +64,9 @@ public class NexusBlockCollapseInfo {
         this.endLine = endLine;
     }
 
+    public boolean getCollapsed(){
+        return this.collapsed;
+    }
     public void setCollapsed(boolean collapsed){
         this.collapsed = collapsed;
     }

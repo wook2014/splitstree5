@@ -140,7 +140,9 @@ public class LineNumberFactoryWithCollapsing implements IntFunction<Node> {
         // mouse interactions with labels to make them clickable
         lineNo.setOnMouseClicked(click -> {
             System.err.println("Clicked on label! "+lineNo.getText());
-            nexusBlockCollapser.collapseBlock(Integer.parseInt(lineNo.getText().replaceAll(" ","")));
+
+            int labelId = Integer.parseInt(lineNo.getText().replaceAll(" ",""));
+            nexusBlockCollapser.handleBlock(labelId);
             System.err.println("Indices!");
             for(Integer i : nexusBlockCollapser.getLineIndices())
                 System.err.print(i+"-");
