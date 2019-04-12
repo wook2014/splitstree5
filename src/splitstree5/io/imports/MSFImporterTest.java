@@ -23,7 +23,8 @@ public class MSFImporterTest {
         CharactersBlock charactersBlock = new CharactersBlock();
         ProgressListener pl = new ProgressPercentage();
 
-        msfImporter.parse(pl, "test/notNexusFiles/journal.pone.0208606.s007.msf", taxaBlock, charactersBlock);
+        //msfImporter.parse(pl, "test/notNexusFiles/journal.pone.0208606.s007.msf", taxaBlock, charactersBlock);
+        msfImporter.parse(pl, "test/exports/TEST_MSF.msf", taxaBlock, charactersBlock);
 
         // printing
         final StringWriter w = new StringWriter();

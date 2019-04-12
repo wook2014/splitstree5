@@ -25,7 +25,9 @@ public class MSFExporterTest {
         TaxaBlock taxa = new TaxaBlock();
         CharactersBlock characters = new CharactersBlock();
         List<String> taxonNames = new CharactersNexusInput().parse(
-                new NexusStreamParser(new FileReader("test/characters/microsat1.nex")),
+                //new NexusStreamParser(new FileReader("test/characters/microsat1.nex")),
+                new NexusStreamParser(new FileReader("test/characters/dolphins_binary.nex")),
+                //new NexusStreamParser(new FileReader("test/characters/algae_rna_interleave.nex")),
                 taxa, characters);
         taxa.addTaxaByNames(taxonNames);
 

@@ -24,7 +24,7 @@ public class MSFImporter extends CharactersFormat implements IToCharacters, IImp
         Map<String, String> taxa2seq = new LinkedHashMap<>();
         boolean charStarted = false;
 
-        try (FileInputIterator it = new FileInputIterator(fileName)){
+        try (FileInputIterator it = new FileInputIterator(fileName)) {
 
             progressListener.setMaximum(it.getMaximumProgress());
             progressListener.setProgress(0);
@@ -37,9 +37,11 @@ public class MSFImporter extends CharactersFormat implements IToCharacters, IImp
                 final String line_no_spaces = line.replaceAll(" ", "");
 
                 if (line_no_spaces.startsWith("!!NA"))
-                    dataType = CharactersType.DNA;
-                if (line_no_spaces.startsWith("!!AA"))
+                    dataType = CharactersType.DNA; //todo estimate dna or rna
+                else if (line_no_spaces.startsWith("!!AA"))
                     dataType = CharactersType.Protein;
+                else
+                    dataType = CharactersType.Standard;
 
                 if (!charStarted && line.contains("Name:")){
                     StringTokenizer tokens = new StringTokenizer(line);
@@ -60,7 +62,7 @@ public class MSFImporter extends CharactersFormat implements IToCharacters, IImp
                 if(charStarted){
                     String taxon = cutTaxonFromLine(line, taxa2seq.keySet());
                     if (!taxon.equals("")){
-                        String chars = line.replaceAll(" ", "");
+                        String chars = line.replaceAll("\\s+", "");
                         chars = chars.substring(taxon.length());
                         taxa2seq.replace(taxon, taxa2seq.get(taxon)+chars);
                     }
@@ -119,6 +121,7 @@ public class MSFImporter extends CharactersFormat implements IToCharacters, IImp
         String line = Basic.getFirstLineFromFile(new File(fileName));
         return line != null &&
                 (line.toUpperCase().equals("!!NA_MULTIPLE_ALIGNMENT 1.0")
-                || line.toUpperCase().equals("!!AA_MULTIPLE_ALIGNMENT 1.0") );
+                || line.toUpperCase().equals("!!AA_MULTIPLE_ALIGNMENT 1.0")
+                        || line.toUpperCase().equals("!!??_MULTIPLE_ALIGNMENT 1.0"));
     }
 }
