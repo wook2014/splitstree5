@@ -22,6 +22,7 @@ package splitstree5.gui.editinputtab;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -65,6 +66,10 @@ import java.util.regex.Pattern;
  * Daniel Huson, 2.2018
  */
 public class EditInputTab extends EditTextViewTab {
+    private final int MAX_LENGTH_SPECIAL_CHAR_FIELD = 1;
+    private StringProperty missing = new SimpleStringProperty();
+    private StringProperty gap = new SimpleStringProperty();
+
     private File tmpFile;
 
     // todo undo doesn't work: collapse-uncollapce-undo. solution:dont delete blocks from the tmpBlocksKeeper after uncollapsing
@@ -132,7 +137,35 @@ public class EditInputTab extends EditTextViewTab {
         //final Button collapseButton = new Button("Activate Collapse NexusBlock"); //+++
         final CheckBox collapseButton = new CheckBox("Activate Collapse NexusBlock");
 
-        toolBar.getItems().addAll(applyButton, collapseButton); //+++
+
+        //++++++ SPECIAL CHARACTERS EDITOR
+
+        final Label labelMissingChar = new Label("missingChar");
+        final TextField missingChar = new TextField();
+        missingChar.setPrefColumnCount(1);
+        missingChar.setOnKeyTyped(event ->{
+            if(missingChar.getText().length() >= MAX_LENGTH_SPECIAL_CHAR_FIELD)
+                event.consume();  // todo use getDataType from ImporterManager
+        });
+        missingChar.disableProperty().bind(Val.map(codeArea.lengthProperty(), n -> n == 0));
+        missing.bind(missingChar.textProperty());
+
+        final Label labelGapChar = new Label("gapChar");
+        final TextField gapChar = new TextField();
+        gapChar.setPrefColumnCount(1);
+        gapChar.setOnKeyTyped(event ->{
+            if(gapChar.getText().length() >= MAX_LENGTH_SPECIAL_CHAR_FIELD)
+                event.consume();
+        });
+        gapChar.disableProperty().bind(Val.map(codeArea.lengthProperty(), n -> n == 0));
+        gap.bind(gapChar.textProperty());
+
+        //++++++ SPECIAL CHARACTERS EDITOR END
+
+        toolBar.getItems().addAll(collapseButton, applyButton,
+                labelMissingChar, missingChar,
+                labelGapChar, gapChar); //+++
+
         //toolBar.getItems().addAll(applyButton);
         applyButton.disableProperty().bind(Val.map(codeArea.lengthProperty(), n -> n == 0));
         //highlightButton.disableProperty().bind(getCodeArea().textProperty().isEmpty()); //+++
@@ -339,5 +372,12 @@ public class EditInputTab extends EditTextViewTab {
             NotificationManager.showError("Input file failed: " + ex.getMessage());
         }
 
+    }
+
+    public String getMissing(){
+        return this.missing.getValue();
+    }
+    public String getGap() {
+        return this.gap.getValue();
     }
 }

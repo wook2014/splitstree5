@@ -72,6 +72,11 @@ public class ImportService extends Service<Boolean> {
         this.fileName = fileName;
         this.title = title;
 
+        // test missing/gap char editor
+        String m = parentMainWindow.getEditedInputTab().getMissing();
+        String g = parentMainWindow.getEditedInputTab().getGap();
+        System.err.println("Test parser MISSING CHAR:" + m + " GAP CHAR:" + g);
+
         final ProgressPane progressPane = new ProgressPane(titleProperty(), messageProperty(), progressProperty(), runningProperty(), this::cancel);
         if (progressBarParent != null)
             progressBarParent.getChildren().add(progressPane);
