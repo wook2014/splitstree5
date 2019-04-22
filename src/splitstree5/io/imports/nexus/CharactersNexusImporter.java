@@ -45,4 +45,10 @@ public class CharactersNexusImporter extends NexusImporterBase<CharactersBlock> 
         setTitleAndLink(input.getTitle(), input.getLink());
         return taxa;
     }
+
+    @Override
+    public void setGap(char c) {}
+
+    @Override
+    public void setMissing(char m) {}
 }

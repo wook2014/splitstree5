@@ -104,6 +104,9 @@ public class PhylipCharactersImporter extends CharactersFormat implements IToCha
         else
             setCharactersStandardEOL(labels, sequences, ntax, nchar, taxa, characters);
 
+        characters.setGapCharacter(getGap());
+        characters.setMissingCharacter(getMissing());
+
     }
 
     @Override

@@ -30,18 +30,19 @@ public class MSFImporter extends CharactersFormat implements IToCharacters, IImp
             progressListener.setProgress(0);
             int linesCounter = 0;
 
+            String firstLine = it.next();
+            if (firstLine.startsWith("!!NA"))
+                dataType = CharactersType.DNA; //todo estimate dna or rna
+            else if (firstLine.startsWith("!!AA"))
+                dataType = CharactersType.Protein;
+            else
+                dataType = CharactersType.Standard;
+
             while (it.hasNext()) {
 
                 linesCounter += 1;
                 final String line = it.next();
-                final String line_no_spaces = line.replaceAll(" ", "");
-
-                if (line_no_spaces.startsWith("!!NA"))
-                    dataType = CharactersType.DNA; //todo estimate dna or rna
-                else if (line_no_spaces.startsWith("!!AA"))
-                    dataType = CharactersType.Protein;
-                else
-                    dataType = CharactersType.Standard;
+                final String line_no_spaces = line.replaceAll("\\s", "");
 
                 if (!charStarted && line.contains("Name:")){
                     StringTokenizer tokens = new StringTokenizer(line);
@@ -86,7 +87,9 @@ public class MSFImporter extends CharactersFormat implements IToCharacters, IImp
         characters.clear();
         characters.setDimension(ntax, nchar);
         characters.setDataType(this.dataType);
-        characters.setMissingCharacter('.'); //todo estimate??
+        // todo check valid characters
+        characters.setMissingCharacter(getMissing());
+        characters.setGapCharacter(getGap());
 
         int labelsCounter = 1;
 

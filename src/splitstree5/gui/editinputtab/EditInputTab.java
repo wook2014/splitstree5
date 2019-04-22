@@ -63,12 +63,12 @@ import java.util.regex.Pattern;
 
 /**
  * tab for entering data
- * Daniel Huson, 2.2018
+ * Daniel Huson, Daria Evseeva, 2.2018
  */
 public class EditInputTab extends EditTextViewTab {
     private final int MAX_LENGTH_SPECIAL_CHAR_FIELD = 1;
-    private StringProperty missing = new SimpleStringProperty();
-    private StringProperty gap = new SimpleStringProperty();
+    private StringProperty missing = new SimpleStringProperty("");
+    private StringProperty gap = new SimpleStringProperty("");
 
     private File tmpFile;
 

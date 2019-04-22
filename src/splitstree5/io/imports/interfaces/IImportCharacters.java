@@ -37,4 +37,7 @@ public interface IImportCharacters extends IImporter {
      */
     void parse(ProgressListener progressListener, String fileName, TaxaBlock taxaBlock, CharactersBlock dataBlock)
             throws CanceledException, IOException;
+
+    void setGap(char g);
+    void setMissing(char m);
 }

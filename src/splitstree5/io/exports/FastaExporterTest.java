@@ -88,6 +88,8 @@ public class FastaExporterTest {
         fastaExporter.export(writer, taxa, splits);
         writer.close();
 
+        // zeilenwise einlesen, stringbuilder, zeilenunbruch in str-buffer reinschreiben, replase all
+        //todo splits A-B, traits
         byte[] encoded1 = Files.readAllBytes(Paths.get("test/notNexusFiles/trees49_splits.fasta"));
         String fromST4 = new String(encoded1, StandardCharsets.UTF_8);
         byte[] encoded2 = Files.readAllBytes(Paths.get("test/exports/TEST_FASTA_splits_trees49.fasta"));
