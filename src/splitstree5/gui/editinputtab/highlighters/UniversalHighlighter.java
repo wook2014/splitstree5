@@ -1,3 +1,22 @@
+/*
+ *  UniversalHighlighter.java Copyright (C) 2019 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package splitstree5.gui.editinputtab.highlighters;
 
 import org.fxmisc.richtext.model.StyleSpans;
@@ -38,13 +57,13 @@ public class UniversalHighlighter implements Highlighter {
         while(matcher.find()) {
             String styleClass =
                     matcher.group("NUMBER") != null ? "number" :
-                    matcher.group("PAREN") != null ? "paren" :
-                    matcher.group("BRACE") != null ? "brace" :
-                    matcher.group("STRING") != null ? "string" :
-                    matcher.group("COMMENT") != null ? "comment" :
-                    matcher.group("FASTACOMMENT") != null ? "fasta-comment" :
-                    matcher.group("FASTA") != null ? "fasta" :
-                    null; /* never happens */
+                            matcher.group("PAREN") != null ? "paren" :
+                                    matcher.group("BRACE") != null ? "brace" :
+                                            matcher.group("STRING") != null ? "string" :
+                                                    matcher.group("COMMENT") != null ? "comment" :
+                                                            matcher.group("FASTACOMMENT") != null ? "fasta-comment" :
+                                                                    matcher.group("FASTA") != null ? "fasta" :
+                                                                            null; /* never happens */
             assert styleClass != null;
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
             spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());

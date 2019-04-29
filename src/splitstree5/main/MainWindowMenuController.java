@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2019 Daniel H. Huson
+ *  MainWindowMenuController.java Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -98,6 +98,7 @@ public class MainWindowMenuController {
             final MainWindow newMainWindow = new MainWindow();
             newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50, mainWindow.getStage().getWidth(), mainWindow.getStage().getHeight());
         });
+
         controller.getImportMenuItem().setOnAction((e) -> ImportDialog.show(mainWindow));
 
         controller.getImportMultipleTreeFilesMenuItem().setOnAction((e) -> ImportMultipleTreeFilesDialog.apply(mainWindow));

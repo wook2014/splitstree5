@@ -1,3 +1,22 @@
+/*
+ *  NexusBlockCollapseInfo.java Copyright (C) 2019 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package splitstree5.gui.editinputtab.collapsing;
 
 import org.fxmisc.richtext.CodeArea;
@@ -41,12 +60,15 @@ public class NexusBlockCollapseInfo {
     public int getStartPosition(){
         return this.startPosition;
     }
+
     public int getEndPosition(){
         return this.endPosition;
     }
+
     public int getStartLine(){
         return this.startLine;
     }
+
     public int getEndLine(){
         return this.endLine;
     }
@@ -54,12 +76,15 @@ public class NexusBlockCollapseInfo {
     public void setStartPosition(int startPosition){
         this.startPosition = startPosition;
     }
+
     public void setEndPosition(int endPosition){
         this.endPosition = endPosition;
     }
+
     public void setStartLine(int startLine){
         this.startLine = startLine;
     }
+
     public void setEndLine(int endLine){
         this.endLine = endLine;
     }
@@ -67,6 +92,7 @@ public class NexusBlockCollapseInfo {
     public boolean getCollapsed(){
         return this.collapsed;
     }
+
     public void setCollapsed(boolean collapsed){
         this.collapsed = collapsed;
     }

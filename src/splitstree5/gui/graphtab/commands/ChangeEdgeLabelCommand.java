@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2019 Daniel H. Huson
+ *  ChangeEdgeLabelCommand.java Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -21,9 +21,9 @@ package splitstree5.gui.graphtab.commands;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
+import jloda.fx.undo.UndoableRedoableCommand;
 import jloda.fx.util.ProgramPropertiesFX;
 import splitstree5.gui.graphtab.base.EdgeViewBase;
-import splitstree5.undo.UndoableRedoableCommand;
 
 /**
  * Change edge label

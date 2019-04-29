@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  FormatChangeCommand.java Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -19,6 +19,7 @@
 
 package splitstree5.gui.formattab;
 
+import jloda.fx.undo.UndoableRedoableCommand;
 import jloda.graph.Edge;
 import jloda.graph.EdgeArray;
 import jloda.graph.Node;
@@ -26,7 +27,6 @@ import jloda.graph.NodeArray;
 import jloda.util.Pair;
 import splitstree5.gui.graphtab.base.EdgeViewBase;
 import splitstree5.gui.graphtab.base.NodeViewBase;
-import splitstree5.undo.UndoableRedoableCommand;
 
 import java.util.ArrayList;
 import java.util.Collection;

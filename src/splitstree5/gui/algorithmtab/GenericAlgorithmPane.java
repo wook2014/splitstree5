@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  GenericAlgorithmPane.java Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -16,6 +16,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package splitstree5.gui.algorithmtab;
 
 import javafx.beans.property.BooleanProperty;
@@ -28,12 +29,12 @@ import javafx.scene.layout.GridPane;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.FloatStringConverter;
 import javafx.util.converter.IntegerStringConverter;
+import jloda.fx.undo.UndoManager;
 import jloda.util.Basic;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.UpdateState;
-import splitstree5.undo.UndoManager;
 import splitstree5.utils.Option;
 import splitstree5.utils.OptionsAccessor;
 

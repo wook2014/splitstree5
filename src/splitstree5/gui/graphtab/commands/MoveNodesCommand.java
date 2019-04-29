@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2019 Daniel H. Huson
+ *  MoveNodesCommand.java Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -20,6 +20,7 @@
 package splitstree5.gui.graphtab.commands;
 
 import javafx.geometry.Point2D;
+import jloda.fx.undo.UndoableRedoableCommand;
 import jloda.graph.Edge;
 import jloda.graph.EdgeArray;
 import jloda.graph.Node;
@@ -28,7 +29,6 @@ import splitstree5.gui.graphtab.base.EdgeView2D;
 import splitstree5.gui.graphtab.base.EdgeViewBase;
 import splitstree5.gui.graphtab.base.NodeView2D;
 import splitstree5.gui.graphtab.base.NodeViewBase;
-import splitstree5.undo.UndoableRedoableCommand;
 
 import java.util.Collection;
 import java.util.HashSet;

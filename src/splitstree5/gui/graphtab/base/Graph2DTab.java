@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2019 Daniel H. Huson
+ *  Graph2DTab.java Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -16,6 +16,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package splitstree5.gui.graphtab.base;
 
 import javafx.application.Platform;
@@ -29,6 +30,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.shape.PathElement;
 import jloda.fx.control.ZoomableScrollPane;
 import jloda.fx.shapes.NodeShape;
+import jloda.fx.undo.CompositeCommand;
 import jloda.fx.util.ProgramExecutorService;
 import jloda.fx.util.ScaleBar;
 import jloda.graph.*;
@@ -41,7 +43,6 @@ import splitstree5.gui.graphtab.commands.RotateCommand;
 import splitstree5.gui.graphtab.commands.ZoomCommand;
 import splitstree5.gui.utils.RubberBandSelection;
 import splitstree5.menu.MenuController;
-import splitstree5.undo.CompositeCommand;
 
 import java.util.ArrayList;
 import java.util.HashSet;

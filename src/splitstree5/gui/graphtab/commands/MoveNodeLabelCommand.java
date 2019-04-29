@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  MoveNodeLabelCommand.java Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -21,8 +21,8 @@ package splitstree5.gui.graphtab.commands;
 
 import javafx.geometry.Point2D;
 import javafx.scene.control.Labeled;
+import jloda.fx.undo.UndoableRedoableCommand;
 import splitstree5.gui.graphtab.base.NodeView2D;
-import splitstree5.undo.UndoableRedoableCommand;
 
 /**
  * move node label command

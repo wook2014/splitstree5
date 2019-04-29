@@ -1,3 +1,22 @@
+/*
+ *  SuperNetwork.java Copyright (C) 2019 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package splitstree5.core.algorithms.trees2splits;
 
 import javafx.beans.property.*;
@@ -422,23 +441,23 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
         final Set<PartialSplit> allEverComputed = new HashSet<>(partialSplits);
 
         for (int i = 0; i < getOptionNumberOfRuns(); i++) {
-                ////doc.notifySubtask("compute closure" + (i == 0 ? "" : "(" + (i + 1) + ")"));
+            ////doc.notifySubtask("compute closure" + (i == 0 ? "" : "(" + (i + 1) + ")"));
 
-                Set<PartialSplit> clone = new LinkedHashSet<>(partialSplits);
+            Set<PartialSplit> clone = new LinkedHashSet<>(partialSplits);
 
-                {
-                    final Vector<PartialSplit> tmp = new Vector<>(clone);
-                    Collections.shuffle(tmp, rand);
-                    clone = new LinkedHashSet<>(tmp);
-                    computeClosure(progress, clone);
-                    progress.checkForCancel();
-                }
-
-                allEverComputed.addAll(clone);
-
+            {
+                final Vector<PartialSplit> tmp = new Vector<>(clone);
+                Collections.shuffle(tmp, rand);
+                clone = new LinkedHashSet<>(tmp);
+                computeClosure(progress, clone);
+                progress.checkForCancel();
             }
-            partialSplits.clear();
-            partialSplits.addAll(allEverComputed);
+
+            allEverComputed.addAll(clone);
+
+        }
+        partialSplits.clear();
+        partialSplits.addAll(allEverComputed);
     }
 
     /**

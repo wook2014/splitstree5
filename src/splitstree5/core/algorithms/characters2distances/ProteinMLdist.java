@@ -1,3 +1,22 @@
+/*
+ *  ProteinMLdist.java Copyright (C) 2019 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package splitstree5.core.algorithms.characters2distances;
 
 import javafx.beans.property.*;
@@ -170,20 +189,24 @@ public class ProteinMLdist extends Algorithm<CharactersBlock, DistancesBlock> im
     public Model getOptionModel() {
         return this.optionModel.getValue();
     }
+
     public Property<Model> optionModelProperty() {
         return this.optionModel;
     }
+
     public void setOptionModel(Model optionModel) {
         this.optionModel.setValue(optionModel);
     }
 
 
     public double getOptionPropInvariableSites() {
-            return this.optionPropInvariableSites.getValue();
+        return this.optionPropInvariableSites.getValue();
     }
+
     public DoubleProperty optionPropInvariableSitesProperty() {
         return this.optionPropInvariableSites;
     }
+
     public void setOptionPropInvariableSites(double pinvar) {
         this.optionPropInvariableSites.setValue(pinvar);
     }
@@ -192,9 +215,11 @@ public class ProteinMLdist extends Algorithm<CharactersBlock, DistancesBlock> im
     public boolean getOptionUsePropInvariableSites() {
         return this.optionUsePropInvariableSites.getValue();
     }
+
     public BooleanProperty optionUsePropInvariableSitesProperty() {
         return this.optionUsePropInvariableSites;
     }
+
     public void setOptionUsePropInvariableSites(boolean val) {
         this.optionUsePropInvariableSites.setValue(val);
     }
@@ -203,9 +228,11 @@ public class ProteinMLdist extends Algorithm<CharactersBlock, DistancesBlock> im
     public double getOptionGamma() {
         return this.optionGamma.getValue();
     }
+
     public DoubleProperty optionGammaProperty() {
         return this.optionGamma;
     }
+
     public void setOptionGamma(double gamma) {
         this.optionGamma.setValue(gamma);
     }
@@ -214,9 +241,11 @@ public class ProteinMLdist extends Algorithm<CharactersBlock, DistancesBlock> im
     public boolean getOptionUseGamma() {
         return this.optionUseGamma.getValue();
     }
+
     public BooleanProperty optionUseGammaProperty() {
         return this.optionUseGamma;
     }
+
     public void setOptionUseGamma(boolean var) {
         this.optionUseGamma.setValue(var);
     }
@@ -225,9 +254,11 @@ public class ProteinMLdist extends Algorithm<CharactersBlock, DistancesBlock> im
     public boolean getOptionEstimateVariance() {
         return this.optionEstimateVariance.getValue();
     }
+
     public BooleanProperty optionEstimateVarianceProperty() {
         return this.optionEstimateVariance;
     }
+
     public void setOptionEstimateVariance(boolean val) {
         this.optionEstimateVariance.setValue(val);
     }

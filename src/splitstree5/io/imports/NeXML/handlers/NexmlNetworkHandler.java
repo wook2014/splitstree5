@@ -1,3 +1,22 @@
+/*
+ *  NexmlNetworkHandler.java Copyright (C) 2019 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package splitstree5.io.imports.NeXML.handlers;
 
 import jloda.graph.Edge;
@@ -103,7 +122,7 @@ public class NexmlNetworkHandler extends DefaultHandler {
 
             currentElement = edge;
 
-        // Metadata
+            // Metadata
         } else if (qName.equalsIgnoreCase("meta") && bReadingNetwork) {
             //System.out.println("READING META");
 
@@ -112,7 +131,6 @@ public class NexmlNetworkHandler extends DefaultHandler {
 
                 for (int i = 0; i<attributes.getLength(); i++)
                     nodeData.put("metadata_"+attributes.getLocalName(i), attributes.getValue(i));
-
 
 
                 networkBlock.getNode2data().put((Node) currentElement, nodeData);

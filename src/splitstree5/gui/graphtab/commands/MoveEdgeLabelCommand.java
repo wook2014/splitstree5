@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2019 Daniel H. Huson
+ *  MoveEdgeLabelCommand.java Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -16,12 +16,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package splitstree5.gui.graphtab.commands;
 
 import javafx.geometry.Point2D;
 import javafx.scene.control.Labeled;
+import jloda.fx.undo.UndoableRedoableCommand;
 import splitstree5.gui.graphtab.base.EdgeView2D;
-import splitstree5.undo.UndoableRedoableCommand;
 
 /**
  * move edge label command

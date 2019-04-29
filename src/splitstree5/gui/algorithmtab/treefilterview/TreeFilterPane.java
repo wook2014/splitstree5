@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2019 Daniel H. Huson
+ *  TreeFilterPane.java Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -27,6 +27,8 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tooltip;
 import jloda.fx.find.ListViewTypeSearcher;
+import jloda.fx.undo.UndoManager;
+import jloda.fx.undo.UndoableChangeListViews2;
 import jloda.fx.util.ExtendedFXMLLoader;
 import jloda.phylo.PhyloTree;
 import splitstree5.core.Document;
@@ -36,8 +38,6 @@ import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.algorithmtab.AlgorithmPane;
 import splitstree5.gui.utils.DragAndDropSupportListView2;
-import splitstree5.undo.UndoManager;
-import splitstree5.undo.UndoableChangeListViews2;
 
 import java.io.IOException;
 import java.util.ArrayList;

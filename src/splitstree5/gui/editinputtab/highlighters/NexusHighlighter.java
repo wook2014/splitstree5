@@ -1,3 +1,22 @@
+/*
+ *  NexusHighlighter.java Copyright (C) 2019 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package splitstree5.gui.editinputtab.highlighters;
 
 import org.fxmisc.richtext.model.StyleSpans;
@@ -36,8 +55,8 @@ public class NexusHighlighter implements Highlighter {
     };
 
     private static final String KEYWORD_PATTERN = "(?<KEYWORDSLINE>(?<KEYWORD>(?i)\\b(" + String.join("|", KEYWORDS) + ")\\b)"+
-                        "(?<OPTION>(?i)(?!\\h+" + String.join("|\\h+", BLOCKS)+")[^;]*;(?!\\h*\\R*end))?)";
-                        // everything between keyword and semicolon not ending with "end" and not blocks word
+            "(?<OPTION>(?i)(?!\\h+" + String.join("|\\h+", BLOCKS)+")[^;]*;(?!\\h*\\R*end))?)";
+    // everything between keyword and semicolon not ending with "end" and not blocks word
 
     private static final String BLOCK_PATTERN = "(?i)\\b(" + String.join("|", BLOCKS) + ")\\b";
     private static final String NETWORK_KEYWORDS_PATTERN = "(?i)\\b(" + String.join("|", NETWORK_KEYWORDS) + ")\\b";
@@ -89,12 +108,12 @@ public class NexusHighlighter implements Highlighter {
 
             String styleClass =
                     matcher.group("KEYWORDSLINE") != null ? "keyword" :
-                    matcher.group("BLOCK") != null ? "block"+collapsing :
-                    matcher.group("NK") != null ? "keyword" :
-                    matcher.group("COLLAPSED") != null ? "collapsed" :
-                    matcher.group("PAREN") != null ? "paren" :
-                    matcher.group("COMMENT") != null ? "comment" :
-                    null;
+                            matcher.group("BLOCK") != null ? "block"+collapsing :
+                                    matcher.group("NK") != null ? "keyword" :
+                                            matcher.group("COLLAPSED") != null ? "collapsed" :
+                                                    matcher.group("PAREN") != null ? "paren" :
+                                                            matcher.group("COMMENT") != null ? "comment" :
+                                                                    null;
 
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
 

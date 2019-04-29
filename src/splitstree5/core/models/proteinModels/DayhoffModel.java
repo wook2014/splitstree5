@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2019 Daniel H. Huson
+ *  DayhoffModel.java Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -16,6 +16,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 /*
  * Created on Jul 28, 2004
  *
@@ -23,8 +24,6 @@
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 package splitstree5.core.models.proteinModels;
-
-import splitstree5.core.models.proteinModels.ProteinModel;
 
 /**
  * @author bryant

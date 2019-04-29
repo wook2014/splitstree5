@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2019 Daniel H. Huson
+ *  TreeSelectorPane.java Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -25,6 +25,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.control.TextFormatter;
 import javafx.util.converter.IntegerStringConverter;
+import jloda.fx.undo.UndoManager;
+import jloda.fx.undo.UndoableRedoableCommand;
 import jloda.fx.util.ExtendedFXMLLoader;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
@@ -34,8 +36,6 @@ import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.algorithmtab.AlgorithmPane;
-import splitstree5.undo.UndoManager;
-import splitstree5.undo.UndoableRedoableCommand;
 
 import java.io.IOException;
 

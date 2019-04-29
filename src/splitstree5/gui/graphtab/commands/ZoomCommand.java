@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2019 Daniel H. Huson
+ *  ZoomCommand.java Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -19,8 +19,8 @@
 
 package splitstree5.gui.graphtab.commands;
 
+import jloda.fx.undo.UndoableRedoableCommand;
 import splitstree5.gui.graphtab.base.Graph2DTab;
-import splitstree5.undo.UndoableRedoableCommand;
 
 /**
  * rotate graph command

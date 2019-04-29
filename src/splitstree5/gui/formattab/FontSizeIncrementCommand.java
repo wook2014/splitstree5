@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Daniel H. Huson
+ *  FontSizeIncrementCommand.java Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -23,6 +23,7 @@ import javafx.scene.control.Labeled;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
+import jloda.fx.undo.UndoableRedoableCommand;
 import jloda.fx.util.FontUtils;
 import jloda.graph.Edge;
 import jloda.graph.EdgeArray;
@@ -30,7 +31,6 @@ import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import splitstree5.gui.graphtab.base.EdgeViewBase;
 import splitstree5.gui.graphtab.base.NodeViewBase;
-import splitstree5.undo.UndoableRedoableCommand;
 
 import java.util.ArrayList;
 import java.util.Collection;

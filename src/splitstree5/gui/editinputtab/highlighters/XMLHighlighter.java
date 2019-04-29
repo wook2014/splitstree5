@@ -1,3 +1,22 @@
+/*
+ *  XMLHighlighter.java Copyright (C) 2019 Daniel H. Huson
+ *
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package splitstree5.gui.editinputtab.highlighters;
 
 import org.fxmisc.richtext.model.StyleSpans;
@@ -14,7 +33,7 @@ public class XMLHighlighter implements Highlighter {
             +"|(?<COMMENT><!--[^<>]+-->)");
 
     private static final Pattern ATTRIBUTES = Pattern.compile(
-                    "((?!xmlns:)\\w+[:])?" + //namespace prefix not equal xmlns:
+            "((?!xmlns:)\\w+[:])?" + //namespace prefix not equal xmlns:
                     "(\\w+\\h*|xmlns:\\w+)" + // attribute name
                     "(=)(\\h*\"[^\"]+\")"); // attribute value
 
@@ -55,7 +74,7 @@ public class XMLHighlighter implements Highlighter {
                                 matcher.end(GROUP_ELEMENT_NAME) - matcher.end(GROUP_ELEMENT_NAMESPACE));
                     } else {
                         spansBuilder.add(Collections.singleton("xml-anytag"),
-                            matcher.end(GROUP_ELEMENT_NAME) - matcher.end(GROUP_OPEN_BRACKET));
+                                matcher.end(GROUP_ELEMENT_NAME) - matcher.end(GROUP_OPEN_BRACKET));
                     }
 
                     if(!attributesText.isEmpty()) {
@@ -75,7 +94,7 @@ public class XMLHighlighter implements Highlighter {
                                 else
                                     spansBuilder.add(Collections.singleton("xml-attribute"),
                                             amatcher.end(GROUP_ATTRIBUTE_NAME) - amatcher.start(GROUP_ATTRIBUTE_NAME));
-                            // name contains namespace
+                                // name contains namespace
                             else {
                                 spansBuilder.add(Collections.singleton("xml-namespace"),
                                         amatcher.end(GROUP_ATTRIBUTE_NAMESPACE) - amatcher.start(GROUP_ATTRIBUTE_NAMESPACE));

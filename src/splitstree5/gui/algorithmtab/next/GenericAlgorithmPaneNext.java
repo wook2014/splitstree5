@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2019 Daniel H. Huson
+ *  GenericAlgorithmPaneNext.java Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -16,6 +16,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package splitstree5.gui.algorithmtab.next;
 
 import javafx.beans.InvalidationListener;
@@ -28,6 +29,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.util.converter.DoubleStringConverter;
+import jloda.fx.undo.UndoManager;
 import jloda.util.Basic;
 import jloda.util.Single;
 import splitstree5.core.algorithms.Algorithm;
@@ -36,7 +38,6 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.algorithmtab.AlgorithmPane;
-import splitstree5.undo.UndoManager;
 
 import java.util.ArrayList;
 

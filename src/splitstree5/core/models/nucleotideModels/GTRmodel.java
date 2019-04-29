@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2019 Daniel H. Huson
+ *  GTRmodel.java Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -16,6 +16,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 /*
  * Created on 11-Jun-2004
  *
@@ -27,7 +28,6 @@ package splitstree5.core.models.nucleotideModels;
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
-import splitstree5.core.models.nucleotideModels.NucleotideModel;
 
 /**
  * @author Mig
