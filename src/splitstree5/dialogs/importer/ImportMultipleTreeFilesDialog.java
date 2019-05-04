@@ -24,12 +24,12 @@ import javafx.stage.FileChooser;
 import jloda.fx.control.ProgressPane;
 import jloda.fx.util.AService;
 import jloda.fx.util.NotificationManager;
-import jloda.fx.util.ProgramPropertiesFX;
 import jloda.fx.util.TaskWithProgressListener;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
 import jloda.util.Pair;
+import jloda.util.ProgramProperties;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.Taxon;
@@ -50,7 +50,7 @@ public class ImportMultipleTreeFilesDialog {
      * @param parentMainWindow
      */
     public static void apply(MainWindow parentMainWindow) {
-        final File previousDir = new File(ProgramPropertiesFX.get("ImportDir", ""));
+        final File previousDir = new File(ProgramProperties.get("ImportDir", ""));
         final FileChooser fileChooser = new FileChooser();
         if (previousDir.isDirectory())
             fileChooser.setInitialDirectory(previousDir);
@@ -61,7 +61,7 @@ public class ImportMultipleTreeFilesDialog {
 
         final List<File> selectedFiles = fileChooser.showOpenMultipleDialog(parentMainWindow.getStage());
         if (selectedFiles != null && selectedFiles.size() > 0) {
-            ProgramPropertiesFX.put("ImportDir", selectedFiles.get(0).getParentFile());
+            ProgramProperties.put("ImportDir", selectedFiles.get(0).getParentFile());
             final AService<Pair<TaxaBlock, TreesBlock>> service = new AService<>(new TaskWithProgressListener<Pair<TaxaBlock, TreesBlock>>() {
                 @Override
                 public Pair<TaxaBlock, TreesBlock> call() throws Exception {

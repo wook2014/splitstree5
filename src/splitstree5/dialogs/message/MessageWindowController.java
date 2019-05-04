@@ -22,8 +22,8 @@ package splitstree5.dialogs.message;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import jloda.fx.util.ProgramPropertiesFX;
 import jloda.fx.window.SplashScreen;
+import jloda.util.ProgramProperties;
 
 import java.time.Duration;
 
@@ -114,7 +114,7 @@ public class MessageWindowController {
     @FXML
     void initialize() {
         // if we are running on MacOS, put the specific menu items in the right places
-        if (ProgramPropertiesFX.isMacOS()) {
+        if (ProgramProperties.isMacOS()) {
             getMenuBar().setUseSystemMenuBar(true);
             //fileMenu.getItems().remove(getQuitMenuItem());
             helpMenu.getItems().remove(getAboutMenuItem());

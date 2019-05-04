@@ -24,7 +24,7 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ComboBoxBase;
 import javafx.scene.layout.Pane;
-import jloda.fx.util.ProgramPropertiesFX;
+import jloda.util.ProgramProperties;
 import splitstree5.gui.formattab.fontselector.FontSelector;
 
 public class FormatTabController {
@@ -61,7 +61,7 @@ public class FormatTabController {
     @FXML
     void initialize() {
         fontComboBoxPane.getChildren().remove(fontComboBox);
-        fontPicker = new FontSelector(ProgramPropertiesFX.getDefaultFont());
+        fontPicker = new FontSelector(ProgramProperties.getDefaultFontFX());
         fontComboBoxPane.getChildren().add(fontPicker);
     }
 

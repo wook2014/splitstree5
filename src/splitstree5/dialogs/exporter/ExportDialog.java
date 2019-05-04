@@ -26,8 +26,8 @@ import javafx.scene.Scene;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import jloda.fx.util.ExtendedFXMLLoader;
-import jloda.fx.util.ProgramPropertiesFX;
 import jloda.util.Basic;
+import jloda.util.ProgramProperties;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.main.MainWindow;
@@ -58,7 +58,7 @@ public class ExportDialog {
         exportService = new ExportService();
 
         stage = new Stage();
-        stage.getIcons().setAll(ProgramPropertiesFX.getProgramIcons());
+        stage.getIcons().setAll(ProgramProperties.getProgramIconsFX());
 
         stage.setScene(new Scene(extendedFXMLLoader.getRoot()));
         stage.sizeToScene();
@@ -66,7 +66,7 @@ public class ExportDialog {
             stage.setX(parentMainWindow.getStage().getX() + 50);
             stage.setY(parentMainWindow.getStage().getY() + 50);
         }
-        stage.setTitle("Export - " + ProgramPropertiesFX.getProgramName());
+        stage.setTitle("Export - " + ProgramProperties.getProgramName());
 
         controller.getProgressBar().setVisible(false);
 
@@ -84,7 +84,7 @@ public class ExportDialog {
         controller.getExportButton().setOnAction((e) -> {
             fileDialogShowing.set(true);
             try {
-                final File previousDir = new File(ProgramPropertiesFX.get("ExportDir", ""));
+                final File previousDir = new File(ProgramProperties.get("ExportDir", ""));
                 final FileChooser fileChooser = new FileChooser();
                 if (previousDir.isDirectory())
                     fileChooser.setInitialDirectory(previousDir);
@@ -93,7 +93,7 @@ public class ExportDialog {
                 if (selectedFile != null) {
                     selectedFile = ExportManager.getInstance().ensureFileSuffix(selectedFile, controller.getFileFormatComboBox().getValue());
                     if (selectedFile.getParentFile().isDirectory())
-                        ProgramPropertiesFX.put("ExportDir", selectedFile.getParent());
+                        ProgramProperties.put("ExportDir", selectedFile.getParent());
                     exportService.setup(selectedFile.getPath(), workingTaxa, dataBlock, controller.getFileFormatComboBox().getValue(), this);
                     exportService.restart();
                     exportService.runningProperty().addListener((c, o, n) -> {

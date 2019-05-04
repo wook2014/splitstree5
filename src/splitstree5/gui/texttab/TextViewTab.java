@@ -32,9 +32,9 @@ import javafx.stage.StageStyle;
 import jloda.fx.find.FindToolBar;
 import jloda.fx.find.TextAreaSearcher;
 import jloda.fx.util.Print;
-import jloda.fx.util.ProgramPropertiesFX;
 import jloda.fx.window.MainWindowManager;
 import jloda.util.Basic;
+import jloda.util.ProgramProperties;
 import splitstree5.gui.ViewerTab;
 import splitstree5.menu.MenuController;
 
@@ -206,7 +206,7 @@ public class TextViewTab extends ViewerTab {
 
         controller.getGotoLineMenuItem().setOnAction((e) -> {
             final TextInputDialog dialog = new TextInputDialog("");
-            dialog.setTitle("Go to Line - " + ProgramPropertiesFX.getProgramName());
+            dialog.setTitle("Go to Line - " + ProgramProperties.getProgramName());
             dialog.initStyle(StageStyle.UTILITY);
             dialog.setX(getMainWindow().getStage().getX() + 0.5 * getMainWindow().getStage().getWidth());
             dialog.setY(getMainWindow().getStage().getY() + 0.5 * getMainWindow().getStage().getHeight());

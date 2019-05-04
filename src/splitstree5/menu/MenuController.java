@@ -25,11 +25,11 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCharacterCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
-import jloda.fx.util.ProgramPropertiesFX;
 import jloda.fx.util.RecentFilesManager;
 import jloda.fx.window.IMainWindow;
 import jloda.fx.window.MainWindowManager;
 import jloda.fx.window.SplashScreen;
+import jloda.util.ProgramProperties;
 import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.io.nexus.workflow.WorkflowNexusInput;
 import splitstree5.main.MainWindow;
@@ -859,7 +859,7 @@ public class MenuController {
     @FXML
     void initialize() {
         // if we are running on MacOS, put the specific menu items in the right places
-        if (ProgramPropertiesFX.isMacOS()) {
+        if (ProgramProperties.isMacOS()) {
             getMenuBar().setUseSystemMenuBar(true);
             fileMenu.getItems().remove(getQuitMenuItem());
             windowMenu.getItems().remove(getAboutMenuItem());
@@ -880,14 +880,14 @@ public class MenuController {
                 if (count == 0)
                     windowMenu.getItems().add(new SeparatorMenuItem());
                 if (mainWindow.getStage() != null) {
-                    final MenuItem menuItem = new MenuItem(mainWindow.getStage().getTitle().replaceAll("- " + ProgramPropertiesFX.getProgramName(), ""));
+                    final MenuItem menuItem = new MenuItem(mainWindow.getStage().getTitle().replaceAll("- " + ProgramProperties.getProgramName(), ""));
                     menuItem.setOnAction((e) -> mainWindow.getStage().toFront());
                     menuItem.setAccelerator(new KeyCharacterCombination("" + (++count), KeyCombination.SHORTCUT_DOWN));
                     windowMenu.getItems().add(menuItem);
                 }
                 if (MainWindowManager.getInstance().getAuxiliaryWindows(mainWindow) != null) {
                     for (Stage auxStage : MainWindowManager.getInstance().getAuxiliaryWindows(mainWindow)) {
-                        final MenuItem menuItem = new MenuItem(auxStage.getTitle().replaceAll("- " + ProgramPropertiesFX.getProgramName(), ""));
+                        final MenuItem menuItem = new MenuItem(auxStage.getTitle().replaceAll("- " + ProgramProperties.getProgramName(), ""));
                         menuItem.setOnAction((e) -> auxStage.toFront());
                         windowMenu.getItems().add(menuItem);
                     }
@@ -958,7 +958,7 @@ public class MenuController {
         }
 
         if (mainWindow != null) // need to refresh the icon for unknown reasons...
-            mainWindow.getStage().getIcons().setAll(ProgramPropertiesFX.getProgramIcons());
+            mainWindow.getStage().getIcons().setAll(ProgramProperties.getProgramIconsFX());
 
     }
 

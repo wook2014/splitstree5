@@ -29,10 +29,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import jloda.fx.util.GeometryUtilsFX;
-import jloda.fx.util.ProgramPropertiesFX;
 import jloda.fx.util.SelectionEffect;
 import jloda.graph.Edge;
 import jloda.util.Basic;
+import jloda.util.ProgramProperties;
 
 import java.util.ArrayList;
 
@@ -77,7 +77,7 @@ public class EdgeView2D extends EdgeViewBase {
         if (text != null) {
             final Label label = new Label(text);
             label.setStyle("");
-            label.setFont(ProgramPropertiesFX.getDefaultFont());
+            label.setFont(ProgramProperties.getDefaultFontFX());
             if (start != null && end != null) {
                 final Point2D m = start.add(end).multiply(0.5);
                 label.setTranslateX(m.getX());

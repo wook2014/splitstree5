@@ -25,12 +25,12 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
 import javafx.geometry.Point2D;
 import javafx.scene.text.Font;
-import jloda.fx.util.ProgramPropertiesFX;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import jloda.phylo.PhyloSplitsGraph;
 import jloda.util.Basic;
+import jloda.util.ProgramProperties;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromSplits;
@@ -138,7 +138,7 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
         progress.setProgress(100);   //set progress to 100%
 
         // compute all views and put their parts into the appropriate groups
-        final Font labelFont = Font.font(ProgramPropertiesFX.getDefaultFont().getFamily(), taxaBlock.getNtax() <= 64 ? 16 : Math.max(4, 12 - Math.log(taxaBlock.getNtax() - 64) / Math.log(2)));
+        final Font labelFont = Font.font(ProgramProperties.getDefaultFontFX().getFamily(), taxaBlock.getNtax() <= 64 ? 16 : Math.max(4, 12 - Math.log(taxaBlock.getNtax() - 64) / Math.log(2)));
         for (Node v : graph.nodes()) {
             final String text;
             if (graph.getLabel(v) != null && graph.getLabel(v).length() > 0)

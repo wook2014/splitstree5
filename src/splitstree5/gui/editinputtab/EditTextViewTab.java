@@ -31,9 +31,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.StageStyle;
 import jloda.fx.find.FindToolBar;
 import jloda.fx.util.Print;
-import jloda.fx.util.ProgramPropertiesFX;
 import jloda.fx.window.MainWindowManager;
 import jloda.util.Basic;
+import jloda.util.ProgramProperties;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -223,7 +223,7 @@ public class EditTextViewTab extends ViewerTab {
 
         controller.getGotoLineMenuItem().setOnAction((e) -> {
             final TextInputDialog dialog = new TextInputDialog("");
-            dialog.setTitle("Go to Line - " + ProgramPropertiesFX.getProgramName());
+            dialog.setTitle("Go to Line - " + ProgramProperties.getProgramName());
             dialog.initStyle(StageStyle.UTILITY);
             dialog.setX(getMainWindow().getStage().getX() + 0.5 * getMainWindow().getStage().getWidth());
             dialog.setY(getMainWindow().getStage().getY() + 0.5 * getMainWindow().getStage().getHeight());

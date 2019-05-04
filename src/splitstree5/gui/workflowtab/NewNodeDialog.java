@@ -26,8 +26,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import jloda.fx.undo.UndoableRedoableCommand;
 import jloda.fx.util.ExtendedFXMLLoader;
-import jloda.fx.util.ProgramPropertiesFX;
 import jloda.util.Basic;
+import jloda.util.ProgramProperties;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.views.TreeEmbedder;
 import splitstree5.core.algorithms.views.TreesGrid;
@@ -96,7 +96,7 @@ public class NewNodeDialog {
         controller.getApplyButton().disableProperty().bind(controller.getTargetDataComboBox().valueProperty().isNull().or(controller.getAlgorithmChoiceBox().valueProperty().isNull()));
 
         stage = new Stage();
-        stage.setTitle("New Node - " + ProgramPropertiesFX.getProgramName());
+        stage.setTitle("New Node - " + ProgramProperties.getProgramName());
         stage.setScene(new Scene(root));
 
         stage.setX(me.getScreenX());

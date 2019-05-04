@@ -34,12 +34,12 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import jloda.fx.util.NotificationManager;
-import jloda.fx.util.ProgramPropertiesFX;
 import jloda.fx.util.RecentFilesManager;
 import jloda.fx.util.ResourceManagerFX;
 import jloda.fx.window.MainWindowManager;
 import jloda.util.Basic;
 import jloda.util.IOExceptionWithLineNumber;
+import jloda.util.ProgramProperties;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.reactfx.Subscription;
@@ -274,7 +274,7 @@ public class EditInputTab extends EditTextViewTab {
         final CodeArea codeArea = getCodeArea();
 
         controller.getOpenMenuItem().setOnAction((e) -> {
-            final File previousDir = new File(ProgramPropertiesFX.get("InputDir", ""));
+            final File previousDir = new File(ProgramProperties.get("InputDir", ""));
 
             final FileChooser fileChooser = new FileChooser();
             if (previousDir.isDirectory())
@@ -284,7 +284,7 @@ public class EditInputTab extends EditTextViewTab {
             final File selectedFile = fileChooser.showOpenDialog(getMainWindow().getStage());
             if (selectedFile != null) {
                 if (selectedFile.getParentFile().isDirectory())
-                    ProgramPropertiesFX.put("InputDir", selectedFile.getParent());
+                    ProgramProperties.put("InputDir", selectedFile.getParent());
 
                 // todo check running time
                 long startTime = System.nanoTime() / (long) Math.pow(10, 9);

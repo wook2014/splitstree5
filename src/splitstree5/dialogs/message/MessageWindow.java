@@ -28,10 +28,10 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import jloda.fx.util.ExtendedFXMLLoader;
 import jloda.fx.util.NotificationManager;
-import jloda.fx.util.ProgramPropertiesFX;
 import jloda.fx.window.IMainWindow;
 import jloda.fx.window.MainWindowManager;
 import jloda.util.Basic;
+import jloda.util.ProgramProperties;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -55,7 +55,7 @@ public class MessageWindow {
         final ExtendedFXMLLoader<MessageWindowController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         controller = extendedFXMLLoader.getController();
         stage = new Stage();
-        stage.getIcons().setAll(ProgramPropertiesFX.getProgramIcons());
+        stage.getIcons().setAll(ProgramProperties.getProgramIconsFX());
 
         stage.setScene(new Scene(extendedFXMLLoader.getRoot()));
         //stage.sizeToScene();
@@ -66,7 +66,7 @@ public class MessageWindow {
             stage.setWidth(Math.max(stage.getScene().getWidth(), parentMainWindow.getStage().getWidth()));
             stage.setHeight(150);
         }
-        stage.setTitle("Message Window - " + ProgramPropertiesFX.getProgramName());
+        stage.setTitle("Message Window - " + ProgramProperties.getProgramName());
         stage.setOnCloseRequest((c) -> setVisible(false));
 
         printStream = createPrintStream(controller.getTextArea());
@@ -108,7 +108,7 @@ public class MessageWindow {
                     Basic.restoreSystemErr(printStream);
                 }
                 stage.toFront();
-                stage.getIcons().setAll(ProgramPropertiesFX.getProgramIcons()); // seem to need to refresh these
+                stage.getIcons().setAll(ProgramProperties.getProgramIconsFX()); // seem to need to refresh these
             } else if (!stage.isFocused()) {
                 stage.toFront();
             }
@@ -141,13 +141,13 @@ public class MessageWindow {
         final FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save SplitsTree5 messages");
 
-        final File previousFile = new File(ProgramPropertiesFX.get("SaveMessagesFile", "messages.txt"));
+        final File previousFile = new File(ProgramProperties.get("SaveMessagesFile", "messages.txt"));
 
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Text", "*.txt"));
         fileChooser.setInitialFileName(previousFile.getPath());
         final File selectedFile = fileChooser.showSaveDialog(MainWindowManager.getInstance().getLastFocusedMainWindow().getStage());
         if (selectedFile != null) {
-            ProgramPropertiesFX.put("SaveMessagesFile", selectedFile.getPath());
+            ProgramProperties.put("SaveMessagesFile", selectedFile.getPath());
             try (FileWriter w = new FileWriter(selectedFile)) {
                 w.write(controller.getTextArea().getText());
 

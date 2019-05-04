@@ -27,12 +27,12 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
 import javafx.stage.FileChooser;
 import jloda.fx.util.NotificationManager;
-import jloda.fx.util.ProgramPropertiesFX;
 import jloda.fx.util.RecentFilesManager;
 import jloda.fx.window.MainWindowManager;
 import jloda.swing.util.BasicSwing;
 import jloda.util.Basic;
 import jloda.util.Pair;
+import jloda.util.ProgramProperties;
 import jloda.util.ProgressPercentage;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.characters2distances.GeneContentDistance;
@@ -139,7 +139,7 @@ public class MainWindowMenuController {
 
 
         controller.getOpenMenuItem().setOnAction((e) -> {
-            final File previousDir = new File(ProgramPropertiesFX.get("InputDir", ""));
+            final File previousDir = new File(ProgramProperties.get("InputDir", ""));
             final FileChooser fileChooser = new FileChooser();
             if (previousDir.isDirectory())
                 fileChooser.setInitialDirectory(previousDir);
@@ -148,7 +148,7 @@ public class MainWindowMenuController {
             final File selectedFile = fileChooser.showOpenDialog(mainWindow.getStage());
             if (selectedFile != null) {
                 if (selectedFile.getParentFile().isDirectory())
-                    ProgramPropertiesFX.put("InputDir", selectedFile.getParent());
+                    ProgramProperties.put("InputDir", selectedFile.getParent());
                 if (WorkflowNexusInput.isApplicable(selectedFile.getPath()))
                     WorkflowNexusInput.open(mainWindow, selectedFile.getPath());
                 else
@@ -211,7 +211,7 @@ public class MainWindowMenuController {
 
             final ImporterManager.DataType dataType = ImporterManager.getDataType(workflow.getTopDataNode().getDataBlock());
             if (dataType != ImporterManager.DataType.Unknown) {
-                final File previousDir = new File(ProgramPropertiesFX.get("InputDir", ""));
+                final File previousDir = new File(ProgramProperties.get("InputDir", ""));
                 final FileChooser fileChooser = new FileChooser();
                 if (previousDir.isDirectory())
                     fileChooser.setInitialDirectory(previousDir);
@@ -227,7 +227,7 @@ public class MainWindowMenuController {
                     final String inputFormat = ImporterManager.getInstance().getFileFormat(selectedFile.getPath());
 
                     try {
-                        ProgramPropertiesFX.put("InputDir", selectedFile.getParent());
+                        ProgramProperties.put("InputDir", selectedFile.getParent());
                         document.setFileName(Basic.replaceFileSuffix(document.getFileName(), ".splt5"));
                         if (mainWindow.getInputTab() != null)
                             mainWindow.getInputTab().loadFile(selectedFile.getPath());
@@ -293,7 +293,7 @@ public class MainWindowMenuController {
         final FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(asWorkflowOnly ? "Export Workflow" : "Save SplitsTree5 file");
 
-        final File previousDir = new File(ProgramPropertiesFX.get("SaveDir", ""));
+        final File previousDir = new File(ProgramProperties.get("SaveDir", ""));
         if (previousDir.isDirectory()) {
             fileChooser.setInitialDirectory(previousDir);
         } else
@@ -310,7 +310,7 @@ public class MainWindowMenuController {
         final File selectedFile = fileChooser.showSaveDialog(mainWindow.getStage());
         if (selectedFile != null) {
             if (selectedFile.getParentFile().isDirectory())
-                ProgramPropertiesFX.put("SaveDir", selectedFile.getParent());
+                ProgramProperties.put("SaveDir", selectedFile.getParent());
             try {
                 final Document document = mainWindow.getDocument();
                 new WorkflowNexusOutput().save(mainWindow.getWorkflow(), selectedFile, asWorkflowOnly);

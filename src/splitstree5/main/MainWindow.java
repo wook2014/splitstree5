@@ -36,7 +36,6 @@ import javafx.stage.Stage;
 import jloda.fx.control.SplittableTabPane;
 import jloda.fx.undo.UndoManager;
 import jloda.fx.util.ExtendedFXMLLoader;
-import jloda.fx.util.ProgramPropertiesFX;
 import jloda.fx.util.RecentFilesManager;
 import jloda.fx.util.ResourceManagerFX;
 import jloda.fx.window.IMainWindow;
@@ -44,6 +43,7 @@ import jloda.fx.window.MainWindowManager;
 import jloda.fx.window.WindowGeometry;
 import jloda.util.Basic;
 import jloda.util.Pair;
+import jloda.util.ProgramProperties;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.ViewerBlock;
 import splitstree5.core.workflow.Connector;
@@ -169,7 +169,7 @@ public class MainWindow implements IMainWindow {
             dirtyStar.set(n ? "*" : "");
         });
 
-        titleProperty.bind(Bindings.concat("Main Window - ").concat(document.nameProperty()).concat(dirtyStar).concat(" - " + ProgramPropertiesFX.getProgramName()));
+        titleProperty.bind(Bindings.concat("Main Window - ").concat(document.nameProperty()).concat(dirtyStar).concat(" - " + ProgramProperties.getProgramName()));
 
         // setup work flow tree view:
         {
@@ -233,7 +233,7 @@ public class MainWindow implements IMainWindow {
             this.stage = stage0;
         else {
             this.stage = new Stage();
-            stage.getIcons().setAll(ProgramPropertiesFX.getProgramIcons());
+            stage.getIcons().setAll(ProgramProperties.getProgramIconsFX());
 
             stage.focusedProperty().addListener((c, o, n) -> {
                 if (!n && mainTabPane.getSelectionModel().getSelectedItem() instanceof ISavesPreviousSelection)
@@ -461,7 +461,7 @@ public class MainWindow implements IMainWindow {
             document.updateMethodsText();
         }
         if (result) {
-            ProgramPropertiesFX.put("WindowGeometry", (new WindowGeometry(getStage())).toString());
+            ProgramProperties.put("WindowGeometry", (new WindowGeometry(getStage())).toString());
         }
         return result;
     }

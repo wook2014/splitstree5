@@ -20,8 +20,8 @@
 package splitstree5.io.nexus.workflow;
 
 import jloda.fx.util.NotificationManager;
-import jloda.fx.util.ProgramPropertiesFX;
 import jloda.util.Pair;
+import jloda.util.ProgramProperties;
 import splitstree5.core.datablocks.SplitsTree5Block;
 import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.DataNode;
@@ -48,7 +48,7 @@ public class WorkflowNexusOutput {
      */
     public void save(Workflow workflow, final File file, boolean asWorkflowOnly) throws IOException {
         if (file.getParentFile() != null && file.getParentFile().isDirectory())
-            ProgramPropertiesFX.put("SaveDir", file.getParent());
+            ProgramProperties.put("SaveDir", file.getParent());
         try (Writer w = new BufferedWriter(file.getName().equals("stdout") ? new OutputStreamWriter(System.out) : new FileWriter(file))) {
             final int count = save(workflow, w, asWorkflowOnly);
             NotificationManager.showInformation("Saved " + count + " blocks to file: " + file.getPath());

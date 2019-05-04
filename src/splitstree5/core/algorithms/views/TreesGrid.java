@@ -25,10 +25,10 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
 import javafx.geometry.Point2D;
 import javafx.scene.text.Font;
-import jloda.fx.util.ProgramPropertiesFX;
 import jloda.graph.*;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
+import jloda.util.ProgramProperties;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
@@ -153,7 +153,7 @@ public class TreesGrid extends Algorithm<TreesBlock, ViewerBlock> implements IFr
                         }
                     }
 
-                    final Font labelFont = Font.font(ProgramPropertiesFX.getDefaultFont().getFamily(), taxaBlock.getNtax() <= 64 ? 16 : Math.max(4, 12 - Math.log(taxaBlock.getNtax() - 64) / Math.log(2)));
+                    final Font labelFont = Font.font(ProgramProperties.getDefaultFontFX().getFamily(), taxaBlock.getNtax() <= 64 ? 16 : Math.max(4, 12 - Math.log(taxaBlock.getNtax() - 64) / Math.log(2)));
 
                     // compute all views and put their parts into the appropriate groups
                     for (Node v : tree.nodes()) {

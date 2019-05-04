@@ -26,8 +26,8 @@ import com.install4j.api.update.UpdateDescriptor;
 import com.install4j.api.update.UpdateDescriptorEntry;
 import javafx.application.Platform;
 import jloda.fx.util.NotificationManager;
-import jloda.fx.util.ProgramPropertiesFX;
 import jloda.util.Basic;
+import jloda.util.ProgramProperties;
 
 /**
  * check for update and install, if present
@@ -38,7 +38,7 @@ public class CheckForUpdate {
      * check for update and install, if present
      */
     public static void apply() {
-        ApplicationDisplayMode applicationDisplayMode = ProgramPropertiesFX.isUseGUI() ? ApplicationDisplayMode.GUI : ApplicationDisplayMode.CONSOLE;
+        ApplicationDisplayMode applicationDisplayMode = ProgramProperties.isUseGUI() ? ApplicationDisplayMode.GUI : ApplicationDisplayMode.CONSOLE;
         UpdateDescriptor updateDescriptor;
         try {
             updateDescriptor = UpdateChecker.getUpdateDescriptor("http://www-ab.informatik.uni-tuebingen.de/data/software/splitstree5/download/updates.xml", applicationDisplayMode);
@@ -48,7 +48,7 @@ public class CheckForUpdate {
             return;
         }
         if (updateDescriptor.getEntries().length > 0) {
-            if (!ProgramPropertiesFX.isUseGUI()) {
+            if (!ProgramProperties.isUseGUI()) {
                 UpdateDescriptorEntry entry = updateDescriptor.getEntries()[0];
                 NotificationManager.showInformation("New version available: " + entry.getNewVersion()
                         + "\nPlease download from: http://www-ab.informatik.uni-tuebingen.de/data/software/splitstree5/download/");
@@ -66,7 +66,7 @@ public class CheckForUpdate {
                 }
 
                 public void prepareShutdown() {
-                    ProgramPropertiesFX.store();
+                    ProgramProperties.store();
                 }
             }, ApplicationLauncher.WindowMode.FRAME, null);
         });
