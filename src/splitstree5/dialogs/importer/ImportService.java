@@ -49,6 +49,7 @@ public class ImportService extends Service<Boolean> {
 
     private boolean reload = false;
 
+    // field for storage of customized special chars for characters blocks
     private static String missingChar = "";
     private static String gapChar = "";
 
@@ -75,6 +76,7 @@ public class ImportService extends Service<Boolean> {
         this.fileName = fileName;
         this.title = title;
 
+        // get gap/missing chars, if Editor is opened
         if (parentMainWindow.getEditedInputTab() != null) {
             missingChar = parentMainWindow.getEditedInputTab().getMissing();
             gapChar = parentMainWindow.getEditedInputTab().getGap();

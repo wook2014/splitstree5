@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 
 /**
  * Import characters data in different formats
- * Daria Evseeva,15.08.2017.
+ * Daria Evseeva, 15.08.2017.
  */
 public abstract class CharactersFormat {
 
@@ -42,7 +42,7 @@ public abstract class CharactersFormat {
     private char matchChar = '.';
 
     /**
-     * add taxa label to a given list of labels
+     * add new taxa taxon to a given list of taxa labels
      * if repeating taxa label is found, convert to "label + number" form
      *
      * @param line
@@ -53,7 +53,7 @@ public abstract class CharactersFormat {
 
         int sameNamesCounter = 0;
         if (taxonNames.contains(line.substring(1))) {
-            System.err.println("Repeating taxon name in line " + linesCounter);
+            System.err.println("Warning: Repeated taxon name " + line.substring(1) + ". Line: " + linesCounter);
             sameNamesCounter++;
         }
         while (taxonNames.contains(line.substring(1) + "(" + sameNamesCounter + ")")) {
@@ -74,7 +74,8 @@ public abstract class CharactersFormat {
      * @param allowedChars
      * @throws IOException
      */
-    static void checkIfCharactersValid(String line, int counter, String allowedChars) throws IOException {
+    protected static void checkIfCharactersValid(String line, int counter, String allowedChars) throws IOException {
+
         if (line.isEmpty())
             throw new IOExceptionWithLineNumber("No characters sequence is given", counter);
 
@@ -84,15 +85,25 @@ public abstract class CharactersFormat {
         boolean found = m.find();
         if (found) {
             String foundSymbol = m.group();
-            throw new IOExceptionWithLineNumber("Unexpected character: " + foundSymbol, counter);
+            throw new IOExceptionWithLineNumber("Unexpected character: " + foundSymbol
+                    + "\nIf the symbol represents gap or missing char set it in the Input Editor.", counter);
         }
     }
 
+    /**
+     * Estimates data type of tha imported characters (dna, protein, standard)
+     *
+     * @param foundSymbols list of all symbols present in characters
+     * @param characters character block
+     * @param frequency frequencies list for the "foundSymbols"
+     * @throws IOException
+     */
     void estimateDataType(String foundSymbols, CharactersBlock characters, Map<Character, Integer> frequency) throws IOException {
+
         String originalFoundSymbols = foundSymbols;
-        foundSymbols = foundSymbols.replace(getStringGap(), "");
-        foundSymbols = foundSymbols.replace(getStringMissing(), "");
-        foundSymbols = foundSymbols.replace(getStringMatchChar(), "");
+        foundSymbols = foundSymbols.replace(getGap() + "", "");
+        foundSymbols = foundSymbols.replace(getMissing() + "", "");
+        foundSymbols = foundSymbols.replace(getMatchChar() + "", "");
         // sort found symbols
         char[] chars = foundSymbols.toCharArray();
         Arrays.sort(chars);
@@ -111,14 +122,14 @@ public abstract class CharactersFormat {
             case "acdefghiklmnpqrstvwyz":
                 characters.setDataType(CharactersType.Protein);
                 break;
-            default:
-                char x = getUnknownSymbols(sortedSymbols);
+            default:  //todo redundant? delete?
+                char x = getUnknownSymbol(sortedSymbols);
                 if (x == '\u0000') {
                     if (sortedSymbols.contains("b") || hasMostNucleotide(frequency)) {
                         if (sortedSymbols.contains("t")) characters.setDataType(CharactersType.DNA);
                         if (sortedSymbols.contains("u")) characters.setDataType(CharactersType.RNA);
                         if (sortedSymbols.contains("t") && sortedSymbols.contains("u"))
-                            throw new IOException("Nucleotide sequence contains Thymine and Uracil at the same time");
+                            throw new IOException("Nucleotide sequences contains Thymine and Uracil at the same time");
                     }
                     if (hasAAOnlySymbols(sortedSymbols))
                         characters.setDataType(CharactersType.Protein);
@@ -143,7 +154,15 @@ public abstract class CharactersFormat {
         }
     }
 
-    private static char getUnknownSymbols(String sortedSymbols) {
+    /**
+     * Get first symbol, which is not nucleotide or amino acid symbol.
+     * If only nucleotide od aa symbols are found return '\u0000' = null character.
+     *
+     * @param sortedSymbols
+     * @return
+     */
+
+    private static char getUnknownSymbol(String sortedSymbols) {
         String knownSymbols = CharactersType.Protein.getSymbols() + CharactersType.DNA.getSymbols() +
                 CharactersType.RNA.getSymbols() + AmbiguityCodes.CODES;
         for (char c : sortedSymbols.toCharArray()) {
@@ -199,11 +218,6 @@ public abstract class CharactersFormat {
     public char getGap() {
         return gap;
     }
-
-    private String getStringGap() {
-        return gap + "";
-    }
-
     public void setGap(char newGap) {
         gap = newGap;
     }
@@ -211,11 +225,6 @@ public abstract class CharactersFormat {
     public char getMissing() {
         return missing;
     }
-
-    private String getStringMissing() {
-        return missing + "";
-    }
-
     public void setMissing(char newMissing) {
         missing = newMissing;
     }
@@ -223,11 +232,6 @@ public abstract class CharactersFormat {
     public char getMatchChar() {
         return matchChar;
     }
-
-    private String getStringMatchChar() {
-        return matchChar + "";
-    }
-
     public void setMatchChar(char newMatchChar) {
         matchChar = newMatchChar;
     }

@@ -58,6 +58,8 @@ public class NexmlCharactersImporter extends CharactersFormat implements IToChar
             char[][] matrix = handler.getMatrix();
             characters.setDimension(matrix.length, matrix[0].length);
             for (int i = 1; i <= matrix.length; i++) {
+                String line = String.valueOf(matrix[i]);
+                checkIfCharactersValid(line, -1, "" + getMissing() + getMatchChar() + getGap());
                 for (int j = 1; j <= matrix[0].length; j++) {
                     characters.set(i, j, matrix[i - 1][j - 1]);
                 }
@@ -74,6 +76,9 @@ public class NexmlCharactersImporter extends CharactersFormat implements IToChar
                         characters.setSymbols(characters.getSymbols() + symbol);
                 }
             }
+
+            characters.setGapCharacter(getGap());
+            characters.setMissingCharacter(getMissing());
 
             progressListener.close();
         } catch (Exception e) {

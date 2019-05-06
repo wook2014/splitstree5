@@ -74,6 +74,8 @@ public class SingleLineSequencesImporter extends CharactersFormat implements ITo
         taxa.addTaxaByNames(taxonNames);
         characters.clear();
         characters.setDimension(ntax, nchar);
+        characters.setGapCharacter(getGap());
+        characters.setMissingCharacter(getMissing());
         readMatrix(matrix, characters);
 
     }

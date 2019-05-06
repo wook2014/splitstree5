@@ -128,6 +128,8 @@ public class ClustalImporter extends CharactersFormat implements IToCharacters, 
     private void setCharacters(Map<String, String> taxa2seq, int ntax, int nchar, CharactersBlock characters) throws IOException {
         characters.clear();
         characters.setDimension(ntax, nchar);
+        characters.setGapCharacter(getGap());
+        characters.setMissingCharacter(getMissing());
 
         int labelsCounter = 1;
         StringBuilder foundSymbols = new StringBuilder("");
