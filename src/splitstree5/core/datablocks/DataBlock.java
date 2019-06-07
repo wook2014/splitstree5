@@ -65,7 +65,7 @@ abstract public class DataBlock extends NameableBase {
      */
     public DataBlock newInstance() {
         try {
-            return getClass().newInstance();
+            return getClass().getConstructor().newInstance();
         } catch (Exception e) {
             Basic.caught(e);
             return null;

@@ -187,7 +187,7 @@ abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extend
      */
     public Algorithm newInstance() {
         try {
-            return getClass().newInstance();
+            return getClass().getConstructor().newInstance();
         } catch (Exception e) {
             Basic.caught(e);
             return null;

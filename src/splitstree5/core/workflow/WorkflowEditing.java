@@ -91,7 +91,7 @@ public class WorkflowEditing {
                     DataNode lastDataNode = parent;
 
                     for (Pair<Class<? extends Algorithm>, Class<? extends DataBlock>> pair : path) {
-                        final DataNode dataNode = workflow.createDataNode(pair.getSecond().newInstance());
+                        final DataNode dataNode = workflow.createDataNode(pair.getSecond().getConstructor().newInstance());
                         final Connector connector = workflow.createConnector(lastDataNode, dataNode, (Algorithm) pair.getFirst().newInstance());
                         if (firstConnector == null)
                             firstConnector = connector;
