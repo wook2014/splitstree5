@@ -86,6 +86,8 @@ public class StockholmImporter extends CharactersFormat implements IToCharacters
         taxa.addTaxaByNames(taxonNamesFound);
         characters.clear();
         characters.setDimension(ntax, nchar);
+        characters.setGapCharacter(getGap());
+        characters.setMissingCharacter(getMissing());
         readMatrix(matrix, characters);
     }
 

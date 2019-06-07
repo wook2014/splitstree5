@@ -122,6 +122,8 @@ public class FastaImporter extends CharactersFormat implements IToCharacters, II
         taxa.addTaxaByNames(taxonNamesFound);
         characters.clear();
         characters.setDimension(ntax, nchar);
+        characters.setGapCharacter(getGap());
+        characters.setMissingCharacter(getMissing());
         readMatrix(matrix, characters);
     }
 

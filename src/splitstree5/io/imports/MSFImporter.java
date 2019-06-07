@@ -84,6 +84,7 @@ public class MSFImporter extends CharactersFormat implements IToCharacters, IImp
                     if (!taxon.equals("")){
                         String chars = line.replaceAll("\\s+", "");
                         chars = chars.substring(taxon.length());
+                        checkIfCharactersValid(chars, linesCounter, "" + getMissing() + getMatchChar()+ getGap());
                         taxa2seq.replace(taxon, taxa2seq.get(taxon)+chars);
                     }
                 }
