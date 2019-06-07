@@ -19,7 +19,6 @@
 
 package splitstree5.core.algorithms.trees2splits;
 
-import com.install4j.api.context.UserCanceledException;
 import javafx.beans.property.*;
 import jloda.fx.util.NotificationManager;
 import jloda.fx.util.ProgramExecutorService;
@@ -329,7 +328,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
             countDownLatch.await();
         } catch (InterruptedException e) {
             if (exception.get() == null)
-                exception.set(new UserCanceledException());
+                exception.set(new CanceledException());
         }
         if (exception.get() != null)
             throw exception.get();

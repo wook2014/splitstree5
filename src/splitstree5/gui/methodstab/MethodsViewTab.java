@@ -38,7 +38,7 @@ public class MethodsViewTab extends TextViewTab {
     public MethodsViewTab(Document document) {
         super(new ReadOnlyStringWrapper("Methods"), document.methodsTextProperty());
         setText("Methods");
-        setGraphic(new ImageView(ResourceManagerFX.getIcon("sun/toolbarButtonGraphics/general/History16.gif")));
+        setGraphic(new ImageView(ResourceManagerFX.getIcon("sun/History16.gif")));
         getTextArea().setFont(ProgramProperties.getDefaultFontFX());
         getTextArea().setWrapText(true);
         setClosable(false);

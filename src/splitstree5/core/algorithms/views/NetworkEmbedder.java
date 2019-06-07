@@ -19,7 +19,6 @@
 
 package splitstree5.core.algorithms.views;
 
-import com.sun.javafx.charts.Legend;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
@@ -44,6 +43,7 @@ import splitstree5.gui.graphtab.NetworkViewTab;
 import splitstree5.gui.graphtab.base.EdgeViewBase;
 import splitstree5.gui.graphtab.base.GraphLayout;
 import splitstree5.gui.graphtab.base.NodeView2D;
+import splitstree5.xtra.Legend;
 
 import java.util.Arrays;
 import java.util.List;

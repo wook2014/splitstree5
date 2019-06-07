@@ -74,7 +74,7 @@ public class WorkflowViewTab extends ViewerTab {
     public WorkflowViewTab(Document document) {
         this.document = document;
         setText("Workflow");
-        setGraphic(new ImageView(ResourceManagerFX.getIcon("sun/toolbarButtonGraphics/general/Preferences16.gif")));
+        setGraphic(new ImageView(ResourceManagerFX.getIcon("sun/Preferences16.gif")));
         setClosable(false);
 
         centerPane = new Pane(new StackPane(edgeViews, nodeViews));

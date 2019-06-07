@@ -60,7 +60,7 @@
                                                            preserveRatio="true">
                                                     <image>
                                                         <Image smooth="false"
-                                                               url="/resources/icons/ExpandTreeView16.gif"/>
+                                                               url="/splitstree5/resources/icons/ExpandTreeView16.gif"/>
                                                     </image>
                                                 </ImageView>
                                             </graphic>
@@ -73,7 +73,7 @@
                                                            preserveRatio="true">
                                                     <image>
                                                         <Image smooth="false"
-                                                               url="/resources/icons/CollapseTreeView16.gif"/>
+                                                               url="/splitstree5/resources/icons/CollapseTreeView16.gif"/>
                                                     </image>
                                                 </ImageView>
                                             </graphic>
@@ -87,7 +87,7 @@
                                                            preserveRatio="true">
                                                     <image>
                                                         <Image smooth="false"
-                                                               url="/resources/icons/sun/toolbarButtonGraphics/general/Preferences16.gif"/>
+                                                               url="/jloda/resources/icons/sun/Preferences16.gif"/>
                                                     </image>
                                                 </ImageView>
                                             </graphic>

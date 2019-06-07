@@ -25,12 +25,10 @@ import javafx.stage.Stage;
 import jloda.fx.util.ArgsOptions;
 import jloda.fx.util.ProgramExecutorService;
 import jloda.fx.util.ResourceManagerFX;
-import jloda.fx.window.MainWindowManager;
 import jloda.fx.window.SplashScreen;
 import jloda.fx.window.WindowGeometry;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
-import splitstree5.dialogs.importer.FileOpener;
 
 import java.io.File;
 import java.time.Duration;
@@ -61,6 +59,8 @@ public class SplitsTree5 extends Application {
      * @throws java.lang.Exception
      */
     public static void parseArguments(String[] args) throws Exception {
+        ResourceManagerFX.addResourceRoot(SplitsTree5.class, "splitstree5/resources");
+
         Basic.restoreSystemOut(System.err); // send system out to system err
         Basic.startCollectionStdErr();
         ProgramProperties.getProgramIconsFX().setAll(ResourceManagerFX.getIcon("SplitsTree5-16.png"), ResourceManagerFX.getIcon("SplitsTree5-32.png"),
@@ -86,23 +86,18 @@ public class SplitsTree5 extends Application {
         else
             defaultPreferenceFile = System.getProperty("user.home") + File.separator + ".SplitsTree5.def";
         final String propertiesFile = options.getOption("-p", "propertiesFile", "Properties file", defaultPreferenceFile);
-        final boolean showVersion = options.getOption("-V", "version", "Show version string", false);
         final boolean silentMode = options.getOption("-S", "silentMode", "Silent mode", false);
         ProgramExecutorService.setMaxNumberOfTheadsForParallelAlgorithm(options.getOption("-t", "threads", "Maximum number of threads to use in a parallel algorithm (0=all available)", 0));
         options.done();
 
         ProgramProperties.load(propertiesFile);
 
+        System.err.println("Java version: " + System.getProperty("java.version"));
+
         if (silentMode) {
             Basic.stopCollectingStdErr();
             Basic.hideSystemErr();
             Basic.hideSystemOut();
-        }
-
-        if (showVersion) {
-            System.err.println(ProgramProperties.getProgramVersion());
-            System.err.println(jloda.util.Version.getVersion(SplitsTree5.class, ProgramProperties.getProgramName()));
-            System.err.println("Java version: " + System.getProperty("java.version"));
         }
     }
 
@@ -130,17 +125,11 @@ public class SplitsTree5 extends Application {
                 // todo: implement
             }
 
-            // setup about and preferences menu for apple:
-            OSXIntegration.init();
-            OSXIntegration.populateAppleMenu(() -> SplashScreen.getInstance().showSplash(Duration.ofMinutes(1)), () -> System.err.println("Preferences"));
-
-            // open files by double-click under Mac OS: // untested
-            OSXIntegration.setOpenFilesHandler(files -> {
-                for (File file : files) {
-                    if (FileOpener.isOpenable(file.getPath()))
-                        FileOpener.open(false, (MainWindow) MainWindowManager.getInstance().getLastFocusedMainWindow(), file.getPath(), null);
-                }
-            });
+            if (false) {
+                // setup about and preferences menu for apple:
+                OSXIntegration.init();
+                OSXIntegration.populateAppleMenu(() -> SplashScreen.getInstance().showSplash(Duration.ofMinutes(1)), () -> System.err.println("Preferences"));
+            }
         } catch (Exception ex) {
             Basic.caught(ex);
         }

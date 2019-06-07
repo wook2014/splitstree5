@@ -42,7 +42,7 @@
             <graphic>
                 <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image smooth="false" url="/resources/icons/sun/toolbarButtonGraphics/general/Open16.gif"/>
+                        <Image smooth="false" url="/jloda/resources/icons/sun/Open16.gif"/>
                     </image>
                 </ImageView>
             </graphic>
@@ -56,7 +56,7 @@
             <graphic>
                 <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image smooth="false" url="/resources/icons/sun/toolbarButtonGraphics/general/Save16.gif"/>
+                        <Image smooth="false" url="/jloda/resources/icons/sun/Save16.gif"/>
                     </image>
                 </ImageView>
             </graphic>
@@ -69,7 +69,7 @@
             <graphic>
                 <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image smooth="false" url="/resources/icons/sun/toolbarButtonGraphics/general/Print16.gif"/>
+                        <Image smooth="false" url="/jloda/resources/icons/sun/Print16.gif"/>
                     </image>
                 </ImageView>
             </graphic>
@@ -85,7 +85,7 @@
             <graphic>
                 <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image smooth="false" url="/resources/icons/sun/toolbarButtonGraphics/general/Find16.gif"/>
+                        <Image smooth="false" url="/jloda/resources/icons/sun/Find16.gif"/>
                     </image>
                 </ImageView>
             </graphic>
@@ -102,7 +102,7 @@
                 <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                     <image>
                         <Image smooth="false"
-                               url="/resources/icons/sun/toolbarButtonGraphics/general/AlignCenter16.gif"/>
+                               url="/jloda/resources/icons/sun/AlignCenter16.gif"/>
                     </image>
                 </ImageView>
             </graphic>
@@ -116,7 +116,7 @@
             <graphic>
                 <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image smooth="false" url="/resources/icons/sun/toolbarButtonGraphics/general/ZoomIn16.gif"/>
+                        <Image smooth="false" url="/jloda/resources/icons/sun/ZoomIn16.gif"/>
                     </image>
                 </ImageView>
             </graphic>
@@ -129,7 +129,7 @@
             <graphic>
                 <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image smooth="false" url="/resources/icons/sun/toolbarButtonGraphics/general/ZoomOut16.gif"/>
+                        <Image smooth="false" url="/jloda/resources/icons/sun/ZoomOut16.gif"/>
                     </image>
                 </ImageView>
             </graphic>
@@ -145,7 +145,7 @@
             <graphic>
                 <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image smooth="false" url="/resources/icons/RotateLeft16.gif"/>
+                        <Image smooth="false" url="/splitstree5/resources/icons/RotateLeft16.gif"/>
                     </image>
                 </ImageView>
             </graphic>
@@ -159,7 +159,7 @@
             <graphic>
                 <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image smooth="false" url="/resources/icons/RotateRight16.gif"/>
+                        <Image smooth="false" url="/splitstree5/resources/icons/RotateRight16.gif"/>
                     </image>
                 </ImageView>
             </graphic>
@@ -175,7 +175,7 @@
             <graphic>
                 <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image smooth="false" url="/resources/icons/TreeViewer16.gif"/>
+                        <Image smooth="false" url="/splitstree5/resources/icons/TreeViewer16.gif"/>
                     </image>
                 </ImageView>
             </graphic>
@@ -189,7 +189,7 @@
             <graphic>
                 <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image smooth="false" url="/resources/icons/SplitsNetworkViewer16.gif"/>
+                        <Image smooth="false" url="/splitstree5/resources/icons/SplitsNetworkViewer16.gif"/>
                     </image>
                 </ImageView>
             </graphic>

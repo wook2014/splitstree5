@@ -113,10 +113,11 @@ public class MainWindow implements IMainWindow {
 
         Platform.setImplicitExit(false);
 
+
         {
             final ExtendedFXMLLoader<MainWindowController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
             root = extendedFXMLLoader.getRoot();
-            root.getStylesheets().add("resources/css/styles.css");
+            root.getStylesheets().add("splitstree5/resources/css/styles.css");
             mainWindowController = extendedFXMLLoader.getController();
         }
 
@@ -264,7 +265,10 @@ public class MainWindow implements IMainWindow {
         }
 
         stage.titleProperty().bind(titleProperty);
-        stage.setScene(new Scene(root, width, height));
+        final Scene scene = new Scene(root, width, height);
+        // todo: need to fix a number of things about this
+        // scene.getStylesheets().setAll(ResourceManagerFX.getCssURL("modena_dark.css").toExternalForm());
+        stage.setScene(scene);
 
         stage.setX(screenX);
         stage.setY(screenY);

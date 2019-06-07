@@ -20,7 +20,6 @@
 package splitstree5.gui.graphtab;
 
 
-import com.sun.javafx.charts.Legend;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -36,6 +35,7 @@ import splitstree5.core.algorithms.views.NetworkEmbedder;
 import splitstree5.gui.graphtab.base.*;
 import splitstree5.gui.graphtab.commands.MoveNodesCommand;
 import splitstree5.menu.MenuController;
+import splitstree5.xtra.Legend;
 
 import java.util.HashSet;
 import java.util.Set;

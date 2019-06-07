@@ -82,7 +82,7 @@ public class EditTextViewTab extends ViewerTab {
         ////
         //new VirtualizedScrollPane<>(new CodeArea());
 
-        String css = this.getClass().getResource("/resources/css/styles.css").toExternalForm();
+        String css = this.getClass().getResource("/splitstree5/resources/css/styles.css").toExternalForm();
         codeArea.getStylesheets().add(css);
         //textArea.setFont(Font.font("Courier New")); // gets set by style file
         codeArea.getContent().setEditable(false);

@@ -82,13 +82,13 @@ public class EditInputTab extends EditTextViewTab {
      */
     public EditInputTab(MainWindow mainWindow) {
         super(new SimpleStringProperty("Input"));
-        setGraphic(new ImageView(ResourceManagerFX.getIcon("sun/toolbarButtonGraphics/general/Import16.gif")));
+        setGraphic(new ImageView(ResourceManagerFX.getIcon("sun/Import16.gif")));
         setMainWindow(mainWindow);
 
         final CodeArea codeArea = getCodeArea();
         CodeAreaStyler codeAreaStyler = new CodeAreaStyler(codeArea);
 
-        String css = this.getClass().getResource("/resources/css/styles.css").toExternalForm();
+        String css = this.getClass().getResource("styles.css").toExternalForm();
         codeArea.getStylesheets().add(css);
         codeArea.setEditable(true);
 

@@ -861,12 +861,11 @@ public class MenuController {
         // if we are running on MacOS, put the specific menu items in the right places
         if (ProgramProperties.isMacOS()) {
             getMenuBar().setUseSystemMenuBar(true);
-            fileMenu.getItems().remove(getQuitMenuItem());
-            windowMenu.getItems().remove(getAboutMenuItem());
-            editMenu.getItems().remove(getPreferencesMenuItem());
-        } else {
-            getAboutMenuItem().setOnAction((e) -> SplashScreen.getInstance().showSplash(Duration.ofMinutes(1)));
+            // fileMenu.getItems().remove(getQuitMenuItem());
+            // windowMenu.getItems().remove(getAboutMenuItem());
+            // editMenu.getItems().remove(getPreferencesMenuItem());
         }
+        getAboutMenuItem().setOnAction((e) -> SplashScreen.getInstance().showSplash(Duration.ofMinutes(1)));
 
         increaseFontSizeMenuItem.setAccelerator(new KeyCharacterCombination("+", KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_ANY));
         decreaseFontSizeMenuItem.setAccelerator(new KeyCharacterCombination("-", KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_ANY));
@@ -899,6 +898,7 @@ public class MenuController {
 
         alwaysOnMenuItems.add(fullScreenMenuItem);
         alwaysOnMenuItems.add(quitMenuItem);
+        alwaysOnMenuItems.add(aboutMenuItem);
         alwaysOnMenuItems.add(openRecentMenu);
         alwaysOnMenuItems.add(showWorkflowMenuItem);
         alwaysOnMenuItems.add(toolsMenu);

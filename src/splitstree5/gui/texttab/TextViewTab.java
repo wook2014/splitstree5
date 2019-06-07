@@ -69,7 +69,7 @@ public class TextViewTab extends ViewerTab {
         setGraphic(label);
         setText("");
         textArea = new TextArea();
-        String css = this.getClass().getResource("/resources/css/styles.css").toExternalForm();
+        String css = this.getClass().getResource("/splitstree5/resources/css/styles.css").toExternalForm();
         textArea.getStylesheets().add(css);
         //textArea.setFont(Font.font("Courier New")); // gets set by style file
         textArea.setEditable(false);

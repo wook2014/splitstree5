@@ -166,7 +166,7 @@ public class MainWindowMenuController {
         });
 
         controller.getInputEditorMenuItem().setOnAction((e) -> {
-            if (false) {
+            if (true) {
                 if (!mainWindow.getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().get() || mainWindow.getInputTab() != null) {
                     mainWindow.showInputTab();
                 } else {
@@ -174,7 +174,7 @@ public class MainWindowMenuController {
                     newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50, mainWindow.getStage().getWidth(), mainWindow.getStage().getHeight());
                     newMainWindow.showInputTab();
                 }
-            } else {
+            } else { // todo: new to figure out how to correctlty include the module
                 if (!mainWindow.getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().get() || mainWindow.getEditedInputTab() != null) {
                     mainWindow.showEditInputTab();
                 } else {

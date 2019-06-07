@@ -130,7 +130,6 @@ public class DragAndDropSupportListView2<T> {
                                 break;
                             }
                             count++;
-
                         }
                     }
                 }

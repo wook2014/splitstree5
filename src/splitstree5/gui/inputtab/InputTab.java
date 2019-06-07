@@ -50,7 +50,6 @@ import java.util.regex.Pattern;
 
 /**
  * tab for entering data
- * @deprecated
  * Daniel Huson, 2.2018
  */
 public class InputTab extends TextViewTab {
@@ -63,7 +62,7 @@ public class InputTab extends TextViewTab {
      */
     public InputTab(MainWindow mainWindow) {
         super(new SimpleStringProperty("Input"));
-        setGraphic(new ImageView(ResourceManagerFX.getIcon("sun/toolbarButtonGraphics/general/Import16.gif")));
+        setGraphic(new ImageView(ResourceManagerFX.getIcon("sun/Import16.gif")));
         setMainWindow(mainWindow);
 
         final TextArea textArea = getTextArea();

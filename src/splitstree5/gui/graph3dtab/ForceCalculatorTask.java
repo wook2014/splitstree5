@@ -19,7 +19,6 @@
 
 package splitstree5.gui.graph3dtab;
 
-import com.sun.javafx.geom.Vec3d;
 import javafx.concurrent.Task;
 import javafx.geometry.Point3D;
 import jloda.graph.Edge;
@@ -86,11 +85,10 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
      * @param to   the point on which the first point acts
      * @return the resulting force vector that acts on the 'to' point
      */
-    private Vec3d calculateLinearForceVector(Point3D from, Point3D to) {
+    private Point3D calculateLinearForceVector(Point3D from, Point3D to) {
         Point3D dist = to.subtract(from);
-        Vec3d force = new Vec3d(dist.getX(), dist.getY(), dist.getZ());
-        force.mul((maxDist - force.length()) / force.length());
-        return force;
+        Point3D force = new Point3D(dist.getX(), dist.getY(), dist.getZ());
+        return force.multiply((maxDist - force.magnitude()) / force.magnitude());
     }
 
     /**
@@ -100,13 +98,12 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
      * @param to   the point on which the first point acts
      * @return the resulting force vector that acts on the 'to' point
      */
-    private Vec3d calculateLogForceVector(Point3D from, Point3D to) {
+    private Point3D calculateLogForceVector(Point3D from, Point3D to) {
         Point3D dist = to.subtract(from);
-        Vec3d force = new Vec3d(dist.getX(), dist.getY(), dist.getZ());
+        Point3D force = new Point3D(dist.getX(), dist.getY(), dist.getZ());
         double c = maxDist * 0.5;
         double forceStrength = maxDist - (c * Math.log(dist.magnitude() / maxDist) + maxDist);
-        force.mul(forceStrength / force.length());
-        return force;
+        return force.multiply(forceStrength / force.magnitude());
     }
 
     /**
@@ -171,13 +168,13 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
                 });
 
                 // Calculation big force vector for each node in the current split
-                Vec3d vec = new Vec3d(0, 0, 0);
+                Point3D vec = new Point3D(0, 0, 0);
 
                 for (Node aNode : leftSplit) {
                     for (Node otherNode : rightSplit) {
                         Point3D dist = nodeLocations.get(aNode).subtract(nodeLocations.get(otherNode));
-                        double length = new Vec3d(dist.getX(), dist.getY(), dist.getZ()).length();
-                        Vec3d newVec;
+                        double length = new Point3D(dist.getX(), dist.getY(), dist.getZ()).magnitude();
+                        Point3D newVec;
                         if (length < maxDist) {
                             if (linear) {
                                 newVec = calculateLinearForceVector(nodeLocations.get(otherNode), nodeLocations.get(aNode));
@@ -195,8 +192,8 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
                 Node correspondingNodeId = getCorrespondingNodeFromSplit(nodeId, graph.getSplit(edges.get(0)));
                 Point3D bondDist = nodeLocations.get(nodeId).subtract(nodeLocations.get(correspondingNodeId));
                 double bondLength = bondDist.magnitude();
-                Point3D newForceVec = bondDist.add(vec.x, vec.y, vec.z);
-                Point3D move0 = newForceVec.multiply(bondLength / new Vec3d(newForceVec.getX(), newForceVec.getY(), newForceVec.getZ()).length());
+                Point3D newForceVec = bondDist.add(vec.getX(), vec.getY(), vec.getZ());
+                Point3D move0 = newForceVec.multiply(bondLength / new Point3D(newForceVec.getX(), newForceVec.getY(), newForceVec.getZ()).magnitude());
                 final Point3D move = nodeLocations.get(correspondingNodeId).add(move0).subtract(nodeLocations.get(nodeId));
 
                 if (!Double.isNaN(move.getX()) || !Double.isNaN(move.getY()) || !Double.isNaN(move.getZ())) {
