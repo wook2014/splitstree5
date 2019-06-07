@@ -40,7 +40,7 @@ public class MicrostatStateLabeler extends StateLabeler {
 
     @Override
     public String char2token(int site, char ch) {
-        return (new Integer((int) ch - OFFSET)).toString();
+        return "" + (((int) ch - OFFSET));
     }
 
     @Override
