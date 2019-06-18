@@ -3,6 +3,9 @@ module splitstreefive {
     requires transitive javafx.controls;
     requires transitive javafx.graphics;
     requires transitive javafx.fxml;
+    requires transitive java.sql;
+    requires transitive java.desktop;
+
     requires junit;
     requires Jama;
     requires richtextfx.fat;
