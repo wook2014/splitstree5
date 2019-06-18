@@ -94,10 +94,13 @@ module splitstreefive {
     opens splitstree5.dialogs.importer;
     opens splitstree5.dialogs.message;
     opens splitstree5.gui.algorithmtab;
+    opens splitstree5.gui.algorithmtab.rootbyoutgroup;
+    opens splitstree5.gui.algorithmtab.taxafilterview;
+    opens splitstree5.gui.algorithmtab.treefilterview;
+    opens splitstree5.gui.algorithmtab.treeselector;
     opens splitstree5.gui.formattab;
     opens splitstree5.gui.formattab.fontselector;
     opens splitstree5.gui.workflowtab;
-    opens splitstree5.info;
     opens splitstree5.main;
     opens splitstree5.menu;
     opens splitstree5.toolbar;
