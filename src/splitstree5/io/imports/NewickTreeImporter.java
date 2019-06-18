@@ -53,7 +53,6 @@ public class NewickTreeImporter implements IToTrees, IImportTrees {
      * @throws CanceledException
      */
     public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, TreesBlock trees) throws IOException, CanceledException {
-        try {
             taxa.clear();
             trees.clear();
 
@@ -91,7 +90,7 @@ public class NewickTreeImporter implements IToTrees, IImportTrees {
                             throw new IOExceptionWithLineNumber(lineno, ex);
                         }
                         if (TreesUtilities.hasNumbersOnLeafNodes(tree)) {
-                            throw new IOException("Leaf labels must begin with a letter");
+                            throw new IOExceptionWithLineNumber(lineno, "Leaf labels must begin with a letter");
                         }
                         if (TreesUtilities.hasNumbersOnInternalNodes(tree)) {
                             TreesUtilities.changeNumbersOnInternalNodesToEdgeConfidencies(tree);
@@ -102,7 +101,7 @@ public class NewickTreeImporter implements IToTrees, IImportTrees {
                                     orderedTaxonNames.add(name);
                                     taxName2Id.put(name, orderedTaxonNames.size());
                                 } else
-                                    throw new IOException("Name appears multiple times in tree:" + name);
+                                    throw new IOExceptionWithLineNumber(lineno, "Name appears multiple times in tree:" + name);
                             }
                         } else {
                             if (!taxonNamesFound.equals(newickParser.getLeafLabels())) {
@@ -137,10 +136,6 @@ public class NewickTreeImporter implements IToTrees, IImportTrees {
                 trees.setPartial(partial);
                 trees.setRooted(true);
             }
-        } catch (Exception ex) {
-            Basic.caught(ex);
-            throw ex;
-        }
     }
 
     @Override
