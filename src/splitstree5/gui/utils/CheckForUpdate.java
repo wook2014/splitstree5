@@ -25,7 +25,6 @@ import com.install4j.api.update.UpdateChecker;
 import com.install4j.api.update.UpdateDescriptor;
 import com.install4j.api.update.UpdateDescriptorEntry;
 import javafx.application.Platform;
-import jloda.Switches;
 import jloda.fx.util.NotificationManager;
 import jloda.swing.util.InfoMessage;
 import jloda.util.Basic;
@@ -51,7 +50,7 @@ public class CheckForUpdate {
             return;
         }
         if (updateDescriptor.getEntries().length > 0) {
-            if (Switches.Install4JLaunchBug || !ProgramProperties.isUseGUI()) {
+            if (!ProgramProperties.isUseGUI()) {
                 UpdateDescriptorEntry entry = updateDescriptor.getEntries()[0];
                 NotificationManager.showInformation("New version available: " + entry.getNewVersion() + "\nPlease download from: http://www-ab.informatik.uni-tuebingen.de/data/software/splitstree5/download/");
                 return;

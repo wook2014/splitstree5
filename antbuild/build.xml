@@ -29,6 +29,7 @@
     </path>
 
     <path id="build.modulepath">
+        <fileset dir="../../jloda/jars" includes="*.jar"/>
         <fileset dir="../../splitstree5/jars" includes="*.jar"/>
         <fileset dir="${jfxDir}" includes="*.jar"/>
         <fileset dir="../antbuild" includes="jloda.jar"/>
