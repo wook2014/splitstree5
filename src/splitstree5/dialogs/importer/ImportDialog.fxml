@@ -88,6 +88,34 @@
                         <Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="SOMETIMES"/>
                     </children>
                 </HBox>
+            <StackPane prefHeight="38.0" prefWidth="500.0">
+               <children>
+                  <Label fx:id="charactersLabel" text="Characters import settings:" StackPane.alignment="TOP_CENTER" />
+                  <Label fx:id="distanceLabel" text="Distances import settings:" StackPane.alignment="TOP_CENTER" />
+                  <Label fx:id="treesLabel" text="Trees import settings:" StackPane.alignment="TOP_CENTER" />
+               </children>
+            </StackPane>
+            <StackPane prefHeight="91.0" prefWidth="500.0">
+               <children>
+                  <TextField fx:id="matchInput" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="42.0" promptText="." StackPane.alignment="BOTTOM_CENTER" />
+                  <TextField fx:id="missingInput" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="42.0" promptText="?" StackPane.alignment="CENTER" />
+                  <Label fx:id="missingChar" text="Missing charachter" StackPane.alignment="CENTER_LEFT">
+                     <StackPane.margin>
+                        <Insets left="5.0" />
+                     </StackPane.margin></Label>
+                  <TextField fx:id="gapInput" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="42.0" promptText="-" StackPane.alignment="TOP_CENTER" />
+                  <Label fx:id="matchChar" text="Match character" StackPane.alignment="BOTTOM_LEFT">
+                     <StackPane.margin>
+                        <Insets left="5.0" />
+                     </StackPane.margin></Label>
+                  <Label fx:id="gapChar" text="Gap character" StackPane.alignment="TOP_LEFT">
+                     <StackPane.margin>
+                        <Insets left="5.0" />
+                     </StackPane.margin></Label>
+                  <CheckBox fx:id="similarityValues" alignment="CENTER_RIGHT" mnemonicParsing="false" text="Use similarity values" />
+                  <CheckBox fx:id="innerNodesLabeling" mnemonicParsing="false" text="Keep inner nodes labeling" />
+               </children>
+            </StackPane>
             </children>
         </VBox>
     </center>
