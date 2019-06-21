@@ -146,7 +146,7 @@ public class ImportMultipleTreeFilesDialog {
             service.setOnSucceeded((e) -> {
                 Platform.runLater(() -> {
                     final Pair<TaxaBlock, TreesBlock> pair = service.getValue();
-                    DataLoader.load(false, "Trees", pair.getFirst(), pair.getSecond(), parentMainWindow);
+                    DataLoader.load(false, "Trees.tmp", pair.getFirst(), pair.getSecond(), parentMainWindow);
                 });
             });
 
