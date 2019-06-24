@@ -55,16 +55,12 @@ public abstract class ViewerTab extends Tab {
                 borderPane.setBorder(Border.EMPTY);
                 setContent(borderPane);
             }
-            if (!(ViewerTab.this instanceof AlgorithmTab) && n != null && getTabPane() != null) {
-                if (!getTabPane().isFocused())
-                    n.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> getTabPane().requestFocus());
+            if (false)
+                if (!(ViewerTab.this instanceof AlgorithmTab) && n != null) {
+                    n.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+                        if (!getTabPane().isFocused()) getTabPane().requestFocus();
+                    });
             }
-        });
-
-        tabPaneProperty().addListener((c, o, n) -> {
-            if (!(ViewerTab.this instanceof AlgorithmTab) && n != null && getContent() != null)
-                if (!getTabPane().isFocused())
-                    getContent().addEventFilter(MouseEvent.MOUSE_CLICKED, e -> getTabPane().requestFocus());
         });
     }
 
