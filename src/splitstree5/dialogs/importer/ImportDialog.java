@@ -127,6 +127,43 @@ public class ImportDialog {
         controller.getImportButton().disableProperty().bind(importService.runningProperty().or(
                 Bindings.isNull(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty()).or(Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), "Unknown"))
                         .or(Bindings.isNull(controller.getFileFormatComboBox().getSelectionModel().selectedItemProperty())).or(Bindings.equal(controller.getFileFormatComboBox().getSelectionModel().selectedItemProperty(), "Unknown"))));
+
+        /*
+        IMPORT SETTINGS
+        */
+        controller.getCharactersLabel().visibleProperty().bind(
+                Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), ImporterManager.DataType.Characters)
+        );
+        controller.getDistanceLabel().visibleProperty().bind(
+                Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), ImporterManager.DataType.Distances)
+        );
+        controller.getTreesLabel().visibleProperty().bind(
+                Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), ImporterManager.DataType.Trees)
+        );
+        controller.getGapChar().visibleProperty().bind(
+                Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), ImporterManager.DataType.Characters)
+        );
+        controller.getGapInput().visibleProperty().bind(
+                Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), ImporterManager.DataType.Characters)
+        );
+        controller.getMissingChar().visibleProperty().bind(
+                Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), ImporterManager.DataType.Characters)
+        );
+        controller.getMissingInput().visibleProperty().bind(
+                Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), ImporterManager.DataType.Characters)
+        );
+        controller.getMatchChar().visibleProperty().bind(
+                Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), ImporterManager.DataType.Characters)
+        );
+        controller.getMatchInput().visibleProperty().bind(
+                Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), ImporterManager.DataType.Characters)
+        );
+        controller.getSimilarityValues().visibleProperty().bind(
+                Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), ImporterManager.DataType.Distances)
+        );
+        controller.getInnerNodesLabeling().visibleProperty().bind(
+                Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), ImporterManager.DataType.Trees)
+        );
     }
 
     private Thread thread;

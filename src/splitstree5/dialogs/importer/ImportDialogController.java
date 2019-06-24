@@ -20,9 +20,7 @@
 package splitstree5.dialogs.importer;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 
@@ -56,6 +54,43 @@ public class ImportDialogController {
     @FXML
     private ComboBox<String> fileFormatComboBox;
 
+    /*
+    IMPORT SETTINGS
+     */
+
+    @FXML
+    private Label charactersLabel;
+
+    @FXML
+    private Label distanceLabel;
+
+    @FXML
+    private Label treesLabel;
+
+    @FXML
+    private Label gapChar;
+
+    @FXML
+    private Label missingChar;
+
+    @FXML
+    private Label matchChar;
+
+    @FXML
+    private TextField gapInput;
+
+    @FXML
+    private TextField missingInput;
+
+    @FXML
+    private TextField matchInput;
+
+    @FXML
+    private CheckBox similarityValues;
+
+    @FXML
+    private CheckBox innerNodesLabeling;
+
     public FlowPane getProgressBarPane() {
         return progressBarPane;
     }
@@ -86,5 +121,53 @@ public class ImportDialogController {
 
     public ComboBox<String> getFileFormatComboBox() {
         return fileFormatComboBox;
+    }
+
+    /*
+    IMPORT SETTINGS
+     */
+
+    public Label getCharactersLabel() {
+        return charactersLabel;
+    }
+
+    public Label getDistanceLabel() {
+        return distanceLabel;
+    }
+
+    public Label getTreesLabel() {
+        return treesLabel;
+    }
+
+    public Label getGapChar() {
+        return gapChar;
+    }
+
+    public Label getMatchChar() {
+        return matchChar;
+    }
+
+    public Label getMissingChar() {
+        return missingChar;
+    }
+
+    public TextField getGapInput() {
+        return gapInput;
+    }
+
+    public TextField getMatchInput() {
+        return matchInput;
+    }
+
+    public TextField getMissingInput() {
+        return missingInput;
+    }
+
+    public CheckBox getSimilarityValues(){
+        return similarityValues;
+    }
+
+    public CheckBox getInnerNodesLabeling(){
+        return innerNodesLabeling;
     }
 }
