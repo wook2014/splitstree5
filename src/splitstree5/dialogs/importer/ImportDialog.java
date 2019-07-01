@@ -29,6 +29,7 @@ import javafx.stage.Stage;
 import jloda.fx.util.ExtendedFXMLLoader;
 import jloda.fx.util.NotificationManager;
 import jloda.util.ProgramProperties;
+import splitstree5.io.imports.interfaces.IImportCharacters;
 import splitstree5.io.imports.interfaces.IImporter;
 import splitstree5.main.MainWindow;
 
@@ -120,6 +121,7 @@ public class ImportDialog {
             if (importer == null)
                 NotificationManager.showWarning("Can't import selected data type and file format");
             else {
+                setupImporter(importer);
                 importService.setup(false, parentMainWindow, importer, controller.getFileTextField().getText(), "Loading file", controller.getProgressBarPane());
                 importService.restart();
             }
@@ -133,6 +135,7 @@ public class ImportDialog {
         */
         controller.getCharactersLabel().visibleProperty().bind(
                 Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), ImporterManager.DataType.Characters)
+                        .and(Bindings.equal(controller.getFileFormatComboBox().getSelectionModel().selectedIndexProperty(), 1).not())
         );
         controller.getDistanceLabel().visibleProperty().bind(
                 Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), ImporterManager.DataType.Distances)
@@ -142,21 +145,27 @@ public class ImportDialog {
         );
         controller.getGapChar().visibleProperty().bind(
                 Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), ImporterManager.DataType.Characters)
+                        .and(Bindings.equal(controller.getFileFormatComboBox().getSelectionModel().selectedIndexProperty(), 1).not())
         );
         controller.getGapInput().visibleProperty().bind(
                 Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), ImporterManager.DataType.Characters)
+                        .and(Bindings.equal(controller.getFileFormatComboBox().getSelectionModel().selectedIndexProperty(), 1).not())
         );
         controller.getMissingChar().visibleProperty().bind(
                 Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), ImporterManager.DataType.Characters)
+                        .and(Bindings.equal(controller.getFileFormatComboBox().getSelectionModel().selectedIndexProperty(), 1).not())
         );
         controller.getMissingInput().visibleProperty().bind(
                 Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), ImporterManager.DataType.Characters)
+                        .and(Bindings.equal(controller.getFileFormatComboBox().getSelectionModel().selectedIndexProperty(), 1).not())
         );
         controller.getMatchChar().visibleProperty().bind(
                 Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), ImporterManager.DataType.Characters)
+                        .and(Bindings.equal(controller.getFileFormatComboBox().getSelectionModel().selectedIndexProperty(), 1).not())
         );
         controller.getMatchInput().visibleProperty().bind(
                 Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), ImporterManager.DataType.Characters)
+                        .and(Bindings.equal(controller.getFileFormatComboBox().getSelectionModel().selectedIndexProperty(), 1).not())
         );
         controller.getSimilarityValues().visibleProperty().bind(
                 Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), ImporterManager.DataType.Distances)
@@ -210,5 +219,19 @@ public class ImportDialog {
 
     public void close() {
         stage.close();
+    }
+
+
+    /*
+    add user defined setting to the importer
+     */
+
+    private void setupImporter(IImporter importer){
+        if (importer instanceof IImportCharacters){
+            if (controller.getMissingInput().getText().length() > 0)
+                ((IImportCharacters) importer).setMissing(controller.getMissingInput().getText().charAt(0));
+            if (controller.getGapInput().getText().length() > 0)
+                ((IImportCharacters) importer).setGap(controller.getGapInput().getText().charAt(0));
+        }
     }
 }
