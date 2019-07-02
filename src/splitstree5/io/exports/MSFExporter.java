@@ -73,7 +73,6 @@ public class MSFExporter implements IExportCharacters {
 
         w.write("\n//\n\n");
 
-        // todo: same for Clustal!
         int iterations;
         if (nchar % optionLineLength == 0)
             iterations = nchar / optionLineLength;
