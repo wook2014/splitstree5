@@ -42,15 +42,25 @@ public class PhylipCharactersExporter implements IFromChararacters, IExportChara
         w.write("\t" + ntax + "\t" + nchar + "\n");
 
         if (optionInterleaved) {
-            int iterations = nchar / optionLineLength + 1;
+
+            int iterations;
+            if (nchar % optionLineLength == 0)
+                iterations = nchar / optionLineLength;
+            else
+                iterations = nchar / optionLineLength + 1;
+
             for (int i = 1; i <= iterations; i++) {
                 int startIndex = optionLineLength * (i - 1) + 1;
                 for (int t = 1; t <= ntax; t++) {
                     StringBuilder sequence = new StringBuilder("");
+
+                    // set space after every 10 chars, but not in the beginning of line
                     for (int j = startIndex; j <= optionLineLength * i && j <= nchar; j++) {
-                        if ((j - 1) % 10 == 0 && (j - 1) != 0) sequence.append(" "); // set space after every 10 chars
+                        if ((j - 1) % 10 == 0 && (j - 1) != 0 && j != startIndex)
+                            sequence.append(" ");
                         sequence.append(characters.get(t, j));
                     }
+
                     if (i == 1 || optionInterleavedMultiLabels)
                         w.write(get10charLabel(taxa.getLabel(t)) + "\t" + sequence.toString().toUpperCase() + "\n");
                     else

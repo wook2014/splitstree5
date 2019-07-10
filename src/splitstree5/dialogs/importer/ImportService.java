@@ -49,10 +49,6 @@ public class ImportService extends Service<Boolean> {
 
     private boolean reload = false;
 
-    // field for storage of customized special chars for characters blocks
-    private static String missingChar = "";
-    private static String gapChar = "";
-
     /**
      * constructor
      */
@@ -75,12 +71,6 @@ public class ImportService extends Service<Boolean> {
         this.importer = importer;
         this.fileName = fileName;
         this.title = title;
-
-        // get gap/missing chars, if Editor is opened
-        if (parentMainWindow.getEditedInputTab() != null) {
-            missingChar = parentMainWindow.getEditedInputTab().getMissing();
-            gapChar = parentMainWindow.getEditedInputTab().getGap();
-        }
 
         final ProgressPane progressPane = new ProgressPane(titleProperty(), messageProperty(), progressProperty(), runningProperty(), this::cancel);
         if (progressBarParent != null)
@@ -126,21 +116,6 @@ public class ImportService extends Service<Boolean> {
 
         if (importer instanceof IImportCharacters) {
             dataBlock = new CharactersBlock();
-
-            // set missing/gap chars
-            // todo: 2 options:
-            // 1. set chars to characters Block and NOT clear in parser
-            // 2. set chars to importer and CLEAR block in parser
-            System.err.println("Test parser MISSING CHAR:" + missingChar + " GAP CHAR:"+ gapChar);
-            if (missingChar.length() > 0)
-                //((CharactersBlock) dataBlock).setMissingCharacter(missingChar.charAt(0));
-                ((IImportCharacters) importer).setMissing(missingChar.charAt(0));
-            if (gapChar.length() > 0)
-                //((CharactersBlock) dataBlock).setGapCharacter(gapChar.charAt(0));
-                ((IImportCharacters) importer).setGap(gapChar.charAt(0));
-            //System.err.println("Characters Block: missing char: "+((CharactersBlock) dataBlock).getMissingCharacter());
-            //System.err.println("Characters Block: gap char: "+((CharactersBlock) dataBlock).getGapCharacter());
-
             ((IImportCharacters) importer).parse(progress, fileName, taxaBlock, (CharactersBlock) dataBlock);
         } else if (importer instanceof IImportDistances) {
             dataBlock = new DistancesBlock();

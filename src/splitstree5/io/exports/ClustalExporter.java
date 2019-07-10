@@ -40,7 +40,12 @@ public class ClustalExporter implements IExportCharacters {
         int ntax = taxa.getNtax();
         int nchar = characters.getNchar();
 
-        int iterations = nchar / optionLineLength + 1;
+        int iterations;
+        if (nchar % optionLineLength == 0)
+            iterations = nchar / optionLineLength;
+        else
+            iterations = nchar / optionLineLength + 1;
+
         for (int i = 1; i <= iterations; i++) {
             int startIndex = optionLineLength * (i - 1) + 1;
             for (int t = 1; t <= ntax; t++) {

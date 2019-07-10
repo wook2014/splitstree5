@@ -35,7 +35,6 @@ import java.util.List;
 public class MSFExporter implements IExportCharacters {
 
     private int optionLineLength = 40;
-    //todo char numbers align
 
     @Override
     public void export(Writer w, TaxaBlock taxa, CharactersBlock characters) throws IOException {
@@ -62,7 +61,7 @@ public class MSFExporter implements IExportCharacters {
         int maxTaxaLength = 0;
         for (int i = 1; i <= ntax; i++) {
 
-            w.write("Name: " + taxa.get(i) +
+            w.write("Name: " + taxa.get(i) + "\t"+
                     " Len: " + nchar +
                     " Check: 0000" +
                     " Weight: 1.0" + "\n");
@@ -73,7 +72,6 @@ public class MSFExporter implements IExportCharacters {
 
         w.write("\n//\n\n");
 
-        // todo: same for Clustal!
         int iterations;
         if (nchar % optionLineLength == 0)
             iterations = nchar / optionLineLength;
@@ -88,8 +86,12 @@ public class MSFExporter implements IExportCharacters {
 
             writeSpaces(w, maxTaxaLength);
             w.write("\t" + startIndex);
-            //space between to number on block beginning
-            writeSpaces(w, optionLineLength - (startIndex+"").length() - (stopIndex+"").length());
+
+            //space between numbers at block beginning
+            int last_line_offset = 0;
+            if ((nchar - i * optionLineLength) < 0)
+                last_line_offset = (nchar - i * optionLineLength);
+            writeSpaces(w, optionLineLength - (startIndex+"").length() - (stopIndex+"").length() + last_line_offset);
             w.write(stopIndex + "\n");
 
             // taxa names
@@ -130,6 +132,5 @@ public class MSFExporter implements IExportCharacters {
         for (int i = 0; i < n; i++){
             w.write(" ");
         }
-        System.err.println(n);
     }
 }
