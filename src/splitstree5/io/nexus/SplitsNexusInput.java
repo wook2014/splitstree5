@@ -250,7 +250,8 @@ public class SplitsNexusInput extends NexusIOBase implements INexusInput<SplitsB
                         throw new IOExceptionWithLineNumber(np.lineno(), "Illegal split part of size" + setA.cardinality());
 
                 }
-                split = new ASplit(setA, taxaBlock.getTaxaSet(), weight);
+                final BitSet setB = BitSetUtils.minus(taxaBlock.getTaxaSet(), setA);
+                split = new ASplit(setA, setB, weight);
             }
             if (np.peekMatchIgnoreCase(","))
                 np.matchIgnoreCase(",");

@@ -23,7 +23,6 @@ package splitstree5.gui.texttab;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.KeyCode;
@@ -31,13 +30,16 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.StageStyle;
 import jloda.fx.find.FindToolBar;
 import jloda.fx.find.TextAreaSearcher;
+import jloda.fx.util.BasicFX;
 import jloda.fx.util.Print;
+import jloda.fx.util.ResourceManagerFX;
 import jloda.fx.window.MainWindowManager;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 import splitstree5.gui.ViewerTab;
 import splitstree5.menu.MenuController;
 
+import java.net.URL;
 import java.util.Optional;
 
 /**
@@ -51,26 +53,24 @@ public class TextViewTab extends ViewerTab {
     /**
      * constructor
      *
-     * @param nameProperty
+     * @param name
      */
-    public TextViewTab(ReadOnlyStringProperty nameProperty) {
-        this(nameProperty, null);
+    public TextViewTab(String name) {
+        this(name, null);
     }
 
     /**
      * constructor
      *
-     * @param nameProperty
      * @param textProperty
      */
-    public TextViewTab(ReadOnlyStringProperty nameProperty, ReadOnlyStringProperty textProperty) {
-        final Label label = new Label();
-        label.textProperty().bind(nameProperty);
-        setGraphic(label);
-        setText("");
+    public TextViewTab(String name, ReadOnlyStringProperty textProperty) {
+        setText(name);
         textArea = new TextArea();
-        String css = this.getClass().getResource("/splitstree5/resources/css/styles.css").toExternalForm();
-        textArea.getStylesheets().add(css);
+        final URL url = ResourceManagerFX.getCssURL("styles.css");
+        if (url != null) {
+            textArea.getStylesheets().add(url.toExternalForm());
+        }
         //textArea.setFont(Font.font("Courier New")); // gets set by style file
         textArea.setEditable(false);
         if (textProperty != null)
@@ -92,40 +92,6 @@ public class TextViewTab extends ViewerTab {
         borderPane.setTop(findToolBar);
         setContent(borderPane);
         setClosable(true);
-    }
-
-    /**
-     * go to given line and given col
-     *
-     * @param lineNumber
-     * @param col        if col<=1 or col>line length, will select the whole line, else selects line starting at given col
-     */
-    public void gotoLine(long lineNumber, int col) {
-        if (col < 0)
-            col = 0;
-        else if (col > 0)
-            col--; // because col is 1-based
-
-        lineNumber = Math.max(1, lineNumber);
-        final String text = textArea.getText();
-        int start = 0;
-        for (int i = 1; i < lineNumber; i++) {
-            start = text.indexOf('\n', start + 1);
-            if (start == -1) {
-                System.err.println("No such line number: " + lineNumber);
-                return;
-            }
-        }
-        start++;
-        if (start < text.length()) {
-            int end = text.indexOf('\n', start);
-            if (end == -1)
-                end = text.length();
-            if (start + col < end)
-                start = start + col;
-            textArea.requestFocus();
-            textArea.selectRange(start, end);
-        }
     }
 
     /**
@@ -216,7 +182,7 @@ public class TextViewTab extends ViewerTab {
             if (result.isPresent()) {
                 final String[] tokens = result.get().split(":");
                 if (tokens.length > 0 && Basic.isInteger(tokens[0]))
-                    gotoLine(Basic.parseInt(tokens[0]), tokens.length == 2 && Basic.isInteger(tokens[1]) ? Basic.parseInt(tokens[1]) : 0);
+                    BasicFX.gotoAndSelectLine(textArea, Basic.parseInt(tokens[0]), tokens.length == 2 && Basic.isInteger(tokens[1]) ? Basic.parseInt(tokens[1]) : 0);
             }
         });
 

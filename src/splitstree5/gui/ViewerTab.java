@@ -28,7 +28,7 @@ import javafx.scene.layout.BorderPane;
 import jloda.fx.find.FindToolBar;
 import jloda.fx.undo.UndoManager;
 import splitstree5.core.workflow.DataNode;
-import splitstree5.gui.algorithmtab.AlgorithmTab;
+import splitstree5.gui.graphtab.base.GraphTabBase;
 import splitstree5.main.MainWindow;
 import splitstree5.menu.MenuController;
 
@@ -55,8 +55,8 @@ public abstract class ViewerTab extends Tab {
                 borderPane.setBorder(Border.EMPTY);
                 setContent(borderPane);
             }
-            if (false)
-                if (!(ViewerTab.this instanceof AlgorithmTab) && n != null) {
+            if (true)
+                if (ViewerTab.this instanceof GraphTabBase && n != null) {
                     n.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
                         if (!getTabPane().isFocused()) getTabPane().requestFocus();
                     });

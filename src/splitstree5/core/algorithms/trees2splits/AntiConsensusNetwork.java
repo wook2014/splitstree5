@@ -135,7 +135,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
             }
             case FirstInputTree: {
                 progress.setTasks("Anti-consensus", "Extracting splits from first tree");
-                final TreeSelector treeSelector = new TreeSelector();
+                final TreeSelectorSplits treeSelector = new TreeSelectorSplits();
                 treeSelector.setOptionWhich(1);
                 treeSelector.compute(progress, taxaBlock, treesBlock, referenceSplits);
                 firstTreeToUse = 2;
@@ -144,7 +144,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
             }
             case LastInputTree: {
                 progress.setTasks("Anti-consensus", "Extracting splits from last tree");
-                final TreeSelector treeSelector = new TreeSelector();
+                final TreeSelectorSplits treeSelector = new TreeSelectorSplits();
                 treeSelector.setOptionWhich(treesBlock.getNTrees());
                 treeSelector.compute(progress, taxaBlock, treesBlock, referenceSplits);
                 firstTreeToUse = 1;

@@ -50,7 +50,7 @@ public class DataViewTab extends TextViewTab {
      * @param dataNode
      */
     public DataViewTab(Document document, DataNode dataNode) {
-        super(dataNode.nameProperty());
+        super(dataNode.getName());
 
         setDataNode(dataNode);
 

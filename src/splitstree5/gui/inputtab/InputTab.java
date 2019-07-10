@@ -21,7 +21,6 @@ package splitstree5.gui.inputtab;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
@@ -30,6 +29,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
+import jloda.fx.util.BasicFX;
 import jloda.fx.util.NotificationManager;
 import jloda.fx.util.RecentFilesManager;
 import jloda.fx.util.ResourceManagerFX;
@@ -54,14 +54,13 @@ import java.util.regex.Pattern;
  */
 public class InputTab extends TextViewTab {
     private File tmpFile;
-
     /**
      * constructor
      *
      * @param mainWindow
      */
     public InputTab(MainWindow mainWindow) {
-        super(new SimpleStringProperty("Input"));
+        super("Input");
         setGraphic(new ImageView(ResourceManagerFX.getIcon("sun/Import16.gif")));
         setMainWindow(mainWindow);
 
@@ -118,7 +117,7 @@ public class InputTab extends TextViewTab {
                     if (ioExceptionWithLineNumber != null) {
                         getTabPane().getSelectionModel().select(InputTab.this);
                         textArea.requestFocus();
-                        gotoLine(ioExceptionWithLineNumber.getLineNumber(), 0);
+                        BasicFX.gotoAndSelectLine(textArea, ioExceptionWithLineNumber.getLineNumber(), 0);
                     }
                 };
 

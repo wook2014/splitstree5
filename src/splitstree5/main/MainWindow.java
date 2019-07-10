@@ -398,6 +398,9 @@ public class MainWindow implements IMainWindow {
                     viewerTab = new DataViewTab(document, workflowNode);
                     aNode2ViewerTab.put(workflowNode, viewerTab);
                     mainTabPane.getTabs().add(0, viewerTab);
+                    viewerTab.setOnClosed((e) -> {
+                        aNode2ViewerTab.remove(workflowNode);
+                    });
                 }
                 mainTabPane.getSelectionModel().select(viewerTab);
                 final Stage stage = (Stage) viewerTab.getTabPane().getScene().getWindow();
@@ -423,6 +426,9 @@ public class MainWindow implements IMainWindow {
                 viewerTab = new AlgorithmTab<>(document, connector);
                 aNode2ViewerTab.put(connector, viewerTab);
                 algorithmsTabPane.getTabs().add(0, viewerTab);
+                viewerTab.setOnClosed((e) -> {
+                    aNode2ViewerTab.remove(connector);
+                });
             }
 
             algorithmsTabPane.getSelectionModel().select(viewerTab);

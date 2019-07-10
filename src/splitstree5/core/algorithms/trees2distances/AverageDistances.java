@@ -24,7 +24,7 @@ import jloda.util.ProgressPercentage;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToDistances;
-import splitstree5.core.algorithms.trees2splits.TreeSelector;
+import splitstree5.core.algorithms.trees2splits.TreeSelectorSplits;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -51,7 +51,7 @@ public class AverageDistances extends Algorithm<TreesBlock, DistancesBlock> impl
         int[][] count = new int[taxaBlock.getNtax() + 1][taxaBlock.getNtax() + 1];
         // number of trees that contain two given taxa
 
-        TreeSelector selector = new TreeSelector();
+        TreeSelectorSplits selector = new TreeSelectorSplits();
 
         for (int which = 1; which <= treesBlock.getNTrees(); which++) {
             TaxaBlock tmpTaxa = (TaxaBlock) taxaBlock.clone();

@@ -25,7 +25,7 @@ import jloda.util.parse.NexusStreamParser;
 import org.junit.Test;
 import splitstree5.core.algorithms.characters2distances.Uncorrected_P;
 import splitstree5.core.algorithms.distances2trees.NeighborJoining;
-import splitstree5.core.algorithms.trees2splits.TreeSelector;
+import splitstree5.core.algorithms.trees2splits.TreeSelectorSplits;
 import splitstree5.core.datablocks.*;
 import splitstree5.io.nexus.CharactersNexusInput;
 import splitstree5.io.nexus.TaxaNexusInput;
@@ -65,7 +65,7 @@ public class TabbedTextExporterTest {
         // algorithms
         Uncorrected_P uncorrected_p = new Uncorrected_P();
         NeighborJoining nj = new NeighborJoining();
-        TreeSelector treeSelector = new TreeSelector();
+        TreeSelectorSplits treeSelector = new TreeSelectorSplits();
         uncorrected_p.compute(pl, taxa, character, distances);
         nj.compute(pl, taxa, distances, trees);
         treeSelector.compute(pl, taxa, trees, splits);

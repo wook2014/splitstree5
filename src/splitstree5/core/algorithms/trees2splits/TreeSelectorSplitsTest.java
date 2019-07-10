@@ -1,5 +1,5 @@
 /*
- *  TreeSelectorTest.java Copyright (C) 2019 Daniel H. Huson
+ *  TreeSelectorSplitsTest.java Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -39,9 +39,9 @@ import static org.junit.Assert.assertEquals;
  * @author Daria
  */
 
-public class TreeSelectorTest {
+public class TreeSelectorSplitsTest {
 
-    final TreeSelector treeSelector = new TreeSelector();
+    final TreeSelectorSplits treeSelector = new TreeSelectorSplits();
 
     @Test
     public void testCompute() throws Exception {

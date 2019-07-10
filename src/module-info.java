@@ -93,6 +93,22 @@ module splitstreefive {
     exports splitstree5.xtra;
     exports splitstree5.xtra.align;
 
+    opens splitstree5.core.algorithms;
+    opens splitstree5.core.algorithms.characters2distances;
+    opens splitstree5.core.algorithms.characters2network;
+    opens splitstree5.core.algorithms.characters2splits;
+    opens splitstree5.core.algorithms.distances2network;
+    opens splitstree5.core.algorithms.distances2splits;
+    opens splitstree5.core.algorithms.distances2trees;
+    opens splitstree5.core.algorithms.filters;
+    opens splitstree5.core.algorithms.interfaces;
+    opens splitstree5.core.algorithms.splits2splits;
+    opens splitstree5.core.algorithms.splits2trees;
+    opens splitstree5.core.algorithms.trees2distances;
+    opens splitstree5.core.algorithms.trees2splits;
+    opens splitstree5.core.algorithms.trees2trees;
+    opens splitstree5.core.algorithms.views;
+
     opens splitstree5.dialogs.exporter;
     opens splitstree5.dialogs.importer;
     opens splitstree5.dialogs.message;

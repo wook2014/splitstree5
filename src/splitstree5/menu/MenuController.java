@@ -870,7 +870,6 @@ public class MenuController {
         increaseFontSizeMenuItem.setAccelerator(new KeyCharacterCombination("+", KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_ANY));
         decreaseFontSizeMenuItem.setAccelerator(new KeyCharacterCombination("-", KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_ANY));
 
-
         final InvalidationListener invalidationListener = observable -> {
             windowMenu.getItems().clear();
             windowMenu.getItems().add(getShowMessageWindowMenuItem());

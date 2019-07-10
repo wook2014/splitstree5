@@ -1,5 +1,5 @@
 /*
- *  TreeSelector.java Copyright (C) 2019 Daniel H. Huson
+ *  TreeSelectorSplits.java Copyright (C) 2019 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -44,7 +44,7 @@ import java.util.List;
  *
  * @author Daniel Huson
  */
-public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
+public class TreeSelectorSplits extends Algorithm<TreesBlock, SplitsBlock> implements IFromTrees, IToSplits {
     private final IntegerProperty optionWhich = new SimpleIntegerProperty(1); // which tree is selected?
 
     @Override
@@ -77,7 +77,7 @@ public class TreeSelector extends Algorithm<TreesBlock, SplitsBlock> implements 
         if (tree.getNumberOfNodes() == 0)
             return;
 
-        progress.setTasks("TreeSelector", "Extracting splits");
+        progress.setTasks("TreeSelectorSplits", "Extracting splits");
         progress.incrementProgress();
 
         final BitSet taxaInTree = TreesUtilities.computeSplits(null, tree, splits.getSplits());
