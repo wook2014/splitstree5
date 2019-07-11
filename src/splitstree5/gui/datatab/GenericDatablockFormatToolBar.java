@@ -207,7 +207,7 @@ public class GenericDatablockFormatToolBar extends ToolBar {
         if (getItems().size() > 0) {
             final Button applyButton = new Button("Apply");
             applyButton.setOnAction((e) -> syncController2Model());
-            applyButton.disableProperty().bind(undoManager.canUndoProperty().not());
+            applyButton.disableProperty().bind(undoManager.undoableProperty().not());
             getItems().add(applyButton);
         }
     }

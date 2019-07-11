@@ -226,7 +226,7 @@ public class TaxaFilterPane extends AlgorithmPane {
             });
         }
 
-        applicableProperty.bind(Bindings.isEmpty(controller.getActiveList().getItems()).not().and(undoManager.canUndoProperty()));
+        applicableProperty.bind(Bindings.isEmpty(controller.getActiveList().getItems()).not().and(undoManager.undoableProperty()));
     }
 
     /**

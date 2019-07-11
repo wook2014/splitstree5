@@ -166,7 +166,7 @@ public class TreeFilterPane extends AlgorithmPane {
         ListViewTypeSearcher.setup(controller.getInactiveList());
 
 
-        applicableProperty.bind(Bindings.isEmpty(controller.getActiveList().getItems()).not().and(undoManager.canUndoProperty()));
+        applicableProperty.bind(Bindings.isEmpty(controller.getActiveList().getItems()).not().and(undoManager.undoableProperty()));
     }
 
     /**

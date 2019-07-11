@@ -192,13 +192,13 @@ public class EditTextViewTab extends ViewerTab {
             controller.getUndoMenuItem().setOnAction((e) -> {
                 getUndoManager().undo();
             });
-            controller.getUndoMenuItem().disableProperty().bind(getUndoManager().canUndoProperty().not());
+            controller.getUndoMenuItem().disableProperty().bind(getUndoManager().undoableProperty().not());
             controller.getUndoMenuItem().textProperty().bind(getUndoManager().undoNameProperty());
 
             controller.getRedoMenuItem().setOnAction((e) -> {
                 getUndoManager().redo();
             });
-            controller.getRedoMenuItem().disableProperty().bind(getUndoManager().canRedoProperty().not());
+            controller.getRedoMenuItem().disableProperty().bind(getUndoManager().redoableProperty().not());
             controller.getRedoMenuItem().textProperty().bind(getUndoManager().redoNameProperty());
         }
 
