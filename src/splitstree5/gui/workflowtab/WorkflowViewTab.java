@@ -283,11 +283,11 @@ public class WorkflowViewTab extends ViewerTab {
         final AMultipleSelectionModel<WorkflowNode> selectionModel = getWorkflow().getNodeSelectionModel();
 
         controller.getUndoMenuItem().setOnAction((e) -> getUndoManager().undo());
-        controller.getUndoMenuItem().disableProperty().bind(new SimpleBooleanProperty(false).isEqualTo(getUndoManager().canUndoProperty()));
+        controller.getUndoMenuItem().disableProperty().bind(new SimpleBooleanProperty(false).isEqualTo(getUndoManager().undoableProperty()));
         controller.getUndoMenuItem().textProperty().bind(getUndoManager().undoNameProperty());
         controller.getRedoMenuItem().setOnAction((e) -> getUndoManager().redo());
 
-        controller.getRedoMenuItem().disableProperty().bind(new SimpleBooleanProperty(false).isEqualTo(getUndoManager().canRedoProperty()));
+        controller.getRedoMenuItem().disableProperty().bind(new SimpleBooleanProperty(false).isEqualTo(getUndoManager().redoableProperty()));
         controller.getRedoMenuItem().textProperty().bind(getUndoManager().redoNameProperty());
 
         controller.getCopyImageMenuItem().setOnAction((x) -> {
