@@ -19,31 +19,37 @@
   ~  along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="300.0" prefWidth="500.0"
-            xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="splitstree5.dialogs.importer.ImportDialogController">
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="300.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="splitstree5.dialogs.importer.ImportDialogController">
     <bottom>
         <HBox minHeight="35.0" style="-fx-border-color: lightgray;" BorderPane.alignment="CENTER">
             <children>
-                <FlowPane fx:id="progressBarPane" HBox.hgrow="ALWAYS"/>
-                <Button fx:id="closeButton" cancelButton="true" minWidth="65.0" mnemonicParsing="false" text="Close"
-                        HBox.hgrow="NEVER">
+                <FlowPane fx:id="progressBarPane" HBox.hgrow="ALWAYS" />
+                <Button fx:id="closeButton" cancelButton="true" minWidth="65.0" mnemonicParsing="false" text="Close" HBox.hgrow="NEVER">
                     <HBox.margin>
-                        <Insets left="3.0" right="3.0"/>
+                        <Insets left="3.0" right="3.0" />
                     </HBox.margin>
                 </Button>
-                <Button fx:id="importButton" defaultButton="true" minWidth="65.0" mnemonicParsing="false" text="Import"
-                        HBox.hgrow="NEVER">
+                <Button fx:id="importButton" defaultButton="true" minWidth="65.0" mnemonicParsing="false" text="Import" HBox.hgrow="NEVER">
                     <HBox.margin>
-                        <Insets left="3.0" right="3.0"/>
+                        <Insets left="3.0" right="3.0" />
                     </HBox.margin>
                 </Button>
             </children>
             <padding>
-                <Insets bottom="5.0" left="10.0" right="10.0" top="5.0"/>
+                <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
             </padding>
         </HBox>
     </bottom>
@@ -54,38 +60,36 @@
                     <children>
                         <Label text="File:">
                             <HBox.margin>
-                                <Insets bottom="5.0" left="5.0" right="5.0" top="10.0"/>
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="10.0" />
                             </HBox.margin>
                         </Label>
                         <TextField fx:id="fileTextField" minWidth="100.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
                             <HBox.margin>
-                                <Insets bottom="5.0" left="5.0" right="10.0" top="5.0"/>
+                                <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />
                             </HBox.margin>
                         </TextField>
                         <Button fx:id="browseButton" mnemonicParsing="false" text="Browse...">
                             <HBox.margin>
-                                <Insets bottom="5.0" left="5.0" right="10.0" top="5.0"/>
+                                <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />
                             </HBox.margin>
                         </Button>
                     </children>
                 </HBox>
                 <HBox prefHeight="40.0" prefWidth="200.0">
                     <children>
-                        <Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="SOMETIMES"/>
-                        <ComboBox fx:id="dataTypeComboBox" minWidth="-Infinity" promptText="Data type"
-                                  HBox.hgrow="ALWAYS">
+                        <Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="SOMETIMES" />
+                        <ComboBox fx:id="dataTypeComboBox" minWidth="-Infinity" promptText="Data type" HBox.hgrow="ALWAYS">
                             <HBox.margin>
-                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                             </HBox.margin>
                         </ComboBox>
-                        <Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="SOMETIMES"/>
-                        <ComboBox fx:id="fileFormatComboBox" minWidth="-Infinity" promptText="File format"
-                                  HBox.hgrow="ALWAYS">
+                        <Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="SOMETIMES" />
+                        <ComboBox fx:id="fileFormatComboBox" minWidth="-Infinity" promptText="File format" HBox.hgrow="ALWAYS">
                             <HBox.margin>
-                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                             </HBox.margin>
                         </ComboBox>
-                        <Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="SOMETIMES"/>
+                        <Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="SOMETIMES" />
                     </children>
                 </HBox>
             <StackPane prefHeight="38.0" prefWidth="500.0">
@@ -112,8 +116,9 @@
                      <StackPane.margin>
                         <Insets left="5.0" />
                      </StackPane.margin></Label>
-                  <CheckBox fx:id="similarityValues" alignment="CENTER_RIGHT" mnemonicParsing="false" text="Use similarity values" />
+                  <CheckBox fx:id="similarityValues" alignment="CENTER" mnemonicParsing="false" text="Use similarity values" StackPane.alignment="TOP_CENTER" />
                   <CheckBox fx:id="innerNodesLabeling" mnemonicParsing="false" text="Keep inner nodes labeling" />
+                  <ComboBox fx:id="similarityCalculation" prefWidth="150.0" promptText="D = -ln(S)" StackPane.alignment="CENTER" />
                </children>
             </StackPane>
             </children>
@@ -122,7 +127,7 @@
     <top>
         <Label text="Import data into SplitsTree5" BorderPane.alignment="CENTER">
             <BorderPane.margin>
-                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
             </BorderPane.margin>
         </Label>
     </top>

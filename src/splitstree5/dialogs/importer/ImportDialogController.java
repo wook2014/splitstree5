@@ -91,6 +91,9 @@ public class ImportDialogController {
     @FXML
     private CheckBox innerNodesLabeling;
 
+    @FXML
+    private ComboBox<String> similarityCalculation;
+
     public FlowPane getProgressBarPane() {
         return progressBarPane;
     }
@@ -169,5 +172,9 @@ public class ImportDialogController {
 
     public CheckBox getInnerNodesLabeling(){
         return innerNodesLabeling;
+    }
+
+    public ComboBox<String> getSimilarityCalculation(){
+        return similarityCalculation;
     }
 }
