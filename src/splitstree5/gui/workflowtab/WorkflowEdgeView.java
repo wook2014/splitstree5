@@ -78,7 +78,6 @@ public class WorkflowEdgeView extends Group {
         this.getChildren().addAll(line1, line2, arrowHead1, arrowHead2);
     }
 
-
     /**
      * compute angle of vector in radian
      *
