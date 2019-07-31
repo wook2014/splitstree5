@@ -144,7 +144,24 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
                 text = null;
 
             //String text = (graph.getLabel(v) != null ? graph.getLabel(v) : "Node " + v.getId());
-            final NodeView2D nodeView = viewTab.createNodeView(v, node2point.getValue(v), null, 0, 0, text);
+
+            /*
+            Check if the node data contains the x, y coordinates
+                if present - use the x, y coordinates in view
+                if not - use standard function
+             */
+            Point2D location;
+            if (node2data.get(v).isEmpty())
+                location = node2point.getValue(v);
+            else {
+                System.err.println("Node Data: "+node2data.get(v));
+                double x = Double.valueOf(node2data.get(v).get("x"))*10;
+                double y = Double.valueOf(node2data.get(v).get("y"))*10;
+                location = new Point2D(x, y);
+            }
+
+            final NodeView2D nodeView = viewTab.createNodeView(v, location, null, 0, 0, text);
+            //final NodeView2D nodeView = viewTab.createNodeView(v, node2point.getValue(v), null, 0, 0, text);
 
             viewTab.getNode2view().put(v, nodeView);
             viewTab.getNodesGroup().getChildren().addAll(nodeView.getShapeGroup());
