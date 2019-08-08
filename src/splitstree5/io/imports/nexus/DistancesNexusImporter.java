@@ -46,4 +46,13 @@ public class DistancesNexusImporter extends NexusImporterBase<DistancesBlock> im
         setTitleAndLink(input.getTitle(), input.getLink());
         return taxa;
     }
+
+    @Override
+    public void setSimilarities(boolean similarities) {
+        // todo: use the nexus format or import here?
+    }
+
+    @Override
+    public void setSimilaritiesCalculation(String similaritiesCalculation) {
+    }
 }

@@ -30,11 +30,14 @@ import jloda.fx.util.ExtendedFXMLLoader;
 import jloda.fx.window.NotificationManager;
 import jloda.util.ProgramProperties;
 import splitstree5.io.imports.interfaces.IImportCharacters;
+import splitstree5.io.imports.interfaces.IImportDistances;
 import splitstree5.io.imports.interfaces.IImporter;
+import splitstree5.io.imports.utils.DistanceSimilarityCalculator;
 import splitstree5.main.MainWindow;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.EnumSet;
 
 /**
  * shows the import dialog
@@ -133,6 +136,7 @@ public class ImportDialog {
         /*
         IMPORT SETTINGS
         */
+        // characters
         controller.getCharactersLabel().visibleProperty().bind(
                 Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), ImporterManager.DataType.Characters)
                         .and(Bindings.equal(controller.getFileFormatComboBox().getSelectionModel().selectedIndexProperty(), 1).not())
@@ -167,9 +171,22 @@ public class ImportDialog {
                 Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), ImporterManager.DataType.Characters)
                         .and(Bindings.equal(controller.getFileFormatComboBox().getSelectionModel().selectedIndexProperty(), 1).not())
         );
+        // distances
         controller.getSimilarityValues().visibleProperty().bind(
                 Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), ImporterManager.DataType.Distances)
         );
+        controller.getSimilarityCalculation().visibleProperty().bind(
+                Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), ImporterManager.DataType.Distances)
+        );
+        controller.getSimilarityCalculation().disableProperty().bind(
+                Bindings.not(controller.getSimilarityValues().selectedProperty())
+        );
+        EnumSet<DistanceSimilarityCalculator> distanceSimilarityCalculators =
+                EnumSet.allOf(DistanceSimilarityCalculator.class);
+        for (DistanceSimilarityCalculator d : distanceSimilarityCalculators)
+            controller.getSimilarityCalculation().getItems().add(d.getLabel());
+
+        // trees
         controller.getInnerNodesLabeling().visibleProperty().bind(
                 Bindings.equal(controller.getDataTypeComboBox().getSelectionModel().selectedItemProperty(), ImporterManager.DataType.Trees)
         );
@@ -232,6 +249,9 @@ public class ImportDialog {
                 ((IImportCharacters) importer).setMissing(controller.getMissingInput().getText().charAt(0));
             if (controller.getGapInput().getText().length() > 0)
                 ((IImportCharacters) importer).setGap(controller.getGapInput().getText().charAt(0));
+        } else if (importer instanceof IImportDistances) {
+            ((IImportDistances) importer).setSimilarities(controller.getSimilarityValues().isSelected());
+            ((IImportDistances) importer).setSimilaritiesCalculation(controller.getSimilarityCalculation().getValue());
         }
     }
 }

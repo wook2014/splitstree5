@@ -36,4 +36,10 @@ public interface IImportDistances extends IImporter {
      * @param dataBlock
      */
     void parse(ProgressListener progressListener, String fileName, TaxaBlock taxaBlock, DistancesBlock dataBlock) throws CanceledException, IOException;
+
+    /**
+     * set if the values in the matrix should be considered as similarities
+     */
+    void setSimilarities(boolean similarities);
+    void setSimilaritiesCalculation(String similaritiesCalculation);
 }

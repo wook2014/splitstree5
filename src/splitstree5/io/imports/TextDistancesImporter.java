@@ -112,6 +112,15 @@ public class TextDistancesImporter implements IToDistances, IImportDistances, II
         }
     }
 
+    @Override
+    public void setSimilarities(boolean similarities) {
+
+    }
+
+    @Override
+    public void setSimilaritiesCalculation(String similaritiesCalculation) {
+
+    }
 
     @Override
     public List<String> getExtensions() {

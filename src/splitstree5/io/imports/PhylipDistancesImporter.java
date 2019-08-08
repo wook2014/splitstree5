@@ -25,6 +25,7 @@ import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.imports.interfaces.IImportDistances;
+import splitstree5.io.imports.utils.DistanceSimilarityCalculator;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,8 +37,10 @@ import java.util.*;
  */
 public class PhylipDistancesImporter implements IToDistances, IImportDistances {
 
-    public static final List<String> extensions = new ArrayList<>(Arrays.asList("dist", "dst"));
+    private boolean similarities = false;
+    private String similarities_calculation = "";
 
+    public static final List<String> extensions = new ArrayList<>(Arrays.asList("dist", "dst"));
     public enum Triangle {Both, Lower, Upper}
 
     @Override
@@ -134,6 +137,10 @@ public class PhylipDistancesImporter implements IToDistances, IImportDistances {
                 readUpperTriangularMatrix(matrix, distances);
         } else {
             throw new IOException("Error: Cannot detect shape of matrix (square, triangular or upper-triangular?)");
+        }
+
+        if (similarities) {
+            invertDistMatrixValues(distances);
         }
     }
 
@@ -236,5 +243,36 @@ public class PhylipDistancesImporter implements IToDistances, IImportDistances {
             matrix.put(label + "(" + sameNamesCounter + ")", new Vector<>());
             return label + "(" + sameNamesCounter + ")";
         }
+    }
+
+    private void invertDistMatrixValues(DistancesBlock distances){
+
+        EnumSet<DistanceSimilarityCalculator> distanceSimilarityCalculators =
+                EnumSet.allOf(DistanceSimilarityCalculator.class);
+        DistanceSimilarityCalculator dsc = DistanceSimilarityCalculator.log;
+        for (DistanceSimilarityCalculator d : distanceSimilarityCalculators)
+            if (d.getLabel().equals(this.similarities_calculation)){
+                dsc = d;
+                break;
+            }
+
+        for (int i = 1; i <= distances.getNtax(); i++){
+            for (int j = 1; j <= distances.getNtax(); j++){
+                // set 0 to the main diagonal
+                if (i == j)
+                    distances.set(i, j, 0);
+                else
+                    distances.set(i, j, dsc.applyAsDouble(distances.get(i, j)));
+            }
+        }
+    }
+
+    public void setSimilarities(boolean similarities){
+        this.similarities = similarities;
+    }
+
+    @Override
+    public void setSimilaritiesCalculation(String similaritiesCalculation) {
+        this.similarities_calculation = similaritiesCalculation;
     }
 }
