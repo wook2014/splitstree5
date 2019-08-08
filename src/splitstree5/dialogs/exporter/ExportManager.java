@@ -19,7 +19,7 @@
 
 package splitstree5.dialogs.exporter;
 
-import jloda.fx.util.NotificationManager;
+import jloda.fx.window.NotificationManager;
 import jloda.fx.util.RecentFilesManager;
 import jloda.util.Basic;
 import jloda.util.PluginClassLoader;

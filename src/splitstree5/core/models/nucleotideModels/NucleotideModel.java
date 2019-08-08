@@ -27,7 +27,7 @@ package splitstree5.core.models.nucleotideModels;
 
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
-import jloda.fx.util.NotificationManager;
+import jloda.fx.window.NotificationManager;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;

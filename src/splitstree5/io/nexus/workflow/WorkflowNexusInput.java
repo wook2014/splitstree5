@@ -23,7 +23,7 @@ import javafx.application.Platform;
 import javafx.stage.Stage;
 import jloda.fx.control.ProgressPane;
 import jloda.fx.util.AService;
-import jloda.fx.util.NotificationManager;
+import jloda.fx.window.NotificationManager;
 import jloda.fx.util.RecentFilesManager;
 import jloda.fx.util.TaskWithProgressListener;
 import jloda.util.Basic;

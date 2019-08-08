@@ -19,7 +19,7 @@
 
 package splitstree5.io.nexus.workflow;
 
-import jloda.fx.util.NotificationManager;
+import jloda.fx.window.NotificationManager;
 import jloda.util.Pair;
 import jloda.util.ProgramProperties;
 import splitstree5.core.datablocks.SplitsTree5Block;

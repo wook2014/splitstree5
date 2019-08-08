@@ -27,7 +27,7 @@ import javafx.scene.Scene;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import jloda.fx.util.ExtendedFXMLLoader;
-import jloda.fx.util.NotificationManager;
+import jloda.fx.window.NotificationManager;
 import jloda.util.ProgramProperties;
 import splitstree5.io.imports.interfaces.IImportCharacters;
 import splitstree5.io.imports.interfaces.IImporter;

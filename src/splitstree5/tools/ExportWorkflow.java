@@ -23,7 +23,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import jloda.fx.util.ArgsOptions;
-import jloda.fx.util.NotificationManager;
+import jloda.fx.window.NotificationManager;
 import jloda.fx.util.ProgramExecutorService;
 import jloda.util.*;
 import splitstree5.core.datablocks.TaxaBlock;

@@ -21,7 +21,7 @@ package splitstree5.core.algorithms.filters;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import jloda.fx.util.NotificationManager;
+import jloda.fx.window.NotificationManager;
 import jloda.graph.Edge;
 import jloda.graph.Graph;
 import jloda.graph.Node;

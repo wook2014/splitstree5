@@ -23,7 +23,7 @@ import javafx.application.Platform;
 import javafx.stage.FileChooser;
 import jloda.fx.control.ProgressPane;
 import jloda.fx.util.AService;
-import jloda.fx.util.NotificationManager;
+import jloda.fx.window.NotificationManager;
 import jloda.fx.util.TaskWithProgressListener;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
