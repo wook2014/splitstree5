@@ -60,11 +60,10 @@ public class SplitsTree5 extends Application {
      */
     public static void parseArguments(String[] args) throws Exception {
         ResourceManagerFX.addResourceRoot(SplitsTree5.class, "splitstree5/resources");
+        ProgramProperties.getProgramIconsFX().setAll(ResourceManagerFX.getIcons("SplitsTree5-16.png", "SplitsTree5-32.png", "SplitsTree5-48.png", "SplitsTree5-64.png", "SplitsTree5-128.png"));
 
         Basic.restoreSystemOut(System.err); // send system out to system err
         Basic.startCollectionStdErr();
-        ProgramProperties.getProgramIconsFX().setAll(ResourceManagerFX.getIcon("SplitsTree5-16.png"), ResourceManagerFX.getIcon("SplitsTree5-32.png"),
-                ResourceManagerFX.getIcon("SplitsTree5-64.png"), ResourceManagerFX.getIcon("SplitsTree5-128.png"));
         ProgramProperties.setProgramName(Version.NAME);
         ProgramProperties.setProgramVersion(Version.SHORT_DESCRIPTION);
         ProgramProperties.setUseGUI(true);

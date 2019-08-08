@@ -234,7 +234,6 @@ public class MainWindow implements IMainWindow {
             this.stage = stage0;
         else {
             this.stage = new Stage();
-            stage.getIcons().setAll(ProgramProperties.getProgramIconsFX());
 
             stage.focusedProperty().addListener((c, o, n) -> {
                 if (!n && mainTabPane.getSelectionModel().getSelectedItem() instanceof ISavesPreviousSelection)
@@ -263,6 +262,8 @@ public class MainWindow implements IMainWindow {
                 mainWindowController.getSplitPane().setDividerPositions(250 / mainWindowController.getBorderPane().getWidth());
             });
         }
+
+        stage.getIcons().setAll(ProgramProperties.getProgramIconsFX());
 
         stage.titleProperty().bind(titleProperty);
         final Scene scene = new Scene(root, width, height);

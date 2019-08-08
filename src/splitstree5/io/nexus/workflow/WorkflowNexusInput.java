@@ -23,13 +23,10 @@ import javafx.application.Platform;
 import javafx.stage.Stage;
 import jloda.fx.control.ProgressPane;
 import jloda.fx.util.AService;
-import jloda.fx.window.NotificationManager;
 import jloda.fx.util.RecentFilesManager;
 import jloda.fx.util.TaskWithProgressListener;
-import jloda.util.Basic;
-import jloda.util.CanceledException;
-import jloda.util.Pair;
-import jloda.util.ProgressListener;
+import jloda.fx.window.NotificationManager;
+import jloda.util.*;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
@@ -122,8 +119,10 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
 
         Platform.runLater(() -> {
             try {
-                if (usingNewWindow)
+                if (usingNewWindow) {
                     mainWindow.show(new Stage(), parentWindow.getStage().getX() + 50, parentWindow.getStage().getY() + 50, parentWindow.getStage().getWidth(), parentWindow.getStage().getHeight());
+                    mainWindow.getStage().getIcons().addAll(ProgramProperties.getProgramIconsFX());
+                }
                 if (!fileName.endsWith(".tmp"))
                     RecentFilesManager.getInstance().insertRecentFile(fileName);
                 if (mainWindow.getStage() != null)
