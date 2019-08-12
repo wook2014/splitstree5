@@ -68,7 +68,7 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> implements IFro
             sizes[t] = 1;
         }
 
-        final double d[][] = new double[ntax + 1][ntax + 1];// distance matix
+        final double[][] d = new double[ntax + 1][ntax + 1];// distance matix
 
         //Initialise d
         //Compute the closest values for each taxa.

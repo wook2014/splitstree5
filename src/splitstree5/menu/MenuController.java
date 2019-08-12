@@ -362,6 +362,9 @@ public class MenuController {
     private MenuItem bootstrappingMenuItem;
 
     @FXML
+    private MenuItem showBootStrapTreeMenuItem;
+
+    @FXML
     private MenuItem showBootStrapNetworkMenuItem;
 
     @FXML
@@ -816,6 +819,11 @@ public class MenuController {
     public MenuItem getShowBootStrapNetworkMenuItem() {
         return showBootStrapNetworkMenuItem;
     }
+
+    public MenuItem getShowBootStrapTreeMenuItem() {
+        return showBootStrapTreeMenuItem;
+    }
+
 
     public MenuItem getEstimateInvariableSitesMenuItem() {
         return estimateInvariableSitesMenuItem;

@@ -83,7 +83,7 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
 
         for (int t = 1; t <= nTax; t++) {
             tax[t] = new StringBuffer();
-            tax[t].append(String.valueOf(t));
+            tax[t].append(t);
             final Node v = tree.newNode(); // create newNode for each Taxon
             tree.setLabel(v, taxaBlock.getLabel(t));
             taxaHashMap.put(tax[t].toString(), v);
