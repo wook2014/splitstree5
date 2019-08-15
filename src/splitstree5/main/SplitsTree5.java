@@ -86,7 +86,7 @@ public class SplitsTree5 extends Application {
             defaultPreferenceFile = System.getProperty("user.home") + File.separator + ".SplitsTree5.def";
         final String propertiesFile = options.getOption("-p", "propertiesFile", "Properties file", defaultPreferenceFile);
         final boolean silentMode = options.getOption("-S", "silentMode", "Silent mode", false);
-        ProgramExecutorService.setMaxNumberOfTheadsForParallelAlgorithm(options.getOption("-t", "threads", "Maximum number of threads to use in a parallel algorithm (0=all available)", 0));
+        ProgramExecutorService.setNumberOfCoresToUse(options.getOption("-t", "threads", "Maximum number of threads to use in a parallel algorithm (0=all available)", 0));
         options.done();
 
         ProgramProperties.load(propertiesFile);

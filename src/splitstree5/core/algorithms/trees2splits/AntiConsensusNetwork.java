@@ -20,8 +20,8 @@
 package splitstree5.core.algorithms.trees2splits;
 
 import javafx.beans.property.*;
-import jloda.fx.window.NotificationManager;
 import jloda.fx.util.ProgramExecutorService;
+import jloda.fx.window.NotificationManager;
 import jloda.graph.Edge;
 import jloda.graph.Graph;
 import jloda.graph.Node;
@@ -187,7 +187,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
 
         final ExecutorService executor = ProgramExecutorService.getInstance();
         final int numberOfThreads = Math.max(1, Basic.min(lastTreeToUse - firstTreeToUse + 1,
-                ProgramExecutorService.getMaxNumberOfThreadsForParallelAlgorithm(), Runtime.getRuntime().availableProcessors()));
+                ProgramExecutorService.getNumberOfCoresToUse(), Runtime.getRuntime().availableProcessors()));
         final CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
         final Single<Exception> exception = new Single<>();
 

@@ -23,8 +23,8 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
-import jloda.fx.window.NotificationManager;
 import jloda.fx.util.ProgramExecutorService;
+import jloda.fx.window.NotificationManager;
 import jloda.phylo.PhyloTree;
 import jloda.util.*;
 import splitstree5.core.algorithms.Algorithm;
@@ -99,7 +99,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
         progress.setProgress(0);
 
         {
-            final int numberOfThreads = Math.max(1, Basic.min(trees.size(), ProgramExecutorService.getMaxNumberOfThreadsForParallelAlgorithm(), Runtime.getRuntime().availableProcessors()));
+            final int numberOfThreads = Math.max(1, Basic.min(trees.size(), ProgramExecutorService.getNumberOfCoresToUse(), Runtime.getRuntime().availableProcessors()));
             final CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
             final Single<CanceledException> exception = new Single<>();
 
