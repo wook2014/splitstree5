@@ -96,7 +96,7 @@ public class MainWindow implements IMainWindow {
 
     private final WorkflowViewTab workflowViewTab;
     private final MethodsViewTab methodsViewTab;
-    private InputTab inputTab;
+    //private InputTab inputTab;
     private EditInputTab editInputTab; // todo delete after testing
 
     /**
@@ -526,7 +526,7 @@ public class MainWindow implements IMainWindow {
     /**
      * show the enter data tab
      */
-    public void showInputTab() {
+    /*public void showInputTab() {
         if (inputTab == null) {
             inputTab = new InputTab(this);
             getDocument().dirtyProperty().addListener((observable, oldValue, newValue) -> {
@@ -538,12 +538,12 @@ public class MainWindow implements IMainWindow {
         if (!getMainWindowController().getMainTabPane().getTabs().contains(inputTab))
             getMainWindowController().getMainTabPane().getTabs().add(inputTab);
         getMainWindowController().getMainTabPane().getSelectionModel().select(inputTab);
-    }
+    }*/
 
     /**
      * show the enter data tab
      */
-    public void showEditInputTab() {
+    public void showInputTab() {
         //todo : delete after testing
         if (editInputTab == null) {
             editInputTab = new EditInputTab(this);
@@ -558,12 +558,12 @@ public class MainWindow implements IMainWindow {
         getMainWindowController().getMainTabPane().getSelectionModel().select(editInputTab);
     }
 
-    public InputTab getInputTab() {
+    /*public InputTab getInputTab() {
         return inputTab;
-    }
+    }*/
 
 
-    public EditInputTab getEditedInputTab() { //todo : delete after testing
+    public EditInputTab getInputTab() { //todo : delete after testing
         return editInputTab;
     }
 
@@ -571,10 +571,17 @@ public class MainWindow implements IMainWindow {
         mainWindowController.getMainTabPane().getSelectionModel().select(workflowViewTab);
     }
 
-    public void removeInputTab() {
+    /*public void removeInputTab() {
         if (inputTab != null) {
             mainTabPane.getTabs().remove(inputTab);
             inputTab = null;
+        }
+    }*/
+
+    public void removeInputTab() { //todo : delete after testing
+        if (editInputTab != null) {
+            mainTabPane.getTabs().remove(editInputTab);
+            editInputTab = null;
         }
     }
 

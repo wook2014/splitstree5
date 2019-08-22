@@ -87,9 +87,6 @@ public class EditInputTab extends EditTextViewTab {
 
         final CodeArea codeArea = getCodeArea();
         CodeAreaStyler codeAreaStyler = new CodeAreaStyler(codeArea);
-
-        String css = this.getClass().getResource("styles.css").toExternalForm();
-        codeArea.getStylesheets().add(css);
         codeArea.setEditable(true);
 
         // recompute the syntax highlighting 500 ms after user stops editing area

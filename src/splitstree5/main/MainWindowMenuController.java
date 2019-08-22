@@ -166,15 +166,15 @@ public class MainWindowMenuController {
         });
 
         controller.getInputEditorMenuItem().setOnAction((e) -> {
-            if (true) {
-                if (!mainWindow.getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().get() || mainWindow.getInputTab() != null) {
-                    mainWindow.showInputTab();
-                } else {
-                    final MainWindow newMainWindow = new MainWindow();
-                    newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50, mainWindow.getStage().getWidth(), mainWindow.getStage().getHeight());
-                    newMainWindow.showInputTab();
-                }
-            } else { // todo: new to figure out how to correctlty include the module
+            //if (true) {
+            if (!mainWindow.getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().get() || mainWindow.getInputTab() != null) {
+                mainWindow.showInputTab();
+            } else {
+                final MainWindow newMainWindow = new MainWindow();
+                newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50, mainWindow.getStage().getWidth(), mainWindow.getStage().getHeight());
+                newMainWindow.showInputTab();
+            }
+            /*}else { // todo: new to figure out how to correctlty include the module
                 if (!mainWindow.getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().get() || mainWindow.getEditedInputTab() != null) {
                     mainWindow.showEditInputTab();
                 } else {
@@ -182,7 +182,7 @@ public class MainWindowMenuController {
                     newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50, mainWindow.getStage().getWidth(), mainWindow.getStage().getHeight());
                     newMainWindow.showEditInputTab();
                 }
-            }
+            }*/
         });
 
         controller.getSaveMenuItem().setOnAction((e) -> {
@@ -231,8 +231,8 @@ public class MainWindowMenuController {
                         document.setFileName(Basic.replaceFileSuffix(document.getFileName(), ".splt5"));
                         if (mainWindow.getInputTab() != null)
                             mainWindow.getInputTab().loadFile(selectedFile.getPath());
-                        if (mainWindow.getEditedInputTab() != null)
-                            mainWindow.getEditedInputTab().loadFile(selectedFile.getPath());
+                        /*if (mainWindow.getEditedInputTab() != null)
+                            mainWindow.getEditedInputTab().loadFile(selectedFile.getPath());*/
                         WorkflowDataLoader.load(workflow, selectedFile.getPath(), inputFormat);
                         if (workflow.getTopTaxaNode().getChildren().size() > 0)
                             workflow.getTopTaxaNode().getChildren().get(0).forceRecompute();

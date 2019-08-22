@@ -37,6 +37,10 @@ import java.util.*;
  * Newick tree importer
  * Daria Evseeva,04.10.2017.
  */
+
+// todo trees inner labels: bootstrap(confidence values) % or labels
+
+
 public class NewickTreeImporter implements IToTrees, IImportTrees {
     public static final List<String> extensions = new ArrayList<>(Arrays.asList("new", "nwk", "tree", "tre", "treefile"));
 

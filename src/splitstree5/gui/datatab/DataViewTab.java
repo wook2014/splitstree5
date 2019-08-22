@@ -32,14 +32,14 @@ import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.UpdateState;
+import splitstree5.gui.editinputtab.EditTextViewTab;
 import splitstree5.gui.texttab.TextViewTab;
 
 /**
  * a data block viewer tab
  * Daniel Huson, 1.2018
  */
-//public class DataViewTab extends EditTextViewTab {
-public class DataViewTab extends TextViewTab {
+public class DataViewTab extends EditTextViewTab {
 
     private final ChangeListener<UpdateState> stateChangeListener;
 
@@ -50,7 +50,7 @@ public class DataViewTab extends TextViewTab {
      * @param dataNode
      */
     public DataViewTab(Document document, DataNode dataNode) {
-        super(dataNode.getName());
+        super(dataNode.nameProperty());
 
         setDataNode(dataNode);
 
@@ -76,8 +76,8 @@ public class DataViewTab extends TextViewTab {
             }
         };
         dataNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
-        getTextArea().textProperty().bind(textProperty);
-        //bindToCodeArea(textProperty);
+        //getTextArea().textProperty().bind(textProperty);
+        bindToCodeArea(textProperty);
 
         setMainWindow(document.getMainWindow());
         if (getGraphic() instanceof Labeled) {
