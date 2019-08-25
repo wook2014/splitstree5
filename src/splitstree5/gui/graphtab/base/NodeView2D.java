@@ -25,6 +25,8 @@ import javafx.geometry.Point2D;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -35,6 +37,11 @@ import jloda.fx.util.GeometryUtilsFX;
 import jloda.fx.util.SelectionEffect;
 import jloda.util.ProgramProperties;
 import splitstree5.gui.formattab.FormatItem;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * node view
@@ -72,6 +79,21 @@ public class NodeView2D extends NodeViewBase {
         if (text != null && text.length() > 0) {
             shape.setStroke(Color.BLACK);
             shape.setFill(Color.WHITE);
+
+            Path currentRelativePath = Paths.get("");
+            String s = currentRelativePath.toAbsolutePath().toString();
+            //System.out.println("Current relative path is: " + s);
+            // create a input stream
+            FileInputStream input = null;
+            try {
+                input = new FileInputStream(s+"\\src\\splitstree5\\gui\\graphtab\\base\\aaa.gif");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            // create a image
+            Image i = new Image(input);
+            // create a image View
+            ImageView iw = new ImageView(i);
 
             label = new Label(text);
             label.setStyle("");
