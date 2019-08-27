@@ -3,7 +3,9 @@ package splitstree5.gui.graphlabels;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.TextArea;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 
 public class LabelsEditorController {
 
@@ -14,10 +16,10 @@ public class LabelsEditorController {
     private CheckBox bold;
 
     @FXML
-    private TextArea text;
+    private Button applyStyle;
 
     @FXML
-    private Button applyStyle;
+    private StackPane area;
 
     public Button getCloseButton() {
         return closeButton;
@@ -27,11 +29,11 @@ public class LabelsEditorController {
         return bold;
     }
 
-    public TextArea getText() {
-        return text;
-    }
-
     public Button getApplyStyle() {
         return applyStyle;
+    }
+
+    public StackPane getArea() {
+        return area;
     }
 }
