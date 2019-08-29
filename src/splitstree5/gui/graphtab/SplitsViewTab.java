@@ -43,6 +43,7 @@ import splitstree5.core.datablocks.ViewerBlock;
 import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.Workflow;
+import splitstree5.gui.graphlabels.LabelsEditor;
 import splitstree5.gui.graphtab.base.*;
 import splitstree5.gui.graphtab.commands.MoveNodesCommand;
 import splitstree5.menu.MenuController;
@@ -205,6 +206,11 @@ public class SplitsViewTab extends Graph2DTab<PhyloSplitsGraph> implements ISpli
                     nodeSelectionModel.clearSelection(v);
                 else
                     nodeSelectionModel.select(v);
+                // call label editor on double click
+                if(x.getClickCount() == 2){
+                    LabelsEditor labelsEditor = new LabelsEditor(getMainWindow(), nodeView.getLabel());
+                    labelsEditor.show();
+                }
                 x.consume();
             });
         }

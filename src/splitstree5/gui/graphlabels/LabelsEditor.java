@@ -15,18 +15,14 @@ import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
 import jloda.fx.util.ExtendedFXMLLoader;
 import jloda.util.ProgramProperties;
-import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.model.StyleSpansBuilder;
+import org.fxmisc.richtext.InlineCssTextArea;
 import splitstree5.main.MainWindow;
-
-import java.util.Collection;
-import java.util.Collections;
 
 public class LabelsEditor {
 
     private final LabelsEditorController controller;
     private final Stage stage;
-    private CodeArea codeArea = new CodeArea();
+    private InlineCssTextArea inlineCssTextArea = new InlineCssTextArea();
 
     public LabelsEditor(MainWindow parentMainWindow, Labeled label){
 
@@ -44,48 +40,40 @@ public class LabelsEditor {
 
         stage.setTitle("Labels Editor");
 
-        controller.getArea().getChildren().add(codeArea);
-        codeArea.insertText(0, label.getText());
-        codeArea.setStyle(fontToCSS(label.getFont()));
+        controller.getArea().getChildren().add(inlineCssTextArea);
+        inlineCssTextArea.insertText(0, label.getText());
+        inlineCssTextArea.setStyle(fontToCSS(label.getFont()));
 
         controller.getBold().selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 
-                IndexRange ir = codeArea.getSelection();
-                //System.err.println(ir + codeArea.getSelectedText());
+                IndexRange ir = inlineCssTextArea.getSelection();
 
                 if (newValue) {
-                    if (ir.getLength() == 0)
-                        codeArea.setStyle(codeArea.getStyle() + "; -fx-font-weight: bold;");
-                    else {
-                        StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
-                        Collection<String> styles = Collections.singleton("bold");
-                        spansBuilder.add(Collections.emptyList(), ir.getStart());
-                        spansBuilder.add(styles, ir.getEnd() - ir.getStart());
-                        codeArea.setStyleSpans(0, spansBuilder.create());
+                    if (ir.getLength() == 0) {
+                        inlineCssTextArea.setStyle(0, inlineCssTextArea.getLength(),
+                                inlineCssTextArea.getStyle() + "; -fx-font-weight: bold;");
+                    } else {
+                        inlineCssTextArea.setStyle(ir.getStart(), ir.getEnd(),
+                                inlineCssTextArea.getStyle() + "; -fx-font-weight: bold;");
                     }
                 } else {
-                    if (ir.getLength() == 0)
-                        codeArea.setStyle(codeArea.getStyle()+ "; -fx-font-weight: normal;");
-                    else {
-                        StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
-                        spansBuilder.add(Collections.emptyList(), codeArea.getLength());
-                        codeArea.setStyleSpans(0, spansBuilder.create());
-                    }
+                    inlineCssTextArea.setStyle(0, inlineCssTextArea.getLength(),
+                            inlineCssTextArea.getStyle()+ "; -fx-font-weight: normal;");
                 }
             }
         });
 
         controller.getApplyStyle().setOnAction(event -> {
 
-            final Bounds bounds = codeArea.getLayoutBounds();
+            final Bounds bounds = inlineCssTextArea.getLayoutBounds();
 
             SnapshotParameters sp = new SnapshotParameters();
             sp.setFill(Color.TRANSPARENT);
             sp.setTransform(Transform.scale(3, 3)); // improve quality
 
-            Image snapshot = codeArea.snapshot( sp, null);
+            Image snapshot = inlineCssTextArea.snapshot( sp, null);
 
             ImageView iw = new ImageView(snapshot);
             iw.setFitWidth(bounds.getWidth());
@@ -93,6 +81,7 @@ public class LabelsEditor {
 
             label.setGraphic(iw);
             label.setTextFill(Color.TRANSPARENT);
+            label.setText(inlineCssTextArea.getText());
         });
 
         controller.getCloseButton().setOnAction((e) -> {

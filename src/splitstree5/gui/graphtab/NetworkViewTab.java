@@ -32,6 +32,7 @@ import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloGraph;
 import splitstree5.core.algorithms.views.NetworkEmbedder;
+import splitstree5.gui.graphlabels.LabelsEditor;
 import splitstree5.gui.graphtab.base.*;
 import splitstree5.gui.graphtab.commands.MoveNodesCommand;
 import splitstree5.menu.MenuController;
@@ -136,6 +137,12 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
                     nodeSelectionModel.clearSelection(v);
                 else
                     nodeSelectionModel.select(v);
+
+                // call label editor on double click
+                if(x.getClickCount() == 2){
+                    LabelsEditor labelsEditor = new LabelsEditor(getMainWindow(), nodeView.getLabel());
+                    labelsEditor.show();
+                }
             });
         }
 
