@@ -24,8 +24,9 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.stage.Stage;
 import jloda.fx.util.ArgsOptions;
-import jloda.fx.window.NotificationManager;
 import jloda.fx.util.ProgramExecutorService;
+import jloda.fx.util.ResourceManagerFX;
+import jloda.fx.window.NotificationManager;
 import jloda.util.*;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.DataNode;
@@ -36,6 +37,7 @@ import splitstree5.dialogs.importer.ImporterManager;
 import splitstree5.io.nexus.workflow.WorkflowNexusInput;
 import splitstree5.io.nexus.workflow.WorkflowNexusOutput;
 import splitstree5.main.MainWindow;
+import splitstree5.main.SplitsTree5;
 import splitstree5.main.Version;
 
 import java.io.File;
@@ -91,6 +93,8 @@ RunWorkflow extends Application {
     }
 
     private void run(String[] args) throws Exception {
+        ResourceManagerFX.addResourceRoot(SplitsTree5.class, "splitstree5/resources");
+
         final ArgsOptions options = new ArgsOptions(args, RunWorkflow.class, "Exports data from a SplitsTree5 workflow");
         options.setVersion(ProgramProperties.getProgramVersion());
         options.setLicense("Copyright (C) 2019 Daniel H. Huson. This program comes with ABSOLUTELY NO WARRANTY.");
@@ -102,7 +106,6 @@ RunWorkflow extends Application {
         final String inputFormat = options.getOption("-f", "format", "Input format", ImporterManager.getInstance().getAllFileFormats(), UNKNOWN_FORMAT);
         String[] outputFiles = options.getOption("-o", "output", "Output file(s) (or directory or stdout)", new String[]{"stdout"});
 
-
         final String nodeName = options.getOption("-n", "node", "Title of node to be exported", "");
         final String exportFormat = options.getOption("-e", "exporter", "Name of exporter to use", ExportManager.getInstance().getExporterNames(), "");
 
@@ -110,10 +113,20 @@ RunWorkflow extends Application {
         final String inputFileExtension = options.getOption("-x", "inputExt", "File extension for input files (when providing directory for input)", "");
         final boolean inputRecursively = options.getOption("-r", "recursive", "Recursively visit all sub-directories (when providing directory for input)", false);
 
+        final String defaultPreferenceFile;
+        if (ProgramProperties.isMacOS())
+            defaultPreferenceFile = System.getProperty("user.home") + "/Library/Preferences/SplitsTree5.def";
+        else
+            defaultPreferenceFile = System.getProperty("user.home") + File.separator + ".SplitsTree5.def";
+        final String propertiesFile = options.getOption("-p", "propertiesFile", "Properties file", defaultPreferenceFile);
+
+
         final boolean silent = options.getOption("-s", "silent", "Silent mode (hide all stderr output)", false);
         if (silent)
             Basic.hideSystemErr();
         options.done();
+
+        ProgramProperties.load(propertiesFile);
 
         if (!inputWorkflowFile.canRead())
             throw new IOException("File not found or unreadable: " + inputWorkflowFile);

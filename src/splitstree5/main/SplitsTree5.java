@@ -77,7 +77,8 @@ public class SplitsTree5 extends Application {
         options.comment("Input:");
         inputFilesAtStartup = options.getOption("-i", "input", "Input file(s)", new String[0]);
 
-        options.comment("Configuration:");
+        options.comment(ArgsOptions.OTHER);
+
         showMessageWindow = options.getOption("-w", "messageWindow", "Show the message window", true);
         final String defaultPreferenceFile;
         if (ProgramProperties.isMacOS())

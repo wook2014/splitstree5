@@ -23,8 +23,9 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import jloda.fx.util.ArgsOptions;
-import jloda.fx.window.NotificationManager;
 import jloda.fx.util.ProgramExecutorService;
+import jloda.fx.util.ResourceManagerFX;
+import jloda.fx.window.NotificationManager;
 import jloda.util.*;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.DataNode;
@@ -32,6 +33,7 @@ import splitstree5.core.workflow.Workflow;
 import splitstree5.dialogs.exporter.ExportManager;
 import splitstree5.io.nexus.workflow.WorkflowNexusInput;
 import splitstree5.main.MainWindow;
+import splitstree5.main.SplitsTree5;
 import splitstree5.main.Version;
 
 import java.io.File;
@@ -83,6 +85,8 @@ public class ExportWorkflow extends Application {
     }
 
     private void run(String[] args) throws Exception {
+        ResourceManagerFX.addResourceRoot(SplitsTree5.class, "splitstree5/resources");
+
         final ArgsOptions options = new ArgsOptions(args, ExportWorkflow.class, "Runs a SplitsTree5 workflow on input data");
         options.setVersion(ProgramProperties.getProgramVersion());
         options.setLicense("Copyright (C) 2019 Daniel H. Huson. This program comes with ABSOLUTELY NO WARRANTY.");
@@ -96,10 +100,20 @@ public class ExportWorkflow extends Application {
 
         options.comment(ArgsOptions.OTHER);
         final boolean methods = options.getOption("-m", "methods", "Report methods used by worflow", false);
+
+        final String defaultPreferenceFile;
+        if (ProgramProperties.isMacOS())
+            defaultPreferenceFile = System.getProperty("user.home") + "/Library/Preferences/SplitsTree5.def";
+        else
+            defaultPreferenceFile = System.getProperty("user.home") + File.separator + ".SplitsTree5.def";
+        final String propertiesFile = options.getOption("-p", "propertiesFile", "Properties file", defaultPreferenceFile);
+
         final boolean silent = options.getOption("-s", "silent", "Silent mode (hide all stderr output)", false);
         if (silent)
             Basic.hideSystemErr();
         options.done();
+
+        ProgramProperties.load(propertiesFile);
 
         if (!inputWorkflowFile.canRead())
             throw new IOException("File not found or unreadable: " + inputWorkflowFile);
