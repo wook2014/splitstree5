@@ -87,7 +87,6 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
     protected final NodeLabelSearcher nodeLabelSearcher;
     protected final EdgeLabelSearcher edgeLabelSearcher;
 
-
     protected NodeArray<NodeViewBase> node2view;
     protected EdgeArray<EdgeViewBase> edge2view;
 
@@ -112,6 +111,7 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
      */
     public GraphTabBase() {
         borderPane.setBorder(Border.EMPTY);
+
         setContent(centerPane); // first need to set this here and then later set to center of root node...
         centerPane.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
         centerPane.setBorder(Border.EMPTY);

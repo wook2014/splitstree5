@@ -135,6 +135,11 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
             ((Graph2DTab) child.getTab()).getScaleBar().setUnitLengthX(factorX);
         }
 
+        if (parent.getFit() > 0)
+            ((Graph2DTab) child.getTab()).getFitLabel().setText(String.format("Fit: %.1f", parent.getFit()));
+        else
+            ((Graph2DTab) child.getTab()).getFitLabel().setText("");
+
         progress.setProgress(100);   //set progress to 100%
 
         // compute all views and put their parts into the appropriate groups

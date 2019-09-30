@@ -28,8 +28,8 @@ import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.Pane;
@@ -291,13 +291,10 @@ public class WorkflowViewTab extends ViewerTab {
         controller.getRedoMenuItem().textProperty().bind(getUndoManager().redoNameProperty());
 
         controller.getCopyImageMenuItem().setOnAction((x) -> {
-            final Clipboard clipboard = Clipboard.getSystemClipboard();
+            final Image image = centerPane.snapshot(null, null);
             final ClipboardContent content = new ClipboardContent();
-            WritableImage writableImage = new WritableImage((int) centerPane.getWidth() + 1,
-                    (int) centerPane.getHeight() + 1);
-            centerPane.snapshot(null, writableImage);
-            content.putImage(writableImage);
-            clipboard.setContent(content);
+            content.putImage(image);
+            Clipboard.getSystemClipboard().setContent(content);
         });
         controller.getCopyImageMenuItem().disableProperty().bind(getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().not());
 

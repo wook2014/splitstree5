@@ -353,7 +353,8 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
             listOfSins.addAll(toKeep);
         }
 
-        for (int i = 0; i < Math.min(100, listOfSins.size()); i++) {
+        final int maxSinsToList = ProgramProperties.get("MaxSinsToList", 100);
+        for (int i = 0; i < Math.min(maxSinsToList, listOfSins.size()); i++) {
             final SIN sin = listOfSins.get(i);
             sin.setRank(i + 1);
             System.out.println(sin);
@@ -361,8 +362,8 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
                 System.err.println(reportTree(taxaBlock, referenceSplits, sin.getSplits()) + ";");
             }
         }
-        if (listOfSins.size() > 100)
-            System.out.println("(" + (listOfSins.size() - 100) + " more)");
+        if (listOfSins.size() > maxSinsToList)
+            System.out.println("(" + (listOfSins.size() - maxSinsToList) + " more)");
 
         splitsBlock.getSplits().addAll(referenceSplits.getSplits());
         for (int s = 1; s <= splitsBlock.getNsplits(); s++) {

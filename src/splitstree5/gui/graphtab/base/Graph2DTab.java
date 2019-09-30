@@ -31,6 +31,7 @@ import javafx.scene.shape.PathElement;
 import jloda.fx.control.ZoomableScrollPane;
 import jloda.fx.shapes.NodeShape;
 import jloda.fx.undo.CompositeCommand;
+import jloda.fx.util.DraggableLabel;
 import jloda.fx.util.ProgramExecutorService;
 import jloda.fx.util.ScaleBar;
 import jloda.graph.*;
@@ -60,6 +61,7 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
     private ObjectProperty<GraphLayout> layout = new SimpleObjectProperty<>(GraphLayout.LeftToRight);
 
     private final ScaleBar scaleBar = new ScaleBar();
+    private final DraggableLabel fitLabel = new DraggableLabel();
 
     private final boolean withScrollPane;
 
@@ -86,6 +88,7 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
         edge2view = new EdgeArray<>(phyloGraph);
         nodeLabelSearcher.setGraph(graph);
         edgeLabelSearcher.setGraph(graph);
+
         Platform.runLater(() -> {
             group.setScaleX(1);
             group.setScaleY(1);
@@ -104,8 +107,10 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
             try {
                 if (centerPane.getChildren().size() == 0) {
                     centerPane.getChildren().add(scaleBar);
+                    centerPane.getChildren().add(fitLabel);
 
                     scaleBar.setFactorX(scaleChangeX.get());
+
                     final Group world = new Group();
                     world.getChildren().add(group);
                     centerPane.getChildren().add(world);
@@ -406,5 +411,9 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
 
     public ScaleBar getScaleBar() {
         return scaleBar;
+    }
+
+    public DraggableLabel getFitLabel() {
+        return fitLabel;
     }
 }

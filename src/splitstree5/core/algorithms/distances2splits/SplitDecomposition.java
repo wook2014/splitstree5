@@ -174,22 +174,29 @@ public class SplitDecomposition extends Algorithm<DistancesBlock, SplitsBlock> i
      * @return fit, ls fit and stress
      */
     public static float computeFit(DistancesBlock distancesBlock, List<ASplit> splits) {
-        double dsum = 0;
-        double ssum = 0;
-
         final int ntax = distancesBlock.getNtax();
-        final double[][] sdist = new double[ntax + 1][ntax + 1];
 
+        double dsum = 0;
         for (int i = 1; i <= ntax; i++) {
             for (int j = i + 1; j <= ntax; j++) {
-                double dij = 0.0;
-                for (ASplit split : splits) {
-                    if (split.isContainedInA(i) != split.isContainedInA(j))
-                        dij += split.getWeight();
-                }
-                sdist[i][j] = sdist[j][i] = dij;
+                dsum += distancesBlock.get(i, j);
             }
         }
+
+        double ssum = 0;
+        {
+            for (int i = 1; i <= ntax; i++) {
+                for (int j = i + 1; j <= ntax; j++) {
+                    double dij = 0.0;
+                    for (ASplit split : splits) {
+                        if (split.isContainedInA(i) != split.isContainedInA(j))
+                            dij += split.getWeight();
+                    }
+                    ssum += dij;
+                }
+            }
+        }
+
         return (float) Math.max(100 * (1.0 - ssum / dsum), 0.0);
     }
 
