@@ -56,9 +56,9 @@ public class ViewerNexusInput extends NexusIOBase {
             "\t\t...\n" +
             "\t\tN: id x y [S: shape-name x y w h color] [L: label x y color font];\n" +
             "\tEDGES\n" +
-            "\t\tE: sid tid S: svg-path w color [L: label x y color font],\n" +
+            "\t\tE: sid tid S: svg-path w color [L: label x y color font] [I: split-id],\n" +
             "\t\t...\n" +
-            "\t\tE: sid tid S: svg-path w color [L: label x y color font];\n" +
+            "\t\tE: sid tid S: svg-path w color [L: label x y color font]  [I: split-id];\n" +
             "\t[LABELS\n" +
             "\t\tL: label x y color font,\n" +
             "\t\t...\n" +
@@ -204,6 +204,12 @@ public class ViewerNexusInput extends NexusIOBase {
                         graphTab.getEdge2view().put(ev.getEdge(), ev);
                         graphTab.getEdgesGroup().getChildren().add(ev.getShapeGroup());
                         graphTab.getEdgeLabelsGroup().getChildren().add(ev.getLabelGroup());
+
+                        if (graph instanceof PhyloSplitsGraph) {
+                            np.matchIgnoreCase("I:");
+                            ((PhyloSplitsGraph) graph).setSplit(ev.getEdge(), np.getInt(1, graph.getNumberOfNodes()));
+                        }
+
                         countEdges++;
                         if (np.peekMatchIgnoreCase(","))
                             np.matchIgnoreCase(",");

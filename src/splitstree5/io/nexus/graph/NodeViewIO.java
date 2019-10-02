@@ -54,8 +54,8 @@ public class NodeViewIO {
             buf.append(String.format(" S: %s %s %s %s %s %s", NodeShape.valueOf(nv.getShape()),
                     Basic.toString(nv.getShapeGroup().getTranslateX(), 4),
                     Basic.toString(nv.getShapeGroup().getTranslateY(), 4),
-                    Basic.toString(nv.getShape().getBoundsInLocal().getWidth(), 4),
-                    Basic.toString(nv.getShape().getBoundsInLocal().getHeight(), 4), ((Color) nv.getShape().getFill()).toString()));
+                    Basic.toString(nv.getShape().getLayoutBounds().getWidth(), 4),
+                    Basic.toString(nv.getShape().getLayoutBounds().getHeight(), 4), ((Color) nv.getShape().getFill()).toString()));
         }
         if (nv.getLabel() != null) {
             final Labeled label = nv.getLabel();

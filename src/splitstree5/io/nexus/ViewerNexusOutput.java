@@ -22,6 +22,7 @@ package splitstree5.io.nexus;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloGraph;
+import jloda.phylo.PhyloSplitsGraph;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.ViewerBlock;
 import splitstree5.gui.graphtab.base.EdgeView2D;
@@ -93,6 +94,9 @@ public class ViewerNexusOutput extends NexusIOBase implements INexusOutput<Viewe
                         w.write(",\n");
                     EdgeView2D ev = (EdgeView2D) graphTab.getEdge2view().get(edge);
                     w.write("\t" + EdgeViewIO.toString(ev));
+                    if (graph instanceof PhyloSplitsGraph) {
+                        w.write(" I: " + ((PhyloSplitsGraph) graph).getSplit(edge));
+                    }
                 } else {
                     System.err.println("Not implemented");
                     break;

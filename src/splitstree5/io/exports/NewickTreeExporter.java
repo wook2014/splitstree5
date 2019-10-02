@@ -35,7 +35,7 @@ public class NewickTreeExporter implements IFromTrees, IExportTrees {
 
         if (trees != null) {
             for (int i = 0; i < trees.getNTrees(); i++) {
-                w.write(trees.getTrees().get(i).toString() + ";\n");
+                w.write(trees.getTrees().get(i).toBracketString() + ";\n");
             }
         }
     }

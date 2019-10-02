@@ -101,7 +101,7 @@
           <versionLine x="17" y="10" text="SplitsTree ${compiler:sys.version}" fontSize="12" fontColor="0,0,0" bold="false" />
         </text>
       </splashScreen>
-      <java mainClass="splitstreefive/splitstree5.main.SplitsTree5" mainMode="2" vmParameters="-Duser.language=en -Duser.region=US --module-path=jars:openjfx/linux/lib  --add-modules=splitstreefive" arguments="" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="splitstreefive/splitstree5.main.SplitsTree5" mainMode="2" vmParameters="-server -Dapple.laf.useScreenMenuBar=true -Duser.language=en -Duser.region=US --add-modules=splitstreefive" arguments="" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath />
         <modulePath>
           <directory location="jars" failOnError="false" />

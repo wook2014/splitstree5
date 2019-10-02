@@ -275,6 +275,9 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
                 }
                 progress.setProgress(np.lineno());
             }
+        } catch (Exception ex) {
+            Basic.caught(ex);
+            throw ex;
         }
     }
 }
