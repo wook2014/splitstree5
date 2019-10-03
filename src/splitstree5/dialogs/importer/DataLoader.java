@@ -24,8 +24,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
-import jloda.fx.window.NotificationManager;
 import jloda.fx.util.RecentFilesManager;
+import jloda.fx.window.NotificationManager;
 import jloda.util.Basic;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.characters2distances.HammingDistances;
@@ -173,8 +173,12 @@ public class DataLoader {
         });
     }
 
-    public static boolean askOkToOverwrite(String oldDataType, String newDataType) {
+    public static boolean askOkToOverwrite(MainWindow mainWindow, String oldDataType, String newDataType) {
         final Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.initOwner(mainWindow.getStage());
+
+        alert.setResizable(true);
+
         alert.setTitle("Confirm Workflow Change - SplitsTree5");
         alert.setHeaderText("Input data type has changed from " + oldDataType + " to " + newDataType);
         alert.setContentText("Overwrite existing workflow to accommodate new datatype?");
