@@ -48,7 +48,7 @@ public class SingleLineSequencesImporter extends CharactersFormat implements ITo
         int nchar = 0;
         int counter = 0;
 
-        try (FileInputIterator it = new FileInputIterator(inputFile)) {
+        try (FileLineIterator it = new FileLineIterator(inputFile)) {
 
             progressListener.setMaximum(it.getMaximumProgress());
             progressListener.setProgress(0);

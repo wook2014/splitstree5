@@ -20,7 +20,7 @@
 package splitstree5.io.imports;
 
 import jloda.util.CanceledException;
-import jloda.util.FileInputIterator;
+import jloda.util.FileLineIterator;
 import jloda.util.IOExceptionWithLineNumber;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IToSplits;
@@ -53,7 +53,7 @@ public class FastaSplitsImporter extends CharactersFormat implements IToSplits, 
         int nsplits = 0;
         int counter = 0;
 
-        try (FileInputIterator it = new FileInputIterator(fileName)) {
+        try (FileLineIterator it = new FileLineIterator(fileName)) {
             progressListener.setMaximum(it.getMaximumProgress());
             progressListener.setProgress(0);
             int currentSequenceLength = 0;

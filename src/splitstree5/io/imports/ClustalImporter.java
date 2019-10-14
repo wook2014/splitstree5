@@ -55,7 +55,7 @@ public class ClustalImporter extends CharactersFormat implements IToCharacters, 
         int nchar;
         int sequenceInLineLength = 0;
         int counter = 0;
-        try (FileInputIterator it = new FileInputIterator(fileName)) {
+        try (FileLineIterator it = new FileLineIterator(fileName)) {
 
             progressListener.setMaximum(it.getMaximumProgress());
             progressListener.setProgress(0);

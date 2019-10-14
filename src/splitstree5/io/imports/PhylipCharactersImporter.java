@@ -52,7 +52,7 @@ public class PhylipCharactersImporter extends CharactersFormat implements IToCha
         boolean sameLengthNtax = true;
         boolean readDimensions = true;
 
-        try (FileInputIterator it = new FileInputIterator(fileName)) {
+        try (FileLineIterator it = new FileLineIterator(fileName)) {
             progressListener.setMaximum(it.getMaximumProgress());
             progressListener.setProgress(0);
             while (it.hasNext()) {

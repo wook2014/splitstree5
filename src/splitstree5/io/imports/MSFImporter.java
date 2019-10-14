@@ -43,7 +43,7 @@ public class MSFImporter extends CharactersFormat implements IToCharacters, IImp
         Map<String, String> taxa2seq = new LinkedHashMap<>();
         boolean charStarted = false;
 
-        try (FileInputIterator it = new FileInputIterator(fileName)) {
+        try (FileLineIterator it = new FileLineIterator(fileName)) {
 
             progressListener.setMaximum(it.getMaximumProgress());
             progressListener.setProgress(0);

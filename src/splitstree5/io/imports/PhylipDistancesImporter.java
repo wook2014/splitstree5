@@ -52,7 +52,7 @@ public class PhylipDistancesImporter implements IToDistances, IImportDistances {
         Triangle triangleForCurrentRow = null;
         Triangle triangleForPreviousRow = null;
 
-        try (FileInputIterator it = new FileInputIterator(inputFile)) {
+        try (FileLineIterator it = new FileLineIterator(inputFile)) {
 
             progressListener.setMaximum(it.getMaximumProgress());
             progressListener.setProgress(0);

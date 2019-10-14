@@ -44,7 +44,7 @@ public class TextDistancesImporter implements IToDistances, IImportDistances, II
         taxa.clear();
         distances.clear();
 
-        try (FileInputIterator it = new FileInputIterator(inputFile)) {
+        try (FileLineIterator it = new FileLineIterator(inputFile)) {
             boolean first = true;
 
             int ntax = 0;

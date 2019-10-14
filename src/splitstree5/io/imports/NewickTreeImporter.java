@@ -61,7 +61,7 @@ public class NewickTreeImporter implements IToTrees, IImportTrees {
             trees.clear();
 
             int lineno = 0;
-            try (FileInputIterator it = new FileInputIterator(inputFile)) {
+            try (FileLineIterator it = new FileLineIterator(inputFile)) {
                 progressListener.setMaximum(it.getMaximumProgress());
                 progressListener.setProgress(0);
 

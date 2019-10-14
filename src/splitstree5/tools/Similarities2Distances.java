@@ -77,7 +77,7 @@ public class Similarities2Distances {
 
         final Map<String, Map<String, Double>> matrix = new HashMap<>();
 
-        try (FileInputIterator it = new FileInputIterator(inputFile, true)) {
+        try (FileLineIterator it = new FileLineIterator(inputFile, true)) {
             while (it.hasNext()) {
                 final String[] tokens = it.next().split("\t");
                 if (tokens.length != 3)

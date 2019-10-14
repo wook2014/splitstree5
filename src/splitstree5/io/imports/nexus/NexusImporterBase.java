@@ -20,7 +20,7 @@
 package splitstree5.io.imports.nexus;
 
 import jloda.util.CanceledException;
-import jloda.util.FileInputIterator;
+import jloda.util.FileLineIterator;
 import jloda.util.Pair;
 import jloda.util.ProgressListener;
 import jloda.util.parse.NexusStreamParser;
@@ -118,7 +118,7 @@ public abstract class NexusImporterBase<D extends DataBlock> {
     public boolean isApplicable(String fileName, String blockName) throws IOException {
         blockName = blockName.toLowerCase();
 
-        try (FileInputIterator it = new FileInputIterator(fileName)) {
+        try (FileLineIterator it = new FileLineIterator(fileName)) {
             boolean first = true;
             while (it.hasNext()) {
                 final String aLine = it.next().toLowerCase();
