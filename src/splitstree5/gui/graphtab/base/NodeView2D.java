@@ -72,7 +72,6 @@ public class NodeView2D extends NodeViewBase {
         if (text != null && text.length() > 0) {
             shape.setStroke(Color.BLACK);
             shape.setFill(Color.WHITE);
-
             label = new Label(text);
             label.setStyle("");
             label.setFont(ProgramProperties.getDefaultFontFX());
@@ -180,7 +179,6 @@ public class NodeView2D extends NodeViewBase {
             label.setTextFill(color);
         }
     }
-
 
     public Point2D getLocation() {
         return location;

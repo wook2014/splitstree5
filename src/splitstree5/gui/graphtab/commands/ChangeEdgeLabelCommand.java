@@ -22,6 +22,8 @@ package splitstree5.gui.graphtab.commands;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import jloda.fx.undo.UndoableRedoableCommand;
+import jloda.graph.Edge;
+import jloda.phylo.PhyloGraph;
 import jloda.util.ProgramProperties;
 import splitstree5.gui.graphtab.base.EdgeViewBase;
 
@@ -32,13 +34,17 @@ import splitstree5.gui.graphtab.base.EdgeViewBase;
 public class ChangeEdgeLabelCommand extends UndoableRedoableCommand {
     private final String oldText;
     private final String newText;
+    private final Edge e;
     private final EdgeViewBase ev;
+    private final PhyloGraph graph;
 
-    public ChangeEdgeLabelCommand(EdgeViewBase ev, String newText) {
+    public ChangeEdgeLabelCommand(Edge e, EdgeViewBase ev, PhyloGraph graph) {
         super("Change Label");
         this.ev = ev;
+        this.e = e;
+        this.graph = graph;
         this.oldText = (ev.getLabel() != null ? ev.getLabel().getText() : null);
-        this.newText = newText;
+        this.newText = graph.getLabel(e);
     }
 
     @Override
@@ -47,6 +53,7 @@ public class ChangeEdgeLabelCommand extends UndoableRedoableCommand {
             ev.setLabel((Labeled) null);
         else
             ev.getLabel().setText(oldText);
+        graph.setLabel(e, oldText);
     }
 
     @Override
@@ -57,6 +64,7 @@ public class ChangeEdgeLabelCommand extends UndoableRedoableCommand {
             ev.setLabel(label);
         } else
             ev.getLabel().setText(newText);
+        graph.setLabel(e, newText);
     }
 
     @Override

@@ -22,6 +22,8 @@ package splitstree5.gui.graphtab.commands;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import jloda.fx.undo.UndoableRedoableCommand;
+import jloda.graph.Node;
+import jloda.phylo.PhyloGraph;
 import jloda.util.ProgramProperties;
 import splitstree5.gui.graphtab.base.NodeViewBase;
 
@@ -32,13 +34,18 @@ import splitstree5.gui.graphtab.base.NodeViewBase;
 public class ChangeNodeLabelCommand extends UndoableRedoableCommand {
     private final String oldText;
     private final String newText;
+    private final Node v;
+    private final PhyloGraph graph;
     private final NodeViewBase nv;
 
-    public ChangeNodeLabelCommand(NodeViewBase nv, String newText) {
+    public ChangeNodeLabelCommand(Node v, NodeViewBase nv, PhyloGraph graph) {
         super("Change Label");
+        this.v = v;
         this.nv = nv;
-        this.oldText = (nv.getLabel() != null ? nv.getLabel().getText() : null);
-        this.newText = newText;
+        this.graph = graph;
+
+        oldText = (nv.getLabel() != null ? nv.getLabel().getText() : null);
+        newText = graph.getLabel(v);
     }
 
     @Override
@@ -47,6 +54,7 @@ public class ChangeNodeLabelCommand extends UndoableRedoableCommand {
             nv.setLabel((Labeled) null);
         else
             nv.getLabel().setText(oldText);
+        graph.setLabel(v, oldText);
     }
 
     @Override
@@ -57,6 +65,7 @@ public class ChangeNodeLabelCommand extends UndoableRedoableCommand {
             nv.setLabel(label);
         } else
             nv.getLabel().setText(newText);
+        graph.setLabel(v, newText);
     }
 
     @Override

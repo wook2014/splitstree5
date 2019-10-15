@@ -119,9 +119,9 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
         // setup find / replace tool bar:
         {
             nodeLabelSearcher = new NodeLabelSearcher("Nodes", graph, nodeSelectionModel);
-            nodeLabelSearcher.addLabelChangedListener(v -> Platform.runLater(() -> getUndoManager().doAndAdd(new ChangeNodeLabelCommand(node2view.get(v), graph.getLabel(v)))));
+            nodeLabelSearcher.addLabelChangedListener(v -> Platform.runLater(() -> getUndoManager().doAndAdd(new ChangeNodeLabelCommand(v, node2view.get(v), graph))));
             edgeLabelSearcher = new EdgeLabelSearcher("Edges", graph, edgeSelectionModel);
-            edgeLabelSearcher.addLabelChangedListener(e -> Platform.runLater(() -> getUndoManager().doAndAdd(new ChangeEdgeLabelCommand(edge2view.get(e), graph.getLabel(e)))));
+            edgeLabelSearcher.addLabelChangedListener(e -> Platform.runLater(() -> getUndoManager().doAndAdd(new ChangeEdgeLabelCommand(e, edge2view.get(e), graph))));
 
             findToolBar = new FindToolBar(nodeLabelSearcher, edgeLabelSearcher);
             //findToolBar.setShowReplaceToolBar(true);
