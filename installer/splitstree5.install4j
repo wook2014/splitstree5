@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="7.0.12" transformSequenceNumber="7">
   <directoryPresets config="../jars/i4jruntime.jar" />
-  <application name="SplitsTree5" distributionSourceDir="" applicationId="4099-4251-9127-4263" mediaDir="../../../builds" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="splitstree5" publisher="Daniel Huson and David Bryant" publisherWeb="www.splitstree.org" version="5.0.0" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="b8c0a1154e563a9a" javaMinVersion="11" javaMaxVersion="" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
+  <application name="SplitsTree5" distributionSourceDir="" applicationId="4099-4251-9127-4263" mediaDir="../../../builds" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="splitstree5" publisher="Daniel Huson and David Bryant" publisherWeb="http://splitstree.husonlab.org" version="5.0.0" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="b8c0a1154e563a9a" javaMinVersion="11" javaMaxVersion="" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages />
@@ -130,7 +130,7 @@
       </iconImageFiles>
     </launcher>
   </launchers>
-  <installerGui installerType="1" addOnAppId="" suggestPreviousLocations="true" autoUpdateDescriptorUrl="http://www-ab.informatik.uni-tuebingen.de/data/software/splitstree5/download/updates.xml" useAutoUpdateBaseUrl="false" autoUpdateBaseUrl="">
+  <installerGui installerType="1" addOnAppId="" suggestPreviousLocations="true" autoUpdateDescriptorUrl="http://software-ab.informatik.uni-tuebingen.de/download/splitstree5/updates.xml" useAutoUpdateBaseUrl="false" autoUpdateBaseUrl="">
     <staticMembers script="" />
     <customCode />
     <autoUpdate useMinUpdatableVersion="true" minUpdatableVersion="4" useMaxUpdatableVersion="false" maxUpdatableVersion="">
