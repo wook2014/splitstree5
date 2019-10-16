@@ -42,7 +42,7 @@ public class CheckForUpdate {
         ApplicationDisplayMode applicationDisplayMode = ProgramProperties.isUseGUI() ? ApplicationDisplayMode.GUI : ApplicationDisplayMode.CONSOLE;
         UpdateDescriptor updateDescriptor;
         try {
-            updateDescriptor = UpdateChecker.getUpdateDescriptor("http://www-ab.informatik.uni-tuebingen.de/data/software/splitstree5/download/updates.xml", applicationDisplayMode);
+            updateDescriptor = UpdateChecker.getUpdateDescriptor("http://software-ab.informatik.uni-tuebingen.de/download/splitstree5/updates.xml", applicationDisplayMode);
         } catch (Exception e) {
             Basic.caught(e);
             // NotificationManager.showInformation("Installed version is up-to-date");
@@ -52,7 +52,7 @@ public class CheckForUpdate {
         if (updateDescriptor.getEntries().length > 0) {
             if (!ProgramProperties.isUseGUI()) {
                 UpdateDescriptorEntry entry = updateDescriptor.getEntries()[0];
-                NotificationManager.showInformation("New version available: " + entry.getNewVersion() + "\nPlease download from: http://www-ab.informatik.uni-tuebingen.de/data/software/splitstree5/download/");
+                NotificationManager.showInformation("New version available: " + entry.getNewVersion() + "\nPlease download from: http://software-ab.informatik.uni-tuebingen.de/download/splitstree5");
                 return;
             }
         } else {
