@@ -19,17 +19,22 @@
 
 package splitstree5.gui.graphtab.base;
 
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.Tooltip;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import javafx.scene.text.Text;
+import javafx.scene.web.WebView;
 import jloda.fx.shapes.NodeShape;
 import jloda.fx.util.GeometryUtilsFX;
 import jloda.fx.util.SelectionEffect;
@@ -78,6 +83,11 @@ public class NodeView2D extends NodeViewBase {
             label.setTranslateX(location.getX() + shapeWidth + 2);
             label.setTranslateY(location.getY());
             labelGroup.getChildren().add(label);
+
+            // HTML styling
+            if (label.getText().startsWith("<html"))
+                applyHTMLStyle2Label(label);
+
         } else {
             if (nodeShape == null) {
                 ((Circle) shape).setRadius(0.75);
@@ -363,5 +373,28 @@ public class NodeView2D extends NodeViewBase {
     @Override
     public javafx.scene.Node getNodeShape() {
         return shape;
+    }
+
+    private void applyHTMLStyle2Label(Labeled label){
+        Platform.runLater(
+                ()->{
+                    WebView wb = new WebView();
+                    wb.getEngine().loadContent(label.getText());
+
+                    //label.setText(label.getText().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", ""));
+                    //System.err.println(label.getFont());
+                    Text theText = new Text(label.getText().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", ""));
+                    theText.setFont(label.getFont());
+                    double width = theText.getBoundsInLocal().getWidth();
+
+                    Bounds bounds = label.getLayoutBounds();
+                    wb.setPrefHeight(bounds.getHeight()+40);
+                    wb.setPrefWidth(width+40);
+
+                    wb.setBlendMode(BlendMode.MULTIPLY);
+                    label.setGraphic(wb);
+                    label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                }
+        );
     }
 }

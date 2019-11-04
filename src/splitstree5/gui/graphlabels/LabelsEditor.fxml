@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
-
-<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.StackPane?>
-<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="/splitstree5/resources/css/labels_styles.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="splitstree5.gui.graphlabels.LabelsEditorController">
-   <children>
-      <HBox layoutX="200.0" layoutY="150.0" prefHeight="100.0" prefWidth="200.0">
+<?import javafx.scene.layout.VBox?>
+
+<SplitPane dividerPositions="0.5527638190954773" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="splitstree5.gui.graphlabels.LabelsEditorController">
+  <items>
+     <StackPane fx:id="area" prefHeight="150.0" prefWidth="200.0" />
+      <VBox prefHeight="200.0" prefWidth="100.0">
          <children>
-            <StackPane fx:id="area" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color:LightGray; -fx-border-width: 1;" />
-         </children></HBox>
-      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="253.0" layoutY="57.0" text="Label Editor" />
-      <CheckBox fx:id="bold" layoutX="266.0" layoutY="302.0" mnemonicParsing="false" text="Bold" />
-      <Button fx:id="closeButton" layoutX="473.0" layoutY="329.0" mnemonicParsing="false" text="Close" />
-      <Button fx:id="applyStyle" layoutX="37.0" layoutY="329.0" mnemonicParsing="false" text="Apply Style" />
-   </children>
-</AnchorPane>
+            <TextArea fx:id="html_area" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" wrapText="true" />
+            <Separator prefWidth="200.0" />
+            <Button fx:id="applyStyle" mnemonicParsing="false" text="Apply Style" />
+         </children>
+      </VBox>
+  </items>
+</SplitPane>
