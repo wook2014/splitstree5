@@ -19,22 +19,29 @@
 
 package splitstree5.gui.graphtab.base;
 
+import javafx.animation.PauseTransition;
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.BlendMode;
+import javafx.scene.image.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Transform;
 import javafx.scene.web.WebView;
+import javafx.util.Duration;
 import jloda.fx.shapes.NodeShape;
 import jloda.fx.util.GeometryUtilsFX;
 import jloda.fx.util.SelectionEffect;
@@ -389,11 +396,34 @@ public class NodeView2D extends NodeViewBase {
 
                     Bounds bounds = label.getLayoutBounds();
                     wb.setPrefHeight(bounds.getHeight()+40);
-                    wb.setPrefWidth(width+40);
+                    wb.setPrefWidth(width+20);
 
                     wb.setBlendMode(BlendMode.MULTIPLY);
+
                     label.setGraphic(wb);
                     label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+
+
+                    TranslateTransition animation = new TranslateTransition(Duration.seconds(0.5), label);
+                    PauseTransition pt = new PauseTransition(Duration.seconds(1));
+                    pt.setOnFinished(new EventHandler<ActionEvent>() {
+                        @Override public void handle(ActionEvent event) {
+                            SnapshotParameters sp = new SnapshotParameters();
+                            //Rectangle2D rect = new Rectangle2D(4, 4, 10,20);
+                            //sp.setFill(Color.TRANSPARENT);
+                            //sp.setViewport(new Rectangle2D(4, 4,width, height));
+                            //sp.setTransform(Transform.scale(3, 3)); // improve quality
+                            WritableImage image = wb.snapshot(sp, null);
+                            ImageView iw = new ImageView(image);
+                            //iw.setFitWidth(bounds.getWidth());
+                            //iw.setFitHeight(bounds.getHeight());
+
+                            label.setGraphic(iw);
+                            animation.play();
+                        }
+                    });
+                    // pausing, after pause onFinished event will take
+                    pt.play();
                 }
         );
     }
