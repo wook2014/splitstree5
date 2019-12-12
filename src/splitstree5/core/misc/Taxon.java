@@ -28,6 +28,7 @@ import java.io.Serializable;
 public class Taxon implements Serializable {
     private String name;
     private String info;
+    private String displayLabel;
 
     public Taxon() {
     }
@@ -36,19 +37,31 @@ public class Taxon implements Serializable {
         setName(name);
     }
 
+    public Taxon(Taxon src) {
+        name = src.name;
+        displayLabel = src.displayLabel;
+        info = src.info;
+    }
+
     public String getName() {
         return name;
     }
-
 
     public void setName(String name) {
         this.name = name;
     }
 
+    public String getDisplayLabel() {
+        return displayLabel;
+    }
+
+    public void setDisplayLabel(String displayLabel) {
+        this.displayLabel = displayLabel;
+    }
+
     public String getInfo() {
         return info;
     }
-
 
     public void setInfo(String info) {
         this.info = info;

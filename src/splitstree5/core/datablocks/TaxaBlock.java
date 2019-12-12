@@ -57,6 +57,7 @@ public class TaxaBlock extends DataBlock {
         taxa = FXCollections.observableArrayList();
         taxon2index = FXCollections.observableHashMap();
         name2taxon = FXCollections.observableHashMap();
+
         taxa.addListener((ListChangeListener<Taxon>) c -> {
             taxon2index.clear();
             name2taxon.clear();
@@ -301,21 +302,42 @@ public class TaxaBlock extends DataBlock {
         this.traitsBlock.set(traitsBlock);
     }
 
-
     /**
      * copy a taxon block
      *
      * @param src
      */
     public void copy(TaxaBlock src) {
-        taxa.clear();
-        taxa.addAll(src.taxa);
-        taxon2index.clear();
-        taxon2index.clear();
-        taxon2index.putAll(src.taxon2index);
-        name2taxon.clear();
-        name2taxon.putAll(src.name2taxon);
+        final ArrayList<Taxon> newTaxa = new ArrayList<>();
+        for (Taxon srcTaxon : src.taxa) {
+            newTaxa.add((new Taxon(srcTaxon)));
+        }
+        taxa.setAll(newTaxa);
         traitsBlock.set(src.traitsBlock.get());
+    }
+
+    /**
+     * returns true, if any taxon has an info string associated with it
+     *
+     * @return true, if some taxon has info
+     */
+    public static boolean hasDisplayLabels(TaxaBlock taxaBlock) {
+        for (int t = 1; t <= taxaBlock.getNtax(); t++)
+            if (taxaBlock.get(t).getDisplayLabel() != null && taxaBlock.get(t).getDisplayLabel().length() > 0)
+                return true;
+        return false;
+    }
+
+    /**
+     * returns true, if any taxon has an info string associated with it
+     *
+     * @return true, if some taxon has info
+     */
+    public static boolean hasInfos(TaxaBlock taxaBlock) {
+        for (int t = 1; t <= taxaBlock.getNtax(); t++)
+            if (taxaBlock.get(t).getInfo() != null && taxaBlock.get(t).getInfo().length() > 0)
+                return true;
+        return false;
     }
 
     @Override

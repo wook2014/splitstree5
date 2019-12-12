@@ -40,7 +40,13 @@ public class TaxaNexusOutput extends NexusIOBase {
         for (int i = 1; i <= taxaBlock.getNtax(); i++)
             w.write("\t[" + i + "] '" + taxaBlock.get(i).getName() + "'\n");
         w.write(";\n");
-        if (hasInfos(taxaBlock)) {
+        if (TaxaBlock.hasDisplayLabels(taxaBlock)) {
+            w.write("DISPLAYLABELS\n");
+            for (int i = 1; i <= taxaBlock.getNtax(); i++)
+                w.write("\t[" + i + "] '" + taxaBlock.get(i).getDisplayLabel() + "'\n");
+            w.write(";\n");
+        }
+        if (TaxaBlock.hasInfos(taxaBlock)) {
             w.write("TAXINFO\n");
             for (int i = 1; i <= taxaBlock.getNtax(); i++)
                 w.write("\t[" + i + "] '" + taxaBlock.get(i).getInfo() + "'\n");
@@ -49,15 +55,4 @@ public class TaxaNexusOutput extends NexusIOBase {
         w.write("END; [" + TaxaBlock.BLOCK_NAME + "]\n");
     }
 
-    /**
-     * returns true, if any taxon has an info string associated with it
-     *
-     * @return true, if some taxon has info
-     */
-    private boolean hasInfos(TaxaBlock taxaBlock) {
-        for (int t = 1; t <= taxaBlock.getNtax(); t++)
-            if (taxaBlock.get(t).getInfo() != null && taxaBlock.get(t).getInfo().length() > 0)
-                return true;
-        return false;
-    }
 }

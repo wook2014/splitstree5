@@ -68,6 +68,9 @@ public class SplitsTree5 extends Application {
         ProgramProperties.setProgramVersion(Version.SHORT_DESCRIPTION);
         ProgramProperties.setUseGUI(true);
 
+        SplashScreen.setVersionString(ProgramProperties.getProgramVersion());
+        SplashScreen.setImageResourceName("SplitsTree5-splash.png");
+
         final ArgsOptions options = new ArgsOptions(args, SplitsTree5.class, "Interactive computation of phylogenetic trees and networks");
         options.setAuthors("Daniel H. Huson and David J. Bryant. Some code by Daria Evseeva and others.");
         // options.setLicense("This is free software, licensed under the terms of the GNU General Public License, Version 3.");
@@ -104,10 +107,7 @@ public class SplitsTree5 extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            // setup and show splash screen:
-            SplashScreen.setVersionString(ProgramProperties.getProgramVersion());
-            SplashScreen.setImageResourceName("SplitsTree5-splash.png");
-            SplashScreen.getInstance().showSplash(Duration.ofSeconds(5));
+            SplashScreen.showSplash(Duration.ofSeconds(5));
 
             final MainWindow mainWindow = new MainWindow();
 
@@ -128,7 +128,7 @@ public class SplitsTree5 extends Application {
             if (false) {
                 // setup about and preferences menu for apple:
                 OSXIntegration.init();
-                OSXIntegration.populateAppleMenu(() -> SplashScreen.getInstance().showSplash(Duration.ofMinutes(1)), () -> System.err.println("Preferences"));
+                OSXIntegration.populateAppleMenu(() -> SplashScreen.showSplash(Duration.ofMinutes(1)), () -> System.err.println("Preferences"));
             }
         } catch (Exception ex) {
             Basic.caught(ex);

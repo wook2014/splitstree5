@@ -40,7 +40,10 @@ public class TaxaNexusInput extends NexusIOBase {
             "\t\tlist-of-labels\n" +
             "\t;]\n" +
             "\t[TAXINFO\n" +
-            "\t\tlist-of-info-items\n" +
+            "\t\tlist-of-info-items (use 'null' for missing item)\n" +
+            "\t;]\n" +
+            "\t[DISPLAYLABELS\n" +
+            "\t\tlist-of-html-strings (use 'null' for missing item)\n" +
             "\t;]\n" +
             "END;\n";
 
@@ -115,17 +118,30 @@ public class TaxaNexusInput extends NexusIOBase {
             np.matchIgnoreCase(";");
         }
 
-        if (labelsDetected && np.peekMatchIgnoreCase("taxinfo")) // get info for labels
+        if (labelsDetected && np.peekMatchIgnoreCase("displayLabels")) // get display labels
         {
-            np.matchIgnoreCase("taxinfo");
+            np.matchIgnoreCase("displayLabels");
+
+            for (int t = 1; t <= ntax; t++) {
+                final String displayLabel = np.getLabelRespectCase();
+                if (!displayLabel.equals("null")) //  explicitly the word "null"
+                    taxaBlock.get(t).setDisplayLabel(displayLabel);
+            }
+            np.matchIgnoreCase(";");
+        }
+        
+        if (labelsDetected && np.peekMatchIgnoreCase("taxInfo")) // get info for labels
+        {
+            np.matchIgnoreCase("taxInfo");
 
             for (int t = 1; t <= ntax; t++) {
                 final String info = np.getLabelRespectCase();
-                if (!info.equals("null")) // not explicitly the word "null"
+                if (!info.equals("null")) //  explicitly the word "null"
                     taxaBlock.get(t).setInfo(info);
             }
             np.matchIgnoreCase(";");
         }
+
         np.matchEndBlock();
         return taxonNamesFound;
     }

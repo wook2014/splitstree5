@@ -119,7 +119,7 @@ public class MessageWindowController {
             //fileMenu.getItems().remove(getQuitMenuItem());
             helpMenu.getItems().remove(getAboutMenuItem());
         } else {
-            getAboutMenuItem().setOnAction((e) -> SplashScreen.getInstance().showSplash(Duration.ofMinutes(1)));
+            getAboutMenuItem().setOnAction((e) -> SplashScreen.showSplash(Duration.ofMinutes(1)));
         }
     }
 }
