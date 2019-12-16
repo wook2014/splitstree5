@@ -17,7 +17,7 @@ public class LabelsEditorController {
     @FXML
     private Button u;
     @FXML
-    private Button openFile;
+    private Button updateHTML;
     @FXML
     private ColorPicker textColor;
 
@@ -45,9 +45,6 @@ public class LabelsEditorController {
     public Button getUnderlineButton() {
         return u;
     }
-    public Button getOpenFileButton() {
-        return openFile;
-    }
     public ColorPicker getTextColor() {
         return textColor;
     }
@@ -58,6 +55,10 @@ public class LabelsEditorController {
 
     public Button getApplyStyle() {
         return applyStyle;
+    }
+
+    public Button getUpdateHTMLButton() {
+        return updateHTML;
     }
 
     public StackPane getArea() {

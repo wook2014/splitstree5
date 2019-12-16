@@ -5,6 +5,18 @@ Processed by SplitsTree4]
 BEGIN Taxa;
 DIMENSIONS ntax=10;
 TAXLABELS
+[1] 'red-purple'
+[2] 'red'
+[3] 'yellow'
+[4] 'yellowish'
+[5] 'greenish'
+[6] 'green'
+[7] 'blue'
+[8] 'purple-blue'
+[9] 'purple'
+[10] 'purple-reddish'
+;
+DISPLAYLABELS
 [1] '<html><body>red-purple</body></html>'
 [2] '<html><body>red</body></html>'
 [3] '<html><body>yellow</body></html>'
@@ -22,16 +34,16 @@ BEGIN Distances;
 DIMENSIONS ntax=10;
 FORMAT labels=left diagonal triangle=lower;
 MATRIX
-[1] '<html><body>red-purple</body></html>'       0.0
-[2] '<html><body>red</body></html>'              61.0 0.0
-[3] '<html><body>yellow</body></html>'           105.0 55.0 0.0
-[4] '<html><body>yellowish</body></html>'        121.0 99.0 54.0 0.0
-[5] '<html><body>greenish</body></html>'         131.0 116.0 81.0 33.0 0.0
-[6] '<html><body>green</body></html>'            124.0 124.0 101.0 55.0 35.0 0.0
-[7] '<html><body>blue</body></html>'             106.0 130.0 121.0 85.0 65.0 41.0 0.0
-[8] '<html><body>purple-<span style="color: rgb(0, 0, 255);">blue</span></body></html>'      85.0 125.0 131.0 106.0 93.0 73.0 45.0 0.0
-[9] '<html><body>purple</body></html>'           52.0 99.0 128.0 121.0 116.0 102.0 84.0 45.0 0.0
-[10] '<html><body>purple-<span style="color: rgb(255, 0, 0);">reddish</span></body></html>'   31.0 80.0 118.0 124.0 121.0 115.0 94.0 62.0 30.0 0.0
+[1] 'red-purple'       0.0
+[2] 'red'              61.0 0.0
+[3] 'yellow'           105.0 55.0 0.0
+[4] 'yellowish'        121.0 99.0 54.0 0.0
+[5] 'greenish'         131.0 116.0 81.0 33.0 0.0
+[6] 'green'            124.0 124.0 101.0 55.0 35.0 0.0
+[7] 'blue'             106.0 130.0 121.0 85.0 65.0 41.0 0.0
+[8] 'purple-blue'      85.0 125.0 131.0 106.0 93.0 73.0 45.0 0.0
+[9] 'purple'           52.0 99.0 128.0 121.0 116.0 102.0 84.0 45.0 0.0
+[10] 'purple-reddish'   31.0 80.0 118.0 124.0 121.0 115.0 94.0 62.0 30.0 0.0
 ;
 END; [Distances]
 

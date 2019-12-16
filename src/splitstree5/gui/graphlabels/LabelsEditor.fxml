@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.web.HTMLEditor?>
 
@@ -14,7 +15,12 @@
          <children>
             <TextArea fx:id="html_area" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" wrapText="true" />
             <Separator prefWidth="200.0" />
-            <Button fx:id="applyStyle" mnemonicParsing="false" text="Apply Style" />
+            <ToolBar prefHeight="40.0" prefWidth="200.0">
+              <items>
+                  <Button fx:id="applyStyle" mnemonicParsing="false" text="Apply Style" />
+                  <Button fx:id="updateHTML" mnemonicParsing="false" text="Update HTML" />
+              </items>
+            </ToolBar>
          </children>
       </VBox>
   </items>

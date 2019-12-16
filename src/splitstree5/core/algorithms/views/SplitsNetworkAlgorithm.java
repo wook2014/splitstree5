@@ -52,6 +52,7 @@ import splitstree5.gui.graphtab.base.NodeViewBase;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -146,8 +147,13 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
         final Font labelFont = Font.font(ProgramProperties.getDefaultFontFX().getFamily(), taxaBlock.getNtax() <= 64 ? 16 : Math.max(4, 12 - Math.log(taxaBlock.getNtax() - 64) / Math.log(2)));
         for (Node v : graph.nodes()) {
             final String text;
+            Iterator taxonIDs = graph.getTaxa(v).iterator();
+
             if (graph.getLabel(v) != null && graph.getLabel(v).length() > 0)
-                text = graph.getLabel(v);
+                if (TaxaBlock.hasDisplayLabels(taxaBlock) && taxonIDs.hasNext())
+                    text = taxaBlock.get((Integer) taxonIDs.next()).getDisplayLabel();
+                else
+                    text = graph.getLabel(v);
             else if (graph.getNumberOfTaxa(v) > 0)
                 text = Basic.toString(taxaBlock.getLabels(graph.getTaxa(v)), ",");
             else text = null;

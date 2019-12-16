@@ -39,13 +39,13 @@ public class NexusHighlighter implements Highlighter {
     private static final String[] KEYWORDS = new String[] {
             "begin", "end", "endblock",
             "dimensions", "matrix",
-            "format", "title",
-            "taxlabels", "matrix",
+            "format", "title", "matrix",
             "properties", "cycle", "draw"
     };
 
-    private static final String[] NETWORK_KEYWORDS = new String[] {
-            "TRANSLATE", "VERTICES", "VLABELS", "EDGES", "ELABELS"
+    private static final String[] INNER_KEYWORDS = new String[] {
+            "TRANSLATE", "VERTICES", "VLABELS", "EDGES", "ELABELS",
+            "displaylabels", "taxlabels"
     };
 
     private static final String[] BLOCKS = new String[] {
@@ -59,7 +59,7 @@ public class NexusHighlighter implements Highlighter {
     // everything between keyword and semicolon not ending with "end" and not blocks word
 
     private static final String BLOCK_PATTERN = "(?i)\\b(" + String.join("|", BLOCKS) + ")\\b";
-    private static final String NETWORK_KEYWORDS_PATTERN = "(?i)\\b(" + String.join("|", NETWORK_KEYWORDS) + ")\\b";
+    private static final String NETWORK_KEYWORDS_PATTERN = "(?i)\\b(" + String.join("|", INNER_KEYWORDS) + ")\\b";
     private static final String PAREN_PATTERN = "[()]";
     private static final String COMMENT_PATTERN = "\\[(.|\\R)*?]";
     private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";

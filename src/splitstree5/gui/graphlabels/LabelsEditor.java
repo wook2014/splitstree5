@@ -1,19 +1,22 @@
 package splitstree5.gui.graphlabels;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Transform;
 import javafx.scene.web.HTMLEditor;
@@ -24,11 +27,11 @@ import jloda.fx.util.ExtendedFXMLLoader;
 import jloda.util.ProgramProperties;
 import splitstree5.main.MainWindow;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.regex.Pattern;
 
 public class LabelsEditor {
 
@@ -38,6 +41,8 @@ public class LabelsEditor {
 
 
     public LabelsEditor(MainWindow parentMainWindow, Labeled label){
+
+        // todo: clear after Format calling, extra button for Format
 
         final ExtendedFXMLLoader<LabelsEditorController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         controller = extendedFXMLLoader.getController();
@@ -51,14 +56,9 @@ public class LabelsEditor {
         stage.setX(parentMainWindow.getStage().getX() + 50);
         stage.setY(parentMainWindow.getStage().getY() + 50);
 
-        stage.setTitle("Labels Editor");
-
         htmlEditor = controller.getHtmlEditor();
         customizeHTMLEditor(label);
-
-
-        String html = label.getText();
-        htmlEditor.setHtmlText(html);
+        htmlEditor.setHtmlText(label.getText());
         controller.getHTML_Area().setText(htmlEditor.getHtmlText());
 
         controller.getApplyStyle().setOnAction(event -> {
@@ -66,78 +66,37 @@ public class LabelsEditor {
 
             Text theText = new Text(label.getText().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", ""));
             theText.setFont(label.getFont());
+
+            System.err.println("Font "+label.getFont()); //.getFont());
             //final Bounds bounds = theText.getBoundsInLocal(); //htmlEditor.getLayoutBounds();
 
-            SnapshotParameters sp = new SnapshotParameters();
-            sp.setViewport(new Rectangle2D(0, 0, 300, 300));
-            //sp.setFill(Color.TRANSPARENT);
-            //sp.setTransform(Transform.scale(3, 3)); // improve quality
-
-            WebView wb = (WebView) htmlEditor.lookup("WebView");
+            // todo: better function to update size!
             final Bounds bounds = label.getBoundsInParent();
-            wb.setPrefHeight(bounds.getHeight()+40);
-            wb.setPrefWidth(bounds.getWidth()+20);
+            WebView wb = (WebView) htmlEditor.lookup("WebView");
 
-            Image snapshot = wb.snapshot(sp, null);
-            ImageView iw = new ImageView(snapshot);
-            //iw.setFitWidth(bounds.getWidth());
-            //iw.setFitHeight(bounds.getHeight());
+            final int scalingFactor = 3;
+            SnapshotParameters sp = new SnapshotParameters();
+            sp.setViewport(new Rectangle2D(scalingFactor, wb.getLayoutY()*scalingFactor,
+                    bounds.getWidth()*scalingFactor, bounds.getHeight()*scalingFactor));
+            sp.setTransform(Transform.scale(scalingFactor, scalingFactor)); // improve quality
+
+
+            WritableImage snapshot1 = wb.snapshot(sp, null);
+            applyTransparency(snapshot1);
+
+            ImageView iw = new ImageView(snapshot1);
+            iw.setPreserveRatio(true);
+            iw.setFitHeight(bounds.getHeight());
+
+
             label.setGraphic(iw);
             label.setText(htmlEditor.getHtmlText());
             label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-
-            /*WebView wb = new WebView();
-            wb.setPrefHeight(bounds.getHeight()+20);
-            wb.setPrefWidth(bounds.getWidth()+20);
-            WebEngine webEngine = wb.getEngine();
-            label.setGraphic(wb);
-            webEngine.loadContent(htmlEditor.getHtmlText());
-
-            //label.setTextFill(Color.TRANSPARENT);
-            label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);*/
-            //label.setText(inlineCssTextArea.getText());
-
         });
 
-        /*controller.getBold().selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-
-                IndexRange ir = inlineCssTextArea.getSelection();
-
-                if (newValue) {
-                    if (ir.getLength() == 0) {
-                        inlineCssTextArea.setStyle(0, inlineCssTextArea.getLength(),
-                                inlineCssTextArea.getStyle() + "; -fx-font-weight: bold;");
-                    } else {
-                        inlineCssTextArea.setStyle(ir.getStart(), ir.getEnd(),
-                                inlineCssTextArea.getStyle() + "; -fx-font-weight: bold;");
-                    }
-                } else {
-                    inlineCssTextArea.setStyle(0, inlineCssTextArea.getLength(),
-                            inlineCssTextArea.getStyle()+ "; -fx-font-weight: normal;");
-                }
-            }
+        controller.getUpdateHTMLButton().setOnAction(event -> {
+            controller.getHTML_Area().setText(htmlEditor.getHtmlText());
         });
-
-        controller.getApplyStyle().setOnAction(event -> {
-
-            final Bounds bounds = inlineCssTextArea.getLayoutBounds();
-
-            SnapshotParameters sp = new SnapshotParameters();
-            sp.setFill(Color.TRANSPARENT);
-            sp.setTransform(Transform.scale(3, 3)); // improve quality
-
-            Image snapshot = inlineCssTextArea.snapshot( sp, null);
-
-            ImageView iw = new ImageView(snapshot);
-            iw.setFitWidth(bounds.getWidth());
-            iw.setFitHeight(bounds.getHeight());
-
-            label.setGraphic(iw);
-            label.setTextFill(Color.TRANSPARENT);
-            label.setText(inlineCssTextArea.getText());
-        });*/
 
     }
 
@@ -145,10 +104,11 @@ public class LabelsEditor {
         stage.show();
     }
 
-    private static String fontToCSS(Font font){
-        return "-fx-background-color: transparent; "+
-                "-fx-font-family:" + font.getFamily() +
-                "; -fx-font-size:" + font.getSize() + "px;";
+    private void setStyledText(Labeled label){
+        //todo
+        Font font = label.getFont();
+
+        htmlEditor.setHtmlText(label.getText());
     }
 
 
@@ -159,16 +119,6 @@ public class LabelsEditor {
 
     ".html-editor-cut", ".html-editor-copy", ".html-editor-paste",
     ".html-editor-strike", ".html-editor-hr"
-
-    ".html-editor-align-left"
-    ".html-editor-align-center"
-    ".html-editor-align-right"
-    ".html-editor-align-justify"
-    ".html-editor-outdent"
-    ".html-editor-indent"
-    ".html-editor-bullets"
-    ".html-editor-numbers"
-
      */
 
     private void customizeHTMLEditor(Labeled label){
@@ -216,37 +166,48 @@ public class LabelsEditor {
                 separator.setOrientation(Orientation.VERTICAL);
 
                 Button loadImg = new Button("Open Image");
+                loadImg.setOnAction(event -> {
+                    openImage(label);
+                    label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                });
+
                 Label label1ImgScale = new Label("Scale label:");
                 Slider imgScale = new Slider(0, 2, 1);
                 imgScale.setShowTickMarks(true);
                 imgScale.setShowTickLabels(true);
                 imgScale.setMajorTickUnit(0.5);
 
-                if (label.getGraphic() == null)
+                CheckBox showText = new CheckBox("Show text");
+
+                if (label.getGraphic() == null){
                     imgScale.setDisable(true);
-                label.graphicProperty().addListener(new ChangeListener<Node>() {
-                    @Override
-                    public void changed(ObservableValue<? extends Node> observable, Node oldValue, Node newValue) {
-                        imgScale.adjustValue(1);
-                        if (label.getGraphic() == null)
-                            imgScale.setDisable(true);
-                        else
-                            imgScale.setDisable(false);
+                    showText.setDisable(true);
+                }
+                label.graphicProperty().addListener((observable, oldValue, newValue) -> {
+                    imgScale.adjustValue(1);
+                    if (label.getGraphic() == null){
+                        imgScale.setDisable(true);
+                        showText.setDisable(true);
+                    } else {
+                        imgScale.setDisable(false);
+                        showText.setDisable(false);
                     }
                 });
 
-                imgScale.valueProperty().addListener(new ChangeListener<Number>() {
-                    @Override
-                    public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                        label.getGraphic().setScaleY(newValue.doubleValue());
-                        label.getGraphic().setScaleX(newValue.doubleValue());
-                    }
+                imgScale.valueProperty().addListener((observable, oldValue, newValue) -> {
+                    label.getGraphic().setScaleY(newValue.doubleValue());
+                    label.getGraphic().setScaleX(newValue.doubleValue());
                 });
 
-                bar.getItems().addAll(separator, loadImg, label1ImgScale, imgScale);
-                loadImg.setOnAction(event -> {
-                    openImage(label);
+                // todo update graphic size!
+                showText.selectedProperty().addListener((observable, oldValue, newValue) -> {
+                    if (oldValue)
+                        label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                    else
+                        label.setContentDisplay(ContentDisplay.TOP);
                 });
+
+                bar.getItems().addAll(separator, loadImg, label1ImgScale, imgScale, showText);
             }
 
         });
@@ -279,21 +240,15 @@ public class LabelsEditor {
         }
     }
 
-
-    // hide buttons containing nodes whose image url matches a given name pattern.
-    public void hideImageNodesMatching(Node node, Pattern imageNamePattern, int depth) {
-        if (node instanceof ImageView) {
-            ImageView imageView = (ImageView) node;
-            String url = imageView.getImage().getUrl();
-            if (url != null && imageNamePattern.matcher(url).matches()) {
-                Node button = imageView.getParent().getParent();
-                button.setVisible(false); button.setManaged(false);
+    public static void applyTransparency(WritableImage writableImage){
+        PixelWriter raster = writableImage.getPixelWriter();
+        for (int x = 0; x < writableImage.getWidth(); x++){
+            for (int y = 0; y < writableImage.getHeight(); y++){
+                Color c = writableImage.getPixelReader().getColor(x, y);
+                if (c.equals(Color.WHITE))
+                    raster.setColor(x, y, Color.TRANSPARENT);
             }
         }
-        if (node instanceof Parent)
-            for (Node child : ((Parent) node).getChildrenUnmodifiable())
-                hideImageNodesMatching(child, imageNamePattern, depth + 1);
     }
-
 
 }

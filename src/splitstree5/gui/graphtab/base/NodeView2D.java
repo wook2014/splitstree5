@@ -26,6 +26,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
@@ -47,6 +48,7 @@ import jloda.fx.util.GeometryUtilsFX;
 import jloda.fx.util.SelectionEffect;
 import jloda.util.ProgramProperties;
 import splitstree5.gui.formattab.FormatItem;
+import splitstree5.gui.graphlabels.LabelsEditor;
 
 /**
  * node view
@@ -92,7 +94,7 @@ public class NodeView2D extends NodeViewBase {
             labelGroup.getChildren().add(label);
 
             // HTML styling
-            if (label.getText().startsWith("<html"))
+            if (label.getText().contains("<html"))
                 applyHTMLStyle2Label(label);
 
         } else {
@@ -383,48 +385,46 @@ public class NodeView2D extends NodeViewBase {
     }
 
     private void applyHTMLStyle2Label(Labeled label){
-        Platform.runLater(
-                ()->{
-                    WebView wb = new WebView();
-                    wb.getEngine().loadContent(label.getText());
 
-                    //label.setText(label.getText().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", ""));
-                    //System.err.println(label.getFont());
-                    Text theText = new Text(label.getText().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", ""));
-                    theText.setFont(label.getFont());
-                    double width = theText.getBoundsInLocal().getWidth();
+        final int webViewOffset = 20;
+        final int scalingFactor = 3;
 
-                    Bounds bounds = label.getLayoutBounds();
-                    wb.setPrefHeight(bounds.getHeight()+40);
-                    wb.setPrefWidth(width+20);
+        Platform.runLater(() -> {
+            WebView wb = new WebView();
+            wb.getEngine().loadContent(label.getText());
 
-                    wb.setBlendMode(BlendMode.MULTIPLY);
+            Text theText = new Text(label.getText().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", ""));
+            theText.setFont(label.getFont());
+            double width = theText.getBoundsInParent().getWidth();
+            double height = theText.getBoundsInParent().getHeight();
 
-                    label.setGraphic(wb);
-                    label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+            Bounds bounds = label.getBoundsInParent();
+            wb.setPrefHeight(height + webViewOffset);
+            wb.setPrefWidth(width + webViewOffset);
 
+            label.setGraphic(wb);
+            label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 
-                    TranslateTransition animation = new TranslateTransition(Duration.seconds(0.5), label);
-                    PauseTransition pt = new PauseTransition(Duration.seconds(1));
-                    pt.setOnFinished(new EventHandler<ActionEvent>() {
-                        @Override public void handle(ActionEvent event) {
-                            SnapshotParameters sp = new SnapshotParameters();
-                            //Rectangle2D rect = new Rectangle2D(4, 4, 10,20);
-                            //sp.setFill(Color.TRANSPARENT);
-                            //sp.setViewport(new Rectangle2D(4, 4,width, height));
-                            //sp.setTransform(Transform.scale(3, 3)); // improve quality
-                            WritableImage image = wb.snapshot(sp, null);
-                            ImageView iw = new ImageView(image);
-                            //iw.setFitWidth(bounds.getWidth());
-                            //iw.setFitHeight(bounds.getHeight());
+            TranslateTransition animation = new TranslateTransition(Duration.seconds(0.5), label);
+            PauseTransition pt = new PauseTransition(Duration.seconds(1));
+            pt.setOnFinished(event -> {
+                SnapshotParameters sp = new SnapshotParameters();
+                sp.setViewport(new Rectangle2D(webViewOffset, webViewOffset,
+                        width*scalingFactor,
+                        height*scalingFactor+webViewOffset));
+                sp.setTransform(Transform.scale(scalingFactor, scalingFactor)); // improve quality
 
-                            label.setGraphic(iw);
-                            animation.play();
-                        }
-                    });
-                    // pausing, after pause onFinished event will take
-                    pt.play();
-                }
-        );
+                WritableImage image = wb.snapshot(sp, null);
+                LabelsEditor.applyTransparency(image);
+                ImageView iw = new ImageView(image);
+                iw.setPreserveRatio(true);
+                iw.setFitWidth(width);
+
+                label.setGraphic(iw);
+                animation.play();
+            });
+            // pausing, after pause onFinished event will take
+            pt.play();
+        });
     }
 }
