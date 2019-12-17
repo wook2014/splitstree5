@@ -15,7 +15,7 @@ public class LabelsEditorController {
     @FXML
     private Button i;
     @FXML
-    private Button u;
+    private Button search;
     @FXML
     private Button updateHTML;
     @FXML
@@ -41,9 +41,6 @@ public class LabelsEditorController {
     }
     public Button getItalicButton() {
         return i;
-    }
-    public Button getUnderlineButton() {
-        return u;
     }
     public ColorPicker getTextColor() {
         return textColor;
@@ -71,5 +68,9 @@ public class LabelsEditorController {
 
     public TextArea getHTML_Area() {
         return html_area;
+    }
+
+    public Button getSearch() {
+        return search;
     }
 }

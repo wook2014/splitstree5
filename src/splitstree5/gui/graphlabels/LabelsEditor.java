@@ -16,15 +16,19 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Transform;
 import javafx.scene.web.HTMLEditor;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import jloda.fx.find.NodeLabelSearcher;
+import jloda.fx.find.SearchManager;
 import jloda.fx.util.ExtendedFXMLLoader;
 import jloda.util.ProgramProperties;
+import splitstree5.gui.graphtab.base.GraphTabBase;
+import splitstree5.gui.graphtab.base.NodeView2D;
+import splitstree5.gui.graphtab.base.NodeViewBase;
 import splitstree5.main.MainWindow;
 
 import java.awt.*;
@@ -38,14 +42,18 @@ public class LabelsEditor {
     private final LabelsEditorController controller;
     private final Stage stage;
     final private HTMLEditor htmlEditor;
+    private SearchManager searchManager = new SearchManager();
 
 
-    public LabelsEditor(MainWindow parentMainWindow, Labeled label){
+    public LabelsEditor(MainWindow parentMainWindow, Labeled label,
+                        NodeLabelSearcher nodeLabelSearcher, GraphTabBase graphTabBase){
 
         // todo: clear after Format calling, extra button for Format
 
         final ExtendedFXMLLoader<LabelsEditorController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         controller = extendedFXMLLoader.getController();
+
+        searchManager.setSearcher(nodeLabelSearcher);
 
         stage = new Stage();
         stage.getIcons().setAll(ProgramProperties.getProgramIconsFX());
@@ -90,7 +98,7 @@ public class LabelsEditor {
 
 
             label.setGraphic(iw);
-            label.setText(htmlEditor.getHtmlText());
+            label.setText(htmlEditor.getHtmlText()); // todo: do not save new text in label
             label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         });
 
@@ -98,6 +106,22 @@ public class LabelsEditor {
             controller.getHTML_Area().setText(htmlEditor.getHtmlText());
         });
 
+        controller.getSearch().setOnAction(event -> {
+            String textInWB = htmlEditor.getHtmlText().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", "");
+
+            searchManager.setSearchText(textInWB);
+            searchManager.findAll();
+
+            // todo does not work for numbers!
+            for (jloda.graph.Node n : nodeLabelSearcher.getSelectionModel().getSelectedItems()){
+                //System.err.println("node "+n.toString());
+
+                NodeViewBase nv = (NodeViewBase) graphTabBase.getNode2view().get(n);
+                nv.setLabel(mergeHTMLStyles(nv.getLabel().getText(), htmlEditor.getHtmlText()));
+
+                NodeView2D.applyHTMLStyle2Label(nv.getLabel());
+            }
+        });
     }
 
     public void show() {
@@ -109,6 +133,17 @@ public class LabelsEditor {
         Font font = label.getFont();
 
         htmlEditor.setHtmlText(label.getText());
+    }
+
+    private String mergeHTMLStyles(String newLabel, String insertion){
+
+        //newLabel = newLabel.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", "");
+        insertion = insertion.replaceAll("</?(html|body|head)[^>]*>", "");
+
+        String tag = insertion.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", "");
+        newLabel = newLabel.replaceAll(tag, insertion);
+
+        return newLabel;
     }
 
 

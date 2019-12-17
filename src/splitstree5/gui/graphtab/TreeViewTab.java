@@ -109,7 +109,7 @@ public class TreeViewTab extends Graph2DTab<PhyloTree> {
 
                 // call label editor on double click
                 if(x.getClickCount() == 2){
-                    LabelsEditor labelsEditor = new LabelsEditor(getMainWindow(), nodeView.getLabel());
+                    LabelsEditor labelsEditor = new LabelsEditor(getMainWindow(), nodeView.getLabel(), nodeLabelSearcher, this);
                     labelsEditor.show();
                 }
 

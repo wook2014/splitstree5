@@ -15,10 +15,12 @@
          <children>
             <TextArea fx:id="html_area" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" wrapText="true" />
             <Separator prefWidth="200.0" />
-            <ToolBar prefHeight="40.0" prefWidth="200.0">
+            <ToolBar prefHeight="145.0" prefWidth="598.0">
               <items>
                   <Button fx:id="applyStyle" mnemonicParsing="false" text="Apply Style" />
                   <Button fx:id="updateHTML" mnemonicParsing="false" text="Update HTML" />
+                  <Separator orientation="VERTICAL" />
+                  <Button fx:id="search" mnemonicParsing="false" text="Search" />
               </items>
             </ToolBar>
          </children>

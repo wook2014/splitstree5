@@ -384,7 +384,7 @@ public class NodeView2D extends NodeViewBase {
         return shape;
     }
 
-    private void applyHTMLStyle2Label(Labeled label){
+    public static void applyHTMLStyle2Label(Labeled label){
 
         final int webViewOffset = 20;
         final int scalingFactor = 3;
