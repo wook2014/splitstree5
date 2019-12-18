@@ -65,6 +65,8 @@ module splitstreefive {
     exports splitstree5.gui.formattab.fontselector;
     exports splitstree5.gui.graph3dtab;
     exports splitstree5.gui.graphtab;
+    exports splitstree5.gui.graphlabels;
+
     exports splitstree5.gui.graphtab.base;
     exports splitstree5.gui.graphtab.commands;
     exports splitstree5.gui.inputtab;
@@ -120,6 +122,8 @@ module splitstreefive {
     opens splitstree5.gui.algorithmtab.treeselector;
     opens splitstree5.gui.formattab;
     opens splitstree5.gui.formattab.fontselector;
+    opens splitstree5.gui.graphlabels;
+
     opens splitstree5.gui.workflowtab;
     opens splitstree5.main;
     opens splitstree5.menu;
