@@ -34,10 +34,12 @@ import splitstree5.gui.graphtab.TreeViewTab;
 import splitstree5.gui.graphtab.base.EdgeView2D;
 import splitstree5.gui.graphtab.base.Graph2DTab;
 import splitstree5.gui.graphtab.base.NodeView2D;
+import splitstree5.gui.graphtab.base.PolygonView2D;
 import splitstree5.io.nexus.graph.EdgeViewIO;
 import splitstree5.io.nexus.graph.NodeViewIO;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,7 +51,7 @@ public class ViewerNexusInput extends NexusIOBase {
     public static final String SYNTAX = "BEGIN " + ViewerBlock.BLOCK_NAME + ";\n" +
             "\t[TITLE {title};]\n" +
             "\t[LINK {type} = {title};]\n" +
-            "\t[DIMENSIONS NNODES=number-of-nodes NEDGES=number-of-edges [NLABELS=number-of-labels];]\n" +
+            "\t[DIMENSIONS NNODES=number-of-nodes NEDGES=number-of-edges [NLABELS=number-of-labels] [NLOOPS=number-of-polygons];]\n" +
             "\tFORMAT type={" + Basic.toString(ViewerBlock.Type.values(), "|") + "}\n" +
             "\tNODES\n" +
             "\t\tN: id x y [S: shape-name x y w h color] [L: label x y color font],\n" +
@@ -63,6 +65,10 @@ public class ViewerNexusInput extends NexusIOBase {
             "\t\tL: label x y color font,\n" +
             "\t\t...\n" +
             "\t\tL: label x y color font;]\n" +
+            "\t{LOOPS\n" +
+            "\t\tnode-id node-id...,\n" +
+            "\t\t...\n" +
+            "\t\tnode-id node-id;]\n" +
             "END;\n";
 
     public String getSyntax() {
@@ -85,6 +91,7 @@ public class ViewerNexusInput extends NexusIOBase {
         final int nNodes;
         final int nEdges;
         final int nLabels;
+        final int nLoops;
 
         if (np.peekMatchIgnoreCase("DIMENSIONS")) {
             np.matchIgnoreCase("DIMENSIONS NNODES=");
@@ -96,11 +103,18 @@ public class ViewerNexusInput extends NexusIOBase {
                 nLabels = np.getInt();
             } else
                 nLabels = 0;
+            if (np.peekMatchIgnoreCase("NLOOPS")) {
+                np.matchIgnoreCase("NLOOPS=");
+                nLoops = np.getInt();
+            } else
+                nLoops = 0;
+
             np.matchIgnoreCase(";");
         } else {
             nNodes = -1;
             nEdges = -1;
             nLabels = -1;
+            nLoops = -1;
         }
 
         np.matchIgnoreCase("FORMAT type=");
@@ -114,7 +128,7 @@ public class ViewerNexusInput extends NexusIOBase {
         if (!(viewerBlock.getTab() instanceof Graph2DTab))
             throw new IOExceptionWithLineNumber("Import of 3D viewer, not implemented", np.lineno());
 
-        final Map<Integer, Node> id2node = new HashMap<>(); // maps node input ids to current ids
+        final Map<Integer, Node> inputId2Node = new HashMap<>(); // maps input node ids to current nodes
         {
             np.matchIgnoreCase("NODES");
             int countNodes = 0;
@@ -127,7 +141,7 @@ public class ViewerNexusInput extends NexusIOBase {
 
                     if (!np.peekMatchIgnoreCase(";")) {
                         while (true) {
-                            final NodeView2D nv = NodeViewIO.valueOf(np, graph, graphTab, id2node);
+                            final NodeView2D nv = NodeViewIO.valueOf(np, graph, graphTab, inputId2Node);
                             graphTab.getNode2view().put(nv.getNode(), nv);
                             graphTab.setupNodeView(nv);
                             graphTab.getNodesGroup().getChildren().add(nv.getShapeGroup());
@@ -148,7 +162,7 @@ public class ViewerNexusInput extends NexusIOBase {
 
                     if (!np.peekMatchIgnoreCase(";")) {
                         while (true) {
-                            final NodeView2D nv = NodeViewIO.valueOf(np, graph, graphTab, id2node);
+                            final NodeView2D nv = NodeViewIO.valueOf(np, graph, graphTab, inputId2Node);
                             graphTab.getNode2view().put(nv.getNode(), nv);
                             graphTab.getNodesGroup().getChildren().add(nv.getShapeGroup());
                             graphTab.getNodeLabelsGroup().getChildren().add(nv.getLabelGroup());
@@ -168,7 +182,7 @@ public class ViewerNexusInput extends NexusIOBase {
 
                     if (!np.peekMatchIgnoreCase(";")) {
                         while (true) {
-                            final NodeView2D nv = NodeViewIO.valueOf(np, graph, graphTab, id2node);
+                            final NodeView2D nv = NodeViewIO.valueOf(np, graph, graphTab, inputId2Node);
                             graphTab.getNode2view().put(nv.getNode(), nv);
                             graphTab.getNodesGroup().getChildren().add(nv.getShapeGroup());
                             graphTab.getNodeLabelsGroup().getChildren().add(nv.getLabelGroup());
@@ -200,7 +214,7 @@ public class ViewerNexusInput extends NexusIOBase {
 
                 if (!np.peekMatchIgnoreCase(";")) {
                     while (true) {
-                        final EdgeView2D ev = EdgeViewIO.valueOf(np, graph, graphTab, id2node);
+                        final EdgeView2D ev = EdgeViewIO.valueOf(np, graph, graphTab, inputId2Node);
                         graphTab.getEdge2view().put(ev.getEdge(), ev);
                         graphTab.getEdgesGroup().getChildren().add(ev.getShapeGroup());
                         graphTab.getEdgeLabelsGroup().getChildren().add(ev.getLabelGroup());
@@ -222,6 +236,27 @@ public class ViewerNexusInput extends NexusIOBase {
         }
         if (nEdges != -1 && nEdges != countEdges)
             throw new IOExceptionWithLineNumber(String.format("Expected %d edges, got %d", nEdges, countEdges), np.lineno());
+
+        if (type == ViewerBlock.Type.SplitsNetworkViewer && np.peekMatchIgnoreCase("LOOPS")) {
+            np.matchIgnoreCase("LOOPS");
+            int countLoops = 0;
+            if (!np.peekMatchIgnoreCase(";")) {
+                final ArrayList<Node> loop = new ArrayList<>();
+                while (!np.peekMatchIgnoreCase(",") && !np.peekMatchIgnoreCase(";")) {
+                    loop.add(inputId2Node.get(np.getInt()));
+                }
+                if (loop.size() > 0) {
+                    countLoops++;
+                    final Graph2DTab graphTab = (Graph2DTab) viewerBlock.getTab();
+                    final PolygonView2D polygon = new PolygonView2D(loop, graphTab.getNode2view());
+                    graphTab.getPolygons().add(polygon);
+                    graphTab.getEdgesGroup().getChildren().add(polygon.getShape());
+                }
+            }
+            np.matchIgnoreCase(";");
+            if (nLoops != -1 && nLoops != countLoops)
+                throw new IOExceptionWithLineNumber(String.format("Expected %d loops, got %d", nLoops, countLoops), np.lineno());
+        }
 
         np.matchEndBlock();
 

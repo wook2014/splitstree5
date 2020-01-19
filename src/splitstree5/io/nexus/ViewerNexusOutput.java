@@ -28,11 +28,13 @@ import splitstree5.core.datablocks.ViewerBlock;
 import splitstree5.gui.graphtab.base.EdgeView2D;
 import splitstree5.gui.graphtab.base.GraphTabBase;
 import splitstree5.gui.graphtab.base.NodeView2D;
+import splitstree5.gui.graphtab.base.PolygonView2D;
 import splitstree5.io.nexus.graph.EdgeViewIO;
 import splitstree5.io.nexus.graph.NodeViewIO;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 
 /**
  * viewer nexus output
@@ -57,10 +59,13 @@ public class ViewerNexusOutput extends NexusIOBase implements INexusOutput<Viewe
 
         int nLabels = 0; // if we ever implement floating labels, then this must be set to their number
 
+        w.write(String.format("DIMENSIONS nNodes=%d nEdges=%d", graph.getNumberOfNodes(), graph.getNumberOfEdges()));
         if (nLabels > 0)
-            w.write(String.format("DIMENSIONS nNodes=%d nEdges=%d nLabels=%d;\n", graph.getNumberOfNodes(), graph.getNumberOfEdges(), nLabels));
-        else
-            w.write(String.format("DIMENSIONS nNodes=%d nEdges=%d;\n", graph.getNumberOfNodes(), graph.getNumberOfEdges()));
+            w.write(" nLabels=" + nLabels);
+        if (graphTab.getPolygons().size() > 0)
+            w.write(" nLoops=" + graphTab.getPolygons().size());
+        w.write(";\n");
+
         w.write(String.format("FORMAT type=%s;\n", viewerBlock.getType().toString()));
 
         // nodes:
@@ -103,6 +108,30 @@ public class ViewerNexusOutput extends NexusIOBase implements INexusOutput<Viewe
                 }
             }
             w.write(";\n");
+        }
+
+        if (viewerBlock.getType() == ViewerBlock.Type.SplitsNetworkViewer) {
+            if (graphTab.getPolygons().size() > 0) {
+                w.write("LOOPS\n");
+                {
+                    final ArrayList<PolygonView2D> polygons = graphTab.getPolygons();
+                    for (int i = 0; i < polygons.size(); i++) {
+                        final PolygonView2D polygonView2D = polygons.get(i);
+                        if (i > 0)
+                            w.write(",\n");
+                        w.write("\t");
+                        boolean first = true;
+                        for (Node v : polygonView2D.getNodes()) {
+                            if (first)
+                                first = false;
+                            else
+                                w.write(" ");
+                            w.write("" + v.getId());
+                        }
+                    }
+                }
+                w.write(";\n");
+            }
         }
 
         w.write("END; [" + ViewerBlock.BLOCK_NAME + "]\n");

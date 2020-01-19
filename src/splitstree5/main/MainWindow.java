@@ -57,7 +57,6 @@ import splitstree5.gui.algorithmtab.AlgorithmTab;
 import splitstree5.gui.datatab.DataViewTab;
 import splitstree5.gui.editinputtab.EditInputTab;
 import splitstree5.gui.formattab.FormatTab;
-import splitstree5.gui.inputtab.InputTab;
 import splitstree5.gui.methodstab.MethodsViewTab;
 import splitstree5.gui.workflowtab.WorkflowViewTab;
 import splitstree5.gui.workflowtree.WorkflowTreeSupport;
@@ -600,5 +599,6 @@ public class MainWindow implements IMainWindow {
     public void close() {
         mainTabPane.redockAll();
         algorithmsTabPane.redockAll();
+        stage.hide();
     }
 }

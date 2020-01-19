@@ -103,7 +103,7 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
             final double deltaY = e.getScreenY() - mouseY;
             if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
                 if (nodeSelectionModel.getSelectedItems().contains(nodeView.getNode())) {
-                    getUndoManager().doAndAdd(new MoveNodesCommand(node2view, edge2view, nodeSelectionModel.getSelectedItems(), deltaX, deltaY));
+                    getUndoManager().doAndAdd(new MoveNodesCommand(null, node2view, edge2view, nodeSelectionModel.getSelectedItems(), deltaX, deltaY));
                 }
                 mouseX = e.getScreenX();
                 mouseY = e.getScreenY();

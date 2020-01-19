@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~  RootedNetworkEditor.fxml Copyright (C) 2020 Daniel H. Huson
+  ~
+  ~  (Some files contain contributions from other authors, who are then mentioned separately.)
+  ~
+  ~  This program is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.layout.*?>
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="splitstree5.treebased.editor.RootedNetworkEditorController">
+    <children>
+        <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <top>
+                <VBox fx:id="topVBox" BorderPane.alignment="CENTER">
+                    <children>
+                        <MenuBar fx:id="menuBar">
+                            <menus>
+                                <Menu fx:id="fileMenu" mnemonicParsing="false" text="File">
+                                    <items>
+                                        <MenuItem fx:id="closeMenuItem" mnemonicParsing="false" text="Close"/>
+                                    </items>
+                                </Menu>
+                                <Menu fx:id="editMenu" mnemonicParsing="false" text="Edit">
+                                    <items>
+                                        <MenuItem fx:id="undoMenuItem" mnemonicParsing="false" text="Undo">
+                                            <accelerator>
+                                                <KeyCodeCombination alt="UP" code="Z" control="UP" meta="DOWN"
+                                                                    shift="UP" shortcut="UP"/>
+                                            </accelerator>
+                                        </MenuItem>
+                                        <MenuItem fx:id="redoMenuItem" mnemonicParsing="false" text="Redo">
+                                            <accelerator>
+                                                <KeyCodeCombination alt="UP" code="Z" control="UP" meta="DOWN"
+                                                                    shift="DOWN" shortcut="UP"/>
+                                            </accelerator>
+                                        </MenuItem>
+                                        <SeparatorMenuItem mnemonicParsing="false"/>
+                                        <MenuItem fx:id="cutMenuItem" mnemonicParsing="false" text="Cut">
+                                            <accelerator>
+                                                <KeyCodeCombination alt="UP" code="X" control="UP" meta="DOWN"
+                                                                    shift="UP" shortcut="UP"/>
+                                            </accelerator>
+                                        </MenuItem>
+                                        <MenuItem fx:id="copyMenuItem" mnemonicParsing="false" text="Copy">
+                                            <accelerator>
+                                                <KeyCodeCombination alt="UP" code="C" control="UP" meta="DOWN"
+                                                                    shift="UP" shortcut="UP"/>
+                                            </accelerator>
+                                        </MenuItem>
+                                        <MenuItem fx:id="copyNewickMenuItem" mnemonicParsing="false"
+                                                  text="Copy Newick"/>
+                                        <MenuItem fx:id="pasteMenuItem" mnemonicParsing="false" text="Paste">
+                                            <accelerator>
+                                                <KeyCodeCombination alt="UP" code="V" control="UP" meta="DOWN"
+                                                                    shift="UP" shortcut="UP"/>
+                                            </accelerator>
+                                        </MenuItem>
+                                        <SeparatorMenuItem mnemonicParsing="false"/>
+                                        <MenuItem fx:id="deleteMenuItem" mnemonicParsing="false" text="Delete">
+                                            <accelerator>
+                                                <KeyCodeCombination alt="UP" code="BACK_SPACE" control="UP" meta="DOWN"
+                                                                    shift="UP" shortcut="UP"/>
+                                            </accelerator>
+                                        </MenuItem>
+                                    </items>
+                                </Menu>
+                                <Menu mnemonicParsing="false" text="Select">
+                                    <items>
+                                        <MenuItem fx:id="selectAllMenuItem" mnemonicParsing="false" text="All">
+                                            <accelerator>
+                                                <KeyCodeCombination alt="UP" code="A" control="UP" meta="DOWN"
+                                                                    shift="UP" shortcut="UP"/>
+                                            </accelerator>
+                                        </MenuItem>
+                                        <MenuItem fx:id="selectNoneMenuItem" mnemonicParsing="false" text="None">
+                                            <accelerator>
+                                                <KeyCodeCombination alt="UP" code="A" control="UP" meta="DOWN"
+                                                                    shift="DOWN" shortcut="UP"/>
+                                            </accelerator>
+                                        </MenuItem>
+                                        <MenuItem fx:id="selectInvertMenuItem" mnemonicParsing="false" text="Invert">
+                                            <accelerator>
+                                                <KeyCodeCombination alt="UP" code="I" control="UP" meta="DOWN"
+                                                                    shift="UP" shortcut="UP"/>
+                                            </accelerator>
+                                        </MenuItem>
+                                        <SeparatorMenuItem mnemonicParsing="false"/>
+                                        <MenuItem fx:id="selectLeavesMenuItem" mnemonicParsing="false" text="Leaves"/>
+                                        <MenuItem fx:id="selectTreeNodesMenuItem" mnemonicParsing="false"
+                                                  text="Tree Nodes"/>
+                                        <MenuItem fx:id="selectReticulateNodesMenuitem" mnemonicParsing="false"
+                                                  text="Reticulate Nodes"/>
+                                        <SeparatorMenuItem mnemonicParsing="false"/>
+                                        <MenuItem fx:id="selectAllBelowMenuItem" mnemonicParsing="false"
+                                                  text="All Below"/>
+                                        <MenuItem fx:id="selectAllAboveMenuItem" mnemonicParsing="false"
+                                                  text="All Above"/>
+                                    </items>
+                                </Menu>
+                                <Menu fx:id="helpMenu" mnemonicParsing="false" text="Help">
+                                    <items>
+                                        <MenuItem fx:id="aboutMenuItem" mnemonicParsing="false" text="About"/>
+                                    </items>
+                                </Menu>
+                            </menus>
+                        </MenuBar>
+                        <ToolBar fx:id="toolBar" prefHeight="40.0" prefWidth="200.0"/>
+                    </children>
+                </VBox>
+            </top>
+            <bottom>
+                <FlowPane fx:id="statusFlowPane" prefHeight="32.0" style="-fx-border-color: lightgray;"
+                          BorderPane.alignment="CENTER"/>
+            </bottom>
+            <center>
+                <StackPane fx:id="stackPane" prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                    <children>
+                        <Pane fx:id="mainPane" prefHeight="200.0" prefWidth="200.0"/>
+                    </children>
+                </StackPane>
+            </center>
+        </BorderPane>
+    </children>
+</AnchorPane>

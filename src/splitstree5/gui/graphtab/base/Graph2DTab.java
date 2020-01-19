@@ -208,6 +208,7 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
         for (EdgeViewBase ev : getEdge2view().values()) {
             ((EdgeView2D) ev).scaleCoordinates(xFactor, yFactor);
         }
+        getPolygons().forEach(PolygonView2D::update);
 
         scaleBar.setFactorX(scaleChangeX.get());
     }
@@ -225,6 +226,7 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
         for (EdgeViewBase ev : getEdge2view().values()) {
             ((EdgeView2D) ev).rotateCoordinates(angle);
         }
+        getPolygons().forEach(PolygonView2D::update);
     }
 
     public GraphLayout getLayout() {

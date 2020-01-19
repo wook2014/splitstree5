@@ -19,10 +19,6 @@
 
 package splitstree5.core.algorithms.distances2splits;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import jloda.util.ProgressSilent;
@@ -39,7 +35,6 @@ import splitstree5.utils.SplitsUtilities;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Stack;
 
 /**
@@ -49,35 +44,12 @@ import java.util.Stack;
  * @author David Bryant and Daniel Huson
  */
 public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implements IFromDistances, IToSplits {
-    private final DoubleProperty optionCutOff = new SimpleDoubleProperty(0.000001);
-    private final Property<NeighborNetSplitWeightOptimizer.LeastSquares> optionLeastSquares = new SimpleObjectProperty<>(NeighborNetSplitWeightOptimizer.LeastSquares.ols);
-    private final Property<NeighborNetSplitWeightOptimizer.Regularization> optionRegularization = new SimpleObjectProperty<>(NeighborNetSplitWeightOptimizer.Regularization.nnls);
-    private final DoubleProperty optionLambdaFrac = new SimpleDoubleProperty(1);
 
     @Override
     public String getCitation() {
         return "Bryant & Moulton 2004; " +
                 "D. Bryant and V. Moulton. Neighbor-net: An agglomerative method for the construction of phylogenetic networks. " +
                 "Molecular Biology and Evolution, 21(2):255– 265, 2004.";
-    }
-
-    public List<String> listOptions() {
-        return Arrays.asList("CutOff", "LeastSquares", "Regularization", "LambdaFrac");
-    }
-
-    @Override
-    public String getToolTip(String optionName) {
-        switch (optionName) {
-            case "CutOff":
-                return "Minimum split weight to be considered";
-            case "LeastSquares":
-                return "Least squares method to use";
-            case "Regularization":
-                return "Regularization scheme";
-            case "LambdaFrac":
-                return "Lambda fraction";
-        }
-        return optionName;
     }
 
     /**
@@ -98,8 +70,7 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
 
         progress.setTasks("NNet", "edge weights");
 
-        final ArrayList<ASplit> splits = NeighborNetSplitWeightOptimizer.computeWeightedSplits(cycle, distancesBlock, optionCutOff.getValue(),
-                optionLeastSquares.getValue(), optionRegularization.getValue(), optionLambdaFrac.get());
+        final ArrayList<ASplit> splits = NeighborNetSplitWeightOptimizer.computeWeightedSplits(cycle, distancesBlock, 0.000001, NeighborNetSplitWeightOptimizer.LeastSquares.ols, NeighborNetSplitWeightOptimizer.Regularization.nnls, 1);
 
         if (Compatibility.isCompatible(splits))
             splitsBlock.setCompatibility(Compatibility.compatible);
@@ -114,54 +85,6 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
     @Override
     public boolean isApplicable(TaxaBlock taxaBlock, DistancesBlock parent) {
         return parent.getNtax() >= 4;
-    }
-
-    public double getOptionCutOff() {
-        return optionCutOff.get();
-    }
-
-    public DoubleProperty optionCutOffProperty() {
-        return optionCutOff;
-    }
-
-    public void setOptionCutOff(double optionCutOff) {
-        this.optionCutOff.set(optionCutOff);
-    }
-
-    public NeighborNetSplitWeightOptimizer.LeastSquares getOptionLeastSquares() {
-        return optionLeastSquares.getValue();
-    }
-
-    public Property<NeighborNetSplitWeightOptimizer.LeastSquares> optionLeastSquaresProperty() {
-        return optionLeastSquares;
-    }
-
-    public void setOptionLeastSquares(NeighborNetSplitWeightOptimizer.LeastSquares optionLeastSquares) {
-        this.optionLeastSquares.setValue(optionLeastSquares);
-    }
-
-    public NeighborNetSplitWeightOptimizer.Regularization getOptionRegularization() {
-        return optionRegularization.getValue();
-    }
-
-    public Property<NeighborNetSplitWeightOptimizer.Regularization> optionRegularizationProperty() {
-        return optionRegularization;
-    }
-
-    public void setOptionRegularization(NeighborNetSplitWeightOptimizer.Regularization optionRegularization) {
-        this.optionRegularization.setValue(optionRegularization);
-    }
-
-    public double getOptionLambdaFrac() {
-        return optionLambdaFrac.get();
-    }
-
-    public DoubleProperty optionLambdaFracProperty() {
-        return optionLambdaFrac;
-    }
-
-    public void setOptionLambdaFrac(double optionLambdaFrac) {
-        this.optionLambdaFrac.set(optionLambdaFrac);
     }
 
     /**

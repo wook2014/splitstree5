@@ -284,7 +284,7 @@ public class SplitsViewTab extends Graph2DTab<PhyloSplitsGraph> implements ISpli
             Point2D newSelectedPoint = GeometryUtilsFX.rotateAbout(selectedPoint, angle, anchorPoint);
             Point2D translate = newSelectedPoint.subtract(selectedPoint);
 
-            getUndoManager().doAndAdd(new MoveNodesCommand(node2view, edge2view, selectedNodes, translate.getX(), translate.getY()));
+            getUndoManager().doAndAdd(new MoveNodesCommand(getPolygons(), node2view, edge2view, selectedNodes, translate.getX(), translate.getY()));
         }
     }
 

@@ -129,4 +129,6 @@ module splitstreefive {
     opens splitstree5.menu;
     opens splitstree5.toolbar;
     opens splitstree5.xtra.align;
+
+    opens splitstree5.treebased.editor;
 }

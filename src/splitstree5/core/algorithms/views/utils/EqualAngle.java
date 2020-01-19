@@ -101,6 +101,14 @@ public class EqualAngle {
 
         PhyloGraphUtils.addLabels(taxaBlock, graph);
         progress.setProgress(100);   //set progress to 100%
+
+        for (Node v : graph.nodes()) {
+            if (graph.getLabel(v) != null)
+                System.err.println("Node " + v.getId() + " " + graph.getLabel(v));
+        }
+        for (Edge e : graph.edges()) {
+            System.err.println("Edge " + e.getSource().getId() + " - " + e.getTarget().getId() + " split: " + graph.getSplit(e));
+        }
     }
 
 
@@ -152,7 +160,7 @@ public class EqualAngle {
      * @return non-trivial splits
      */
     private static ArrayList<Integer> getNonTrivialSplitsOrdered(SplitsBlock splits) {
-        final SortedSet<Pair<Integer, Integer>> interiorSplits = new TreeSet<>(new Pair<Integer, Integer>()); // first component is cardinality, second is id
+        final SortedSet<Pair<Integer, Integer>> interiorSplits = new TreeSet<>(new Pair<>()); // first component is cardinality, second is id
 
         for (int s = 1; s <= splits.getNsplits(); s++) {
             final ASplit split = splits.get(s);
@@ -166,7 +174,6 @@ public class EqualAngle {
         }
         return interiorSplitIDs;
     }
-
 
     /**
      * normalizes cycle so that cycle[1]=1
@@ -199,9 +206,9 @@ public class EqualAngle {
      * adds an interior split using the wrapping algorithm
      *
      * @param taxa
-     * @param cycle
      * @param splits
      * @param s
+     * @param cycle
      * @param graph
      */
     private static void wrapSplit(TaxaBlock taxa, SplitsBlock splits, int s, int[] cycle, PhyloSplitsGraph graph) throws IllegalStateException {
@@ -217,61 +224,65 @@ public class EqualAngle {
                 xq = t;
             }
         }
-        Node v = graph.getTaxon2Node(xp);
-        final Node z = graph.getTaxon2Node(xq);
-        final Edge targetLeafEdge = z.getFirstAdjacentEdge();
+        final Node vp = graph.getTaxon2Node(xp);
+        final Node innerP = vp.getFirstAdjacentEdge().getOpposite(vp);
+        final Node vq = graph.getTaxon2Node(xq);
+        final Node innerQ = vq.getFirstAdjacentEdge().getOpposite(vq);
+        final Edge targetLeafEdge = vq.getFirstAdjacentEdge();
 
-        Edge e = v.getFirstAdjacentEdge();
-        v = graph.getOpposite(v, e);
-        Node u = null;
+        Edge e = vp.getFirstAdjacentEdge();
+        Node v = graph.getOpposite(vp, e);  // node on existing boundary path
+
         final ArrayList<Edge> leafEdges = new ArrayList<>(taxa.getNtax());
         leafEdges.add(e);
-        Edge nextE;
 
         final NodeSet nodesVisited = new NodeSet(graph);
 
+        Node prevU = null; // previous node on newly created boundary path from vp.opposite to vq.opposite
+        Edge nextE;
         do {
-            Edge f = e;
             if (nodesVisited.contains(v)) {
                 System.err.println(graph);
-
                 throw new IllegalStateException("Node already visited: " + v);
             }
             nodesVisited.add(v);
 
-            Edge f0 = f; // f0 is edge by which we enter the node
-            f = v.getNextAdjacentEdgeCyclic(f0);
-            while (isLeafEdge(f)) {
-                leafEdges.add(f);
-                if (f == targetLeafEdge) {
-                    break;
+            final Edge f0 = e; // f0 is edge by which we enter the node
+            {
+                Edge f = v.getNextAdjacentEdgeCyclic(f0);
+                while (isLeafEdge(f)) {
+                    leafEdges.add(f);
+                    if (f == targetLeafEdge) {
+                        break;
+                    }
+                    if (f == f0)
+                        throw new RuntimeException("Node wraparound: f=" + f + " f0=" + f0);
+                    f = v.getNextAdjacentEdgeCyclic(f);
+
                 }
-                if (f == f0)
-                    throw new RuntimeException("Node wraparound: f=" + f + " f0=" + f0);
-                f = v.getNextAdjacentEdgeCyclic(f);
-
+                if (f == targetLeafEdge)
+                    nextE = null; // at end of chain
+                else
+                    nextE = f; // continue along boundary
             }
-            if (isLeafEdge(f))
-                nextE = null; // at end of chain
-            else
-                nextE = f; // continue along boundary
-            Node w = graph.newNode();
-            Edge h = graph.newEdge(w, null, v, f0, Edge.AFTER, Edge.AFTER, null);
-            // here we make sure that new edge is inserted after f0
 
-            graph.setSplit(h, s);
-            graph.setWeight(h, splits.get(s).getWeight());
-            if (u != null) {
-                h = graph.newEdge(w, u, null);
-                graph.setSplit(h, graph.getSplit(e));
-                graph.setWeight(h, graph.getWeight(e));
+            final Node u = graph.newNode(); // new node on new path
+            {
+                final Edge f = graph.newEdge(u, null, v, f0, Edge.AFTER, Edge.AFTER, null); // edge from new node on new path to old node on existing path
+                // here we make sure that new edge is inserted after f0
+                graph.setSplit(f, s);
+                graph.setWeight(f, splits.get(s).getWeight());
             }
-            for (Object leafEdge : leafEdges) {
-                f = (Edge) leafEdge;
-                h = graph.newEdge(w, graph.getOpposite(v, f));
 
-                graph.setSplit(h, graph.getSplit(f));
-                graph.setWeight(h, graph.getWeight(f));
+            if (prevU != null) {
+                final Edge f = graph.newEdge(u, prevU, null); // edge from current node to previous node on new path
+                graph.setSplit(f, graph.getSplit(e));
+                graph.setWeight(f, graph.getWeight(e));
+            }
+            for (Edge f : leafEdges) { // copy leaf edges over to new path
+                final Edge fCopy = graph.newEdge(u, graph.getOpposite(v, f));
+                graph.setSplit(fCopy, graph.getSplit(f));
+                graph.setWeight(fCopy, graph.getWeight(f));
                 graph.deleteEdge(f);
             }
             leafEdges.clear();
@@ -279,7 +290,7 @@ public class EqualAngle {
             if (nextE != null) {
                 v = graph.getOpposite(v, nextE);
                 e = nextE;
-                u = w;
+                prevU = u;
             }
         } while (nextE != null);
     }
@@ -332,22 +343,35 @@ public class EqualAngle {
      * @param forbiddenSplits : set of all the splits such as their edges won't have their angles changed
      */
     public static void assignAnglesToEdges(int ntaxa, SplitsBlock splits, int[] cycle, PhyloSplitsGraph graph, BitSet forbiddenSplits) {
-        //We create the list of angles representing the taxas on a circle.
-        double[] TaxaAngles = new double[ntaxa + 1];
+        //We create the list of angles representing the positions on a circle.
+        double[] angles = assignAnglesToSplits(ntaxa, splits, cycle);
+
+        for (Edge e : graph.edges()) {
+            if (!forbiddenSplits.get(graph.getSplit(e))) {
+                graph.setAngle(e, angles[graph.getSplit(e)]);
+            }
+        }
+    }
+
+    /**
+     * assigns angles to all edges in the graph
+     *
+     * @param splits
+     * @param cycle
+     */
+    public static double[] assignAnglesToSplits(int ntaxa, SplitsBlock splits, int[] cycle) {
+        //We create the list of angles representing the positions on a circle.
+        double[] angles = new double[ntaxa + 1];
         for (int t = 1; t < ntaxa + 1; t++) {
-            TaxaAngles[t] = (360 * t / (double) ntaxa);
+            angles[t] = (360 * t / (double) ntaxa);
         }
 
         double[] split2angle = new double[splits.getNsplits() + 1];
 
-        assignAnglesToSplits(ntaxa, TaxaAngles, split2angle, splits, cycle);
-
-        for (Edge e : graph.edges()) {
-            if (!forbiddenSplits.get(graph.getSplit(e))) {
-                graph.setAngle(e, split2angle[graph.getSplit(e)]);
-            }
-        }
+        assignAnglesToSplits(ntaxa, angles, split2angle, splits, cycle);
+        return split2angle;
     }
+
 
     /**
      * assigns angles to the splits in the graph, considering that they are located exactly "in the middle" of two taxa
@@ -355,10 +379,10 @@ public class EqualAngle {
      *
      * @param splits
      * @param cycle
-     * @param TaxaAngles  for each taxa, its angle
+     * @param angles      for each taxa, its angle
      * @param split2angle for each split, its angle
      */
-    private static void assignAnglesToSplits(int ntaxa, double[] TaxaAngles, double[] split2angle, SplitsBlock splits, int[] cycle) {
+    private static void assignAnglesToSplits(int ntaxa, double[] angles, double[] split2angle, SplitsBlock splits, int[] cycle) {
         for (int s = 1; s <= splits.getNsplits(); s++) {
             final BitSet part = splits.get(s).getPartNotContaining(1);
             int xp = 0; // first position of split part not containing taxon 1
@@ -374,13 +398,13 @@ public class EqualAngle {
 
             final int xpNeighbor = (xp - 2) % ntaxa + 1;
             final int xqNeighbor = (xq) % ntaxa + 1;
-            //the split, when represented on the circle of the taxas, is a line which interescts the circle in two
+            //the split, when represented on the circle of the taxas, is a line which intersects the circle in two
             //places : SplitsByAngle is a sorted list (sorted by the angle of these intersections), where every
             // split thus appears 2 times (once per intersection)
             double TaxaAngleP;
             double TaxaAngleQ;
-            TaxaAngleP = GeometryUtilsFX.midAngle(TaxaAngles[xp], TaxaAngles[xpNeighbor]);
-            TaxaAngleQ = GeometryUtilsFX.midAngle(TaxaAngles[xq], TaxaAngles[xqNeighbor]);
+            TaxaAngleP = GeometryUtilsFX.midAngle(angles[xp], angles[xpNeighbor]);
+            TaxaAngleQ = GeometryUtilsFX.midAngle(angles[xq], angles[xqNeighbor]);
 
             split2angle[s] = GeometryUtilsFX.modulo360((TaxaAngleQ + TaxaAngleP) / 2);
             if (xqNeighbor == 1) {
@@ -408,7 +432,6 @@ public class EqualAngle {
 
         assignCoordinatesToNodesRec(useWeights, v, splitsInPath, nodesVisited, graph, node2point);
     }
-
 
     /**
      * recursively assigns coordinates to all nodes

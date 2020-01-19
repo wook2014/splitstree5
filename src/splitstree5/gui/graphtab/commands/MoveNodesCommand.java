@@ -25,11 +25,9 @@ import jloda.graph.Edge;
 import jloda.graph.EdgeArray;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;
-import splitstree5.gui.graphtab.base.EdgeView2D;
-import splitstree5.gui.graphtab.base.EdgeViewBase;
-import splitstree5.gui.graphtab.base.NodeView2D;
-import splitstree5.gui.graphtab.base.NodeViewBase;
+import splitstree5.gui.graphtab.base.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -39,6 +37,7 @@ import java.util.Set;
  * Daniel Huson, 2.2018
  */
 public class MoveNodesCommand extends UndoableRedoableCommand {
+    private final ArrayList<PolygonView2D> polygons;
     private final NodeArray<? extends NodeViewBase> node2view;
     private final EdgeArray<? extends EdgeViewBase> edge2view;
     private final Collection<Node> nodes;
@@ -54,8 +53,9 @@ public class MoveNodesCommand extends UndoableRedoableCommand {
      * @param deltaX
      * @param deltaY
      */
-    public MoveNodesCommand(NodeArray<? extends NodeViewBase> node2view, EdgeArray<? extends EdgeViewBase> edge2view, Collection<Node> nodes, double deltaX, double deltaY) {
+    public MoveNodesCommand(ArrayList<PolygonView2D> polygons, NodeArray<? extends NodeViewBase> node2view, EdgeArray<? extends EdgeViewBase> edge2view, Collection<Node> nodes, double deltaX, double deltaY) {
         super("Move nodes");
+        this.polygons = polygons;
         this.node2view = node2view;
         this.edge2view = edge2view;
         this.nodes = new HashSet<>();
@@ -83,6 +83,9 @@ public class MoveNodesCommand extends UndoableRedoableCommand {
             final Point2D tar = ((NodeView2D) node2view.get(e.getTarget())).getLocation();
             ((EdgeView2D) edge2view.get(e)).setCoordinates(src, tar);
         }
+        if (polygons != null) {
+            polygons.forEach(PolygonView2D::update);
+        }
     }
 
     @Override
@@ -102,6 +105,9 @@ public class MoveNodesCommand extends UndoableRedoableCommand {
                 final Point2D tar = ((NodeView2D) node2view.get(e.getTarget())).getLocation();
                 ((EdgeView2D) edge2view.get(e)).setCoordinates(src, tar);
             }
+        }
+        if (polygons != null) {
+            polygons.forEach(PolygonView2D::update);
         }
     }
 

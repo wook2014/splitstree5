@@ -90,6 +90,8 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
     protected NodeArray<NodeViewBase> node2view;
     protected EdgeArray<EdgeViewBase> edge2view;
 
+    protected ArrayList<PolygonView2D> polygons = new ArrayList<>();
+
     protected final StackPane centerPane = new StackPane();
 
     protected final BooleanProperty sparseLabels = new SimpleBooleanProperty(false);
@@ -674,6 +676,10 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
 
     public void setSkipNextLabelLayout(boolean skipNextLabelLayout) {
         this.skipNextLabelLayout = skipNextLabelLayout;
+    }
+
+    public ArrayList<PolygonView2D> getPolygons() {
+        return polygons;
     }
 }
 
