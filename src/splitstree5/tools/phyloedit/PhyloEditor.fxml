@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  ~  RootedNetworkEditor.fxml Copyright (C) 2020 Daniel H. Huson
+  ~  PhyloEditor.fxml Copyright (C) 2020 Daniel H. Huson
   ~
   ~  (Some files contain contributions from other authors, who are then mentioned separately.)
   ~
@@ -19,13 +19,14 @@
   ~  along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.input.*?>
 <?import javafx.scene.layout.*?>
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="splitstree5.treebased.editor.RootedNetworkEditorController">
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="splitstree5.tools.phyloedit.PhyloEditorController">
     <children>
         <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
                     AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -123,18 +124,39 @@
                                 </Menu>
                             </menus>
                         </MenuBar>
-                        <ToolBar fx:id="toolBar" prefHeight="40.0" prefWidth="200.0"/>
+                        <ToolBar fx:id="toolBar" prefHeight="40.0" prefWidth="200.0">
+                            <items>
+                                <Button fx:id="copyNewickButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false"
+                                        text="Copy">
+                                    <graphic>
+                                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <image>
+                                                <Image url="@/jloda/resources/icons/sun/Export16.gif"/>
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                    <tooltip>
+                                        <Tooltip text="Copy Newick String to Clipboard"/>
+                                    </tooltip>
+                                </Button>
+                            </items>
+                        </ToolBar>
                     </children>
                 </VBox>
             </top>
             <bottom>
-                <FlowPane fx:id="statusFlowPane" prefHeight="32.0" style="-fx-border-color: lightgray;"
-                          BorderPane.alignment="CENTER"/>
+                <FlowPane fx:id="statusFlowPane" hgap="5.0" prefHeight="32.0" style="-fx-border-color: lightgray;"
+                          vgap="5.0" BorderPane.alignment="CENTER">
+                    <padding>
+                        <Insets left="10.0" right="10.0"/>
+                    </padding>
+                </FlowPane>
             </bottom>
             <center>
                 <StackPane fx:id="stackPane" prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                     <children>
-                        <Pane fx:id="mainPane" prefHeight="200.0" prefWidth="200.0"/>
+                        <Pane fx:id="mainPane" style="-fx-background-color: transparent;"/>
                     </children>
                 </StackPane>
             </center>

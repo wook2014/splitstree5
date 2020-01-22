@@ -1,5 +1,5 @@
 /*
- *  ImportMultipleTreeFilesDialog.java Copyright (C) 2019 Daniel H. Huson
+ *  ImportMultipleTreeFilesDialog.java Copyright (C) 2020 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -23,8 +23,8 @@ import javafx.application.Platform;
 import javafx.stage.FileChooser;
 import jloda.fx.control.ProgressPane;
 import jloda.fx.util.AService;
-import jloda.fx.window.NotificationManager;
 import jloda.fx.util.TaskWithProgressListener;
+import jloda.fx.window.NotificationManager;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;

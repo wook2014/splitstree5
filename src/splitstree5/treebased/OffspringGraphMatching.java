@@ -53,4 +53,12 @@ public class OffspringGraphMatching {
 
         return BipartiteMatching.computeBipartiteMatching(graph, oneSide);
     }
+
+    public static boolean isTreeBased(PhyloTree tree, EdgeSet matching) {
+        return discrepancy(tree, matching) == 0;
+    }
+
+    public static int discrepancy(PhyloTree tree, EdgeSet matching) {
+        return (tree.getNumberOfNodes() - tree.getNumberOfLeaves()) - matching.size();
+    }
 }

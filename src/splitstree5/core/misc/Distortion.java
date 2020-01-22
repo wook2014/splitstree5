@@ -1,5 +1,5 @@
 /*
- *  Distortion.java Copyright (C) 2019 Daniel H. Huson
+ *  Distortion.java Copyright (C) 2020 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *

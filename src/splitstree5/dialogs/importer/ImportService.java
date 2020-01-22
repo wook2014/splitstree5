@@ -1,5 +1,5 @@
 /*
- *  ImportService.java Copyright (C) 2019 Daniel H. Huson
+ *  ImportService.java Copyright (C) 2020 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -23,9 +23,9 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.scene.layout.Pane;
 import jloda.fx.control.ProgressPane;
-import jloda.fx.window.NotificationManager;
 import jloda.fx.util.ProgramExecutorService;
 import jloda.fx.util.TaskWithProgressListener;
+import jloda.fx.window.NotificationManager;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.Pair;

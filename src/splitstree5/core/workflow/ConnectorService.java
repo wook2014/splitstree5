@@ -1,5 +1,5 @@
 /*
- *  ConnectorService.java Copyright (C) 2019 Daniel H. Huson
+ *  ConnectorService.java Copyright (C) 2020 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -22,9 +22,9 @@ package splitstree5.core.workflow;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import jloda.fx.control.ProgressPane;
-import jloda.fx.window.NotificationManager;
 import jloda.fx.util.ProgramExecutorService;
 import jloda.fx.util.TaskWithProgressListener;
+import jloda.fx.window.NotificationManager;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
 import splitstree5.core.datablocks.DataBlock;

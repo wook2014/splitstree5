@@ -1,5 +1,5 @@
 /*
- *  MessageWindow.java Copyright (C) 2019 Daniel H. Huson
+ *  MessageWindow.java Copyright (C) 2020 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -27,9 +27,9 @@ import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import jloda.fx.util.ExtendedFXMLLoader;
-import jloda.fx.window.NotificationManager;
 import jloda.fx.window.IMainWindow;
 import jloda.fx.window.MainWindowManager;
+import jloda.fx.window.NotificationManager;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 

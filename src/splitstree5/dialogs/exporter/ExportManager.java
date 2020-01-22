@@ -1,5 +1,5 @@
 /*
- *  ExportManager.java Copyright (C) 2019 Daniel H. Huson
+ *  ExportManager.java Copyright (C) 2020 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -19,8 +19,8 @@
 
 package splitstree5.dialogs.exporter;
 
-import jloda.fx.window.NotificationManager;
 import jloda.fx.util.RecentFilesManager;
+import jloda.fx.window.NotificationManager;
 import jloda.util.Basic;
 import jloda.util.PluginClassLoader;
 import splitstree5.core.datablocks.*;

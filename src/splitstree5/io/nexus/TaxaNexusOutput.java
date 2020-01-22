@@ -1,5 +1,5 @@
 /*
- *  TaxaNexusOutput.java Copyright (C) 2019 Daniel H. Huson
+ *  TaxaNexusOutput.java Copyright (C) 2020 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *

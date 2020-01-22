@@ -1,5 +1,5 @@
 /*
- *  MainWindowMenuController.java Copyright (C) 2019 Daniel H. Huson
+ *  MainWindowMenuController.java Copyright (C) 2020 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -26,9 +26,9 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
 import javafx.stage.FileChooser;
-import jloda.fx.window.NotificationManager;
 import jloda.fx.util.RecentFilesManager;
 import jloda.fx.window.MainWindowManager;
+import jloda.fx.window.NotificationManager;
 import jloda.swing.util.BasicSwing;
 import jloda.util.Basic;
 import jloda.util.Pair;

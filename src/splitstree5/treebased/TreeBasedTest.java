@@ -84,12 +84,11 @@ public class TreeBasedTest {
                     final EdgeSet matching = OffspringGraphMatching.compute(tree);
 
                     System.out.println("Size of matching: " + matching.size());
-                    boolean isTreeBased = (matching.size() == (tree.getNumberOfNodes() - tree.getNumberOfLeaves()));
-                    if (isTreeBased) {
+                    if (OffspringGraphMatching.isTreeBased(tree, matching)) {
                         treeBased++;
                         System.out.println("Network is tree-based");
                     } else {
-                        System.out.println("Network is NOT tree-based, discrepancy: " + ((tree.getNumberOfNodes() - tree.getNumberOfLeaves()) - matching.size()));
+                        System.out.println("Network is NOT tree-based, discrepancy: " + OffspringGraphMatching.discrepancy(tree, matching));
                     }
                 }
             }

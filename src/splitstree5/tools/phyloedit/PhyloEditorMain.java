@@ -1,5 +1,5 @@
 /*
- *  RootedNetworkEditor.java Copyright (C) 2020 Daniel H. Huson
+ *  PhyloEditorMain.java Copyright (C) 2020 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -17,30 +17,28 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.treebased.editor;
+package splitstree5.tools.phyloedit;
 
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import jloda.fx.undo.UndoManager;
 import jloda.fx.util.ExtendedFXMLLoader;
-import jloda.phylo.PhyloTree;
 
-public class RootedNetworkEditor extends Application {
+public class PhyloEditorMain extends Application {
     private Parent root;
-    private RootedNetworkEditorController controller;
-    private final PhyloTree phyloTree = new PhyloTree();
-    private final UndoManager undoManager = new UndoManager();
-    private final PhyloTreeView phyloTreeView = new PhyloTreeView(phyloTree, undoManager);
+    private PhyloEditorController controller;
+    private final PhyloEditor editor = new PhyloEditor(this);
+    private Stage stage;
 
     @Override
     public void start(Stage stage) throws Exception {
-        final ExtendedFXMLLoader<RootedNetworkEditorController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
+        this.stage = stage;
+        final ExtendedFXMLLoader<PhyloEditorController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         root = extendedFXMLLoader.getRoot();
         controller = extendedFXMLLoader.getController();
 
-        controller.getMainPane().getChildren().add(phyloTreeView.getWorld());
+        controller.getMainPane().getChildren().add(editor.getWorld());
 
         final Scene scene = new Scene(root);
 
@@ -55,19 +53,16 @@ public class RootedNetworkEditor extends Application {
         stage.show();
     }
 
-    public RootedNetworkEditorController getController() {
+    public PhyloEditorController getController() {
         return controller;
     }
 
-    public PhyloTree getPhyloTree() {
-        return phyloTree;
+
+    public PhyloEditor getEditor() {
+        return editor;
     }
 
-    public PhyloTreeView getPhyloTreeView() {
-        return phyloTreeView;
-    }
-
-    public UndoManager getUndoManager() {
-        return undoManager;
+    public Stage getStage() {
+        return stage;
     }
 }

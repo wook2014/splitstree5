@@ -1,5 +1,5 @@
 /*
- *  DataViewTab.java Copyright (C) 2019 Daniel H. Huson
+ *  DataViewTab.java Copyright (C) 2020 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -33,7 +33,6 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.editinputtab.EditTextViewTab;
-import splitstree5.gui.texttab.TextViewTab;
 
 /**
  * a data block viewer tab
