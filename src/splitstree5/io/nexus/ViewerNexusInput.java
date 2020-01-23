@@ -219,9 +219,11 @@ public class ViewerNexusInput extends NexusIOBase {
                         graphTab.getEdgesGroup().getChildren().add(ev.getShapeGroup());
                         graphTab.getEdgeLabelsGroup().getChildren().add(ev.getLabelGroup());
 
-                        if (graph instanceof PhyloSplitsGraph) {
+                        if (graph instanceof PhyloSplitsGraph && np.peekMatchIgnoreCase("I:")) {
                             np.matchIgnoreCase("I:");
-                            ((PhyloSplitsGraph) graph).setSplit(ev.getEdge(), np.getInt(1, graph.getNumberOfNodes()));
+                            final int s = np.getInt(0, graph.getNumberOfNodes());
+                            if (s > 0)
+                                ((PhyloSplitsGraph) graph).setSplit(ev.getEdge(), s);
                         }
 
                         countEdges++;

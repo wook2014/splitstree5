@@ -68,7 +68,11 @@ module splitstreefive {
     opens splitstree5.xtra.align;
 
     opens splitstree5.io.imports;
+    opens splitstree5.io.imports.interfaces;
+    opens splitstree5.io.imports.nexus;
+    opens splitstree5.io.imports.NeXML;
     opens splitstree5.io.exports;
+    opens splitstree5.io.exports.interfaces;
 
     opens splitstree5.tools.phyloedit;
 }

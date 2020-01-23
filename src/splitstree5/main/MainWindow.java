@@ -57,6 +57,7 @@ import splitstree5.gui.algorithmtab.AlgorithmTab;
 import splitstree5.gui.datatab.DataViewTab;
 import splitstree5.gui.editinputtab.EditInputTab;
 import splitstree5.gui.formattab.FormatTab;
+import splitstree5.gui.inputtab.InputTab;
 import splitstree5.gui.methodstab.MethodsViewTab;
 import splitstree5.gui.workflowtab.WorkflowViewTab;
 import splitstree5.gui.workflowtree.WorkflowTreeSupport;
@@ -95,8 +96,8 @@ public class MainWindow implements IMainWindow {
 
     private final WorkflowViewTab workflowViewTab;
     private final MethodsViewTab methodsViewTab;
-    //private InputTab inputTab;
-    private EditInputTab editInputTab; // todo delete after testing
+    private InputTab inputTab;
+    private EditInputTab editInputTab;
 
     /**
      * constructor
@@ -543,18 +544,32 @@ public class MainWindow implements IMainWindow {
      * show the enter data tab
      */
     public void showInputTab() {
-        //todo : delete after testing
-        if (editInputTab == null) {
-            editInputTab = new EditInputTab(this);
-            getDocument().dirtyProperty().addListener((observable, oldValue, newValue) -> {
-                if (!newValue) {
-                    removeInputTab();
-                }
-            });
+        if (false) {
+            if (inputTab == null) {
+                inputTab = new InputTab(this);
+                getDocument().dirtyProperty().addListener((observable, oldValue, newValue) -> {
+                    if (!newValue) {
+                        removeInputTab();
+                    }
+                });
+            }
+            if (!getMainWindowController().getMainTabPane().getTabs().contains(inputTab))
+                getMainWindowController().getMainTabPane().getTabs().add(inputTab);
+            getMainWindowController().getMainTabPane().getSelectionModel().select(inputTab);
+
+        } else {
+            if (editInputTab == null) {
+                editInputTab = new EditInputTab(this);
+                getDocument().dirtyProperty().addListener((observable, oldValue, newValue) -> {
+                    if (!newValue) {
+                        removeInputTab();
+                    }
+                });
+            }
+            if (!getMainWindowController().getMainTabPane().getTabs().contains(editInputTab))
+                getMainWindowController().getMainTabPane().getTabs().add(editInputTab);
+            getMainWindowController().getMainTabPane().getSelectionModel().select(editInputTab);
         }
-        if (!getMainWindowController().getMainTabPane().getTabs().contains(editInputTab))
-            getMainWindowController().getMainTabPane().getTabs().add(editInputTab);
-        getMainWindowController().getMainTabPane().getSelectionModel().select(editInputTab);
     }
 
     /*public InputTab getInputTab() {

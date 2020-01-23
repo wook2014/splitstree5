@@ -100,7 +100,9 @@ public class ViewerNexusOutput extends NexusIOBase implements INexusOutput<Viewe
                     EdgeView2D ev = (EdgeView2D) graphTab.getEdge2view().get(edge);
                     w.write("\t" + EdgeViewIO.toString(ev));
                     if (graph instanceof PhyloSplitsGraph) {
-                        w.write(" I: " + ((PhyloSplitsGraph) graph).getSplit(edge));
+                        final int s = ((PhyloSplitsGraph) graph).getSplit(edge);
+                        if (s > 0)
+                            w.write(" I: " + s);
                     }
                 } else {
                     System.err.println("Not implemented");
