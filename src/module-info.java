@@ -21,7 +21,6 @@ module splitstreefive {
     opens splitstree5.resources.icons;
     opens splitstree5.resources.images;
 
-
     exports splitstree5.main;
     exports splitstree5.tools;
     exports splitstree5.tools.phyloedit;
@@ -45,6 +44,9 @@ module splitstreefive {
     opens splitstree5.core.algorithms.trees2trees;
     opens splitstree5.core.algorithms.views;
 
+    exports splitstree5.core.datablocks;
+    exports splitstree5.core.misc;
+
     opens splitstree5.dialogs.exporter;
     opens splitstree5.dialogs.importer;
     opens splitstree5.dialogs.message;
@@ -58,10 +60,15 @@ module splitstreefive {
     opens splitstree5.gui.graphlabels;
 
     opens splitstree5.gui.workflowtab;
+    exports splitstree5.gui.workflowtab;
+
     opens splitstree5.main;
     opens splitstree5.menu;
     opens splitstree5.toolbar;
     opens splitstree5.xtra.align;
+
+    opens splitstree5.io.imports;
+    opens splitstree5.io.exports;
 
     opens splitstree5.tools.phyloedit;
 }

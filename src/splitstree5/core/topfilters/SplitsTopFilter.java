@@ -48,7 +48,7 @@ public class SplitsTopFilter extends ATopFilter<SplitsBlock> {
     public SplitsTopFilter(DataNode<TaxaBlock> originalTaxaNode, DataNode<TaxaBlock> modifiedTaxaNode, DataNode<SplitsBlock> parentNode, DataNode<SplitsBlock> childNode) {
         super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parentNode, childNode);
 
-        setAlgorithm(new Algorithm<SplitsBlock, SplitsBlock>("TopFilter") {
+        setAlgorithm(new Algorithm<>("TopFilter") {
             public void compute(ProgressListener progress, TaxaBlock modifiedTaxaBlock, SplitsBlock parent, SplitsBlock child) throws CanceledException {
                 {
                     setShortDescription("Splits top filter");

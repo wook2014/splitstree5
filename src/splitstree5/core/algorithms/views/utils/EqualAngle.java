@@ -102,12 +102,14 @@ public class EqualAngle {
         PhyloGraphUtils.addLabels(taxaBlock, graph);
         progress.setProgress(100);   //set progress to 100%
 
-        for (Node v : graph.nodes()) {
-            if (graph.getLabel(v) != null)
-                System.err.println("Node " + v.getId() + " " + graph.getLabel(v));
-        }
-        for (Edge e : graph.edges()) {
-            System.err.println("Edge " + e.getSource().getId() + " - " + e.getTarget().getId() + " split: " + graph.getSplit(e));
+        if (false) {
+            for (Node v : graph.nodes()) {
+                if (graph.getLabel(v) != null)
+                    System.err.println("Node " + v.getId() + " " + graph.getLabel(v));
+            }
+            for (Edge e : graph.edges()) {
+                System.err.println("Edge " + e.getSource().getId() + " - " + e.getTarget().getId() + " split: " + graph.getSplit(e));
+            }
         }
     }
 

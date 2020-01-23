@@ -41,6 +41,7 @@ import splitstree5.core.misc.Compatibility;
 import splitstree5.core.misc.Distortion;
 import splitstree5.utils.TreesUtilities;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -69,7 +70,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
 
     @Override
     public String getCitation() {
-        return "Huson et al. 2019;D.H. Huson, B. Albrecht, P. Lockhart and M.A. Steel. Anti-consensus: manuscript in preparation";
+        return "Huson et al. 2020;D.H. Huson, M.A. Steel and others. Anti-consensus: manuscript in preparation";
     }
 
     @Override
@@ -98,9 +99,6 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         return optionName;
     }
 
-
-
-
     /**
      * compute the consensus splits
      *
@@ -124,34 +122,53 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         switch (getOptionReferenceTree()) {
             default:
             case MajorityConsensus: {
-                progress.setTasks("Anti-consensus", "Determining majority consensus splits");
-                final ConsensusTreeSplits consensusTreeSplits = new ConsensusTreeSplits();
-                consensusTreeSplits.setOptionConsensus(ConsensusTreeSplits.Consensus.Majority); // todo: implement and use loose consensus
-                consensusTreeSplits.setOptionEdgeWeights(ConsensusNetwork.EdgeWeights.TreeSizeWeightedMean);
-                consensusTreeSplits.compute(progress, taxaBlock, treesBlock, referenceSplits);
-                firstTreeToUse = 1;
-                lastTreeToUse = treesBlock.getNTrees();
-                break;
+                if (treesBlock.isPartial()) {
+                    throw new IOException("Can't use majority consensus as reference tree because some input trees have incomplete taxa");
+                } else {
+                    progress.setTasks("Anti-consensus", "Determining majority consensus splits");
+                    final ConsensusTreeSplits consensusTreeSplits = new ConsensusTreeSplits();
+                    consensusTreeSplits.setOptionConsensus(ConsensusTreeSplits.Consensus.Majority); // todo: implement and use loose consensus
+                    consensusTreeSplits.setOptionEdgeWeights(ConsensusNetwork.EdgeWeights.TreeSizeWeightedMean);
+                    consensusTreeSplits.compute(progress, taxaBlock, treesBlock, referenceSplits);
+                    firstTreeToUse = 1;
+                    lastTreeToUse = treesBlock.getNTrees();
+                    break;
+                }
             }
             case FirstInputTree: {
                 progress.setTasks("Anti-consensus", "Extracting splits from first tree");
                 final TreeSelectorSplits treeSelector = new TreeSelectorSplits();
                 treeSelector.setOptionWhich(1);
                 treeSelector.compute(progress, taxaBlock, treesBlock, referenceSplits);
-                firstTreeToUse = 2;
-                lastTreeToUse = treesBlock.getNTrees();
-                break;
+
+                if (referenceSplits.isPartial()) {
+                    throw new IOException("Can't use first tree as reference tree because it doesn't contain all taxa");
+                } else {
+                    firstTreeToUse = 2;
+                    lastTreeToUse = treesBlock.getNTrees();
+                    setOptionReferenceTree(Reference.FirstInputTree);
+                    break;
+                }
             }
             case LastInputTree: {
                 progress.setTasks("Anti-consensus", "Extracting splits from last tree");
                 final TreeSelectorSplits treeSelector = new TreeSelectorSplits();
                 treeSelector.setOptionWhich(treesBlock.getNTrees());
                 treeSelector.compute(progress, taxaBlock, treesBlock, referenceSplits);
-                firstTreeToUse = 1;
-                lastTreeToUse = treesBlock.getNTrees() - 1;
+
+                if (referenceSplits.isPartial()) {
+                    throw new IOException("Can't use last tree as reference tree because it doesn't contain all taxa");
+                } else {
+                    firstTreeToUse = 1;
+                    lastTreeToUse = treesBlock.getNTrees() - 1;
+                    setOptionReferenceTree(Reference.LastInputTree);
+                }
                 break;
             }
         }
+
+        if (referenceSplits.getNsplits() == 0)
+            throw new IOException("Reference tree has no splits");
 
         // normalize weights
         {
@@ -197,10 +214,11 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
             executor.submit(() -> {
                 try {
                     for (int t = firstTreeToUse + offset; t <= lastTreeToUse; t += numberOfThreads) {
-                        final PhyloTree tree = treesBlock.getTree(t);
-                        final ArrayList<ASplit> splits = new ArrayList<>(tree.getNumberOfEdges());
+                        final PhyloTree geneTree = treesBlock.getTree(t);
+                        final ArrayList<ASplit> splits = new ArrayList<>(geneTree.getNumberOfEdges());
 
-                        TreesUtilities.computeSplits(taxaBlock.getTaxaSet(), tree, splits);
+                        TreesUtilities.computeSplits(taxaBlock.getTaxaSet(), geneTree, splits);
+
                         // normalize weights:
                         {
                             double totalWeight = 0;
@@ -212,7 +230,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
                             }
                         }
 
-                        final Collection<ASplit> splitsWithDistortion = new ArrayList<>(tree.getNumberOfEdges());
+                        final Collection<ASplit> splitsWithDistortion = new ArrayList<>(geneTree.getNumberOfEdges());
                         final Map<BitSet, BitSet> splitSet2Incompatibilities = new HashMap<>();
 
                         for (ASplit split : splits) {
@@ -220,7 +238,6 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
 
                             final BitSet incompatibilities = new BitSet();
                             final double incompatiblitySpan = 100 * computeTotalWeightOfIncompatibleReferenceSplits(split, referenceSplits, incompatibilities);
-
 
                             if (distortion > 0 && distortion <= getOptionMaxDistortion()) {
                                 split.setConfidence(incompatiblitySpan);
@@ -426,7 +443,6 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         return result;
     }
 
-
     /**
      * computes the coverage graph: split s covers t, if the incompatibilities associated with t are contained in those for s
      * If s and t have the same set of incompatibilities, then additionally require that s is lexicographically smaller
@@ -615,7 +631,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
 
     @Override
     public boolean isApplicable(TaxaBlock taxaBlock, TreesBlock parent) {
-        return !parent.isPartial();
+        return true;
     }
 
     /**

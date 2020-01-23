@@ -81,7 +81,9 @@ public class NewNodeDialog {
             controller.getAlgorithmChoiceBox().getSelectionModel().select(0);
         });
 
-        controller.getAlgorithmChoiceBox().getItems().setAll((new Connector(workflow.getWorkingTaxaBlock(), sourceNode, new DataNode(controller.getTargetDataComboBox().getValue()), false)).getAllAlgorithms());
+
+        final DataBlock dataBlock = controller.getTargetDataComboBox().getValue();
+        controller.getAlgorithmChoiceBox().getItems().setAll((new Connector(workflow.getWorkingTaxaBlock(), sourceNode, new DataNode(dataBlock), false)).getAllAlgorithms());
         controller.getAlgorithmChoiceBox().getSelectionModel().select(0);
 
         controller.getCancelButton().setOnAction((e) -> stage.close());
