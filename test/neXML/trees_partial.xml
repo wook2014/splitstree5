@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-!--
-        For an explanation of the structure of the root element
-	and the taxa element refer to the file taxa.xml.
--->
+
 <nex:nexml
         version="0.9"
         xml:base="http://example.org/"
