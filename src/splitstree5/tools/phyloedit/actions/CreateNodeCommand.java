@@ -34,15 +34,15 @@ public class CreateNodeCommand extends UndoableRedoableCommand {
     final private Runnable redo;
     private int id;
 
-    public CreateNodeCommand(Pane pane, PhyloEditor window, double x, double y) {
+    public CreateNodeCommand(Pane pane, PhyloEditor editor, double x, double y) {
         super("New Node");
-        final PhyloTree graph = window.getGraph();
+        final PhyloTree graph = editor.getGraph();
 
         undo = () -> {
             if (id != 0) {
                 final Node v = graph.searchNodeId(id);
                 if (v != null) {
-                    window.removeNode(v);
+                    editor.removeNode(v);
                     graph.deleteNode(v);
                 }
             }
@@ -56,7 +56,7 @@ public class CreateNodeCommand extends UndoableRedoableCommand {
             } else {
                 v = graph.newNode(null, id);
             }
-            window.addNode(pane, x, y, v);
+            editor.addNode(pane, x, y, v);
         };
     }
 

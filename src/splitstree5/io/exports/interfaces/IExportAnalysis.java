@@ -26,12 +26,12 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * export analysis
+ * save analysis
  * Daniel Huson, 1.2018
  */
 public interface IExportAnalysis extends IExporter, IFromAnalysis {
     /**
-     * export analysis
+     * save analysis
      *
      * @param w
      * @param analysis

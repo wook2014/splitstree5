@@ -1,5 +1,5 @@
 /*
- *  IExportViewer.java Copyright (C) 2020 Daniel H. Huson
+ *  NewWindow.java Copyright (C) 2020 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -17,25 +17,22 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.io.exports.interfaces;
+package splitstree5.tools.phyloedit.actions;
 
-import splitstree5.core.algorithms.interfaces.IFromViewer;
-import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.datablocks.ViewerBlock;
-
-import java.io.IOException;
-import java.io.Writer;
+import jloda.fx.window.MainWindowManager;
+import splitstree5.tools.phyloedit.PhyloEditorWindow;
 
 /**
- * save viewer block
- * Daniel Huson, 3.2018
+ * create a new window
+ * Daniel Huson, 7.2019
  */
-public interface IExportViewer extends IExporter, IFromViewer {
+public class NewWindow {
     /**
-     * save taxa
+     * create a new window
      *
-     * @param w
-     * @param taxa
+     * @return new window
      */
-    void export(Writer w, TaxaBlock taxa, ViewerBlock viewerBlock) throws IOException;
+    public static PhyloEditorWindow apply() {
+        return (PhyloEditorWindow) MainWindowManager.getInstance().createAndShowWindow(false);
+    }
 }

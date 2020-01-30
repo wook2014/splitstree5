@@ -106,7 +106,7 @@ public class ExportManager {
     }
 
     /**
-     * export a datablock in the named format
+     * save a datablock in the named format
      *
      * @param fileName
      * @param taxaBlock

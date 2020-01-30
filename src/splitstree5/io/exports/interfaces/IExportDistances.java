@@ -27,12 +27,12 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * export distances
+ * save distances
  * Daniel Huson, 1.2018
  */
 public interface IExportDistances extends IExporter, IFromDistances {
     /**
-     * export distances
+     * save distances
      *
      * @param w
      * @param taxa

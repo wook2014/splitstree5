@@ -19,28 +19,26 @@
 
 package splitstree5.tools.phyloedit;
 
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Point2D;
-import javafx.geometry.Point3D;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.CubicCurve;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import jloda.fx.control.ItemSelectionModel;
 import jloda.fx.graph.GraphFX;
 import jloda.fx.shapes.CircleShape;
 import jloda.fx.undo.UndoManager;
-import jloda.fx.util.GeometryUtilsFX;
-import jloda.fx.util.MouseDragClosestNode;
-import jloda.fx.util.MouseDragToTranslate;
-import jloda.fx.util.SelectionEffectBlue;
+import jloda.fx.util.SelectionEffect;
 import jloda.graph.Edge;
 import jloda.graph.EdgeArray;
 import jloda.graph.Node;
@@ -50,11 +48,10 @@ import jloda.util.Pair;
 import jloda.util.Single;
 import splitstree5.tools.phyloedit.actions.MoveSelectedNodesCommand;
 import splitstree5.tools.phyloedit.actions.NewEdgeAndNodeCommand;
-import splitstree5.tools.phyloedit.actions.NodeViewContextMenu;
-import splitstree5.tools.phyloedit.actions.TranslateCommand;
+import splitstree5.tools.phyloedit.actions.NodeLabelDialog;
 
-import java.util.ArrayList;
-import java.util.function.Function;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * editor
@@ -63,13 +60,17 @@ import java.util.function.Function;
 public class PhyloEditor {
     public enum EdgeType {treeEdge, reticulateEdge}
 
+    private final StringProperty fileName = new SimpleStringProperty("");
+
     private final PhyloTree graph = new PhyloTree();
     private final GraphFX<PhyloTree> graphFX = new GraphFX<>(graph);
     private final UndoManager undoManager = new UndoManager();
 
-    private final static ObjectProperty<Font> font = new SimpleObjectProperty<>(Font.font("Helvetica", 12));
+    private final BooleanProperty dirty = new SimpleBooleanProperty(false);
 
-    private final PhyloEditorMain main;
+    private final ObjectProperty<Font> font = new SimpleObjectProperty<>(Font.font("Helvetica", 12));
+
+    private final PhyloEditorWindow window;
     private final NodeArray<Pair<Shape, Label>> node2shapeAndLabel;
     private final EdgeArray<EdgeView> edge2view;
 
@@ -86,8 +87,8 @@ public class PhyloEditor {
     /**
      * constructor
      */
-    public PhyloEditor(PhyloEditorMain main) {
-        this.main = main;
+    public PhyloEditor(PhyloEditorWindow window) {
+        this.window = window;
 
         spacers = new Group();
         graphNodes = new Group();
@@ -103,19 +104,16 @@ public class PhyloEditor {
         nodeSelection.getSelectedItems().addListener((ListChangeListener<Node>) (e) -> {
             while (e.next()) {
                 for (Node v : e.getAddedSubList()) {
-                    final Pair<Shape, Label> pair = node2shapeAndLabel.get(v);
-                    if (pair != null) {
-                        for (Object oNode : pair) {
-                            ((javafx.scene.Node) oNode).setEffect(SelectionEffectBlue.getInstance());
-                        }
+                    if (v.getOwner() != null) {
+                        getShape(v).setEffect(SelectionEffect.getInstance());
+                        getLabel(v).setEffect(SelectionEffect.getInstance());
                     }
+
                 }
                 for (Node v : e.getRemoved()) {
-                    final Pair<Shape, Label> pair = node2shapeAndLabel.get(v);
-                    if (pair != null) {
-                        for (Object oNode : pair) {
-                            ((javafx.scene.Node) oNode).setEffect(null);
-                        }
+                    if (v.getOwner() != null) {
+                        getShape(v).setEffect(null);
+                        getLabel(v).setEffect(null);
                     }
                 }
             }
@@ -127,7 +125,7 @@ public class PhyloEditor {
                     final EdgeView edgeView = edge2view.get(edge);
                     if (edgeView != null) {
                         for (javafx.scene.Node node : edgeView.getChildren())
-                            node.setEffect(SelectionEffectBlue.getInstance());
+                            node.setEffect(SelectionEffect.getInstance());
                     }
                 }
                 for (Edge edge : e.getRemoved()) {
@@ -139,13 +137,27 @@ public class PhyloEditor {
                 }
             }
         });
+
+        graphFX.getNodeList().addListener((ListChangeListener<Node>) c -> {
+            while (c.next()) {
+                nodeSelection.getSelectedItems().removeAll(c.getRemoved());
+            }
+        });
+
+        graphFX.getEdgeList().addListener((ListChangeListener<Edge>) c -> {
+            while (c.next()) {
+                edgeSelection.getSelectedItems().removeAll(c.getRemoved());
+            }
+        });
+
+        undoManager.undoableProperty().addListener(c -> dirty.set(true));
     }
 
     public void clear() {
         nodeSelection.clearSelection();
         edgeSelection.clearSelection();
         graph.clear();
-        world.getChildren().clear();
+        //world.getChildren().clear();
     }
 
     public void addNode(Pane pane, double x, double y, Node v) {
@@ -161,6 +173,8 @@ public class PhyloEditor {
             label = new Label(graph.getLabel(v));
         else
             label = new Label();
+
+        label.setFont(getFont());
 
         shape.setTranslateX(x);
         shape.setTranslateY(y);
@@ -188,15 +202,21 @@ public class PhyloEditor {
         label.textProperty().addListener((c, o, n) -> graph.setLabel(v, n));
 
         shape.setOnContextMenuRequested((c) -> {
-            (new NodeViewContextMenu(main.getStage(), undoManager, v, shape, label)).show(main.getStage(), c.getScreenX(), c.getScreenY());
+            final MenuItem setLabel = new MenuItem("Set Label");
+            setLabel.setOnAction((e) -> NodeLabelDialog.apply(window.getStage(), this, v));
+            new ContextMenu(setLabel).show(window.getStage(), c.getScreenX(), c.getScreenY());
         });
+
+
+        shape.setOnMouseEntered(e -> shape.setFill(Color.LIGHTGRAY));
+        shape.setOnMouseExited(e -> shape.setFill(Color.WHITE));
 
         node2shapeAndLabel.put(v, new Pair<>(shape, label));
     }
 
     public void removeNode(Node v) {
         for (Edge e : v.adjacentEdges()) {
-            graphEdges.getChildren().remove(edge2view.get(e).cubicCurve);
+            graphEdges.getChildren().removeAll(edge2view.get(e).getChildren());
         }
         Pair<Shape, Label> pair = node2shapeAndLabel.get(v);
         if (pair != null) {
@@ -209,13 +229,13 @@ public class PhyloEditor {
         final Shape sourceShape = node2shapeAndLabel.get(e.getSource()).getFirst();
         final Shape targetShape = node2shapeAndLabel.get(e.getTarget()).getFirst();
 
-        EdgeView edgeView = createPath(e, sourceShape.translateXProperty(), sourceShape.translateYProperty(), targetShape.translateXProperty(), targetShape.translateYProperty(), EdgeType.reticulateEdge);
+        final EdgeView edgeView = new EdgeView(this, e, sourceShape.translateXProperty(), sourceShape.translateYProperty(), targetShape.translateXProperty(), targetShape.translateYProperty());
         edge2view.setValue(e, edgeView);
-        graphEdges.getChildren().add(edgeView.cubicCurve);
+        graphEdges.getChildren().addAll(edgeView.getChildren());
     }
 
     public void removeEdge(Edge e) {
-        graphEdges.getChildren().remove(edge2view.get(e));
+        graphEdges.getChildren().removeAll(getEdgeView(e).getChildren());
     }
 
     enum What {moveNode, growEdge}
@@ -228,14 +248,22 @@ public class PhyloEditor {
 
         final double[] mouseDownPosition = new double[2];
         final double[] previousMousePosition = new double[2];
+        final Map<Integer, double[]> oldControlPointLocations = new HashMap<>();
+        final Map<Integer, double[]> newControlPointLocations = new HashMap<>();
+
         final Single<Boolean> moved = new Single<>(false);
         final Single<What> what = new Single<>(null);
+        final Single<Node> target = new Single<>(null);
         final Line line = new Line();
         world.getChildren().add(line);
 
         mouseTarget.setOnMousePressed(c -> {
             previousMousePosition[0] = c.getSceneX();
             previousMousePosition[1] = c.getSceneY();
+
+            oldControlPointLocations.clear();
+            newControlPointLocations.clear();
+
             mouseDownPosition[0] = c.getSceneX();
             mouseDownPosition[1] = c.getSceneY();
             moved.set(false);
@@ -250,6 +278,7 @@ public class PhyloEditor {
                 line.setEndX(location.getX());
                 line.setEndY(location.getY());
                 line.setVisible(true);
+                target.set(null);
             }
             c.consume();
         });
@@ -260,16 +289,41 @@ public class PhyloEditor {
 
             if (what.get() == What.moveNode) {
                 getNodeSelection().select(v);
+                final double deltaX = (mouseX - previousMousePosition[0]);
+                final double deltaY = (mouseY - previousMousePosition[1]);
 
                 for (Node u : getNodeSelection().getSelectedItems()) {
                     if (mouseTarget instanceof Shape) {
-                        final Shape shape = node2shapeAndLabel.get(u).get1();
-                        shape.setTranslateX(shape.getTranslateX() + (mouseX - previousMousePosition[0]));
-                        shape.setTranslateY(shape.getTranslateY() + (mouseY - previousMousePosition[1]));
+                        {
+                            final double deltaXReshapeEdge = (mouseX - previousMousePosition[0]);
+                            final double deltaYReshapeEdge = (mouseY - previousMousePosition[1]);
+
+                            for (Edge e : u.outEdges()) {
+                                final EdgeView edgeView = edge2view.get(e);
+
+                                if (!oldControlPointLocations.containsKey(e.getId())) {
+                                    oldControlPointLocations.put(e.getId(), edgeView.getControlCoordinates());
+                                }
+                                edgeView.startMoved(deltaXReshapeEdge, deltaYReshapeEdge);
+                                newControlPointLocations.put(e.getId(), edgeView.getControlCoordinates());
+                            }
+                            for (Edge e : u.inEdges()) {
+                                final EdgeView edgeView = edge2view.get(e);
+                                if (!oldControlPointLocations.containsKey(e.getId())) {
+                                    oldControlPointLocations.put(e.getId(), edgeView.getControlCoordinates());
+                                }
+                                edgeView.endMoved(deltaXReshapeEdge, deltaYReshapeEdge);
+                                newControlPointLocations.put(e.getId(), edgeView.getControlCoordinates());
+                            }
+                        }
+
+                        final Shape shape = getShape(u);
+                        shape.setTranslateX(shape.getTranslateX() + deltaX);
+                        shape.setTranslateY(shape.getTranslateY() + deltaY);
                     } else if (mouseTarget instanceof Label) {
                         final Label label = node2shapeAndLabel.get(u).get2();
-                        label.setLayoutX(label.getLayoutX() + (mouseX - previousMousePosition[0]));
-                        label.setLayoutY(label.getLayoutY() + (mouseY - previousMousePosition[1]));
+                        label.setLayoutX(label.getLayoutX() + deltaX);
+                        label.setLayoutY(label.getLayoutY() + deltaY);
                     }
                 }
             }
@@ -280,6 +334,17 @@ public class PhyloEditor {
                 final Point2D location = pane.sceneToLocal(mouseX, mouseY);
                 line.setEndX(location.getX());
                 line.setEndY(location.getY());
+
+                final Node w = findNodeIfHit(c.getScreenX(), c.getScreenY());
+                if ((w == null || w == v || w != target.get()) && target.get() != null) {
+                    getShape(target.get()).setFill(Color.WHITE);
+                    target.set(null);
+                }
+                if (w != null && w != v && w != target.get()) {
+                    target.set(w);
+                    getShape(target.get()).setFill(Color.GRAY);
+
+                }
             }
 
             moved.set(true);
@@ -303,9 +368,15 @@ public class PhyloEditor {
             } else {
                 if (what.get() == What.moveNode) {
                     // yes, add, not doAndAdd()
-                    undoManager.add(new MoveSelectedNodesCommand(previousMousePosition[0] - mouseDownPosition[0], previousMousePosition[1] - mouseDownPosition[1], this, nodeSelection.getSelectedItems()));
+                    final double dx = previousMousePosition[0] - mouseDownPosition[0];
+                    final double dy = previousMousePosition[1] - mouseDownPosition[1];
+                    undoManager.add(new MoveSelectedNodesCommand(dx, dy, this,
+                            nodeSelection.getSelectedItems(), oldControlPointLocations, newControlPointLocations));
 
                 } else if (what.get() == What.growEdge) {
+                    if (target.get() != null)
+                        getShape(target.get()).setFill(Color.WHITE);
+
                     final double x = line.getEndX();
                     final double y = line.getEndY();
 
@@ -324,7 +395,6 @@ public class PhyloEditor {
         pair.getFirst().setTranslateY(pair.getFirst().getTranslateY() + y);
     }
 
-
     private Node findNodeIfHit(double x, double y) {
         for (Node v : graph.nodes()) {
             final Shape shape = node2shapeAndLabel.get(v).getFirst();
@@ -334,213 +404,16 @@ public class PhyloEditor {
         return null;
     }
 
-    /**
-     * create a path to represent an edge
-     *
-     * @param aX
-     * @param aY
-     * @param bX
-     * @param bY
-     * @param edgeType
-     * @return path
-     */
-    private EdgeView createPath(Edge edge, ReadOnlyDoubleProperty aX, ReadOnlyDoubleProperty aY, ReadOnlyDoubleProperty bX, ReadOnlyDoubleProperty bY, EdgeType edgeType) {
-        final Shape arrowHead = new Polyline(-5, -3, 5, 0, -5, 3);
-        arrowHead.setStroke(Color.BLACK);
-        arrowHead.setStrokeWidth(2);
-
-        final CubicCurve curve = new CubicCurve();
-        curve.setFill(Color.TRANSPARENT);
-        curve.setStroke(Color.BLACK);
-        curve.setStrokeWidth(2);
-        curve.setPickOnBounds(true);
-
-        curve.startXProperty().bind(aX);
-        curve.startYProperty().bind(aY);
-        curve.endXProperty().bind(bX);
-        curve.endYProperty().bind(bY);
-
-        Circle circle1 = new Circle();
-        circle1.translateXProperty().bindBidirectional(curve.controlX1Property());
-        circle1.translateYProperty().bindBidirectional(curve.controlY1Property());
-        circle1.setTranslateX(0.3 * curve.getStartX() + 0.7 * curve.getEndX());
-        circle1.setTranslateY(0.3 * curve.getStartY() + 0.7 * curve.getEndY());
-
-        Circle circle2 = new Circle();
-        circle2.translateXProperty().bindBidirectional(curve.controlX2Property());
-        circle2.translateYProperty().bindBidirectional(curve.controlY2Property());
-        circle2.setTranslateX(0.7 * curve.getStartX() + 0.3 * curve.getEndX());
-        circle2.setTranslateY(0.7 * curve.getStartY() + 0.3 * curve.getEndY());
-
-        final int id = edge.getId();
-
-        // reference current translating node
-        final Function<Circle, javafx.scene.Node> translatingNode = (circle) -> {
-            final Edge e = graph.searchEdgeId(id);
-            final EdgeView edgeView = edge2view.get(e);
-            if (circle == circle1)
-                return edgeView.circle1;
-            else
-                return edgeView.circle2;
-        };
-
-        MouseDragClosestNode.setup(curve, node2shapeAndLabel.get(edge.getSource()).get1(), circle1,
-                node2shapeAndLabel.get(edge.getTarget()).get1(), circle2,
-                (circle, delta) -> {
-                    undoManager.add(new TranslateCommand("Edge Shape", translatingNode.apply((Circle) circle), delta));
-                });
-
-
-        //arrowHead.translateXProperty().bindBidirectional(curve.controlXProperty());
-        //arrowHead.translateYProperty().bindBidirectional(curve.controlYProperty());
-
-        MouseDragToTranslate.setup(arrowHead);
-
-        final InvalidationListener invalidationListener = (e) -> {
-            final double angle = GeometryUtilsFX.computeAngle(new Point2D(curve.getEndX() - curve.getControlX2(), curve.getEndY() - curve.getControlY2()));
-            arrowHead.setRotationAxis(new Point3D(0, 0, 1));
-            arrowHead.setRotate(angle);
-
-            final Point2D location = GeometryUtilsFX.translateByAngle(new Point2D(curve.getEndX(), curve.getEndY()), angle, -15);
-            arrowHead.setTranslateX(location.getX());
-            arrowHead.setTranslateY(location.getY());
-        };
-        invalidationListener.invalidated(null);
-
-        curve.startXProperty().addListener(invalidationListener);
-        curve.startYProperty().addListener(invalidationListener);
-        curve.endXProperty().addListener(invalidationListener);
-        curve.endYProperty().addListener(invalidationListener);
-        curve.controlX2Property().addListener(invalidationListener);
-        curve.controlY2Property().addListener(invalidationListener);
-
-        curve.startXProperty().addListener((c, o, n) -> curve.setControlX1(curve.getControlX1() + (n.doubleValue() - o.doubleValue())));
-        curve.startYProperty().addListener((c, o, n) -> curve.setControlY1(curve.getControlY1() + (n.doubleValue() - o.doubleValue())));
-
-        curve.endXProperty().addListener((c, o, n) -> curve.setControlX2(curve.getControlX2() + (n.doubleValue() - o.doubleValue())));
-        curve.endYProperty().addListener((c, o, n) -> curve.setControlY2(curve.getControlY2() + (n.doubleValue() - o.doubleValue())));
-
-        return new EdgeView(id, curve, circle1, circle2);
-    }
-
-    /**
-     * update the path representing an edge
-     *
-     * @param ax
-     * @param ay
-     * @param ex
-     * @param ey
-     * @param moveToA
-     * @param lineToB
-     * @param quadCurveToD
-     * @param lineToE
-     * @param arrowHead
-     * @param clockwise
-     * @return center point
-     */
-    private static Point2D updatePath(double ax, double ay, double ex, double ey, Point2D center, MoveTo moveToA, LineTo lineToB, QuadCurveTo quadCurveToD, LineTo lineToE, EdgeType edgeType, Shape arrowHead, boolean clockwise) {
-        final double straightSegmentLength = 25;
-        final double liftFactor = 0.2;
-
-        final double distance = GeometryUtilsFX.distance(ax, ay, ex, ey);
-
-        moveToA.setX(ax);
-        moveToA.setY(ay);
-
-        lineToE.setX(ex);
-        lineToE.setY(ey);
-
-        if (false && distance <= 2 * straightSegmentLength) {
-            lineToB.setX(ax);
-            lineToB.setY(ay);
-
-            quadCurveToD.setX(ax);
-            quadCurveToD.setY(ay);
-            quadCurveToD.setControlX(ax);
-            quadCurveToD.setControlY(ay);
-
-            center = new Point2D(ax, ay);
-
-            arrowHead.setTranslateX(0.5 * (quadCurveToD.getX() + lineToE.getX()));
-            arrowHead.setTranslateY(0.5 * (quadCurveToD.getY() + lineToE.getY()));
-        } else {
-            final double alpha = GeometryUtilsFX.computeAngle(new Point2D(ex - ax, ey - ay));
-
-            final Point2D m = new Point2D(0.5 * (ax + ex), 0.5 * (ay + ey));
-            if (center == null) {
-                final Point2D c;
-                if (!clockwise)
-                    center = m.add(-Math.sin(GeometryUtilsFX.deg2rad(alpha)) * liftFactor * distance, Math.cos(GeometryUtilsFX.deg2rad(alpha)) * liftFactor * distance);
-                else
-                    center = m.subtract(-Math.sin(GeometryUtilsFX.deg2rad(alpha)) * liftFactor * distance, Math.cos(GeometryUtilsFX.deg2rad(alpha)) * liftFactor * distance);
-            }
-
-            final double beta = GeometryUtilsFX.computeAngle(center.subtract(ax, ay));
-
-            final Point2D b = new Point2D(ax + straightSegmentLength * Math.cos(GeometryUtilsFX.deg2rad(beta)), ay + straightSegmentLength * Math.sin(GeometryUtilsFX.deg2rad(beta)));
-
-            lineToB.setX(b.getX());
-            lineToB.setY(b.getY());
-
-            final double delta = GeometryUtilsFX.computeAngle(center.subtract(ex, ey));
-            final Point2D d = new Point2D(ex + straightSegmentLength * Math.cos(GeometryUtilsFX.deg2rad(delta)), ey + straightSegmentLength * Math.sin(GeometryUtilsFX.deg2rad(delta)));
-
-            quadCurveToD.setX(d.getX());
-            quadCurveToD.setY(d.getY());
-            quadCurveToD.setControlX(center.getX());
-            quadCurveToD.setControlY(center.getY());
-
-            arrowHead.setTranslateX(0.75 * d.getX() + 0.25 * lineToE.getX());
-            arrowHead.setTranslateY(0.75 * d.getY() + 0.25 * lineToE.getY());
-        }
-
-        final double angle = GeometryUtilsFX.computeAngle(new Point2D(lineToE.getX() - quadCurveToD.getX(), lineToE.getY() - quadCurveToD.getY()));
-        arrowHead.setRotationAxis(new Point3D(0, 0, 1));
-        arrowHead.setRotate(angle);
-        return center;
-
-    }
-
-    /**
-     * is this edge the second of two edges that both connect the same two nodes?
-     * (If so, will flip its bend)
-     *
-     * @param edge
-     * @return true, if second of two edges
-     */
-    private static boolean isSecondOfTwoEdges(Edge edge) {
-        for (Edge f : edge.getSource().adjacentEdges()) {
-            if (f.getTarget() == edge.getTarget() && edge.getId() > f.getId())
-                return true;
-        }
-        return false;
-    }
-
-
-    /**
-     * find a path in a group
-     *
-     * @param group
-     * @return path, if found
-     */
-    static Path getPath(Group group) {
-        for (javafx.scene.Node child : group.getChildren()) {
-            if (child instanceof Path)
-                return (Path) child;
-        }
-        return null;
-    }
-
-    public static Font getFont() {
+    public Font getFont() {
         return font.get();
     }
 
-    public static ObjectProperty<Font> fontProperty() {
+    public ObjectProperty<Font> fontProperty() {
         return font;
     }
 
-    public static void setFont(Font font) {
-        PhyloEditor.font.set(font);
+    public void setFont(Font font) {
+        this.font.set(font);
     }
 
     public Group getWorld() {
@@ -559,6 +432,26 @@ public class PhyloEditor {
         return node2shapeAndLabel;
     }
 
+    public Shape getShape(Node v) {
+        return node2shapeAndLabel.get(v).getFirst();
+    }
+
+    public Label getLabel(Node v) {
+        return node2shapeAndLabel.get(v).getSecond();
+    }
+
+    public EdgeArray<EdgeView> getEdge2view() {
+        return edge2view;
+    }
+
+    public EdgeView getEdgeView(Edge e) {
+        return edge2view.get(e);
+    }
+
+    public CubicCurve getCurve(Edge e) {
+        return edge2view.get(e).getCurve();
+    }
+
     public ItemSelectionModel<Edge> getEdgeSelection() {
         return edgeSelection;
     }
@@ -571,29 +464,27 @@ public class PhyloEditor {
         return undoManager;
     }
 
-    static class EdgeView {
-        private int id;
-        private CubicCurve cubicCurve;
-        private Label label;
-        private Circle circle1;
-        private Circle circle2;
+    public String getFileName() {
+        return fileName.get();
+    }
 
-        public EdgeView(int edgeId, CubicCurve cubicCurve, Circle circle1, Circle circle2) {
-            this.id = edgeId;
-            this.cubicCurve = cubicCurve;
-            this.circle1 = circle1;
-            this.circle2 = circle2;
-        }
+    public StringProperty fileNameProperty() {
+        return fileName;
+    }
 
-        public ArrayList<javafx.scene.Node> getChildren() {
-            final ArrayList<javafx.scene.Node> children = new ArrayList<>();
-            if (cubicCurve != null)
-                children.add(cubicCurve);
-            if (label != null)
-                children.add(label);
-            return children;
-        }
+    public void setFileName(String fileName) {
+        this.fileName.set(fileName);
+    }
 
+    public boolean isDirty() {
+        return dirty.get();
+    }
 
+    public BooleanProperty dirtyProperty() {
+        return dirty;
+    }
+
+    public void setDirty(boolean dirty) {
+        this.dirty.set(dirty);
     }
 }

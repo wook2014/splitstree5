@@ -152,16 +152,15 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
             if (withScrollPane) {
                 if (!(borderPane.getCenter() instanceof ScrollPane)) {
                     setContent(borderPane);
-                    scrollPane = new ZoomableScrollPane(centerPane) {
-                        @Override // override node scaling to use coordinate scaling
-                        public void updateScale() {
-                            if (layout.get() == GraphLayout.Radial) {
-                                getUndoManager().doAndAdd(new ZoomCommand(getZoomFactorY(), getZoomFactorY(), Graph2DTab.this));
-                            } else {
-                                getUndoManager().doAndAdd(new ZoomCommand(getZoomFactorX(), getZoomFactorY(), Graph2DTab.this));
-                            }
+                    scrollPane = new ZoomableScrollPane(centerPane);
+
+                    scrollPane.setUpdateScaleMethod(() -> {
+                        if (layout.get() == GraphLayout.Radial) {
+                            getUndoManager().doAndAdd(new ZoomCommand(scrollPane.getZoomFactorY(), scrollPane.getZoomFactorY(), Graph2DTab.this));
+                        } else {
+                            getUndoManager().doAndAdd(new ZoomCommand(scrollPane.getZoomFactorX(), scrollPane.getZoomFactorY(), Graph2DTab.this));
                         }
-                    };
+                    });
                     new RubberBandSelection(centerPane, scrollPane, group, createRubberBandSelectionHandler());
 
                     scrollPane.lockAspectRatioProperty().bind(layout.isEqualTo(GraphLayout.Radial));

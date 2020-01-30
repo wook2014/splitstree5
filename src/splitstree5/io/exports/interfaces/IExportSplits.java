@@ -27,12 +27,12 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * export splits
+ * save splits
  * Daniel Huson, 1.2018
  */
 public interface IExportSplits extends IExporter, IFromSplits {
     /**
-     * export splits
+     * save splits
      *
      * @param w
      * @param taxa

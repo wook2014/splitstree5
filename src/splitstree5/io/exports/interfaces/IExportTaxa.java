@@ -26,12 +26,12 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * export taxa
+ * save taxa
  * Daniel Huson, 1.2018
  */
 public interface IExportTaxa extends IExporter, IFromTaxa {
     /**
-     * export taxa
+     * save taxa
      *
      * @param w
      * @param taxa

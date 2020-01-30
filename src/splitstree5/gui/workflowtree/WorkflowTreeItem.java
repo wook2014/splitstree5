@@ -130,7 +130,7 @@ public class WorkflowTreeItem extends TreeItem<String> {
                 final MenuItem export = new MenuItem("Export...");
                 export.setOnAction((x) -> {
                     if (workflowNode instanceof DataNode)
-                        ExportDialog.show(document.getMainWindow(), document.getWorkflow().getWorkingTaxaBlock(), ((DataNode) workflowNode).getDataBlock());
+                        ExportDialog.show(document.getMainWindow().getStage(), document.getWorkflow().getWorkingTaxaBlock(), ((DataNode) workflowNode).getDataBlock());
                 });
                 export.setDisable(!(workflowNode instanceof DataNode));
 

@@ -171,7 +171,7 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
     }
 
     /**
-     * export an algorithms block
+     * save an algorithms block
      *
      * @param w
      * @param algorithm
@@ -184,7 +184,7 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
     }
 
     /**
-     * export a datablock
+     * save a datablock
      *
      * @param w
      * @param taxaBlock

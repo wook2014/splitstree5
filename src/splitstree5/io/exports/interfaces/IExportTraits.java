@@ -27,12 +27,12 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * export traits
+ * save traits
  * Daniel Huson, 1.2018
  */
 public interface IExportTraits extends IExporter, IFromTraits {
     /**
-     * export taxa
+     * save taxa
      *
      * @param w
      * @param taxa

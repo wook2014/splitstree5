@@ -19,6 +19,7 @@
 
 package splitstree5.tools.phyloedit.actions;
 
+import javafx.application.Platform;
 import javafx.scene.layout.Pane;
 import jloda.fx.undo.UndoableRedoableCommand;
 import jloda.graph.Edge;
@@ -37,7 +38,16 @@ public class NewEdgeAndNodeCommand extends UndoableRedoableCommand {
     private int edgeId;
     private int wId;
 
-
+    /**
+     * construct
+     *
+     * @param pane
+     * @param editor
+     * @param a
+     * @param b
+     * @param x
+     * @param y
+     */
     public NewEdgeAndNodeCommand(Pane pane, PhyloEditor editor, Node a, final Node b, double x, double y) {
         super("Add Edge");
         final Graph graph = editor.getGraph();
@@ -70,7 +80,7 @@ public class NewEdgeAndNodeCommand extends UndoableRedoableCommand {
                 w = graph.searchNodeId(bId);
 
             final Node v = graph.searchNodeId(aId);
-            if (v.getCommonEdge(w) == null) {
+            if (v.getCommonEdge(w) == null && v != w) {
                 Edge e;
                 if (edgeId == 0) {
                     e = graph.newEdge(v, w);
@@ -80,6 +90,7 @@ public class NewEdgeAndNodeCommand extends UndoableRedoableCommand {
                 }
                 editor.addEdge(e);
             }
+            if (wId > 0) Platform.runLater(() -> editor.getNodeSelection().clearAndSelect(graph.searchNodeId(wId)));
         };
     }
 

@@ -27,12 +27,12 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * export trees
+ * save trees
  * Daniel Huson, 1.2018
  */
 public interface IExportTrees extends IExporter, IFromTrees {
     /**
-     * export characters
+     * save characters
      *
      * @param w
      * @param taxa

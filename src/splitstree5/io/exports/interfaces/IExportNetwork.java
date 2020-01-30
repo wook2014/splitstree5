@@ -27,12 +27,12 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * export network
+ * save network
  * Daniel Huson, 1.2018
  */
 public interface IExportNetwork extends IExporter, IFromNetwork {
     /**
-     * export characters
+     * save characters
      *
      * @param w
      * @param taxa

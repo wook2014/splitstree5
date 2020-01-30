@@ -24,16 +24,33 @@ import jloda.fx.undo.UndoableRedoableCommand;
 import jloda.graph.Node;
 import jloda.graph.NodeEdge;
 import jloda.phylo.PhyloTree;
+import splitstree5.tools.phyloedit.EdgeView;
 import splitstree5.tools.phyloedit.PhyloEditor;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * move all selected nodes
+ * Daniel Huson, 1.2020
+ */
 public class MoveSelectedNodesCommand extends UndoableRedoableCommand {
     private final Runnable undo;
     private final Runnable redo;
 
-    public MoveSelectedNodesCommand(double x, double y, PhyloEditor editor, ObservableList<Node> selectedItems) {
+    /**
+     * constructor
+     *
+     * @param x
+     * @param y
+     * @param editor
+     * @param selectedItems
+     * @param oldEdgeControlCoordinates
+     * @param newEdgeControlCoordinates
+     */
+    public MoveSelectedNodesCommand(double x, double y, PhyloEditor editor, ObservableList<Node> selectedItems,
+                                    Map<Integer, double[]> oldEdgeControlCoordinates, Map<Integer, double[]> newEdgeControlCoordinates) {
         super("Move");
 
         final PhyloTree graph = editor.getGraph();
@@ -44,11 +61,19 @@ public class MoveSelectedNodesCommand extends UndoableRedoableCommand {
                 Node v = graph.searchNodeId(id);
                 editor.moveNode(v, -x, -y);
             }
+            for (int id : oldEdgeControlCoordinates.keySet()) {
+                EdgeView edgeView = editor.getEdge2view().get(graph.searchEdgeId(id));
+                edgeView.setControlCoordinates(oldEdgeControlCoordinates.get(id));
+            }
         };
         redo = () -> {
             for (int id : nodeIds) {
                 Node v = graph.searchNodeId(id);
                 editor.moveNode(v, x, y);
+            }
+            for (int id : newEdgeControlCoordinates.keySet()) {
+                EdgeView edgeView = editor.getEdge2view().get(graph.searchEdgeId(id));
+                edgeView.setControlCoordinates(newEdgeControlCoordinates.get(id));
             }
         };
     }

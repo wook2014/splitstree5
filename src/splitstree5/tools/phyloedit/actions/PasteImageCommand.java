@@ -23,7 +23,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import jloda.fx.undo.UndoableRedoableCommand;
-import splitstree5.tools.phyloedit.PhyloEditorController;
+import splitstree5.tools.phyloedit.PhyloEditorWindowController;
 
 /**
  * paste a background image
@@ -33,12 +33,12 @@ public class PasteImageCommand extends UndoableRedoableCommand {
     private final Runnable undo;
     private final Runnable redo;
 
-    public PasteImageCommand(Stage stage, PhyloEditorController controller, Image image) {
+    public PasteImageCommand(Stage stage, PhyloEditorWindowController controller, Image image) {
         super("Paste Image");
 
         final ImageView prevView;
-        if (controller.getStackPane().getChildren().get(0) instanceof ImageView)
-            prevView = (ImageView) controller.getStackPane().getChildren().get(0);
+        if (controller.getMainPane().getChildren().get(0) instanceof ImageView)
+            prevView = (ImageView) controller.getMainPane().getChildren().get(0);
         else
             prevView = null;
 
@@ -46,22 +46,24 @@ public class PasteImageCommand extends UndoableRedoableCommand {
         newView.setOpacity(0.5);
         newView.setPickOnBounds(true);
         newView.setPreserveRatio(true);
+        newView.setMouseTransparent(true);
+
 
         undo = () -> {
-            controller.getStackPane().getChildren().remove(newView);
+            controller.getMainPane().getChildren().remove(newView);
             newView.fitWidthProperty().unbind();
             if (prevView != null) {
-                controller.getStackPane().getChildren().add(0, prevView);
+                controller.getMainPane().getChildren().add(0, prevView);
                 prevView.fitWidthProperty().bind(controller.getToolBar().widthProperty().subtract(50));
             }
         };
 
         redo = () -> {
             if (prevView != null) {
-                controller.getStackPane().getChildren().remove(prevView);
+                controller.getMainPane().getChildren().remove(prevView);
                 prevView.fitWidthProperty().unbind();
             }
-            controller.getStackPane().getChildren().add(0, newView);
+            controller.getMainPane().getChildren().add(0, newView);
             newView.fitWidthProperty().bind(controller.getToolBar().widthProperty().subtract(50));
             //newView.setFitWidth(100);
         };

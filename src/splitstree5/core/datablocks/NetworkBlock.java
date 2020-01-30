@@ -45,23 +45,28 @@ public class NetworkBlock extends DataBlock {
     private Type networkType;
 
     public NetworkBlock() {
-        this.graph = new PhyloGraph();
+        this(null);
+    }
+
+    public NetworkBlock(String name) {
+        this(name, new PhyloGraph());
+    }
+
+    public NetworkBlock(String name, PhyloGraph graph) {
+        this.graph = graph;
         node2data = new NodeArray<>(graph);
         edge2data = new EdgeArray<>(graph);
+        setName(name);
 
         //getNetworkNodes().addListener((InvalidationListener) observable -> setShortDescription(getInfo()));
     }
+
 
     public void clear() {
         graph.clear();
         node2data.clear();
         edge2data.clear();
         networkType = Type.Other;
-    }
-
-    public NetworkBlock(String name) {
-        this();
-        setName(name);
     }
 
     public PhyloGraph getGraph() {
@@ -122,10 +127,12 @@ public class NetworkBlock extends DataBlock {
         return graph.getNumberOfEdges();
     }
 
-    public class NodeData extends HashMap<String, String> {
+    public static class NodeData extends HashMap<String, String> {
+        public enum BasicKey {x, y, h, w, label}
     }
 
-    public class EdgeData extends HashMap<String, String> {
+    public static class EdgeData extends HashMap<String, String> {
+        enum BasicKey {type, c1, c2, label}
     }
 
     public Type getNetworkType() {

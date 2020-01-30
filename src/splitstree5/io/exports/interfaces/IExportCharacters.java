@@ -27,12 +27,12 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * export characters
+ * save characters
  * Daniel Huson, 1.2018
  */
 public interface IExportCharacters extends IExporter, IFromChararacters {
     /**
-     * export characters
+     * save characters
      *
      * @param w
      * @param taxa

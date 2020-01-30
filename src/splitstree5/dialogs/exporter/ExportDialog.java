@@ -30,13 +30,12 @@ import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.main.MainWindow;
 
 import java.io.File;
 import java.io.IOException;
 
 /**
- * shows the export dialog
+ * shows the save dialog
  * Daniel Huson, 1.2018
  */
 public class ExportDialog {
@@ -48,10 +47,10 @@ public class ExportDialog {
     /**
      * constructor
      *
-     * @param parentMainWindow
+     * @param owner
      * @throws IOException
      */
-    public ExportDialog(MainWindow parentMainWindow, TaxaBlock workingTaxa, DataBlock dataBlock) {
+    public ExportDialog(Stage owner, TaxaBlock workingTaxa, DataBlock dataBlock) {
         final ExtendedFXMLLoader<ExportDialogController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         controller = extendedFXMLLoader.getController();
 
@@ -62,9 +61,9 @@ public class ExportDialog {
 
         stage.setScene(new Scene(extendedFXMLLoader.getRoot()));
         stage.sizeToScene();
-        if (parentMainWindow != null) {
-            stage.setX(parentMainWindow.getStage().getX() + 50);
-            stage.setY(parentMainWindow.getStage().getY() + 50);
+        if (owner != null) {
+            stage.setX(owner.getX() + 50);
+            stage.setY(owner.getY() + 50);
         }
         stage.setTitle("Export - " + ProgramProperties.getProgramName());
 
@@ -127,7 +126,7 @@ public class ExportDialog {
      *
      * @param other
      */
-    public static void show(MainWindow other, TaxaBlock taxonBlock, DataBlock dataBlock) {
+    public static void show(Stage other, TaxaBlock taxonBlock, DataBlock dataBlock) {
         ExportDialog exportDialog = new ExportDialog(other, taxonBlock, dataBlock);
         exportDialog.show();
     }

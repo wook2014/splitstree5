@@ -84,7 +84,7 @@ public class TabbedTextExporterTest {
         String export = new String(encoded2, StandardCharsets.UTF_8);
 
         //System.err.println(algae);
-        //System.err.println(export);
+        //System.err.println(save);
         assertEquals(algae, export);
 
     }
