@@ -75,4 +75,7 @@ module splitstreefive {
     opens splitstree5.io.exports.interfaces;
 
     opens splitstree5.tools.phyloedit;
+    exports splitstree5.gui.utils;
+    exports splitstree5.io.nexus;
+    exports splitstree5.treebased;
 }
