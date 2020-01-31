@@ -23,7 +23,6 @@ module splitstreefive {
 
     exports splitstree5.main;
     exports splitstree5.tools;
-    exports splitstree5.tools.phyloedit;
     exports splitstree5.utils;
     exports splitstree5.xtra;
     exports splitstree5.xtra.align;
@@ -74,7 +73,6 @@ module splitstreefive {
     opens splitstree5.io.exports;
     opens splitstree5.io.exports.interfaces;
 
-    opens splitstree5.tools.phyloedit;
     exports splitstree5.gui.utils;
     exports splitstree5.io.nexus;
     exports splitstree5.treebased;
