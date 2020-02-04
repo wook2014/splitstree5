@@ -20,8 +20,10 @@
 package splitstree5.gui.formattab;
 
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import jloda.fx.shapes.ISized;
+import jloda.fx.shapes.NodeShape;
 import jloda.graph.Edge;
 import jloda.graph.EdgeArray;
 import jloda.graph.Node;
@@ -253,7 +255,7 @@ public class FormatItem implements Cloneable {
                         formatItem.addLabelColor((Color) nv.getLabel().getTextFill());
                     }
                     if (nv.getNodeShape() != null) {
-                        formatItem.addNodeShape((NodeShape.valueOf(nv.getNodeShape())));
+                        formatItem.addNodeShape(NodeShape.valueOf((Shape) nv.getShapeGroup().getChildren().get(0)));
                         formatItem.addNodeSize(nv.getWidth(), nv.getHeight());
                         formatItem.addNodeColor(nv.getFill());
                     }
@@ -307,8 +309,6 @@ public class FormatItem implements Cloneable {
                                 ((NodeView2D) nv).setShape(NodeShape.create(getNodeShape(), (int) Math.round(nv.getWidth())));
                             else if (nv instanceof NodeView3D)
                                 ((NodeView3D) nv).setShape(NodeShape.create3D(nv.getNodeShape(), (int) Math.round(nv.getWidth())));
-
-
                         }
                         if (isNodeSizeSet()) {
                             double width = (getNodeWidth() != null ? getNodeWidth() : -1);

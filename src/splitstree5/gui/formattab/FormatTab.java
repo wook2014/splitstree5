@@ -24,6 +24,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.paint.Color;
 import javafx.util.converter.DoubleStringConverter;
+import jloda.fx.shapes.NodeShape;
 import jloda.fx.util.ExtendedFXMLLoader;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.graphtab.base.GraphTabBase;
