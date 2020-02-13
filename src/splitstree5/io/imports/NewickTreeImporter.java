@@ -45,7 +45,7 @@ import java.util.*;
 public class NewickTreeImporter implements IToTrees, IImportTrees {
     public static final List<String> extensions = new ArrayList<>(Arrays.asList("new", "nwk", "tree", "tre", "treefile"));
 
-    boolean optionConvertMultiLabeledTree = false;
+    private boolean optionConvertMultiLabeledTree = false;
 
     /**
      * parse trees
@@ -76,7 +76,6 @@ public class NewickTreeImporter implements IToTrees, IImportTrees {
                 final ArrayList<String> parts = new ArrayList<>();
 
                 // read in the trees
-                int count = 0;
                 while (it.hasNext()) {
                     lineno++;
                     final String line = Basic.removeComments(it.next(), '[', ']');
@@ -100,13 +99,38 @@ public class NewickTreeImporter implements IToTrees, IImportTrees {
                         if (TreesUtilities.hasNumbersOnInternalNodes(tree)) {
                             TreesUtilities.changeNumbersOnInternalNodesToEdgeConfidencies(tree);
                         }
+                        final List<String> leafLabelList = IterationUtils.asList(newickParser.leafLabels());
+                        final Set<String> leafLabelSet = new HashSet<>(leafLabelList);
+                        final boolean multiLabeled = (leafLabelSet.size() < leafLabelList.size());
+
+                        if (multiLabeled) {
+                            if (isOptionConvertMultiLabeledTree()) {
+                                final Set<String> seen = new HashSet<>();
+                                for (Node v : tree.nodes()) {
+                                    String label = tree.getLabel(v);
+                                    if (label != null) {
+                                        int count = 1;
+                                        while (seen.contains(label)) {
+                                            label = tree.getLabel(v) + "-" + (++count);
+                                        }
+                                        if (count > 1)
+                                            tree.setLabel(v, label);
+                                        seen.add(label);
+                                    }
+                                }
+                            } else {
+                                for (String z : leafLabelSet) {
+                                    leafLabelList.remove(z);
+                                }
+                                throw new IOExceptionWithLineNumber(lineno, "Name appears multiple times in tree:" + leafLabelList.get(0));
+                            }
+                        }
+
                         if (taxonNamesFound.size() == 0) {
                             for (String name : newickParser.leafLabels()) {
-                                if (taxonNamesFound.add(name)) {
-                                    orderedTaxonNames.add(name);
-                                    taxName2Id.put(name, orderedTaxonNames.size());
-                                } else
-                                    throw new IOExceptionWithLineNumber(lineno, "Name appears multiple times in tree:" + name);
+                                taxonNamesFound.add(name);
+                                orderedTaxonNames.add(name);
+                                taxName2Id.put(name, orderedTaxonNames.size());
                             }
                         } else {
                             if (!taxonNamesFound.equals(IterationUtils.asSet(newickParser.leafLabels()))) {
@@ -133,7 +157,8 @@ public class NewickTreeImporter implements IToTrees, IImportTrees {
                         tree.setName("tree-" + trees.size());
 
                         progressListener.setProgress(it.getProgress());
-                    }
+                    } else
+                        parts.add(line);
                 }
                 if (parts.size() > 0)
                     System.err.println("Ignoring trailing lines at end of file:\n" + Basic.abbreviateDotDotDot(Basic.toString(parts, "\n"), 400));
@@ -154,7 +179,7 @@ public class NewickTreeImporter implements IToTrees, IImportTrees {
         return line != null && line.startsWith("(");
     }
 
-    public boolean getOptionConvertMultiLabeledTree() {
+    public boolean isOptionConvertMultiLabeledTree() {
         return optionConvertMultiLabeledTree;
     }
 

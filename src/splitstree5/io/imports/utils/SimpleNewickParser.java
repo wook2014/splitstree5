@@ -195,37 +195,12 @@ public class SimpleNewickParser {
         return -1;
     }
 
-
-    public Iterable<String> allLabels() {
-        return () -> new Iterator<>() {
-            private Node v = tree.getFirstNode();
-
-            {
-                while (v != null && tree.getLabel(v) == null)
-                    v = v.getNext();
-            }
-
-            @Override
-            public boolean hasNext() {
-                return v != null;
-            }
-
-            @Override
-            public String next() {
-                final String result = (v != null ? tree.getLabel(v) : null);
-                while (v != null && tree.getLabel(v) == null)
-                    v = v.getNext();
-                return result;
-            }
-        };
-    }
-
     public Iterable<String> leafLabels() {
         return () -> new Iterator<>() {
             private Node v = tree.getFirstNode();
 
             {
-                while (v != null && v.getOutDegree() > 0 && tree.getLabel(v) == null)
+                while (v != null && (v.getOutDegree() > 0 || tree.getLabel(v) == null))
                     v = v.getNext();
             }
 
@@ -237,7 +212,9 @@ public class SimpleNewickParser {
             @Override
             public String next() {
                 final String result = (v != null ? tree.getLabel(v) : null);
-                while (v != null && v.getOutDegree() > 0 && tree.getLabel(v) == null)
+                if (v != null)
+                    v = v.getNext();
+                while (v != null && (v.getOutDegree() > 0 || tree.getLabel(v) == null))
                     v = v.getNext();
                 return result;
             }
