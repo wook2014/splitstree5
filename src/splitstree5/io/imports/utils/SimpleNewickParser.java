@@ -1,7 +1,7 @@
 /*
- *  SimpleNewickParser.java Copyright (C) 2020 Daniel H. Huson
+ * SimpleNewickParser.java Copyright (C) 2020. Daniel H. Huson
  *
- *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ * (Some code written by other authors, as named in code.)
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,6 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
 package splitstree5.io.imports.utils;
@@ -26,8 +27,7 @@ import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Iterator;
 
 
 /**
@@ -42,9 +42,6 @@ public class SimpleNewickParser {
     private PhyloTree tree;
     private boolean hasWeights;
 
-    private final Set<String> leafLabels = new HashSet<>();
-    private final Set<String> internalLabels = new HashSet<>();
-
     /**
      * parse the tree
      *
@@ -54,8 +51,6 @@ public class SimpleNewickParser {
     public PhyloTree parse(String line) throws IOException {
         this.tree = new PhyloTree();
         hasWeights = false;
-        leafLabels.clear();
-        internalLabels.clear();
 
         parseBracketNotationRecursively(0, null, 0, line);
         if (tree.getNumberOfNodes() > 0)
@@ -122,13 +117,6 @@ public class SimpleNewickParser {
                             label = "T" + label;
                         }
                         tree.setLabel(w, label);
-                        if (w.getOutDegree() == 0) {
-                            if (leafLabels.contains(label))
-                                System.err.println("Leaf label occurs multiple times: " + label);
-                            else
-                                leafLabels.add(label);
-                        } else
-                            internalLabels.add(label);
                     }
                 } else // everything to next ) : or , is considered a label:
                 {
@@ -157,13 +145,6 @@ public class SimpleNewickParser {
                     }
 
                     tree.setLabel(w, label);
-                    if (w.getOutDegree() == 0) {
-                        if (leafLabels.contains(label))
-                            System.err.println("Leaf label occurs multiple times: " + label);
-                        else
-                            leafLabels.add(label);
-                    } else
-                        internalLabels.add(label);
                 }
                 Edge e = null;
                 if (v != null) {
@@ -214,13 +195,55 @@ public class SimpleNewickParser {
         return -1;
     }
 
-    public Set<String> getLeafLabels() {
-        return leafLabels;
+
+    public Iterable<String> allLabels() {
+        return () -> new Iterator<>() {
+            private Node v = tree.getFirstNode();
+
+            {
+                while (v != null && tree.getLabel(v) == null)
+                    v = v.getNext();
+            }
+
+            @Override
+            public boolean hasNext() {
+                return v != null;
+            }
+
+            @Override
+            public String next() {
+                final String result = (v != null ? tree.getLabel(v) : null);
+                while (v != null && tree.getLabel(v) == null)
+                    v = v.getNext();
+                return result;
+            }
+        };
     }
 
-    public Set<String> getInternalLabels() {
-        return internalLabels;
+    public Iterable<String> leafLabels() {
+        return () -> new Iterator<>() {
+            private Node v = tree.getFirstNode();
+
+            {
+                while (v != null && v.getOutDegree() > 0 && tree.getLabel(v) == null)
+                    v = v.getNext();
+            }
+
+            @Override
+            public boolean hasNext() {
+                return v != null;
+            }
+
+            @Override
+            public String next() {
+                final String result = (v != null ? tree.getLabel(v) : null);
+                while (v != null && v.getOutDegree() > 0 && tree.getLabel(v) == null)
+                    v = v.getNext();
+                return result;
+            }
+        };
     }
+
 
     public boolean isEnforceLeafLabelsStartWithLetter() {
         return enforceLeafLabelsStartWithLetter;

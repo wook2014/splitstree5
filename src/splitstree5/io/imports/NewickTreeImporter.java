@@ -1,7 +1,7 @@
 /*
- *  NewickTreeImporter.java Copyright (C) 2020 Daniel H. Huson
+ * NewickTreeImporter.java Copyright (C) 2020. Daniel H. Huson
  *
- *  (Some files contain contributions from other authors, who are then mentioned separately.)
+ * (Some code written by other authors, as named in code.)
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,6 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
 package splitstree5.io.imports;
@@ -100,7 +101,7 @@ public class NewickTreeImporter implements IToTrees, IImportTrees {
                             TreesUtilities.changeNumbersOnInternalNodesToEdgeConfidencies(tree);
                         }
                         if (taxonNamesFound.size() == 0) {
-                            for (String name : newickParser.getLeafLabels()) {
+                            for (String name : newickParser.leafLabels()) {
                                 if (taxonNamesFound.add(name)) {
                                     orderedTaxonNames.add(name);
                                     taxName2Id.put(name, orderedTaxonNames.size());
@@ -108,9 +109,9 @@ public class NewickTreeImporter implements IToTrees, IImportTrees {
                                     throw new IOExceptionWithLineNumber(lineno, "Name appears multiple times in tree:" + name);
                             }
                         } else {
-                            if (!taxonNamesFound.equals(newickParser.getLeafLabels())) {
+                            if (!taxonNamesFound.equals(IterationUtils.asSet(newickParser.leafLabels()))) {
                                 partial = true;
-                                for (String name : newickParser.getLeafLabels()) {
+                                for (String name : newickParser.leafLabels()) {
                                     if (!taxonNamesFound.contains(name)) {
                                         System.err.println("Additional taxon name: " + name);
                                         taxonNamesFound.add(name);
