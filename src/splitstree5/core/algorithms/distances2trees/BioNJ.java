@@ -130,7 +130,7 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
         // actual for (finding all nearest Neighbors)
         for (int actual = nTax; actual > 3; actual--) {
             // find: min D (h, b, b)
-            double d_min = Double.MAX_VALUE, d_ij;
+            double d_min = Double.POSITIVE_INFINITY, d_ij;
             for (int i = 1; i < nTax; i++) {
                 if (!active.get(i)) continue;
                 for (int j = i + 1; j <= nTax; j++) {

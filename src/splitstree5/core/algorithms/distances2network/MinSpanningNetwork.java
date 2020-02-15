@@ -105,7 +105,7 @@ public class MinSpanningNetwork extends Algorithm<DistancesBlock, NetworkBlock> 
         int numComponentsMSN = ntax;
 
 
-        double maxValue = Double.MAX_VALUE;
+        double maxValue = Double.POSITIVE_INFINITY;
         // all sets of edges in ascending order of lengths
 
         progress.setMaximum(distancesToTaxonPairs.size());
@@ -160,7 +160,7 @@ public class MinSpanningNetwork extends Algorithm<DistancesBlock, NetworkBlock> 
             if (numComponentsMSN == 1) {
                 if (optionMinSpanningTree.getValue())
                     return; // tree
-                if (maxValue == Double.MAX_VALUE)
+                if (maxValue == Double.POSITIVE_INFINITY)
                     maxValue = threshold + getOptionEpsilon(); // once network is connected, add all edges upto threshold+epsilon
             }
         }

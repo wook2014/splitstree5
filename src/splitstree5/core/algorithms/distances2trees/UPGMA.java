@@ -88,7 +88,7 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> implements IFro
         for (int clusters = ntax; clusters > 2; clusters--) {
             int i_min = 0, j_min = 0;
             //Find closest pair.
-            double d_min = Double.MAX_VALUE;
+            double d_min = Double.POSITIVE_INFINITY;
             for (int i = 1; i <= clusters; i++) {
                 for (int j = i + 1; j <= clusters; j++) {
                     double dij = d[i][j];

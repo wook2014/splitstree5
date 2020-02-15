@@ -93,7 +93,7 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> imple
         // actual for (finding all nearest Neighbors)
         for (int actual = nTax; actual > 2; actual--) {
             // find: min D (h, b, b)
-            double minDist = Double.MAX_VALUE;
+            double minDist = Double.POSITIVE_INFINITY;
             for (int i = 1; i < nTax; i++) {
                 if (distanceMatrix[0][i] == 0.0) continue;
                 for (int j = i + 1; j <= nTax; j++) {

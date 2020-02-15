@@ -87,7 +87,7 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
                 changed = true;   // sequences have been changed, recompute graph
             } else {
                 // determine min connection cost:
-                double minConnectionCost = Double.MAX_VALUE;
+                double minConnectionCost = Double.POSITIVE_INFINITY;
 
                 for (Node u = graph.getFirstNode(); u != null; u = u.getNext()) {
                     String seqU = (String) u.getInfo();
@@ -180,7 +180,7 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
 
         // TODO: This implementation of the minimum spanning network is wrong, add only edges between different connected components
 
-        double maxValue = Double.MAX_VALUE;
+        double maxValue = Double.POSITIVE_INFINITY;
         // all sets of edges in ascending order of lengths
         for (Object o : value2pairs.keySet()) {
             Double value = (Double) o;
@@ -233,7 +233,7 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
                             componentsOfMSN[k] = newComponent;
                 }
             }
-            if (numComponentsMSN == 1 && maxValue == Double.MAX_VALUE)
+            if (numComponentsMSN == 1 && maxValue == Double.POSITIVE_INFINITY)
                 maxValue = threshold + epsilon; // once network is connected, add all edges upto threshold+epsilon
         }
     }

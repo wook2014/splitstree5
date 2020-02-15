@@ -277,19 +277,19 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
      * @return max distance between any two points
      */
     public static double calculateMaxDist(Iterable<Point3D> points) {
-        double minX = Double.MAX_VALUE;
-        double maxX = Double.MIN_VALUE;
-        double minY = Double.MAX_VALUE;
-        double maxY = Double.MIN_VALUE;
-        double minZ = Double.MAX_VALUE;
-        double maxZ = Double.MIN_VALUE;
+        double minX = Double.POSITIVE_INFINITY;
+        double maxX = Double.NEGATIVE_INFINITY;
+        double minY = Double.POSITIVE_INFINITY;
+        double maxY = Double.NEGATIVE_INFINITY;
+        double minZ = Double.POSITIVE_INFINITY;
+        double maxZ = Double.NEGATIVE_INFINITY;
         for (Point3D point : points) {
-            minX = point.getX() < minX ? point.getX() : minX;
-            minY = point.getY() < minY ? point.getY() : minY;
-            minZ = point.getZ() < minZ ? point.getZ() : minZ;
-            maxX = point.getX() > maxX ? point.getX() : maxX;
-            maxY = point.getY() > maxY ? point.getY() : maxY;
-            maxZ = point.getZ() > maxZ ? point.getZ() : maxZ;
+            minX = Math.min(point.getX(), minX);
+            minY = Math.min(point.getY(), minY);
+            minZ = Math.min(point.getZ(), minZ);
+            maxX = Math.max(point.getX(), maxX);
+            maxY = Math.max(point.getY(), maxY);
+            maxZ = Math.max(point.getZ(), maxZ);
         }
         return (new Point3D(maxX, maxY, maxZ)).distance(new Point3D(minX, minY, minZ));
     }

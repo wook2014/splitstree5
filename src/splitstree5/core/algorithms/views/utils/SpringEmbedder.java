@@ -176,10 +176,10 @@ public class SpringEmbedder {
      * @return bounding box
      */
     private static Bounds computeBBox(NodeArray<Point2D> node2location) {
-        double minX = Double.MAX_VALUE;
+        double minX = Double.POSITIVE_INFINITY;
         double maxX = Double.MIN_VALUE;
-        double minY = Double.MAX_VALUE;
-        double maxY = Double.MIN_VALUE;
+        double minY = Double.NEGATIVE_INFINITY;
+        double maxY = Double.NEGATIVE_INFINITY;
         for (Point2D point : node2location.values()) {
             minX = Math.min(minX, point.getX());
             maxX = Math.max(maxX, point.getX());
