@@ -20,6 +20,7 @@
 
 package splitstree5.dialogs.importer;
 
+import javafx.scene.layout.Pane;
 import jloda.fx.window.NotificationManager;
 import splitstree5.io.imports.interfaces.IImporter;
 import splitstree5.main.MainWindow;
@@ -54,7 +55,7 @@ public class FileOpener {
      * @param parentMainWindow
      * @param fileName
      */
-    public static void open(boolean reload, MainWindow parentMainWindow, String fileName, Consumer<Throwable> exceptionHandler) {
+    public static void open(boolean reload, MainWindow parentMainWindow, Pane statusPane, String fileName, Consumer<Throwable> exceptionHandler) {
         if (!(new File(fileName)).canRead())
             NotificationManager.showError("File not found or unreadable: " + fileName);
         else {
@@ -66,7 +67,7 @@ public class FileOpener {
                     NotificationManager.showError("Can't open file '" + fileName + "'\nUnknown data type or file format");
                 else {
                     final ImportService importService = new ImportService();
-                    importService.setup(reload, parentMainWindow, importer, fileName, "Loading file", parentMainWindow.getMainWindowController().getBottomPane());
+                    importService.setup(reload, parentMainWindow, importer, fileName, "Loading file", statusPane);
                     importService.setOnCancelled((e) -> NotificationManager.showWarning("User canceled"));
                     importService.setOnFailed((e) -> {
                         NotificationManager.showError("Import of (" + dataType + "/" + fileFormat + ") failed:\n" + (importService.getException().getCause() != null ? importService.getException().getCause().getMessage() : importService.getException().getMessage()));

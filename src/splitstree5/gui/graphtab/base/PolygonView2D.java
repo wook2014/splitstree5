@@ -47,6 +47,7 @@ public class PolygonView2D {
         polygon.getPoints().clear();
         for (Node v : nodes) {
             final NodeViewBase nodeViewBase = node2view.get(v);
+            nodeViewBase.setFill(Color.SILVER);
             polygon.getPoints().addAll(nodeViewBase.getShapeGroup().getTranslateX(), nodeViewBase.getShapeGroup().getTranslateY());
         }
     }

@@ -69,6 +69,9 @@ public class MenuController {
     private MenuItem importMenuItem;
 
     @FXML
+    private MenuItem compareGenomesMenuItem;
+
+    @FXML
     private MenuItem importMultipleTreeFilesMenuItem;
 
     @FXML
@@ -435,6 +438,10 @@ public class MenuController {
 
     public MenuItem getImportMultipleTreeFilesMenuItem() {
         return importMultipleTreeFilesMenuItem;
+    }
+
+    public MenuItem getCompareGenomesMenuItem() {
+        return compareGenomesMenuItem;
     }
 
     public MenuItem getGroupIdenticalHaplotypesFilesMenuItem() {
@@ -940,7 +947,7 @@ public class MenuController {
             if (WorkflowNexusInput.isApplicable(fileName))
                 WorkflowNexusInput.open(mainWindow, fileName);
             else
-                FileOpener.open(false, mainWindow, fileName, null);
+                FileOpener.open(false, mainWindow, mainWindow.getMainWindowController().getBottomPane(), fileName, null);
         });
 
         wrapTextMenuItem.selectedProperty().unbind();

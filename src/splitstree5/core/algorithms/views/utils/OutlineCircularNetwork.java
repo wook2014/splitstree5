@@ -55,7 +55,7 @@ public class OutlineCircularNetwork {
      */
     public static void apply(ProgressListener progress, boolean useWeights, TaxaBlock taxaBlock, SplitsBlock splits, PhyloSplitsGraph graph, NodeArray<Point2D> node2point, BitSet forbiddenSplits, BitSet usedSplits,
                              ArrayList<ArrayList<Node>> loops) throws CanceledException {
-        progress.setTasks("Sparse Equal Angle", null);
+        progress.setTasks("Outline", null);
 
         if (node2point == null)
             node2point = new NodeArray<>(graph);

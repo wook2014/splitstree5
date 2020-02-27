@@ -26,6 +26,7 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import jloda.fx.util.RecentFilesManager;
+import jloda.fx.window.MainWindowManager;
 import jloda.fx.window.NotificationManager;
 import jloda.util.Basic;
 import splitstree5.core.Document;
@@ -61,7 +62,7 @@ public class DataLoader {
      * @param parentWindow
      */
     public static void load(boolean reload, String fileName, TaxaBlock taxaBlock, DataBlock dataBlock, MainWindow parentWindow) {
-        if (reload) {
+        if (reload && parentWindow != null) {
             final Workflow workflow = parentWindow.getWorkflow();
 
             if (workflow.canLoadData(dataBlock)) {
@@ -85,7 +86,7 @@ public class DataLoader {
         }
 
         final MainWindow mainWindow;
-        if (parentWindow.getWorkflow().getWorkingDataNode() == null) {
+        if (parentWindow != null && parentWindow.getWorkflow().getWorkingDataNode() == null) {
             mainWindow = parentWindow;
         } else {
             mainWindow = new MainWindow();
@@ -162,7 +163,10 @@ public class DataLoader {
             if (mainWindow == parentWindow) // are using an existing window
                 mainWindow.getStage().toFront();
             else // is new window
-                mainWindow.show(new Stage(), parentWindow.getStage().getX() + 50, parentWindow.getStage().getY() + 50, parentWindow.getStage().getWidth(), parentWindow.getStage().getHeight());
+            {
+                final Stage refWindow = (parentWindow != null ? parentWindow.getStage() : MainWindowManager.getInstance().getLastFocusedMainWindow().getStage());
+                mainWindow.show(new Stage(), refWindow.getX() + 50, refWindow.getY() + 50, refWindow.getWidth(), refWindow.getHeight());
+            }
             final String shortDescription = workflow.getTopTaxaNode() != null ? workflow.getTopDataNode().getShortDescription() : "null";
             NotificationManager.showInformation("Opened file: " + Basic.getFileNameWithoutPath(fileName) + (shortDescription.length() > 0 ? "\nLoaded " + shortDescription : ""));
         });

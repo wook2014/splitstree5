@@ -197,7 +197,7 @@ public class EditInputTab extends EditTextViewTab {
                 if (WorkflowNexusInput.isApplicable(tmpFile.getPath()))
                     WorkflowNexusInput.open(mainWindow, tmpFile.getPath());
                 else
-                    FileOpener.open(true, mainWindow, tmpFile.getPath(), exceptionHandler);
+                    FileOpener.open(true, mainWindow, mainWindow.getMainWindowController().getBottomPane(), tmpFile.getPath(), exceptionHandler);
             } catch (Exception ex) {
                 NotificationManager.showError("Enter data failed: " + ex.getMessage());
             }

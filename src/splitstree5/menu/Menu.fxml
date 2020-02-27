@@ -89,12 +89,8 @@
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <Menu fx:id="toolsMenu" text="Tools">
                     <items>
-                        <MenuItem fx:id="importMultipleTreeFilesMenuItem" text="Import Trees from Multiple Files...">
-                            <accelerator>
-                                <KeyCodeCombination alt="UP" code="I" control="UP" meta="UP" shift="DOWN"
-                                                    shortcut="DOWN"/>
-                            </accelerator>
-                        </MenuItem>
+                        <MenuItem fx:id="compareGenomesMenuItem" text="Compare Genomes..."/>
+                        <MenuItem fx:id="importMultipleTreeFilesMenuItem" text="Import Trees from Multiple Files..."/>
                         <MenuItem fx:id="GroupIdenticalHaplotypesFilesMenuItem" text="Group Identical Haplotypes...">
                         </MenuItem>
                     </items>

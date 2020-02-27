@@ -49,6 +49,10 @@ module splitstreefive {
     opens splitstree5.dialogs.exporter;
     opens splitstree5.dialogs.importer;
     opens splitstree5.dialogs.message;
+    exports splitstree5.dialogs.genome;
+    opens splitstree5.dialogs.genome;
+
+
     opens splitstree5.gui.algorithmtab;
     opens splitstree5.gui.algorithmtab.rootbyoutgroup;
     opens splitstree5.gui.algorithmtab.taxafilterview;
@@ -76,4 +80,5 @@ module splitstreefive {
     exports splitstree5.gui.utils;
     exports splitstree5.io.nexus;
     exports splitstree5.treebased;
+
 }
