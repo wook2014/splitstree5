@@ -30,13 +30,11 @@ import jloda.fx.util.AllFileFilter;
 import jloda.fx.util.BasicFX;
 import jloda.fx.util.ExtendedFXMLLoader;
 import jloda.fx.util.FastAFileFilter;
-import jloda.fx.window.NotificationManager;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 import splitstree5.main.Version;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -115,7 +113,6 @@ public class ImportGenomesDialog {
 
         controller.getOutputFileTextField().textProperty().addListener((c, o, n) -> ProgramProperties.put("GenomesOutputFile", n));
 
-
         controller.getSequenceTypeChoiceBox().getItems().addAll(Sequence.values());
         controller.getSequenceTypeChoiceBox().setValue(Sequence.DNA);
 
@@ -125,6 +122,9 @@ public class ImportGenomesDialog {
 
         controller.getTaxaChoiceBox().getItems().addAll(TaxonIdentification.values());
         controller.getTaxaChoiceBox().setValue(TaxonIdentification.PerFastARecord);
+
+        controller.getStoreOnlyReferencesCheckBox().setSelected(ProgramProperties.get("StoreOnlyReferences", false));
+        controller.getStoreOnlyReferencesCheckBox().selectedProperty().addListener((c, o, n) -> ProgramProperties.put("StoreOnlyReferences", n));
 
         controller.getCancelButton().setOnAction(c -> stage.close());
         controller.getCancelButton().disableProperty().bind(isRunning);
@@ -138,15 +138,11 @@ public class ImportGenomesDialog {
 
 
         controller.getApplyButton().setOnAction(c -> {
-            final ImportGenomesManager importGenomesManager = new ImportGenomesManager(Arrays.asList(Basic.split(controller.getInputTextArea().getText(), ',')),
-                    controller.getTaxaChoiceBox().getValue(), labelListsManager.computeLine2Label(), Basic.parseInt(controller.getMinLengthTextField().getText()));
+            final GenomesImporter genomesImporter = new GenomesImporter(Arrays.asList(Basic.split(controller.getInputTextArea().getText(), ',')),
+                    controller.getTaxaChoiceBox().getValue(), labelListsManager.computeLine2Label(), Basic.parseInt(controller.getMinLengthTextField().getText()),
+                    controller.getStoreOnlyReferencesCheckBox().isSelected());
 
-            try {
-                importGenomesManager.saveData(controller.getOutputFileTextField().getText(), controller.getStatusFlowPane());
-            } catch (IOException e) {
-                NotificationManager.showError("Save failed: " + e);
-            }
-
+            genomesImporter.saveData(controller.getOutputFileTextField().getText(), controller.getStatusFlowPane());
         });
         controller.getApplyButton().disableProperty().bind(controller.getInputTextArea().textProperty().isEmpty());
     }

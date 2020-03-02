@@ -47,7 +47,16 @@ import java.util.stream.Collectors;
  * Daniel Huson, 3.2020
  */
 public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFromGenomes, IToDistances {
-    public enum Distance {Phylogenetic, Jaccard}
+    public enum Distance {
+        Phylogenetic, Jaccard;
+
+        public String toString() {
+            if (this == Phylogenetic)
+                return "Phylogenetic";
+            else
+                return "1-Jaccard";
+        }
+    }
 
     public enum Alphabet {Nucleotides, AminoAcids}
 
@@ -83,6 +92,8 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
         if (sketches.size() < 4) {
             throw new IOException("Too few genomes: " + sketches.size());
         }
+
+        // todo: warn when files not found
 
         for (final MashSketch sketch : sketches) {
             if (sketch.getValues().length == 0)

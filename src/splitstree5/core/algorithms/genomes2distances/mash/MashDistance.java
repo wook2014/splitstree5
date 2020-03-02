@@ -36,7 +36,7 @@ public class MashDistance {
             else
                 return Math.max(0f, -1.0 / a.getkSize() * Math.log(2.0 * j / (1 + j)));
         } else
-            return j;
+            return 1 - j;
     }
 
     /**

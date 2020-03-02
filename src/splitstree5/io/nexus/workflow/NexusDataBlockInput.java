@@ -75,6 +75,13 @@ public class NexusDataBlockInput {
                 title = input.getTitle();
                 link = input.getLink();
                 return dataBlock;
+            } else if (np.peekMatchBeginBlock(GenomesBlock.BLOCK_NAME)) {
+                final GenomesNexusInput input = new GenomesNexusInput();
+                final GenomesBlock dataBlock = new GenomesBlock();
+                input.parse(np, taxa, dataBlock);
+                title = input.getTitle();
+                link = input.getLink();
+                return dataBlock;
             } else if (np.peekMatchBeginBlock(DistancesBlock.BLOCK_NAME)) {
                 final DistancesNexusInput input = new DistancesNexusInput();
                 final DistancesBlock dataBlock = new DistancesBlock();

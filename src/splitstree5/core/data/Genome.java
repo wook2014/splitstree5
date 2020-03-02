@@ -19,6 +19,11 @@
 
 package splitstree5.core.data;
 
+import jloda.util.Basic;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -95,14 +100,14 @@ public class Genome {
      * @param i 1-based
      * @return
      */
-    public GenomePart getSequence(int i) {
+    public GenomePart getPart(int i) {
         return parts.get(i);
     }
 
     public Iterable<byte[]> parts() {
         return () -> new Iterator<>() {
             int i = 0;
-            byte[] next = (i < getNumberOfParts() ? getSequence(i++).getSequence() : null);
+            byte[] next = (i < getNumberOfParts() ? getPart(i++).getSequence() : null);
 
             @Override
             public boolean hasNext() {
@@ -112,7 +117,7 @@ public class Genome {
             @Override
             public byte[] next() {
                 final byte[] result = next;
-                next = (i < getNumberOfParts() ? getSequence(i++).getSequence() : null);
+                next = (i < getNumberOfParts() ? getPart(i++).getSequence() : null);
                 return result;
             }
         };
@@ -155,7 +160,32 @@ public class Genome {
             if (sequence != null)
                 return sequence;
             else {
-                // todo: read from file
+                if (file != null) {
+                    try (BufferedReader ins = new BufferedReader(new InputStreamReader(Basic.getInputStreamPossiblyZIPorGZIP(file)))) {
+                        long toSkip = offset;
+                        while (toSkip > 0) {
+                            toSkip -= ins.skip(toSkip);
+                            if (!ins.ready())
+                                break;
+                        }
+                        String line = ins.readLine();
+                        if (line != null && line.startsWith(">"))
+                            line = ins.readLine();
+                        if (line != null) {
+                            final ArrayList<byte[]> lines = new ArrayList<>();
+                            do {
+                                lines.add(line.getBytes());
+                                line = ins.readLine();
+
+                            }
+                            while (line != null && !line.startsWith(">"));
+                            return Basic.concatenate(lines);
+                        }
+                    } catch (IOException e) {
+                        System.err.println("Read file failed: " + e);
+                        return null;
+                    }
+                }
                 return null;
             }
         }

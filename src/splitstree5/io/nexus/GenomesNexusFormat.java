@@ -30,7 +30,6 @@ public class GenomesNexusFormat implements INexusFormat {
     private boolean optionLabels;
     private boolean optionAccessions;
     private boolean optionMultiPart;
-    private boolean optionFiles;
 
     /**
      * the Constructor
@@ -60,14 +59,6 @@ public class GenomesNexusFormat implements INexusFormat {
 
     public void setOptionMultiPart(boolean optionMultiPart) {
         this.optionMultiPart = optionMultiPart;
-    }
-
-    public boolean isOptionFiles() {
-        return optionFiles;
-    }
-
-    public void setOptionFiles(boolean optionFiles) {
-        this.optionFiles = optionFiles;
     }
 
     @Override

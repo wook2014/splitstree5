@@ -20,6 +20,7 @@
 package splitstree5.dialogs.importgenomes;
 
 import javafx.scene.layout.FlowPane;
+import jloda.fx.util.AService;
 import jloda.fx.window.NotificationManager;
 import jloda.util.Basic;
 import jloda.util.FastAFileIterator;
@@ -43,14 +44,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * manages the importgenomes input
+ * performs genome import
  * Daniel Huson, 2.2020
  */
-public class ImportGenomesManager {
+public class GenomesImporter {
     private final List<String> fileNames;
     private final boolean perFile;
     private final boolean useFileName;
     private final int minLength;
+    private final boolean storeFileReferences;
 
     private final Map<String, String> line2label;
 
@@ -60,29 +62,29 @@ public class ImportGenomesManager {
      * @param fileNames
      * @param line2label
      */
-    public ImportGenomesManager(List<String> fileNames, ImportGenomesDialog.TaxonIdentification taxonIdentification, Map<String, String> line2label, int minLength) {
+    public GenomesImporter(List<String> fileNames, ImportGenomesDialog.TaxonIdentification taxonIdentification, Map<String, String> line2label, int minLength, boolean storeFileReferences) {
         this.fileNames = fileNames;
         perFile = (taxonIdentification == ImportGenomesDialog.TaxonIdentification.PerFile || taxonIdentification == ImportGenomesDialog.TaxonIdentification.PerFileUsingFileName);
         useFileName = (taxonIdentification == ImportGenomesDialog.TaxonIdentification.PerFileUsingFileName);
         this.line2label = line2label;
         this.minLength = minLength;
+        this.storeFileReferences = storeFileReferences;
     }
-
 
     /**
      * iterator over all input fastA records
      *
      * @return iterator
      */
-    public Iterable<Pair<String, byte[]>> iterable() {
+    public Iterable<InputRecord> iterable() {
         return () -> new Iterator<>() {
-            final Iterator<Pair<String, byte[]>> iterator = ImportGenomesManager.this.iterator();
-            Pair<String, byte[]> next = null;
+            final Iterator<InputRecord> iterator = GenomesImporter.this.iterator();
+            InputRecord next = null;
 
             {
                 while (next == null && iterator.hasNext()) {
-                    final Pair<String, byte[]> pair = iterator.next();
-                    if (pair.getSecond().length >= minLength)
+                    final InputRecord pair = iterator.next();
+                    if (pair.getSequence().length >= minLength)
                         next = pair;
                 }
             }
@@ -90,16 +92,15 @@ public class ImportGenomesManager {
             @Override
             public boolean hasNext() {
                 return (next != null);
-
             }
 
             @Override
-            public Pair<String, byte[]> next() {
-                final Pair<String, byte[]> result = next;
+            public InputRecord next() {
+                final InputRecord result = next;
                 next = null;
                 while (next == null && iterator.hasNext()) {
-                    final Pair<String, byte[]> pair = iterator.next();
-                    if (pair.getSecond().length >= minLength)
+                    final InputRecord pair = iterator.next();
+                    if (pair.getSequence().length >= minLength)
                         next = pair;
                 }
                 return result;
@@ -108,16 +109,16 @@ public class ImportGenomesManager {
     }
 
     /**
-     * iterator over all input
+     * iterator over all input records
      *
      * @return iterator
      */
-    private Iterator<Pair<String, byte[]>> iterator() {
+    private Iterator<InputRecord> iterator() {
         return new Iterator<>() {
             private FastAFileIterator fastaIterator;
 
             private int whichFile = 0;
-            private Pair<String, byte[]> next;
+            private InputRecord next;
 
             {
                 try {
@@ -129,7 +130,7 @@ public class ImportGenomesManager {
                                 fastaIterator = new FastAFileIterator(fileNames.get(whichFile));
                                 if (fastaIterator.hasNext()) {
                                     final Pair<String, String> pair = fastaIterator.next();
-                                    next = new Pair<>(Basic.swallowLeadingGreaterSign(pair.getFirst()), pair.getSecond().getBytes());
+                                    next = new InputRecord(Basic.swallowLeadingGreaterSign(pair.getFirst()), pair.getSecond().getBytes(), fileNames.get(whichFile), fastaIterator.getPosition());
                                 } else {
                                     fastaIterator.close();
                                     whichFile++;
@@ -157,8 +158,8 @@ public class ImportGenomesManager {
             }
 
             @Override
-            public Pair<String, byte[]> next() {
-                final Pair<String, byte[]> result = next;
+            public InputRecord next() {
+                final InputRecord result = next;
                 try {
                     next = null;
 
@@ -177,19 +178,26 @@ public class ImportGenomesManager {
                         }
                         if (fastaIterator != null) {
                             final Pair<String, String> pair = fastaIterator.next();
-                            next = new Pair<>(Basic.swallowLeadingGreaterSign(pair.getFirst()), pair.getSecond().getBytes());
+                            next = new InputRecord(Basic.swallowLeadingGreaterSign(pair.getFirst()), pair.getSecond().getBytes(), fileNames.get(whichFile), fastaIterator.getPosition());
                         }
                     }
                 } catch (IOException ex) {
                     next = null;
                 }
-                result.setFirst(line2label.getOrDefault(result.getFirst(), result.getFirst().replaceAll("'", "_")));
+                result.setName(line2label.getOrDefault(result.getName(), result.getName().replaceAll("'", "_")));
                 return result;
             }
         };
     }
 
-    private Pair<String, byte[]> getDataFromAFile(String fileName, boolean useFileName) {
+    /**
+     * get a single input record from a single file
+     *
+     * @param fileName
+     * @param useFileName
+     * @return input record
+     */
+    private InputRecord getDataFromAFile(String fileName, boolean useFileName) {
         final String name;
         if (useFileName)
             name = Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(fileName), "");
@@ -202,40 +210,98 @@ public class ImportGenomesManager {
         }
 
         try (FileLineIterator it = new FileLineIterator(fileName)) {
-            return new Pair<>(name, it.stream().filter(s -> !s.startsWith(">")).map(s -> s.replaceAll("\\s+", "")).collect(Collectors.joining()).getBytes());
+            return new InputRecord(name, it.stream().filter(s -> !s.startsWith(">")).map(s -> s.replaceAll("\\s+", "")).collect(Collectors.joining()).getBytes(),
+                    fileName, 0L);
         } catch (IOException e) {
             Basic.caught(e);
             return null;
         }
     }
 
-    public void saveData(String fileName, FlowPane statusFlowPane) throws IOException {
-        final TaxaBlock taxaBlock = new TaxaBlock();
+    /**
+     * save the data to a file
+     *
+     * @param fileName
+     * @param statusFlowPane
+     * @throws IOException
+     */
+    public void saveData(String fileName, FlowPane statusFlowPane) {
+        AService<Boolean> aService = new AService<>(statusFlowPane);
 
-        for (Pair<String, byte[]> pair : iterable()) {
-            taxaBlock.addTaxaByNames(Collections.singleton(pair.getFirst()));
+        aService.setCallable(() -> {
+            final TaxaBlock taxaBlock = new TaxaBlock();
+
+            for (InputRecord inputRecord : iterable()) {
+                taxaBlock.addTaxaByNames(Collections.singleton(inputRecord.getName()));
+            }
+
+            final GenomesBlock genomesBlock = new GenomesBlock();
+
+            aService.getProgressListener().setSubtask("Saving data");
+            aService.getProgressListener().setMaximum(taxaBlock.getNtax());
+            aService.getProgressListener().setProgress(0);
+
+            for (InputRecord inputRecord : iterable()) {
+                final Genome genome = new Genome();
+                genome.setName(inputRecord.getName());
+                final Genome.GenomePart genomePart = new Genome.GenomePart();
+                genomePart.setName("part");
+                if (storeFileReferences) {
+                    genomePart.setFile(inputRecord.getFile(), inputRecord.getOffset(), inputRecord.getSequence().length);
+                } else {
+                    genomePart.setSequence(inputRecord.getSequence(), inputRecord.getSequence().length);
+                }
+                genome.getParts().add(genomePart);
+                genome.setLength(genome.computeLength());
+                genomesBlock.getGenomes().add(genome);
+                aService.getProgressListener().incrementProgress();
+            }
+
+            try (BufferedWriter w = new BufferedWriter(new FileWriter(fileName))) {
+                // ((GenomesNexusFormat)genomesBlock.getFormat()).setOptionLabels(true);
+                w.write("#nexus\n");
+                (new TaxaNexusOutput()).write(w, taxaBlock);
+                (new GenomesNexusOutput()).write(w, taxaBlock, genomesBlock);
+            }
+            return true;
+        });
+
+        aService.setOnFailed(c -> NotificationManager.showError("Genome import failed: " + aService.getException()));
+        aService.setOnSucceeded(c -> FileOpener.open(false, null, statusFlowPane, fileName, e -> NotificationManager.showError("Mash failed: " + e)));
+        aService.start();
+    }
+
+    public static class InputRecord {
+        private String name;
+        private byte[] sequence;
+        private String file;
+        private long offset;
+
+        public InputRecord(String name, byte[] sequence, String file, long offset) {
+            this.name = name;
+            this.sequence = sequence;
+            this.file = file;
+            this.offset = offset;
         }
 
-        final GenomesBlock genomesBlock = new GenomesBlock();
-
-        for (Pair<String, byte[]> pair : iterable()) {
-            final Genome genome = new Genome();
-            genome.setName(pair.getFirst());
-            final Genome.GenomePart part = new Genome.GenomePart();
-            part.setName("part1");
-            part.setSequence(pair.getSecond(), pair.getSecond().length);
-            genome.getParts().add(part);
-            genome.setLength(genome.computeLength());
-            genomesBlock.getGenomes().add(genome);
+        public String getName() {
+            return name;
         }
 
-        try (BufferedWriter w = new BufferedWriter(new FileWriter(fileName))) {
-            // ((GenomesNexusFormat)genomesBlock.getFormat()).setOptionLabels(true);
-            w.write("#nexus\n");
-            (new TaxaNexusOutput()).write(w, taxaBlock);
-            (new GenomesNexusOutput()).write(w, taxaBlock, genomesBlock);
+        public void setName(String name) {
+            this.name = name;
         }
 
-        FileOpener.open(false, null, statusFlowPane, fileName, e -> NotificationManager.showError("Mash failed: " + e));
+        public byte[] getSequence() {
+            return sequence;
+        }
+
+        public String getFile() {
+            return file;
+        }
+
+        public long getOffset() {
+            return offset;
+        }
     }
 }

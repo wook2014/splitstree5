@@ -21,12 +21,14 @@
 package splitstree5.core.algorithms.views;
 
 import javafx.application.Platform;
-import javafx.beans.property.*;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Tooltip;
 import javafx.scene.text.Font;
+import jloda.fx.window.NotificationManager;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;
@@ -37,10 +39,8 @@ import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromSplits;
 import splitstree5.core.algorithms.interfaces.IToViewer;
-import splitstree5.core.algorithms.views.utils.BoxOptimizer;
-import splitstree5.core.algorithms.views.utils.ConvexHull;
-import splitstree5.core.algorithms.views.utils.DaylightOptimizer;
 import splitstree5.core.algorithms.views.utils.EqualAngle;
+import splitstree5.core.algorithms.views.utils.OutlineCircularNetwork;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.ViewerBlock;
@@ -52,23 +52,18 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * compute an implementing of a set of splits using the equal angle algorithm
- * Daniel Huson, 11.2017
+ * compute an implementing of a set of splits using the outline algorithm
+ * Daniel Huson, 3.2020
  */
-public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implements IFromSplits, IToViewer {
-    public enum Algorithm {EqualAngleConvexHull, EqualAngleOnly, ConvexHullOnly}
-
-    private final ObjectProperty<Algorithm> optionAlgorithm = new SimpleObjectProperty<>(Algorithm.EqualAngleConvexHull);
+public class OutlineAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implements IFromSplits, IToViewer {
     private final BooleanProperty optionUseWeights = new SimpleBooleanProperty(true);
-    private final IntegerProperty optionDaylightIterations = new SimpleIntegerProperty(0);
-    private final IntegerProperty optionBoxOpenIterations = new SimpleIntegerProperty(0);
 
     private final PhyloSplitsGraph graph = new PhyloSplitsGraph();
 
     private ChangeListener<UpdateState> changeListener;
 
     public List<String> listOptions() {
-        return Arrays.asList("optionAlgorithm", "optionUseWeights", "optionBoxOpenIterations", "optionDaylightIterations");
+        return Collections.singletonList("optionUseWeights");
     }
 
     @Override
@@ -82,7 +77,8 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, SplitsBlock splitsBlock, ViewerBlock viewerBlock) throws Exception {
         if (splitsBlock.getNsplits() == 0)
             throw new IOException("No splits in input");
-        progress.setTasks("Split network construction", "Init.");
+        progress.setTasks("Outline algorithm", "Init.");
+
         final ISplitsViewTab viewTab = (ISplitsViewTab) viewerBlock.getTab();
         //splitsViewTab.setNodeLabel2Style(nodeLabel2Style);
 
@@ -100,47 +96,21 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
 
         final ArrayList<ArrayList<Node>> loops = new ArrayList<>();
 
-        if (getOptionAlgorithm() == Algorithm.EqualAngleOnly || getOptionAlgorithm() == Algorithm.EqualAngleConvexHull)
-            EqualAngle.apply(progress, isOptionUseWeights(), taxaBlock, splitsBlock, graph, node2point, forbiddenSplits, usedSplits);
-
-        if (getOptionBoxOpenIterations() > 0) {
-            final BoxOptimizer boxOptimizer = new BoxOptimizer();
-            boxOptimizer.setOptionIterations(getOptionBoxOpenIterations());
-            boxOptimizer.setOptionUseWeights(isOptionUseWeights());
-            boxOptimizer.apply(progress, taxaBlock, splitsBlock.getNsplits(), graph, node2point);
-        }
-
-        if (usedSplits.cardinality() < splitsBlock.getNsplits()) {
-            if (getOptionAlgorithm() == Algorithm.EqualAngleConvexHull || getOptionAlgorithm() == Algorithm.ConvexHullOnly) {
-                progress.setProgress(60);
-                ConvexHull.apply(progress, taxaBlock, splitsBlock, graph, usedSplits);
-            }
-        }
+        OutlineCircularNetwork.apply(progress, isOptionUseWeights(), taxaBlock, splitsBlock, graph, node2point, forbiddenSplits, usedSplits, loops);
+        if (splitsBlock.getNsplits() - usedSplits.cardinality() > 0)
+            NotificationManager.showWarning(String.format("Outline algorithm: skipped %d non-circular splits", splitsBlock.getNsplits() - usedSplits.cardinality()));
 
         EqualAngle.assignAnglesToEdges(taxaBlock.getNtax(), splitsBlock, splitsBlock.getCycle(), graph, forbiddenSplits);
         EqualAngle.assignCoordinatesToNodes(isOptionUseWeights(), graph, node2point); // need coordinates
-
-        if (getOptionDaylightIterations() > 0) {
-            final DaylightOptimizer daylightOptimizer = new DaylightOptimizer();
-            daylightOptimizer.setOptionIterations(getOptionDaylightIterations());
-            daylightOptimizer.setOptionUseWeights(isOptionUseWeights());
-            daylightOptimizer.apply(progress, taxaBlock, graph, node2point);
-            EqualAngle.assignCoordinatesToNodes(isOptionUseWeights(), graph, node2point);
-        }
-
-        progress.setProgress(90);
 
         double factorX = TreeEmbedder.scaleAndCenterToFitTarget(GraphLayout.Radial, viewTab.getTargetDimensions(), node2point, true);
         if (viewerBlock.getTab() instanceof Graph2DTab) {
             ((Graph2DTab) viewTab).getScaleBar().setUnitLengthX(factorX);
         }
-
         if (splitsBlock.getFit() > 0)
             ((Graph2DTab) viewTab).getFitLabel().setText(String.format("Fit: %.1f", splitsBlock.getFit()));
         else
             ((Graph2DTab) viewTab).getFitLabel().setText("");
-
-        progress.setProgress(100);   //set progress to 100%
 
         // compute all views and put their parts into the appropriate groups
         final Font labelFont = Font.font(ProgramProperties.getDefaultFontFX().getFamily(), taxaBlock.getNtax() <= 64 ? 16 : Math.max(4, 12 - Math.log(taxaBlock.getNtax() - 64) / Math.log(2)));
@@ -205,17 +175,6 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
         getConnector().stateProperty().addListener(new WeakChangeListener<>(changeListener));
     }
 
-    public Algorithm getOptionAlgorithm() {
-        return optionAlgorithm.get();
-    }
-
-    public ObjectProperty<Algorithm> optionAlgorithmProperty() {
-        return optionAlgorithm;
-    }
-
-    public void setOptionAlgorithm(Algorithm optionAlgorithm) {
-        this.optionAlgorithm.set(optionAlgorithm);
-    }
 
     public boolean isOptionUseWeights() {
         return optionUseWeights.get();
@@ -227,30 +186,5 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
 
     public void setOptionUseWeights(boolean optionUseWeights) {
         this.optionUseWeights.set(optionUseWeights);
-    }
-
-
-    public int getOptionDaylightIterations() {
-        return optionDaylightIterations.get();
-    }
-
-    public IntegerProperty optionDaylightIterationsProperty() {
-        return optionDaylightIterations;
-    }
-
-    public void setOptionDaylightIterations(int optionDaylightIterations) {
-        this.optionDaylightIterations.set(optionDaylightIterations);
-    }
-
-    public int getOptionBoxOpenIterations() {
-        return optionBoxOpenIterations.get();
-    }
-
-    public IntegerProperty optionBoxOpenIterationsProperty() {
-        return optionBoxOpenIterations;
-    }
-
-    public void setOptionBoxOpenIterations(int optionBoxOpenIterations) {
-        this.optionBoxOpenIterations.set(optionBoxOpenIterations);
     }
 }

@@ -29,6 +29,7 @@ module splitstreefive {
 
     opens splitstree5.core.algorithms;
     opens splitstree5.core.algorithms.genomes2distances;
+    exports splitstree5.core.algorithms.genomes2distances.mash;
     opens splitstree5.core.algorithms.characters2distances;
     opens splitstree5.core.algorithms.characters2network;
     opens splitstree5.core.algorithms.characters2splits;

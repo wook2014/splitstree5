@@ -60,13 +60,15 @@
                                                 <RowConstraints minHeight="10.0" valignment="TOP" vgrow="ALWAYS"/>
                                                 <RowConstraints fillHeight="false" maxHeight="47.0" minHeight="29.0"
                                                                 prefHeight="30.0" vgrow="SOMETIMES"/>
+                                                <RowConstraints fillHeight="false" maxHeight="47.0" minHeight="29.0"
+                                                                prefHeight="30.0" vgrow="SOMETIMES"/>
                                                 <RowConstraints fillHeight="false" maxHeight="5.0" minHeight="5.0"
                                                                 prefHeight="5.0" vgrow="SOMETIMES"/>
                                                 <RowConstraints fillHeight="false" maxHeight="44.0" minHeight="30.0"
                                                                 prefHeight="30.0" vgrow="SOMETIMES"/>
                                             </rowConstraints>
                                             <children>
-                                                <Label text="Output:" GridPane.rowIndex="4"/>
+                                                <Label text="Output:" GridPane.rowIndex="5"/>
                                                 <HBox maxHeight="1.7976931348623157E308"
                                                       maxWidth="1.7976931348623157E308" spacing="10.0"
                                                       GridPane.columnIndex="1" GridPane.hgrow="ALWAYS"
@@ -119,7 +121,7 @@
                                                     </children>
                                                 </HBox>
                                                 <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0"
-                                                      GridPane.columnIndex="1" GridPane.rowIndex="4">
+                                                      GridPane.columnIndex="1" GridPane.rowIndex="5">
                                                     <children>
                                                         <TextField fx:id="outputFileTextField" promptText="Output file"
                                                                    HBox.hgrow="ALWAYS"/>
@@ -143,6 +145,18 @@
                                                                text=" files:"/>
                                                     </children>
                                                 </VBox>
+                                                <HBox spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                                    <children>
+                                                        <Label text="Store only references to sequences:"/>
+                                                        <CheckBox fx:id="storeOnlyReferencesCheckBox"
+                                                                  mnemonicParsing="false">
+                                                            <tooltip>
+                                                                <Tooltip
+                                                                        text="Select this to prevent genomes being stored in Splitstree5 file"/>
+                                                            </tooltip>
+                                                        </CheckBox>
+                                                    </children>
+                                                </HBox>
                                             </children>
                                         </GridPane>
                                     </children>

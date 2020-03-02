@@ -47,9 +47,9 @@ public class GenomesNexusInput extends NexusIOBase implements INexusInput<Genome
             "\t\t[FILES={YES|NO}]\n" +
             "\t;]\n" +
             "\tMATRIX\n" +
-            "\t\t[label] [accession] length {sequence | [number-of-parts] length {sequence|{file offset}} ...  length {sequence|{file offset}}},\n" +
+            "\t\t[label] [accession] length {sequence | [number-of-parts] length {sequence|{file://file offset}} ...  length {sequence|{file offset}}},\n" +
             "\t\t...\n" +
-            "\t\t[label] [accession] length {sequence | [number-of-parts] length {sequence|{file offset}} ...  length {sequence|{file offset}}}\n" +
+            "\t\t[label] [accession] length {sequence | [number-of-parts] length {sequence|{file://file offset}} ...  length {sequence|{file offset}}}\n" +
             "\t;]\n" +
             "END;\n";
 
@@ -98,9 +98,6 @@ public class GenomesNexusInput extends NexusIOBase implements INexusInput<Genome
                 format.setOptionMultiPart(np.findIgnoreCase(tokens, "multiPart=yes", true, format.isOptionMultiPart()));
                 format.setOptionMultiPart(np.findIgnoreCase(tokens, "multiPart=no", false, format.isOptionMultiPart()));
 
-                format.setOptionFiles(np.findIgnoreCase(tokens, "files=yes", true, format.isOptionFiles()));
-                format.setOptionFiles(np.findIgnoreCase(tokens, "files=no", false, format.isOptionFiles()));
-
                 if (tokens.size() != 0)
                     throw new IOExceptionWithLineNumber(np.lineno(), "'" + tokens + "' unexpected in FORMAT");
             }
@@ -141,22 +138,26 @@ public class GenomesNexusInput extends NexusIOBase implements INexusInput<Genome
 
                             final int partLength = np.getInt();
 
-                            if (format.isOptionFiles()) {
-                                part.setFile(np.getWordRespectCase(), np.getLong(), partLength);
+                            final String word = np.getWordRespectCase();
+
+                            if (word.startsWith("file://")) {
+                                part.setFile(word.replaceFirst("file://", ""), np.getLong(), partLength);
                             } else {
                                 // todo: scan for partLength number of letters
-                                part.setSequence(np.getWordRespectCase().replaceAll("\\s+", "").getBytes(), partLength);
+                                part.setSequence(word.replaceAll("\\s+", "").getBytes(), partLength);
                             }
                             genome.getParts().add(part);
                         }
                     } else {
                         genome.setLength(np.getInt());
                         final Genome.GenomePart part = new Genome.GenomePart();
-                        if (format.isOptionFiles()) {
-                            part.setFile(np.getWordRespectCase(), np.getLong(), genome.getLength());
+                        final String word = np.getWordRespectCase();
+
+                        if (word.startsWith("file://")) {
+                            part.setFile(word.replaceFirst("file://", ""), np.getLong(), genome.getLength());
                         } else {
                             // todo: scan for partLength number of letters
-                            part.setSequence(np.getWordRespectCase().replaceAll("\\s+", "").getBytes(), genome.getLength());
+                            part.setSequence(word.replaceAll("\\s+", "").getBytes(), genome.getLength());
                         }
                         genome.getParts().add(part);
                     }

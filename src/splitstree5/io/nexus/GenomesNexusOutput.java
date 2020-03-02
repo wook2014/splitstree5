@@ -63,11 +63,6 @@ public class GenomesNexusOutput extends NexusIOBase implements INexusOutput<Geno
             w.write(" multiPart=yes");
         else
             w.write(" multiPart=no");
-        if (format.isOptionFiles())
-            w.write(" files=yes");
-        else
-            w.write(" files=no");
-
         w.write(";\n");
 
         // write matrix:
@@ -98,7 +93,7 @@ public class GenomesNexusOutput extends NexusIOBase implements INexusOutput<Geno
                     for (Genome.GenomePart part : parts) {
                         w.write(" " + part.getLength() + " ");
                         if (part.getFile() != null) {
-                            w.write(String.format("'%s' %d", part.getFile(), part.getOffset()));
+                            w.write(String.format("'file://%s' %d", part.getFile(), part.getOffset()));
                         } else
                             w.write(Basic.toString(part.getSequence())); // todo: pretty print sequence...
                     }
@@ -107,7 +102,7 @@ public class GenomesNexusOutput extends NexusIOBase implements INexusOutput<Geno
                     w.write(" " + part.getLength() + " ");
 
                     if (part.getFile() != null) {
-                        w.write(String.format("'%s' %d", part.getFile(), part.getOffset()));
+                        w.write(String.format("'file://%s' %d", part.getFile(), part.getOffset()));
                     } else
                         w.write(Basic.toString(part.getSequence())); // todo: pretty print sequence...
                 }

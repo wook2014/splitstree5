@@ -71,6 +71,9 @@ public class ImportGenomesController {
     @FXML
     private Button labelsRedoButton;
 
+    @FXML
+    private CheckBox storeOnlyReferencesCheckBox;
+
     public TextArea getInputTextArea() {
         return inputTextArea;
     }
@@ -130,5 +133,9 @@ public class ImportGenomesController {
 
     public Button getLabelsRedoButton() {
         return labelsRedoButton;
+    }
+
+    public CheckBox getStoreOnlyReferencesCheckBox() {
+        return storeOnlyReferencesCheckBox;
     }
 }
