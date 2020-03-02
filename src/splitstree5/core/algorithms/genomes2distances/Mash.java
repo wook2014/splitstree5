@@ -37,10 +37,12 @@ import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.GenomesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.io.nexus.GenomesNexusFormat;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+
 
 /**
  * implements the Mash algorithm
@@ -58,12 +60,9 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
         }
     }
 
-    public enum Alphabet {Nucleotides, AminoAcids}
-
     private final IntegerProperty optionKMerSize = new SimpleIntegerProperty(21);
     private final IntegerProperty optionSketchSize = new SimpleIntegerProperty(1000);
     private final ObjectProperty<Distance> optionDistances = new SimpleObjectProperty<>(Distance.Phylogenetic);
-    private final ObjectProperty<Alphabet> optionAlphabet = new SimpleObjectProperty<>(Alphabet.Nucleotides);
 
     @Override
     public List<String> listOptions() {
@@ -78,7 +77,7 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, GenomesBlock genomesBlock, DistancesBlock distancesBlock) throws Exception {
 
-        final boolean isNucleotideData = (getOptionAlphabet() == Alphabet.Nucleotides);
+        final boolean isNucleotideData = ((GenomesNexusFormat) genomesBlock.getFormat()).getCharactersType().equals(GenomesNexusFormat.CharactersType.dna);
         final int alphabetSize = (isNucleotideData ? 5 : 21);
 
         final boolean use64Bits = (Math.pow(alphabetSize, getOptionKMerSize()) >= Integer.MAX_VALUE);
@@ -164,17 +163,5 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
 
     public void setOptionDistances(Distance optionDistances) {
         this.optionDistances.set(optionDistances);
-    }
-
-    public Alphabet getOptionAlphabet() {
-        return optionAlphabet.get();
-    }
-
-    public ObjectProperty<Alphabet> optionAlphabetProperty() {
-        return optionAlphabet;
-    }
-
-    public void setOptionAlphabet(Alphabet optionAlphabet) {
-        this.optionAlphabet.set(optionAlphabet);
     }
 }

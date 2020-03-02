@@ -63,6 +63,9 @@ public class GenomesNexusOutput extends NexusIOBase implements INexusOutput<Geno
             w.write(" multiPart=yes");
         else
             w.write(" multiPart=no");
+
+        w.write(" dataType=" + format.getCharactersType().name());
+
         w.write(";\n");
 
         // write matrix:

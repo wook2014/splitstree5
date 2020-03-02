@@ -98,6 +98,11 @@ public class GenomesNexusInput extends NexusIOBase implements INexusInput<Genome
                 format.setOptionMultiPart(np.findIgnoreCase(tokens, "multiPart=yes", true, format.isOptionMultiPart()));
                 format.setOptionMultiPart(np.findIgnoreCase(tokens, "multiPart=no", false, format.isOptionMultiPart()));
 
+                if (np.findIgnoreCase(tokens, "dataType=dna", true, format.getCharactersType() == GenomesNexusFormat.CharactersType.dna))
+                    format.setCharactersType(GenomesNexusFormat.CharactersType.dna);
+                if (np.findIgnoreCase(tokens, "dataType=protein", true, format.getCharactersType() == GenomesNexusFormat.CharactersType.protein))
+                    format.setCharactersType(GenomesNexusFormat.CharactersType.protein);
+
                 if (tokens.size() != 0)
                     throw new IOExceptionWithLineNumber(np.lineno(), "'" + tokens + "' unexpected in FORMAT");
             }

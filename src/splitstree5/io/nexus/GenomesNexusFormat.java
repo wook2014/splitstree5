@@ -27,9 +27,13 @@ import java.util.List;
  * Daniel Huson, 3.2020
  */
 public class GenomesNexusFormat implements INexusFormat {
+    public enum CharactersType {dna, protein}
+
     private boolean optionLabels;
     private boolean optionAccessions;
     private boolean optionMultiPart;
+
+    private CharactersType charactersType = CharactersType.dna;
 
     /**
      * the Constructor
@@ -59,6 +63,14 @@ public class GenomesNexusFormat implements INexusFormat {
 
     public void setOptionMultiPart(boolean optionMultiPart) {
         this.optionMultiPart = optionMultiPart;
+    }
+
+    public CharactersType getCharactersType() {
+        return charactersType;
+    }
+
+    public void setCharactersType(CharactersType charactersType) {
+        this.charactersType = charactersType;
     }
 
     @Override
