@@ -36,9 +36,6 @@ public class CompareGenomesController {
     private ChoiceBox<CompareGenomesDialog.TaxonIdentification> taxaChoiceBox;
 
     @FXML
-    private ChoiceBox<CompareGenomesDialog.Method> methodChoiceBox;
-
-    @FXML
     private ChoiceBox<CompareGenomesDialog.Sequence> sequenceTypeChoiceBox;
 
     @FXML
@@ -49,24 +46,6 @@ public class CompareGenomesController {
 
     @FXML
     private Button outputBrowseButton;
-
-    @FXML
-    private TextField mashKTextField;
-
-    @FXML
-    private TextField mashSTextField;
-
-    @FXML
-    private RadioButton mashPhylogeneticRadioButton;
-
-    @FXML
-    private RadioButton mashJaccardRadioButton;
-
-    @FXML
-    private TextField dashingPrefixLengthTextField;
-
-    @FXML
-    private TextField dashingKmerTextField;
 
     @FXML
     private Tab taxonLabelsTab;
@@ -116,36 +95,8 @@ public class CompareGenomesController {
         return outputBrowseButton;
     }
 
-    public ChoiceBox<CompareGenomesDialog.Method> getMethodChoiceBox() {
-        return methodChoiceBox;
-    }
-
     public ChoiceBox<CompareGenomesDialog.Sequence> getSequenceTypeChoiceBox() {
         return sequenceTypeChoiceBox;
-    }
-
-    public TextField getMashKTextField() {
-        return mashKTextField;
-    }
-
-    public TextField getMashSTextField() {
-        return mashSTextField;
-    }
-
-    public RadioButton getMashPhylogeneticRadioButton() {
-        return mashPhylogeneticRadioButton;
-    }
-
-    public RadioButton getMashJaccardRadioButton() {
-        return mashJaccardRadioButton;
-    }
-
-    public TextField getDashingPrefixLengthTextField() {
-        return dashingPrefixLengthTextField;
-    }
-
-    public TextField getDashingKmerTextField() {
-        return dashingKmerTextField;
     }
 
     public FlowPane getStatusFlowPane() {

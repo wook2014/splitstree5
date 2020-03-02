@@ -102,7 +102,7 @@ public class MainWindowMenuController {
 
         controller.getImportMenuItem().setOnAction(e -> ImportDialog.show(mainWindow));
 
-        controller.getCompareGenomesMenuItem().setOnAction(e -> {
+        controller.getImportGenomesMenuItem().setOnAction(e -> {
             if (dialog.get() == null) {
                 dialog.set(new CompareGenomesDialog(mainWindow.getStage()));
                 MainWindowManager.getInstance().addAuxiliaryWindow(mainWindow, dialog.get().getStage());

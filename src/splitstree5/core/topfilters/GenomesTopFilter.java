@@ -24,16 +24,18 @@ package splitstree5.core.topfilters;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.datablocks.DistancesBlock;
+import splitstree5.core.datablocks.GenomesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.misc.Taxon;
 import splitstree5.core.workflow.DataNode;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * distances top taxon filter
- * Daniel Huson, 12/12/16.
+ * genomes top taxon filter
+ * Daniel Huson, 3.2020
  */
-public class DistancesTopFilter extends ATopFilter<DistancesBlock> {
+public class GenomesTopFilter extends ATopFilter<GenomesBlock> {
     /**
      * constructor
      *
@@ -42,33 +44,29 @@ public class DistancesTopFilter extends ATopFilter<DistancesBlock> {
      * @param parent
      * @param child
      */
-    public DistancesTopFilter(DataNode<TaxaBlock> originalTaxaNode, DataNode<TaxaBlock> modifiedTaxaNode, DataNode<DistancesBlock> parent, DataNode<DistancesBlock> child) {
+    public GenomesTopFilter(DataNode<TaxaBlock> originalTaxaNode, DataNode<TaxaBlock> modifiedTaxaNode, DataNode<GenomesBlock> parent, DataNode<GenomesBlock> child) {
         super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parent, child);
 
         setAlgorithm(new Algorithm<>("TopFilter") {
             {
-                setShortDescription("Distances top filter");
+                setShortDescription("Genomes top filter");
             }
 
-            public void compute(ProgressListener progress, TaxaBlock modifiedTaxaBlock, DistancesBlock original, DistancesBlock modified) throws CanceledException {
+            public void compute(ProgressListener progress, TaxaBlock modifiedTaxaBlock, GenomesBlock original, GenomesBlock modified) throws CanceledException {
                 if (originalTaxaNode.getDataBlock().getTaxa().equals(modifiedTaxaBlock.getTaxa())) {
                     child.getDataBlock().copy(parent.getDataBlock());
                     setShortDescription("using all " + modifiedTaxaBlock.size() + " taxa");
-
                 } else {
                     progress.setMaximum(modifiedTaxaBlock.getNtax());
-                    modified.setNtax(modifiedTaxaBlock.getNtax());
+                    progress.setProgress(0);
+                    child.getDataBlock().clear();
 
-                    for (Taxon a : modifiedTaxaBlock.getTaxa()) {
-                        final int originalI = getOriginalTaxaBlock().indexOf(a);
-                        final int modifiedI = modifiedTaxaBlock.indexOf(a);
-                        for (Taxon b : modifiedTaxaBlock.getTaxa()) {
-                            final int originalJ = getOriginalTaxaBlock().indexOf(b);
-                            final int modifiedJ = modifiedTaxaBlock.indexOf(b);
-                            modified.set(modifiedI, modifiedJ, original.get(originalI, originalJ));
-                            if (original.isVariances())
-                                modified.setVariance(modifiedI, modifiedJ, original.getVariance(originalI, originalJ));
-                        }
+                    final Map<String, Integer> name2index = new HashMap<>();
+                    for (int t = 1; t <= getOriginalTaxaBlock().getNtax(); t++)
+                        name2index.put(getOriginalTaxaBlock().getLabel(t), t);
+
+                    for (int t = 1; t <= modifiedTaxaBlock.getNtax(); t++) {
+                        child.getDataBlock().getGenomes().add(original.getGenome(name2index.get(modifiedTaxaBlock.get(t).getName())));
                         progress.incrementProgress();
                     }
                     setShortDescription("using " + modifiedTaxaBlock.size() + " of " + getOriginalTaxaBlock().size() + " taxa");

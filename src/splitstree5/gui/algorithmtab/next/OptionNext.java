@@ -100,7 +100,7 @@ public class OptionNext<T> {
      * @return options
      */
     public static ArrayList<OptionNext> getAllOptions(Algorithm optionable) {
-        final Map<String, OptionNext> name2AnOption = new TreeMap<>();
+        final Map<String, OptionNext> name2AnOption = new HashMap<>();
 
         Method listMethod = null;
 

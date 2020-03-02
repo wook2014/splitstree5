@@ -26,6 +26,7 @@ import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.TreeSet;
 
 public class ComputeMashSketch {
@@ -33,7 +34,7 @@ public class ComputeMashSketch {
      * compute a mash sketch
      *
      * @param name
-     * @param sequence
+     * @param sequences
      * @param isNucleotides
      * @param sketchSize
      * @param kSize
@@ -41,43 +42,45 @@ public class ComputeMashSketch {
      * @return
      * @throws IOException
      */
-    public static MashSketch run(String name, byte[] sequence, boolean isNucleotides, int sketchSize, int kSize, boolean use64Bits, ProgressListener progressListener) {
+    public static MashSketch run(String name, Collection<byte[]> sequences, boolean isNucleotides, int sketchSize, int kSize, boolean use64Bits, ProgressListener progressListener) {
         final MashSketch sketch = new MashSketch(sketchSize, kSize, name, isNucleotides, use64Bits);
 
         final TreeSet<Long> sortedSet = new TreeSet<>();
         sortedSet.add(Long.MAX_VALUE);
         final int seed = 666;
 
-        final byte[] reverseComplement = (isNucleotides ? DNA5Alphabet.reverseComplement(sequence, new byte[sequence.length]) : null);
-
         try {
-            final int top = sequence.length - kSize;
-            for (int offset = 0; offset < top; offset++) {
-                if (isNucleotides) {
-                    final int ambiguous = Basic.lastIndexOf(sequence, offset, kSize, 'N'); // don't use k-mers with ambiguity letters
-                    if (ambiguous != -1) {
-                        offset = ambiguous; // skip to last ambiguous so that increment will move past
-                        continue;
+            for (byte[] sequence : sequences) {
+                final byte[] reverseComplement = (isNucleotides ? DNA5Alphabet.reverseComplement(sequence, new byte[sequence.length]) : null);
+
+                final int top = sequence.length - kSize;
+                for (int offset = 0; offset < top; offset++) {
+                    if (isNucleotides) {
+                        final int ambiguous = Basic.lastIndexOf(sequence, offset, kSize, 'N'); // don't use k-mers with ambiguity letters
+                        if (ambiguous != -1) {
+                            offset = ambiguous; // skip to last ambiguous so that increment will move past
+                            continue;
+                        }
                     }
-                }
-                final int offsetUse;
-                final byte[] seqUse;
+                    final int offsetUse;
+                    final byte[] seqUse;
 
-                if (!isNucleotides || isCanonical(offset, kSize, sequence, reverseComplement)) {
-                    offsetUse = offset;
-                    seqUse = sequence;
-                } else {
-                    offsetUse = sequence.length - offset - kSize;
-                    seqUse = reverseComplement;
-                }
+                    if (!isNucleotides || isCanonical(offset, kSize, sequence, reverseComplement)) {
+                        offsetUse = offset;
+                        seqUse = sequence;
+                    } else {
+                        offsetUse = sequence.length - offset - kSize;
+                        seqUse = reverseComplement;
+                    }
 
-                final long hash = (use64Bits ? MurmurHash.hash64(seqUse, offsetUse, kSize, seed) : (long) MurmurHash.hash32(seqUse, offsetUse, kSize, seed));
+                    final long hash = (use64Bits ? MurmurHash.hash64(seqUse, offsetUse, kSize, seed) : (long) MurmurHash.hash32(seqUse, offsetUse, kSize, seed));
 
-                if (hash < sortedSet.last()) {
-                    if (sortedSet.add(hash) && sortedSet.size() > sketchSize)
-                        sortedSet.pollLast();
+                    if (hash < sortedSet.last()) {
+                        if (sortedSet.add(hash) && sortedSet.size() > sketchSize)
+                            sortedSet.pollLast();
+                    }
+                    progressListener.checkForCancel();
                 }
-                progressListener.checkForCancel();
             }
             if (sortedSet.size() == sketchSize) {
                 final long[] values = new long[sortedSet.size()];

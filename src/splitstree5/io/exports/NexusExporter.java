@@ -36,7 +36,7 @@ import java.util.List;
  * exports in Nexus format
  * Daniel Huson, 2.2018
  */
-public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportCharacters, IExportDistances, IExportTrees, IExportSplits, IExportNetwork, IExportTraits, IExportViewer {
+public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportCharacters, IExportGenomes, IExportDistances, IExportTrees, IExportSplits, IExportNetwork, IExportTraits, IExportViewer {
     private boolean prependTaxa = true;
     private String title;
     private Pair<String, String> link;
@@ -79,10 +79,24 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
             newBlock.setDataType(block.getDataType());
             newBlock.setFormat(block.getFormat());
             output.write(w, new TaxaBlock(), new CharactersBlock());
-        }
-        else
+        } else
             output.write(w, taxa, block);
     }
+
+    @Override
+    public void export(Writer w, TaxaBlock taxa, GenomesBlock genomes) throws IOException {
+        if (prependTaxa)
+            new TaxaNexusOutput().write(w, taxa);
+        final GenomesNexusOutput output = new GenomesNexusOutput();
+        output.setTitleAndLink(getTitle(), getLink());
+        if (asWorkflowOnly) {
+            final GenomesBlock newBlock = new GenomesBlock();
+            newBlock.setFormat(genomes.getFormat());
+            output.write(w, new TaxaBlock(), newBlock);
+        } else
+            output.write(w, taxa, genomes);
+    }
+
 
     @Override
     public void export(Writer w, TaxaBlock taxa, DistancesBlock distances) throws IOException {
@@ -195,6 +209,8 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
     public void export(Writer w, TaxaBlock taxaBlock, DataBlock dataBlock) throws IOException {
         if (dataBlock instanceof CharactersBlock)
             export(w, taxaBlock, (CharactersBlock) dataBlock);
+        else if (dataBlock instanceof GenomesBlock)
+            export(w, taxaBlock, (GenomesBlock) dataBlock);
         else if (dataBlock instanceof DistancesBlock)
             export(w, taxaBlock, (DistancesBlock) dataBlock);
         else if (dataBlock instanceof SplitsBlock)

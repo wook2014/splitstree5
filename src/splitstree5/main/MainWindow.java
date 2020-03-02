@@ -184,9 +184,16 @@ public class MainWindow implements IMainWindow {
             MenuItem openItem = new MenuItem("Open...");
             openItem.setOnAction((e) -> menuController.getOpenMenuItem().fire());
             openItem.disableProperty().bind(workflow.hasWorkingTaxonNodeForFXThreadProperty());
+
             MenuItem importItem = new MenuItem("Import...");
             importItem.setOnAction((e) -> menuController.getImportMenuItem().fire());
             importItem.disableProperty().bind(workflow.hasWorkingTaxonNodeForFXThreadProperty());
+
+            MenuItem importGenomesItem = new MenuItem("Import Genomes...");
+            importGenomesItem.setOnAction((e) -> menuController.getImportGenomesMenuItem().fire());
+            importGenomesItem.disableProperty().bind(workflow.hasWorkingTaxonNodeForFXThreadProperty());
+
+
             MenuItem closeItem = new MenuItem("Close");
             closeItem.setOnAction((e) -> menuController.getCloseMenuItem().fire());
 

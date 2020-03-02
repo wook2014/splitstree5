@@ -34,6 +34,7 @@ import splitstree5.core.algorithms.characters2distances.HammingDistances;
 import splitstree5.core.algorithms.distances2splits.NeighborNet;
 import splitstree5.core.algorithms.filters.SplitsFilter;
 import splitstree5.core.algorithms.filters.TreesFilter;
+import splitstree5.core.algorithms.genomes2distances.Mash;
 import splitstree5.core.algorithms.trees2splits.ConsensusNetwork;
 import splitstree5.core.algorithms.trees2splits.SuperNetwork;
 import splitstree5.core.algorithms.views.NetworkEmbedder;
@@ -100,24 +101,25 @@ public class DataLoader {
         Platform.runLater(() -> {
 
             if (dataBlock instanceof CharactersBlock) {
-            workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
-            final DataNode<DistancesBlock> distances = workflow.createDataNode(new DistancesBlock());
-            workflow.createConnector(workflow.getWorkingDataNode(), distances, new HammingDistances());
-            final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
-            workflow.createConnector(distances, splits, new NeighborNet());
-            final DataNode<ViewerBlock> viewNode = workflow.createDataNode(new ViewerBlock.SplitsNetworkViewerBlock());
-            workflow.createConnector(splits, viewNode, new SplitsNetworkAlgorithm());
+                workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
+                final DataNode<DistancesBlock> distances = workflow.createDataNode(new DistancesBlock());
+                workflow.createConnector(workflow.getWorkingDataNode(), distances, new HammingDistances());
+                final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
+                workflow.createConnector(distances, splits, new NeighborNet());
+                final DataNode<ViewerBlock> viewNode = workflow.createDataNode(new ViewerBlock.SplitsNetworkViewerBlock());
+                workflow.createConnector(splits, viewNode, new SplitsNetworkAlgorithm());
 
-        } else if (dataBlock instanceof CharactersBlock) {
-            workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
-            final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
-            workflow.createConnector(workflow.getWorkingDataNode(), splits, new NeighborNet());
-            final DataNode<ViewerBlock> viewNode = workflow.createDataNode(new ViewerBlock.SplitsNetworkViewerBlock());
-            workflow.createConnector(splits, viewNode, new SplitsNetworkAlgorithm());
-
-        } else if (dataBlock instanceof DistancesBlock) {
-            workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
-            final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
+            } else if (dataBlock instanceof GenomesBlock) {
+                workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
+                final DataNode<DistancesBlock> distances = workflow.createDataNode(new DistancesBlock());
+                workflow.createConnector(workflow.getWorkingDataNode(), distances, new Mash());
+                final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
+                workflow.createConnector(distances, splits, new NeighborNet());
+                final DataNode<ViewerBlock> viewNode = workflow.createDataNode(new ViewerBlock.SplitsNetworkViewerBlock());
+                workflow.createConnector(splits, viewNode, new SplitsNetworkAlgorithm());
+            } else if (dataBlock instanceof DistancesBlock) {
+                workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
+                final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
             workflow.createConnector(workflow.getWorkingDataNode(), splits, new NeighborNet());
             final DataNode<ViewerBlock> viewNode = workflow.createDataNode(new ViewerBlock.SplitsNetworkViewerBlock());
             workflow.createConnector(splits, viewNode, new SplitsNetworkAlgorithm());

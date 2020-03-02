@@ -19,13 +19,23 @@
 
 package splitstree5.dialogs.genome;
 
+import javafx.scene.layout.FlowPane;
+import jloda.fx.window.NotificationManager;
 import jloda.util.Basic;
 import jloda.util.FastAFileIterator;
 import jloda.util.FileLineIterator;
 import jloda.util.Pair;
+import splitstree5.core.datablocks.GenomesBlock;
+import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.dialogs.importer.FileOpener;
+import splitstree5.io.nexus.GenomesNexusOutput;
+import splitstree5.io.nexus.TaxaNexusOutput;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +52,6 @@ public class GenomeInputManager {
     private final int minLength;
 
     private final Map<String, String> line2label;
-
 
     /**
      * constructor
@@ -197,5 +206,35 @@ public class GenomeInputManager {
             Basic.caught(e);
             return null;
         }
+    }
+
+    public void saveData(String fileName, FlowPane statusFlowPane) throws IOException {
+        final TaxaBlock taxaBlock = new TaxaBlock();
+
+        for (Pair<String, byte[]> pair : iterable()) {
+            taxaBlock.addTaxaByNames(Collections.singleton(pair.getFirst()));
+        }
+
+        final GenomesBlock genomesBlock = new GenomesBlock();
+
+        for (Pair<String, byte[]> pair : iterable()) {
+            final Genome genome = new Genome();
+            genome.setName(pair.getFirst());
+            final Genome.GenomePart part = new Genome.GenomePart();
+            part.setName("part1");
+            part.setSequence(pair.getSecond(), pair.getSecond().length);
+            genome.getParts().add(part);
+            genome.setLength(genome.computeLength());
+            genomesBlock.getGenomes().add(genome);
+        }
+
+        try (BufferedWriter w = new BufferedWriter(new FileWriter(fileName))) {
+            // ((GenomesNexusFormat)genomesBlock.getFormat()).setOptionLabels(true);
+            w.write("#nexus\n");
+            (new TaxaNexusOutput()).write(w, taxaBlock);
+            (new GenomesNexusOutput()).write(w, taxaBlock, genomesBlock);
+        }
+
+        FileOpener.open(false, null, statusFlowPane, fileName, e -> NotificationManager.showError("Mash failed: " + e));
     }
 }

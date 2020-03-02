@@ -23,7 +23,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.scene.Scene;
-import javafx.scene.control.ToggleGroup;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -34,10 +33,10 @@ import jloda.fx.util.FastAFileFilter;
 import jloda.fx.window.NotificationManager;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
-import splitstree5.dialogs.genome.mash.MashAlgorithm;
 import splitstree5.main.Version;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -46,8 +45,6 @@ import java.util.List;
  * Daniel Huson, 2.2020
  */
 public class CompareGenomesDialog {
-    public enum Method {Mash, Dashing}
-
     public enum Sequence {DNA, Protein}
 
     public enum TaxonIdentification {PerFastARecord, PerFile, PerFileUsingFileName}
@@ -118,8 +115,6 @@ public class CompareGenomesDialog {
 
         controller.getOutputFileTextField().textProperty().addListener((c, o, n) -> ProgramProperties.put("GenomesOutputFile", n));
 
-        controller.getMethodChoiceBox().getItems().addAll(Method.values());
-        controller.getMethodChoiceBox().setValue(Method.Mash);
 
         controller.getSequenceTypeChoiceBox().getItems().addAll(Sequence.values());
         controller.getSequenceTypeChoiceBox().setValue(Sequence.DNA);
@@ -128,31 +123,8 @@ public class CompareGenomesDialog {
         controller.getMinLengthTextField().textProperty().addListener((c, o, n) -> ProgramProperties.put("MinLength", n));
         BasicFX.ensureAcceptsIntegersOnly(controller.getMinLengthTextField());
 
-        controller.getMashKTextField().setText(ProgramProperties.get("MashK", "21"));
-        controller.getMashKTextField().textProperty().addListener((c, o, n) -> ProgramProperties.put("MashK", n));
-        BasicFX.ensureAcceptsIntegersOnly(controller.getMashKTextField());
-
-        controller.getMashSTextField().setText(ProgramProperties.get("MashS", "1000"));
-        controller.getMashSTextField().textProperty().addListener((c, o, n) -> ProgramProperties.put("MashS", n));
-        BasicFX.ensureAcceptsIntegersOnly(controller.getMashSTextField());
-
-        controller.getDashingKmerTextField().setText(ProgramProperties.get("DashingK", "21"));
-        controller.getDashingKmerTextField().textProperty().addListener((c, o, n) -> ProgramProperties.put("DashingK", n));
-        BasicFX.ensureAcceptsIntegersOnly(controller.getDashingKmerTextField());
-
-        controller.getDashingPrefixLengthTextField().setText(ProgramProperties.get("DashingPrefix", "8"));
-        controller.getDashingPrefixLengthTextField().textProperty().addListener((c, o, n) -> ProgramProperties.put("DashingPrefix", n));
-        BasicFX.ensureAcceptsIntegersOnly(controller.getDashingPrefixLengthTextField());
-
         controller.getTaxaChoiceBox().getItems().addAll(TaxonIdentification.values());
         controller.getTaxaChoiceBox().setValue(TaxonIdentification.PerFastARecord);
-
-        final ToggleGroup mashDistanceGroup = new ToggleGroup();
-        mashDistanceGroup.getToggles().addAll(controller.getMashJaccardRadioButton(), controller.getMashPhylogeneticRadioButton());
-        mashDistanceGroup.selectToggle(ProgramProperties.get("MashPhylogeneticDistances", true) ? controller.getMashPhylogeneticRadioButton() : controller.getMashJaccardRadioButton());
-        mashDistanceGroup.selectedToggleProperty().addListener((c, o, n) -> {
-            ProgramProperties.put("MashPhylogeneticDistances", n == controller.getMashPhylogeneticRadioButton());
-        });
 
         controller.getCancelButton().setOnAction(c -> stage.close());
         controller.getCancelButton().disableProperty().bind(isRunning);
@@ -169,18 +141,10 @@ public class CompareGenomesDialog {
             final GenomeInputManager genomeInputManager = new GenomeInputManager(Arrays.asList(Basic.split(controller.getInputTextArea().getText(), ',')),
                     controller.getTaxaChoiceBox().getValue(), labelListsManager.computeLine2Label(), Basic.parseInt(controller.getMinLengthTextField().getText()));
 
-
-            switch (controller.getMethodChoiceBox().getValue()) {
-                default:
-                case Mash: {
-                    MashAlgorithm.apply(controller.getOutputFileTextField().getText(), genomeInputManager.iterable(),
-                            controller.getSequenceTypeChoiceBox().getValue() == Sequence.DNA,
-                            Basic.parseInt(controller.getMashKTextField().getText()), Basic.parseInt(controller.getMashSTextField().getText()),
-                            controller.getMashPhylogeneticRadioButton().isSelected(), controller.getStatusFlowPane(), isRunning);
-                    break;
-                }
-                case Dashing:
-                    NotificationManager.showWarning("Method not implemented: " + controller.getMethodChoiceBox().getValue());
+            try {
+                genomeInputManager.saveData(controller.getOutputFileTextField().getText(), controller.getStatusFlowPane());
+            } catch (IOException e) {
+                NotificationManager.showError("Save failed: " + e);
             }
 
         });

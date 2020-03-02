@@ -69,6 +69,9 @@ public class MenuController {
     private MenuItem importMenuItem;
 
     @FXML
+    private MenuItem importGenomesMenuItem;
+
+    @FXML
     private MenuItem compareGenomesMenuItem;
 
     @FXML
@@ -434,6 +437,10 @@ public class MenuController {
 
     public MenuItem getImportMenuItem() {
         return importMenuItem;
+    }
+
+    public MenuItem getImportGenomesMenuItem() {
+        return importGenomesMenuItem;
     }
 
     public MenuItem getImportMultipleTreeFilesMenuItem() {

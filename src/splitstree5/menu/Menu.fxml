@@ -45,6 +45,7 @@
                         <KeyCodeCombination alt="UP" code="I" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
+                <MenuItem fx:id="importGenomesMenuItem" text="Import Genomes..."/>
                 <MenuItem fx:id="replaceDataMenuItem" text="Replace Data...">
                     <accelerator>
                         <KeyCodeCombination alt="UP" code="I" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>

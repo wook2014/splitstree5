@@ -42,6 +42,8 @@ public class NexusParser {
     public static void parse(NexusStreamParser np, TaxaBlock taxaBlock, DataBlock dataBlock) throws IOException {
         if (dataBlock instanceof CharactersBlock)
             new CharactersNexusInput().parse(np, taxaBlock, (CharactersBlock) dataBlock);
+        else if (dataBlock instanceof GenomesBlock)
+            new GenomesNexusInput().parse(np, taxaBlock, (GenomesBlock) dataBlock);
         else if (dataBlock instanceof DistancesBlock)
             new DistancesNexusInput().parse(np, taxaBlock, (DistancesBlock) dataBlock);
         else if (dataBlock instanceof SplitsBlock)

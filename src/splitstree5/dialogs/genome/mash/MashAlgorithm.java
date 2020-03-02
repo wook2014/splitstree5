@@ -73,7 +73,7 @@ public class MashAlgorithm {
         aService.setCallable(() -> {
 
             final ArrayList<MashSketch> sketches = StreamSupport.stream(input.spliterator(), true)
-                    .map(pair -> ComputeMashSketch.run(pair.getFirst(), pair.getSecond(), isNucleotideData, sketchSize, kMerSize, use64Bits, aService.getProgressListener())).collect(Collectors.toCollection(ArrayList::new));
+                    .map(pair -> ComputeMashSketch.run(pair.getFirst(), Collections.singletonList(pair.getSecond()), isNucleotideData, sketchSize, kMerSize, use64Bits, aService.getProgressListener())).collect(Collectors.toCollection(ArrayList::new));
 
             aService.getProgressListener().checkForCancel();
 

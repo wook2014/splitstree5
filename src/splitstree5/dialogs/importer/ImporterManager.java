@@ -34,7 +34,7 @@ import java.util.*;
  * Daniel Huson, 1.2018
  */
 public class ImporterManager {
-    public enum DataType {Characters, Distances, Trees, Splits, Network, Unknown}
+    public enum DataType {Genomes, Characters, Distances, Trees, Splits, Network, Unknown}
 
     public static String UNKNOWN_FORMAT = "Unknown";
 
@@ -156,6 +156,8 @@ public class ImporterManager {
     private static DataType getDataType(IImporter importer) {
         if (importer instanceof IImportCharacters) {
             return DataType.Characters;
+        } else if (importer instanceof IImportGenomes) {
+            return DataType.Genomes;
         } else if (importer instanceof IImportDistances) {
             return DataType.Distances;
         } else if (importer instanceof IImportTrees) {

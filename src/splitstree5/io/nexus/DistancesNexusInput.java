@@ -93,7 +93,6 @@ public class DistancesNexusInput extends NexusIOBase implements INexusInput<Dist
                 format.setOptionLabels(np.findIgnoreCase(tokens, "labels=left", true, format.isOptionLabels()));
                 format.setOptionLabels(np.findIgnoreCase(tokens, "labels=no", false, format.isOptionLabels())); //DJB 14mar03
 
-
                 format.setOptionDiagonal(np.findIgnoreCase(tokens, "diagonal=no", false, format.isOptionDiagonal()));
                 format.setOptionDiagonal(np.findIgnoreCase(tokens, "diagonal=yes", true, format.isOptionDiagonal()));
 

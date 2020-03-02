@@ -229,6 +229,8 @@ public class Workflow {
         final DataBlock dataBlock = parent.getDataBlock();
         if (dataBlock instanceof CharactersBlock) {
             topFilter.set(new CharactersTopFilter(getTopTaxaNode(), getWorkingTaxaNode(), parent, child));
+        } else if (dataBlock instanceof GenomesBlock) {
+            topFilter.set(new GenomesTopFilter(getTopTaxaNode(), getWorkingTaxaNode(), parent, child));
         } else if (dataBlock instanceof DistancesBlock) {
             topFilter.set(new DistancesTopFilter(getTopTaxaNode(), getWorkingTaxaNode(), parent, child));
         } else if (dataBlock instanceof SplitsBlock) {

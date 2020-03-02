@@ -181,8 +181,8 @@ public class InputTab extends TextViewTab {
                 long endTime   = System.nanoTime() / (long) Math.pow(10, 9);
                 long totalTime = endTime - startTime;
                 System.err.println();
-                System.err.println(this.getClass()+":"+selectedFile.getPath());
-                System.err.println("Running time InputTab: "+totalTime+" sec");
+                System.err.println(this.getClass() + ":" + selectedFile.getPath());
+                System.err.println("Running time InputTab: " + totalTime + " sec");
             }
         });
         controller.getOpenMenuItem().disableProperty().bind(textArea.textProperty().isNotEmpty());
@@ -191,6 +191,8 @@ public class InputTab extends TextViewTab {
         controller.getOpenRecentMenu().disableProperty().bind(textArea.textProperty().isNotEmpty());
 
         controller.getImportMenuItem().disableProperty().bind(new SimpleBooleanProperty(true));
+        controller.getImportGenomesMenuItem().disableProperty().bind(new SimpleBooleanProperty(true));
+
         controller.getInputEditorMenuItem().disableProperty().bind(new SimpleBooleanProperty(true));
 
         controller.getPasteMenuItem().setOnAction((e) -> {
