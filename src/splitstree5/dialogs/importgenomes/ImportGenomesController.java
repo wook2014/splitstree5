@@ -17,14 +17,14 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package splitstree5.dialogs.genome;
+package splitstree5.dialogs.importgenomes;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 
-public class CompareGenomesController {
+public class ImportGenomesController {
 
     @FXML
     private TextArea inputTextArea;
@@ -33,10 +33,10 @@ public class CompareGenomesController {
     private Button inputBrowseButton;
 
     @FXML
-    private ChoiceBox<CompareGenomesDialog.TaxonIdentification> taxaChoiceBox;
+    private ChoiceBox<ImportGenomesDialog.TaxonIdentification> taxaChoiceBox;
 
     @FXML
-    private ChoiceBox<CompareGenomesDialog.Sequence> sequenceTypeChoiceBox;
+    private ChoiceBox<ImportGenomesDialog.Sequence> sequenceTypeChoiceBox;
 
     @FXML
     private TextField minLengthTextField;
@@ -79,7 +79,7 @@ public class CompareGenomesController {
         return inputBrowseButton;
     }
 
-    public ChoiceBox<CompareGenomesDialog.TaxonIdentification> getTaxaChoiceBox() {
+    public ChoiceBox<ImportGenomesDialog.TaxonIdentification> getTaxaChoiceBox() {
         return taxaChoiceBox;
     }
 
@@ -95,7 +95,7 @@ public class CompareGenomesController {
         return outputBrowseButton;
     }
 
-    public ChoiceBox<CompareGenomesDialog.Sequence> getSequenceTypeChoiceBox() {
+    public ChoiceBox<ImportGenomesDialog.Sequence> getSequenceTypeChoiceBox() {
         return sequenceTypeChoiceBox;
     }
 

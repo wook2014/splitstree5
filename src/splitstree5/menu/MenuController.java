@@ -72,9 +72,6 @@ public class MenuController {
     private MenuItem importGenomesMenuItem;
 
     @FXML
-    private MenuItem compareGenomesMenuItem;
-
-    @FXML
     private MenuItem importMultipleTreeFilesMenuItem;
 
     @FXML
@@ -445,10 +442,6 @@ public class MenuController {
 
     public MenuItem getImportMultipleTreeFilesMenuItem() {
         return importMultipleTreeFilesMenuItem;
-    }
-
-    public MenuItem getCompareGenomesMenuItem() {
-        return compareGenomesMenuItem;
     }
 
     public MenuItem getGroupIdenticalHaplotypesFilesMenuItem() {

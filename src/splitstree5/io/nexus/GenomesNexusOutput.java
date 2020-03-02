@@ -22,9 +22,9 @@ package splitstree5.io.nexus;
 
 import javafx.collections.ObservableList;
 import jloda.util.Basic;
+import splitstree5.core.data.Genome;
 import splitstree5.core.datablocks.GenomesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.dialogs.genome.Genome;
 
 import java.io.IOException;
 import java.io.Writer;

@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.dialogs.genome;
+package splitstree5.dialogs.importgenomes;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -41,10 +41,10 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * genome analysis dialog
+ * importgenomes analysis dialog
  * Daniel Huson, 2.2020
  */
-public class CompareGenomesDialog {
+public class ImportGenomesDialog {
     public enum Sequence {DNA, Protein}
 
     public enum TaxonIdentification {PerFastARecord, PerFile, PerFileUsingFileName}
@@ -56,9 +56,9 @@ public class CompareGenomesDialog {
      *
      * @param initialParent
      */
-    public CompareGenomesDialog(Stage initialParent) {
-        final ExtendedFXMLLoader<CompareGenomesController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
-        final CompareGenomesController controller = extendedFXMLLoader.getController();
+    public ImportGenomesDialog(Stage initialParent) {
+        final ExtendedFXMLLoader<ImportGenomesController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
+        final ImportGenomesController controller = extendedFXMLLoader.getController();
 
         stage = new Stage();
         stage.setTitle("Compare Genomes - " + Version.NAME);
@@ -78,7 +78,7 @@ public class CompareGenomesDialog {
         stage.show();
     }
 
-    private void controlBindings(Stage stage, CompareGenomesController controller) {
+    private void controlBindings(Stage stage, ImportGenomesController controller) {
         final BooleanProperty isRunning = new SimpleBooleanProperty(false);
 
         controller.getInputBrowseButton().setOnAction(c -> {
@@ -138,11 +138,11 @@ public class CompareGenomesDialog {
 
 
         controller.getApplyButton().setOnAction(c -> {
-            final GenomeInputManager genomeInputManager = new GenomeInputManager(Arrays.asList(Basic.split(controller.getInputTextArea().getText(), ',')),
+            final ImportGenomesManager importGenomesManager = new ImportGenomesManager(Arrays.asList(Basic.split(controller.getInputTextArea().getText(), ',')),
                     controller.getTaxaChoiceBox().getValue(), labelListsManager.computeLine2Label(), Basic.parseInt(controller.getMinLengthTextField().getText()));
 
             try {
-                genomeInputManager.saveData(controller.getOutputFileTextField().getText(), controller.getStatusFlowPane());
+                importGenomesManager.saveData(controller.getOutputFileTextField().getText(), controller.getStatusFlowPane());
             } catch (IOException e) {
                 NotificationManager.showError("Save failed: " + e);
             }

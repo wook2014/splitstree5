@@ -60,11 +60,11 @@ import splitstree5.core.algorithms.views.SplitsNetworkAlgorithm;
 import splitstree5.core.algorithms.views.TreeEmbedder;
 import splitstree5.core.datablocks.*;
 import splitstree5.core.workflow.*;
-import splitstree5.dialogs.genome.CompareGenomesDialog;
 import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.dialogs.importer.ImportDialog;
 import splitstree5.dialogs.importer.ImportMultipleTreeFilesDialog;
 import splitstree5.dialogs.importer.ImporterManager;
+import splitstree5.dialogs.importgenomes.ImportGenomesDialog;
 import splitstree5.dialogs.message.MessageWindow;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.utils.CharactersUtilities;
@@ -86,7 +86,7 @@ import java.util.Optional;
  * Daniel Huson, 12.2017
  */
 public class MainWindowMenuController {
-    static private final Single<CompareGenomesDialog> dialog = new Single<>();
+    static private final Single<ImportGenomesDialog> dialog = new Single<>();
 
     /**
      * setup the main menus
@@ -104,7 +104,7 @@ public class MainWindowMenuController {
 
         controller.getImportGenomesMenuItem().setOnAction(e -> {
             if (dialog.get() == null) {
-                dialog.set(new CompareGenomesDialog(mainWindow.getStage()));
+                dialog.set(new ImportGenomesDialog(mainWindow.getStage()));
                 MainWindowManager.getInstance().addAuxiliaryWindow(mainWindow, dialog.get().getStage());
             }
             dialog.get().getStage().show();

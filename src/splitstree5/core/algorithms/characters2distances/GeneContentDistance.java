@@ -107,7 +107,7 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
      */
     private static void computeMLDistance(DistancesBlock dist, int ntax, BitSet[] genes) {
         dist.setNtax(ntax);
-        // dtermine average genome size:
+        // dtermine average importgenomes size:
         double m = 0;
         for (int i = 1; i <= ntax; i++) {
             m += genes[i].cardinality();

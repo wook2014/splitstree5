@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  ~ CompareGenomesDialog.fxml Copyright (C) 2020. Daniel H. Huson
+  ~ ImportGenomesDialog.fxml Copyright (C) 2020. Daniel H. Huson
   ~
   ~  (Some files contain contributions from other authors, who are then mentioned separately.)
   ~
@@ -25,7 +25,8 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <AnchorPane prefHeight="400.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8.0.111"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="splitstree5.dialogs.genome.CompareGenomesController">
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="splitstree5.dialogs.importgenomes.ImportGenomesController">
     <children>
         <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
                     AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">

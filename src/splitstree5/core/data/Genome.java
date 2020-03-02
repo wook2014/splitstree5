@@ -17,13 +17,13 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.dialogs.genome;
+package splitstree5.core.data;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * represents data associated with a genome
+ * represents data associated with a importgenomes
  * Daniel Huson, 2.2020
  */
 public class Genome {

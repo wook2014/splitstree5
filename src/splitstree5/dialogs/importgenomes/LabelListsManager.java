@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.dialogs.genome;
+package splitstree5.dialogs.importgenomes;
 
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
@@ -47,7 +47,7 @@ public class LabelListsManager {
     private final ObservableList<String> displayLabels;
     private final Map<String, Integer> line2PosInDisplayLabels = new HashMap<>();
 
-    public LabelListsManager(CompareGenomesController controller) {
+    public LabelListsManager(ImportGenomesController controller) {
         displayLabels = controller.getDisplayLabelsListView().getItems();
         controller.getStatusFlowPane().getChildren().add(label);
         label.visibleProperty().bind(Bindings.isNotEmpty(controller.getDisplayLabelsListView().getItems()));
@@ -92,7 +92,7 @@ public class LabelListsManager {
      *
      * @param controller
      */
-    public void update(CompareGenomesController controller) {
+    public void update(ImportGenomesController controller) {
         final ArrayList<String> oldDisplayLabels = new ArrayList<>(displayLabels);
         displayLabels.clear();
 
@@ -119,11 +119,11 @@ public class LabelListsManager {
         return map;
     }
 
-    private static List<String> getLabels(List<String> inputFiles, CompareGenomesDialog.TaxonIdentification taxonIdentification) {
+    private static List<String> getLabels(List<String> inputFiles, ImportGenomesDialog.TaxonIdentification taxonIdentification) {
         final List<String> labels;
-        if (taxonIdentification == CompareGenomesDialog.TaxonIdentification.PerFileUsingFileName) {
+        if (taxonIdentification == ImportGenomesDialog.TaxonIdentification.PerFileUsingFileName) {
             labels = inputFiles.stream().map(s -> Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(s), "")).collect(Collectors.toList());
-        } else if (taxonIdentification == CompareGenomesDialog.TaxonIdentification.PerFile) {
+        } else if (taxonIdentification == ImportGenomesDialog.TaxonIdentification.PerFile) {
             labels = new ArrayList<>();
 
             for (String fileName : inputFiles) {

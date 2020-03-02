@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.dialogs.genome;
+package splitstree5.dialogs.importgenomes;
 
 import javafx.scene.layout.FlowPane;
 import jloda.fx.window.NotificationManager;
@@ -25,6 +25,7 @@ import jloda.util.Basic;
 import jloda.util.FastAFileIterator;
 import jloda.util.FileLineIterator;
 import jloda.util.Pair;
+import splitstree5.core.data.Genome;
 import splitstree5.core.datablocks.GenomesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.dialogs.importer.FileOpener;
@@ -42,10 +43,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * manages the genome input
+ * manages the importgenomes input
  * Daniel Huson, 2.2020
  */
-public class GenomeInputManager {
+public class ImportGenomesManager {
     private final List<String> fileNames;
     private final boolean perFile;
     private final boolean useFileName;
@@ -59,10 +60,10 @@ public class GenomeInputManager {
      * @param fileNames
      * @param line2label
      */
-    public GenomeInputManager(List<String> fileNames, CompareGenomesDialog.TaxonIdentification taxonIdentification, Map<String, String> line2label, int minLength) {
+    public ImportGenomesManager(List<String> fileNames, ImportGenomesDialog.TaxonIdentification taxonIdentification, Map<String, String> line2label, int minLength) {
         this.fileNames = fileNames;
-        perFile = (taxonIdentification == CompareGenomesDialog.TaxonIdentification.PerFile || taxonIdentification == CompareGenomesDialog.TaxonIdentification.PerFileUsingFileName);
-        useFileName = (taxonIdentification == CompareGenomesDialog.TaxonIdentification.PerFileUsingFileName);
+        perFile = (taxonIdentification == ImportGenomesDialog.TaxonIdentification.PerFile || taxonIdentification == ImportGenomesDialog.TaxonIdentification.PerFileUsingFileName);
+        useFileName = (taxonIdentification == ImportGenomesDialog.TaxonIdentification.PerFileUsingFileName);
         this.line2label = line2label;
         this.minLength = minLength;
     }
@@ -75,7 +76,7 @@ public class GenomeInputManager {
      */
     public Iterable<Pair<String, byte[]>> iterable() {
         return () -> new Iterator<>() {
-            final Iterator<Pair<String, byte[]>> iterator = GenomeInputManager.this.iterator();
+            final Iterator<Pair<String, byte[]>> iterator = ImportGenomesManager.this.iterator();
             Pair<String, byte[]> next = null;
 
             {

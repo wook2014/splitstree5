@@ -24,7 +24,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToTrees;
-import splitstree5.dialogs.genome.Genome;
+import splitstree5.core.data.Genome;
 import splitstree5.io.nexus.GenomesNexusFormat;
 
 /**
@@ -93,7 +93,7 @@ public class GenomesBlock extends DataBlock {
 
     @Override
     public String getInfo() {
-        return (size() == 1 ? "one genome" : size() + " genomes");
+        return (size() == 1 ? "one importgenomes" : size() + " genomes");
     }
 
     @Override
