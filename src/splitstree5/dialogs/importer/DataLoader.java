@@ -38,6 +38,7 @@ import splitstree5.core.algorithms.genomes2distances.Mash;
 import splitstree5.core.algorithms.trees2splits.ConsensusNetwork;
 import splitstree5.core.algorithms.trees2splits.SuperNetwork;
 import splitstree5.core.algorithms.views.NetworkEmbedder;
+import splitstree5.core.algorithms.views.OutlineAlgorithm;
 import splitstree5.core.algorithms.views.SplitsNetworkAlgorithm;
 import splitstree5.core.algorithms.views.TreeEmbedder;
 import splitstree5.core.datablocks.*;
@@ -116,7 +117,7 @@ public class DataLoader {
                 final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
                 workflow.createConnector(distances, splits, new NeighborNet());
                 final DataNode<ViewerBlock> viewNode = workflow.createDataNode(new ViewerBlock.SplitsNetworkViewerBlock());
-                workflow.createConnector(splits, viewNode, new SplitsNetworkAlgorithm());
+                workflow.createConnector(splits, viewNode, new OutlineAlgorithm());
             } else if (dataBlock instanceof DistancesBlock) {
                 workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
                 final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
