@@ -29,14 +29,14 @@ import jloda.util.Pair;
 import jloda.util.ProgressListener;
 import jloda.util.Triplet;
 import splitstree5.core.algorithms.Algorithm;
+import splitstree5.core.algorithms.genomes2distances.mash.ComputeMashSketch;
+import splitstree5.core.algorithms.genomes2distances.mash.MashDistance;
+import splitstree5.core.algorithms.genomes2distances.mash.MashSketch;
 import splitstree5.core.algorithms.interfaces.IFromGenomes;
 import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.GenomesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.dialogs.genome.mash.ComputeMashSketch;
-import splitstree5.dialogs.genome.mash.MashDistance;
-import splitstree5.dialogs.genome.mash.MashSketch;
 
 import java.io.IOException;
 import java.util.*;

@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.dialogs.genome.mash;
+package splitstree5.core.algorithms.genomes2distances.mash;
 
 import jloda.seq.DNA5Alphabet;
 import jloda.thirdparty.MurmurHash;
