@@ -83,9 +83,9 @@ public class LabelListsManager {
             });
         });
 
-        Button removeFirstButton = new Button("-first");
+        Button removeFirstButton = new Button("- first word");
         removeFirstButton.setOnAction(c -> {
-            undoManager.doAndAdd(new UndoableRedoableCommand("Del first word") {
+            undoManager.doAndAdd(new UndoableRedoableCommand("Remove first word") {
                 final List<String> labels = new ArrayList<>(controller.getDisplayLabelsListView().getItems());
 
                 @Override
@@ -101,11 +101,11 @@ public class LabelListsManager {
                 }
             });
         });
-        removeFirstButton.setTooltip(new Tooltip("Delete the first word from each item"));
+        removeFirstButton.setTooltip(new Tooltip("Remove the first word from each item"));
 
-        Button removeLastButton = new Button("-last");
+        Button removeLastButton = new Button("- last word");
         removeLastButton.setOnAction(c -> {
-            undoManager.doAndAdd(new UndoableRedoableCommand("Delete last word") {
+            undoManager.doAndAdd(new UndoableRedoableCommand("Remove last word") {
                 final List<String> labels = new ArrayList<>(displayLabels);
 
                 @Override
@@ -121,7 +121,7 @@ public class LabelListsManager {
                 }
             });
         });
-        removeLastButton.setTooltip(new Tooltip("Delete the last word from each item"));
+        removeLastButton.setTooltip(new Tooltip("Remove the last word from each item"));
 
         controller.getAdditionalButtonsHBox().getChildren().addAll(new Separator(Orientation.VERTICAL), removeFirstButton, removeLastButton, new Separator(Orientation.VERTICAL));
 
@@ -162,10 +162,12 @@ public class LabelListsManager {
         final Map<String, String> map = new HashMap<>();
         for (String line : line2PosInDisplayLabels.keySet()) {
             final Integer pos = line2PosInDisplayLabels.get(line);
+            final String name;
             if (pos != null && pos < displayLabels.size())
-                map.put(line, displayLabels.get(pos));
+                name = displayLabels.get(pos);
             else
-                map.put(line, line.replaceAll("'", "_"));
+                name = line.replaceAll("'", "_");
+            map.put(line, Basic.getUniqueName(name, map.values()));
         }
         return map;
     }
@@ -184,9 +186,12 @@ public class LabelListsManager {
         final List<Pair<String, Integer>> list = Basic.reverse(word2count.keySet().stream().map(a -> new Pair<>(a, word2count.get(a))).sorted(Comparator.comparingInt(Pair::getSecond)).collect(Collectors.toList()));
 
         for (int i = 0; i < Math.min(7, list.size()); i++) {
+            if (list.get(i).getSecond() < 5)
+                break;
             final String word = list.get(i).getFirst();
             final Button button = new Button("- " + word);
             button.setUserData("frequent");
+            button.setTooltip(new Tooltip("Remove all occurrences of the word '" + word + "'"));
             button.setOnAction(c -> {
                 undoManager.doAndAdd(new UndoableRedoableCommand("Delete word") {
                     final List<String> labels = new ArrayList<>(displayLabels);
@@ -209,7 +214,8 @@ public class LabelListsManager {
     }
 
     private static String cleanOrKeep(String str, String original) {
-        final String result = str.replaceAll(",\\s*,", ",").replaceAll(",\\s*$", "").replaceAll("\\s+", " ").replaceAll("[(:;,.]$", "").trim();
+        final String result = str.replaceAll(",\\s*,", ",").replaceAll(",\\s*$", "").replaceAll("\\s+", " ").
+                replaceAll("[(:;,.]$", "").replaceAll(",\\s*[,.:;]", ",").replace("( ", "(").replace(" )", ")").trim();
         return result.length() > 0 ? result : original;
     }
 

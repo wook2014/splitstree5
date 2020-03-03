@@ -241,7 +241,7 @@ public class GenomesImporter {
      * @throws IOException
      */
     public void saveData(String fileName, FlowPane statusFlowPane, Consumer<Boolean> running) {
-        AService<Boolean> aService = new AService<>(statusFlowPane);
+        AService<Integer> aService = new AService<>(statusFlowPane);
 
         aService.setCallable(() -> {
             aService.getProgressListener().setTasks("Processing files", "");
@@ -280,6 +280,9 @@ public class GenomesImporter {
 
             final TaxaBlock taxaBlock = new TaxaBlock();
 
+            if (genomesBlock.size() < 4)
+                throw new IOException("Too few genomes: " + genomesBlock.size());
+
             for (Genome genome : genomesBlock.getGenomes()) {
                 taxaBlock.addTaxaByNames(Collections.singleton(genome.getName()));
             }
@@ -290,13 +293,17 @@ public class GenomesImporter {
                 (new TaxaNexusOutput()).write(w, taxaBlock);
                 (new GenomesNexusOutput()).write(w, taxaBlock, genomesBlock);
             }
-            return true;
+            return genomesBlock.size();
         });
 
         aService.runningProperty().addListener((c, o, n) -> running.accept(n));
 
         aService.setOnFailed(c -> NotificationManager.showError("Genome import failed: " + aService.getException()));
-        aService.setOnSucceeded(c -> FileOpener.open(false, (MainWindow) MainWindowManager.getInstance().getLastFocusedMainWindow(), statusFlowPane, fileName, e -> NotificationManager.showError("Genome import failed: " + e)));
+        aService.setOnSucceeded(c -> {
+            NotificationManager.showInformation("Imported " + aService.getValue() + " genomes");
+            FileOpener.open(false, (MainWindow) MainWindowManager.getInstance().getLastFocusedMainWindow(), statusFlowPane, fileName,
+                    e -> NotificationManager.showError("Genome import failed: " + e));
+        });
         aService.start();
     }
 

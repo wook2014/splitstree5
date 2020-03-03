@@ -68,9 +68,7 @@ public class OutlineAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implem
 
     @Override
     public String getCitation() {
-        return "Dress & Huson 2004; " +
-                "A.W.M. Dress and D.H. Huson, Constructing splits graphs, " +
-                "in IEEE/ACM Transactions on Computational Biology and Bioinformatics, vol. 1, no. 3, pp. 109-115, July-Sept. 2004.";
+        return "Bryant, Huson and Lockart 2020; D. Bryant, D.H. Huson and P.J. Lockhart. Phylogenetic outlines. In preparation.";
     }
 
     @Override

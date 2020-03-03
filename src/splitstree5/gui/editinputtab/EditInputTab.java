@@ -33,6 +33,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import jloda.fx.util.RecentFilesManager;
 import jloda.fx.util.ResourceManagerFX;
@@ -67,6 +68,7 @@ import java.util.regex.Pattern;
  * Daniel Huson, Daria Evseeva, 2.2018
  */
 public class EditInputTab extends EditTextViewTab {
+    private static boolean debug = false;
     private final int MAX_LENGTH_SPECIAL_CHAR_FIELD = 1;
     private StringProperty missing = new SimpleStringProperty("");
     private StringProperty gap = new SimpleStringProperty("");
@@ -83,7 +85,7 @@ public class EditInputTab extends EditTextViewTab {
      */
     public EditInputTab(MainWindow mainWindow) {
         super(new SimpleStringProperty("Input"));
-        setGraphic(new ImageView(ResourceManagerFX.getIcon("sun/Import16.gif")));
+        setGraphic(new HBox(new ImageView(ResourceManagerFX.getIcon("sun/Import16.gif")), new Label("Input")));
         setMainWindow(mainWindow);
 
         final CodeArea codeArea = getCodeArea();
@@ -126,8 +128,8 @@ public class EditInputTab extends EditTextViewTab {
         }
 
         final ToolBar toolBar = new ToolBar();
+        toolBar.setVisible(false);
         setToolBar(toolBar);
-
 
         final Button applyButton = new Button("Parse and Load");
         applyButton.setTooltip(new Tooltip("Save this data to a temporary file, parse the file and then load the data"));
@@ -151,8 +153,8 @@ public class EditInputTab extends EditTextViewTab {
         final Label labelGapChar = new Label("gapChar");
         final TextField gapChar = new TextField();
         gapChar.setPrefColumnCount(1);
-        gapChar.setOnKeyTyped(event ->{
-            if(gapChar.getText().length() >= MAX_LENGTH_SPECIAL_CHAR_FIELD)
+        gapChar.setOnKeyTyped(event -> {
+            if (gapChar.getText().length() >= MAX_LENGTH_SPECIAL_CHAR_FIELD)
                 event.consume();
         });
         gapChar.disableProperty().bind(Val.map(codeArea.lengthProperty(), n -> n == 0));
@@ -160,9 +162,12 @@ public class EditInputTab extends EditTextViewTab {
 
         //++++++ SPECIAL CHARACTERS EDITOR END
 
-        toolBar.getItems().addAll(collapseButton, applyButton,
-                labelMissingChar, missingChar,
-                labelGapChar, gapChar); //+++
+        if (ProgramProperties.get("enable-activiate-collapse", false)) {
+            toolBar.setVisible(true);
+            toolBar.getItems().addAll(collapseButton, applyButton,
+                    labelMissingChar, missingChar,
+                    labelGapChar, gapChar); //+++
+        }
 
         //toolBar.getItems().addAll(applyButton);
         applyButton.disableProperty().bind(Val.map(codeArea.lengthProperty(), n -> n == 0));
@@ -208,27 +213,33 @@ public class EditInputTab extends EditTextViewTab {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if(oldValue) {
-                    System.err.println("Block collapsing is disabled");
+                    if (debug)
+                        System.err.println("Block collapsing is disabled");
                     getCodeArea().setParagraphGraphicFactory(LineNumberFactory.get(getCodeArea()));
                     codeAreaStyler.setCollapsingActive(false);
                     ((NexusHighlighter) codeAreaStyler.getHighlighter()).setCollapsingActive(false);
                 }
                 if(newValue) {
-                    System.err.println("Block collapsing is active");
+                    if (debug)
+                        System.err.println("Block collapsing is active");
 
                     ArrayList<NexusBlockCollapseInfo> info =
                             ((NexusHighlighter) codeAreaStyler.getHighlighter()).getNexusBlockCollapseInfos();
-                    System.err.println("number ob blocks: "+info.size());
+                    if (debug)
+                        System.err.println("number ob blocks: " + info.size());
                     NexusBlockCollapser nexusBlockCollapser = new NexusBlockCollapser(getCodeArea(), info);
-                    for(NexusBlockCollapseInfo i : info){
+                    for (NexusBlockCollapseInfo i : info) {
                         //int[] a = CodeAreaStyler.getLinesRangeByIndex(i.getStartPosition(), i.getEndPosition(), codeArea);
                         //System.err.println("lines" + a[0]+ a[1]);
-                        System.err.println("block: "+i.getStartPosition()+"-"+i.getEndPosition()+" lines: "+
-                                i.getStartLine()+"-"+i.getEndLine());
+                        if (debug)
+                            System.err.println("block: " + i.getStartPosition() + "-" + i.getEndPosition() + " lines: " +
+                                    i.getStartLine() + "-" + i.getEndLine());
                     }
-                    System.err.println("Indices!");
-                    for(Integer i : nexusBlockCollapser.getLineIndices())
-                        System.err.print(i+"-");
+                    if (debug)
+                        System.err.println("Indices!");
+                    if (debug)
+                        for (Integer i : nexusBlockCollapser.getLineIndices())
+                            System.err.print(i + "-");
 
                     getCodeArea().setParagraphGraphicFactory(LineNumberFactoryWithCollapsing.get(getCodeArea(), nexusBlockCollapser));
                     codeAreaStyler.setCollapsingActive(true);
@@ -287,11 +298,14 @@ public class EditInputTab extends EditTextViewTab {
                 // todo check running time
                 long startTime = System.nanoTime() / (long) Math.pow(10, 9);
                 loadFile(selectedFile.getPath());
-                long endTime   = System.nanoTime() / (long) Math.pow(10, 9);
+                long endTime = System.nanoTime() / (long) Math.pow(10, 9);
                 long totalTime = endTime - startTime;
-                System.err.println();
-                System.err.println(this.getClass()+":"+selectedFile.getPath());
-                System.err.println("Running time EditInputTab: "+totalTime+" sec");
+                if (debug)
+                    System.err.println();
+                if (debug)
+                    System.err.println(this.getClass() + ":" + selectedFile.getPath());
+                if (debug)
+                    System.err.println("Running time EditInputTab: " + totalTime + " sec");
             }
         });
         controller.getOpenMenuItem().disableProperty().bind(Val.map(codeArea.lengthProperty(), n -> n != 0));

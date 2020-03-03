@@ -566,17 +566,17 @@ public class MainWindow implements IMainWindow {
             getMainWindowController().getMainTabPane().getSelectionModel().select(inputTab);
 
         } else {
-            if (editInputTab == null) {
-                editInputTab = new EditInputTab(this);
+            EditInputTab editTab = (EditInputTab) Basic.findByClass(getMainWindowController().getMainTabPane().getTabs(), EditInputTab.class);
+            if (editTab == null) {
+                editTab = new EditInputTab(this);
                 getDocument().dirtyProperty().addListener((observable, oldValue, newValue) -> {
                     if (!newValue) {
                         removeInputTab();
                     }
                 });
+                getMainWindowController().getMainTabPane().getTabs().add(editTab);
             }
-            if (!getMainWindowController().getMainTabPane().getTabs().contains(editInputTab))
-                getMainWindowController().getMainTabPane().getTabs().add(editInputTab);
-            getMainWindowController().getMainTabPane().getSelectionModel().select(editInputTab);
+            editTab.getTabPane().getSelectionModel().select(editTab);
         }
     }
 

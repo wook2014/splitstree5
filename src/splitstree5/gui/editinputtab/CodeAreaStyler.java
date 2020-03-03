@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
  */
 
 public class CodeAreaStyler {
+    private static boolean debug = false;
 
     //todo change codearea highlighting color
 
@@ -59,7 +60,8 @@ public class CodeAreaStyler {
                     @Override
                     public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                         if (newValue) {
-                            System.err.println("Use Nexus highlighter");
+                            if (debug)
+                                System.err.println("Use Nexus highlighter");
                             highlighter = new NexusHighlighter();
                         }
                     }
@@ -71,7 +73,8 @@ public class CodeAreaStyler {
                     @Override
                     public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                         if (newValue) {
-                            System.err.println("Use xml highlighter");
+                            if (debug)
+                                System.err.println("Use xml highlighter");
                             highlighter = new XMLHighlighter();
                         }
                     }
@@ -84,7 +87,8 @@ public class CodeAreaStyler {
                     @Override
                     public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                         if (newValue) {
-                            System.err.println("Use universal highlighter");
+                            if (debug)
+                                System.err.println("Use universal highlighter");
                             highlighter = new UniversalHighlighter();
                         }
                     }
@@ -119,7 +123,7 @@ public class CodeAreaStyler {
             if (hold && collapsingActive) {
 
                 //int chIdx = click.getCharacterIndex();
-                System.out.println(codeArea.getStyleAtPosition(chIdx).toString());
+                System.err.println(codeArea.getStyleAtPosition(chIdx).toString());
 
                 if (codeArea.getStyleAtPosition(chIdx).toString().contains("block")){
                     collapseBlock(chIdx, codeArea);
@@ -128,7 +132,7 @@ public class CodeAreaStyler {
                 if (codeArea.getStyleAtPosition(chIdx).toString().contains("collapsed")) {
 
                     for (String i : tmpBlocksKeeper.keySet()) {
-                        System.out.println(tmpBlocksKeeper.get(i).substring(0, 10));
+                        System.err.println(tmpBlocksKeeper.get(i).substring(0, 10));
                     }
 
                     final String CB = "(<< Collapsed )(\\w+)(Block >>)";
@@ -144,10 +148,10 @@ public class CodeAreaStyler {
                             break;
                     }
 
-                    System.out.println(codeArea.getText().substring(cbStart, cbEnd));
+                    System.err.println(codeArea.getText().substring(cbStart, cbEnd));
 
                     //int blockNr = Integer.parseInt(matcher.group(2));
-                    //System.out.println("collapsed nr. "+matcher.group(2));
+                    //System.err.println("collapsed nr. "+matcher.group(2));
 
                     if (cbStart != 0 || cbEnd != 0) {
                         key = matcher.group(2);
@@ -169,7 +173,7 @@ public class CodeAreaStyler {
                     Pattern PATTERN = Pattern.compile(CB);
 
                     String CB_string = getKeyWord(chIdx, false);
-                    System.out.println(CB_string);
+                    System.err.println(CB_string);
                     Matcher matcher = PATTERN.matcher(CB_string);
 
                     if (matcher.find()) {
@@ -211,9 +215,11 @@ public class CodeAreaStyler {
         while (matcher2.find())
             start2remove = matcher2.start();
 
-        System.out.println("start2remove "+start2remove);
-        System.out.println("end2remove "+end2remove);
-        //System.out.println("Block Nr. "+beginCounter);
+        if (debug)
+            System.err.println("start2remove " + start2remove);
+        if (debug)
+            System.err.println("end2remove " + end2remove);
+        //System.err.println("Block Nr. "+beginCounter);
 
         //tmpBlocksKeeper.put(beginCounter, codeArea.getText().substring(start2remove, end2remove));
 
@@ -221,7 +227,7 @@ public class CodeAreaStyler {
             /*blocksCounter ++;
             tmpBlocksKeeper.put(blocksCounter, codeArea.getText().substring(start2remove, end2remove));
             codeArea.replaceText(start2remove, end2remove, "<< Collapsed block "+blocksCounter+">>");
-            System.out.println("Block Nr. "+blocksCounter);*/
+            System.err.println("Block Nr. "+blocksCounter);*/
 
             /*int linesCounter = paragraphStart;
             int sum = start2remove;
@@ -233,8 +239,9 @@ public class CodeAreaStyler {
 
             String keyWord = getKeyWord(charIndex, true, codeArea);
             tmpBlocksKeeper.put(keyWord, codeArea.getText().substring(start2remove, end2remove));
-            codeArea.replaceText(start2remove, end2remove, "<< Collapsed "+keyWord+"Block >>");
-            System.out.println("Block Nr. "+keyWord);
+            codeArea.replaceText(start2remove, end2remove, "<< Collapsed " + keyWord + "Block >>");
+            if (debug)
+                System.err.println("Block Nr. " + keyWord);
 
             //int[] replaceRange = {paragraphStart, linesCounter};
             // todo delete? -- codeArea.setParagraphGraphicFactory(LineNumberFactoryWithCollapsing.get(codeArea, replaceRange));
@@ -281,14 +288,18 @@ public class CodeAreaStyler {
             endLine++;
         }*/
 
-        System.err.println(Arrays.toString(codeArea.getText(0, startIdx).split("\n")));
-        System.err.println(codeArea.getText(startIdx, endItx));
+        if (debug)
+            System.err.println(Arrays.toString(codeArea.getText(0, startIdx).split("\n")));
+        if (debug)
+            System.err.println(codeArea.getText(startIdx, endItx));
 
         int endLine = codeArea.getText(0, endItx).split("\n").length;
         int startLine = endLine - codeArea.getText(startIdx, endItx).split("\n").length;
 
-        System.err.println("Start line of block "+startLine);
-        System.err.println("End line of block "+endLine);
+        if (debug)
+            System.err.println("Start line of block " + startLine);
+        if (debug)
+            System.err.println("End line of block " + endLine);
 
         return new int[]{startLine, endLine};
     }

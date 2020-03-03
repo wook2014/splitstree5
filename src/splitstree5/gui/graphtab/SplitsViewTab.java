@@ -35,6 +35,7 @@ import jloda.fx.util.ResourceManagerFX;
 import jloda.graph.*;
 import jloda.phylo.PhyloSplitsGraph;
 import jloda.util.Pair;
+import jloda.util.ProgramProperties;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.views.SplitsNetworkAlgorithm;
 import splitstree5.core.datablocks.DataBlock;
@@ -208,7 +209,7 @@ public class SplitsViewTab extends Graph2DTab<PhyloSplitsGraph> implements ISpli
                 else
                     nodeSelectionModel.select(v);
                 // call label editor on double click
-                if(x.getClickCount() == 2){
+                if (ProgramProperties.get("enable-label-editor", false) && x.getClickCount() == 2) {
                     LabelsEditor labelsEditor = new LabelsEditor(getMainWindow(), nodeView.getLabel(), nodeLabelSearcher, this);
                     labelsEditor.show();
                 }

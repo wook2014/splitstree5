@@ -31,6 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class NexusHighlighter implements Highlighter {
+    private static boolean verbose = false;
 
     private boolean collapsingActive = false;
     private ArrayList<NexusBlockCollapseInfo> nexusBlockCollapseInfos;
@@ -97,12 +98,14 @@ public class NexusHighlighter implements Highlighter {
 
             //System.err.println(matcher.group(0));
             if(matcher.group(0).toLowerCase().equals("begin")) {
-                System.err.println(matcher.group(0) + matcher.start(0));
+                if (verbose)
+                    System.err.println(matcher.group(0) + matcher.start(0));
                 nexusBlockStart = matcher.start(0);
 
             }
             if(matcher.group(0).toLowerCase().equals("end;")) { //todo add endblock
-                System.err.println(matcher.group(0) + matcher.end(0));
+                if (verbose)
+                    System.err.println(matcher.group(0) + matcher.end(0));
                 nexusBlockEnd = matcher.end(0);
                 nexusBlockCollapseInfos.add(new NexusBlockCollapseInfo(nexusBlockStart, nexusBlockEnd));
             }
