@@ -209,7 +209,7 @@ public class LabelListsManager {
     }
 
     private static String cleanOrKeep(String str, String original) {
-        final String result = str.replaceAll(",\\s*,", ",").replaceAll(",\\s*$", "").replaceAll("\\s+", " ").trim();
+        final String result = str.replaceAll(",\\s*,", ",").replaceAll(",\\s*$", "").replaceAll("\\s+", " ").replaceAll("[(:;,.]$", "").trim();
         return result.length() > 0 ? result : original;
     }
 

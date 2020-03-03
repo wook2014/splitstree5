@@ -296,7 +296,7 @@ public class GenomesImporter {
         aService.runningProperty().addListener((c, o, n) -> running.accept(n));
 
         aService.setOnFailed(c -> NotificationManager.showError("Genome import failed: " + aService.getException()));
-        aService.setOnSucceeded(c -> FileOpener.open(false, (MainWindow) MainWindowManager.getInstance().getLastFocusedMainWindow(), statusFlowPane, fileName, e -> NotificationManager.showError("Mash failed: " + e)));
+        aService.setOnSucceeded(c -> FileOpener.open(false, (MainWindow) MainWindowManager.getInstance().getLastFocusedMainWindow(), statusFlowPane, fileName, e -> NotificationManager.showError("Genome import failed: " + e)));
         aService.start();
     }
 

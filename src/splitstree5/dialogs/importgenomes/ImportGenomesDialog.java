@@ -58,7 +58,7 @@ public class ImportGenomesDialog {
         final ImportGenomesController controller = extendedFXMLLoader.getController();
 
         stage = new Stage();
-        stage.setTitle("Compare Genomes - " + Version.NAME);
+        stage.setTitle("Import Genomes - " + Version.NAME);
         stage.getIcons().setAll(ProgramProperties.getProgramIconsFX());
 
         stage.setScene(new Scene(extendedFXMLLoader.getRoot()));
