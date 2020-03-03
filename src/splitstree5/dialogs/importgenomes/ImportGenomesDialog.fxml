@@ -24,7 +24,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<AnchorPane prefHeight="400.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8.0.111"
+<AnchorPane fx:id="rootPane" prefHeight="400.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8.0.111"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="splitstree5.dialogs.importgenomes.ImportGenomesController">
     <children>
@@ -41,7 +41,7 @@
                 <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE"
                          BorderPane.alignment="CENTER">
                     <tabs>
-                        <Tab text="Setup">
+                        <Tab fx:id="filesTab" text="Files">
                             <content>
                                 <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                                     <children>
@@ -76,23 +76,42 @@
                                                       GridPane.vgrow="ALWAYS">
                                                     <children>
                                                         <TextArea fx:id="inputTextArea"
-                                                                  promptText="Input files, comma separated"
+                                                                  promptText="Input files, comma separated, gzipped ok"
                                                                   HBox.hgrow="ALWAYS">
                                                             <tooltip>
                                                                 <Tooltip text="Input files in FastA format"/>
                                                             </tooltip>
                                                         </TextArea>
-                                                        <Button fx:id="inputBrowseButton" contentDisplay="GRAPHIC_ONLY"
-                                                                mnemonicParsing="false" text="Browse...">
-                                                            <graphic>
-                                                                <ImageView fitHeight="16.0" fitWidth="16.0"
-                                                                           pickOnBounds="true" preserveRatio="true">
-                                                                    <image>
-                                                                        <Image url="@/jloda/resources/icons/sun/Open16.gif"/>
-                                                                    </image>
-                                                                </ImageView>
-                                                            </graphic>
-                                                        </Button>
+                                                        <VBox spacing="10.0">
+                                                            <children>
+                                                                <Button fx:id="inputBrowseButton"
+                                                                        contentDisplay="GRAPHIC_ONLY"
+                                                                        mnemonicParsing="false" text="Browse...">
+                                                                    <graphic>
+                                                                        <ImageView fitHeight="16.0" fitWidth="16.0"
+                                                                                   pickOnBounds="true"
+                                                                                   preserveRatio="true">
+                                                                            <image>
+                                                                                <Image url="@/jloda/resources/icons/sun/Open16.gif"/>
+                                                                            </image>
+                                                                        </ImageView>
+                                                                    </graphic>
+                                                                </Button>
+                                                                <Button fx:id="clearInputButton"
+                                                                        contentDisplay="GRAPHIC_ONLY"
+                                                                        mnemonicParsing="false" text="Clear">
+                                                                    <graphic>
+                                                                        <ImageView fitHeight="16.0" fitWidth="16.0"
+                                                                                   pickOnBounds="true"
+                                                                                   preserveRatio="true">
+                                                                            <image>
+                                                                                <Image url="@/jloda/resources/icons/sun/Delete16.gif"/>
+                                                                            </image>
+                                                                        </ImageView>
+                                                                    </graphic>
+                                                                </Button>
+                                                            </children>
+                                                        </VBox>
                                                     </children>
                                                 </HBox>
                                                 <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0"
@@ -181,23 +200,42 @@
                                                 </ListView>
                                             </center>
                                             <top>
-                                                <VBox fx:id="displayLabelsVBox" BorderPane.alignment="CENTER">
+                                                <VBox BorderPane.alignment="CENTER">
                                                     <children>
-                                                        <Label text="Edit display labels:">
-                                                            <VBox.margin>
-                                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                                                            </VBox.margin>
-                                                        </Label>
+                                                        <VBox fx:id="displayLabelsVBox">
+                                                            <children>
+                                                                <Label text="Edit display labels:">
+                                                                    <VBox.margin>
+                                                                        <Insets bottom="5.0" left="5.0" right="5.0"
+                                                                                top="5.0"/>
+                                                                    </VBox.margin>
+                                                                </Label>
+                                                            </children>
+                                                            <padding>
+                                                                <Insets bottom="2.0" left="5.0" right="5.0" top="2.0"/>
+                                                            </padding>
+                                                        </VBox>
+                                                        <HBox fx:id="additionalButtonsHBox" prefHeight="30.0"/>
                                                     </children>
-                                                    <padding>
-                                                        <Insets bottom="2.0" left="5.0" right="5.0" top="2.0"/>
-                                                    </padding>
                                                 </VBox>
                                             </top>
                                         </BorderPane>
                                         <HBox alignment="CENTER_LEFT" AnchorPane.rightAnchor="30.0"
                                               AnchorPane.topAnchor="2.0">
                                             <children>
+                                                <Button fx:id="replaceButton" contentDisplay="GRAPHIC_ONLY"
+                                                        layoutX="10.0" layoutY="10.0" mnemonicParsing="false"
+                                                        style="-fx-background-color: transparent;" text="Replace...">
+                                                    <graphic>
+                                                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true"
+                                                                   preserveRatio="true">
+                                                            <image>
+                                                                <Image url="@/jloda/resources/icons/sun/Replace16.gif"/>
+                                                            </image>
+                                                        </ImageView>
+                                                    </graphic>
+                                                </Button>
+                                                <Separator orientation="VERTICAL" prefHeight="16.0"/>
                                                 <Button fx:id="labelsUndoButton" contentDisplay="GRAPHIC_ONLY"
                                                         mnemonicParsing="false"
                                                         style="-fx-background-color: transparent;" text="Undo">

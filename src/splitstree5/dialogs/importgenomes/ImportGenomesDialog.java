@@ -24,7 +24,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.scene.Scene;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import jloda.fx.util.AllFileFilter;
 import jloda.fx.util.BasicFX;
@@ -63,9 +62,6 @@ public class ImportGenomesDialog {
         stage.getIcons().setAll(ProgramProperties.getProgramIconsFX());
 
         stage.setScene(new Scene(extendedFXMLLoader.getRoot()));
-
-        stage.initModality(Modality.APPLICATION_MODAL);
-
         stage.setX(initialParent.getX() + 100);
         stage.setY(initialParent.getY() + 100);
 
@@ -78,6 +74,11 @@ public class ImportGenomesDialog {
 
     private void controlBindings(Stage stage, ImportGenomesController controller) {
         final BooleanProperty isRunning = new SimpleBooleanProperty(false);
+
+        stage.setOnCloseRequest(c -> {
+            if (isRunning.get())
+                c.consume();
+        });
 
         controller.getInputBrowseButton().setOnAction(c -> {
             final List<File> files = getFiles(stage);
@@ -111,6 +112,9 @@ public class ImportGenomesDialog {
             }
         });
 
+        controller.getClearInputButton().setOnAction(c -> controller.getInputTextArea().setText(""));
+        controller.getClearInputButton().disableProperty().bind(controller.getInputTextArea().textProperty().isEmpty());
+
         controller.getOutputFileTextField().textProperty().addListener((c, o, n) -> ProgramProperties.put("GenomesOutputFile", n));
 
         controller.getSequenceTypeChoiceBox().getItems().addAll(Sequence.values());
@@ -123,7 +127,7 @@ public class ImportGenomesDialog {
         controller.getTaxaChoiceBox().getItems().addAll(TaxonIdentification.values());
         controller.getTaxaChoiceBox().setValue(TaxonIdentification.PerFastARecord);
 
-        controller.getStoreOnlyReferencesCheckBox().setSelected(ProgramProperties.get("StoreOnlyReferences", false));
+        controller.getStoreOnlyReferencesCheckBox().setSelected(ProgramProperties.get("StoreOnlyReferences", true));
         controller.getStoreOnlyReferencesCheckBox().selectedProperty().addListener((c, o, n) -> ProgramProperties.put("StoreOnlyReferences", n));
 
         controller.getCancelButton().setOnAction(c -> stage.close());
@@ -135,16 +139,18 @@ public class ImportGenomesDialog {
             if (n)
                 labelListsManager.update(controller);
         });
+        controller.getTaxonLabelsTab().disableProperty().bind(isRunning);
 
+        controller.getFilesTab().disableProperty().bind(isRunning);
 
         controller.getApplyButton().setOnAction(c -> {
             final GenomesImporter genomesImporter = new GenomesImporter(Arrays.asList(Basic.split(controller.getInputTextArea().getText(), ',')),
                     controller.getTaxaChoiceBox().getValue(), labelListsManager.computeLine2Label(), Basic.parseInt(controller.getMinLengthTextField().getText()),
                     controller.getStoreOnlyReferencesCheckBox().isSelected());
 
-            genomesImporter.saveData(controller.getOutputFileTextField().getText(), controller.getStatusFlowPane());
+            genomesImporter.saveData(controller.getOutputFileTextField().getText(), controller.getStatusFlowPane(), isRunning::set);
         });
-        controller.getApplyButton().disableProperty().bind(controller.getInputTextArea().textProperty().isEmpty());
+        controller.getApplyButton().disableProperty().bind(controller.getInputTextArea().textProperty().isEmpty().or(isRunning));
     }
 
     /**

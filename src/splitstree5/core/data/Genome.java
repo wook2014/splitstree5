@@ -171,14 +171,21 @@ public class Genome {
                         String line = ins.readLine();
                         if (line != null && line.startsWith(">"))
                             line = ins.readLine();
+
                         if (line != null) {
+                            int length = 0;
                             final ArrayList<byte[]> lines = new ArrayList<>();
                             do {
-                                lines.add(line.getBytes());
-                                line = ins.readLine();
-
+                                final byte[] bytes = line.getBytes();
+                                length += bytes.length;
+                                lines.add(bytes);
+                                if (length >= getLength())
+                                    break;
+                                do { // skip headers
+                                    line = ins.readLine();
+                                } while (line != null && line.startsWith(">"));
                             }
-                            while (line != null && !line.startsWith(">"));
+                            while (line != null);
                             return Basic.concatenate(lines);
                         }
                     } catch (IOException e) {

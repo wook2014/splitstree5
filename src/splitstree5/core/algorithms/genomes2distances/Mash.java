@@ -29,7 +29,6 @@ import jloda.util.Pair;
 import jloda.util.ProgressListener;
 import jloda.util.Triplet;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.algorithms.genomes2distances.mash.ComputeMashSketch;
 import splitstree5.core.algorithms.genomes2distances.mash.MashDistance;
 import splitstree5.core.algorithms.genomes2distances.mash.MashSketch;
 import splitstree5.core.algorithms.interfaces.IFromGenomes;
@@ -66,7 +65,7 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
 
     @Override
     public List<String> listOptions() {
-        return Arrays.asList("optionKMerSize", "optionSketchSize", "optionDistances", "optionAlphabet");
+        return Arrays.asList("optionKMerSize", "optionSketchSize", "optionDistances");
     }
 
     @Override
@@ -82,8 +81,12 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
 
         final boolean use64Bits = (Math.pow(alphabetSize, getOptionKMerSize()) >= Integer.MAX_VALUE);
 
-        final ArrayList<MashSketch> sketches = genomesBlock.getGenomes().stream().map(g -> new Pair<>(g.getName(), g.parts()))
-                .map(pair -> ComputeMashSketch.run(pair.getFirst(), Basic.asList(pair.getSecond()), isNucleotideData, getOptionSketchSize(), getOptionKMerSize(), use64Bits, progress))
+        progress.setSubtask("Sketching");
+        progress.setMaximum(genomesBlock.getNGenomes());
+        progress.setProgress(0);
+
+        final ArrayList<MashSketch> sketches = genomesBlock.getGenomes().parallelStream().map(g -> new Pair<>(g.getName(), g.parts()))
+                .map(pair -> MashSketch.compute(pair.getFirst(), Basic.asList(pair.getSecond()), isNucleotideData, getOptionSketchSize(), getOptionKMerSize(), use64Bits, progress))
                 .collect(Collectors.toCollection(ArrayList::new));
 
         progress.checkForCancel();

@@ -21,17 +21,16 @@ package splitstree5.dialogs.importgenomes;
 
 import javafx.scene.layout.FlowPane;
 import jloda.fx.util.AService;
+import jloda.fx.window.MainWindowManager;
 import jloda.fx.window.NotificationManager;
-import jloda.util.Basic;
-import jloda.util.FastAFileIterator;
-import jloda.util.FileLineIterator;
-import jloda.util.Pair;
+import jloda.util.*;
 import splitstree5.core.data.Genome;
 import splitstree5.core.datablocks.GenomesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.io.nexus.GenomesNexusOutput;
 import splitstree5.io.nexus.TaxaNexusOutput;
+import splitstree5.main.MainWindow;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -41,7 +40,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * performs genome import
@@ -76,9 +77,9 @@ public class GenomesImporter {
      *
      * @return iterator
      */
-    public Iterable<InputRecord> iterable() {
+    public Iterable<InputRecord> iterable(ProgressListener progressListener) {
         return () -> new Iterator<>() {
-            final Iterator<InputRecord> iterator = GenomesImporter.this.iterator();
+            final Iterator<InputRecord> iterator = GenomesImporter.this.iterator(progressListener);
             InputRecord next = null;
 
             {
@@ -113,7 +114,7 @@ public class GenomesImporter {
      *
      * @return iterator
      */
-    private Iterator<InputRecord> iterator() {
+    private Iterator<InputRecord> iterator(ProgressListener progressListener) {
         return new Iterator<>() {
             private FastAFileIterator fastaIterator;
 
@@ -121,6 +122,13 @@ public class GenomesImporter {
             private InputRecord next;
 
             {
+                if (progressListener != null) {
+                    progressListener.setMaximum(fileNames.size());
+                    try {
+                        progressListener.setProgress(0);
+                    } catch (CanceledException ignored) {
+                    }
+                }
                 try {
                     if (whichFile < fileNames.size()) {
                         if (perFile)
@@ -185,6 +193,13 @@ public class GenomesImporter {
                     next = null;
                 }
                 result.setName(line2label.getOrDefault(result.getName(), result.getName().replaceAll("'", "_")));
+
+                if (progressListener != null) {
+                    try {
+                        progressListener.setProgress(whichFile);
+                    } catch (CanceledException ignored) {
+                    }
+                }
                 return result;
             }
         };
@@ -225,36 +240,48 @@ public class GenomesImporter {
      * @param statusFlowPane
      * @throws IOException
      */
-    public void saveData(String fileName, FlowPane statusFlowPane) {
+    public void saveData(String fileName, FlowPane statusFlowPane, Consumer<Boolean> running) {
         AService<Boolean> aService = new AService<>(statusFlowPane);
 
         aService.setCallable(() -> {
-            final TaxaBlock taxaBlock = new TaxaBlock();
-
-            for (InputRecord inputRecord : iterable()) {
-                taxaBlock.addTaxaByNames(Collections.singleton(inputRecord.getName()));
-            }
+            aService.getProgressListener().setTasks("Processing files", "");
 
             final GenomesBlock genomesBlock = new GenomesBlock();
 
-            aService.getProgressListener().setSubtask("Saving data");
-            aService.getProgressListener().setMaximum(taxaBlock.getNtax());
-            aService.getProgressListener().setProgress(0);
+            final Single<Exception> exception = new Single<>();
 
-            for (InputRecord inputRecord : iterable()) {
-                final Genome genome = new Genome();
-                genome.setName(inputRecord.getName());
-                final Genome.GenomePart genomePart = new Genome.GenomePart();
-                genomePart.setName("part");
-                if (storeFileReferences) {
-                    genomePart.setFile(inputRecord.getFile(), inputRecord.getOffset(), inputRecord.getSequence().length);
-                } else {
-                    genomePart.setSequence(inputRecord.getSequence(), inputRecord.getSequence().length);
+            StreamSupport.stream(iterable(aService.getProgressListener()).spliterator(), true).forEach(inputRecord -> {
+                try {
+                    final Genome genome = new Genome();
+                    genome.setName(inputRecord.getName());
+                    final Genome.GenomePart genomePart = new Genome.GenomePart();
+                    genomePart.setName("part");
+                    if (storeFileReferences) {
+                        genomePart.setFile(inputRecord.getFile(), inputRecord.getOffset(), inputRecord.getSequence().length);
+                    } else {
+                        genomePart.setSequence(inputRecord.getSequence(), inputRecord.getSequence().length);
+                    }
+                    genome.getParts().add(genomePart);
+                    genome.setLength(genome.computeLength());
+                    synchronized (genomesBlock) {
+                        genomesBlock.getGenomes().add(genome);
+                        aService.getProgressListener().checkForCancel();
+                    }
+                } catch (CanceledException ex) {
+                    synchronized (exception) {
+                        if (exception.get() == null)
+                            exception.set(ex);
+                    }
                 }
-                genome.getParts().add(genomePart);
-                genome.setLength(genome.computeLength());
-                genomesBlock.getGenomes().add(genome);
-                aService.getProgressListener().incrementProgress();
+            });
+
+            if (exception.get() != null)
+                throw exception.get();
+
+            final TaxaBlock taxaBlock = new TaxaBlock();
+
+            for (Genome genome : genomesBlock.getGenomes()) {
+                taxaBlock.addTaxaByNames(Collections.singleton(genome.getName()));
             }
 
             try (BufferedWriter w = new BufferedWriter(new FileWriter(fileName))) {
@@ -266,8 +293,10 @@ public class GenomesImporter {
             return true;
         });
 
+        aService.runningProperty().addListener((c, o, n) -> running.accept(n));
+
         aService.setOnFailed(c -> NotificationManager.showError("Genome import failed: " + aService.getException()));
-        aService.setOnSucceeded(c -> FileOpener.open(false, null, statusFlowPane, fileName, e -> NotificationManager.showError("Mash failed: " + e)));
+        aService.setOnSucceeded(c -> FileOpener.open(false, (MainWindow) MainWindowManager.getInstance().getLastFocusedMainWindow(), statusFlowPane, fileName, e -> NotificationManager.showError("Mash failed: " + e)));
         aService.start();
     }
 

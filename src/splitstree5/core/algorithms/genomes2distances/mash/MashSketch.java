@@ -19,22 +19,21 @@
 
 package splitstree5.core.algorithms.genomes2distances.mash;
 
+import jloda.seq.DNA5Alphabet;
+import jloda.thirdparty.MurmurHash;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
-import jloda.util.parse.NexusStreamParser;
 
-import java.io.*;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.Collection;
-import java.util.zip.GZIPOutputStream;
+import java.util.TreeSet;
 
 /**
  * a Mash sketch
  * Daniel Huson, 1.2019
  */
 public class MashSketch {
-    public static byte[] MAGIC_NUMBER = "MASHV0".getBytes();
     private final int sketchSize;
     private final int kSize;
     private final String name;
@@ -61,44 +60,91 @@ public class MashSketch {
     }
 
     /**
-     * construct a sketch from a data input stream
+     * compute a mash sketch
      *
-     * @param ins
+     * @param name
+     * @param sequences
+     * @param isNucleotides
+     * @param sketchSize
+     * @param kMerSize
+     * @param use64Bits
+     * @return
+     * @throws IOException
      */
-    public MashSketch(DataInputStream ins) throws IOException {
-        final int headerLength = ins.readInt();
-        final byte[] headerBytes = new byte[headerLength];
-        int got = 0;
-        do {
-            got += ins.read(headerBytes, got, headerLength - got);
-        }
-        while (got < headerLength);
-        // "##ComputeMashSketch name='%s' sketchSize=%d kSize=%d type=%s bits=%b\n
-        NexusStreamParser np = new NexusStreamParser(new StringReader(new String(headerBytes)));
-        np.matchIgnoreCase("##ComputeMashSketch name=");
-        name = np.getWordRespectCase();
-        np.matchIgnoreCase("sketchSize=");
-        sketchSize = np.getInt();
-        np.matchIgnoreCase("kSize=");
-        this.kSize = np.getInt();
-        np.matchIgnoreCase("type=");
-        final String type = np.getWordRespectCase();
-        isNucleotides = type.equals("nucl");
-        if (np.peekMatchIgnoreCase("bits=64")) {
-            np.matchIgnoreCase("bits=64");
-            use64Bits = true;
-        } else {
-            np.matchIgnoreCase("bits=32");
-            use64Bits = false;
-        }
+    public static MashSketch compute(String name, Collection<byte[]> sequences, boolean isNucleotides, int sketchSize, int kMerSize, boolean use64Bits, ProgressListener progress) {
+        final MashSketch sketch = new MashSketch(sketchSize, kMerSize, name, isNucleotides, use64Bits);
 
-        values = new long[sketchSize];
-        for (int i = 0; i < sketchSize; i++) {
-            if (use64Bits)
-                values[i] = ins.readLong();
-            else
-                values[i] = (long) ins.readInt();
+        final TreeSet<Long> sortedSet = new TreeSet<>();
+        sortedSet.add(Long.MAX_VALUE);
+        final int seed = 666;
+
+        try {
+            for (byte[] sequence : sequences) {
+                final byte[] reverseComplement = (isNucleotides ? DNA5Alphabet.reverseComplement(sequence, new byte[sequence.length]) : null);
+
+                final int top = sequence.length - kMerSize;
+                for (int offset = 0; offset < top; offset++) {
+                    if (isNucleotides) {
+                        final int ambiguous = Basic.lastIndexOf(sequence, offset, kMerSize, 'N'); // don't use k-mers with ambiguity letters
+                        if (ambiguous != -1) {
+                            offset = ambiguous; // skip to last ambiguous so that increment will move past
+                            continue;
+                        }
+                    }
+                    final int offsetUse;
+                    final byte[] seqUse;
+
+                    if (!isNucleotides || isCanonical(offset, kMerSize, sequence, reverseComplement)) {
+                        offsetUse = offset;
+                        seqUse = sequence;
+                    } else {
+                        offsetUse = sequence.length - offset - kMerSize;
+                        seqUse = reverseComplement;
+                    }
+
+                    final long hash = (use64Bits ? MurmurHash.hash64(seqUse, offsetUse, kMerSize, seed) : (long) MurmurHash.hash32(seqUse, offsetUse, kMerSize, seed));
+
+                    if (hash < sortedSet.last()) {
+                        if (sortedSet.add(hash) && sortedSet.size() > sketchSize)
+                            sortedSet.pollLast();
+                    }
+                    progress.checkForCancel();
+                }
+            }
+            if (sortedSet.size() == sketchSize) {
+                final long[] values = new long[sortedSet.size()];
+                int pos = 0;
+                for (Long value : sortedSet)
+                    values[pos++] = value;
+                sketch.setValues(values);
+                //System.err.println(sketch.getName()+" min: "+values[0]+" max: "+values[values.length-1]);
+            } else {
+                sketch.setValues(new long[0]);
+                System.err.println("Computing sketch " + sketch.getName() + ": Too few k-mers: " + sortedSet.size());
+            }
+            progress.incrementProgress();
+        } catch (CanceledException ignored) {
         }
+        return sketch;
+    }
+
+    /**
+     * determines whether forward direction is canonical
+     *
+     * @param offset
+     * @param sequence
+     * @param reverseSequence
+     * @return true, if forward is canonical
+     */
+    private static boolean isCanonical(int offset, int len, byte[] sequence, byte[] reverseSequence) {
+        final int rOffset = reverseSequence.length - offset - len;
+        for (int i = 0; i < len; i++) {
+            if (sequence[offset + i] < reverseSequence[rOffset + i])
+                return true;
+            else if (sequence[offset + i] > reverseSequence[rOffset + i])
+                return false;
+        }
+        return true;
     }
 
     public String getHeader() {
@@ -106,30 +152,7 @@ public class MashSketch {
     }
 
     public String toString() {
-        final StringBuilder buf = new StringBuilder();
-        buf.append(getHeader());
-        for (long value : getValues()) {
-            buf.append(String.format("%d\n", value));
-        }
-        return buf.toString();
-    }
-
-    /**
-     * write a sketch in binary
-     *
-     * @param outs
-     * @throws IOException
-     */
-    public void write(DataOutputStream outs) throws IOException {
-        final byte[] headerBytes = getHeader().getBytes();
-        outs.writeInt(headerBytes.length);
-        outs.write(headerBytes);
-        for (long value : values) {
-            if (use64Bits)
-                outs.writeLong(value);
-            else
-                outs.writeInt((int) value);
-        }
+        return getHeader();
     }
 
     public int getSketchSize() {
@@ -162,46 +185,5 @@ public class MashSketch {
 
     public static boolean canCompare(MashSketch a, MashSketch b) {
         return a.getSketchSize() == b.getSketchSize() && a.getkSize() == b.getkSize() && a.isNucleotides() == b.isNucleotides();
-    }
-
-    /**
-     * read a sketch file
-     *
-     * @param fileName
-     * @return sketches contained in file
-     * @throws IOException
-     */
-    public static Collection<MashSketch> readFile(String fileName) throws IOException {
-        try (DataInputStream ins = new DataInputStream(new FileInputStream(fileName))) {
-            Basic.readAndVerifyMagicNumber(ins, MAGIC_NUMBER);
-            final ArrayList<MashSketch> list = new ArrayList<>();
-            while (ins.available() > 0) {
-                list.add(new MashSketch(ins));
-            }
-            return list;
-        }
-    }
-
-    /**
-     * write a collection of sketches to a file
-     *
-     * @param sketches
-     * @param outputFile - can be stdout or  .gz file
-     * @throws IOException
-     */
-    public static void write(Collection<MashSketch> sketches, String outputFile, ProgressListener progress) throws IOException, CanceledException {
-        progress.setMaximum(sketches.size());
-        progress.setProgress(0);
-        try (DataOutputStream outs = new DataOutputStream(outputFile.endsWith(".gz") ?
-                new BufferedOutputStream(new GZIPOutputStream(new FileOutputStream(outputFile)))
-                : outputFile.equals("stdout") ? new PrintStream(System.out)
-                : new BufferedOutputStream(new FileOutputStream(outputFile)))) {
-            outs.write(MashSketch.MAGIC_NUMBER);
-            for (MashSketch sketch : sketches) {
-                if (sketch != null)
-                    sketch.write(outs);
-                progress.incrementProgress();
-            }
-        }
     }
 }

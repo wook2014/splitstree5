@@ -21,8 +21,8 @@ package splitstree5.dialogs.importgenomes;
 
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.geometry.Orientation;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldListCell;
 import jloda.fx.find.FindToolBar;
 import jloda.fx.find.ListViewSearcher;
@@ -30,6 +30,7 @@ import jloda.fx.undo.UndoManager;
 import jloda.fx.undo.UndoableRedoableCommand;
 import jloda.util.Basic;
 import jloda.util.FileLineIterator;
+import jloda.util.Pair;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,12 +43,21 @@ import java.util.stream.StreamSupport;
  * Daniel Huson, 2.2020
  */
 public class LabelListsManager {
+    private final ImportGenomesController controller;
     private final Label label = new Label();
+
+    private final UndoManager undoManager;
 
     private final ObservableList<String> displayLabels;
     private final Map<String, Integer> line2PosInDisplayLabels = new HashMap<>();
 
+    /**
+     * constructor
+     *
+     * @param controller
+     */
     public LabelListsManager(ImportGenomesController controller) {
+        this.controller = controller;
         displayLabels = controller.getDisplayLabelsListView().getItems();
         controller.getStatusFlowPane().getChildren().add(label);
         label.visibleProperty().bind(Bindings.isNotEmpty(controller.getDisplayLabelsListView().getItems()));
@@ -55,9 +65,9 @@ public class LabelListsManager {
         final ListViewSearcher<String> listViewSearcher = new ListViewSearcher<>(controller.getDisplayLabelsListView());
         final FindToolBar findToolBar = new FindToolBar(listViewSearcher);
         controller.getDisplayLabelsVBox().getChildren().add(findToolBar);
-        findToolBar.setShowReplaceToolBar(true);
+        controller.getReplaceButton().setOnAction(c -> findToolBar.setShowReplaceToolBar(!findToolBar.isShowReplaceToolBar()));
 
-        final UndoManager undoManager = new UndoManager();
+        undoManager = new UndoManager();
         listViewSearcher.setLabelSetter((listView, which, newLabel) -> {
             final String oldLabel = listView.getItems().get(which).toString();
             undoManager.doAndAdd(new UndoableRedoableCommand("Replace") {
@@ -68,10 +78,52 @@ public class LabelListsManager {
 
                 @Override
                 public void redo() {
-                    ((ListView<String>) listView).getItems().set(which, newLabel);
+                    ((ListView<String>) listView).getItems().set(which, cleanOrKeep(newLabel, oldLabel));
                 }
             });
         });
+
+        Button removeFirstButton = new Button("-first");
+        removeFirstButton.setOnAction(c -> {
+            undoManager.doAndAdd(new UndoableRedoableCommand("Del first word") {
+                final List<String> labels = new ArrayList<>(controller.getDisplayLabelsListView().getItems());
+
+                @Override
+                public void undo() {
+                    displayLabels.setAll(labels);
+                    updateFrequentWordButtons();
+                }
+
+                @Override
+                public void redo() {
+                    displayLabels.setAll(labels.stream().map(s -> cleanOrKeep(s.replaceAll("^\\S+\\s*", ""), s)).collect(Collectors.toList()));
+                    updateFrequentWordButtons();
+                }
+            });
+        });
+        removeFirstButton.setTooltip(new Tooltip("Delete the first word from each item"));
+
+        Button removeLastButton = new Button("-last");
+        removeLastButton.setOnAction(c -> {
+            undoManager.doAndAdd(new UndoableRedoableCommand("Delete last word") {
+                final List<String> labels = new ArrayList<>(displayLabels);
+
+                @Override
+                public void undo() {
+                    displayLabels.setAll(labels);
+                    updateFrequentWordButtons();
+                }
+
+                @Override
+                public void redo() {
+                    displayLabels.setAll(labels.stream().map(s -> cleanOrKeep(s.replaceAll("\\s*\\S+$", ""), s)).collect(Collectors.toList()));
+                    updateFrequentWordButtons();
+                }
+            });
+        });
+        removeLastButton.setTooltip(new Tooltip("Delete the last word from each item"));
+
+        controller.getAdditionalButtonsHBox().getChildren().addAll(new Separator(Orientation.VERTICAL), removeFirstButton, removeLastButton, new Separator(Orientation.VERTICAL));
 
         controller.getLabelsUndoButton().setOnAction(c -> undoManager.undo());
         controller.getLabelsUndoButton().disableProperty().bind(undoManager.undoableProperty().not());
@@ -83,8 +135,6 @@ public class LabelListsManager {
         controller.getDisplayLabelsListView().setOnEditCommit(t -> {
             controller.getDisplayLabelsListView().getItems().set(t.getIndex(), t.getNewValue());
         });
-
-        controller.getDisplayLabelsVBox().setOnMouseClicked(c -> findToolBar.setShowReplaceToolBar(true));
     }
 
     /**
@@ -105,6 +155,7 @@ public class LabelListsManager {
             line2PosInDisplayLabels.put(label, displayLabels.size() - 1);
         }
         label.setText("Taxa: " + displayLabels.size());
+        updateFrequentWordButtons();
     }
 
     public Map<String, String> computeLine2Label() {
@@ -117,6 +168,49 @@ public class LabelListsManager {
                 map.put(line, line.replaceAll("'", "_"));
         }
         return map;
+    }
+
+    private void updateFrequentWordButtons() {
+        controller.getAdditionalButtonsHBox().getChildren().removeIf(node -> (node.getUserData() != null && node.getUserData().equals("frequent")));
+
+        final Map<String, Integer> word2count = new HashMap<>();
+        displayLabels.forEach(s -> {
+            for (String a : s.split("\\s+")) {
+                if (a.length() > 0)
+                    word2count.put(a, word2count.computeIfAbsent(a, z -> 0) + 1);
+            }
+        });
+
+        final List<Pair<String, Integer>> list = Basic.reverse(word2count.keySet().stream().map(a -> new Pair<>(a, word2count.get(a))).sorted(Comparator.comparingInt(Pair::getSecond)).collect(Collectors.toList()));
+
+        for (int i = 0; i < Math.min(7, list.size()); i++) {
+            final String word = list.get(i).getFirst();
+            final Button button = new Button("- " + word);
+            button.setUserData("frequent");
+            button.setOnAction(c -> {
+                undoManager.doAndAdd(new UndoableRedoableCommand("Delete word") {
+                    final List<String> labels = new ArrayList<>(displayLabels);
+
+                    @Override
+                    public void undo() {
+                        displayLabels.setAll(labels);
+                        updateFrequentWordButtons();
+                    }
+
+                    @Override
+                    public void redo() {
+                        displayLabels.setAll(labels.stream().map(s -> cleanOrKeep(s.replaceAll(word, ""), s)).collect(Collectors.toList()));
+                        updateFrequentWordButtons();
+                    }
+                });
+            });
+            controller.getAdditionalButtonsHBox().getChildren().add(button);
+        }
+    }
+
+    private static String cleanOrKeep(String str, String original) {
+        final String result = str.replaceAll(",\\s*,", ",").replaceAll(",\\s*$", "").replaceAll("\\s+", " ").trim();
+        return result.length() > 0 ? result : original;
     }
 
     private static List<String> getLabels(List<String> inputFiles, ImportGenomesDialog.TaxonIdentification taxonIdentification) {

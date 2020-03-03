@@ -21,10 +21,15 @@ package splitstree5.dialogs.importgenomes;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 public class ImportGenomesController {
+
+    @FXML
+    private AnchorPane rootPane;
 
     @FXML
     private TextArea inputTextArea;
@@ -47,6 +52,8 @@ public class ImportGenomesController {
     @FXML
     private Button outputBrowseButton;
 
+    @FXML
+    private Tab filesTab;
     @FXML
     private Tab taxonLabelsTab;
 
@@ -73,6 +80,19 @@ public class ImportGenomesController {
 
     @FXML
     private CheckBox storeOnlyReferencesCheckBox;
+
+    @FXML
+    private HBox additionalButtonsHBox;
+
+    @FXML
+    private Button replaceButton;
+
+    @FXML
+    private Button clearInputButton;
+
+    public AnchorPane getRootPane() {
+        return rootPane;
+    }
 
     public TextArea getInputTextArea() {
         return inputTextArea;
@@ -106,6 +126,10 @@ public class ImportGenomesController {
         return statusFlowPane;
     }
 
+    public Tab getFilesTab() {
+        return filesTab;
+    }
+
     public Tab getTaxonLabelsTab() {
         return taxonLabelsTab;
     }
@@ -137,5 +161,17 @@ public class ImportGenomesController {
 
     public CheckBox getStoreOnlyReferencesCheckBox() {
         return storeOnlyReferencesCheckBox;
+    }
+
+    public HBox getAdditionalButtonsHBox() {
+        return additionalButtonsHBox;
+    }
+
+    public Button getReplaceButton() {
+        return replaceButton;
+    }
+
+    public Button getClearInputButton() {
+        return clearInputButton;
     }
 }
