@@ -22,7 +22,10 @@ package splitstree5.dialogs.importgenomes;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.TextFieldListCell;
 import jloda.fx.find.FindToolBar;
 import jloda.fx.find.ListViewSearcher;
@@ -73,12 +76,12 @@ public class LabelListsManager {
             undoManager.doAndAdd(new UndoableRedoableCommand("Replace") {
                 @Override
                 public void undo() {
-                    ((ListView<String>) listView).getItems().set(which, oldLabel);
+                    displayLabels.set(which, oldLabel);
                 }
 
                 @Override
                 public void redo() {
-                    ((ListView<String>) listView).getItems().set(which, cleanOrKeep(newLabel, oldLabel));
+                    displayLabels.set(which, cleanOrKeep(newLabel, oldLabel));
                 }
             });
         });
@@ -102,6 +105,7 @@ public class LabelListsManager {
             });
         });
         removeFirstButton.setTooltip(new Tooltip("Remove the first word from each item"));
+        removeFirstButton.disableProperty().bind(Bindings.isEmpty(displayLabels));
 
         Button removeLastButton = new Button("- last word");
         removeLastButton.setOnAction(c -> {
@@ -122,6 +126,7 @@ public class LabelListsManager {
             });
         });
         removeLastButton.setTooltip(new Tooltip("Remove the last word from each item"));
+        removeLastButton.disableProperty().bind(Bindings.isEmpty(displayLabels));
 
         controller.getAdditionalButtonsHBox().getChildren().addAll(new Separator(Orientation.VERTICAL), removeFirstButton, removeLastButton, new Separator(Orientation.VERTICAL));
 
@@ -135,6 +140,11 @@ public class LabelListsManager {
         controller.getDisplayLabelsListView().setOnEditCommit(t -> {
             controller.getDisplayLabelsListView().getItems().set(t.getIndex(), t.getNewValue());
         });
+    }
+
+    public void clear() {
+        displayLabels.clear();
+        line2PosInDisplayLabels.clear();
     }
 
     /**
@@ -204,7 +214,7 @@ public class LabelListsManager {
 
                     @Override
                     public void redo() {
-                        displayLabels.setAll(labels.stream().map(s -> cleanOrKeep(s.replaceAll(word, ""), s)).collect(Collectors.toList()));
+                        displayLabels.setAll(labels.stream().map(s -> cleanOrKeep(s.replace(word, ""), s)).collect(Collectors.toList()));
                         updateFrequentWordButtons();
                     }
                 });
@@ -214,8 +224,8 @@ public class LabelListsManager {
     }
 
     private static String cleanOrKeep(String str, String original) {
-        final String result = str.replaceAll(",\\s*,", ",").replaceAll(",\\s*$", "").replaceAll("\\s+", " ").
-                replaceAll("[(:;,.]$", "").replaceAll(",\\s*[,.:;]", ",").replace("( ", "(").replace(" )", ")").trim();
+        final String result = str.replaceAll("(,;:)\\s*[,:;]", "$1").replaceAll("[,;:(]\\s*$", "").replaceAll("[|\\s]+", " ")
+                .replaceAll("(\\(\\[\\{) ", "$1").replaceAll("(\\)]}) ", "$1").trim();
         return result.length() > 0 ? result : original;
     }
 

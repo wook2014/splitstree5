@@ -34,6 +34,7 @@ public class NameableBase {
     private StringProperty name;
     private StringProperty shortDescription;
 
+    // todo: what is the difference between title and name? Do we really need title?
     private StringProperty title;
 
     /**

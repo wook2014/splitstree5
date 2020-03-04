@@ -225,4 +225,13 @@ abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extend
         return null;
     }
 
+    /**
+     * is assignable from
+     *
+     * @param clazz
+     * @return
+     */
+    public boolean isAssignableFrom(Class clazz) {
+        return this.getClass().isAssignableFrom(clazz);
+    }
 }

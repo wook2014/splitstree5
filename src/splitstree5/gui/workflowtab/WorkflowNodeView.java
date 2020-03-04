@@ -91,7 +91,7 @@ public class WorkflowNodeView extends Group {
 
         final Label label = new Label();
         label.setMouseTransparent(true);
-        label.textProperty().bind(workflowNode.titleProperty());
+        label.textProperty().bind(workflowNode.nameProperty());
         label.setFont(Font.font("Helvetica", 12));
         label.setLayoutX(10);
         label.setLayoutY(4);

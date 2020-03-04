@@ -45,6 +45,7 @@ import jloda.fx.window.WindowGeometry;
 import jloda.util.Basic;
 import jloda.util.Pair;
 import jloda.util.ProgramProperties;
+import jloda.util.Single;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.ViewerBlock;
 import splitstree5.core.workflow.Connector;
@@ -52,6 +53,7 @@ import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.Workflow;
 import splitstree5.core.workflow.WorkflowNode;
 import splitstree5.dialogs.SaveChangesDialog;
+import splitstree5.dialogs.importgenomes.ImportGenomesDialog;
 import splitstree5.gui.ISavesPreviousSelection;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.algorithmtab.AlgorithmTab;
@@ -68,6 +70,7 @@ import splitstree5.toolbar.MainToolBarController;
 import java.io.IOException;
 
 public class MainWindow implements IMainWindow {
+    static final Single<ImportGenomesDialog> importGenomesDialog = new Single<>();
     private final Document document;
     private final Workflow workflow;
 
@@ -620,6 +623,8 @@ public class MainWindow implements IMainWindow {
 
     @Override
     public void close() {
+        if (importGenomesDialog.get() != null)
+            importGenomesDialog.get().getStage().hide();
         mainTabPane.redockAll();
         algorithmsTabPane.redockAll();
         stage.hide();

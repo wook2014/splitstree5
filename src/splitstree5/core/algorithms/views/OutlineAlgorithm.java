@@ -185,4 +185,10 @@ public class OutlineAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implem
     public void setOptionUseWeights(boolean optionUseWeights) {
         this.optionUseWeights.set(optionUseWeights);
     }
+
+    @Override
+    public boolean isAssignableFrom(Class that) {
+        return super.isAssignableFrom(that) || SplitsNetworkAlgorithm.class.isAssignableFrom(that);
+    }
+
 }

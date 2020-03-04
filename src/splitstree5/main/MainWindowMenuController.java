@@ -31,7 +31,10 @@ import jloda.fx.util.RecentFilesManager;
 import jloda.fx.window.MainWindowManager;
 import jloda.fx.window.NotificationManager;
 import jloda.swing.util.BasicSwing;
-import jloda.util.*;
+import jloda.util.Basic;
+import jloda.util.Pair;
+import jloda.util.ProgramProperties;
+import jloda.util.ProgressPercentage;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.characters2distances.GeneContentDistance;
 import splitstree5.core.algorithms.characters2distances.LogDet;
@@ -86,7 +89,6 @@ import java.util.Optional;
  * Daniel Huson, 12.2017
  */
 public class MainWindowMenuController {
-    static private final Single<ImportGenomesDialog> dialog = new Single<>();
 
     /**
      * setup the main menus
@@ -103,12 +105,12 @@ public class MainWindowMenuController {
         controller.getImportMenuItem().setOnAction(e -> ImportDialog.show(mainWindow));
 
         controller.getImportGenomesMenuItem().setOnAction(e -> {
-            if (dialog.get() == null) {
-                dialog.set(new ImportGenomesDialog(mainWindow.getStage()));
-                MainWindowManager.getInstance().addAuxiliaryWindow(mainWindow, dialog.get().getStage());
+            if (MainWindow.importGenomesDialog.get() == null) {
+                MainWindow.importGenomesDialog.set(new ImportGenomesDialog(mainWindow.getStage()));
+                MainWindowManager.getInstance().addAuxiliaryWindow(mainWindow, MainWindow.importGenomesDialog.get().getStage());
             }
-            dialog.get().getStage().show();
-            dialog.get().getStage().toFront();
+            MainWindow.importGenomesDialog.get().getStage().show();
+            MainWindow.importGenomesDialog.get().getStage().toFront();
         });
 
         controller.getImportMultipleTreeFilesMenuItem().setOnAction(e -> ImportMultipleTreeFilesDialog.apply(mainWindow));
@@ -461,8 +463,8 @@ public class MainWindowMenuController {
         controller.getNeighborNetMenuItem().disableProperty().bind(disableDistancesMethods);
 
         controller.getSplitDecompositionMenuItem().setOnAction(e -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, DistancesBlock.class,
-
                 SplitDecomposition.class, SplitsBlock.class, SplitsNetworkAlgorithm.class, ViewerBlock.SplitsNetworkViewerBlock.class)));
+
         controller.getSplitDecompositionMenuItem().disableProperty().bind(disableDistancesMethods);
 
         controller.getParsimonySplitsMenuItem().setOnAction(e -> mainWindow.show(WorkflowEditing.findOrCreatePath(workflow, viewDataNode, CharactersBlock.class,

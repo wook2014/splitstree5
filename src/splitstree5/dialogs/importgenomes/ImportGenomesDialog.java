@@ -141,6 +141,11 @@ public class ImportGenomesDialog {
         });
         controller.getTaxonLabelsTab().disableProperty().bind(isRunning);
 
+        controller.getInputTextArea().textProperty().addListener((c, o, n) -> {
+            if (n.length() == 0)
+                labelListsManager.clear();
+        });
+
         controller.getFilesTab().disableProperty().bind(isRunning);
 
         controller.getApplyButton().setOnAction(c -> {

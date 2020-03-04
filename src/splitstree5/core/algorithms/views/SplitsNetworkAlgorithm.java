@@ -253,4 +253,9 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
     public void setOptionBoxOpenIterations(int optionBoxOpenIterations) {
         this.optionBoxOpenIterations.set(optionBoxOpenIterations);
     }
+
+    @Override
+    public boolean isAssignableFrom(Class that) {
+        return super.isAssignableFrom(that) || OutlineAlgorithm.class.isAssignableFrom(that);
+    }
 }

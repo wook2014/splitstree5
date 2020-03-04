@@ -57,7 +57,7 @@ public class Connector<P extends DataBlock, C extends DataBlock> extends Workflo
 
     private BooleanProperty applicable = new SimpleBooleanProperty(false); // algorithm is set and applicable?
 
-    private final ChangeListener<UpdateState> parentStateChangeListener = new ChangeListener<UpdateState>() {
+    private final ChangeListener<UpdateState> parentStateChangeListener = new ChangeListener<>() {
         @Override
         public void changed(ObservableValue<? extends UpdateState> observable, UpdateState oldValue, UpdateState newValue) {
             if (Connector.this.getAlgorithm() != null) {

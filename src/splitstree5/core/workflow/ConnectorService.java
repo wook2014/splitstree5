@@ -103,7 +103,7 @@ public class ConnectorService<P extends DataBlock, C extends DataBlock> extends 
 
         @Override
         protected void failed() {
-            if (getException().getMessage().startsWith("Restart")) {
+            if (getException().getMessage() != null && getException().getMessage().startsWith("Restart")) {
                 NotificationManager.showInformation(getException().getMessage());
                 connector.setState(UpdateState.INVALID);
             } else {

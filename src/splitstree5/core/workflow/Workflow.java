@@ -771,7 +771,7 @@ public class Workflow {
             final DataNode target = connector.getChild();
 
             if (target.getDataBlock().getClass().isAssignableFrom(pair.getSecond())) {
-                if (!connector.getAlgorithm().getClass().isAssignableFrom(pair.getFirst())) {
+                if (!connector.getAlgorithm().isAssignableFrom(pair.getFirst())) {
                     try {
                         connector.setAlgorithm(pair.getFirst().getConstructor().newInstance());
                         if (connector.getAlgorithm().isApplicable(getWorkingTaxaBlock(), dataNode.getDataBlock()) && mustForceRecompute.get() == null)
