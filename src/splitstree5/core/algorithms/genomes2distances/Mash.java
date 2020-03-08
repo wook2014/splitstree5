@@ -20,10 +20,7 @@
 
 package splitstree5.core.algorithms.genomes2distances;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import jloda.util.Basic;
 import jloda.util.Pair;
 import jloda.util.ProgressListener;
@@ -63,9 +60,11 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
     private final IntegerProperty optionSketchSize = new SimpleIntegerProperty(1000);
     private final ObjectProperty<Distance> optionDistances = new SimpleObjectProperty<>(Distance.Phylogenetic);
 
+    private final BooleanProperty optionIgnoreUniqueKMers = new SimpleBooleanProperty(false);
+
     @Override
     public List<String> listOptions() {
-        return Arrays.asList("optionKMerSize", "optionSketchSize", "optionDistances");
+        return Arrays.asList("optionKMerSize", "optionSketchSize", "optionDistances", "optionIgnoreUniqueKMers");
     }
 
     @Override
@@ -86,7 +85,7 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
         progress.setProgress(0);
 
         final ArrayList<MashSketch> sketches = genomesBlock.getGenomes().parallelStream().map(g -> new Pair<>(g.getName(), g.parts()))
-                .map(pair -> MashSketch.compute(pair.getFirst(), Basic.asList(pair.getSecond()), isNucleotideData, getOptionSketchSize(), getOptionKMerSize(), use64Bits, progress))
+                .map(pair -> MashSketch.compute(pair.getFirst(), Basic.asList(pair.getSecond()), isNucleotideData, getOptionSketchSize(), getOptionKMerSize(), use64Bits, isOptionIgnoreUniqueKMers(), progress))
                 .collect(Collectors.toCollection(ArrayList::new));
 
         progress.checkForCancel();
@@ -132,6 +131,13 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
         }
     }
 
+    @Override
+    public String getToolTip(String optionName) {
+        if (optionName.endsWith("IgnoreUniqueKMers"))
+            return "Use this only when input data consists of unassembled reads";
+        return super.getToolTip(optionName);
+    }
+
     public int getOptionKMerSize() {
         return optionKMerSize.get();
     }
@@ -166,5 +172,17 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
 
     public void setOptionDistances(Distance optionDistances) {
         this.optionDistances.set(optionDistances);
+    }
+
+    public boolean isOptionIgnoreUniqueKMers() {
+        return optionIgnoreUniqueKMers.get();
+    }
+
+    public BooleanProperty optionIgnoreUniqueKMersProperty() {
+        return optionIgnoreUniqueKMers;
+    }
+
+    public void setOptionIgnoreUniqueKMers(boolean optionIgnoreUniqueKMers) {
+        this.optionIgnoreUniqueKMers.set(optionIgnoreUniqueKMers);
     }
 }

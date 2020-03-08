@@ -116,7 +116,7 @@ public class GenomesImporter {
      */
     private Iterator<InputRecord> iterator(ProgressListener progressListener) {
         return new Iterator<>() {
-            private FastAFileIterator fastaIterator;
+            private IFastAIterator fastaIterator;
 
             private int whichFile = 0;
             private InputRecord next;
@@ -135,7 +135,7 @@ public class GenomesImporter {
                             next = getDataFromAFile(fileNames.get(whichFile++), useFileName);
                         else {
                             do {
-                                fastaIterator = new FastAFileIterator(fileNames.get(whichFile));
+                                fastaIterator = FastAFileIterator.getFastAOrFastQAsFastAIterator(fileNames.get(whichFile));
                                 if (fastaIterator.hasNext()) {
                                     final Pair<String, String> pair = fastaIterator.next();
                                     next = new InputRecord(Basic.swallowLeadingGreaterSign(pair.getFirst()), pair.getSecond().getBytes(), fileNames.get(whichFile), fastaIterator.getPosition());
@@ -218,15 +218,19 @@ public class GenomesImporter {
             name = Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(fileName), "");
         else {
             final String line = Basic.getFirstLineFromFile(new File(fileName));
-            if (line != null)
-                name = Basic.swallowLeadingGreaterSign(line);
-            else
+            if (line != null) {
+                if (line.startsWith(">") || line.startsWith("@"))
+                    name = line.substring(1).trim();
+                else
+                    name = line;
+            } else
                 name = Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(fileName), "");
         }
 
-        try (FileLineIterator it = new FileLineIterator(fileName)) {
-            return new InputRecord(name, it.stream().filter(s -> !s.startsWith(">")).map(s -> s.replaceAll("\\s+", "")).collect(Collectors.joining()).getBytes(),
+        try (IFastAIterator it = FastAFileIterator.getFastAOrFastQAsFastAIterator(fileName)) {
+            return new InputRecord(name, it.stream().map(Pair::getSecond).collect(Collectors.joining()).getBytes(),
                     fileName, 0L);
+
         } catch (IOException e) {
             Basic.caught(e);
             return null;

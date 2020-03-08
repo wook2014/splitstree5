@@ -25,10 +25,7 @@ import javafx.collections.FXCollections;
 import javafx.scene.Scene;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import jloda.fx.util.AllFileFilter;
-import jloda.fx.util.BasicFX;
-import jloda.fx.util.ExtendedFXMLLoader;
-import jloda.fx.util.FastAFileFilter;
+import jloda.fx.util.*;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 import splitstree5.main.Version;
@@ -179,7 +176,7 @@ public class ImportGenomesDialog {
         if (previousDir.isDirectory())
             fileChooser.setInitialDirectory(previousDir);
         fileChooser.setTitle("Genome Files");
-        fileChooser.getExtensionFilters().addAll(FastAFileFilter.getInstance(), AllFileFilter.getInstance());
+        fileChooser.getExtensionFilters().addAll(FastAFileFilter.getInstance(), FastQFileFilter.getInstance(), AllFileFilter.getInstance());
 
         return fileChooser.showOpenMultipleDialog(owner);
     }

@@ -57,7 +57,7 @@ public class MashAlgorithm {
      * @param isRunning
      */
     public static void apply(String outputFile, Iterable<Pair<String, byte[]>> input, boolean isNucleotideData,
-                             int kMerSize, int sketchSize, boolean usePhylogeneticDistances, FlowPane statusFlowPane, BooleanProperty isRunning) {
+                             int kMerSize, int sketchSize, boolean usePhylogeneticDistances, boolean filterUniqueKMers, FlowPane statusFlowPane, BooleanProperty isRunning) {
         if (true) {
             for (Pair<String, byte[]> pair : input) {
                 System.err.println(pair.getFirst() + " " + pair.getSecond().length);
@@ -73,7 +73,7 @@ public class MashAlgorithm {
         aService.setCallable(() -> {
 
             final ArrayList<MashSketch> sketches = StreamSupport.stream(input.spliterator(), true)
-                    .map(pair -> MashSketch.compute(pair.getFirst(), Collections.singletonList(pair.getSecond()), isNucleotideData, sketchSize, kMerSize, use64Bits, aService.getProgressListener())).collect(Collectors.toCollection(ArrayList::new));
+                    .map(pair -> MashSketch.compute(pair.getFirst(), Collections.singletonList(pair.getSecond()), isNucleotideData, sketchSize, kMerSize, use64Bits, filterUniqueKMers, aService.getProgressListener())).collect(Collectors.toCollection(ArrayList::new));
 
             aService.getProgressListener().checkForCancel();
 

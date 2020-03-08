@@ -24,6 +24,7 @@ import jloda.thirdparty.MurmurHash;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
+import splitstree5.core.algorithms.genomes2distances.mash.bloomfilter.BloomFilter;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -71,12 +72,18 @@ public class MashSketch {
      * @return
      * @throws IOException
      */
-    public static MashSketch compute(String name, Collection<byte[]> sequences, boolean isNucleotides, int sketchSize, int kMerSize, boolean use64Bits, ProgressListener progress) {
+    public static MashSketch compute(String name, Collection<byte[]> sequences, boolean isNucleotides, int sketchSize, int kMerSize, boolean use64Bits, boolean filterUniqueKMers, ProgressListener progress) {
         final MashSketch sketch = new MashSketch(sketchSize, kMerSize, name, isNucleotides, use64Bits);
 
         final TreeSet<Long> sortedSet = new TreeSet<>();
         sortedSet.add(Long.MAX_VALUE);
         final int seed = 666;
+
+        final BloomFilter bloomFilter;
+        if (filterUniqueKMers)
+            bloomFilter = new BloomFilter(sequences.stream().mapToInt(s -> s.length).sum(), 500000000);
+        else
+            bloomFilter = null;
 
         try {
             for (byte[] sequence : sequences) {
@@ -100,6 +107,10 @@ public class MashSketch {
                     } else {
                         offsetUse = sequence.length - offset - kMerSize;
                         seqUse = reverseComplement;
+                    }
+
+                    if (bloomFilter != null && bloomFilter.add(seqUse, offsetUse, kMerSize)) {
+                        continue; // first time we have seen this k-mer
                     }
 
                     final long hash = (use64Bits ? MurmurHash.hash64(seqUse, offsetUse, kMerSize, seed) : (long) MurmurHash.hash32(seqUse, offsetUse, kMerSize, seed));
