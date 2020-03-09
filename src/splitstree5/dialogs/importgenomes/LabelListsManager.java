@@ -20,6 +20,8 @@
 package splitstree5.dialogs.importgenomes;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
@@ -31,15 +33,16 @@ import jloda.fx.find.FindToolBar;
 import jloda.fx.find.ListViewSearcher;
 import jloda.fx.undo.UndoManager;
 import jloda.fx.undo.UndoableRedoableCommand;
+import jloda.fx.window.NotificationManager;
 import jloda.util.Basic;
-import jloda.util.FileLineIterator;
+import jloda.util.FastAFileIterator;
+import jloda.util.IFastAIterator;
 import jloda.util.Pair;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 /**
  * manages the list of labels
@@ -54,6 +57,8 @@ public class LabelListsManager {
     private final ObservableList<String> displayLabels;
     private final Map<String, Integer> line2PosInDisplayLabels = new HashMap<>();
 
+    private final BooleanProperty applicable = new SimpleBooleanProperty();
+
     /**
      * constructor
      *
@@ -62,6 +67,9 @@ public class LabelListsManager {
     public LabelListsManager(ImportGenomesController controller) {
         this.controller = controller;
         displayLabels = controller.getDisplayLabelsListView().getItems();
+
+        applicable.bind(Bindings.isNotEmpty(displayLabels));
+
         controller.getStatusFlowPane().getChildren().add(label);
         label.visibleProperty().bind(Bindings.isNotEmpty(controller.getDisplayLabelsListView().getItems()));
 
@@ -168,6 +176,7 @@ public class LabelListsManager {
         updateFrequentWordButtons();
     }
 
+
     public Map<String, String> computeLine2Label() {
         final Map<String, String> map = new HashMap<>();
         for (String line : line2PosInDisplayLabels.keySet()) {
@@ -238,23 +247,38 @@ public class LabelListsManager {
 
             for (String fileName : inputFiles) {
                 final String line = Basic.getFirstLineFromFile(new File(fileName));
-                if (line != null)
-                    labels.add(Basic.swallowLeadingGreaterSign(line));
-                else
+                if (line != null) {
+                    labels.add(line.startsWith(">") || line.startsWith("@") ? line.substring(1).trim() : line);
+                } else
                     labels.add(fileName);
             }
             return labels;
-        } else {
+        } else { // perFastARecord
             labels = new ArrayList<>();
 
             for (String fileName : inputFiles) {
-                try (FileLineIterator it = new FileLineIterator(fileName)) {
-                    labels.addAll(StreamSupport.stream(it.lines().spliterator(), false).filter(a -> a.startsWith(">")).map(Basic::swallowLeadingGreaterSign).collect(Collectors.toList()));
+                try (IFastAIterator it = FastAFileIterator.getFastAOrFastQAsFastAIterator(fileName)) {
+                    while (it.hasNext()) {
+                        final String line = it.next().getFirst();
+                        labels.add(line.startsWith(">") || line.startsWith("@") ? line.substring(1).trim() : line);
+                        if (labels.size() > 1000)
+                            throw new IOException("Too many taxon labels (>1000)");
+
+                    }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    NotificationManager.showError("Processing failed: " + e);
+                    return null;
                 }
             }
         }
         return labels;
+    }
+
+    public boolean isApplicable() {
+        return applicable.get();
+    }
+
+    public BooleanProperty applicableProperty() {
+        return applicable;
     }
 }

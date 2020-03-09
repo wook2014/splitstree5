@@ -152,7 +152,7 @@ public class ImportGenomesDialog {
 
             genomesImporter.saveData(controller.getOutputFileTextField().getText(), controller.getStatusFlowPane(), isRunning::set);
         });
-        controller.getApplyButton().disableProperty().bind(controller.getInputTextArea().textProperty().isEmpty().or(isRunning));
+        controller.getApplyButton().disableProperty().bind(controller.getInputTextArea().textProperty().isEmpty().or(isRunning).or(labelListsManager.applicableProperty().not()));
     }
 
     /**
