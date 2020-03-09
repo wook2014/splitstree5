@@ -28,7 +28,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
-import jloda.fx.control.AMultipleSelectionModel;
+import jloda.fx.control.ItemSelectionModel;
 import jloda.util.Basic;
 import jloda.util.Pair;
 import jloda.util.Single;
@@ -81,7 +81,7 @@ public class Workflow {
     private final BooleanProperty updating = new SimpleBooleanProperty();
     private final ObservableSet<WorkflowNode> invalidNodes = FXCollections.observableSet();
 
-    private final AMultipleSelectionModel<WorkflowNode> nodeSelectionModel = new AMultipleSelectionModel<>();
+    private final ItemSelectionModel<WorkflowNode> nodeSelectionModel = new ItemSelectionModel<>();
 
     private final LongProperty topologyChanged = new SimpleLongProperty(0);
 
@@ -621,7 +621,7 @@ public class Workflow {
         return ReadOnlyIntegerProperty.readOnlyIntegerProperty(size);
     }
 
-    public AMultipleSelectionModel<WorkflowNode> getNodeSelectionModel() {
+    public ItemSelectionModel<WorkflowNode> getNodeSelectionModel() {
         return nodeSelectionModel;
     }
 
@@ -632,6 +632,7 @@ public class Workflow {
     public ObservableSet<DataNode> getWorkingNodes() {
         return workingNodes;
     }
+
 
 
     /**
@@ -664,7 +665,7 @@ public class Workflow {
         final ArrayList<WorkflowNode> allNodes = new ArrayList<>(dataNodes.size() + connectorNodes.size());
         allNodes.addAll(dataNodes);
         allNodes.addAll(connectorNodes);
-        getNodeSelectionModel().setItems(allNodes);
+        getNodeSelectionModel().clearSelection();
     }
 
     public void cancelAll() {

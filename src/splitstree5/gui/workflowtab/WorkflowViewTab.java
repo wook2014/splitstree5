@@ -36,7 +36,7 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import jloda.fx.control.AMultipleSelectionModel;
+import jloda.fx.control.ItemSelectionModel;
 import jloda.fx.control.ZoomableScrollPane;
 import jloda.fx.undo.UndoableChangeList;
 import jloda.fx.undo.UndoableRedoableCommand;
@@ -281,7 +281,7 @@ public class WorkflowViewTab extends ViewerTab {
         controller.getPageSetupMenuItem().setOnAction((e) -> Print.showPageLayout(getMainWindow().getStage()));
         controller.getPrintMenuitem().setOnAction((e) -> Print.print(getMainWindow().getStage(), centerPane));
 
-        final AMultipleSelectionModel<WorkflowNode> selectionModel = getWorkflow().getNodeSelectionModel();
+        final ItemSelectionModel<WorkflowNode> selectionModel = getWorkflow().getNodeSelectionModel();
 
         controller.getUndoMenuItem().setOnAction((e) -> getUndoManager().undo());
         controller.getUndoMenuItem().disableProperty().bind(new SimpleBooleanProperty(false).isEqualTo(getUndoManager().undoableProperty()));
@@ -299,19 +299,33 @@ public class WorkflowViewTab extends ViewerTab {
         });
         controller.getCopyImageMenuItem().disableProperty().bind(getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().not());
 
-        controller.getSelectAllMenuItem().setOnAction((e) -> selectionModel.selectAll());
+        controller.getSelectAllMenuItem().setOnAction(c -> {
+            selectionModel.selectItems(getWorkflow().dataNodes());
+            selectionModel.selectItems(getWorkflow().connectors());
+        });
         controller.getSelectAllMenuItem().disableProperty().bind(Bindings.size(selectionModel.getSelectedItems()).isEqualTo(getWorkflow().getNumberOfNodes()));
 
         controller.getSelectNoneMenuItem().setOnAction((e) -> selectionModel.clearSelection());
         controller.getSelectNoneMenuItem().disableProperty().bind(selectionModel.emptyProperty());
 
-        controller.getSelectAllNodesMenuItem().setOnAction((e) -> selectionModel.selectAll());
+        controller.getSelectAllNodesMenuItem().setOnAction(c -> {
+            selectionModel.selectItems(getWorkflow().dataNodes());
+            selectionModel.selectItems(getWorkflow().connectors());
+        });
         controller.getSelectAllNodesMenuItem().disableProperty().bind(Bindings.size(selectionModel.getSelectedItems()).isEqualTo(getWorkflow().getNumberOfNodes()));
 
         controller.getDeselectAllNodesMenuItem().setOnAction((e) -> selectionModel.clearSelection());
         controller.getDeselectAllNodesMenuItem().disableProperty().bind(selectionModel.emptyProperty());
 
-        controller.getInvertNodeSelectionMenuItem().setOnAction((e) -> selectionModel.invertSelection());
+        controller.getInvertNodeSelectionMenuItem().setOnAction(c ->
+        {
+            final Set<WorkflowNode> nodes = new HashSet<>(getWorkflow().dataNodes());
+            nodes.addAll(getWorkflow().connectors());
+            nodes.removeAll(selectionModel.getSelectedItems());
+            selectionModel.clearSelection();
+            selectionModel.selectItems(nodes);
+        });
+
         controller.getInvertNodeSelectionMenuItem().disableProperty().bind(getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().not());
 
         controller.getSelectAllBelowMenuItem().setOnAction((e) -> {

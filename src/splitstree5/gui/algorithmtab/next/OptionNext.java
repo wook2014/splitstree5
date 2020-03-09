@@ -54,7 +54,7 @@ public class OptionNext<T> {
         else
             this.toolTipText = Basic.fromCamelCase(name);
 
-        if (property.getValue().getClass().isEnum()) {
+        if (property.getValue() != null && property.getValue().getClass().isEnum()) {
             legalValues = new ArrayList<>();
             for (Object value : ((Enum) property.getValue()).getClass().getEnumConstants()) {
                 legalValues.add(value.toString());

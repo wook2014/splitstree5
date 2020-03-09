@@ -30,7 +30,7 @@ import javafx.geometry.Point3D;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Rotate;
-import jloda.fx.control.AMultipleSelectionModel;
+import jloda.fx.control.ItemSelectionModel;
 import jloda.fx.control.ProgressPane;
 import jloda.fx.util.GeometryUtilsFX;
 import jloda.fx.util.ResourceManagerFX;
@@ -57,7 +57,7 @@ import java.util.Set;
  * Daniel Huson, 11.2017
  */
 public class SplitsView3DTab extends Graph3DTab<PhyloSplitsGraph> implements ISplitsViewTab {
-    private final AMultipleSelectionModel<Integer> splitsSelectionModel = new AMultipleSelectionModel<>();
+    private final ItemSelectionModel<Integer> splitsSelectionModel = new ItemSelectionModel<>();
     private boolean inSelection;
 
     /**
@@ -127,7 +127,7 @@ public class SplitsView3DTab extends Graph3DTab<PhyloSplitsGraph> implements ISp
     @Override
     public void updateSelectionModels(PhyloSplitsGraph graph, TaxaBlock taxa, Document document) {
         super.updateSelectionModels(graph, taxa, document);
-        splitsSelectionModel.setItems(graph.getSplitIds());
+        splitsSelectionModel.clearSelection();
 
         document.getTaxaSelectionModel().getSelectedItems().addListener((InvalidationListener) (c) -> {
             if (!inSelection)
@@ -225,9 +225,9 @@ public class SplitsView3DTab extends Graph3DTab<PhyloSplitsGraph> implements ISp
      * @param node2view
      * @return anchor and mover
      */
-    private Pair<Point3D, Point3D> getAnchorAndMover(AMultipleSelectionModel<Node> nodeSelectionModel, AMultipleSelectionModel<Edge> edgeSelectionModel, NodeArray<NodeViewBase> node2view) {
-        Edge e = edgeSelectionModel.getSelectedItem();
-        if (!nodeSelectionModel.getSelectedItems().contains(e.getSource()))
+    private Pair<Point3D, Point3D> getAnchorAndMover(ItemSelectionModel<Node> nodeSelectionModel, ItemSelectionModel<Edge> edgeSelectionModel, NodeArray<NodeViewBase> node2view) {
+        Edge e = edgeSelectionModel.getSelectedItems().get(0);
+        if (!nodeSelectionModel.isSelected(e.getSource()))
             return new Pair<>(((NodeView3D) node2view.get(e.getSource())).getLocation(), ((NodeView3D) node2view.get(e.getTarget())).getLocation());
         else
             return new Pair<>(((NodeView3D) node2view.get(e.getTarget())).getLocation(), ((NodeView3D) node2view.get(e.getSource())).getLocation());

@@ -94,24 +94,26 @@ public class TaxaFilterPane extends AlgorithmPane {
 
         // setup listeners that use document:
         paneTaxonSelectionChangeListener = c -> {
-            try {
-                inSelection = true;
-                while (c.next()) {
-                    if (c.getAddedSize() > 0) {
-                        document.getTaxaSelectionModel().selectItems(c.getAddedSubList());
+            if (!inSelection) {
+                try {
+                    inSelection = true;
+                    while (c.next()) {
+                        if (c.getAddedSize() > 0) {
+                            document.getTaxaSelectionModel().selectItems(c.getAddedSubList());
+                        }
+                        if (c.getRemovedSize() > 0) {
+                            document.getTaxaSelectionModel().clearSelection(c.getRemoved());
+                        }
                     }
-                    if (c.getRemovedSize() > 0) {
-                        document.getTaxaSelectionModel().clearSelection(c.getRemoved());
-                    }
+                } finally {
+                    inSelection = false;
                 }
-            } finally {
-                inSelection = false;
             }
         };
         documentTaxonSelectionChangeListener = c -> {
             if (!inSelection) {
-                inSelection = true;
                 try {
+                    inSelection = true;
                     while (c.next()) {
                         if (c.getAddedSize() > 0) {
                             select(c.getAddedSubList(), true);
@@ -171,7 +173,7 @@ public class TaxaFilterPane extends AlgorithmPane {
             controller.getInactiveList().setTooltip(new Tooltip("Inactive: " + controller.getInactiveList().getItems().size()));
         });
 
-        document.getTaxaSelectionModel().getSelectedItems().addListener(new WeakListChangeListener<>(documentTaxonSelectionChangeListener));
+        document.getTaxaSelectionModel().getSelectedItems().addListener(documentTaxonSelectionChangeListener);
 
         controller.getInactivateAllButton().setOnAction((e) -> {
             final ArrayList<Taxon> selected = new ArrayList<>(controller.getActiveList().getSelectionModel().getSelectedItems());

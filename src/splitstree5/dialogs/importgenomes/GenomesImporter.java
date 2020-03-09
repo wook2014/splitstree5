@@ -186,7 +186,7 @@ public class GenomesImporter {
                         }
                         if (fastaIterator != null) {
                             final Pair<String, String> pair = fastaIterator.next();
-                            next = new InputRecord(Basic.swallowLeadingGreaterSign(pair.getFirst()), pair.getSecond().getBytes(), fileNames.get(whichFile), fastaIterator.getPosition());
+                            next = new InputRecord(Basic.swallowLeadingGreaterSign(pair.getFirst()), pair.getSecond().toUpperCase().getBytes(), fileNames.get(whichFile), fastaIterator.getPosition());
                         }
                     }
                 } catch (IOException ex) {

@@ -92,6 +92,7 @@ public class NodeView2D extends NodeViewBase {
             label.setTranslateX(location.getX() + shapeWidth + 2);
             label.setTranslateY(location.getY());
             labelGroup.getChildren().add(label);
+            (v.getOwner()).setLabel(v, text);
 
             // HTML styling
             if (label.getText().contains("<html"))
@@ -197,6 +198,8 @@ public class NodeView2D extends NodeViewBase {
             label.setTranslateY(location.getY());
             label.setTextFill(color);
         }
+        (getNode().getOwner()).setLabel(getNode(), label != null ? label.getText() : null);
+
     }
 
     public Point2D getLocation() {

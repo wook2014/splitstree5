@@ -36,7 +36,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import jloda.fx.control.AMultipleSelectionModel;
+import jloda.fx.control.ItemSelectionModel;
 import jloda.fx.control.ZoomableScrollPane;
 import jloda.fx.find.EdgeLabelSearcher;
 import jloda.fx.find.FindToolBar;
@@ -79,8 +79,8 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
     protected final Group nodesGroup = new Group();
     protected final Group edgeLabelsGroup = new Group();
     protected final Group nodeLabelsGroup = new Group();
-    protected final AMultipleSelectionModel<Node> nodeSelectionModel = new AMultipleSelectionModel<>();
-    protected final AMultipleSelectionModel<Edge> edgeSelectionModel = new AMultipleSelectionModel<>();
+    protected final ItemSelectionModel<Node> nodeSelectionModel = new ItemSelectionModel<>();
+    protected final ItemSelectionModel<Edge> edgeSelectionModel = new ItemSelectionModel<>();
 
     protected final BorderPane borderPane = new BorderPane();
     protected G graph;
@@ -232,11 +232,11 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
         return nodeLabelsGroup;
     }
 
-    public AMultipleSelectionModel<Node> getNodeSelectionModel() {
+    public ItemSelectionModel<Node> getNodeSelectionModel() {
         return nodeSelectionModel;
     }
 
-    public AMultipleSelectionModel<Edge> getEdgeSelectionModel() {
+    public ItemSelectionModel<Edge> getEdgeSelectionModel() {
         return edgeSelectionModel;
     }
 
@@ -260,15 +260,10 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
         if (weakDocumentTaxonSelectionChangeListener != null)
             document.getTaxaSelectionModel().getSelectedItems().removeListener(weakDocumentTaxonSelectionChangeListener);
 
-        try {
-            nodeSelectionModel.setListenersSuspended(true);
-            edgeSelectionModel.setListenersSuspended(true);
-            nodeSelectionModel.setItems(graph.getNodesAsSet().toArray(new Node[graph.getNumberOfNodes()]));
-            edgeSelectionModel.setItems(graph.getEdgesAsSet().toArray(new Edge[graph.getNumberOfEdges()]));
-        } finally {
-            nodeSelectionModel.setListenersSuspended(false);
-            edgeSelectionModel.setListenersSuspended(false);
-        }
+        Platform.runLater(() -> {
+            nodeSelectionModel.clearSelection();
+            edgeSelectionModel.clearSelection();
+        });
 
         nodeSelectionChangeListener = (c -> {
             try {
@@ -535,8 +530,8 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
         }
 
         controller.getSelectAllMenuItem().setOnAction((e) -> {
-            nodeSelectionModel.selectAll();
-            edgeSelectionModel.selectAll();
+            nodeSelectionModel.selectItems(graph.getNodesAsSet());
+            edgeSelectionModel.selectItems(graph.getEdgesAsSet());
         });
         // controller.getSelectAllMenuItem().disableProperty().bind(Bindings.size(nodeSelectionModel.getSelectedItems()).isEqualTo(graph.getNumberOfNodes())
         // .and(Bindings.size(edgeSelectionModel.getSelectedItems()).isEqualTo(graph.getNumberOfEdges()))); // todo: breaks if number of nodes or edges changes...
@@ -547,10 +542,10 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
         });
 
         if (graph != null) {
-            controller.getSelectAllNodesMenuItem().setOnAction((e) -> nodeSelectionModel.selectAll());
+            controller.getSelectAllNodesMenuItem().setOnAction((e) -> nodeSelectionModel.selectItems(graph.getNodesAsSet()));
             controller.getSelectAllNodesMenuItem().disableProperty().bind(Bindings.size(nodeSelectionModel.getSelectedItems()).isEqualTo(graph.getNumberOfNodes()));
 
-            controller.getSelectAllEdgesMenuItem().setOnAction((e) -> edgeSelectionModel.selectAll());
+            controller.getSelectAllEdgesMenuItem().setOnAction((e) -> edgeSelectionModel.selectItems(graph.getEdgesAsSet()));
             controller.getSelectAllEdgesMenuItem().disableProperty().bind(Bindings.size(edgeSelectionModel.getSelectedItems()).isEqualTo(graph.getNumberOfEdges()));
         }
 
@@ -598,8 +593,8 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
             }
         });
 
-        controller.getInvertNodeSelectionMenuItem().setOnAction((e) -> nodeSelectionModel.invertSelection());
-        controller.getInvertEdgeSelectionMenuItem().setOnAction((e) -> edgeSelectionModel.invertSelection());
+        controller.getInvertNodeSelectionMenuItem().setOnAction((e) -> nodeSelectionModel.invertSelection(graph.getNodesAsSet()));
+        controller.getInvertEdgeSelectionMenuItem().setOnAction((e) -> edgeSelectionModel.invertSelection(graph.getEdgesAsSet()));
 
         controller.getDeselectAllNodesMenuItem().setOnAction((e) -> nodeSelectionModel.clearSelection());
         controller.getDeselectAllNodesMenuItem().disableProperty().bind(nodeSelectionModel.emptyProperty());
@@ -622,8 +617,8 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
                 getUndoManager().doAndAdd(new FontSizeIncrementCommand(2, nodeSelectionModel.getSelectedItems(),
                         node2view, edgeSelectionModel.getSelectedItems(), edge2view));
             } else {
-                getUndoManager().doAndAdd(new FontSizeIncrementCommand(2, Arrays.asList(nodeSelectionModel.getItems()),
-                        node2view, Arrays.asList(edgeSelectionModel.getItems()), edge2view));
+                getUndoManager().doAndAdd(new FontSizeIncrementCommand(2, graph.getNodesAsSet(),
+                        node2view, graph.getEdgesAsSet(), edge2view));
             }
         });
 
@@ -632,8 +627,8 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
                 getUndoManager().doAndAdd(new FontSizeIncrementCommand(-2, nodeSelectionModel.getSelectedItems(),
                         node2view, edgeSelectionModel.getSelectedItems(), edge2view));
             } else {
-                getUndoManager().doAndAdd(new FontSizeIncrementCommand(-2, Arrays.asList(nodeSelectionModel.getItems()),
-                        node2view, Arrays.asList(edgeSelectionModel.getItems()), edge2view));
+                getUndoManager().doAndAdd(new FontSizeIncrementCommand(-2, graph.getNodesAsSet(),
+                        node2view, graph.getEdgesAsSet(), edge2view));
             }
         });
 

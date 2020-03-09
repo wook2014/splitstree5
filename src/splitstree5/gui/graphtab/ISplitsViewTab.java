@@ -24,7 +24,7 @@ import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.ToolBar;
-import jloda.fx.control.AMultipleSelectionModel;
+import jloda.fx.control.ItemSelectionModel;
 import jloda.graph.Edge;
 import jloda.graph.EdgeArray;
 import jloda.graph.Node;
@@ -63,9 +63,9 @@ public interface ISplitsViewTab {
 
     PhyloSplitsGraph getGraph();
 
-    AMultipleSelectionModel<Node> getNodeSelectionModel();
+    ItemSelectionModel<Node> getNodeSelectionModel();
 
-    AMultipleSelectionModel<Edge> getEdgeSelectionModel();
+    ItemSelectionModel<Edge> getEdgeSelectionModel();
 
     void show();
 

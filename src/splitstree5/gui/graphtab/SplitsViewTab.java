@@ -28,7 +28,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import jloda.fx.control.AMultipleSelectionModel;
+import jloda.fx.control.ItemSelectionModel;
 import jloda.fx.shapes.NodeShape;
 import jloda.fx.util.GeometryUtilsFX;
 import jloda.fx.util.ResourceManagerFX;
@@ -57,7 +57,7 @@ import java.util.*;
  * Daniel Huson, 11.2017
  */
 public class SplitsViewTab extends Graph2DTab<PhyloSplitsGraph> implements ISplitsViewTab {
-    private final AMultipleSelectionModel<Integer> splitsSelectionModel = new AMultipleSelectionModel<>();
+    private final ItemSelectionModel<Integer> splitsSelectionModel = new ItemSelectionModel<>();
     private boolean inSelection;
 
     /**
@@ -127,7 +127,7 @@ public class SplitsViewTab extends Graph2DTab<PhyloSplitsGraph> implements ISpli
     @Override
     public void updateSelectionModels(PhyloSplitsGraph graph, TaxaBlock taxa, Document document) {
         super.updateSelectionModels(graph, taxa, document);
-        splitsSelectionModel.setItems(graph.getSplitIds());
+        splitsSelectionModel.clearSelection();
 
         document.getTaxaSelectionModel().getSelectedItems().addListener((InvalidationListener) (c) -> {
             if (!inSelection)
@@ -324,7 +324,7 @@ public class SplitsViewTab extends Graph2DTab<PhyloSplitsGraph> implements ISpli
     /**
      * select by split associated with given edge
      */
-    public static void selectBySplit(PhyloSplitsGraph graph, Edge e, AMultipleSelectionModel<Integer> splitsSelectionModel, AMultipleSelectionModel<Node> nodeSelectionModel, boolean useLargerSide) {
+    public static void selectBySplit(PhyloSplitsGraph graph, Edge e, ItemSelectionModel<Integer> splitsSelectionModel, ItemSelectionModel<Node> nodeSelectionModel, boolean useLargerSide) {
         final int splitId = graph.getSplit(e);
         selectAllNodesOnOneSide(graph, e, nodeSelectionModel, useLargerSide);
         splitsSelectionModel.select((Integer) splitId);
@@ -334,7 +334,7 @@ public class SplitsViewTab extends Graph2DTab<PhyloSplitsGraph> implements ISpli
     /**
      * select all nodes on smaller side of graph separated by e
      */
-    private static void selectAllNodesOnOneSide(PhyloSplitsGraph graph, Edge e, AMultipleSelectionModel<Node> nodeSelectionModel, boolean useLargerSide) {
+    private static void selectAllNodesOnOneSide(PhyloSplitsGraph graph, Edge e, ItemSelectionModel<Node> nodeSelectionModel, boolean useLargerSide) {
         nodeSelectionModel.clearSelection();
         final NodeSet visited = new NodeSet(graph);
         visitRec(graph, e.getSource(), null, graph.getSplit(e), visited);

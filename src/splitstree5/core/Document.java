@@ -24,7 +24,7 @@ import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
 import javafx.collections.ListChangeListener;
-import jloda.fx.control.AMultipleSelectionModel;
+import jloda.fx.control.ItemSelectionModel;
 import jloda.util.Basic;
 import splitstree5.core.misc.Taxon;
 import splitstree5.core.workflow.Workflow;
@@ -45,7 +45,7 @@ public class Document {
 
     private final StringProperty fileName = new SimpleStringProperty();
     private final StringProperty name = new SimpleStringProperty();
-    private final AMultipleSelectionModel<Taxon> taxaSelectionModel = new AMultipleSelectionModel<>();
+    private final ItemSelectionModel<Taxon> taxaSelectionModel = new ItemSelectionModel<>();
 
     private final StringProperty methodsText = new SimpleStringProperty();
 
@@ -76,10 +76,8 @@ public class Document {
         if (workflow.getTopTaxaNode() != null) {
             workflow.getTopTaxaNode().stateProperty().addListener((observable, oldValue, newValue) -> {
                 final List<Taxon> taxa = workflow.getTopTaxaNode().getDataBlock().getTaxa();
-                taxaSelectionModel.setItems(taxa.toArray(new Taxon[0]));
             });
             final List<Taxon> taxa = workflow.getTopTaxaNode().getDataBlock().getTaxa();
-            taxaSelectionModel.setItems(taxa.toArray(new Taxon[0]));
         }
 
         // for debugging:
@@ -109,7 +107,7 @@ public class Document {
         return workflow.updatingProperty();
     }
 
-    public AMultipleSelectionModel<Taxon> getTaxaSelectionModel() {
+    public ItemSelectionModel<Taxon> getTaxaSelectionModel() {
         return taxaSelectionModel;
     }
 

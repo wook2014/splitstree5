@@ -27,7 +27,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import jloda.fx.control.AMultipleSelectionModel;
+import jloda.fx.control.ItemSelectionModel;
 import jloda.fx.shapes.NodeShape;
 import jloda.fx.util.ResourceManagerFX;
 import jloda.graph.Edge;
@@ -189,7 +189,7 @@ public class TreeViewTab extends Graph2DTab<PhyloTree> {
      * @param v
      * @param nodeSelectionModel
      */
-    private void selectAllBelowRec(Node v, AMultipleSelectionModel<Node> nodeSelectionModel, AMultipleSelectionModel<Edge> edgeSelectionModel) {
+    private void selectAllBelowRec(Node v, ItemSelectionModel<Node> nodeSelectionModel, ItemSelectionModel<Edge> edgeSelectionModel) {
         for (Edge e : v.outEdges()) {
             nodeSelectionModel.select(e.getTarget());
             edgeSelectionModel.select(e);
