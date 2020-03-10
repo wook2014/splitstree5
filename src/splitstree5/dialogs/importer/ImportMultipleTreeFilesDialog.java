@@ -100,7 +100,8 @@ public class ImportMultipleTreeFilesDialog {
                                         }
                                     }
 
-                                    if (treesBlock.isPartial())
+                                    if (allTrees.getNTrees() > 0 && !allTrees.isPartial()
+                                            && (treesBlock.isPartial() || taxaBlock.getNtax() != allTaxa.getNtax() || !allTaxa.getLabels().containsAll(taxaBlock.getLabels())))
                                         allTrees.setPartial(true);
 
                                     // ensure all trees use the same taxon ids:

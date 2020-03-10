@@ -23,6 +23,8 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -75,24 +77,32 @@ public class LabelListsManager {
 
         final ListViewSearcher<String> listViewSearcher = new ListViewSearcher<>(controller.getDisplayLabelsListView());
         final FindToolBar findToolBar = new FindToolBar(listViewSearcher);
+
         controller.getDisplayLabelsVBox().getChildren().add(findToolBar);
         controller.getReplaceButton().setOnAction(c -> findToolBar.setShowReplaceToolBar(!findToolBar.isShowReplaceToolBar()));
 
         undoManager = new UndoManager();
-        listViewSearcher.setLabelSetter((listView, which, newLabel) -> {
-            final String oldLabel = listView.getItems().get(which).toString();
-            undoManager.doAndAdd(new UndoableRedoableCommand("Replace") {
-                @Override
-                public void undo() {
-                    displayLabels.set(which, oldLabel);
-                }
 
-                @Override
-                public void redo() {
-                    displayLabels.set(which, cleanOrKeep(newLabel, oldLabel));
-                }
+        // override replace buttons to implement undo/redo
+        {
+            final EventHandler<ActionEvent> replaceAllAction = findToolBar.getController().getReplaceAllButton().getOnAction();
+            findToolBar.getController().getReplaceAllButton().setOnAction(c -> {
+                final ArrayList<String> original = new ArrayList<>(displayLabels);
+                replaceAllAction.handle(null);
+                final ArrayList<String> replaced = new ArrayList<>(displayLabels);
+                undoManager.add(UndoableRedoableCommand.create("replace all", () -> displayLabels.setAll(original), () -> displayLabels.setAll(replaced)));
             });
-        });
+        }
+        {
+            final EventHandler<ActionEvent> replaceAction = findToolBar.getController().getReplaceButton().getOnAction();
+            findToolBar.getController().getReplaceButton().setOnAction(c -> {
+                final ArrayList<String> original = new ArrayList<>(displayLabels);
+                replaceAction.handle(null);
+                final ArrayList<String> replaced = new ArrayList<>(displayLabels);
+                undoManager.add(UndoableRedoableCommand.create("replace", () -> displayLabels.setAll(original), () -> displayLabels.setAll(replaced)));
+            });
+        }
+
 
         Button removeFirstButton = new Button("- first word");
         removeFirstButton.setOnAction(c -> {
