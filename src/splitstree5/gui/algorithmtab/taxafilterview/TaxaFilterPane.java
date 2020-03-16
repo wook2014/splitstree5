@@ -175,38 +175,37 @@ public class TaxaFilterPane extends AlgorithmPane {
 
         document.getTaxaSelectionModel().getSelectedItems().addListener(documentTaxonSelectionChangeListener);
 
-        controller.getInactivateAllButton().setOnAction((e) -> {
-            final ArrayList<Taxon> selected = new ArrayList<>(controller.getActiveList().getSelectionModel().getSelectedItems());
+        controller.getInactivateAllButton().setOnAction(e -> {
             controller.getInactiveList().getItems().addAll(controller.getActiveList().getItems());
             controller.getActiveList().getItems().clear();
-            select(selected, true);
+            controller.getInactiveList().getSelectionModel().clearSelection();
         });
         controller.getInactivateAllButton().disableProperty().bind(Bindings.isEmpty(controller.getActiveList().getItems()));
 
-        controller.getInactivateSelectedButton().setOnAction((e) -> {
+        controller.getInactivateSelectedButton().setOnAction(e -> {
             final ArrayList<Taxon> selected = new ArrayList<>(controller.getActiveList().getSelectionModel().getSelectedItems());
             controller.getActiveList().getSelectionModel().clearSelection();
             controller.getActiveList().getItems().removeAll(selected);
             controller.getInactiveList().getItems().addAll(selected);
+            controller.getInactiveList().getSelectionModel().clearSelection();
             select(selected, true);
         });
         controller.getInactivateSelectedButton().disableProperty().bind(Bindings.isEmpty(controller.getActiveList().getSelectionModel().getSelectedIndices()));
 
-        controller.getActivateAllButton().setOnAction((e) -> {
-            final ArrayList<Taxon> selected = new ArrayList<>(controller.getInactiveList().getSelectionModel().getSelectedItems());
+        controller.getActivateAllButton().setOnAction(e -> {
             final ArrayList<Taxon> inactivated = new ArrayList<>(controller.getInactiveList().getItems());
             controller.getInactiveList().getSelectionModel().clearSelection();
             controller.getInactiveList().getItems().clear();
             controller.getActiveList().getItems().addAll(inactivated);
-            select(selected, true);
         });
         controller.getActivateAllButton().disableProperty().bind(Bindings.isEmpty(controller.getInactiveList().getItems()));
 
-        controller.getActivateSelectedButton().setOnAction((e) -> {
+        controller.getActivateSelectedButton().setOnAction(e -> {
             final ArrayList<Taxon> selected = new ArrayList<>(controller.getInactiveList().getSelectionModel().getSelectedItems());
             controller.getInactiveList().getSelectionModel().clearSelection();
             controller.getInactiveList().getItems().removeAll(selected);
             controller.getActiveList().getItems().addAll(selected);
+            controller.getActiveList().getSelectionModel().clearSelection();
             select(selected, true);
         });
         controller.getActivateSelectedButton().disableProperty().bind(Bindings.isEmpty(controller.getInactiveList().getSelectionModel().getSelectedIndices()));
@@ -216,7 +215,7 @@ public class TaxaFilterPane extends AlgorithmPane {
             // this would allow us to edit taxon labels, but we need to figure out how to write this back to the original taxa
             controller.getActiveList().setEditable(true);
             controller.getActiveList().setCellFactory(TaxonListCell.forListView());
-            controller.getActiveList().setOnEditCommit((e) -> {
+            controller.getActiveList().setOnEditCommit(e -> {
                 // make sure new value is unique:
                 for (int i = 0; i < controller.getActiveList().getItems().size(); i++) {
                     if (i != e.getIndex() && controller.getActiveList().getItems().get(i).equals(e.getNewValue())) {
@@ -300,11 +299,17 @@ public class TaxaFilterPane extends AlgorithmPane {
             activeList.getItems().clear();
             inactiveList.getItems().clear();
 
-            if (taxaFilter.getOptionEnabledTaxa().size() == 0 && taxaFilter.getOptionDisabledTaxa().size() == 0) {
-                activeList.getItems().addAll(((TaxaBlock) connector.getParent().getDataBlock()).getTaxa());
+            final TaxaBlock fullTaxaBlock = ((TaxaBlock) connector.getParent().getDataBlock());
+
+            if (taxaFilter.getOptionEnabledTaxa().length == 0 && taxaFilter.getOptionDisabledTaxa().length == 0) {
+                activeList.getItems().addAll(fullTaxaBlock.getTaxa());
             } else {
-                activeList.getItems().addAll(taxaFilter.getOptionEnabledTaxa());
-                inactiveList.getItems().addAll(taxaFilter.getOptionDisabledTaxa());
+                for (String name : taxaFilter.getOptionEnabledTaxa()) {
+                    activeList.getItems().add(fullTaxaBlock.get(name));
+                }
+                for (String name : taxaFilter.getOptionDisabledTaxa()) {
+                    inactiveList.getItems().add(fullTaxaBlock.get(name));
+                }
             }
 
 
@@ -318,10 +323,8 @@ public class TaxaFilterPane extends AlgorithmPane {
      * sync controller to model
      */
     public void syncController2Model() {
-        taxaFilter.getOptionEnabledTaxa().clear();
-        taxaFilter.getOptionEnabledTaxa().addAll(controller.getActiveList().getItems());
-        taxaFilter.getOptionDisabledTaxa().clear();
-        taxaFilter.getOptionDisabledTaxa().addAll(controller.getInactiveList().getItems());
+        taxaFilter.setOptionEnabledTaxa(controller.getActiveList().getItems().stream().map(Taxon::getName).toArray(String[]::new));
+        taxaFilter.setOptionDisabledTaxa(controller.getInactiveList().getItems().stream().map(Taxon::getName).toArray(String[]::new));
         connector.setState(UpdateState.INVALID);
     }
 

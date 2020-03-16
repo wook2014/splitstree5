@@ -178,7 +178,6 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
         }
     }
 
-
     /**
      * inpurt a work flow from a reader
      *
@@ -217,6 +216,7 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
                     final TaxaBlock dataBlock = new TaxaBlock();
                     taxaInput.parse(np, dataBlock);
                     final DataNode<TaxaBlock> dataNode = workflow.createDataNode(dataBlock);
+
                     if (topTaxaNode == null) {
                         topTaxaNode = dataNode;
                         workflow.setTopTaxaNode(dataNode);
@@ -237,7 +237,7 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
                     title2node.put(dataBlock.getBlockName() + " " + taxaInput.getTitle(), dataNode);
                 } else {
                     final TaxaBlock taxaBlock;
-                    if (workingTaxaNode == null) {
+                    if (topDataNode == null) {
                         taxaBlock = topTaxaNode.getDataBlock();
                         // should only ever happen in the data block to be read is the top traits block
                         if (!np.peekMatchBeginBlock("traits"))

@@ -22,8 +22,8 @@ package splitstree5.core.datablocks;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import splitstree5.core.algorithms.interfaces.IFromTrees;
-import splitstree5.core.algorithms.interfaces.IToTrees;
+import splitstree5.core.algorithms.interfaces.IFromGenomes;
+import splitstree5.core.algorithms.interfaces.IToGenomes;
 import splitstree5.core.data.Genome;
 import splitstree5.io.nexus.GenomesNexusFormat;
 
@@ -83,12 +83,12 @@ public class GenomesBlock extends DataBlock {
 
     @Override
     public Class getFromInterface() {
-        return IFromTrees.class;
+        return IFromGenomes.class;
     }
 
     @Override
     public Class getToInterface() {
-        return IToTrees.class;
+        return IToGenomes.class;
     }
 
     @Override

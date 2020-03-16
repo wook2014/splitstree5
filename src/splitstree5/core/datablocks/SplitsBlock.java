@@ -20,10 +20,7 @@
 
 package splitstree5.core.datablocks;
 
-import javafx.beans.InvalidationListener;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 import jloda.util.Basic;
 import splitstree5.core.algorithms.interfaces.IFromSplits;
 import splitstree5.core.algorithms.interfaces.IToSplits;
@@ -32,10 +29,7 @@ import splitstree5.core.misc.Compatibility;
 import splitstree5.io.nexus.SplitsNexusFormat;
 import splitstree5.utils.SplitsUtilities;
 
-import java.util.BitSet;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * A splits block
@@ -44,7 +38,7 @@ import java.util.TreeMap;
 public class SplitsBlock extends DataBlock {
     public static final String BLOCK_NAME = "SPLITS";
 
-    private final ObservableList<ASplit> splits;
+    private final ArrayList<ASplit> splits;
 
     private Compatibility compatibility = Compatibility.unknown;
     private float fit = -1;
@@ -55,17 +49,21 @@ public class SplitsBlock extends DataBlock {
 
     private int[] cycle;
 
-    private final ObservableMap<Integer, String> splitLabels;
+    private final Map<Integer, String> splitLabels;
 
     /**
      * default constructor
      */
     public SplitsBlock() {
-        splits = FXCollections.observableArrayList();
+        splits = new ArrayList<>();
         format = new SplitsNexusFormat();
 
         splitLabels = FXCollections.observableMap(new TreeMap<>());
-        getSplits().addListener((InvalidationListener) observable -> setShortDescription(getInfo()));
+    }
+
+    @Override
+    public String getShortDescription() {
+        return getInfo();
     }
 
     /**
@@ -98,7 +96,7 @@ public class SplitsBlock extends DataBlock {
         splitLabels.clear();
     }
 
-    public ObservableList<ASplit> getSplits() {
+    public ArrayList<ASplit> getSplits() {
         return splits;
     }
 
@@ -219,7 +217,7 @@ public class SplitsBlock extends DataBlock {
         this.cycle = cycle;
     }
 
-    public ObservableMap<Integer, String> getSplitLabels() {
+    public Map<Integer, String> getSplitLabels() {
         return splitLabels;
     }
 

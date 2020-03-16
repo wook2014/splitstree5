@@ -21,12 +21,17 @@
 package splitstree5.gui.algorithmtab.next;
 
 import jloda.util.Basic;
+import jloda.util.IOExceptionWithLineNumber;
+import jloda.util.parse.NexusStreamParser;
+
+import java.io.StringReader;
 
 /**
  * possible value types of options
  * Daniel Huson, 2.2019
  */
-public enum OptionValueType {Integer, Float, Double, String, Boolean, doubleArray, doubleSquareMatrix, Enum;
+public enum OptionValueType {
+    Integer, Float, Double, String, Boolean, stringArray, doubleArray, doubleSquareMatrix, Enum;
 
     /**
      * get the type of a value
@@ -45,6 +50,8 @@ public enum OptionValueType {Integer, Float, Double, String, Boolean, doubleArra
             return Boolean;
         else if (value instanceof String)
             return String;
+        else if (value instanceof String[])
+            return stringArray;
         else if (value instanceof double[])
             return doubleArray;
         else if (value instanceof double[][])
@@ -75,6 +82,8 @@ public enum OptionValueType {Integer, Float, Double, String, Boolean, doubleArra
             case Boolean:
                 return Basic.isBoolean(text);
             case String:
+                return text.length() > 0;
+            case stringArray:
                 return text.length() > 0;
         }
         return false;
@@ -120,6 +129,13 @@ public enum OptionValueType {Integer, Float, Double, String, Boolean, doubleArra
                 return Basic.parseBoolean(text);
             case String:
                 return text;
+            case stringArray: {
+                try {
+                    return (new NexusStreamParser(new StringReader(text))).getTokensRespectCase(null, null).stream().map(s -> s.replaceAll(",$", "")).toArray(java.lang.String[]::new);
+                } catch (IOExceptionWithLineNumber ioExceptionWithLineNumber) {
+                    return new String[0];
+                }
+            }
         }
         return false;
     }
@@ -162,6 +178,8 @@ public enum OptionValueType {Integer, Float, Double, String, Boolean, doubleArra
                 }
                 return buf.toString();
             }
+            case stringArray:
+                return "'" + Basic.toString((String[]) object, "' '") + "'";
             default:
                 return object.toString();
         }

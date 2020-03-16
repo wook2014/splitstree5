@@ -18,7 +18,7 @@
  *
  */
 
-package splitstree5.core.algorithms.views.utils;
+package splitstree5.core.algorithms.views.algo;
 
 import jloda.graph.Edge;
 import jloda.graph.EdgeIntegerArray;

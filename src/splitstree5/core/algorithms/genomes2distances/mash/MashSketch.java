@@ -24,7 +24,8 @@ import jloda.thirdparty.MurmurHash;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
-import splitstree5.core.algorithms.genomes2distances.mash.bloomfilter.BloomFilter;
+import splitstree5.core.algorithms.genomes2distances.utils.KMerUtils;
+import splitstree5.core.algorithms.genomes2distances.utils.bloomfilter.BloomFilter;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -47,14 +48,14 @@ public class MashSketch {
      * construct a new sketch
      *
      * @param sketchSize
-     * @param kSize
+     * @param kMerSize
      * @param name
      * @param isNucleotides
      * @param use64Bits
      */
-    public MashSketch(int sketchSize, int kSize, String name, boolean isNucleotides, boolean use64Bits) {
+    public MashSketch(int sketchSize, int kMerSize, String name, boolean isNucleotides, boolean use64Bits) {
         this.sketchSize = sketchSize;
-        this.kSize = kSize;
+        this.kSize = kMerSize;
         this.name = name;
         this.isNucleotides = isNucleotides;
         this.use64Bits = use64Bits;
@@ -101,7 +102,7 @@ public class MashSketch {
                     final int offsetUse;
                     final byte[] seqUse;
 
-                    if (!isNucleotides || isCanonical(offset, kMerSize, sequence, reverseComplement)) {
+                    if (!isNucleotides || KMerUtils.isCanonical(offset, kMerSize, sequence, reverseComplement)) {
                         offsetUse = offset;
                         seqUse = sequence;
                     } else {
@@ -137,25 +138,6 @@ public class MashSketch {
         } catch (CanceledException ignored) {
         }
         return sketch;
-    }
-
-    /**
-     * determines whether forward direction is canonical
-     *
-     * @param offset
-     * @param sequence
-     * @param reverseSequence
-     * @return true, if forward is canonical
-     */
-    private static boolean isCanonical(int offset, int len, byte[] sequence, byte[] reverseSequence) {
-        final int rOffset = reverseSequence.length - offset - len;
-        for (int i = 0; i < len; i++) {
-            if (sequence[offset + i] < reverseSequence[rOffset + i])
-                return true;
-            else if (sequence[offset + i] > reverseSequence[rOffset + i])
-                return false;
-        }
-        return true;
     }
 
     public String getHeader() {

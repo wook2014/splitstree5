@@ -1,5 +1,5 @@
 /*
- *  MashAlgorithm.java Copyright (C) 2020 Daniel H. Huson
+ *  DashingAlgorithm.java Copyright (C) 2020 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.algorithms.genomes2distances.mash;
+package splitstree5.core.algorithms.genomes2distances.dashing;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.layout.FlowPane;
@@ -41,40 +41,35 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 /**
- * implements the Mash algorithm
- * Daniel Huson, 2.2020
+ * implements the dashing algorithm
+ * Daniel Huson, 3.2020
  */
-public class MashAlgorithm {
+public class DashingAlgorithm {
     /**
-     * apply the mash algorithm
+     * apply the dashing algorithm
      *
      * @param outputFile
      * @param input
-     * @param isNucleotideData
      * @param kMerSize
-     * @param sketchSize
+     * @param prefixSize
      * @param genomeDistanceType
      * @param statusFlowPane
      * @param isRunning
      */
-    public static void apply(String outputFile, Iterable<Pair<String, byte[]>> input, boolean isNucleotideData,
-                             int kMerSize, int sketchSize, GenomeDistanceType genomeDistanceType, boolean filterUniqueKMers, FlowPane statusFlowPane, BooleanProperty isRunning) {
+    public static void apply(String outputFile, Iterable<Pair<String, byte[]>> input, int kMerSize, int prefixSize, GenomeDistanceType genomeDistanceType, boolean filterUniqueKMers, FlowPane statusFlowPane, BooleanProperty isRunning) {
         if (true) {
             for (Pair<String, byte[]> pair : input) {
                 System.err.println(pair.getFirst() + " " + pair.getSecond().length);
             }
         }
 
-        final int alphabetSize = (isNucleotideData ? 5 : 21);
-
-        final boolean use64Bits = (Math.pow(alphabetSize, kMerSize) >= Integer.MAX_VALUE);
 
         AService<Pair<TaxaBlock, DistancesBlock>> aService = new AService<>(statusFlowPane);
 
         aService.setCallable(() -> {
 
-            final ArrayList<MashSketch> sketches = StreamSupport.stream(input.spliterator(), true)
-                    .map(pair -> MashSketch.compute(pair.getFirst(), Collections.singletonList(pair.getSecond()), isNucleotideData, sketchSize, kMerSize, use64Bits, filterUniqueKMers, aService.getProgressListener())).collect(Collectors.toCollection(ArrayList::new));
+            final ArrayList<DashingSketch> sketches = StreamSupport.stream(input.spliterator(), true)
+                    .map(pair -> DashingSketch.compute(pair.getFirst(), Collections.singletonList(pair.getSecond()), kMerSize, prefixSize, filterUniqueKMers, aService.getProgressListener())).collect(Collectors.toCollection(ArrayList::new));
 
             aService.getProgressListener().checkForCancel();
 
@@ -82,12 +77,12 @@ public class MashAlgorithm {
                 throw new IOException("Too few genomes: " + sketches.size());
             }
 
-            for (final MashSketch sketch : sketches) {
-                if (sketch.getValues().length == 0)
+            for (final DashingSketch sketch : sketches) {
+                if (sketch.getHarmonicMean() == Double.NEGATIVE_INFINITY)
                     throw new IOException("Sketch '" + sketch.getName() + "': too few different k-mers");
             }
 
-            final List<Triplet<MashSketch, MashSketch, Double>> triplets = new ArrayList<>();
+            final List<Triplet<DashingSketch, DashingSketch, Double>> triplets = new ArrayList<>();
 
             for (int i = 0; i < sketches.size(); i++) {
                 for (int j = i + 1; j < sketches.size(); j++) {
@@ -95,7 +90,7 @@ public class MashAlgorithm {
                 }
             }
 
-            triplets.parallelStream().forEach(t -> t.setThird(MashDistance.compute(t.get1(), t.get2(), genomeDistanceType)));
+            triplets.parallelStream().forEach(t -> t.setThird(DashingDistance.compute(t.get1(), t.get2(), genomeDistanceType)));
             aService.getProgressListener().checkForCancel();
 
             final Map<String, Integer> name2rank = new HashMap<>();
@@ -109,7 +104,7 @@ public class MashAlgorithm {
 
             final DistancesBlock distancesBlock = new DistancesBlock();
             distancesBlock.setNtax(taxaBlock.getNtax());
-            for (Triplet<MashSketch, MashSketch, Double> triplet : triplets) {
+            for (Triplet<DashingSketch, DashingSketch, Double> triplet : triplets) {
                 final int t1 = name2rank.get(triplet.get1().getName());
                 final int t2 = name2rank.get(triplet.get2().getName());
                 distancesBlock.set(t1, t2, triplet.getThird());
@@ -121,7 +116,7 @@ public class MashAlgorithm {
             isRunning.set(n);
         });
 
-        aService.setOnFailed(c -> NotificationManager.showError("Mash failed: " + aService.getException()));
+        aService.setOnFailed(c -> NotificationManager.showError("Dashing failed: " + aService.getException()));
 
         aService.setOnSucceeded(c -> {
             try (BufferedWriter w = new BufferedWriter(new FileWriter(outputFile))) {
@@ -130,13 +125,15 @@ public class MashAlgorithm {
                 (new TaxaNexusOutput()).write(w, pair.getFirst());
                 (new DistancesNexusOutput()).write(w, pair.getFirst(), pair.getSecond());
             } catch (IOException ex) {
-                NotificationManager.showError("Mash failed: " + ex);
+                NotificationManager.showError("Dashing failed: " + ex);
             }
             if (Basic.fileExistsAndIsNonEmpty(outputFile)) {
-                FileOpener.open(false, null, statusFlowPane, outputFile, e -> NotificationManager.showError("Mash failed: " + e));
+                FileOpener.open(false, null, statusFlowPane, outputFile, e -> NotificationManager.showError("Dashing failed: " + e));
             }
         });
 
         aService.start();
     }
+
+
 }

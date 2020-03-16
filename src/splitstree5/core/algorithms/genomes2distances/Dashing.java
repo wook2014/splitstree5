@@ -26,8 +26,8 @@ import jloda.util.Pair;
 import jloda.util.ProgressListener;
 import jloda.util.Triplet;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.algorithms.genomes2distances.mash.MashDistance;
-import splitstree5.core.algorithms.genomes2distances.mash.MashSketch;
+import splitstree5.core.algorithms.genomes2distances.dashing.DashingDistance;
+import splitstree5.core.algorithms.genomes2distances.dashing.DashingSketch;
 import splitstree5.core.algorithms.genomes2distances.utils.GenomeDistanceType;
 import splitstree5.core.algorithms.interfaces.IFromGenomes;
 import splitstree5.core.algorithms.interfaces.IToDistances;
@@ -42,41 +42,38 @@ import java.util.stream.Collectors;
 
 
 /**
- * implements the Mash algorithm
+ * implements the Dashing algorithm
  * Daniel Huson, 3.2020
  */
-public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFromGenomes, IToDistances {
-
-    private final IntegerProperty optionKMerSize = new SimpleIntegerProperty(21);
-    private final IntegerProperty optionSketchSize = new SimpleIntegerProperty(1000);
+public class Dashing extends Algorithm<GenomesBlock, DistancesBlock> implements IFromGenomes, IToDistances {
+    private final IntegerProperty optionKMerSize = new SimpleIntegerProperty(31);
+    private final IntegerProperty optionPrefixSize = new SimpleIntegerProperty(10);
     private final ObjectProperty<GenomeDistanceType> optionDistances = new SimpleObjectProperty<>(GenomeDistanceType.Mash);
 
     private final BooleanProperty optionIgnoreUniqueKMers = new SimpleBooleanProperty(false);
 
     @Override
     public List<String> listOptions() {
-        return Arrays.asList("optionKMerSize", "optionSketchSize", "optionDistances", "optionIgnoreUniqueKMers");
+        return Arrays.asList("optionKMerSize", "optionPrefixSize", "optionDistances", "optionIgnoreUniqueKMers");
     }
 
     @Override
     public String getCitation() {
-        return "Ondov et al 2016; Brian D. Ondov, Todd J. Treangen, Páll Melsted, Adam B. Mallonee, Nicholas H. Bergman, Sergey Koren & Adam M. Phillippy. Mash: fast importgenomes and metagenome distance estimation using MinHash. Genome Biol 17, 132 (2016).";
+        return "Baker and Langmead 2019;Baker DN and Langmead B, Genome Biology (2019) 20:265";
     }
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, GenomesBlock genomesBlock, DistancesBlock distancesBlock) throws Exception {
 
         final boolean isNucleotideData = ((GenomesNexusFormat) genomesBlock.getFormat()).getCharactersType().equals(GenomesNexusFormat.CharactersType.dna);
-        final int alphabetSize = (isNucleotideData ? 5 : 21);
 
-        final boolean use64Bits = (Math.pow(alphabetSize, getOptionKMerSize()) >= Integer.MAX_VALUE);
 
         progress.setSubtask("Sketching");
         progress.setMaximum(genomesBlock.getNGenomes());
         progress.setProgress(0);
 
-        final ArrayList<MashSketch> sketches = genomesBlock.getGenomes().parallelStream().map(g -> new Pair<>(g.getName(), g.parts()))
-                .map(pair -> MashSketch.compute(pair.getFirst(), Basic.asList(pair.getSecond()), isNucleotideData, getOptionSketchSize(), getOptionKMerSize(), use64Bits, isOptionIgnoreUniqueKMers(), progress))
+        final ArrayList<DashingSketch> sketches = genomesBlock.getGenomes().parallelStream().map(g -> new Pair<>(g.getName(), g.parts()))
+                .map(pair -> DashingSketch.compute(pair.getFirst(), Basic.asList(pair.getSecond()), getOptionKMerSize(), getOptionPrefixSize(), isOptionIgnoreUniqueKMers(), progress))
                 .collect(Collectors.toCollection(ArrayList::new));
 
         progress.checkForCancel();
@@ -87,12 +84,12 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
 
         // todo: warn when files not found
 
-        for (final MashSketch sketch : sketches) {
-            if (sketch.getValues().length == 0)
+        for (final DashingSketch sketch : sketches) {
+            if (sketch.getHarmonicMean() == Double.NEGATIVE_INFINITY)
                 throw new IOException("Sketch '" + sketch.getName() + "': too few different k-mers");
         }
 
-        final List<Triplet<MashSketch, MashSketch, Double>> triplets = new ArrayList<>();
+        final List<Triplet<DashingSketch, DashingSketch, Double>> triplets = new ArrayList<>();
 
         for (int i = 0; i < sketches.size(); i++) {
             for (int j = i + 1; j < sketches.size(); j++) {
@@ -100,7 +97,7 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
             }
         }
 
-        triplets.parallelStream().forEach(t -> t.setThird(MashDistance.compute(t.get1(), t.get2(), getOptionDistances())));
+        triplets.parallelStream().forEach(t -> t.setThird(DashingDistance.compute(t.get1(), t.get2(), getOptionDistances())));
 
         progress.checkForCancel();
 
@@ -114,7 +111,7 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
         distancesBlock.clear();
 
         distancesBlock.setNtax(taxaBlock.getNtax());
-        for (Triplet<MashSketch, MashSketch, Double> triplet : triplets) {
+        for (Triplet<DashingSketch, DashingSketch, Double> triplet : triplets) {
             final int t1 = name2rank.get(triplet.get1().getName());
             final int t2 = name2rank.get(triplet.get2().getName());
             distancesBlock.set(t1, t2, triplet.getThird());
@@ -125,7 +122,7 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
     @Override
     public String getToolTip(String optionName) {
         if (optionName.endsWith("IgnoreUniqueKMers"))
-            return "Use this only when input data consists of unassembled reads";
+            return "Use this only when input data consists of unassembled sequencing reads";
         return super.getToolTip(optionName);
     }
 
@@ -141,16 +138,16 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
         this.optionKMerSize.set(optionKMerSize);
     }
 
-    public int getOptionSketchSize() {
-        return optionSketchSize.get();
+    public int getOptionPrefixSize() {
+        return optionPrefixSize.get();
     }
 
-    public IntegerProperty optionSketchSizeProperty() {
-        return optionSketchSize;
+    public IntegerProperty optionPrefixSizeProperty() {
+        return optionPrefixSize;
     }
 
-    public void setOptionSketchSize(int optionSketchSize) {
-        this.optionSketchSize.set(optionSketchSize);
+    public void setOptionPrefixSize(int optionPrefixSize) {
+        this.optionPrefixSize.set(optionPrefixSize);
     }
 
     public GenomeDistanceType getOptionDistances() {

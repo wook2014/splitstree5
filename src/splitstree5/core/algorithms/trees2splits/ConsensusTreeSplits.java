@@ -104,8 +104,10 @@ public class ConsensusTreeSplits extends Algorithm<TreesBlock, SplitsBlock> impl
                 if (Compatibility.isCompatible(split, child.getSplits()))
                     child.getSplits().add(split);
             }
-        } else
-            child.getSplits().setAll(consensusSplits.getSplits());
+        } else {
+            child.getSplits().clear();
+            child.getSplits().addAll(consensusSplits.getSplits());
+        }
 
         child.setCompatibility(Compatibility.compatible);
         child.setCycle(SplitsUtilities.computeCycle(taxaBlock.getNtax(), child.getSplits()));

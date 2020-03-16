@@ -108,6 +108,13 @@ public class AlgorithmNexusInput extends NexusIOBase {
                                     option.getProperty().setValue(option.getEnumValueForName(np.getWordRespectCase()));
                                     break;
                                 }
+                                case stringArray: {
+                                    final ArrayList<String> list = new ArrayList<>();
+                                    while (!np.peekMatchAnyTokenIgnoreCase(", ;"))
+                                        list.add(np.getWordRespectCase());
+                                    option.getProperty().setValue(list.toArray(new String[0]));
+                                    break;
+                                }
                                 default: {
                                     option.getProperty().setValue(OptionValueType.parseType(option.getOptionValueType(), np.getWordRespectCase()));
                                     break;

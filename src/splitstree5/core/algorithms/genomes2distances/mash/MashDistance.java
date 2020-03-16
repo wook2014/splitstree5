@@ -19,6 +19,12 @@
 
 package splitstree5.core.algorithms.genomes2distances.mash;
 
+import splitstree5.core.algorithms.genomes2distances.utils.GenomeDistanceType;
+
+/**
+ * compute the distance between two mash sketches
+ * Daniel Huson, 1.2020
+ */
 public class MashDistance {
     /**
      * computes the mash distance
@@ -27,16 +33,16 @@ public class MashDistance {
      * @param b
      * @return mash distance
      */
-    public static double compute(MashSketch a, MashSketch b, boolean phylogenetic) {
+    public static double compute(MashSketch a, MashSketch b, GenomeDistanceType genomeDistanceType) {
 
-        final double j = computeJaccardIndex(a, b);
-        if (phylogenetic) {
-            if (j == 0)
+        final double jaccardIndex = computeJaccardIndex(a, b);
+        if (genomeDistanceType == GenomeDistanceType.Mash) {
+            if (jaccardIndex == 0)
                 return 1;
             else
-                return Math.max(0f, -1.0 / a.getkSize() * Math.log(2.0 * j / (1 + j)));
+                return Math.max(0f, -1.0 / a.getkSize() * Math.log(2.0 * jaccardIndex / (1 + jaccardIndex)));
         } else
-            return 1 - j;
+            return 1 - jaccardIndex;
     }
 
     /**

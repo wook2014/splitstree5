@@ -162,14 +162,15 @@ public class EditInputTab extends EditTextViewTab {
 
         //++++++ SPECIAL CHARACTERS EDITOR END
 
+        toolBar.setVisible(true);
+
         if (ProgramProperties.get("enable-activiate-collapse", false)) {
-            toolBar.setVisible(true);
             toolBar.getItems().addAll(collapseButton, applyButton,
                     labelMissingChar, missingChar,
                     labelGapChar, gapChar); //+++
-        }
+        } else
+            toolBar.getItems().add(applyButton);
 
-        //toolBar.getItems().addAll(applyButton);
         applyButton.disableProperty().bind(Val.map(codeArea.lengthProperty(), n -> n == 0));
         //highlightButton.disableProperty().bind(getCodeArea().textProperty().isEmpty()); //+++
 

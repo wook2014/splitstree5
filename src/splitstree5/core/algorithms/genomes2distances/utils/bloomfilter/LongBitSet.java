@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.core.algorithms.genomes2distances.mash.bloomfilter;
+package splitstree5.core.algorithms.genomes2distances.utils.bloomfilter;
 
 import java.util.Arrays;
 import java.util.Iterator;

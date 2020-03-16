@@ -18,7 +18,7 @@
  *
  */
 
-package splitstree5.core.algorithms.views.utils;
+package splitstree5.core.algorithms.views.algo;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;

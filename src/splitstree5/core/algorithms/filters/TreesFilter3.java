@@ -157,16 +157,21 @@ public class TreesFilter3 extends Algorithm<TreesBlock, TreesBlock> implements I
 
                 if (isOptionFilterTaxa() && best.cardinality() < workflow.getTopTaxaNode().getDataBlock().getNtax()) {
                     TaxaFilter taxaFilter = (TaxaFilter) workflow.getTaxaFilter().getAlgorithm();
-                    taxaFilter.getOptionEnabledTaxa().clear();
-                    taxaFilter.getOptionDisabledTaxa().clear();
+
                     final TaxaBlock topTaxaBlock = workflow.getTopTaxaNode().getDataBlock();
+                    final ArrayList<String> enabled = new ArrayList<>();
+                    final ArrayList<String> disabled = new ArrayList<>();
+
                     for (int t = 1; t <= topTaxaBlock.getNtax(); t++) {
                         final int index = taxaBlock.indexOf(topTaxaBlock.get(t));
                         if (index > 0 && best.get(index))
-                            taxaFilter.getOptionEnabledTaxa().add(topTaxaBlock.get(t));
+                            enabled.add(topTaxaBlock.get(t).getName());
                         else
-                            taxaFilter.getOptionDisabledTaxa().add(topTaxaBlock.get(t));
+                            disabled.add(topTaxaBlock.get(t).getName());
                     }
+                    taxaFilter.setOptionEnabledTaxa(enabled.toArray(new String[0]));
+                    taxaFilter.setOptionDisabledTaxa(disabled.toArray(new String[0]));
+
                     setOptionFilterTaxa(false);
                     workflow.getTaxaFilter().forceRecompute();
                     throw new CanceledException("Restart: to update taxa filter");

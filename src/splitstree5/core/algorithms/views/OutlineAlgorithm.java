@@ -39,8 +39,6 @@ import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromSplits;
 import splitstree5.core.algorithms.interfaces.IToViewer;
-import splitstree5.core.algorithms.views.utils.EqualAngle;
-import splitstree5.core.algorithms.views.utils.OutlineCircularNetwork;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.ViewerBlock;
@@ -52,7 +50,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * compute an implementing of a set of splits using the outline algorithm
+ * compute an embedding of a set of splits using the outline algorithm
  * Daniel Huson, 3.2020
  */
 public class OutlineAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implements IFromSplits, IToViewer {
@@ -68,7 +66,7 @@ public class OutlineAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implem
 
     @Override
     public String getCitation() {
-        return "Bryant, Huson and Lockart 2020; D. Bryant, D.H. Huson and P.J. Lockhart. Phylogenetic outlines. In preparation.";
+        return "Bryant, Huson and Lockhart 2020; D. Bryant, D.H. Huson and P.J. Lockhart. Phylogenetic outlines. In preparation.";
     }
 
     @Override
@@ -94,12 +92,9 @@ public class OutlineAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implem
 
         final ArrayList<ArrayList<Node>> loops = new ArrayList<>();
 
-        OutlineCircularNetwork.apply(progress, isOptionUseWeights(), taxaBlock, splitsBlock, graph, node2point, forbiddenSplits, usedSplits, loops);
+        splitstree5.core.algorithms.views.algo.NetworkOutlineAlgorithm.apply(progress, isOptionUseWeights(), taxaBlock, splitsBlock, graph, node2point, forbiddenSplits, usedSplits, loops);
         if (splitsBlock.getNsplits() - usedSplits.cardinality() > 0)
             NotificationManager.showWarning(String.format("Outline algorithm: skipped %d non-circular splits", splitsBlock.getNsplits() - usedSplits.cardinality()));
-
-        EqualAngle.assignAnglesToEdges(taxaBlock.getNtax(), splitsBlock, splitsBlock.getCycle(), graph, forbiddenSplits);
-        EqualAngle.assignCoordinatesToNodes(isOptionUseWeights(), graph, node2point); // need coordinates
 
         double factorX = TreeEmbedder.scaleAndCenterToFitTarget(GraphLayout.Radial, viewTab.getTargetDimensions(), node2point, true);
         if (viewerBlock.getTab() instanceof Graph2DTab) {

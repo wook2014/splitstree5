@@ -132,32 +132,33 @@ public class OptionNext<T> {
 
         // determine the order in which to return options
         final Collection<String> order = new ArrayList<>(name2AnOption.size());
-        if (listMethod == null) {
-            order.addAll(name2AnOption.keySet());
-        } else {
-            try {
-                final Set<String> set = new HashSet<>();
-                final List list = (List) listMethod.invoke(optionable);
-                if (list != null) {
-                    for (Object a : list) {
-                        String optionName = a.toString();
-                        if (optionName.startsWith("option"))
-                            optionName = optionName.replaceAll("^option", "").replaceAll("Property$", "");
-                        order.add(optionName);
-                        set.add(optionName);
-                    }
-                }
-                // add other parameters not mentioned in the order
-                if (false)
-                    for (String name : name2AnOption.keySet()) {
-                        if (!set.contains(name))
-                            order.add(name);
-                    }
 
-            } catch (Exception e) {
-                order.clear();
-                order.addAll(name2AnOption.keySet());
+        List list = null;
+        if (listMethod != null) {
+            try {
+                list = (List) listMethod.invoke(optionable);
+            } catch (IllegalAccessException | InvocationTargetException ignored) {
             }
+        }
+
+        if (list != null) {
+            final Set<String> set = new HashSet<>();
+            for (Object a : list) {
+                String optionName = a.toString();
+                if (optionName.startsWith("option"))
+                    optionName = optionName.replaceAll("^option", "").replaceAll("Property$", "");
+                order.add(optionName);
+                set.add(optionName);
+            }
+
+            // add other parameters not mentioned in the order
+            if (false)
+                for (String name : name2AnOption.keySet()) {
+                    if (!set.contains(name))
+                        order.add(name);
+                }
+        } else {
+            order.addAll(name2AnOption.keySet());
         }
         options.clear();
         for (String name : order) {
