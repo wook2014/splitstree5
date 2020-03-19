@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
  * implements the Dashing algorithm
  * Daniel Huson, 3.2020
  */
-public class Dashing extends Algorithm<GenomesBlock, DistancesBlock> implements IFromGenomes, IToDistances {
+public class DashingUntested extends Algorithm<GenomesBlock, DistancesBlock> implements IFromGenomes, IToDistances {
     private final IntegerProperty optionKMerSize = new SimpleIntegerProperty(31);
     private final IntegerProperty optionPrefixSize = new SimpleIntegerProperty(10);
     private final ObjectProperty<GenomeDistanceType> optionDistances = new SimpleObjectProperty<>(GenomeDistanceType.Mash);
