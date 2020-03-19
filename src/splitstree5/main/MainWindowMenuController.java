@@ -71,7 +71,6 @@ import splitstree5.dialogs.importgenomes.ImportGenomesDialog;
 import splitstree5.dialogs.message.MessageWindow;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.utils.CharactersUtilities;
-import splitstree5.gui.utils.CheckForUpdate;
 import splitstree5.io.nexus.workflow.WorkflowNexusInput;
 import splitstree5.io.nexus.workflow.WorkflowNexusOutput;
 import splitstree5.menu.MenuController;

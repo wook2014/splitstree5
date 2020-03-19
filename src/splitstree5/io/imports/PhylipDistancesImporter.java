@@ -20,7 +20,6 @@
 
 package splitstree5.io.imports;
 
-import jloda.fx.window.NotificationManager;
 import jloda.util.*;
 import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.DistancesBlock;
@@ -34,7 +33,7 @@ import java.util.*;
 
 /**
  * Phylip matrix input
- * Daria Evseeva,02.10.2017.
+ * Daria Evseeva, 02.10.2017, Daniel Huson, 3.2020
  */
 public class PhylipDistancesImporter implements IToDistances, IImportDistances {
 
@@ -42,6 +41,7 @@ public class PhylipDistancesImporter implements IToDistances, IImportDistances {
     private String similarities_calculation = "";
 
     public static final List<String> extensions = new ArrayList<>(Arrays.asList("dist", "dst"));
+
     public enum Triangle {Both, Lower, Upper}
 
     @Override
@@ -49,95 +49,67 @@ public class PhylipDistancesImporter implements IToDistances, IImportDistances {
         taxa.clear();
         distances.clear();
 
-        final Map<String, Vector<Double>> matrix = new LinkedHashMap<>();
-        Triangle triangleForCurrentRow = null;
-        Triangle triangleForPreviousRow = null;
+
+        Triangle triangle = null;
+        int row = 0;
+        int numberOfTaxa = 0;
 
         try (FileLineIterator it = new FileLineIterator(inputFile)) {
-
-            progressListener.setMaximum(it.getMaximumProgress());
-            progressListener.setProgress(0);
-            int counter = 0;
-
-            final String firstLine = it.next();
-            counter++;
-            final int ntax = Integer.parseInt(firstLine.replaceAll("\\s+", ""));
-            //System.err.println(ntax);
-            distances.setNtax(ntax);
-
-            int tokensInPreviousRow = 0;
-            int tokensInCurrentRow = 0;
-            String currentLabel = "";
-            boolean foundFirstLabel = false;
-
             while (it.hasNext()) {
-                counter++;
-                final String line = it.next();
-                StringTokenizer st = new StringTokenizer(line);
-                while (st.hasMoreTokens()) {
-                    String token = st.nextToken();
-                    if (!Basic.isDouble(token)) {
-                        foundFirstLabel = true;
+                final String line = it.next().trim();
 
-                        if (tokensInCurrentRow > ntax)
-                            throw new IOExceptionWithLineNumber("Wrong number of entries for Taxa " + currentLabel, counter);
-
-                        // when 2 lines are read
-                        if (matrix.keySet().size() >= 2) {
-                            int differenceOfLines = tokensInCurrentRow - tokensInPreviousRow;
-                            switch (differenceOfLines) {
-                                case 0:
-                                    triangleForCurrentRow = Triangle.Both;
-                                    break;
-                                case 1:
-                                    triangleForCurrentRow = Triangle.Lower;
-                                    break;
-                                case -1:
-                                    triangleForCurrentRow = Triangle.Upper;
-                                    break;
-                                default:
-                                    throw new IOExceptionWithLineNumber("Wrong number of entries for Taxa " + currentLabel, counter);
-                            }
-                        }
-
-                        if (triangleForPreviousRow != null && !triangleForCurrentRow.equals(triangleForPreviousRow)) {
-                            throw new IOExceptionWithLineNumber("Wrong number of entries for Taxa " + currentLabel, counter);
-                        } else {
-                            triangleForPreviousRow = triangleForCurrentRow;
-                        }
-
-                        // System.err.println("curr " + tokensInCurrentRow + " pref " + tokensInPreviousRow);
-                        tokensInPreviousRow = tokensInCurrentRow;
-                        tokensInCurrentRow = 0;
-                        currentLabel = addTaxaName(matrix, token, counter);
-                    } else {
-
-                        if (!foundFirstLabel)
-                            throw new IOExceptionWithLineNumber("Taxa label expected", counter);
-
-                        tokensInCurrentRow++;
-                        matrix.get(currentLabel).add(Double.parseDouble(token));
+                if (line.startsWith("#") || line.length() == 0)
+                    continue;
+                if (row == 0) {
+                    numberOfTaxa = Integer.parseInt(line);
+                    distances.setNtax(numberOfTaxa);
+                } else {
+                    final String[] tokens = line.split("\\s+");
+                    if (row == 1) {
+                        if (tokens.length == 1)
+                            triangle = Triangle.Lower;
+                        else if (tokens.length == numberOfTaxa)
+                            triangle = Triangle.Upper;
+                        else if (tokens.length == numberOfTaxa + 1)
+                            triangle = Triangle.Both;
+                        else
+                            throw new IOExceptionWithLineNumber(it.getLineNumber(), "Matrix has wrong shape");
                     }
-                    progressListener.setProgress(it.getProgress());
-                }
-            }
-        }
 
-        if (false) {
-            for (String s : matrix.keySet()) {
-                System.err.println("Row " + s + " " + Basic.toString(matrix.get(s), " "));
+                    if (row > numberOfTaxa)
+                        throw new IOExceptionWithLineNumber(it.getLineNumber(), "Matrix has wrong shape");
+
+                    if (triangle == Triangle.Both) {
+                        if (tokens.length != numberOfTaxa + 1)
+                            throw new IOExceptionWithLineNumber(it.getLineNumber(), "Matrix has wrong shape");
+                        taxa.addTaxaByNames(Collections.singleton(tokens[0]));
+                        for (int col = 1; col < tokens.length; col++) {
+                            final double value = Basic.parseDouble(tokens[col]);
+                            distances.set(row, col, value);
+                        }
+                    } else if (triangle == Triangle.Upper) {
+                        if (tokens.length != numberOfTaxa + 1 - row)
+                            throw new IOExceptionWithLineNumber(it.getLineNumber(), "Matrix has wrong shape");
+                        taxa.addTaxaByNames(Collections.singleton(tokens[0]));
+                        for (int i = 1; i < tokens.length; i++) {
+                            final int col = row + i;
+                            final double value = Basic.parseDouble(tokens[i]);
+                            distances.set(row, col, value);
+                            distances.set(col, row, value);
+                        }
+                    } else if (triangle == Triangle.Lower) {
+                        if (tokens.length != row)
+                            throw new IOExceptionWithLineNumber(it.getLineNumber(), "Matrix has wrong shape");
+                        taxa.addTaxaByNames(Collections.singleton(tokens[0]));
+                        for (int col = 1; col < tokens.length; col++) {
+                            final double value = Basic.parseDouble(tokens[col]);
+                            distances.set(row, col, value);
+                            distances.set(col, row, value);
+                        }
+                    }
+                }
+                row++;
             }
-        }
-        taxa.addTaxaByNames(matrix.keySet());
-        if (triangleForCurrentRow != null) {
-            if (triangleForCurrentRow.equals(Triangle.Both))
-                readSquareMatrix(matrix, distances);
-            if (triangleForCurrentRow.equals(Triangle.Lower))
-                readTriangularMatrix(matrix, distances);
-            if (triangleForCurrentRow.equals(Triangle.Upper))
-                readUpperTriangularMatrix(matrix, distances);
-        } else {
-            throw new IOException("Error: Cannot detect shape of matrix (square, triangular or upper-triangular?)");
         }
 
         if (similarities) {
@@ -159,106 +131,19 @@ public class PhylipDistancesImporter implements IToDistances, IImportDistances {
         return tokens.countTokens() == 1 && Basic.isInteger(tokens.nextToken());
     }
 
-    /**
-     * read a square matrix
-     *
-     * @param matrix
-     * @param distancesBlock
-     */
-    private static void readSquareMatrix(Map<String, Vector<Double>> matrix, DistancesBlock distancesBlock) {
-        boolean similarities = false;
-
-        int t1 = 0;
-        for (String taxa : matrix.keySet()) {
-            t1++;
-            for (int t2 = 1; t2 <= distancesBlock.getNtax(); t2++) {
-                double value = matrix.get(taxa).get(t2 - 1);
-                if (t1 == 1 && t2 == 1 && value == 1) {
-                    NotificationManager.showInformation("First dialog value is 1, assuming input values are similarities, using -log(value)");
-                    similarities = true;
-                }
-                if (!similarities)
-                    distancesBlock.set(t1, t2, value);
-                else {
-                    if (value == 0)
-                        value = 0.00000001; // small number
-                    distancesBlock.set(t1, t2, Math.max(0, -Math.log(value)));
-                }
-            }
-        }
-    }
-
-    /**
-     * read a lower triangular matrix
-     *
-     * @param matrix
-     * @param distancesBlock
-     */
-    private static void readTriangularMatrix(Map<String, Vector<Double>> matrix, DistancesBlock distancesBlock) {
-        int t1 = 0;
-        for (String taxa : matrix.keySet()) {
-            t1++;
-            for (int t2 = 1; t2 < t1; t2++) {
-                distancesBlock.set(t1, t2, matrix.get(taxa).get(t2 - 1));
-                distancesBlock.set(t2, t1, matrix.get(taxa).get(t2 - 1));
-            }
-            distancesBlock.set(t1, t1, 0.0);
-        }
-    }
-
-    /**
-     * read an upper triangular matrix
-     *
-     * @param matrix
-     * @param distancesBlock
-     */
-    private static void readUpperTriangularMatrix(Map<String, Vector<Double>> matrix, DistancesBlock distancesBlock) {
-        int t1 = 0;
-        // length of the first line - ntax
-        int diff = matrix.entrySet().iterator().next().getValue().size() - distancesBlock.getNtax() + 1;
-        for (String taxa : matrix.keySet()) {
-            t1++;
-            for (int t2 = matrix.get(taxa).size(); t2 > 0; t2--) {
-                int positionInSquareMatrix = t2 + t1 - diff;
-                distancesBlock.set(t1, positionInSquareMatrix, matrix.get(taxa).get(t2 - 1));
-                distancesBlock.set(positionInSquareMatrix, t1, matrix.get(taxa).get(t2 - 1));
-            }
-            distancesBlock.set(t1, t1, 0.0);
-        }
-    }
-
-    private static String addTaxaName(Map<String, Vector<Double>> matrix, String label, int linesCounter) {
-        int sameNamesCounter = 0;
-        if (matrix.keySet().contains(label)) {
-            System.err.println("Repeating taxon name in line " + linesCounter);
-            sameNamesCounter++;
-        }
-        while (matrix.keySet().contains(label + "(" + sameNamesCounter + ")")) {
-            sameNamesCounter++;
-        }
-
-        if (sameNamesCounter == 0) {
-            matrix.put(label, new Vector<>());
-            return label;
-        } else {
-            matrix.put(label + "(" + sameNamesCounter + ")", new Vector<>());
-            return label + "(" + sameNamesCounter + ")";
-        }
-    }
-
-    private void invertDistMatrixValues(DistancesBlock distances){
+    private void invertDistMatrixValues(DistancesBlock distances) {
 
         EnumSet<DistanceSimilarityCalculator> distanceSimilarityCalculators =
                 EnumSet.allOf(DistanceSimilarityCalculator.class);
         DistanceSimilarityCalculator dsc = DistanceSimilarityCalculator.log;
         for (DistanceSimilarityCalculator d : distanceSimilarityCalculators)
-            if (d.getLabel().equals(this.similarities_calculation)){
+            if (d.getLabel().equals(this.similarities_calculation)) {
                 dsc = d;
                 break;
             }
 
-        for (int i = 1; i <= distances.getNtax(); i++){
-            for (int j = 1; j <= distances.getNtax(); j++){
+        for (int i = 1; i <= distances.getNtax(); i++) {
+            for (int j = 1; j <= distances.getNtax(); j++) {
                 // set 0 to the main diagonal
                 if (i == j)
                     distances.set(i, j, 0);
@@ -268,7 +153,7 @@ public class PhylipDistancesImporter implements IToDistances, IImportDistances {
         }
     }
 
-    public void setSimilarities(boolean similarities){
+    public void setSimilarities(boolean similarities) {
         this.similarities = similarities;
     }
 

@@ -35,15 +35,20 @@ public class DashingDistance {
      * @return mash distance
      */
     public static double compute(DashingSketch a, DashingSketch b, GenomeDistanceType genomeDistanceType) {
+
         final DashingSketch union = DashingSketch.union(a, b);
         final double jaccardIndex = Math.max(0, (a.getHarmonicMean() + b.getHarmonicMean() - union.getHarmonicMean()) / union.getHarmonicMean());
 
         if (genomeDistanceType == GenomeDistanceType.Mash) {
-            if (jaccardIndex == 0)
+            if (jaccardIndex <= 0)
                 return 1;
             else
                 return Math.max(0f, -1.0 / a.getKmerSize() * Math.log(2.0 * jaccardIndex / (1 + jaccardIndex)));
-        } else
-            return 1 - jaccardIndex;
+        } else {
+            if (jaccardIndex <= 0)
+                return 1;
+            else
+                return 1 - jaccardIndex;
+        }
     }
 }

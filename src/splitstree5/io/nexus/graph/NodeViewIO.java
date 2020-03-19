@@ -23,7 +23,9 @@ package splitstree5.io.nexus.graph;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Labeled;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
+import jloda.fx.shapes.ISized;
 import jloda.fx.shapes.NodeShape;
 import jloda.fx.util.FontUtils;
 import jloda.graph.Node;
@@ -51,12 +53,14 @@ public class NodeViewIO {
     public static String toString(NodeView2D nv) {
         final StringBuilder buf = new StringBuilder();
         buf.append(String.format("N: %d %s %sf", nv.getNode().getId(), Basic.toString(nv.getLocation().getX(), 4), Basic.toString(nv.getLocation().getY(), 4)));
-        if (nv.getShape() != null) {
-            buf.append(String.format(" S: %s %s %s %s %s %s", NodeShape.valueOf(nv.getShape()),
+        final Shape shape = nv.getShape();
+        if (shape != null) {
+            buf.append(String.format(" S: %s %s %s %s %s %s", NodeShape.valueOf(shape),
                     Basic.toString(nv.getShapeGroup().getTranslateX(), 4),
                     Basic.toString(nv.getShapeGroup().getTranslateY(), 4),
-                    Basic.toString(nv.getShape().getLayoutBounds().getWidth(), 4),
-                    Basic.toString(nv.getShape().getLayoutBounds().getHeight(), 4), ((Color) nv.getShape().getFill()).toString()));
+                    Basic.toString(shape instanceof ISized ? ((ISized) shape).getWidth() : shape.getLayoutBounds().getWidth(), 4),
+                    Basic.toString(shape instanceof ISized ? ((ISized) shape).getHeight() : shape.getLayoutBounds().getHeight(), 4),
+                    ((Color) shape.getFill()).toString()));
         }
         if (nv.getLabel() != null) {
             final Labeled label = nv.getLabel();

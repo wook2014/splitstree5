@@ -243,7 +243,7 @@ public class ViewerNexusInput extends NexusIOBase {
         if (type == ViewerBlock.Type.SplitsNetworkViewer && np.peekMatchIgnoreCase("LOOPS")) {
             np.matchIgnoreCase("LOOPS");
             int countLoops = 0;
-            if (!np.peekMatchIgnoreCase(";")) {
+            while (!np.peekMatchIgnoreCase(";")) {
                 final ArrayList<Node> loop = new ArrayList<>();
                 while (!np.peekMatchIgnoreCase(",") && !np.peekMatchIgnoreCase(";")) {
                     loop.add(inputId2Node.get(np.getInt()));
@@ -255,6 +255,8 @@ public class ViewerNexusInput extends NexusIOBase {
                     graphTab.getPolygons().add(polygon);
                     graphTab.getEdgesGroup().getChildren().add(polygon.getShape());
                 }
+                if (np.peekMatchIgnoreCase(","))
+                    np.matchIgnoreCase(",");
             }
             np.matchIgnoreCase(";");
             if (nLoops != -1 && nLoops != countLoops)

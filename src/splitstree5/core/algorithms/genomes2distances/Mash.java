@@ -21,10 +21,8 @@
 package splitstree5.core.algorithms.genomes2distances;
 
 import javafx.beans.property.*;
-import jloda.util.Basic;
-import jloda.util.Pair;
-import jloda.util.ProgressListener;
-import jloda.util.Triplet;
+import jloda.fx.window.NotificationManager;
+import jloda.util.*;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.genomes2distances.mash.MashDistance;
 import splitstree5.core.algorithms.genomes2distances.mash.MashSketch;
@@ -53,9 +51,11 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
 
     private final BooleanProperty optionIgnoreUniqueKMers = new SimpleBooleanProperty(false);
 
+    private final IntegerProperty optionHashSeed = new SimpleIntegerProperty(42);
+
     @Override
     public List<String> listOptions() {
-        return Arrays.asList("optionKMerSize", "optionSketchSize", "optionDistances", "optionIgnoreUniqueKMers");
+        return Arrays.asList("optionKMerSize", "optionSketchSize", "optionDistances", "optionIgnoreUniqueKMers", "optionHashSeed");
     }
 
     @Override
@@ -76,7 +76,7 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
         progress.setProgress(0);
 
         final ArrayList<MashSketch> sketches = genomesBlock.getGenomes().parallelStream().map(g -> new Pair<>(g.getName(), g.parts()))
-                .map(pair -> MashSketch.compute(pair.getFirst(), Basic.asList(pair.getSecond()), isNucleotideData, getOptionSketchSize(), getOptionKMerSize(), use64Bits, isOptionIgnoreUniqueKMers(), progress))
+                .map(pair -> MashSketch.compute(pair.getFirst(), Basic.asList(pair.getSecond()), isNucleotideData, getOptionSketchSize(), getOptionKMerSize(), getOptionHashSeed(), use64Bits, isOptionIgnoreUniqueKMers(), progress))
                 .collect(Collectors.toCollection(ArrayList::new));
 
         progress.checkForCancel();
@@ -113,13 +113,20 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
 
         distancesBlock.clear();
 
+        int countOnes = 0;
+
         distancesBlock.setNtax(taxaBlock.getNtax());
         for (Triplet<MashSketch, MashSketch, Double> triplet : triplets) {
             final int t1 = name2rank.get(triplet.get1().getName());
             final int t2 = name2rank.get(triplet.get2().getName());
-            distancesBlock.set(t1, t2, triplet.getThird());
-            distancesBlock.set(t2, t1, triplet.getThird());
+            final double dist = triplet.getThird();
+            distancesBlock.set(t1, t2, dist);
+            distancesBlock.set(t2, t1, dist);
+            if (dist == 1.0)
+                countOnes++;
         }
+        if (countOnes > 0)
+            NotificationManager.showWarning(String.format("Failed to estimate distance for %d pairs (distances set to 1)", countOnes));
     }
 
     @Override
@@ -176,4 +183,46 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
     public void setOptionIgnoreUniqueKMers(boolean optionIgnoreUniqueKMers) {
         this.optionIgnoreUniqueKMers.set(optionIgnoreUniqueKMers);
     }
+
+    public int getOptionHashSeed() {
+        return optionHashSeed.get();
+    }
+
+    public IntegerProperty optionHashSeedProperty() {
+        return optionHashSeed;
+    }
+
+    public void setOptionHashSeed(int optionHashSeed) {
+        this.optionHashSeed.set(optionHashSeed);
+    }
+
+    public static void main(String[] args) throws IOException {
+        final String file1 = "/Users/huson/data/mash/all/EF065509.fasta";
+        final String file2 = "/Users/huson/data/mash/all/AY278489.fasta";
+
+        final String name1 = Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(file1), "");
+        final String seq1;
+        try (FileLineIterator it = new FileLineIterator(file1)) {
+            final StringBuilder buf = new StringBuilder();
+            it.stream().filter(s -> !s.startsWith(">")).collect(Collectors.toList()).forEach(s ->
+                    buf.append(s.replaceAll("\\s+", "")));
+            seq1 = buf.toString();
+        }
+
+        final String name2 = Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(file2), "");
+        final String seq2;
+        try (FileLineIterator it = new FileLineIterator(file2)) {
+            final StringBuilder buf = new StringBuilder();
+            it.stream().filter(s -> !s.startsWith(">")).collect(Collectors.toList()).forEach(s ->
+                    buf.append(s.replaceAll("\\s+", "")));
+            seq2 = buf.toString();
+        }
+
+        final MashSketch sketch1 = MashSketch.compute(name1, Collections.singleton(seq1.getBytes()), true, 1000, 21, 666, false, false, new ProgressSilent());
+        final MashSketch sketch2 = MashSketch.compute(name2, Collections.singleton(seq2.getBytes()), true, 1000, 21, 666, false, false, new ProgressSilent());
+
+        System.err.println(String.format("Jaccard: %.5f", MashDistance.compute(sketch1, sketch2, GenomeDistanceType.JaccardIndex)));
+        System.err.println(String.format("Mash:    %.5f", MashDistance.compute(sketch1, sketch2, GenomeDistanceType.Mash)));
+    }
 }
+

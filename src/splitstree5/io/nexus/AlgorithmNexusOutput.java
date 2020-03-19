@@ -51,13 +51,14 @@ public class AlgorithmNexusOutput extends NexusIOBase {
             w.write("OPTIONS\n");
             boolean first = true;
             for (OptionNext option : optionsNext) {
-                if (first)
-                    first = false;
-                else
-                    w.write(",\n");
-                final Object value = option.getProperty().getValue();
-
-                w.write("\t" + option.getName() + " = " + OptionValueType.toStringType(option.getOptionValueType(), value));
+                final String valueString = OptionValueType.toStringType(option.getOptionValueType(), option.getProperty().getValue());
+                if (valueString.length() > 0) {
+                    if (first)
+                        first = false;
+                    else
+                        w.write(",\n");
+                    w.write("\t" + option.getName() + " = " + valueString);
+                }
             }
             w.write(";\n");
         } else {

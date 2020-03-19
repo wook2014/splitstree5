@@ -373,7 +373,6 @@ public class NodeView2D extends NodeViewBase {
     @Override
     public void setWidth(double width) {
         shape.setScaleX(width / shape.getBoundsInLocal().getWidth());
-
     }
 
     @Override

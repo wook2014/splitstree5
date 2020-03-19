@@ -66,7 +66,7 @@ public class Similarities2Distances {
      * @param args
      */
     public void run(String[] args) throws Exception {
-        final ArgsOptions options = new ArgsOptions(args, this.getClass(), "Converts a list of similarties to a matrix of distances");
+        final ArgsOptions options = new ArgsOptions(args, this.getClass(), "Converts a list of similarities to a matrix of distances");
         options.setVersion(ProgramProperties.getProgramVersion());
         options.setLicense("This is free software, licensed under the terms of the GNU General Public License, Version 3.");
         options.setAuthors("Daniel H. Huson");

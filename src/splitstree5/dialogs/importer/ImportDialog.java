@@ -103,7 +103,6 @@ public class ImportDialog {
         });
         controller.getBrowseButton().disableProperty().bind(importService.runningProperty());
 
-
         controller.getFileTextField().textProperty().addListener((c, o, n) -> {
             final ImporterManager.DataType dataType = ImporterManager.getInstance().getDataType(n);
             controller.getDataTypeComboBox().setValue(dataType);
@@ -111,7 +110,6 @@ public class ImportDialog {
             controller.getFileFormatComboBox().setValue(dataFormat);
         });
         controller.getFileTextField().disableProperty().bind(importService.runningProperty());
-
 
         controller.getCancelButton().setOnAction((e) -> {
             if (importService.isRunning())

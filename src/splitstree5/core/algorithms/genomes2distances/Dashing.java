@@ -21,6 +21,7 @@
 package splitstree5.core.algorithms.genomes2distances;
 
 import javafx.beans.property.*;
+import jloda.fx.window.NotificationManager;
 import jloda.util.Basic;
 import jloda.util.Pair;
 import jloda.util.ProgressListener;
@@ -52,9 +53,12 @@ public class Dashing extends Algorithm<GenomesBlock, DistancesBlock> implements 
 
     private final BooleanProperty optionIgnoreUniqueKMers = new SimpleBooleanProperty(false);
 
+    private final IntegerProperty optionHashSeed = new SimpleIntegerProperty(42);
+
+
     @Override
     public List<String> listOptions() {
-        return Arrays.asList("optionKMerSize", "optionPrefixSize", "optionDistances", "optionIgnoreUniqueKMers");
+        return Arrays.asList("optionKMerSize", "optionPrefixSize", "optionDistances", "optionIgnoreUniqueKMers", "optionHashSeed");
     }
 
     @Override
@@ -67,13 +71,12 @@ public class Dashing extends Algorithm<GenomesBlock, DistancesBlock> implements 
 
         final boolean isNucleotideData = ((GenomesNexusFormat) genomesBlock.getFormat()).getCharactersType().equals(GenomesNexusFormat.CharactersType.dna);
 
-
         progress.setSubtask("Sketching");
         progress.setMaximum(genomesBlock.getNGenomes());
         progress.setProgress(0);
 
         final ArrayList<DashingSketch> sketches = genomesBlock.getGenomes().parallelStream().map(g -> new Pair<>(g.getName(), g.parts()))
-                .map(pair -> DashingSketch.compute(pair.getFirst(), Basic.asList(pair.getSecond()), getOptionKMerSize(), getOptionPrefixSize(), isOptionIgnoreUniqueKMers(), progress))
+                .map(pair -> DashingSketch.compute(pair.getFirst(), Basic.asList(pair.getSecond()), getOptionKMerSize(), getOptionPrefixSize(), getOptionHashSeed(), isOptionIgnoreUniqueKMers(), progress))
                 .collect(Collectors.toCollection(ArrayList::new));
 
         progress.checkForCancel();
@@ -87,6 +90,8 @@ public class Dashing extends Algorithm<GenomesBlock, DistancesBlock> implements 
         for (final DashingSketch sketch : sketches) {
             if (sketch.getHarmonicMean() == Double.NEGATIVE_INFINITY)
                 throw new IOException("Sketch '" + sketch.getName() + "': too few different k-mers");
+            if (true)
+                System.err.println(sketch.toStringComplete());
         }
 
         final List<Triplet<DashingSketch, DashingSketch, Double>> triplets = new ArrayList<>();
@@ -110,13 +115,22 @@ public class Dashing extends Algorithm<GenomesBlock, DistancesBlock> implements 
 
         distancesBlock.clear();
 
+        int countOnes = 0;
+
         distancesBlock.setNtax(taxaBlock.getNtax());
         for (Triplet<DashingSketch, DashingSketch, Double> triplet : triplets) {
             final int t1 = name2rank.get(triplet.get1().getName());
             final int t2 = name2rank.get(triplet.get2().getName());
-            distancesBlock.set(t1, t2, triplet.getThird());
-            distancesBlock.set(t2, t1, triplet.getThird());
+            final double dist = triplet.getThird();
+            distancesBlock.set(t1, t2, dist);
+            distancesBlock.set(t2, t1, dist);
+            if (dist == 1.0)
+                countOnes++;
         }
+
+        if (countOnes > 0)
+            NotificationManager.showWarning(String.format("Failed to determine distance for %d pairs (distances set to 1)", countOnes));
+
     }
 
     @Override
@@ -172,5 +186,17 @@ public class Dashing extends Algorithm<GenomesBlock, DistancesBlock> implements 
 
     public void setOptionIgnoreUniqueKMers(boolean optionIgnoreUniqueKMers) {
         this.optionIgnoreUniqueKMers.set(optionIgnoreUniqueKMers);
+    }
+
+    public int getOptionHashSeed() {
+        return optionHashSeed.get();
+    }
+
+    public IntegerProperty optionHashSeedProperty() {
+        return optionHashSeed;
+    }
+
+    public void setOptionHashSeed(int optionHashSeed) {
+        this.optionHashSeed.set(optionHashSeed);
     }
 }

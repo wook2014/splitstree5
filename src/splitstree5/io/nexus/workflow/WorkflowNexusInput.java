@@ -237,12 +237,9 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
                     title2node.put(dataBlock.getBlockName() + " " + taxaInput.getTitle(), dataNode);
                 } else {
                     final TaxaBlock taxaBlock;
-                    if (topDataNode == null) {
+                    if (topDataNode == null)
                         taxaBlock = topTaxaNode.getDataBlock();
-                        // should only ever happen in the data block to be read is the top traits block
-                        if (!np.peekMatchBeginBlock("traits"))
-                            System.err.println("Unexpected top block...");
-                    } else
+                    else
                         taxaBlock = workingTaxaNode.getDataBlock();
 
                     final DataBlock dataBlock = dataInput.parse(np, taxaBlock);

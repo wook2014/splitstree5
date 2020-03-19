@@ -19,16 +19,16 @@
 
 package splitstree5.core.algorithms.genomes2distances.dashing;
 
-import jloda.seq.DNA5Alphabet;
-import jloda.thirdparty.MurmurHash;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
-import splitstree5.core.algorithms.genomes2distances.utils.KMerUtils;
+import jloda.util.SequenceUtils;
 import splitstree5.core.algorithms.genomes2distances.utils.bloomfilter.BloomFilter;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * a Dashing sketch
@@ -41,6 +41,8 @@ public class DashingSketch {
     private final int[] register;
     private final int kmerSize;
     private final int prefixSize;
+
+    private int kmersUsed = 0;
     private double harmonicMean = Double.NEGATIVE_INFINITY;
 
     /**
@@ -75,13 +77,11 @@ public class DashingSketch {
      * @return
      * @throws IOException
      */
-    public static DashingSketch compute(String name, Collection<byte[]> sequences, int kMerSize, int prefixSize, boolean filterUniqueKMers, ProgressListener progress) {
+    public static DashingSketch compute(String name, Collection<byte[]> sequences, int kMerSize, int prefixSize, int seed, boolean filterUniqueKMers, ProgressListener progress) {
         final DashingSketch sketch = new DashingSketch(name, kMerSize, prefixSize);
 
         // todo: compute:
         final int minSize = 1000;
-
-        final int seed = 777;
 
         final int[] register = sketch.getRegister();
         final int registerLength = register.length;
@@ -92,34 +92,50 @@ public class DashingSketch {
         else
             bloomFilter = null;
 
+        int count = 0;
         try {
-            int count = 0;
-            for (byte[] sequence : sequences) {
-                final byte[] reverseComplement = DNA5Alphabet.reverseComplement(sequence, new byte[sequence.length]);
+            byte[] kMerReverseComplement = new byte[kMerSize]; // will reuse
 
-                final int top = sequence.length - kMerSize;
+
+            for (byte[] sequence : sequences) {
+                if (false) {
+                    for (int i = 0; i < sequence.length; i++)
+                        if ("ACGTN".indexOf(sequence[i]) == -1)
+                            sequence[i] = 'N';
+                }
+
+                if (false) {
+                    final String otherLetters = new String(sequence).replaceAll("[acgtuACGTU]", "");
+                    if (otherLetters.length() > 0)
+                        System.err.println(name + " contains non-nucleotides: " + otherLetters);
+                }
+
+                final int top = sequence.length - kMerSize + 1;
                 for (int offset = 0; offset < top; offset++) {
-                    final int ambiguous = Basic.lastIndexOf(sequence, offset, kMerSize, 'N'); // don't use k-mers with ambiguity letters
-                    if (ambiguous != -1) {
-                        offset = ambiguous; // skip to last ambiguous so that increment will move past
+                    final int ambiguousPos = Basic.lastIndexOf(sequence, offset, kMerSize, 'N'); // don't use k-mers with ambiguity letters
+                    if (ambiguousPos != -1) {
+                        offset = ambiguousPos; // skip to last ambiguous so that increment will move past
                         continue;
                     }
                     final int offsetUse;
                     final byte[] seqUse;
 
-                    if (KMerUtils.isCanonical(offset, kMerSize, sequence, reverseComplement)) {
+                    kMerReverseComplement = SequenceUtils.getReverseComplement(sequence, offset, kMerSize, kMerReverseComplement);
+
+                    if (false && SequenceUtils.compare(sequence, offset, kMerReverseComplement, 0, kMerSize) <= 0) {
                         offsetUse = offset;
                         seqUse = sequence;
                     } else {
-                        offsetUse = sequence.length - offset - kMerSize;
-                        seqUse = reverseComplement;
+                        offsetUse = 0;
+                        seqUse = kMerReverseComplement;
                     }
 
                     if (bloomFilter != null && bloomFilter.add(seqUse, offsetUse, kMerSize)) {
                         continue; // first time we have seen this k-mer
                     }
 
-                    final long hash = MurmurHash.hash64(seqUse, offsetUse, kMerSize, seed);
+                    final long hash = Murmur3_64.murmurhash3_x64_128_first_part(seqUse, offsetUse, kMerSize, seed);
+                    //final long hash = MurmurHash.hash64(seqUse, offsetUse, kMerSize, seed);
                     int registerKey = (int) (hash % (long) registerLength);
                     if (registerKey < 0)
                         registerKey = registerKey + registerLength;
@@ -136,9 +152,10 @@ public class DashingSketch {
                 sketch.setHarmonicMean(computeHarmonicMean(register));
             }
 
-
             progress.incrementProgress();
         } catch (CanceledException ignored) {
+        } finally {
+            sketch.kmersUsed = count;
         }
         return sketch;
     }
@@ -214,9 +231,41 @@ public class DashingSketch {
         return union;
     }
 
-    public String getHeader() {
+    public String toString() {
         return String.format("##ComputeDashingSketch name='%s' kSize=%d prefixSize=%d\n", name, kmerSize, prefixSize);
     }
+
+    public String toStringComplete() {
+        final StringBuilder buf = new StringBuilder(toString());
+        buf.append(String.format("size of register: %d\n", register.length));
+        buf.append(String.format("Count kMers used: %d\n", getKmersUsed()));
+        buf.append(String.format("harmonic mean:    %.1f\n", getHarmonicMean()));
+        if (false) {
+            buf.append("register values:  ");
+            boolean first = true;
+            for (int value : register) {
+                if (first)
+                    first = false;
+                else
+                    buf.append(" ");
+                buf.append(value);
+            }
+            buf.append("\n");
+        } else {
+            buf.append("Zeros count:\n");
+            int total = 0;
+            final Map<Integer, Integer> zeros2count = new TreeMap<>((a, b) -> -Integer.compare(a, b));
+            for (int zeros : register)
+                zeros2count.merge(zeros, 1, Integer::sum);
+            for (Integer zeros : zeros2count.keySet()) {
+                total += zeros * zeros2count.get(zeros);
+                buf.append(String.format("%3d %5d\n", zeros, zeros2count.get(zeros)));
+            }
+            buf.append("total: " + total + "\n");
+        }
+        return buf.toString();
+    }
+
 
     public String getName() {
         return name;
@@ -244,5 +293,9 @@ public class DashingSketch {
 
     public static boolean canCompare(DashingSketch a, DashingSketch b) {
         return a.getKmerSize() == b.getKmerSize() && a.getPrefixSize() == b.getPrefixSize();
+    }
+
+    public int getKmersUsed() {
+        return kmersUsed;
     }
 }

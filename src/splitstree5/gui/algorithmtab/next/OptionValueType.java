@@ -178,8 +178,13 @@ public enum OptionValueType {
                 }
                 return buf.toString();
             }
-            case stringArray:
-                return "'" + Basic.toString((String[]) object, "' '") + "'";
+            case stringArray: {
+                final String[] array = (String[]) object;
+                if (array.length == 0)
+                    return "";
+                else
+                    return "'" + Basic.toString(array, "' '") + "'";
+            }
             default:
                 return object.toString();
         }
