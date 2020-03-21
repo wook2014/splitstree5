@@ -59,7 +59,7 @@ public class NexmlTreesImporter implements IToTrees, IImportTrees {
             saxParser.parse(file, handler);
             taxa.addTaxaByNames(handler.getTaxaLabels());
             for (PhyloTree t : handler.getTrees()) {
-                trees.getTrees().add(t);
+                trees.getTrees().add(t); // todo: problem with multiple trees import?
             }
             trees.setPartial(handler.isPartial());
             trees.setRooted(handler.isRooted());
