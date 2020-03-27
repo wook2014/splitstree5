@@ -58,7 +58,7 @@ public class DashingUntested extends Algorithm<GenomesBlock, DistancesBlock> imp
 
     @Override
     public List<String> listOptions() {
-        return Arrays.asList("optionKMerSize", "optionPrefixSize", "optionDistances", "optionIgnoreUniqueKMers", "optionHashSeed");
+        return Arrays.asList("optionKMerSize", "optionPrefixSize", "optionDistances", "optionHashSeed", "optionIgnoreUniqueKMers");
     }
 
     @Override
@@ -90,7 +90,7 @@ public class DashingUntested extends Algorithm<GenomesBlock, DistancesBlock> imp
         for (final DashingSketch sketch : sketches) {
             if (sketch.getHarmonicMean() == Double.NEGATIVE_INFINITY)
                 throw new IOException("Sketch '" + sketch.getName() + "': too few different k-mers");
-            if (true)
+            if (false)
                 System.err.println(sketch.toStringComplete());
         }
 

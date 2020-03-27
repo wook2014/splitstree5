@@ -19,6 +19,7 @@
 
 package splitstree5.core.algorithms.genomes2distances.dashing;
 
+import jloda.thirdparty.MurmurHash;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
@@ -122,7 +123,7 @@ public class DashingSketch {
 
                     kMerReverseComplement = SequenceUtils.getReverseComplement(sequence, offset, kMerSize, kMerReverseComplement);
 
-                    if (false && SequenceUtils.compare(sequence, offset, kMerReverseComplement, 0, kMerSize) <= 0) {
+                    if (SequenceUtils.compare(sequence, offset, kMerReverseComplement, 0, kMerSize) <= 0) {
                         offsetUse = offset;
                         seqUse = sequence;
                     } else {
@@ -134,8 +135,7 @@ public class DashingSketch {
                         continue; // first time we have seen this k-mer
                     }
 
-                    final long hash = Murmur3_64.murmurhash3_x64_128_first_part(seqUse, offsetUse, kMerSize, seed);
-                    //final long hash = MurmurHash.hash64(seqUse, offsetUse, kMerSize, seed);
+                    final long hash = MurmurHash.hash64(seqUse, offsetUse, kMerSize, seed);
                     int registerKey = (int) (hash % (long) registerLength);
                     if (registerKey < 0)
                         registerKey = registerKey + registerLength;
@@ -261,7 +261,7 @@ public class DashingSketch {
                 total += zeros * zeros2count.get(zeros);
                 buf.append(String.format("%3d %5d\n", zeros, zeros2count.get(zeros)));
             }
-            buf.append("total: " + total + "\n");
+            buf.append("total: ").append(total).append("\n");
         }
         return buf.toString();
     }

@@ -55,7 +55,7 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
 
     @Override
     public List<String> listOptions() {
-        return Arrays.asList("optionKMerSize", "optionSketchSize", "optionDistances", "optionIgnoreUniqueKMers", "optionHashSeed");
+        return Arrays.asList("optionKMerSize", "optionSketchSize", "optionDistances", "optionHashSeed", "optionIgnoreUniqueKMers");
     }
 
     @Override

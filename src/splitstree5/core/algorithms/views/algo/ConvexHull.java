@@ -250,14 +250,12 @@ public class ConvexHull {
             }
 
             progress.setProgress(-1);
-            for (Node n : graph.nodes()) {
-                graph.setLabel(n, null);
-            }
+            graph.nodeStream().forEach(n -> graph.setLabel(n, null));
             PhyloGraphUtils.addLabels(taxaBlock, graph);
 
 
             final BitSet seen = new BitSet();
-            for (Edge e = graph.getFirstEdge(); e != null; e = e.getNext()) {
+            for (Edge e : graph.edges()) {
                 int s = graph.getSplit(e);
                 if (s > 0 && !seen.get(s)) {
                     seen.set(s);
@@ -269,6 +267,7 @@ public class ConvexHull {
             graph.clear();
             throw ex;
         }
+        graph.edgeStream().forEach(e -> graph.setLabel(e, null));
     }//end apply
 
     /**

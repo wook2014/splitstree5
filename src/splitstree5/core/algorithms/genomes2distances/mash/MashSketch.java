@@ -19,11 +19,11 @@
 
 package splitstree5.core.algorithms.genomes2distances.mash;
 
+import jloda.thirdparty.MurmurHash;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import jloda.util.SequenceUtils;
-import splitstree5.core.algorithms.genomes2distances.dashing.Murmur3_64;
 import splitstree5.core.algorithms.genomes2distances.utils.bloomfilter.BloomFilter;
 
 import java.io.IOException;
@@ -119,8 +119,7 @@ public class MashSketch {
                         continue; // first time we have seen this k-mer
                     }
 
-                    final long hash = Murmur3_64.murmurhash3_x64_128_first_part(seqUse, offsetUse, kMerSize, seed);
-                    // final long hash = (use64Bits ? MurmurHash.hash64(seqUse, offsetUse, kMerSize, seed) : (long) MurmurHash.hash32(seqUse, offsetUse, kMerSize, seed));
+                    final long hash = (use64Bits ? MurmurHash.hash64(seqUse, offsetUse, kMerSize, seed) : (long) MurmurHash.hash32(seqUse, offsetUse, kMerSize, seed));
 
                     if (hash < sortedSet.last()) {
                         if (sortedSet.add(hash) && sortedSet.size() > sketchSize)

@@ -121,6 +121,10 @@ public class CompareDistances {
         int bothSame = 0;
         int bothDifferent = 0;
 
+        int bothOne = 0;
+        int firstOnlyOne = 0;
+        int secondOnlyOne = 0;
+
         Map<String, Integer> badCount = new HashMap<>();
 
         final ArrayList<Pair<Double, String>> lines = new ArrayList<>();
@@ -141,10 +145,16 @@ public class CompareDistances {
                                 bothDifferent++;
 
                                 badCount.merge(a1, 1, Integer::sum);
-                            } else if (dist1 < delta && dist2 < delta)
-                                bothZero++;
-                            else
+                            } else
                                 bothSame++;
+                            if (dist1 == 0 && dist2 == 0)
+                                bothZero++;
+                            if (dist1 == 1.0 && dist2 == 1.0)
+                                bothOne++;
+                            else if (dist1 == 1.0)
+                                firstOnlyOne++;
+                            else if (dist2 == 1.0)
+                                secondOnlyOne++;
                         }
                     }
 
@@ -154,9 +164,14 @@ public class CompareDistances {
 
         lines.stream().sorted((x, y) -> -Double.compare(x.getFirst(), y.getFirst())).forEach(p -> System.err.println(p.getSecond()));
 
-        System.err.println(String.format("Both zero:%5d", bothZero));
-        System.err.println(String.format("Both same:%5d", bothSame));
-        System.err.println(String.format("Both diff:%5d", bothDifferent));
+        System.err.println(String.format("Both same: %5d", bothSame));
+        System.err.println(String.format("Both diff: %5d", bothDifferent));
+
+        System.err.println(String.format("Both zero: %5d", bothZero));
+        System.err.println(String.format("Both one : %5d", bothOne));
+        System.err.println(String.format("First one: %5d", firstOnlyOne));
+        System.err.println(String.format("Second one: %5d", secondOnlyOne));
+
 
         System.err.println(String.format("Bad taxa (%d):", badCount.size()));
         badCount.entrySet().stream().sorted((x, y) -> -Integer.compare(x.getValue(), y.getValue()))
