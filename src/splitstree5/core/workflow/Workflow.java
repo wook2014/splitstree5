@@ -119,7 +119,7 @@ public class Workflow {
                     else
                         connector.setTitle(String.format("%s-%d", name, count - 1));
                 }
-                System.err.println("Connector added: " + connector.getName());
+                // System.err.println("Connector added: " + connector.getName());
             }
         });
 
@@ -148,8 +148,7 @@ public class Workflow {
                         else
                             dataNode.setTitle(String.format("%s-%d", name, count - 1));
                     }
-                    System.err.println("DataNode added: " + dataNode.getName());
-
+                    //System.err.println("DataNode added: " + dataNode.getName());
                 }
             }
             // todo: remove number from name2used when node is removed
