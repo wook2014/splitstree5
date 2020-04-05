@@ -74,11 +74,6 @@
                         <KeyCodeCombination alt="UP" code="E" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
-                <MenuItem fx:id="exportImageMenuItem" text="Export Image...">
-                    <accelerator>
-                        <KeyCodeCombination alt="UP" code="E" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
-                    </accelerator>
-                </MenuItem>
                 <MenuItem fx:id="exportWorkflowMenuItem" text="Export Workflow..."/>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="pageSetupMenuItem" text="Page Setup..."/>

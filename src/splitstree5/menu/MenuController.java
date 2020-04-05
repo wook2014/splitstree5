@@ -79,10 +79,7 @@ public class MenuController {
 
     @FXML
     private MenuItem exportMenuItem;
-
-    @FXML
-    private MenuItem exportImageMenuItem;
-
+    
     @FXML
     private MenuItem replaceDataMenuItem;
 
@@ -450,10 +447,6 @@ public class MenuController {
 
     public MenuItem getExportMenuItem() {
         return exportMenuItem;
-    }
-
-    public MenuItem getExportImageMenuItem() {
-        return exportImageMenuItem;
     }
 
     public MenuItem getReplaceDataMenuItem() {
