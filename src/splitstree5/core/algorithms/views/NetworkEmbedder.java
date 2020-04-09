@@ -125,7 +125,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
             final String label = graph.getLabel(v);
             if (label != null) {
                 final StringBuilder buf = new StringBuilder();
-                if (label.startsWith("<")) // multi-labeled node
+                if (label.startsWith("<")) // multi-labeled node //todo: differentiate between multi label and html?
                 {
                     final String[] tokens = Basic.split(label.substring(1, label.length() - 1), ',');
                     for (String token : tokens) {
@@ -155,9 +155,10 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
             if (node2data.get(v).isEmpty())
                 location = node2point.getValue(v);
             else {
+                //todo redo scaling
                 System.err.println("Node Data: "+node2data.get(v));
-                double x = Double.valueOf(node2data.get(v).get("x"))*10;
-                double y = Double.valueOf(node2data.get(v).get("y"))*10;
+                double x = Double.parseDouble(node2data.get(v).get("x"))*10;
+                double y = Double.parseDouble(node2data.get(v).get("y"))*10;
                 location = new Point2D(x, y);
             }
 
@@ -361,8 +362,13 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
                     if (dist < 1e-3)
                         dist = 1e-3;
                     double repulse = k * k / dist;
-                    xDispl.set(v, xDispl.getValue(v) + repulse * xDist);
-                    yDispl.set(v, yDispl.getValue(v) + repulse * yDist);
+                    try {
+                        xDispl.set(v, xDispl.getValue(v) + repulse * xDist);
+                        yDispl.set(v, yDispl.getValue(v) + repulse * yDist);
+                    } catch (NullPointerException ex) {
+                        xDispl.set(v, repulse * xDist);
+                        yDispl.set(v, repulse * yDist);
+                    }
                 }
 
                 for (Edge e : graph.edges()) {
