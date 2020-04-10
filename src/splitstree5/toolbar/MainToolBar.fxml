@@ -146,7 +146,7 @@
             <graphic>
                 <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image smooth="false" url="/splitstree5/resources/icons/RotateLeft16.gif"/>
+                        <Image smooth="false" url="/jloda/resources/icons/RotateLeft16.gif"/>
                     </image>
                 </ImageView>
             </graphic>
@@ -160,7 +160,7 @@
             <graphic>
                 <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image smooth="false" url="/splitstree5/resources/icons/RotateRight16.gif"/>
+                        <Image smooth="false" url="/jloda/resources/icons/RotateRight16.gif"/>
                     </image>
                 </ImageView>
             </graphic>

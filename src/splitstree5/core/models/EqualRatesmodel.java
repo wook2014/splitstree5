@@ -23,7 +23,7 @@ package splitstree5.core.models;
 import java.util.Random;
 
 /**
- * Implements the equal rates model for an arbitrary number of sites.
+ * Implements the equals rates model for an arbitrary number of sites.
  * <p/>
  * Takes base frequencies   pi[i], i=0...nstates-1.
  * The generator is   Q

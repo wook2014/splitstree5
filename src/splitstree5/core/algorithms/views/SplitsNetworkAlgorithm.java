@@ -52,7 +52,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * compute an implementing of a set of splits using the equal angle algorithm
+ * compute an implementing of a set of splits using the equals angle algorithm
  * Daniel Huson, 11.2017
  */
 public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implements IFromSplits, IToViewer {

@@ -40,7 +40,7 @@ import splitstree5.core.models.nucleotideModels.NucleotideModel;
 public abstract class Nucleotides2DistancesBase extends Algorithm<CharactersBlock, DistancesBlock> {
     public enum SetParameters {fromChars, defaultValues}
 
-    protected final static double DEFAULT_GAMMA = -1;        //Negative gamma corresponds to equal rates
+    protected final static double DEFAULT_GAMMA = -1;        //Negative gamma corresponds to equals rates
     protected final static double DEFAULT_PROP_INVARIABLE_SITES = 0.0;
 
     protected final static double[] DEFAULT_BASE_FREQ = {0.25, 0.25, 0.25, 0.25};  //Use the exact distance by default - transforms without exact distances should set useML = false

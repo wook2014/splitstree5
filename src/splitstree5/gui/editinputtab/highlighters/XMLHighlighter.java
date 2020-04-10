@@ -34,7 +34,7 @@ public class XMLHighlighter implements Highlighter {
             +"|(?<COMMENT><!--[^<>]+-->)");
 
     private static final Pattern ATTRIBUTES = Pattern.compile(
-            "((?!xmlns:)\\w+[:])?" + //namespace prefix not equal xmlns:
+            "((?!xmlns:)\\w+[:])?" + //namespace prefix not equals xmlns:
                     "(\\w+\\h*|xmlns:\\w+)" + // attribute name
                     "(=)(\\h*\"[^\"]+\")"); // attribute value
 

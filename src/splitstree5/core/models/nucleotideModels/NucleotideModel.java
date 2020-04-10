@@ -272,7 +272,7 @@ public abstract class NucleotideModel implements SubstitutionModel {
      * @param val gamma parameter
      */
     public void setGamma(double val) {
-//Note: negative gamma -> equal rates.
+//Note: negative gamma -> equals rates.
         if (val != gamma) {
             gamma = val;
             if (tval != 0.0) {

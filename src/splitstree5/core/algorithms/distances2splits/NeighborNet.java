@@ -418,7 +418,7 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
 
         NetNode u;
 
-        u = agg3way(x2, x, y, amalgs, D, netNodes, num_nodes); /* Replace x2,x,y by two nodes, equal to x2_prev.next and y_prev.next. */
+        u = agg3way(x2, x, y, amalgs, D, netNodes, num_nodes); /* Replace x2,x,y by two nodes, equals to x2_prev.next and y_prev.next. */
         num_nodes += 2;
         agg3way(u, u.nbr, y2, amalgs, D, netNodes, num_nodes); /* z = y_prev . next */
         num_nodes += 2;

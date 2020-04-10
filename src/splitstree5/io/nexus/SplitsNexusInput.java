@@ -240,7 +240,7 @@ public class SplitsNexusInput extends NexusIOBase implements INexusInput<SplitsB
                 if (BitSetUtils.intersection(setA, setB).cardinality() > 0)
                     throw new IOExceptionWithLineNumber(np.lineno(), "Split sides not disjoint");
                 if (BitSetUtils.compare(BitSetUtils.union(setA, setB), taxaBlock.getTaxaSet()) != 0)
-                    throw new IOExceptionWithLineNumber(np.lineno(), "Union of split doesn't equal complete taxon set");
+                    throw new IOExceptionWithLineNumber(np.lineno(), "Union of split doesn't equals complete taxon set");
 
                 split = new ASplit(setA, setB, weight);
             } else {

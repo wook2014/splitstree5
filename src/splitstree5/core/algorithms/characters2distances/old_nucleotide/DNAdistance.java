@@ -47,7 +47,7 @@ public abstract class DNAdistance extends Algorithm<CharactersBlock, DistancesBl
     public enum SetParameters {fromChars, defaultParameters}
 
     final double DEFAULT_PROP_INVARIABLE_SITES = 0.0;
-    final double DEFAULT_GAMMA = -1;        //Negative gamma corresponds to equal rates
+    final double DEFAULT_GAMMA = -1;        //Negative gamma corresponds to equals rates
     final double DEFAULT_BASE_FREQ = 0.25;  //Use the exact distance by default - transforms without exact distances should set useML = false
     final double DEFAULT_TSTV_RATIO = 2.0;  //default is no difference between transitions and transversions
 
@@ -65,7 +65,7 @@ public abstract class DNAdistance extends Algorithm<CharactersBlock, DistancesBl
 
 
     public DNAdistance() {
-        baseFreq = new double[]{0.25, 0.25, 0.25, 0.25};    //default is equal frequencies
+        baseFreq = new double[]{0.25, 0.25, 0.25, 0.25};    //default is equals frequencies
         /*this.baseFreq = new DoubleProperty[4];
         for(DoubleProperty dp : baseFreq)
             dp = new SimpleDoubleProperty(0.25); //.setValue(0.25);*/

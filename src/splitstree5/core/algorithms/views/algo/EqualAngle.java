@@ -36,7 +36,7 @@ import splitstree5.utils.SplitsUtilities;
 import java.util.*;
 
 /**
- * the equal angle algorithm for computing a split network for circular splits
+ * the equals angle algorithm for computing a split network for circular splits
  * Daniel Huson, 11.2017
  */
 public class EqualAngle {
@@ -51,7 +51,7 @@ public class EqualAngle {
      * @param node2point
      */
     public static void apply(ProgressListener progress, boolean useWeights, TaxaBlock taxaBlock, SplitsBlock splits, PhyloSplitsGraph graph, NodeArray<Point2D> node2point, BitSet forbiddenSplits, BitSet usedSplits) throws CanceledException {
-        //System.err.println("Running equal angle algorithm");
+        //System.err.println("Running equals angle algorithm");
         graph.clear();
         usedSplits.clear();
 

@@ -234,7 +234,7 @@ public class NeighborNetSplitWeightOptimizer {
 
         //Find the cut-off value. All values greater than this should
         //be returned, as well as some (or perhaps all) of the values
-        //equal to this.
+        //equals to this.
         int nkept = (int) Math.ceil(propKept * numNeg);  //Ranges from 1 to n
         double cutoff = xcopy[nkept - 1];
 

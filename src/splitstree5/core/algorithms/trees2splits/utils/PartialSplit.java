@@ -140,7 +140,7 @@ public class PartialSplit implements Comparator, Cloneable {
      *
      * @param A
      * @param B
-     * @return -1 if A lexicographically first, 1 if B first, and 0 if equal
+     * @return -1 if A lexicographically first, 1 if B first, and 0 if equals
      */
     public static int compareSides(BitSet A, BitSet B) {
         //BitSet sa = A.getBits();
@@ -260,10 +260,10 @@ public class PartialSplit implements Comparator, Cloneable {
     }
 
     /**
-     * equal partial splits?
+     * equals partial splits?
      *
      * @param ps
-     * @return true, if equal as partial splits
+     * @return true, if equals as partial splits
      */
     public boolean equals(Object ps) {
         if (!(ps instanceof PartialSplit))

@@ -143,7 +143,7 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
                 }
             }
 
-            //are these taxa equal taxa, if so, do nothing:
+            //are these taxa equals taxa, if so, do nothing:
             boolean areLabelsInTaxa = true;
             for(String label : taxaLabels){
                 if(!taxaBlock.getLabel().contains(label)) {

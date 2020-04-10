@@ -256,7 +256,7 @@ public final class ASplit implements Comparable<ASplit> {
     }
 
     /**
-     * is this equal to the given split in terms of A and B
+     * is this equals to the given split in terms of A and B
      *
      * @param obj
      * @return true, if obj is instance of ASplit and has the sets A and B

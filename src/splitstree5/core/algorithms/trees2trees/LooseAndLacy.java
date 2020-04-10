@@ -349,7 +349,7 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
                     return a1 == -1 ? 1 : -1;
                 else if (a1 > a2)
                     return 1;
-                else if (a1 == -1) // equal and both over
+                else if (a1 == -1) // equals and both over
                     return 0;
 
             }
