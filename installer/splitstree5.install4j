@@ -3,7 +3,9 @@
   <directoryPresets config="../jars/i4jruntime.jar" />
   <application name="SplitsTree5" applicationId="4099-4251-9127-4263" mediaDir="../../../builds" shortName="splitstree5" publisher="Daniel Huson and David Bryant" publisherWeb="http://splitstree.husonlab.org" version="5.0.0" allPathsRelative="true" macVolumeId="b8c0a1154e563a9a" javaMinVersion="11">
     <codeSigning macEnabled="true" macPkcs12File="../../../../etc/application.p12" />
-    <jreBundles jdkProviderId="AdoptOpenJDK" release="openjdk12/jdk-12.0.2+10_openj9-0.15.1" />
+    <jreBundles jdkProviderId="Liberica" release="OpenJDK 13.0.2+9">
+      <modules />
+    </jreBundles>
   </application>
   <files>
     <mountPoints>
@@ -1141,6 +1143,7 @@ return true;</property>
       <variables>
         <variable name="jfxlib" value="openjfx/linux/lib" />
       </variables>
+      <jreBundle jreBundleSource="generated" />
     </unixInstaller>
     <macosFolder name="Mac OS X Folder" id="1691242165" installDir="SplitsTree5" overridePrincipalLanguage="true" compressDmg="true" signLaunchers="true">
       <exclude>
@@ -1150,11 +1153,7 @@ return true;</property>
       <variables>
         <variable name="jfxlib" value="openjfx/osx/lib" />
       </variables>
-      <jreBundle jreBundleSource="generated" includedJre="macosx-amd64-12.0.1">
-        <modules>
-          <defaultModules set="jre" />
-        </modules>
-      </jreBundle>
+      <jreBundle jreBundleSource="generated" includedJre="macosx-amd64-12.0.1" />
     </macosFolder>
     <windows name="Windows64bit" id="1691242288" installDir="SplitsTree5" overridePrincipalLanguage="true">
       <overriddenPrincipalLanguage id="409" />
@@ -1166,14 +1165,11 @@ return true;</property>
       <variables>
         <variable name="jfxlib" value="openjfx/windows/lib" />
       </variables>
-      <jreBundle jreBundleSource="generated" includedJre="windows-amd64-12.0.1" installOnlyIfNecessary="true">
-        <modules>
-          <defaultModules set="jre" />
-        </modules>
-      </jreBundle>
+      <jreBundle jreBundleSource="generated" includedJre="windows-amd64-12.0.1" installOnlyIfNecessary="true" />
     </windows>
   </mediaSets>
-  <buildIds buildAll="false">
+  <buildIds>
     <mediaSet refId="1691242165" />
   </buildIds>
+  <buildOptions disableSigning="true" disableNotarization="true" />
 </install4j>

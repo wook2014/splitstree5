@@ -870,7 +870,7 @@ public class MenuController {
         // if we are running on MacOS, put the specific menu items in the right places
         if (ProgramProperties.isMacOS()) {
             getMenuBar().setUseSystemMenuBar(true);
-            //fileMenu.getItems().remove(getQuitMenuItem());
+            fileMenu.getItems().remove(getQuitMenuItem());
             // windowMenu.getItems().remove(getAboutMenuItem());
             // editMenu.getItems().remove(getPreferencesMenuItem());
         }
