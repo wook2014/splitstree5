@@ -1,7 +1,7 @@
 /*
- * SaveChangesDialog.java Copyright (C) 2020. Daniel H. Huson
+ * SaveBeforeClosingDialog.java Copyright (C) 2020. Daniel H. Huson
  *
- * (Some code written by other authors, as named in code.)
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,23 +28,23 @@ import splitstree5.main.MainWindow;
 
 import java.util.Optional;
 
+public class SaveBeforeClosingDialog {
+    public enum Result {save, close, cancel}
 
-public class SaveChangesDialog {
     /**
      * ask whether to save before closing
      *
      * @param mainWindow
      * @return true if doesn't need saving or saved, false else
      */
-    public static boolean apply(MainWindow mainWindow) {
+    public static Result apply(MainWindow mainWindow) {
         final Document document = mainWindow.getDocument();
         if (!document.isDirty()) {
-            return true;
+            return Result.close;
         } else {
             mainWindow.getStage().toFront();
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.initOwner(mainWindow.getStage());
-            alert.setResizable(true);
             alert.setTitle("Save File Dialog");
             alert.setHeaderText("This document has unsaved changes");
             alert.setContentText("Save changes?");
@@ -53,15 +53,13 @@ public class SaveChangesDialog {
             ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
             alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeCancel);
 
-            Optional<ButtonType> result = alert.showAndWait();
+            final Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent()) {
                 if (result.get() == buttonTypeYes) {
-                    return SaveDialog.showSaveDialog(mainWindow, false);
-                } else if (result.get() == buttonTypeNo) {
-                    return true;
-                }
+                    return SaveChangesDialog.apply(mainWindow) ? Result.save : Result.close;
+                } else return result.get() == buttonTypeNo ? Result.close : Result.cancel;
             }
-            return false; // canceled
+            return Result.cancel; // canceled
         }
     }
 }

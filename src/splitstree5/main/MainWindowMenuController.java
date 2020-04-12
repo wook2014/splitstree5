@@ -30,6 +30,7 @@ import javafx.stage.FileChooser;
 import jloda.fx.util.RecentFilesManager;
 import jloda.fx.window.MainWindowManager;
 import jloda.fx.window.NotificationManager;
+import jloda.fx.window.WindowGeometry;
 import jloda.swing.util.BasicSwing;
 import jloda.util.Basic;
 import jloda.util.Pair;
@@ -63,6 +64,8 @@ import splitstree5.core.algorithms.views.SplitsNetworkAlgorithm;
 import splitstree5.core.algorithms.views.TreeEmbedder;
 import splitstree5.core.datablocks.*;
 import splitstree5.core.workflow.*;
+import splitstree5.dialogs.SaveChangesDialog;
+import splitstree5.dialogs.SaveDialog;
 import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.dialogs.importer.ImportDialog;
 import splitstree5.dialogs.importer.ImportMultipleTreeFilesDialog;
@@ -168,12 +171,29 @@ public class MainWindowMenuController {
         });
 
         controller.getCloseMenuItem().setOnAction(e -> {
-            mainWindow.clear(true, true);
+            if (SaveChangesDialog.apply(mainWindow)) {
+                mainWindow.clear();
+                ProgramProperties.put("WindowGeometry", (new WindowGeometry(mainWindow.getStage())).toString());
+
+                MainWindowManager.getInstance().closeMainWindow(mainWindow);
+            }
         });
 
         mainWindow.getStage().setOnCloseRequest(e -> {
-            mainWindow.clear(true, true);
+            controller.getCloseMenuItem().getOnAction().handle(null);
             e.consume();
+        });
+
+        controller.getQuitMenuItem().setOnAction(e -> {
+            while (MainWindowManager.getInstance().size() > 0) {
+                final MainWindow aWindow = (MainWindow) MainWindowManager.getInstance().getMainWindow(MainWindowManager.getInstance().size() - 1);
+                if (!SaveChangesDialog.apply(aWindow))
+                    break;
+                mainWindow.clear();
+                if (!MainWindowManager.getInstance().closeMainWindow(aWindow))
+                    break;
+                ProgramProperties.put("WindowGeometry", (new WindowGeometry(mainWindow.getStage())).toString());
+            }
         });
 
         controller.getInputEditorMenuItem().setOnAction(e -> {
@@ -212,7 +232,7 @@ public class MainWindowMenuController {
                 .or(document.updatingProperty()).or(document.nameProperty().isEmpty()).or(mainWindow.getWorkflow().hasTopTaxaProperty().not()));
 
         controller.getSaveAsMenuItem().setOnAction(e -> {
-            showSaveDialog(mainWindow, false);
+            SaveDialog.showSaveDialog(mainWindow, false);
         });
 
         controller.getReplaceDataMenuItem().setOnAction(e -> {
@@ -256,15 +276,7 @@ public class MainWindowMenuController {
         controller.getReplaceDataMenuItem().disableProperty().bind(mainWindow.getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().not());
 
         controller.getExportWorkflowMenuItem().setOnAction(e -> {
-            showSaveDialog(mainWindow, true);
-        });
-
-        controller.getQuitMenuItem().setOnAction(e -> {
-            while (MainWindowManager.getInstance().size() > 0) {
-                final MainWindow window = (MainWindow) MainWindowManager.getInstance().getMainWindow(MainWindowManager.getInstance().size() - 1);
-                if (!window.clear(true, true))
-                    break;
-            }
+            SaveDialog.showSaveDialog(mainWindow, true);
         });
 
         controller.getShowWorkflowMenuItem().setOnAction(e -> mainWindow.showWorkflow());
@@ -291,52 +303,6 @@ public class MainWindowMenuController {
 
         Optional<ButtonType> result = alert.showAndWait();
         return result.isPresent() && result.get() == buttonTypeOverwrite;
-    }
-
-    /**
-     * save dialog
-     *
-     * @param mainWindow
-     * @return true if save
-     */
-    public static boolean showSaveDialog(MainWindow mainWindow, boolean asWorkflowOnly) {
-
-        final FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle(asWorkflowOnly ? "Export Workflow" : "Save SplitsTree5 file");
-
-        final File previousDir = new File(ProgramProperties.get("SaveDir", ""));
-        if (previousDir.isDirectory()) {
-            fileChooser.setInitialDirectory(previousDir);
-        } else
-            fileChooser.setInitialDirectory((new File(mainWindow.getDocument().getFileName()).getParentFile()));
-
-        if (!asWorkflowOnly) {
-            fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("SplitsTree5 Files", "*.stree5", "*.nxs", "*.nex"));
-            fileChooser.setInitialFileName(Basic.getFileNameWithoutPath(Basic.replaceFileSuffix(mainWindow.getDocument().getFileName(), ".stree5")));
-        } else {
-            fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("SplitsTree5 Workflow Files", "*.wflow5"));
-            fileChooser.setInitialFileName(Basic.getFileNameWithoutPath(Basic.replaceFileSuffix(mainWindow.getDocument().getFileName(), ".wflow5")));
-        }
-
-        final File selectedFile = fileChooser.showSaveDialog(mainWindow.getStage());
-        if (selectedFile != null) {
-            if (selectedFile.getParentFile().isDirectory())
-                ProgramProperties.put("SaveDir", selectedFile.getParent());
-            try {
-                final Document document = mainWindow.getDocument();
-                new WorkflowNexusOutput().save(mainWindow.getWorkflow(), selectedFile, asWorkflowOnly);
-                if (!asWorkflowOnly) {
-                    document.setFileName(selectedFile.getPath());
-                    mainWindow.getDocument().setDirty(false);
-                    document.setHasSplitsTree5File(true);
-                }
-                if (!document.getFileName().endsWith(".tmp"))
-                    RecentFilesManager.getInstance().insertRecentFile(document.getFileName());
-            } catch (IOException e) {
-                Basic.caught(e);
-            }
-        }
-        return selectedFile != null;
     }
 
     /**

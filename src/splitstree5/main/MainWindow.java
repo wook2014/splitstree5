@@ -41,7 +41,6 @@ import jloda.fx.util.RecentFilesManager;
 import jloda.fx.util.ResourceManagerFX;
 import jloda.fx.window.IMainWindow;
 import jloda.fx.window.MainWindowManager;
-import jloda.fx.window.WindowGeometry;
 import jloda.util.Basic;
 import jloda.util.Pair;
 import jloda.util.ProgramProperties;
@@ -52,7 +51,6 @@ import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.Workflow;
 import splitstree5.core.workflow.WorkflowNode;
-import splitstree5.dialogs.SaveChangesDialog;
 import splitstree5.dialogs.importgenomes.ImportGenomesDialog;
 import splitstree5.gui.ISavesPreviousSelection;
 import splitstree5.gui.ViewerTab;
@@ -456,36 +454,25 @@ public class MainWindow implements IMainWindow {
     }
 
     /**
-     * Clear the current window. Stop any running tasks. Also close, if requested
+     * Clear the current window. Stop any running tasks.
      *
-     * @param askToSave
-     * @param close     window after clearing
      * @return true if closed, false if canceled
      */
-    public boolean clear(boolean askToSave, boolean close) {
-        boolean result = SaveChangesDialog.apply(this);
-        if (result) {
-            workflow.cancelAll();
-            for (Tab tab : mainTabPane.getTabs()) {
-                if (tab instanceof ViewerTab && ((ViewerTab) tab).getFindToolBar() != null)
-                    ((ViewerTab) tab).getFindToolBar().cancel(); // cancel all find jobs
-            }
-            if (close)
-                result = MainWindowManager.getInstance().closeMainWindow(this);
-            workflow.clear();
-            document.setDirty(false);
-            // if(inputTab!=null && getMainWindowController().getMainTabPane().getTabs().contains(inputTab))
-            //     getMainWindowController().getMainTabPane().getTabs().remove(inputTab);
+    public void clear() {
+        workflow.cancelAll();
+        for (Tab tab : mainTabPane.getTabs()) {
+            if (tab instanceof ViewerTab && ((ViewerTab) tab).getFindToolBar() != null)
+                ((ViewerTab) tab).getFindToolBar().cancel(); // cancel all find jobs
+        }
+        workflow.clear();
+        document.setDirty(false);
+        // if(inputTab!=null && getMainWindowController().getMainTabPane().getTabs().contains(inputTab))
+        //     getMainWindowController().getMainTabPane().getTabs().remove(inputTab);
 
             mainWindowController.getTreeView().getRoot().getChildren().clear();
 
             workflowViewTab.clear();
             document.updateMethodsText();
-        }
-        if (result) {
-            ProgramProperties.put("WindowGeometry", (new WindowGeometry(getStage())).toString());
-        }
-        return result;
     }
 
     public void showFormatTab() {
