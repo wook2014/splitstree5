@@ -86,7 +86,7 @@ public class TextViewTab extends ViewerTab {
         // setup find tool bar:
         {
             textAreaSearcher = new TextAreaSearcher("Text", textArea);
-            findToolBar = new FindToolBar(textAreaSearcher);
+            findToolBar = new FindToolBar(null, textAreaSearcher);
         }
 
         final BorderPane borderPane = new BorderPane(textArea);

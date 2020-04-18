@@ -101,7 +101,7 @@ public class EditTextViewTab extends ViewerTab {
 
         {
             codeAreaSearcher = new CodeAreaSearcher("Text", codeArea.getContent());
-            findToolBar = new FindToolBar(codeAreaSearcher);
+            findToolBar = new FindToolBar(null, codeAreaSearcher);
         }
 
         final BorderPane borderPane = new BorderPane(codeArea);

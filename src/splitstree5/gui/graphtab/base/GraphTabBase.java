@@ -126,7 +126,7 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
             edgeLabelSearcher = new EdgeLabelSearcher("Edges", graph, edgeSelectionModel);
             edgeLabelSearcher.addLabelChangedListener(e -> Platform.runLater(() -> getUndoManager().doAndAdd(new ChangeEdgeLabelCommand(e, edge2view.get(e), graph))));
 
-            findToolBar = new FindToolBar(nodeLabelSearcher, edgeLabelSearcher);
+            findToolBar = new FindToolBar(null, nodeLabelSearcher, edgeLabelSearcher);
             //findToolBar.setShowReplaceToolBar(true);
 
             nodeLabelSearcher.foundProperty().addListener((c, o, n) -> {

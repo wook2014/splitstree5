@@ -76,7 +76,7 @@ public class LabelListsManager {
         label.visibleProperty().bind(Bindings.isNotEmpty(controller.getDisplayLabelsListView().getItems()));
 
         final ListViewSearcher<String> listViewSearcher = new ListViewSearcher<>(controller.getDisplayLabelsListView());
-        final FindToolBar findToolBar = new FindToolBar(listViewSearcher);
+        final FindToolBar findToolBar = new FindToolBar(null, listViewSearcher);
 
         controller.getDisplayLabelsVBox().getChildren().add(findToolBar);
         controller.getReplaceButton().setOnAction(c -> findToolBar.setShowReplaceToolBar(!findToolBar.isShowReplaceToolBar()));
