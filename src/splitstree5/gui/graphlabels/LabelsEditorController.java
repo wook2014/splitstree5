@@ -31,57 +31,28 @@ import javafx.scene.web.HTMLEditor;
 public class LabelsEditorController {
 
     @FXML
-    private Button b;
-    @FXML
-    private Button i;
-    @FXML
     private Button search;
     @FXML
     private Button updateHTML;
     @FXML
-    private ColorPicker textColor;
-
-    @FXML
     private HTMLEditor htmlEditor;
-
-    @FXML
-    private CheckBox bold;
-
     @FXML
     private Button applyStyle;
-
     @FXML
-    private StackPane area;
-
+    private Button apply2all;
     @FXML
     private TextArea html_area;
-
-    public Button getBoldButton() {
-        return b;
-    }
-
-    public Button getItalicButton() {
-        return i;
-    }
-
-    public ColorPicker getTextColor() {
-        return textColor;
-    }
-
-    public CheckBox getBold() {
-        return bold;
-    }
 
     public Button getApplyStyle() {
         return applyStyle;
     }
 
-    public Button getUpdateHTMLButton() {
-        return updateHTML;
+    public Button getApply2all() {
+        return apply2all;
     }
 
-    public StackPane getArea() {
-        return area;
+    public Button getUpdateHTMLButton() {
+        return updateHTML;
     }
 
     public HTMLEditor getHtmlEditor() {

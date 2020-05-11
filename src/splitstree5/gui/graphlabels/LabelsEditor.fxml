@@ -36,6 +36,7 @@
                   <Button fx:id="updateHTML" mnemonicParsing="false" text="Update HTML" />
                   <Separator orientation="VERTICAL" />
                   <Button fx:id="search" mnemonicParsing="false" text="Search" />
+                  <Button fx:id="apply2all" mnemonicParsing="false" text="Apply to all" />
               </items>
             </ToolBar>
          </children>

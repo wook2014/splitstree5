@@ -47,7 +47,6 @@ import jloda.util.ProgramProperties;
 import splitstree5.gui.graphtab.base.GraphTabBase;
 import splitstree5.gui.graphtab.base.NodeView2D;
 import splitstree5.gui.graphtab.base.NodeViewBase;
-import splitstree5.main.MainWindow;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -60,10 +59,10 @@ public class LabelsEditor {
     private final Stage stage;
     final private HTMLEditor htmlEditor;
     private SearchManager searchManager = new SearchManager();
+    private Labeled label = new Label();
+    private boolean imgAdded = false;
 
-
-    public LabelsEditor(MainWindow parentMainWindow, Labeled label,
-                        NodeLabelSearcher nodeLabelSearcher, GraphTabBase graphTabBase){
+    public LabelsEditor(NodeLabelSearcher nodeLabelSearcher, GraphTabBase graphTabBase){
 
         // todo: clear after Format calling, extra button for Format
 
@@ -78,14 +77,9 @@ public class LabelsEditor {
         stage.setScene(new Scene(extendedFXMLLoader.getRoot()));
         stage.sizeToScene();
 
-        stage.setX(parentMainWindow.getStage().getX() + 50);
-        stage.setY(parentMainWindow.getStage().getY() + 50);
-
         htmlEditor = controller.getHtmlEditor();
-        customizeHTMLEditor(label);
-        htmlEditor.setHtmlText(label.getText());
-        controller.getHTML_Area().setText(htmlEditor.getHtmlText());
 
+        controller.getHTML_Area().setEditable(false);
         controller.getApplyStyle().setOnAction(event -> {
             controller.getHTML_Area().setText(htmlEditor.getHtmlText());
 
@@ -128,11 +122,12 @@ public class LabelsEditor {
 
             searchManager.setSearchText(textInWB);
             searchManager.findAll();
+        });
 
+        controller.getApply2all().setOnAction(event -> {
             // todo does not work for numbers!
             for (jloda.graph.Node n : nodeLabelSearcher.getSelectionModel().getSelectedItems()){
                 //System.err.println("node "+n.toString());
-
                 NodeViewBase nv = (NodeViewBase) graphTabBase.getNode2view().get(n);
                 nv.setLabel(mergeHTMLStyles(nv.getLabel().getText(), htmlEditor.getHtmlText()));
 
@@ -142,7 +137,14 @@ public class LabelsEditor {
     }
 
     public void show() {
+        customizeHTMLEditor();
         stage.show();
+    }
+
+    public void setLabel(Labeled label){
+        this.label = label;
+        htmlEditor.setHtmlText(label.getText());
+        controller.getHTML_Area().setText(htmlEditor.getHtmlText());
     }
 
     private void setStyledText(Labeled label){
@@ -173,7 +175,7 @@ public class LabelsEditor {
     ".html-editor-strike", ".html-editor-hr"
      */
 
-    private void customizeHTMLEditor(Labeled label){
+    private void customizeHTMLEditor(){
 
         Platform.runLater(() -> {
 
@@ -259,7 +261,10 @@ public class LabelsEditor {
                         label.setContentDisplay(ContentDisplay.TOP);
                 });
 
-                bar.getItems().addAll(separator, loadImg, label1ImgScale, imgScale, showText);
+                if (!imgAdded){
+                    bar.getItems().addAll(separator, loadImg, label1ImgScale, imgScale, showText);
+                    imgAdded = true;
+                }
             }
 
         });
