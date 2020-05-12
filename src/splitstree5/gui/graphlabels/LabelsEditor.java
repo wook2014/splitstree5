@@ -28,7 +28,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
@@ -49,7 +48,6 @@ import splitstree5.gui.graphtab.base.NodeView2D;
 import splitstree5.gui.graphtab.base.NodeViewBase;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 
@@ -59,7 +57,7 @@ public class LabelsEditor {
     private final Stage stage;
     final private HTMLEditor htmlEditor;
     private SearchManager searchManager = new SearchManager();
-    private Labeled label = new Label();
+    private Labeled label;
     private boolean imgAdded = false;
 
     public LabelsEditor(NodeLabelSearcher nodeLabelSearcher, GraphTabBase graphTabBase){
@@ -86,7 +84,7 @@ public class LabelsEditor {
             Text theText = new Text(label.getText().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", ""));
             theText.setFont(label.getFont());
 
-            System.err.println("Font "+label.getFont()); //.getFont());
+            //System.err.println("Font "+label.getFont()); //.getFont());
             //final Bounds bounds = theText.getBoundsInLocal(); //htmlEditor.getLayoutBounds();
 
             // todo: better function to update size!
@@ -239,7 +237,7 @@ public class LabelsEditor {
                 }
                 label.graphicProperty().addListener((observable, oldValue, newValue) -> {
                     imgScale.adjustValue(1);
-                    if (label.getGraphic() == null){
+                    if (label.graphicProperty().isNull().get()){
                         imgScale.setDisable(true);
                         showText.setDisable(true);
                     } else {
@@ -262,7 +260,7 @@ public class LabelsEditor {
                 });
 
                 if (!imgAdded){
-                    bar.getItems().addAll(separator, loadImg, label1ImgScale, imgScale, showText);
+                    bar.getItems().addAll(separator, loadImg, label1ImgScale, imgScale); //showText);
                     imgAdded = true;
                 }
             }
@@ -282,8 +280,7 @@ public class LabelsEditor {
             try {
                 String mimetype = Files.probeContentType(file.toPath());
                 if (mimetype != null && mimetype.split("/")[0].equals("image")) {
-                    Image image = new Image(new FileInputStream(file.getPath()));
-                    label.setGraphic(new ImageView(image));
+                    htmlEditor.setHtmlText(label.getText()+"<img src=\""+ "file:///"+file.getAbsolutePath() + "\">");
                 } else {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Image parsing error");
