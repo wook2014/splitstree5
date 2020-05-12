@@ -130,7 +130,7 @@ public class RerootingUtils {
                 for (Integer t : tree.getTaxa(v)) {
                     if (outgroupTaxa.get(t)) {
                         isOutgroupNode = true;
-                        node2NumberOutgroup.set(v, node2NumberOutgroup.getValue(v) + 1);
+                        node2NumberOutgroup.set(v, node2NumberOutgroup.get(v) + 1);
                         totalOutgroupTaxa++;
                         break;
                     }
@@ -159,8 +159,8 @@ public class RerootingUtils {
         int nodesBelowBestEdge = 0;
 
         for (Edge e : tree.edges()) {
-            int outgroupBelowE = edge2OutgroupBelow.getValue(e);
-            int nodesBelowE = edge2NodesBelow.getValue(e);
+            int outgroupBelowE = edge2OutgroupBelow.get(e);
+            int nodesBelowE = edge2NodesBelow.get(e);
             if (outgroupBelowE < 0.5 * totalOutgroupTaxa) {
                 outgroupBelowE = totalOutgroupTaxa - outgroupBelowE;
                 nodesBelowE = totalNodes - nodesBelowE;
@@ -180,8 +180,8 @@ public class RerootingUtils {
         int nodesBelowBestNode = nodesBelowBestEdge;
 
         for (Node v : tree.nodes()) {
-            int outgroupBelowV = node2OutgroupBelow.getValue(v);
-            int nodesBelowV = node2NodesBelow.getValue(v);
+            int outgroupBelowV = node2OutgroupBelow.get(v);
+            int nodesBelowV = node2NodesBelow.get(v);
             if (outgroupBelowV > 0 && (outgroupBelowV > outgroupBelowBestNode || (outgroupBelowV == outgroupBelowBestNode && nodesBelowV < nodesBelowBestNode))) {
                 bestNode = v;
                 outgroupBelowBestNode = outgroupBelowV;
@@ -211,13 +211,13 @@ public class RerootingUtils {
      */
     private static void rerootByOutgroupRec(Node v, Edge e, NodeIntegerArray node2NumberOutgroup, EdgeIntegerArray edge2OutgroupBelow,
                                             EdgeIntegerArray edge2NodesBelow, NodeIntegerArray node2OutgroupBelow, NodeIntegerArray node2NodesBelow, int totalNodes, int totalOutgroup) {
-        int outgroupBelowE = node2NumberOutgroup.getValue(v);
+        int outgroupBelowE = node2NumberOutgroup.get(v);
         int nodesBelowE = 1; // including v
 
         for (Edge f : v.outEdges()) {
             rerootByOutgroupRec(f.getTarget(), f, node2NumberOutgroup, edge2OutgroupBelow, edge2NodesBelow, node2OutgroupBelow, node2NodesBelow, totalNodes, totalOutgroup);
-            outgroupBelowE += edge2OutgroupBelow.getValue(f);
-            nodesBelowE += edge2NodesBelow.getValue(f);
+            outgroupBelowE += edge2OutgroupBelow.get(f);
+            nodesBelowE += edge2NodesBelow.get(f);
         }
         if (e != null) {
             edge2NodesBelow.set(e, nodesBelowE);
@@ -227,7 +227,7 @@ public class RerootingUtils {
         // if v is a multifurcation then we may need to use it as root
         if (v.getOutDegree() > 2) // multifurcation
         {
-            final int outgroupBelowV = outgroupBelowE + node2NumberOutgroup.getValue(v);
+            final int outgroupBelowV = outgroupBelowE + node2NumberOutgroup.get(v);
 
             if (outgroupBelowV == totalOutgroup) // all outgroup taxa lie below here
             {
@@ -236,8 +236,8 @@ public class RerootingUtils {
 
                 int nodesBelowV = 1;
                 for (Edge f = v.getFirstOutEdge(); f != null; f = v.getNextOutEdge(f)) {
-                    if (edge2OutgroupBelow.getValue(f) > 0)
-                        nodesBelowV += edge2NodesBelow.getValue(f);
+                    if (edge2OutgroupBelow.get(f) > 0)
+                        nodesBelowV += edge2NodesBelow.get(f);
                 }
                 node2NodesBelow.set(v, nodesBelowV);
             } else // outgroupBelowE<totalOutgroup, i.e. some outgroup nodes lie above e
@@ -247,10 +247,10 @@ public class RerootingUtils {
                 boolean keep = false;
                 int nodesBelowV = 0;
                 for (Edge f = v.getFirstOutEdge(); f != null; f = v.getNextOutEdge(f)) {
-                    if (edge2OutgroupBelow.getValue(f) > 0)
+                    if (edge2OutgroupBelow.get(f) > 0)
                         keep = true;   // need to have at least one node below that contains outgroup taxa
                     else
-                        nodesBelowV += edge2NodesBelow.getValue(f);
+                        nodesBelowV += edge2NodesBelow.get(f);
                 }
                 if (keep) {
                     node2OutgroupBelow.set(v, totalOutgroup);

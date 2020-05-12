@@ -19,18 +19,17 @@
   -->
 	<project name="SplitsTree5" default="jar" basedir=".">
 
-	<property name="ant.build.javac.source" value="11"/>
-	<property name="ant.build.javac.target" value="11"/>
+        <property name="ant.build.javac.source" value="14"/>
+        <property name="ant.build.javac.target" value="14"/>
 
 
+        <property name="jfxDir" value="../../javafx/lib"/>
+        <property name="jlodaAntDir" value="../../jloda/antbuild"/>
+        <property name="buildSrcDir" value="../antbuild/src"/>
+        <property name="buildModulesDir" value="../antbuild/modules"/>
 
-    <property name="jfxDir" value="../../javafx/lib"/>
-    <property name="jlodaAntDir" value="../../jloda/antbuild"/>
-    <property name="buildSrcDir" value="../antbuild/src"/>
-    <property name="buildModulesDir" value="../antbuild/modules"/>
-
-    <path id="build.classpath">
-        <fileset dir="../../splitstree5/jars" includes="*.jar"/>
+        <path id="build.classpath">
+            <fileset dir="../../splitstree5/jars" includes="*.jar"/>
         <fileset dir="${jlodaAntDir}" includes="jloda.jar"/>
     </path>
 
