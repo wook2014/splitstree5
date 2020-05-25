@@ -19,8 +19,8 @@
   -->
 	<project name="SplitsTree5" default="jar" basedir=".">
 
-        <property name="ant.build.javac.source" value="14"/>
-        <property name="ant.build.javac.target" value="14"/>
+        <property name="ant.build.javac.source" value="13"/>
+        <property name="ant.build.javac.target" value="13"/>
 
 
         <property name="jfxDir" value="../../javafx/lib"/>
@@ -30,7 +30,7 @@
 
         <path id="build.classpath">
             <fileset dir="../../splitstree5/jars" includes="*.jar"/>
-        <fileset dir="${jlodaAntDir}" includes="jloda.jar"/>
+            <fileset dir="${jlodaAntDir}" includes="jloda.jar"/>
     </path>
 
     <path id="build.modulepath">

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="8.0.4" transformSequenceNumber="8">
-  <directoryPresets config="../../javafx-jmods" />
+  <directoryPresets config="../../javafx-jmods-11" />
   <application name="SplitsTree5" applicationId="4099-4251-9127-4263" mediaDir="../../../builds" shortName="splitstree5" publisher="Daniel Huson and David Bryant" publisherWeb="http://splitstree.husonlab.org" version="5.0.0" allPathsRelative="true" macVolumeId="b8c0a1154e563a9a" javaMinVersion="11">
     <codeSigning macEnabled="true" macPkcs12File="../../../../etc/application.p12" />
-    <jreBundles jdkProviderId="AdoptOpenJDK" release="openjdk14/jdk-14.0.1+7">
+    <jreBundles jdkProviderId="AdoptOpenJDK" release="openjdk13/jdk-13.0.2+8">
       <modules />
     </jreBundles>
   </application>
@@ -1168,13 +1168,13 @@ return true;</property>
       </variables>
       <jreBundle jreBundleSource="generated" includedJre="windows-amd64-12.0.1" installOnlyIfNecessary="true">
         <modules>
-          <jmodDirectory location="../../javafx-jmods/windows" />
+          <jmodDirectory location="../../javafx-jmods-11/windows" />
         </modules>
       </jreBundle>
     </windows>
   </mediaSets>
-  <buildIds>
-    <mediaSet refId="1691242165" />
+  <buildIds buildAll="false">
+    <mediaSet refId="1691242288" />
   </buildIds>
   <buildOptions disableSigning="true" disableNotarization="true" />
 </install4j>
