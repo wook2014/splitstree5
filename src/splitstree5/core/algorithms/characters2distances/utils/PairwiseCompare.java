@@ -131,27 +131,27 @@ public class PairwiseCompare { // todo: add support for character weights
                     }
                 }
             } else {
-                if (AmbiguityCodes.isAmbiguityCode(ci))
-                    ci = characters.getMissingCharacter();
-                if (AmbiguityCodes.isAmbiguityCode(cj))
-                    cj = characters.getMissingCharacter();
-
-                int stateI = states.indexOf(ci);
-                int stateJ = states.indexOf(cj);
+                final int stateI;
                 if (ci == gapChar)
                     stateI = gapIndex;
-                if (ci == missingChar)
+                else if (ci == missingChar)
                     stateI = missingIndex;
+                else
+                    stateI = states.indexOf(ci);
+                final int stateJ;
                 if (cj == gapChar)
                     stateJ = gapIndex;
-                if (cj == missingChar)
+                else if (cj == missingChar)
                     stateJ = missingIndex;
+                else
+                    stateJ = states.indexOf(cj);
+
                 if (stateI >= 0 && stateJ >= 0)
                     fCount[stateI][stateJ] += charWeight;
                 else {
                     if (stateI < 0)
                         throw new SplitsException("Position " + k + " for taxa " + i + ": invalid character '" + ci + "'");
-                    else if (stateJ < 0)
+                    else // if (stateJ < 0)
                         throw new SplitsException("Position " + k + " for taxa " + j + ": invalid character '" + cj + "'");
                 }
             }

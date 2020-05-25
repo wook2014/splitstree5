@@ -79,7 +79,9 @@ public class RootByOutGroupAlgorithm extends Algorithm<TreesBlock, TreesBlock> i
 
             final BitSet outGroupTaxonSet = new BitSet();
             for (Taxon taxon : optionOutGroupTaxa) {
-                outGroupTaxonSet.set(taxa.indexOf(taxon));
+                int index = taxa.indexOf(taxon);
+                if (index >= 0)
+                    outGroupTaxonSet.set(index);
             }
 
             child.getTrees().clear();
@@ -92,7 +94,8 @@ public class RootByOutGroupAlgorithm extends Algorithm<TreesBlock, TreesBlock> i
                         tree.setRoot(tree.getFirstNode());
                         tree.redirectEdgesAwayFromRoot();
                     }
-                    RerootingUtils.rerootByOutGroup(tree, outGroupTaxonSet);
+                    if (outGroupTaxonSet.cardinality() > 0)
+                        RerootingUtils.rerootByOutGroup(tree, outGroupTaxonSet);
                     child.getTrees().add(tree);
                 }
             }

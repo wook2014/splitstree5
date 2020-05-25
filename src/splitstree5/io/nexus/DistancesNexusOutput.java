@@ -20,6 +20,7 @@
 
 package splitstree5.io.nexus;
 
+import jloda.util.Basic;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
@@ -85,12 +86,12 @@ public class DistancesNexusOutput extends NexusIOBase implements INexusOutput<Di
                                 break InnerLoop;
                             if ((!format.isOptionDiagonal() && t == s + 1) || (format.isOptionDiagonal() && t == s)) {
                                 // replace lower dialog by spaces
-                                buf.replace(0, buf.length(), buf.toString().replaceAll(".", " "));
+                                buf.replace(0, buf.length(), " ".repeat(buf.length()));
                             }
                         default:
                         case Both:
                     }
-                    buf.append(String.format(" %10f", distancesBlock.get(s, t)));
+                    buf.append(Basic.removeTrailingZerosAfterDot(String.format(" %.6f", distancesBlock.get(s, t))));
                 }
                 w.write(buf.toString() + "\n");
             }
@@ -112,27 +113,25 @@ public class DistancesNexusOutput extends NexusIOBase implements INexusOutput<Di
                 int right;
 
                 switch (format.getOptionTriangle()) {
-                    case Lower:
+                    case Lower -> {
                         left = 1;//1;
-
                         right = t - diag;//t-1+diag;
-
-                        break;
-                    case Upper:
+                    }
+                    case Upper -> {
                         left = t + diag;//t-1+diag;
-
                         right = distancesBlock.getNtax();
                         for (int i = 1; i < t; i++)
                             w.write("      ");
-                        break;
-                    default: // both
+                    }
+// both
+                    default -> {
                         left = 1;
                         right = distancesBlock.getNtax();
-                        break;
+                    }
                 }
 
                 for (int q = left; q <= right; q++) {
-                    w.write(" " + (float) (distancesBlock.getVariance(t, q)));
+                    w.write(Basic.removeTrailingZerosAfterDot(String.format(" %.6f", distancesBlock.getVariance(t, q))));
                 }
                 w.write("\n");
             }
@@ -156,7 +155,7 @@ public class DistancesNexusOutput extends NexusIOBase implements INexusOutput<Di
             for (int i = 1; i <= (max - len + 2); i++) {
                 w.write(" ");
             }
-        } catch (Exception ex) {
+        } catch (Exception ignored) {
         }
     }
 
