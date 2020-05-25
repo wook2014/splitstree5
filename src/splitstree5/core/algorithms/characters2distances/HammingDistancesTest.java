@@ -54,20 +54,21 @@ public class HammingDistancesTest {
 
         hammingDistances.compute(new ProgressPercentage(), taxa, characters, distances);
 
+        distances.getFormat().setOptionLabels(false);
         StringWriter w = new StringWriter();
         new DistancesNexusOutput().write(w, taxa, distances);
         System.err.println(w.toString());
 
         final TaxaBlock taxaFromSplitsTree4 = new TaxaBlock();
         final DistancesBlock distancesFromSplitsTree4 = new DistancesBlock();
+
         taxaFromSplitsTree4.addTaxaByNames(new DistancesNexusInput().parse(new NexusStreamParser(new FileReader("test/nexus/distances-simple.nex")), taxaFromSplitsTree4, distancesFromSplitsTree4));
 
+        distancesFromSplitsTree4.getFormat().setOptionLabels(false);
         StringWriter wFromSplitsTree4 = new StringWriter();
         new DistancesNexusOutput().write(wFromSplitsTree4, taxaFromSplitsTree4, distancesFromSplitsTree4);
         //System.err.println(wFromSplitsTree4.toString());
 
         assertEquals(w.toString(), wFromSplitsTree4.toString());
-
     }
-
 }

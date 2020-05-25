@@ -112,22 +112,22 @@ public class DistancesNexusOutput extends NexusIOBase implements INexusOutput<Di
                 int left;
                 int right;
 
+                // both
                 switch (format.getOptionTriangle()) {
-                    case Lower -> {
+                    case Lower:
                         left = 1;//1;
                         right = t - diag;//t-1+diag;
-                    }
-                    case Upper -> {
+                        break;
+                    case Upper:
                         left = t + diag;//t-1+diag;
                         right = distancesBlock.getNtax();
                         for (int i = 1; i < t; i++)
                             w.write("      ");
-                    }
-// both
-                    default -> {
+                        break;
+                    default:
                         left = 1;
                         right = distancesBlock.getNtax();
-                    }
+                        break;
                 }
 
                 for (int q = left; q <= right; q++) {

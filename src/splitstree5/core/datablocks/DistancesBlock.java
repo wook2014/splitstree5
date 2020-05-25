@@ -208,4 +208,9 @@ public class DistancesBlock extends DataBlock {
     public String getBlockName() {
         return BLOCK_NAME;
     }
+
+    @Override
+    public DistancesNexusFormat getFormat() {
+        return (DistancesNexusFormat) super.getFormat();
+    }
 }
