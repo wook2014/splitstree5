@@ -21,7 +21,6 @@
 package splitstree5.gui.graphlabels;
 
 import javafx.application.Platform;
-import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
@@ -68,43 +67,31 @@ public class LabelsEditor {
         controller = extendedFXMLLoader.getController();
 
         searchManager.setSearcher(nodeLabelSearcher);
-
         stage = new Stage();
         stage.getIcons().setAll(ProgramProperties.getProgramIconsFX());
-
         stage.setScene(new Scene(extendedFXMLLoader.getRoot()));
         stage.sizeToScene();
 
         htmlEditor = controller.getHtmlEditor();
-
         controller.getHTML_Area().setEditable(false);
         controller.getApplyStyle().setOnAction(event -> {
             controller.getHTML_Area().setText(htmlEditor.getHtmlText());
 
             Text theText = new Text(label.getText().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", ""));
             theText.setFont(label.getFont());
-
-            //System.err.println("Font "+label.getFont()); //.getFont());
-            //final Bounds bounds = theText.getBoundsInLocal(); //htmlEditor.getLayoutBounds();
-
-            // todo: better function to update size!
-            final Bounds bounds = label.getBoundsInParent();
             WebView wb = (WebView) htmlEditor.lookup("WebView");
 
             final int scalingFactor = 3;
             SnapshotParameters sp = new SnapshotParameters();
-            sp.setViewport(new Rectangle2D(scalingFactor, wb.getLayoutY()*scalingFactor,
-                    bounds.getWidth()*scalingFactor, bounds.getHeight()*scalingFactor));
             sp.setTransform(Transform.scale(scalingFactor, scalingFactor)); // improve quality
 
-
             WritableImage snapshot1 = wb.snapshot(sp, null);
-            applyTransparency(snapshot1);
+            Rectangle2D transparencyBounds =  applyTransparency(snapshot1);
 
             ImageView iw = new ImageView(snapshot1);
+            iw.setViewport(transparencyBounds);
             iw.setPreserveRatio(true);
-            iw.setFitHeight(bounds.getHeight());
-
+            iw.setFitHeight(transparencyBounds.getHeight()/scalingFactor);
 
             label.setGraphic(iw);
             label.setText(htmlEditor.getHtmlText()); // todo: do not save new text in label
@@ -117,7 +104,6 @@ public class LabelsEditor {
 
         controller.getSearch().setOnAction(event -> {
             String textInWB = htmlEditor.getHtmlText().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", "");
-
             searchManager.setSearchText(textInWB);
             searchManager.findAll();
         });
@@ -128,7 +114,6 @@ public class LabelsEditor {
                 //System.err.println("node "+n.toString());
                 NodeViewBase nv = (NodeViewBase) graphTabBase.getNode2view().get(n);
                 nv.setLabel(mergeHTMLStyles(nv.getLabel().getText(), htmlEditor.getHtmlText()));
-
                 NodeView2D.applyHTMLStyle2Label(nv.getLabel());
             }
         });
@@ -137,6 +122,7 @@ public class LabelsEditor {
     public void show() {
         customizeHTMLEditor();
         stage.show();
+        stage.toFront();
     }
 
     public void setLabel(Labeled label){
@@ -166,9 +152,7 @@ public class LabelsEditor {
 
     /*
     HTML Editor Selectors:
-
     ".separator", ".top-toolbar", ".bottom-toolbar", "WebView"
-
     ".html-editor-cut", ".html-editor-copy", ".html-editor-paste",
     ".html-editor-strike", ".html-editor-hr"
      */
@@ -294,15 +278,29 @@ public class LabelsEditor {
         }
     }
 
-    public static void applyTransparency(WritableImage writableImage){
+    public static Rectangle2D applyTransparency(WritableImage writableImage){
         PixelWriter raster = writableImage.getPixelWriter();
-        for (int x = 0; x < writableImage.getWidth(); x++){
-            for (int y = 0; y < writableImage.getHeight(); y++){
+        final int scrollbarOffset = 42;
+        double width = writableImage.getWidth() - scrollbarOffset;
+        double height = writableImage.getHeight() - scrollbarOffset;
+        double top = height / 2;
+        double bottom = 0;
+        double left = width / 2 ;
+        double right = 0;
+        for (int x = 0; x < width; x++){
+            for (int y = 0; y < height; y++){
                 Color c = writableImage.getPixelReader().getColor(x, y);
                 if (c.equals(Color.WHITE))
                     raster.setColor(x, y, Color.TRANSPARENT);
+                else {
+                    top    = Math.min(top, y);
+                    bottom = Math.max(bottom, y);
+                    left   = Math.min(left, x);
+                    right  = Math.max(right, x);
+                }
             }
         }
+        return new Rectangle2D(left, top, right-left, bottom-top);
     }
 
 }

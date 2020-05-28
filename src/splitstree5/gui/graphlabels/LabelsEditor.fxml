@@ -21,20 +21,25 @@
   -->
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.web.HTMLEditor?>
-<SplitPane dividerPositions="0.5" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="splitstree5.gui.graphlabels.LabelsEditorController">
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.web.*?>
+
+<SplitPane dividerPositions="0.5" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="splitstree5.gui.graphlabels.LabelsEditorController">
   <items>
       <HTMLEditor fx:id="htmlEditor" htmlText="htmlhead/headbody contenteditable=true/body/html" prefHeight="200.0" prefWidth="506.0" />
       <VBox prefHeight="200.0" prefWidth="100.0">
          <children>
+            <ToolBar prefHeight="40.0" prefWidth="200.0">
+              <items>
+                <Button mnemonicParsing="false" text="Update View ↑" />
+                <Button fx:id="updateHTML" mnemonicParsing="false" text="Update HTML ↓" />
+              </items>
+            </ToolBar>
             <TextArea fx:id="html_area" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" wrapText="true" />
             <Separator prefWidth="200.0" />
             <ToolBar prefHeight="145.0" prefWidth="598.0">
               <items>
                   <Button fx:id="applyStyle" mnemonicParsing="false" text="Apply Style" />
-                  <Button fx:id="updateHTML" mnemonicParsing="false" text="Update HTML" />
-                  <Separator orientation="VERTICAL" />
                   <Button fx:id="search" mnemonicParsing="false" text="Search" />
                   <Button fx:id="apply2all" mnemonicParsing="false" text="Apply to all" />
               </items>
