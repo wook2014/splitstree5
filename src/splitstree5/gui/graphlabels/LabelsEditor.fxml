@@ -31,7 +31,7 @@
          <children>
             <ToolBar prefHeight="40.0" prefWidth="200.0">
               <items>
-                <Button mnemonicParsing="false" text="Update View ↑" />
+                <Button fx:id="updateView" mnemonicParsing="false" text="Update View ↑" />
                 <Button fx:id="updateHTML" mnemonicParsing="false" text="Update HTML ↓" />
               </items>
             </ToolBar>
@@ -40,8 +40,11 @@
             <ToolBar prefHeight="145.0" prefWidth="598.0">
               <items>
                   <Button fx:id="applyStyle" mnemonicParsing="false" text="Apply Style" />
-                  <Button fx:id="search" mnemonicParsing="false" text="Search" />
+                  <Separator orientation="VERTICAL" />
+                  <CheckBox fx:id="findAll" mnemonicParsing="false" text="Find all" />
                   <Button fx:id="apply2all" mnemonicParsing="false" text="Apply to all" />
+                  <Pane HBox.hgrow="ALWAYS" />
+                  <Button fx:id="reset" mnemonicParsing="false" text="Reset" />
               </items>
             </ToolBar>
          </children>

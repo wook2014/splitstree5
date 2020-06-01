@@ -26,21 +26,16 @@ import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.Tooltip;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
-import javafx.scene.transform.Transform;
 import javafx.scene.web.WebView;
 import javafx.util.Duration;
 import jloda.fx.shapes.NodeShape;
@@ -389,7 +384,6 @@ public class NodeView2D extends NodeViewBase {
     public static void applyHTMLStyle2Label(Labeled label){
 
         final int webViewOffset = 20;
-        final int scalingFactor = 3;
 
         Platform.runLater(() -> {
             WebView wb = new WebView();
@@ -400,29 +394,15 @@ public class NodeView2D extends NodeViewBase {
             double width = theText.getBoundsInParent().getWidth();
             double height = theText.getBoundsInParent().getHeight();
 
-            Bounds bounds = label.getBoundsInParent();
             wb.setPrefHeight(height + webViewOffset);
             wb.setPrefWidth(width + webViewOffset);
-
             label.setGraphic(wb);
             label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 
             TranslateTransition animation = new TranslateTransition(Duration.seconds(0.5), label);
             PauseTransition pt = new PauseTransition(Duration.seconds(1));
             pt.setOnFinished(event -> {
-                SnapshotParameters sp = new SnapshotParameters();
-                sp.setViewport(new Rectangle2D(webViewOffset, webViewOffset,
-                        width*scalingFactor,
-                        height*scalingFactor+webViewOffset));
-                sp.setTransform(Transform.scale(scalingFactor, scalingFactor)); // improve quality
-
-                WritableImage image = wb.snapshot(sp, null);
-                LabelsEditor.applyTransparency(image);
-                ImageView iw = new ImageView(image);
-                iw.setPreserveRatio(true);
-                iw.setFitWidth(width);
-
-                label.setGraphic(iw);
+                label.setGraphic(LabelsEditor.takeSnapshot(wb));
                 animation.play();
             });
             // pausing, after pause onFinished event will take
