@@ -92,7 +92,7 @@ public class DaylightOptimizer {
                     if (!optimizeDaylightNode(taxa.getNtax(), graph, v, node2point))
                         ignore.add(v);
                     else
-                        EqualAngle.assignCoordinatesToNodes(isOptionUseWeights(), graph, node2point);
+                        EqualAngle.assignCoordinatesToNodes(isOptionUseWeights(), graph, node2point, 1);
                 }
                 progress.incrementProgress();
             }

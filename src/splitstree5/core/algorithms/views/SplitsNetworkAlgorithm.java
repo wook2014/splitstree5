@@ -21,32 +21,36 @@
 package splitstree5.core.algorithms.views;
 
 import javafx.application.Platform;
-import javafx.beans.property.*;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Tooltip;
 import javafx.scene.text.Font;
+import jloda.fx.window.NotificationManager;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import jloda.phylo.PhyloSplitsGraph;
-import jloda.util.Basic;
-import jloda.util.ProgramProperties;
-import jloda.util.ProgressListener;
+import jloda.util.*;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromSplits;
 import splitstree5.core.algorithms.interfaces.IToViewer;
-import splitstree5.core.algorithms.views.algo.BoxOptimizer;
 import splitstree5.core.algorithms.views.algo.ConvexHull;
-import splitstree5.core.algorithms.views.algo.DaylightOptimizer;
 import splitstree5.core.algorithms.views.algo.EqualAngle;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.ViewerBlock;
+import splitstree5.core.misc.ASplit;
+import splitstree5.core.misc.Taxon;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.graphtab.ISplitsViewTab;
+import splitstree5.gui.graphtab.SplitsViewTab;
 import splitstree5.gui.graphtab.base.*;
+import splitstree5.utils.SplitsUtilities;
 
 import java.io.IOException;
 import java.util.*;
@@ -59,30 +63,60 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
     public enum Algorithm {EqualAngleConvexHull, EqualAngleOnly, ConvexHullOnly}
 
     private final ObjectProperty<Algorithm> optionAlgorithm = new SimpleObjectProperty<>(Algorithm.EqualAngleConvexHull);
+
+    public enum Layout {Circular, MidPointRooted, MidPointRootedAlt, RootBySelectedOutgroup, RootBySelectedOutgroupAlt}
+
+    private final ObjectProperty<Layout> optionLayout = new SimpleObjectProperty<>(Layout.Circular);
+
     private final BooleanProperty optionUseWeights = new SimpleBooleanProperty(true);
-    private final IntegerProperty optionDaylightIterations = new SimpleIntegerProperty(0);
-    private final IntegerProperty optionBoxOpenIterations = new SimpleIntegerProperty(0);
+
 
     private final PhyloSplitsGraph graph = new PhyloSplitsGraph();
 
     private ChangeListener<UpdateState> changeListener;
 
     public List<String> listOptions() {
-        return Arrays.asList("optionAlgorithm", "optionUseWeights", "optionBoxOpenIterations", "optionDaylightIterations");
+        return Arrays.asList("optionAlgorithm", "optionUseWeights", "optionLayout", "optionBoxOpenIterations", "optionDaylightIterations");
     }
 
     @Override
     public String getCitation() {
         return "Dress & Huson 2004; " +
                 "A.W.M. Dress and D.H. Huson, Constructing splits graphs, " +
-                "in IEEE/ACM Transactions on Computational Biology and Bioinformatics, vol. 1, no. 3, pp. 109-115, July-Sept. 2004.";
+                "IEEE/ACM Transactions on Computational Biology and Bioinformatics 1(3):109-115, 2004.";
     }
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, SplitsBlock splitsBlock, ViewerBlock viewerBlock) throws Exception {
-        if (splitsBlock.getNsplits() == 0)
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock0, SplitsBlock splitsBlock0, ViewerBlock viewerBlock) throws Exception {
+        if (splitsBlock0.getNsplits() == 0)
             throw new IOException("No splits in input");
         progress.setTasks("Split network construction", "Init.");
+
+        final TaxaBlock taxaBlock;
+        final SplitsBlock splitsBlock;
+        if (getOptionLayout() == Layout.Circular) {
+            taxaBlock = taxaBlock0;
+            splitsBlock = splitsBlock0;
+        } else if (getOptionLayout() == Layout.RootBySelectedOutgroup || getOptionLayout() == Layout.RootBySelectedOutgroupAlt) {
+            final BitSet selectedTaxa = ((SplitsViewTab) viewerBlock.getTab()).getSelectedTaxa();
+            if (selectedTaxa.cardinality() > 0 && selectedTaxa.nextSetBit(1) <= taxaBlock0.getNtax()) {
+                taxaBlock = new TaxaBlock();
+                splitsBlock = new SplitsBlock();
+                final int s = SplitsUtilities.getTighestSplit(selectedTaxa, splitsBlock0);
+                final double weight = splitsBlock0.get(s).getWeight();
+                final Triplet<Integer, Double, Double> rootingSplit = new Triplet<>(s, 0.5 * weight, 0.5 * weight);
+                setupForRootedNetwork(getOptionLayout() == Layout.RootBySelectedOutgroupAlt, rootingSplit, taxaBlock0, splitsBlock0, taxaBlock, splitsBlock, progress);
+            } else {
+                NotificationManager.showWarning(selectedTaxa.cardinality() == 0 ? "No taxa selected" : "Invalid taxa selected");
+                return;
+            }
+        } else {
+            taxaBlock = new TaxaBlock();
+            splitsBlock = new SplitsBlock();
+            final Triplet<Integer, Double, Double> rootingSplit = SplitsUtilities.computeMidpoint(isOptionUseWeights(), taxaBlock0.getNtax(), splitsBlock0, progress);
+            setupForRootedNetwork(getOptionLayout() == Layout.MidPointRootedAlt, rootingSplit, taxaBlock0, splitsBlock0, taxaBlock, splitsBlock, progress);
+        }
+
         final ISplitsViewTab viewTab = (ISplitsViewTab) viewerBlock.getTab();
         //splitsViewTab.setNodeLabel2Style(nodeLabel2Style);
 
@@ -103,13 +137,6 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
         if (getOptionAlgorithm() == Algorithm.EqualAngleOnly || getOptionAlgorithm() == Algorithm.EqualAngleConvexHull)
             EqualAngle.apply(progress, isOptionUseWeights(), taxaBlock, splitsBlock, graph, node2point, forbiddenSplits, usedSplits);
 
-        if (getOptionBoxOpenIterations() > 0) {
-            final BoxOptimizer boxOptimizer = new BoxOptimizer();
-            boxOptimizer.setOptionIterations(getOptionBoxOpenIterations());
-            boxOptimizer.setOptionUseWeights(isOptionUseWeights());
-            boxOptimizer.apply(progress, taxaBlock, splitsBlock.getNsplits(), graph, node2point);
-        }
-
         if (usedSplits.cardinality() < splitsBlock.getNsplits()) {
             if (getOptionAlgorithm() == Algorithm.EqualAngleConvexHull || getOptionAlgorithm() == Algorithm.ConvexHullOnly) {
                 progress.setProgress(60);
@@ -117,16 +144,8 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
             }
         }
 
-        EqualAngle.assignAnglesToEdges(taxaBlock.getNtax(), splitsBlock, splitsBlock.getCycle(), graph, forbiddenSplits);
-        EqualAngle.assignCoordinatesToNodes(isOptionUseWeights(), graph, node2point); // need coordinates
-
-        if (getOptionDaylightIterations() > 0) {
-            final DaylightOptimizer daylightOptimizer = new DaylightOptimizer();
-            daylightOptimizer.setOptionIterations(getOptionDaylightIterations());
-            daylightOptimizer.setOptionUseWeights(isOptionUseWeights());
-            daylightOptimizer.apply(progress, taxaBlock, graph, node2point);
-            EqualAngle.assignCoordinatesToNodes(isOptionUseWeights(), graph, node2point);
-        }
+        EqualAngle.assignAnglesToEdges(taxaBlock.getNtax(), splitsBlock, splitsBlock.getCycle(), graph, forbiddenSplits, getOptionLayout() == Layout.Circular ? 360 : 160);
+        EqualAngle.assignCoordinatesToNodes(isOptionUseWeights(), graph, node2point, splitsBlock.getCycle()[1]); // need coordinates
 
         progress.setProgress(90);
 
@@ -217,6 +236,18 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
         this.optionAlgorithm.set(optionAlgorithm);
     }
 
+    public Layout getOptionLayout() {
+        return optionLayout.get();
+    }
+
+    public ObjectProperty<Layout> optionLayoutProperty() {
+        return optionLayout;
+    }
+
+    public void setOptionLayout(Layout optionLayout) {
+        this.optionLayout.set(optionLayout);
+    }
+
     public boolean isOptionUseWeights() {
         return optionUseWeights.get();
     }
@@ -230,32 +261,101 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
     }
 
 
-    public int getOptionDaylightIterations() {
-        return optionDaylightIterations.get();
-    }
-
-    public IntegerProperty optionDaylightIterationsProperty() {
-        return optionDaylightIterations;
-    }
-
-    public void setOptionDaylightIterations(int optionDaylightIterations) {
-        this.optionDaylightIterations.set(optionDaylightIterations);
-    }
-
-    public int getOptionBoxOpenIterations() {
-        return optionBoxOpenIterations.get();
-    }
-
-    public IntegerProperty optionBoxOpenIterationsProperty() {
-        return optionBoxOpenIterations;
-    }
-
-    public void setOptionBoxOpenIterations(int optionBoxOpenIterations) {
-        this.optionBoxOpenIterations.set(optionBoxOpenIterations);
-    }
-
     @Override
     public boolean isAssignableFrom(Class that) {
         return super.isAssignableFrom(that) || OutlineAlgorithm.class.isAssignableFrom(that);
+    }
+
+    public static void setupForRootedNetwork(boolean altLayout, Triplet<Integer, Double, Double> triplet, TaxaBlock taxaBlockSrc, SplitsBlock splitsBlockSrc, TaxaBlock taxaBlockTarget, SplitsBlock splitsBlockTarget, ProgressListener progress) throws IOException {
+        //final Triplet<Integer,Double,Double> triplet= SplitsUtilities.getMidpointSplit(taxaBlockSrc.getNtax(), splitsBlockSrc);
+        final int mid = triplet.get1();
+        final double weightWith1 = triplet.get2();
+        final double weightOpposite1 = triplet.get3();
+
+        // modify taxa:
+        taxaBlockTarget.clear();
+        taxaBlockTarget.setNtax(taxaBlockSrc.getNtax() + 1);
+        for (Taxon taxon : taxaBlockSrc.getTaxa())
+            taxaBlockTarget.add(taxon);
+        final Taxon root = new Taxon("Root");
+        taxaBlockTarget.add(root);
+        final int rootTaxonId = taxaBlockTarget.indexOf(root);
+
+        // modify cycle:
+        final int[] cycle0 = splitsBlockSrc.getCycle();
+        final int[] cycle = new int[cycle0.length + 1];
+        int first = 0; // first taxon on other side of mid split
+        if (!altLayout) {
+            final BitSet part = splitsBlockSrc.get(mid).getPartNotContaining(1);
+            int j = 0;
+            for (int value : cycle0) {
+                if (first == 0 && part.get(value)) {
+                    first = value;
+                    cycle[j++] = rootTaxonId;
+                }
+                cycle[j++] = value;
+            }
+        } else { // altLayout
+            final BitSet part = splitsBlockSrc.get(mid).getPartNotContaining(1);
+            int seen = 0;
+            int j = 0;
+            for (int value : cycle0) {
+                cycle[j++] = value;
+                if (part.get(value)) {
+                    seen++;
+                    if (seen == part.cardinality()) {
+                        first = value;
+                        cycle[j++] = rootTaxonId;
+                    }
+                }
+            }
+        }
+        SplitsUtilities.rotateCycle(cycle, rootTaxonId);
+
+        // setup splits:
+        splitsBlockTarget.clear();
+        double totalWeight = 0;
+
+        final ASplit mid1 = splitsBlockSrc.get(mid).clone();
+        mid1.getPartContaining(1).set(rootTaxonId);
+        mid1.setWeight(weightWith1);
+        final ASplit mid2 = splitsBlockSrc.get(mid).clone();
+        mid2.getPartNotContaining(1).set(rootTaxonId);
+        mid2.setWeight(weightOpposite1);
+
+        for (int s = 1; s <= splitsBlockSrc.getNsplits(); s++) {
+            if (s == mid) {
+                totalWeight += mid1.getWeight();
+                splitsBlockTarget.getSplits().add(mid1);
+                //splitsBlockTarget.getSplitLabels().put(mid,"BOLD");
+            } else {
+                final ASplit aSplit = splitsBlockSrc.get(s).clone();
+
+                if (BitSetUtils.contains(mid1.getPartNotContaining(rootTaxonId), aSplit.getA())) {
+                    aSplit.getB().set(rootTaxonId);
+                } else if (BitSetUtils.contains(mid1.getPartNotContaining(rootTaxonId), aSplit.getB())) {
+                    aSplit.getA().set(rootTaxonId);
+                } else if (aSplit.getPartContaining(first).cardinality() > 1)
+                    aSplit.getPartContaining(first).set(rootTaxonId);
+                else
+                    aSplit.getPartNotContaining(first).set(rootTaxonId);
+
+                splitsBlockTarget.getSplits().add(aSplit);
+                totalWeight += aSplit.getWeight();
+            }
+        }
+        // add  new separator split
+        if (true) {
+            totalWeight += mid2.getWeight();
+            splitsBlockTarget.getSplits().add(mid2);
+            //splitsBlockTarget.getSplitLabels().put(splitsBlockTarget.getNsplits(),"BOLD");
+        }
+        // add root split:
+        if (true) {
+            final ASplit aSplit = new ASplit(BitSetUtils.asBitSet(rootTaxonId), taxaBlockTarget.getNtax(), totalWeight > 0 ? totalWeight / splitsBlockTarget.getNsplits() : 1);
+            splitsBlockTarget.getSplits().add(aSplit);
+
+        }
+        splitsBlockTarget.setCycle(cycle, false);
     }
 }

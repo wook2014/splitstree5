@@ -61,6 +61,11 @@ public class SplitsBlock extends DataBlock {
         splitLabels = FXCollections.observableMap(new TreeMap<>());
     }
 
+    public SplitsBlock(SplitsBlock that) {
+        this();
+        copy(that);
+    }
+
     @Override
     public String getShortDescription() {
         return getInfo();
@@ -196,12 +201,14 @@ public class SplitsBlock extends DataBlock {
         return result;
     }
 
-    /**
-     * set the cycle (and normalize it)
-     *
-     * @param cycle
-     */
     public void setCycle(int[] cycle) {
+        setCycle(cycle, true);
+    }
+
+    /**
+     * set the cycle and possibly normalize it
+     */
+    public void setCycle(int[] cycle, boolean normalize) {
         if (cycle != null) {
             BitSet set = new BitSet();
             for (int i : cycle) {
@@ -211,7 +218,8 @@ public class SplitsBlock extends DataBlock {
                 System.err.println("Internal error: setCycle() failed: wrong cardinality");
                 cycle = null;
             } else {
-                cycle = SplitsUtilities.normalizeCycle(cycle);
+                if (normalize)
+                    cycle = SplitsUtilities.normalizeCycle(cycle);
             }
         }
         this.cycle = cycle;
@@ -239,5 +247,13 @@ public class SplitsBlock extends DataBlock {
     @Override
     public String getBlockName() {
         return BLOCK_NAME;
+    }
+
+    public int indexOf(ASplit split) {
+        for (int s = 1; s <= getNsplits(); s++) {
+            if (get(s).equals(split))
+                return s;
+        }
+        return -1;
     }
 }

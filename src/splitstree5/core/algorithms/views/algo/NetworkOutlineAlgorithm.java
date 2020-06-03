@@ -54,7 +54,7 @@ public class NetworkOutlineAlgorithm {
      * @param node2point
      */
     public static void apply(ProgressListener progress, boolean useWeights, TaxaBlock taxaBlock, SplitsBlock splits, PhyloSplitsGraph graph, NodeArray<Point2D> node2point, BitSet forbiddenSplits, BitSet usedSplits,
-                             ArrayList<ArrayList<Node>> loops) throws CanceledException {
+                             ArrayList<ArrayList<Node>> loops, boolean rooted) throws CanceledException {
         progress.setTasks("Outline", null);
 
         if (node2point == null)
@@ -68,8 +68,9 @@ public class NetworkOutlineAlgorithm {
         addAllTrivial(taxaBlock.getNtax(), splits); // these will be removed again
 
         try {
-            final int[] cycle = SplitsUtilities.normalizeCycle(splits.getCycle());
-            final double[] split2angle = EqualAngle.assignAnglesToSplits(taxaBlock.getNtax(), splits, cycle);
+            final int[] cycle = splits.getCycle();
+            //final int[] cycle=SplitsUtilities.normalizeCycle(splits.getCycle());
+            final double[] split2angle = EqualAngle.assignAnglesToSplits(taxaBlock.getNtax(), splits, splits.getCycle(), rooted ? 160 : 360);
 
             final ArrayList<Event> events = new ArrayList<>();
             {
@@ -139,7 +140,7 @@ public class NetworkOutlineAlgorithm {
 
                 if (previousEvent != null) {
                     if (event.getS() == previousEvent.getS()) {
-                        for (int t : BitSetUtils.members(event.getSplit().getPartNotContaining(1))) {
+                        for (int t : BitSetUtils.members(event.getSplit().getPartNotContaining(cycle[1]))) {
                             graph.addTaxon(previousNode, t);
                             taxaFound.set(t);
                         }
@@ -241,7 +242,8 @@ public class NetworkOutlineAlgorithm {
         private final ASplit split;
         private int minCyclePos;
         private int maxCyclePos;
-        private int size;
+        private final int size;
+        private final int firstInCycle;
         private final int s;
         private final Type type;
 
@@ -249,12 +251,13 @@ public class NetworkOutlineAlgorithm {
             this.type = type;
             this.s = s;
             this.split = split;
+            this.firstInCycle = cycle[1];
 
             minCyclePos = Integer.MAX_VALUE;
             maxCyclePos = Integer.MIN_VALUE;
-            final BitSet farSide = split.getPartNotContaining(1);
+            final BitSet farSide = split.getPartNotContaining(firstInCycle);
             for (int i = 0; i < cycle.length; i++) {
-                int t = cycle[i];
+                final int t = cycle[i];
                 if (t > 0 && farSide.get(t)) {
                     minCyclePos = Math.min(minCyclePos, i);
                     maxCyclePos = Math.max(maxCyclePos, i);
@@ -287,7 +290,6 @@ public class NetworkOutlineAlgorithm {
             return size;
         }
 
-
         public static Comparator<Event> comparator() {
             return (a, b) -> {
                 final int aPos;
@@ -319,7 +321,7 @@ public class NetworkOutlineAlgorithm {
         }
 
         public String toString() {
-            return type.name() + " S" + s + " (" + minCyclePos + "-" + maxCyclePos + "): " + Basic.toString(split.getPartNotContaining(1), ",");
+            return type.name() + " S" + s + " (" + minCyclePos + "-" + maxCyclePos + "): " + Basic.toString(split.getPartNotContaining(firstInCycle), ",");
         }
     }
 }

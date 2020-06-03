@@ -20,13 +20,13 @@
 
 package splitstree5.utils;
 
-import jloda.util.Basic;
-import jloda.util.ProgressListener;
+import jloda.util.*;
 import splitstree5.core.algorithms.distances2splits.NeighborNet;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ASplit;
+import splitstree5.core.misc.Compatibility;
 
 import java.io.PrintStream;
 import java.util.*;
@@ -297,5 +297,134 @@ public class SplitsUtilities {
         double stress = Math.sqrt(ssumSquare / netsumSquare);
 
         System.err.println("\nRecomputed fit:\n\tfit = " + fit + "\n\tLS fit =" + lsfit + "\n\tstress =" + stress + "\n");
+    }
+
+    public static void rotateCycle(int[] cycle, int first) {
+        final int[] tmp = new int[2 * cycle.length - 1];
+        System.arraycopy(cycle, 0, tmp, 0, cycle.length);
+        System.arraycopy(cycle, 1, tmp, cycle.length, cycle.length - 1);
+        for (int i = 1; i < tmp.length; i++) {
+            if (tmp[i] == first) {
+                for (int j = 1; j < cycle.length; j++) {
+                    cycle[j] = tmp[i++];
+                }
+                return;
+            }
+        }
+    }
+
+    public static int getTighestSplit(BitSet taxa, SplitsBlock splitsBlock) {
+        int best = 0;
+        int bestSideCardinality = Integer.MAX_VALUE;
+        for (int s = 1; s <= splitsBlock.getNsplits(); s++) {
+            final ASplit split = splitsBlock.get(s);
+            if (BitSetUtils.contains(split.getA(), taxa) && split.getA().cardinality() < bestSideCardinality) {
+                best = s;
+                bestSideCardinality = split.getA().cardinality();
+            }
+            if (BitSetUtils.contains(split.getB(), taxa) && (split.getB().cardinality() < bestSideCardinality)) {
+                best = s;
+                bestSideCardinality = split.getB().cardinality();
+            }
+        }
+        return best;
+    }
+
+    public static Triplet<Integer, Double, Double> computeMidpoint(boolean useWeights, int ntaxa, SplitsBlock splitsBlock, ProgressListener progress) throws CanceledException {
+        progress.setSubtask("Computing root location");
+
+        final ArrayList<Pair<Integer, Integer>> pairs = new ArrayList<>();
+        for (int a = 1; a <= ntaxa; a++) {
+            for (int b = a + 1; b <= ntaxa; b++) {
+                pairs.add(new Pair<>(a, b));
+            }
+        }
+
+        final Single<Double> bestLength = new Single<>(0.0);
+        final Single<ArrayList<ASplit>> bestPath = new Single<>(new ArrayList<>());
+        final Single<Integer> start = new Single<>(0);
+
+        progress.setMaximum(pairs.size());
+
+        final Single<CanceledException> exception = new Single<>();
+
+        pairs.parallelStream().forEach(pair -> {
+            final int a = pair.getFirst();
+            final int b = pair.getSecond();
+
+            double remainingLength = 0;
+            final ArrayList<ASplit> separators = new ArrayList<>();
+            for (int s = 1; s <= splitsBlock.getNsplits(); s++) {
+                final ASplit split = splitsBlock.get(s);
+                if (split.isContainedInA(a) != split.isContainedInA(b)) {
+                    separators.add(split);
+                    remainingLength += (useWeights ? split.getWeight() : 1);
+                }
+            }
+            separators.sort(Comparator.comparingInt(p -> p.getPartContaining(a).cardinality()));
+            final ArrayList<ASplit> path = new ArrayList<>();
+            final Single<Double> length = new Single<>(0.0);
+            computeLongestPathRec(useWeights, separators, remainingLength, 0, new ArrayList<>(), 0, path, length);
+            synchronized (bestLength) {
+                if (length.get() > bestLength.get()) {
+                    bestLength.set(length.get());
+                    bestPath.set(path);
+                    start.set(a);
+                }
+            }
+            try {
+                progress.incrementProgress();
+            } catch (CanceledException e) {
+                exception.setIfCurrentValueIsNull(e);
+            }
+        });
+        if (exception.get() != null)
+            throw exception.get();
+
+        double accummulated = 0;
+        for (ASplit split : bestPath.get()) {
+            if (accummulated + (useWeights ? split.getWeight() : 1.0) >= 0.5 * bestLength.get()) {
+                double part1 = 0.5 * bestLength.get() - accummulated;
+                double part2 = (useWeights ? split.getWeight() : 1.0) - part1;
+
+                if (split.getPartContaining(1).get(start.get()))
+                    return new Triplet<>(splitsBlock.indexOf(split), part1, part2);
+                else
+                    return new Triplet<>(splitsBlock.indexOf(split), part2, part1);
+            }
+            accummulated += (useWeights ? split.getWeight() : 1.0);
+        }
+        return new Triplet<>(0, 0.0, 0.0);
+    }
+
+    private static void computeLongestPathRec(boolean useWeights, ArrayList<ASplit> splits, double remainingLength, int pos, ArrayList<ASplit> path, double length, ArrayList<ASplit> bestPath, Single<Double> bestLength) {
+        if (pos >= splits.size()) {
+            if (length > bestLength.get()) {
+                bestPath.clear();
+                bestPath.addAll(path);
+                bestLength.set(length);
+            }
+        } else {
+            final ASplit split = splits.get(pos);
+            final double weight = (useWeights ? split.getWeight() : 1);
+
+            if (length + remainingLength - weight > bestLength.get())
+                computeLongestPathRec(useWeights, splits, remainingLength - weight, pos + 1, path, length, bestPath, bestLength);
+            if (length + remainingLength > bestLength.get() && isCompatibleWithAll(splits, splits.get(pos))) {
+                path.add(split);
+                computeLongestPathRec(useWeights, splits, remainingLength - weight, pos + 1, path, length + weight, bestPath, bestLength);
+                path.remove(splits.get(pos));
+            }
+        }
+    }
+
+    private static boolean isCompatibleWithAll(ArrayList<ASplit> splits, ASplit other) {
+        for (ASplit split : splits) {
+            if (!split.equals(other)) {
+                if (!Compatibility.areCompatible(split, other))
+                    return false;
+            }
+        }
+        return true;
     }
 }

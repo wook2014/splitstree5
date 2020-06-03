@@ -27,7 +27,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
-import jloda.util.Basic;
 import splitstree5.core.algorithms.interfaces.IFromTaxa;
 import splitstree5.core.algorithms.interfaces.IToTaxa;
 import splitstree5.core.misc.Taxon;
@@ -75,6 +74,30 @@ public class TaxaBlock extends DataBlock {
 
         hasTaxa.bind(Bindings.isNotEmpty(taxa));
     }
+
+    public TaxaBlock(TaxaBlock that) {
+        this();
+        copy(that);
+    }
+
+    /**
+     * copy a taxon block
+     *
+     * @param src
+     */
+    public void copy(TaxaBlock src) {
+        final ArrayList<Taxon> newTaxa = new ArrayList<>();
+        for (Taxon srcTaxon : src.taxa) {
+            newTaxa.add((new Taxon(srcTaxon)));
+        }
+        taxa.setAll(newTaxa);
+        traitsBlock.set(src.traitsBlock.get());
+    }
+
+    public Object clone() {
+        return new TaxaBlock(this);
+    }
+
 
     @Override
     public void clear() {
@@ -251,20 +274,6 @@ public class TaxaBlock extends DataBlock {
         return labels;
     }
 
-    public Object clone() {
-        TaxaBlock result = new TaxaBlock();
-
-        try {
-            for (int t = 1; t <= getNtax(); t++) {
-                result.add(get(t));
-            }
-        } catch (Exception ex) {
-            Basic.caught(ex);
-        }
-        result.traitsBlock.set(traitsBlock.get());
-        return result;
-    }
-
     /**
      * get the current set of taxa as a bit set
      *
@@ -303,19 +312,6 @@ public class TaxaBlock extends DataBlock {
         this.traitsBlock.set(traitsBlock);
     }
 
-    /**
-     * copy a taxon block
-     *
-     * @param src
-     */
-    public void copy(TaxaBlock src) {
-        final ArrayList<Taxon> newTaxa = new ArrayList<>();
-        for (Taxon srcTaxon : src.taxa) {
-            newTaxa.add((new Taxon(srcTaxon)));
-        }
-        taxa.setAll(newTaxa);
-        traitsBlock.set(src.traitsBlock.get());
-    }
 
     /**
      * returns true, if any taxon has an info string associated with it

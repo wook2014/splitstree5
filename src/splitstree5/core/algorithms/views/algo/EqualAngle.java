@@ -85,7 +85,7 @@ public class EqualAngle {
         progress.setProgress(-1);
         removeTemporaryTrivialEdges(graph);
 
-        assignAnglesToEdges(taxaBlock.getNtax(), splits, cycle, graph, forbiddenSplits);
+        assignAnglesToEdges(taxaBlock.getNtax(), splits, cycle, graph, forbiddenSplits, 360);
 
         progress.setProgress(90);
 
@@ -98,7 +98,7 @@ public class EqualAngle {
             }
         }
         if (node2point != null)
-            assignCoordinatesToNodes(useWeights, graph, node2point); // need coordinates
+            assignCoordinatesToNodes(useWeights, graph, node2point, 1); // need coordinates
 
         PhyloGraphUtils.addLabels(taxaBlock, graph);
         progress.setProgress(100);   //set progress to 100%
@@ -345,9 +345,9 @@ public class EqualAngle {
      * @param graph
      * @param forbiddenSplits : set of all the splits such as their edges won't have their angles changed
      */
-    public static void assignAnglesToEdges(int ntaxa, SplitsBlock splits, int[] cycle, PhyloSplitsGraph graph, BitSet forbiddenSplits) {
+    public static void assignAnglesToEdges(int ntaxa, SplitsBlock splits, int[] cycle, PhyloSplitsGraph graph, BitSet forbiddenSplits, double totalAngle) {
         //We create the list of angles representing the positions on a circle.
-        double[] angles = assignAnglesToSplits(ntaxa, splits, cycle);
+        double[] angles = assignAnglesToSplits(ntaxa, splits, cycle, totalAngle);
 
         for (Edge e : graph.edges()) {
             if (!forbiddenSplits.get(graph.getSplit(e))) {
@@ -362,11 +362,11 @@ public class EqualAngle {
      * @param splits
      * @param cycle
      */
-    public static double[] assignAnglesToSplits(int ntaxa, SplitsBlock splits, int[] cycle) {
+    public static double[] assignAnglesToSplits(int ntaxa, SplitsBlock splits, int[] cycle, double totalAngle) {
         //We create the list of angles representing the positions on a circle.
         double[] angles = new double[ntaxa + 1];
-        for (int t = 1; t < ntaxa + 1; t++) {
-            angles[t] = (360 * t / (double) ntaxa);
+        for (int t = 1; t <= ntaxa; t++) {
+            angles[t] = (totalAngle * (t - 1) / (double) ntaxa) + 270 - 0.5 * totalAngle;
         }
 
         double[] split2angle = new double[splits.getNsplits() + 1];
@@ -387,10 +387,10 @@ public class EqualAngle {
      */
     private static void assignAnglesToSplits(int ntaxa, double[] angles, double[] split2angle, SplitsBlock splits, int[] cycle) {
         for (int s = 1; s <= splits.getNsplits(); s++) {
-            final BitSet part = splits.get(s).getPartNotContaining(1);
-            int xp = 0; // first position of split part not containing taxon 1
-            int xq = 0; // last position of split part not containing taxon 1
-            for (int i = 1; i <= ntaxa; i++) {
+            int xp = 0; // first position of split part not containing taxon cycle[1]
+            int xq = 0; // last position of split part not containing taxon cycle[1]
+            final BitSet part = splits.get(s).getPartNotContaining(cycle[1]);
+            for (int i = 2; i <= ntaxa; i++) {
                 int t = cycle[i];
                 if (part.get(t)) {
                     if (xp == 0)
@@ -399,20 +399,8 @@ public class EqualAngle {
                 }
             }
 
-            final int xpNeighbor = (xp - 2) % ntaxa + 1;
-            final int xqNeighbor = (xq) % ntaxa + 1;
-            //the split, when represented on the circle of the taxas, is a line which intersects the circle in two
-            //places : SplitsByAngle is a sorted list (sorted by the angle of these intersections), where every
-            // split thus appears 2 times (once per intersection)
-            double TaxaAngleP;
-            double TaxaAngleQ;
-            TaxaAngleP = GeometryUtilsFX.midAngle(angles[xp], angles[xpNeighbor]);
-            TaxaAngleQ = GeometryUtilsFX.midAngle(angles[xq], angles[xqNeighbor]);
+            split2angle[s] = GeometryUtilsFX.modulo360(0.5 * (angles[xp] + angles[xq]));
 
-            split2angle[s] = GeometryUtilsFX.modulo360((TaxaAngleQ + TaxaAngleP) / 2);
-            if (xqNeighbor == 1) {
-                split2angle[s] = GeometryUtilsFX.modulo360(split2angle[s] + 180);
-            }
             //System.out.println("split from "+xp+","+xpneighbour+" ("+TaxaAngleP+") to "+xq+","+xqneighbour+" ("+TaxaAngleQ+") -> "+split2angle[s]+" $ "+(180 * (xp + xq)) / (double) ntaxa);s
         }
     }
@@ -424,10 +412,10 @@ public class EqualAngle {
      * @param useWeights
      * @param graph
      */
-    public static void assignCoordinatesToNodes(boolean useWeights, PhyloSplitsGraph graph, NodeArray<Point2D> node2point) {
+    public static void assignCoordinatesToNodes(boolean useWeights, PhyloSplitsGraph graph, NodeArray<Point2D> node2point, int startTaxonId) {
         if (graph.getNumberOfNodes() == 0)
             return;
-        final Node v = graph.getTaxon2Node(1);
+        final Node v = graph.getTaxon2Node(startTaxonId);
         node2point.put(v, new Point2D(0, 0));
 
         final BitSet splitsInPath = new BitSet();
@@ -461,5 +449,4 @@ public class EqualAngle {
             }
         }
     }
-
 }

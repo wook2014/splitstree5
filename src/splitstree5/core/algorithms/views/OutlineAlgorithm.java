@@ -22,7 +22,9 @@ package splitstree5.core.algorithms.views;
 
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
 import javafx.geometry.Point2D;
@@ -36,6 +38,7 @@ import jloda.phylo.PhyloSplitsGraph;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 import jloda.util.ProgressListener;
+import jloda.util.Triplet;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromSplits;
 import splitstree5.core.algorithms.interfaces.IToViewer;
@@ -44,16 +47,24 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.ViewerBlock;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.graphtab.ISplitsViewTab;
+import splitstree5.gui.graphtab.SplitsViewTab;
 import splitstree5.gui.graphtab.base.*;
+import splitstree5.utils.SplitsUtilities;
 
 import java.io.IOException;
 import java.util.*;
+
+import static splitstree5.core.algorithms.views.SplitsNetworkAlgorithm.setupForRootedNetwork;
 
 /**
  * compute an embedding of a set of splits using the outline algorithm
  * Daniel Huson, 3.2020
  */
 public class OutlineAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implements IFromSplits, IToViewer {
+    public enum Layout {Circular, MidPointRooted, MidPointRootedAlt, RootBySelectedOutgroup, RootBySelectedOutgroupAlt}
+
+    private final ObjectProperty<Layout> optionLayout = new SimpleObjectProperty<>(Layout.Circular);
+
     private final BooleanProperty optionUseWeights = new SimpleBooleanProperty(true);
 
     private final PhyloSplitsGraph graph = new PhyloSplitsGraph();
@@ -61,7 +72,7 @@ public class OutlineAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implem
     private ChangeListener<UpdateState> changeListener;
 
     public List<String> listOptions() {
-        return Collections.singletonList("optionUseWeights");
+        return Arrays.asList("optionUseWeights", "optionLayout");
     }
 
     @Override
@@ -70,11 +81,35 @@ public class OutlineAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implem
     }
 
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, SplitsBlock splitsBlock, ViewerBlock viewerBlock) throws Exception {
-        if (splitsBlock.getNsplits() == 0)
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock0, SplitsBlock splitsBlock0, ViewerBlock viewerBlock) throws Exception {
+        if (splitsBlock0.getNsplits() == 0)
             throw new IOException("No splits in input");
         progress.setTasks("Outline algorithm", "Init.");
 
+        final TaxaBlock taxaBlock;
+        final SplitsBlock splitsBlock;
+        if (getOptionLayout() == Layout.Circular) {
+            taxaBlock = taxaBlock0;
+            splitsBlock = splitsBlock0;
+        } else if (getOptionLayout() == Layout.RootBySelectedOutgroup || getOptionLayout() == Layout.RootBySelectedOutgroupAlt) {
+            final BitSet selectedTaxa = ((SplitsViewTab) viewerBlock.getTab()).getSelectedTaxa();
+            if (selectedTaxa.cardinality() > 0 && selectedTaxa.nextSetBit(1) <= taxaBlock0.getNtax()) {
+                taxaBlock = new TaxaBlock();
+                splitsBlock = new SplitsBlock();
+                final int s = SplitsUtilities.getTighestSplit(selectedTaxa, splitsBlock0);
+                final double weight = splitsBlock0.get(s).getWeight();
+                final Triplet<Integer, Double, Double> rootingSplit = new Triplet<>(s, 0.5 * weight, 0.5 * weight);
+                setupForRootedNetwork(getOptionLayout() == Layout.RootBySelectedOutgroupAlt, rootingSplit, taxaBlock0, splitsBlock0, taxaBlock, splitsBlock, progress);
+            } else {
+                NotificationManager.showWarning(selectedTaxa.cardinality() == 0 ? "No taxa selected" : "Invalid taxa selected");
+                return;
+            }
+        } else {
+            taxaBlock = new TaxaBlock();
+            splitsBlock = new SplitsBlock();
+            final Triplet<Integer, Double, Double> rootingSplit = SplitsUtilities.computeMidpoint(isOptionUseWeights(), taxaBlock0.getNtax(), splitsBlock0, progress);
+            setupForRootedNetwork(getOptionLayout() == Layout.MidPointRootedAlt, rootingSplit, taxaBlock0, splitsBlock0, taxaBlock, splitsBlock, progress);
+        }
         final ISplitsViewTab viewTab = (ISplitsViewTab) viewerBlock.getTab();
         //splitsViewTab.setNodeLabel2Style(nodeLabel2Style);
 
@@ -92,7 +127,7 @@ public class OutlineAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implem
 
         final ArrayList<ArrayList<Node>> loops = new ArrayList<>();
 
-        splitstree5.core.algorithms.views.algo.NetworkOutlineAlgorithm.apply(progress, isOptionUseWeights(), taxaBlock, splitsBlock, graph, node2point, forbiddenSplits, usedSplits, loops);
+        splitstree5.core.algorithms.views.algo.NetworkOutlineAlgorithm.apply(progress, isOptionUseWeights(), taxaBlock, splitsBlock, graph, node2point, forbiddenSplits, usedSplits, loops, getOptionLayout() != Layout.Circular);
         if (splitsBlock.getNsplits() - usedSplits.cardinality() > 0)
             NotificationManager.showWarning(String.format("Outline algorithm: skipped %d non-circular splits", splitsBlock.getNsplits() - usedSplits.cardinality()));
 
@@ -186,4 +221,15 @@ public class OutlineAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implem
         return super.isAssignableFrom(that) || SplitsNetworkAlgorithm.class.isAssignableFrom(that);
     }
 
+    public Layout getOptionLayout() {
+        return optionLayout.get();
+    }
+
+    public ObjectProperty<Layout> optionLayoutProperty() {
+        return optionLayout;
+    }
+
+    public void setOptionLayout(Layout optionLayout) {
+        this.optionLayout.set(optionLayout);
+    }
 }

@@ -92,13 +92,13 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
     public NodeView2D createNodeView(Node v, Point2D location, NodeShape shape, double shapeWidth, double shapeHeight, String text) {
         final NodeView2D nodeView = new NodeView2D(v, location, shape, shapeWidth, shapeHeight, text);
 
-        nodeView.getShapeGroup().setOnMousePressed((e) -> {
+        nodeView.getShapeGroup().setOnMousePressed(e -> {
             e.consume();
             mouseX = e.getScreenX();
             mouseY = e.getScreenY();
         });
 
-        nodeView.getShapeGroup().setOnMouseDragged((e) -> {
+        nodeView.getShapeGroup().setOnMouseDragged(e -> {
             e.consume();
             final double deltaX = e.getScreenX() - mouseX;
             final double deltaY = e.getScreenY() - mouseY;
@@ -237,7 +237,7 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
     @Override
     public void updateMenus(MenuController controller) {
         super.updateMenus(controller);
-        controller.getSelectAllBelowMenuItem().setOnAction((e) -> {
+        controller.getSelectAllBelowMenuItem().setOnAction(e -> {
             final Stack<Node> stack = new Stack<>();
             final Set<Node> nodesToSelect = new HashSet<>();
             stack.addAll(nodeSelectionModel.getSelectedItems());
@@ -253,7 +253,7 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
         });
         controller.getSelectAllBelowMenuItem().disableProperty().bind(nodeSelectionModel.emptyProperty());
 
-        controller.getSelectAllEdgesBelowMenuItem().setOnAction((e) -> {
+        controller.getSelectAllEdgesBelowMenuItem().setOnAction(e -> {
             final Stack<Node> stack = new Stack<>();
             final Set<Edge> edgesToSelect = new HashSet<>();
             stack.addAll(nodeSelectionModel.getSelectedItems());
@@ -268,7 +268,6 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
             edgeSelectionModel.selectItems(edgesToSelect);
         });
         controller.getSelectAllEdgesBelowMenuItem().disableProperty().bind(nodeSelectionModel.emptyProperty());
-
     }
 
     @Override

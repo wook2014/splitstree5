@@ -392,4 +392,21 @@ public class SplitsViewTab extends Graph2DTab<PhyloSplitsGraph> implements ISpli
         else
             return "";
     }
+
+    public BitSet getSelectedSplits() {
+        BitSet bits = new BitSet();
+        for (Edge e : edgeSelectionModel.getSelectedItems()) {
+            bits.set(graph.getSplit(e));
+        }
+        return bits;
+    }
+
+    public BitSet getSelectedTaxa() {
+        BitSet bits = new BitSet();
+        for (Node v : nodeSelectionModel.getSelectedItems()) {
+            for (int t : graph.getTaxa(v))
+                bits.set(t);
+        }
+        return bits;
+    }
 }

@@ -151,7 +151,6 @@ public class MainWindowMenuController {
                     && !(n.getDataBlock() instanceof DistancesBlock)));
         });
 
-
         controller.getOpenMenuItem().setOnAction(e -> {
             final File previousDir = new File(ProgramProperties.get("InputDir", ""));
             final FileChooser fileChooser = new FileChooser();
