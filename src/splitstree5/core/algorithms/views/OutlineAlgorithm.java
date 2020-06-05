@@ -101,7 +101,7 @@ public class OutlineAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implem
                 final Triplet<Integer, Double, Double> rootingSplit = new Triplet<>(s, 0.5 * weight, 0.5 * weight);
                 setupForRootedNetwork(getOptionLayout() == Layout.RootBySelectedOutgroupAlt, rootingSplit, taxaBlock0, splitsBlock0, taxaBlock, splitsBlock, progress);
             } else {
-                NotificationManager.showWarning(selectedTaxa.cardinality() == 0 ? "No taxa selected" : "Invalid taxa selected");
+                NotificationManager.showWarning(selectedTaxa.cardinality() == 0 ? "No out-group taxa selected" : "Invalid out-group taxa selected");
                 return;
             }
         } else {
