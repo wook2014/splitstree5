@@ -21,13 +21,14 @@
 package splitstree5.gui.graphlabels;
 
 import javafx.application.Platform;
-import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
@@ -58,6 +59,7 @@ public class LabelsEditor {
     final private HTMLEditor htmlEditor;
     private SearchManager searchManager = new SearchManager();
     private Labeled label;
+    private String originalLabel;
     private boolean imgAdded = false;
 
     public LabelsEditor(NodeLabelSearcher nodeLabelSearcher, GraphTabBase graphTabBase){
@@ -68,58 +70,46 @@ public class LabelsEditor {
         controller = extendedFXMLLoader.getController();
 
         searchManager.setSearcher(nodeLabelSearcher);
-
         stage = new Stage();
         stage.getIcons().setAll(ProgramProperties.getProgramIconsFX());
-
         stage.setScene(new Scene(extendedFXMLLoader.getRoot()));
         stage.sizeToScene();
 
         htmlEditor = controller.getHtmlEditor();
+        controller.getFindAll().setSelected(false);
+        controller.getApply2all().setDisable(true);
 
-        controller.getHTML_Area().setEditable(false);
         controller.getApplyStyle().setOnAction(event -> {
             controller.getHTML_Area().setText(htmlEditor.getHtmlText());
 
             Text theText = new Text(label.getText().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", ""));
             theText.setFont(label.getFont());
 
-            //System.err.println("Font "+label.getFont()); //.getFont());
-            //final Bounds bounds = theText.getBoundsInLocal(); //htmlEditor.getLayoutBounds();
-
-            // todo: better function to update size!
-            final Bounds bounds = label.getBoundsInParent();
             WebView wb = (WebView) htmlEditor.lookup("WebView");
+            wb.getEngine().executeScript("window.getSelection().removeAllRanges()");
+            //System.err.println(wb.getEngine().executeScript("window.innerWidth - document.documentElement.clientWidth"));//todo use for scrollbars
 
-            final int scalingFactor = 3;
-            SnapshotParameters sp = new SnapshotParameters();
-            sp.setViewport(new Rectangle2D(scalingFactor, wb.getLayoutY()*scalingFactor,
-                    bounds.getWidth()*scalingFactor, bounds.getHeight()*scalingFactor));
-            sp.setTransform(Transform.scale(scalingFactor, scalingFactor)); // improve quality
-
-
-            WritableImage snapshot1 = wb.snapshot(sp, null);
-            applyTransparency(snapshot1);
-
-            ImageView iw = new ImageView(snapshot1);
-            iw.setPreserveRatio(true);
-            iw.setFitHeight(bounds.getHeight());
-
-
-            label.setGraphic(iw);
-            label.setText(htmlEditor.getHtmlText()); // todo: do not save new text in label
-            label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+            Platform.runLater(() -> {// todo: only works for the first time?
+                label.setGraphic(takeSnapshot(wb));
+                label.setText(htmlEditor.getHtmlText()); // todo: do not save new text in label
+                label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+            });
         });
 
         controller.getUpdateHTMLButton().setOnAction(event -> {
             controller.getHTML_Area().setText(htmlEditor.getHtmlText());
         });
 
-        controller.getSearch().setOnAction(event -> {
-            String textInWB = htmlEditor.getHtmlText().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", "");
-
-            searchManager.setSearchText(textInWB);
-            searchManager.findAll();
+        controller.getFindAll().selectedProperty().addListener((observableValue, aBoolean, t1) -> {
+            if (t1) {
+                String textInWB = htmlEditor.getHtmlText().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", "");
+                searchManager.setSearchText(textInWB);
+                searchManager.findAll();
+                controller.getApply2all().setDisable(false);
+            } else {
+                searchManager.doUnselectAll();
+                controller.getApply2all().setDisable(true);
+            }
         });
 
         controller.getApply2all().setOnAction(event -> {
@@ -128,21 +118,31 @@ public class LabelsEditor {
                 //System.err.println("node "+n.toString());
                 NodeViewBase nv = (NodeViewBase) graphTabBase.getNode2view().get(n);
                 nv.setLabel(mergeHTMLStyles(nv.getLabel().getText(), htmlEditor.getHtmlText()));
-
                 NodeView2D.applyHTMLStyle2Label(nv.getLabel());
             }
+        });
+
+        controller.getReset().setOnAction(event -> { //todo apply in viewer or editor?
+            this.htmlEditor.setHtmlText(this.originalLabel);
+        });
+
+        controller.getUpdateView().setOnAction(event -> {
+            this.htmlEditor.setHtmlText(controller.getHTML_Area().getText());
         });
     }
 
     public void show() {
         customizeHTMLEditor();
         stage.show();
+        stage.toFront();
+        controller.getFindAll().setSelected(false);
     }
 
     public void setLabel(Labeled label){
         this.label = label;
         htmlEditor.setHtmlText(label.getText());
         controller.getHTML_Area().setText(htmlEditor.getHtmlText());
+        this.originalLabel = htmlEditor.getHtmlText();
     }
 
     private void setStyledText(Labeled label){
@@ -166,9 +166,7 @@ public class LabelsEditor {
 
     /*
     HTML Editor Selectors:
-
     ".separator", ".top-toolbar", ".bottom-toolbar", "WebView"
-
     ".html-editor-cut", ".html-editor-copy", ".html-editor-paste",
     ".html-editor-strike", ".html-editor-hr"
      */
@@ -220,7 +218,6 @@ public class LabelsEditor {
                 Button loadImg = new Button("Open Image");
                 loadImg.setOnAction(event -> {
                     openImage(label);
-                    label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
                 });
 
                 Label label1ImgScale = new Label("Scale label:");
@@ -294,15 +291,43 @@ public class LabelsEditor {
         }
     }
 
-    public static void applyTransparency(WritableImage writableImage){
+    public static ImageView takeSnapshot(WebView wb){
+        final int scalingFactor = 3;
+        SnapshotParameters sp = new SnapshotParameters();
+        sp.setTransform(Transform.scale(scalingFactor, scalingFactor)); // improve quality
+        WritableImage snapshot1 = wb.snapshot(sp, null);
+        Rectangle2D transparencyBounds = applyTransparency(snapshot1);
+
+        ImageView iw = new ImageView(snapshot1);
+        iw.setViewport(transparencyBounds);
+        iw.setPreserveRatio(true);
+        iw.setFitHeight(transparencyBounds.getHeight() / scalingFactor);
+        return iw;
+    }
+
+    public static Rectangle2D applyTransparency(WritableImage writableImage){
         PixelWriter raster = writableImage.getPixelWriter();
-        for (int x = 0; x < writableImage.getWidth(); x++){
-            for (int y = 0; y < writableImage.getHeight(); y++){
+        //final int scrollbarOffset = 42; //todo?
+        double width = writableImage.getWidth(); //- scrollbarOffset;
+        double height = writableImage.getHeight(); //- scrollbarOffset;
+        double top = height / 2;
+        double bottom = 0;
+        double left = width / 2 ;
+        double right = 0;
+        for (int x = 0; x < width; x++){
+            for (int y = 0; y < height; y++){
                 Color c = writableImage.getPixelReader().getColor(x, y);
                 if (c.equals(Color.WHITE))
                     raster.setColor(x, y, Color.TRANSPARENT);
+                else {
+                    top    = Math.min(top, y);
+                    bottom = Math.max(bottom, y);
+                    left   = Math.min(left, x);
+                    right  = Math.max(right, x);
+                }
             }
         }
+        return new Rectangle2D(left, top, right-left, bottom-top);
     }
 
 }

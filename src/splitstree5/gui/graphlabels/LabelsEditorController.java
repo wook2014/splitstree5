@@ -31,9 +31,11 @@ import javafx.scene.web.HTMLEditor;
 public class LabelsEditorController {
 
     @FXML
-    private Button search;
+    private CheckBox findAll;
     @FXML
     private Button updateHTML;
+    @FXML
+    private Button updateView;
     @FXML
     private HTMLEditor htmlEditor;
     @FXML
@@ -42,6 +44,8 @@ public class LabelsEditorController {
     private Button apply2all;
     @FXML
     private TextArea html_area;
+    @FXML
+    private Button reset;
 
     public Button getApplyStyle() {
         return applyStyle;
@@ -55,6 +59,10 @@ public class LabelsEditorController {
         return updateHTML;
     }
 
+    public Button getUpdateView() {
+        return updateView;
+    }
+
     public HTMLEditor getHtmlEditor() {
         return htmlEditor;
     }
@@ -63,7 +71,11 @@ public class LabelsEditorController {
         return html_area;
     }
 
-    public Button getSearch() {
-        return search;
+    public CheckBox getFindAll() {
+        return findAll;
+    }
+
+    public Button getReset() {
+        return reset;
     }
 }
