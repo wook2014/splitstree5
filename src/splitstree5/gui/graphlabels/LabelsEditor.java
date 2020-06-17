@@ -62,14 +62,13 @@ public class LabelsEditor {
     private String originalLabel;
     private boolean imgAdded = false;
 
-    public LabelsEditor(NodeLabelSearcher nodeLabelSearcher, GraphTabBase graphTabBase){
+    public LabelsEditor(){
 
         // todo: clear after Format calling, extra button for Format
 
         final ExtendedFXMLLoader<LabelsEditorController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         controller = extendedFXMLLoader.getController();
 
-        searchManager.setSearcher(nodeLabelSearcher);
         stage = new Stage();
         stage.getIcons().setAll(ProgramProperties.getProgramIconsFX());
         stage.setScene(new Scene(extendedFXMLLoader.getRoot()));
@@ -112,6 +111,26 @@ public class LabelsEditor {
             }
         });
 
+        controller.getReset().setOnAction(event -> { //todo apply in viewer or editor?
+            this.htmlEditor.setHtmlText(this.originalLabel);
+        });
+
+        controller.getUpdateView().setOnAction(event -> {
+            this.htmlEditor.setHtmlText(controller.getHTML_Area().getText());
+        });
+
+        controller.getFindAll().setVisible(false);
+        controller.getApply2all().setVisible(false);
+        controller.getSeparator().setVisible(false);
+    }
+
+    public LabelsEditor(NodeLabelSearcher nodeLabelSearcher, GraphTabBase graphTabBase){
+        this();
+        controller.getFindAll().setVisible(true);
+        controller.getApply2all().setVisible(true);
+        controller.getSeparator().setVisible(true);
+
+        searchManager.setSearcher(nodeLabelSearcher);
         controller.getApply2all().setOnAction(event -> {
             // todo does not work for numbers!
             for (jloda.graph.Node n : nodeLabelSearcher.getSelectionModel().getSelectedItems()){
@@ -120,14 +139,6 @@ public class LabelsEditor {
                 nv.setLabel(mergeHTMLStyles(nv.getLabel().getText(), htmlEditor.getHtmlText()));
                 NodeView2D.applyHTMLStyle2Label(nv.getLabel());
             }
-        });
-
-        controller.getReset().setOnAction(event -> { //todo apply in viewer or editor?
-            this.htmlEditor.setHtmlText(this.originalLabel);
-        });
-
-        controller.getUpdateView().setOnAction(event -> {
-            this.htmlEditor.setHtmlText(controller.getHTML_Area().getText());
         });
     }
 

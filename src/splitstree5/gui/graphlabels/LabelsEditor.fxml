@@ -40,7 +40,7 @@
             <ToolBar prefHeight="145.0" prefWidth="598.0">
               <items>
                   <Button fx:id="applyStyle" mnemonicParsing="false" text="Apply Style" />
-                  <Separator orientation="VERTICAL" />
+                  <Separator fx:id="separator" orientation="VERTICAL" />
                   <CheckBox fx:id="findAll" mnemonicParsing="false" text="Find all" />
                   <Button fx:id="apply2all" mnemonicParsing="false" text="Apply to all" />
                   <Pane HBox.hgrow="ALWAYS" />

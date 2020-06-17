@@ -21,11 +21,7 @@
 package splitstree5.gui.graphlabels;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.TextArea;
-import javafx.scene.layout.StackPane;
+import javafx.scene.control.*;
 import javafx.scene.web.HTMLEditor;
 
 public class LabelsEditorController {
@@ -46,6 +42,8 @@ public class LabelsEditorController {
     private TextArea html_area;
     @FXML
     private Button reset;
+    @FXML
+    private Separator separator;
 
     public Button getApplyStyle() {
         return applyStyle;
@@ -77,5 +75,9 @@ public class LabelsEditorController {
 
     public Button getReset() {
         return reset;
+    }
+
+    public Separator getSeparator() {
+        return separator;
     }
 }
