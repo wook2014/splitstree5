@@ -151,7 +151,9 @@ public class LabelsEditor {
 
     public void setLabel(Labeled label){
         this.label = label;
-        htmlEditor.setHtmlText(label.getText());
+        String font = label.getFont().getFamily();
+        Double size = label.getFont().getSize();
+        htmlEditor.setHtmlText("<span style=\"font-size: "+size+"; font-family:"+font+";\">"+label.getText()+"</span>");
         controller.getHTML_Area().setText(htmlEditor.getHtmlText());
         this.originalLabel = htmlEditor.getHtmlText();
     }

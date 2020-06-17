@@ -383,11 +383,13 @@ public class NodeView2D extends NodeViewBase {
 
     public static void applyHTMLStyle2Label(Labeled label){
 
-        final int webViewOffset = 20;
+        final int webViewOffset = 40;
 
         Platform.runLater(() -> {
             WebView wb = new WebView();
-            wb.getEngine().loadContent(label.getText());
+            String font = label.getFont().getName();
+            Double size = label.getFont().getSize();
+            wb.getEngine().loadContent("<span style=\"font-size: "+size+"; font-family:"+font+";\">"+label.getText()+"</span>");
 
             Text theText = new Text(label.getText().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", ""));
             theText.setFont(label.getFont());
