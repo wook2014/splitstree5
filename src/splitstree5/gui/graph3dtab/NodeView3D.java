@@ -27,8 +27,6 @@ import javafx.event.EventHandler;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point3D;
-import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
@@ -38,6 +36,7 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape3D;
 import javafx.scene.shape.Sphere;
+import jloda.fx.control.RichTextLabel;
 import jloda.fx.util.SelectionEffect;
 import jloda.graph.Node;
 import splitstree5.gui.formattab.FormatItem;
@@ -68,7 +67,7 @@ public class NodeView3D extends NodeViewBase {
 
         if (text != null && text.length() > 0) {
             color = Color.GOLD;
-            setLabel(new Label(text));
+            setLabel(new RichTextLabel(text));
             getLabel().setVisible(false);
             getLabel().setStyle("");
         } else {
@@ -145,7 +144,7 @@ public class NodeView3D extends NodeViewBase {
         updateStuff();
     }
 
-    public void setLabel(Labeled label) {
+    public void setLabel(RichTextLabel label) {
         if (this.label != null) {
             labelGroup.getChildren().remove(this.label);
         }

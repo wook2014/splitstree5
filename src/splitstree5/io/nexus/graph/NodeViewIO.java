@@ -21,10 +21,10 @@
 package splitstree5.io.nexus.graph;
 
 import javafx.geometry.Point2D;
-import javafx.scene.control.Labeled;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
+import jloda.fx.control.RichTextLabel;
 import jloda.fx.shapes.ISized;
 import jloda.fx.shapes.NodeShape;
 import jloda.fx.util.FontUtils;
@@ -63,7 +63,7 @@ public class NodeViewIO {
                     ((Color) shape.getFill()).toString()));
         }
         if (nv.getLabel() != null) {
-            final Labeled label = nv.getLabel();
+            final RichTextLabel label = nv.getLabel();
 
             buf.append(String.format(" L: '%s' %s %s", label.getText(),
                     Basic.toString(label.getTranslateX(), 4),
@@ -148,7 +148,7 @@ public class NodeViewIO {
             nv.getShape().setFill(shapeColor);
         }
         if (labelText != null && labelFont != null) {
-            final Labeled labeled = nv.getLabel();
+            final RichTextLabel labeled = nv.getLabel();
             labeled.setFont(labelFont);
             labeled.setTextFill(labelColor);
             labeled.setTranslateX(lx);

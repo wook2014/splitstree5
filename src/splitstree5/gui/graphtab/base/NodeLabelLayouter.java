@@ -23,10 +23,9 @@ package splitstree5.gui.graphtab.base;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
-import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import jloda.fx.control.RichTextLabel;
 import jloda.fx.util.GeometryUtilsFX;
 import jloda.graph.Edge;
 import jloda.graph.EdgeArray;
@@ -100,7 +99,7 @@ public class NodeLabelLayouter {
                     angle = 0.5 * (array.get(best) + array.get(best + 1));
                 }
 
-                final Labeled label = nv.getLabel();
+                final RichTextLabel label = nv.getLabel();
                 if (label != null) {
                     nv.getLabel().setVisible(true);
 
@@ -178,7 +177,7 @@ public class NodeLabelLayouter {
             final NodeView2D nv = (NodeView2D) node2view.getValue(v);
             if (nv.getLabel() != null) {
                 nv.getLabel().setVisible(true);
-                final Label label = (Label) nv.getLabel();
+                final RichTextLabel label = nv.getLabel();
 
                 final javafx.scene.Node shape = nv.getShapeGroup();
                 final Point2D reference = new Point2D(shape.getTranslateX() + shape.getLayoutBounds().getWidth(),

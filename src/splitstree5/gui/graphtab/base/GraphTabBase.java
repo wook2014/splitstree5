@@ -37,6 +37,7 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import jloda.fx.control.ItemSelectionModel;
+import jloda.fx.control.RichTextLabel;
 import jloda.fx.control.ZoomableScrollPane;
 import jloda.fx.find.EdgeLabelSearcher;
 import jloda.fx.find.FindToolBar;
@@ -432,7 +433,7 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
     }
 
     public void addNodeLabelMovementSupport(NodeView2D nodeView) {
-        final Labeled label = nodeView.getLabel();
+        final RichTextLabel label = nodeView.getLabel();
         if (label != null) {
             final Single<Point2D> oldLocation = new Single<>();
             final Single<Point2D> point = new Single<>();

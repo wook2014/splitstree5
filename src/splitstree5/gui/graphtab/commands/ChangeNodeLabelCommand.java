@@ -20,8 +20,7 @@
 
 package splitstree5.gui.graphtab.commands;
 
-import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
+import jloda.fx.control.RichTextLabel;
 import jloda.fx.undo.UndoableRedoableCommand;
 import jloda.graph.Node;
 import jloda.phylo.PhyloGraph;
@@ -52,7 +51,7 @@ public class ChangeNodeLabelCommand extends UndoableRedoableCommand {
     @Override
     public void undo() {
         if (oldText == null)
-            nv.setLabel((Labeled) null);
+            nv.setLabel((RichTextLabel) null);
         else
             nv.getLabel().setText(oldText);
         graph.setLabel(v, oldText);
@@ -61,7 +60,7 @@ public class ChangeNodeLabelCommand extends UndoableRedoableCommand {
     @Override
     public void redo() {
         if (oldText == null) {
-            Label label = new Label(newText);
+            RichTextLabel label = new RichTextLabel(newText);
             label.setFont(ProgramProperties.getDefaultFontFX());
             nv.setLabel(label);
         } else

@@ -21,11 +21,10 @@
 package splitstree5.gui.graphtab.base;
 
 import javafx.scene.Group;
-import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
+import jloda.fx.control.RichTextLabel;
 import jloda.graph.Node;
 
 /**
@@ -35,7 +34,7 @@ import jloda.graph.Node;
 public abstract class NodeViewBase {
     protected final Group shapeGroup = new Group();
     protected final Group labelGroup = new Group();
-    protected Labeled label;
+    protected RichTextLabel label;
 
     private final Node v;
 
@@ -102,21 +101,21 @@ public abstract class NodeViewBase {
     public abstract void setHeight(double height);
 
 
-    public Labeled getLabel() {
+    public RichTextLabel getLabel() {
         return label;
     }
 
-    public void setLabel(Labeled label) {
+    public void setLabel(RichTextLabel label) {
         this.label = label;
     }
 
     public void setLabel(String text) {
         if (text == null)
-            setLabel((Labeled) null);
+            setLabel((RichTextLabel) null);
         else if (getLabel() != null)
             getLabel().setText(text);
         else
-            setLabel(new Label(text));
+            setLabel(new RichTextLabel(text));
     }
 
     public abstract void showAsSelected(boolean selected);

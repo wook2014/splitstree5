@@ -24,6 +24,7 @@ import javafx.scene.control.Labeled;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
+import jloda.fx.control.RichTextLabel;
 import jloda.fx.undo.UndoableRedoableCommand;
 import jloda.fx.util.FontUtils;
 import jloda.graph.Edge;
@@ -81,7 +82,7 @@ public class FontSizeIncrementCommand extends UndoableRedoableCommand {
 
         if (nodes != null && node2view != null) {
             for (Node v : nodes) {
-                Labeled label = node2view.get(v).getLabel();
+                RichTextLabel label = node2view.get(v).getLabel();
                 if (label != null) {
                     final double size = (label.getFont().getSize() - increment);
                     if (size >= 0) {
@@ -121,7 +122,7 @@ public class FontSizeIncrementCommand extends UndoableRedoableCommand {
 
         if (nodes != null && node2view != null) {
             for (Node v : nodes) {
-                Labeled label = node2view.get(v).getLabel();
+                RichTextLabel label = node2view.get(v).getLabel();
                 if (label != null) {
                     final double size = (label.getFont().getSize() + increment);
                     if (font == null || !label.getFont().equals(font)) {

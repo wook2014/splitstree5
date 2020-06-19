@@ -27,8 +27,6 @@ import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -38,6 +36,7 @@ import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
 import javafx.util.Duration;
+import jloda.fx.control.RichTextLabel;
 import jloda.fx.shapes.NodeShape;
 import jloda.fx.util.GeometryUtilsFX;
 import jloda.fx.util.SelectionEffect;
@@ -81,7 +80,7 @@ public class NodeView2D extends NodeViewBase {
         if (text != null && text.length() > 0) {
             shape.setStroke(Color.BLACK);
             shape.setFill(Color.WHITE);
-            label = new Label(text);
+            label = new RichTextLabel(text);
             label.setStyle("");
             label.setFont(ProgramProperties.getDefaultFontFX());
             label.setTranslateX(location.getX() + shapeWidth + 2);
@@ -173,7 +172,7 @@ public class NodeView2D extends NodeViewBase {
     }
 
     @Override
-    public void setLabel(Labeled label) {
+    public void setLabel(RichTextLabel label) {
         final Point2D location;
         final Color color;
 
@@ -381,7 +380,7 @@ public class NodeView2D extends NodeViewBase {
         return shape;
     }
 
-    public static void applyHTMLStyle2Label(Labeled label){
+    public static void applyHTMLStyle2Label(RichTextLabel label) {
 
         final int webViewOffset = 40;
 
@@ -389,7 +388,7 @@ public class NodeView2D extends NodeViewBase {
             WebView wb = new WebView();
             String font = label.getFont().getName();
             Double size = label.getFont().getSize();
-            wb.getEngine().loadContent("<span style=\"font-size: "+size+"; font-family:"+font+";\">"+label.getText()+"</span>");
+            wb.getEngine().loadContent("<span style=\"font-size: " + size + "; font-family:" + font + ";\">" + label.getText() + "</span>");
 
             Text theText = new Text(label.getText().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", ""));
             theText.setFont(label.getFont());

@@ -22,6 +22,7 @@ package splitstree5.gui.graphtab.commands;
 
 import javafx.geometry.Point2D;
 import javafx.scene.control.Labeled;
+import jloda.fx.control.RichTextLabel;
 import jloda.fx.undo.UndoableRedoableCommand;
 import jloda.graph.Edge;
 import jloda.graph.EdgeArray;
@@ -78,7 +79,7 @@ public class LayoutLabelsCommand extends UndoableRedoableCommand {
     @Override
     public void undo() {
         for (Triplet<Node, Point2D, Boolean> tre : oldNodeLabels) {
-            final Labeled label = node2view.get(tre.getFirst()).getLabel();
+            final RichTextLabel label = node2view.get(tre.getFirst()).getLabel();
             final Point2D location = tre.getSecond();
             label.setLayoutX(location.getX());
             label.setLayoutY(location.getY());

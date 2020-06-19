@@ -27,8 +27,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
@@ -40,6 +38,7 @@ import javafx.scene.web.HTMLEditor;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import jloda.fx.control.RichTextLabel;
 import jloda.fx.find.NodeLabelSearcher;
 import jloda.fx.find.SearchManager;
 import jloda.fx.util.ExtendedFXMLLoader;
@@ -58,7 +57,7 @@ public class LabelsEditor {
     private final Stage stage;
     final private HTMLEditor htmlEditor;
     private SearchManager searchManager = new SearchManager();
-    private Labeled label;
+    private RichTextLabel label;
     private String originalLabel;
     private boolean imgAdded = false;
 
@@ -149,11 +148,11 @@ public class LabelsEditor {
         controller.getFindAll().setSelected(false);
     }
 
-    public void setLabel(Labeled label){
+    public void setLabel(RichTextLabel label) {
         this.label = label;
         String font = label.getFont().getFamily();
         Double size = label.getFont().getSize();
-        htmlEditor.setHtmlText("<span style=\"font-size: "+size+"; font-family:"+font+";\">"+label.getText()+"</span>");
+        htmlEditor.setHtmlText("<span style=\"font-size: " + size + "; font-family:" + font + ";\">" + label.getText() + "</span>");
         controller.getHTML_Area().setText(htmlEditor.getHtmlText());
         this.originalLabel = htmlEditor.getHtmlText();
     }
@@ -279,7 +278,7 @@ public class LabelsEditor {
     }
 
 
-    private void openImage(Labeled label){
+    private void openImage(RichTextLabel label) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Label Picture");
         fileChooser.setInitialDirectory(
