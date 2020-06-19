@@ -44,13 +44,13 @@ import jloda.fx.find.SearchManager;
 import jloda.fx.util.ExtendedFXMLLoader;
 import jloda.util.ProgramProperties;
 import splitstree5.gui.graphtab.base.GraphTabBase;
-import splitstree5.gui.graphtab.base.NodeView2D;
 import splitstree5.gui.graphtab.base.NodeViewBase;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
+@Deprecated
 public class LabelsEditor {
 
     private final LabelsEditorController controller;
@@ -136,7 +136,6 @@ public class LabelsEditor {
                 //System.err.println("node "+n.toString());
                 NodeViewBase nv = (NodeViewBase) graphTabBase.getNode2view().get(n);
                 nv.setLabel(mergeHTMLStyles(nv.getLabel().getText(), htmlEditor.getHtmlText()));
-                NodeView2D.applyHTMLStyle2Label(nv.getLabel());
             }
         });
     }

@@ -21,9 +21,13 @@
 package splitstree5.gui.graphlabels;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Separator;
+import javafx.scene.control.TextArea;
 import javafx.scene.web.HTMLEditor;
 
+@Deprecated
 public class LabelsEditorController {
 
     @FXML

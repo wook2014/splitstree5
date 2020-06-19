@@ -20,29 +20,21 @@
 
 package splitstree5.gui.graphtab.base;
 
-import javafx.animation.PauseTransition;
-import javafx.animation.TranslateTransition;
-import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
-import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
-import javafx.scene.text.Text;
-import javafx.scene.web.WebView;
-import javafx.util.Duration;
 import jloda.fx.control.RichTextLabel;
 import jloda.fx.shapes.NodeShape;
 import jloda.fx.util.GeometryUtilsFX;
 import jloda.fx.util.SelectionEffect;
 import jloda.util.ProgramProperties;
 import splitstree5.gui.formattab.FormatItem;
-import splitstree5.gui.graphlabels.LabelsEditor;
 
 /**
  * node view
@@ -87,11 +79,6 @@ public class NodeView2D extends NodeViewBase {
             label.setTranslateY(location.getY());
             labelGroup.getChildren().add(label);
             (v.getOwner()).setLabel(v, text);
-
-            // HTML styling
-            if (label.getText().contains("<html"))
-                applyHTMLStyle2Label(label);
-
         } else {
             if (nodeShape == null) {
                 ((Circle) shape).setRadius(0.75);
@@ -378,36 +365,5 @@ public class NodeView2D extends NodeViewBase {
     @Override
     public javafx.scene.Node getNodeShape() {
         return shape;
-    }
-
-    public static void applyHTMLStyle2Label(RichTextLabel label) {
-
-        final int webViewOffset = 40;
-
-        Platform.runLater(() -> {
-            WebView wb = new WebView();
-            String font = label.getFont().getName();
-            Double size = label.getFont().getSize();
-            wb.getEngine().loadContent("<span style=\"font-size: " + size + "; font-family:" + font + ";\">" + label.getText() + "</span>");
-
-            Text theText = new Text(label.getText().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", ""));
-            theText.setFont(label.getFont());
-            double width = theText.getBoundsInParent().getWidth();
-            double height = theText.getBoundsInParent().getHeight();
-
-            wb.setPrefHeight(height + webViewOffset);
-            wb.setPrefWidth(width + webViewOffset);
-            label.setGraphic(wb);
-            label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-
-            TranslateTransition animation = new TranslateTransition(Duration.seconds(0.5), label);
-            PauseTransition pt = new PauseTransition(Duration.seconds(1));
-            pt.setOnFinished(event -> {
-                label.setGraphic(LabelsEditor.takeSnapshot(wb));
-                animation.play();
-            });
-            // pausing, after pause onFinished event will take
-            pt.play();
-        });
     }
 }
