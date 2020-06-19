@@ -108,7 +108,7 @@ public class FormatTab extends ViewerTab {
                 }
             });
             controller.getFontComboBox().fontValueProperty().addListener(labelFontListener);
-            controller.getFontComboBox().setOnShowing((x) -> {
+            controller.getFontComboBox().setOnShowing(x -> {
                 if (!isUpdating) {
                     try {
                         isUpdating = true;
@@ -127,7 +127,7 @@ public class FormatTab extends ViewerTab {
 
             // label color:
             controller.getLabelColorPicker().disableProperty().bind(controller.getFontComboBox().disableProperty());
-            controller.getLabelColorPicker().setOnAction((x) -> {
+            controller.getLabelColorPicker().setOnAction(x -> {
                 if (!isUpdating) {
                     try {
                         isUpdating = true;
@@ -141,7 +141,7 @@ public class FormatTab extends ViewerTab {
                     }
                 }
             });
-            controller.getLabelColorPicker().setOnShowing((x) -> {
+            controller.getLabelColorPicker().setOnShowing(x -> {
                 if (!isUpdating) {
                     try {
                         isUpdating = true;
@@ -170,7 +170,7 @@ public class FormatTab extends ViewerTab {
                     }
                 }
             });
-            controller.getNodeShapeComboBox().setOnShowing((x) -> {
+            controller.getNodeShapeComboBox().setOnShowing(x -> {
                 if (!isUpdating) {
                     try {
                         isUpdating = true;
@@ -201,7 +201,7 @@ public class FormatTab extends ViewerTab {
                     }
                 }
             });
-            controller.getNodeWidthComboBox().setOnShowing((x) -> {
+            controller.getNodeWidthComboBox().setOnShowing(x -> {
                 if (!isUpdating) {
                     try {
                         isUpdating = true;
@@ -231,7 +231,7 @@ public class FormatTab extends ViewerTab {
                     }
                 }
             });
-            controller.getNodeHeightComboBox().setOnShowing((x) -> {
+            controller.getNodeHeightComboBox().setOnShowing(x -> {
                 if (!isUpdating) {
                     try {
                         isUpdating = true;
@@ -259,7 +259,7 @@ public class FormatTab extends ViewerTab {
                     }
                 }
             });
-            controller.getNodeColorPicker().setOnShowing((x) -> {
+            controller.getNodeColorPicker().setOnShowing(x -> {
                 if (!isUpdating) {
                     try {
                         isUpdating = true;
@@ -289,7 +289,7 @@ public class FormatTab extends ViewerTab {
                     }
                 }
             });
-            controller.getEdgeWidthComboBox().setOnShowing((x) -> {
+            controller.getEdgeWidthComboBox().setOnShowing(x -> {
                 if (!isUpdating) {
                     try {
                         isUpdating = true;
@@ -317,7 +317,7 @@ public class FormatTab extends ViewerTab {
                     }
                 }
             });
-            controller.getEdgeColorPicker().setOnShowing((x) -> {
+            controller.getEdgeColorPicker().setOnShowing(x -> {
                 if (!isUpdating) {
                     try {
                         isUpdating = true;

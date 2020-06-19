@@ -33,7 +33,6 @@ import jloda.fx.util.ResourceManagerFX;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
-import jloda.util.ProgramProperties;
 import splitstree5.gui.graphtab.base.EdgeView2D;
 import splitstree5.gui.graphtab.base.Graph2DTab;
 import splitstree5.gui.graphtab.base.GraphLayout;
@@ -107,12 +106,6 @@ public class TreeViewTab extends Graph2DTab<PhyloTree> {
                     nodeSelectionModel.clearSelection(v);
                 else
                     nodeSelectionModel.select(v);
-
-                // call label editor on double click
-                if (ProgramProperties.get("enable-label-editor", false) && x.getClickCount() == 2) {
-                    getLabelsEditor().setLabel(nodeView.getLabel());
-                    getLabelsEditor().show();
-                }
 
                 x.consume();
             });

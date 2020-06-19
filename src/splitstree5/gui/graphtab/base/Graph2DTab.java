@@ -38,7 +38,6 @@ import jloda.fx.util.ScaleBar;
 import jloda.graph.*;
 import jloda.phylo.PhyloGraph;
 import jloda.phylo.PhyloTree;
-import splitstree5.gui.graphlabels.LabelsEditor;
 import splitstree5.gui.graphtab.SplitsViewTab;
 import splitstree5.gui.graphtab.TreeViewTab;
 import splitstree5.gui.graphtab.commands.LayoutLabelsCommand;
@@ -64,7 +63,6 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
 
     private final ScaleBar scaleBar = new ScaleBar();
     private final DraggableLabel fitLabel = new DraggableLabel();
-    private LabelsEditor labelsEditor = new LabelsEditor(nodeLabelSearcher, this);
 
     private final boolean withScrollPane;
 
@@ -421,5 +419,4 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
         return fitLabel;
     }
 
-    public LabelsEditor getLabelsEditor(){return labelsEditor;}
 }

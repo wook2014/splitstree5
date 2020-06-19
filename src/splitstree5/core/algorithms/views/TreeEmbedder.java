@@ -24,12 +24,17 @@ import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
+import javafx.event.EventHandler;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.text.Font;
 import jloda.fx.util.GeometryUtilsFX;
 import jloda.graph.*;
 import jloda.phylo.PhyloTree;
+import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
@@ -40,13 +45,11 @@ import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.datablocks.ViewerBlock;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.formattab.FormatItem;
+import splitstree5.gui.formattab.NodeLabelDialog;
 import splitstree5.gui.graphtab.TreeViewTab;
 import splitstree5.gui.graphtab.base.*;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * compute a visualization of a tree
@@ -178,9 +181,19 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
 
                 // compute all views and put their parts into the appropriate groups
                 for (Node v : tree.nodes()) {
+                    final int taxonId;
+                    {
+                        final Iterator<Integer> it = tree.getTaxa(v).iterator();
+                        taxonId = (it.hasNext() ? it.next() : 0);
+                    }
                     final String text;
-                    if (tree.getLabel(v) != null && tree.getLabel(v).trim().length() > 0)
-                        text = tree.getLabel(v).trim();
+                    if (tree.getLabel(v) != null && tree.getLabel(v).length() > 0) {
+                        if (TaxaBlock.hasDisplayLabels(taxaBlock) && taxonId > 0)
+                            text = taxaBlock.get(taxonId).getDisplayLabel();
+                        else
+                            text = tree.getLabel(v);
+                    } else if (tree.getNumberOfTaxa(v) > 0)
+                        text = Basic.toString(taxaBlock.getLabels(tree.getTaxa(v)), ",");
                     else text = null;
 
                     final NodeView2D nodeView = viewTab.createNodeView(v, node2point.getValue(v), null, 0, 0, text);
@@ -193,6 +206,16 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
                     viewTab.getNode2view().put(v, nodeView);
                     viewTab.getNodesGroup().getChildren().addAll(nodeView.getShapeGroup());
                     viewTab.getNodeLabelsGroup().getChildren().addAll(nodeView.getLabelGroup());
+
+                    if (taxonId > 0) {
+                        final EventHandler<? super ContextMenuEvent> contextMenuHandler = x -> {
+                            final MenuItem menuItem = new MenuItem("Edit label");
+                            menuItem.setOnAction(z -> NodeLabelDialog.apply(taxaBlock.getDocument().getMainWindow(), taxonId, nodeView));
+                            (new ContextMenu(menuItem)).show(nodeView.getShapeGroup(), x.getScreenX(), x.getScreenY());
+                        };
+                        nodeView.getShapeGroup().setOnContextMenuRequested(contextMenuHandler);
+                        nodeView.getLabelGroup().setOnContextMenuRequested(contextMenuHandler);
+                    }
                 }
                 for (Edge e : tree.edges()) {
                     final EdgeControlPoints controlPoints = edge2controlPoints.getValue(e);

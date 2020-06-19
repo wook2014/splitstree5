@@ -53,7 +53,7 @@ public class Taxon implements Serializable {
     }
 
     public String getDisplayLabel() {
-        return displayLabel;
+        return displayLabel != null ? displayLabel : name;
     }
 
     public void setDisplayLabel(String displayLabel) {
