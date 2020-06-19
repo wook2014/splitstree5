@@ -35,6 +35,8 @@ import java.io.File;
 import java.time.Duration;
 
 public class SplitsTree5 extends Application {
+    public static boolean enableExperimental = false;
+
     private static String[] inputFilesAtStartup;
     private static boolean showMessageWindow;
 
@@ -92,6 +94,9 @@ public class SplitsTree5 extends Application {
         final String propertiesFile = options.getOption("-p", "propertiesFile", "Properties file", defaultPreferenceFile);
         final boolean silentMode = options.getOption("-S", "silentMode", "Silent mode", false);
         ProgramExecutorService.setNumberOfCoresToUse(options.getOption("-t", "threads", "Maximum number of threads to use in a parallel algorithm (0=all available)", 0));
+
+        enableExperimental = options.getOption("-x", "experimental", "Enable experimental features", false);
+
         options.done();
 
         ProgramProperties.load(propertiesFile);
