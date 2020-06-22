@@ -44,8 +44,8 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.datablocks.ViewerBlock;
 import splitstree5.core.workflow.UpdateState;
+import splitstree5.dialogs.nodelabel.NodeLabelDialog;
 import splitstree5.gui.formattab.FormatItem;
-import splitstree5.gui.formattab.NodeLabelDialog;
 import splitstree5.gui.graphtab.TreeViewTab;
 import splitstree5.gui.graphtab.base.*;
 
@@ -189,14 +189,14 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
                     final String text;
                     if (tree.getLabel(v) != null && tree.getLabel(v).length() > 0) {
                         if (TaxaBlock.hasDisplayLabels(taxaBlock) && taxonId > 0)
-                            text = taxaBlock.get(taxonId).getDisplayLabel();
+                            text = taxaBlock.get(taxonId).getDisplayLabelOrName();
                         else
                             text = tree.getLabel(v);
                     } else if (tree.getNumberOfTaxa(v) > 0)
                         text = Basic.toString(taxaBlock.getLabels(tree.getTaxa(v)), ",");
                     else text = null;
 
-                    final NodeView2D nodeView = viewTab.createNodeView(v, node2point.getValue(v), null, 0, 0, text);
+                    final NodeView2D nodeView = viewTab.createNodeView(v, tree.getTaxa(v), node2point.getValue(v), null, 0, 0, text);
                     if (text != null && text.length() > 0 && viewTab.getNodeLabel2Style().containsKey(text)) {
                         nodeView.setStyling(viewTab.getNodeLabel2Style().get(text));
                     }

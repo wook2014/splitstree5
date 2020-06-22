@@ -18,10 +18,12 @@
  *
  */
 
-package splitstree5.gui.formattab;
+package splitstree5.dialogs.nodelabel;
 
 import jloda.fx.label.EditLabelDialog;
+import jloda.fx.undo.ChangeValueCommand;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.misc.Taxon;
 import splitstree5.gui.graphtab.base.NodeViewBase;
 import splitstree5.main.MainWindow;
 
@@ -33,14 +35,19 @@ import java.util.Optional;
  */
 public class NodeLabelDialog {
 
-    public static void apply(MainWindow mainWindow, int taxonId, NodeViewBase nv) {
+    public static void apply(MainWindow mainWindow, int workingTaxonId, NodeViewBase nv) {
         final EditLabelDialog editLabelDialog = new EditLabelDialog(mainWindow.getStage(), nv.getLabel());
         final Optional<String> result = editLabelDialog.showAndWait();
         if (result.isPresent()) {
             final String newLabel = result.get();
-            final TaxaBlock taxaBlock = mainWindow.getWorkflow().getTopTaxaNode().getDataBlock();
-            taxaBlock.get(taxonId).setDisplayLabel(newLabel);
-            nv.setLabel(newLabel);
+            final TaxaBlock workingTaxaBlock = mainWindow.getWorkflow().getWorkingTaxaBlock();
+            mainWindow.getUndoRedoManager().doAndAdd(new ChangeValueCommand<>("Style", workingTaxaBlock.get(workingTaxonId).getDisplayLabel(), newLabel,
+                    (label) -> {
+                        final Taxon workingTaxon = workingTaxaBlock.get(workingTaxonId);
+                        workingTaxon.setDisplayLabel(label);
+                        mainWindow.updateDataView(mainWindow.getWorkflow().getWorkingTaxaNode());
+                        nv.setLabel(workingTaxon.getDisplayLabelOrName());
+                    }));
         }
     }
 }

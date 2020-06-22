@@ -181,7 +181,7 @@ public class TreesGrid extends Algorithm<TreesBlock, ViewerBlock> implements IFr
                         } else
                             text = null;
 
-                        final NodeView2D nodeView = viewTab.createNodeView(v, node2point.getValue(v), null, 0, 0, text);
+                        final NodeView2D nodeView = viewTab.createNodeView(v, tree.getTaxa(v), node2point.getValue(v), null, 0, 0, text);
                         if (text != null && text.length() > 0 && viewTab.getNodeLabel2Style().containsKey(text)) {
                             nodeView.setStyling(viewTab.getNodeLabel2Style().get(text));
                         }

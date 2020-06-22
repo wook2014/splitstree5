@@ -40,6 +40,7 @@ public class ViewerBlock extends DataBlock {
     private final GraphTabBase viewerTab;
     private final Type type;
 
+
     /**
      * constructor
      *
@@ -77,6 +78,8 @@ public class ViewerBlock extends DataBlock {
                 Platform.runLater(() -> { // setup tab
                     viewerTab.setMainWindow(document.getMainWindow());
                     document.getMainWindow().showDataView(getDataNode());
+
+                    viewerTab.setupNodeViewContextMenu(getDocument());
                 });
             }
         }
@@ -98,12 +101,12 @@ public class ViewerBlock extends DataBlock {
     }
 
     @Override
-    public Class getFromInterface() {
+    public Class<IFromViewer> getFromInterface() {
         return IFromViewer.class;
     }
 
     @Override
-    public Class getToInterface() {
+    public Class<IToViewer> getToInterface() {
         return IToViewer.class;
     }
 

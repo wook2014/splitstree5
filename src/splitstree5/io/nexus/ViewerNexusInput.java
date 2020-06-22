@@ -143,6 +143,13 @@ public class ViewerNexusInput extends NexusIOBase {
                     if (!np.peekMatchIgnoreCase(";")) {
                         while (true) {
                             final NodeView2D nv = NodeViewIO.valueOf(np, graph, graphTab, inputId2Node);
+
+                            // older files don't explicitly contain taxon ids, so need try to infer them here:
+                            final Node v = graph.getLastNode();
+                            if (!graph.getTaxa(v).iterator().hasNext() && nv.getLabel() != null && taxaBlock.indexOf(nv.getLabel().getRawText()) != -1) {
+                                nv.getWorkingTaxa().set(taxaBlock.indexOf(nv.getLabel().getRawText()));
+                            }
+
                             graphTab.getNode2view().put(nv.getNode(), nv);
                             graphTab.setupNodeView(nv);
                             graphTab.getNodesGroup().getChildren().add(nv.getShapeGroup());
@@ -164,6 +171,14 @@ public class ViewerNexusInput extends NexusIOBase {
                     if (!np.peekMatchIgnoreCase(";")) {
                         while (true) {
                             final NodeView2D nv = NodeViewIO.valueOf(np, graph, graphTab, inputId2Node);
+
+                            // older files don't explicitly contain taxon ids, so need try to infer them here:
+                            final Node v = graph.getLastNode();
+
+                            if (!graph.getTaxa(v).iterator().hasNext() && nv.getLabel() != null && taxaBlock.indexOf(nv.getLabel().getRawText()) != -1) {
+                                nv.getWorkingTaxa().set(taxaBlock.indexOf(nv.getLabel().getRawText()));
+                            }
+
                             graphTab.getNode2view().put(nv.getNode(), nv);
                             graphTab.getNodesGroup().getChildren().add(nv.getShapeGroup());
                             graphTab.getNodeLabelsGroup().getChildren().add(nv.getLabelGroup());
@@ -184,6 +199,13 @@ public class ViewerNexusInput extends NexusIOBase {
                     if (!np.peekMatchIgnoreCase(";")) {
                         while (true) {
                             final NodeView2D nv = NodeViewIO.valueOf(np, graph, graphTab, inputId2Node);
+
+                            // older files don't explicitly contain taxon ids, so need try to infer them here:
+                            final Node v = graph.getLastNode();
+                            if (!graph.getTaxa(v).iterator().hasNext() && nv.getLabel() != null && taxaBlock.indexOf(nv.getLabel().getRawText()) != -1) {
+                                nv.getWorkingTaxa().set(taxaBlock.indexOf(nv.getLabel().getRawText()));
+                            }
+
                             graphTab.getNode2view().put(nv.getNode(), nv);
                             graphTab.getNodesGroup().getChildren().add(nv.getShapeGroup());
                             graphTab.getNodeLabelsGroup().getChildren().add(nv.getLabelGroup());

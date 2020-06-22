@@ -26,6 +26,9 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import jloda.fx.control.RichTextLabel;
 import jloda.graph.Node;
+import jloda.util.BitSetUtils;
+
+import java.util.BitSet;
 
 /**
  * node view
@@ -35,6 +38,7 @@ public abstract class NodeViewBase {
     protected final Group shapeGroup = new Group();
     protected final Group labelGroup = new Group();
     protected RichTextLabel label;
+    private BitSet workingTaxa;
 
     private final Node v;
 
@@ -43,10 +47,12 @@ public abstract class NodeViewBase {
      *
      * @param v
      */
-    public NodeViewBase(Node v) {
+    public NodeViewBase(Node v, Iterable<Integer> workingTaxonIds) {
         this.v = v;
+        if (workingTaxonIds.iterator().hasNext()) {
+            this.workingTaxa = BitSetUtils.asBitSet(workingTaxonIds);
+        }
     }
-
 
     public Group getShapeGroup() {
         return shapeGroup;
@@ -123,4 +129,14 @@ public abstract class NodeViewBase {
     public abstract boolean isShownAsSelected();
 
     public abstract javafx.scene.Node getNodeShape();
+
+    public BitSet getWorkingTaxa() {
+        if (workingTaxa == null)
+            workingTaxa = new BitSet();
+        return workingTaxa;
+    }
+
+    public int getNumberOfWorkingTaxonIds() {
+        return workingTaxa == null ? 0 : workingTaxa.cardinality();
+    }
 }

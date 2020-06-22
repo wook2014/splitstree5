@@ -56,8 +56,8 @@ public class NodeView2D extends NodeViewBase {
      * @param text
      * @return
      */
-    public NodeView2D(jloda.graph.Node v, Point2D location, NodeShape nodeShape, double shapeWidth, double shapeHeight, String text) {
-        super(v);
+    public NodeView2D(jloda.graph.Node v, Iterable<Integer> workingTaxonIds, Point2D location, NodeShape nodeShape, double shapeWidth, double shapeHeight, String text) {
+        super(v, workingTaxonIds);
         setLocation(location);
         if (nodeShape == null)
             shape = NodeShape.create(NodeShape.Circle, 2);

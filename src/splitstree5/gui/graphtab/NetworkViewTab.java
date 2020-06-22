@@ -80,6 +80,7 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
      * create a node  view
      *
      * @param v
+     * @param workingTaxonIds
      * @param location
      * @param shape
      * @param shapeWidth
@@ -88,8 +89,8 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
      * @return node view
      */
     @Override
-    public NodeView2D createNodeView(Node v, Point2D location, NodeShape shape, double shapeWidth, double shapeHeight, String text) {
-        final NodeView2D nodeView = new NodeView2D(v, location, shape, shapeWidth, shapeHeight, text);
+    public NodeView2D createNodeView(Node v, Iterable<Integer> workingTaxonIds, Point2D location, NodeShape shape, double shapeWidth, double shapeHeight, String text) {
+        final NodeView2D nodeView = new NodeView2D(v, workingTaxonIds, location, shape, shapeWidth, shapeHeight, text);
 
         nodeView.getShapeGroup().setOnMousePressed(e -> {
             e.consume();

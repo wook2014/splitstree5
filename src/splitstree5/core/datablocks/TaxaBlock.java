@@ -205,7 +205,7 @@ public class TaxaBlock extends DataBlock {
 
     public void addTaxaByNames(Collection<String> taxonNames) {
         for (String name : taxonNames) {
-            if (!name2taxon.keySet().contains(name))
+            if (!name2taxon.containsKey(name))
                 getTaxa().add(new Taxon(name));
         }
     }
@@ -320,7 +320,7 @@ public class TaxaBlock extends DataBlock {
      */
     public static boolean hasDisplayLabels(TaxaBlock taxaBlock) {
         for (int t = 1; t <= taxaBlock.getNtax(); t++)
-            if (taxaBlock.get(t).getDisplayLabel() != null && taxaBlock.get(t).getDisplayLabel().length() > 0)
+            if (taxaBlock.get(t).getDisplayLabel() != null)
                 return true;
         return false;
     }

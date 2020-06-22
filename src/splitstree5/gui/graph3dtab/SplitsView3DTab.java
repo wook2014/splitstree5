@@ -141,8 +141,8 @@ public class SplitsView3DTab extends Graph3DTab<PhyloSplitsGraph> implements ISp
     /**
      * create a node view
      */
-    public NodeView3D createNodeView(final Node v, Point2D location, String label) {
-        return new NodeView3D(v, new Point3D(location.getX(), location.getY(), 0), label);
+    public NodeView3D createNodeView(final Node v, Iterable<Integer> workingTaxonIds, Point2D location, String label) {
+        return new NodeView3D(v, workingTaxonIds, new Point3D(location.getX(), location.getY(), 0), label);
     }
 
     /**

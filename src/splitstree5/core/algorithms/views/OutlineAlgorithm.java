@@ -27,12 +27,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
-import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
-import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.text.Font;
 import jloda.fx.window.NotificationManager;
 import jloda.graph.Edge;
@@ -50,7 +46,6 @@ import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.ViewerBlock;
 import splitstree5.core.workflow.UpdateState;
-import splitstree5.gui.formattab.NodeLabelDialog;
 import splitstree5.gui.graphtab.ISplitsViewTab;
 import splitstree5.gui.graphtab.SplitsViewTab;
 import splitstree5.gui.graphtab.base.*;
@@ -155,28 +150,17 @@ public class OutlineAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implem
                 taxonId = (it.hasNext() ? it.next() : 0);
             }
 
-
             if (graph.getLabel(v) != null && graph.getLabel(v).length() > 0)
                 if (TaxaBlock.hasDisplayLabels(taxaBlock) && taxonId > 0)
-                    text = taxaBlock.get(taxonId).getDisplayLabel();
+                    text = taxaBlock.get(taxonId).getDisplayLabelOrName();
                 else
                     text = graph.getLabel(v);
             else if (graph.getNumberOfTaxa(v) > 0)
                 text = Basic.toString(taxaBlock.getLabels(graph.getTaxa(v)), ",");
             else text = null;
 
-            final NodeViewBase nodeView = viewTab.createNodeView(v, node2point.getValue(v), text);
+            final NodeViewBase nodeView = viewTab.createNodeView(v, graph.getTaxa(v), node2point.getValue(v), text);
             viewTab.setupNodeView(nodeView);
-
-            if (taxonId > 0) {
-                final EventHandler<? super ContextMenuEvent> contextMenuHandler = x -> {
-                    final MenuItem menuItem = new MenuItem("Edit label");
-                    menuItem.setOnAction(z -> NodeLabelDialog.apply(taxaBlock.getDocument().getMainWindow(), taxonId, nodeView));
-                    (new ContextMenu(menuItem)).show(nodeView.getShapeGroup(), x.getScreenX(), x.getScreenY());
-                };
-                nodeView.getShapeGroup().setOnContextMenuRequested(contextMenuHandler);
-                nodeView.getLabelGroup().setOnContextMenuRequested(contextMenuHandler);
-            }
 
             viewTab.getNode2view().put(v, nodeView);
             viewTab.getNodesGroup().getChildren().addAll(nodeView.getShapeGroup());

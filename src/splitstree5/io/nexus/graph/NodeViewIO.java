@@ -36,8 +36,8 @@ import jloda.util.parse.NexusStreamParser;
 import splitstree5.gui.graphtab.base.Graph2DTab;
 import splitstree5.gui.graphtab.base.NodeView2D;
 
-import java.io.StringReader;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * node view input and output methods
@@ -50,7 +50,7 @@ public class NodeViewIO {
      * @param nv
      * @return string
      */
-    public static String toString(NodeView2D nv) {
+    public static String toOutputString(NodeView2D nv) {
         final StringBuilder buf = new StringBuilder();
         buf.append(String.format("N: %d %s %sf", nv.getNode().getId(), Basic.toString(nv.getLocation().getX(), 4), Basic.toString(nv.getLocation().getY(), 4)));
         final Shape shape = nv.getShape();
@@ -60,30 +60,21 @@ public class NodeViewIO {
                     Basic.toString(nv.getShapeGroup().getTranslateY(), 4),
                     Basic.toString(shape instanceof ISized ? ((ISized) shape).getWidth() : shape.getLayoutBounds().getWidth(), 4),
                     Basic.toString(shape instanceof ISized ? ((ISized) shape).getHeight() : shape.getLayoutBounds().getHeight(), 4),
-                    ((Color) shape.getFill()).toString()));
+                    shape.getFill().toString()));
         }
         if (nv.getLabel() != null) {
             final RichTextLabel label = nv.getLabel();
 
+
             buf.append(String.format(" L: '%s' %s %s", label.getText(),
                     Basic.toString(label.getTranslateX(), 4),
                     Basic.toString(label.getTranslateY(), 4)));
-            buf.append(String.format(" %s '%s'", ((Color) label.getTextFill()).toString(), FontUtils.toString(label.getFont())));
+            buf.append(String.format(" %s '%s'", label.getTextFill().toString(), FontUtils.toString(label.getFont())));
+        }
+        if (nv.getNumberOfWorkingTaxonIds() > 0) {
+            buf.append(String.format(" T: %s", Basic.toString(nv.getWorkingTaxa(), " ")));
         }
         return buf.toString();
-    }
-
-    /**
-     * parse a node from a string
-     *
-     * @param string
-     * @param graph2DTab
-     * @param id2node
-     * @return node view
-     * @throws IOExceptionWithLineNumber
-     */
-    public static NodeView2D valueOf(String string, PhyloGraph graph, Graph2DTab graph2DTab, Map<Integer, Node> id2node) throws IOExceptionWithLineNumber {
-        return valueOf(new NexusStreamParser(new StringReader(string)), graph, graph2DTab, id2node);
     }
 
     /**
@@ -127,7 +118,7 @@ public class NodeViewIO {
 
         if (np.peekMatchIgnoreCase("L:")) {
             np.matchIgnoreCase("L:");
-            labelText = np.getWordRespectCase();
+            labelText = np.getWordRespectCase().replaceAll(Pattern.quote("<n>"), "\n");
             lx = np.getDouble();
             ly = np.getDouble();
             labelColor = Color.valueOf(np.getWordRespectCase());
@@ -139,7 +130,15 @@ public class NodeViewIO {
             labelFont = null;
         }
 
-        final NodeView2D nv = graph2DTab.createNodeView(graph.newNode(), new Point2D(x, y), shape, sw, sh, labelText);
+        final Node v = graph.newNode();
+        if (np.peekMatchIgnoreCase("T:")) {
+            np.matchIgnoreCase("T:");
+            while (np.peekInteger()) {
+                graph.addTaxon(v, np.getInt());
+            }
+        }
+
+        final NodeView2D nv = graph2DTab.createNodeView(v, graph.getTaxa(v), new Point2D(x, y), shape, sw, sh, labelText);
         id2node.put(id, nv.getNode());
 
         if (shape != null) {

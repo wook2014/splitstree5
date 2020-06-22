@@ -113,6 +113,7 @@ public class NexusDataBlockInput {
             } else if (np.peekMatchBeginBlock(ViewerBlock.BLOCK_NAME)) {
                 final ViewerNexusInput input = new ViewerNexusInput();
                 final ViewerBlock dataBlock = input.parse(np, taxa);
+                dataBlock.setDocument(taxa.getDocument());
                 title = input.getTitle();
                 link = input.getLink();
                 return dataBlock;

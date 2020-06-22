@@ -27,13 +27,17 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.WeakListChangeListener;
+import javafx.event.EventHandler;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Labeled;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import jloda.fx.control.ItemSelectionModel;
@@ -50,11 +54,13 @@ import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import jloda.phylo.PhyloGraph;
 import jloda.util.Basic;
+import jloda.util.BitSetUtils;
 import jloda.util.Single;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
 import splitstree5.core.workflow.DataNode;
+import splitstree5.dialogs.nodelabel.NodeLabelDialog;
 import splitstree5.gui.ISavesPreviousSelection;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.formattab.FontSizeIncrementCommand;
@@ -66,6 +72,7 @@ import splitstree5.gui.graphtab.commands.MoveNodeLabelCommand;
 import splitstree5.menu.MenuController;
 
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * base class for graph Tab, can support both 2D and 3D visualizationm
@@ -109,6 +116,9 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
     private ObservableList<Taxon> documentTaxonSelectedItems;
 
     private boolean skipNextLabelLayout = false;
+
+    private Function<NodeViewBase, EventHandler<? super ContextMenuEvent>> nodeViewContextMenu = (nv) -> (EventHandler<ContextMenuEvent>) z -> {
+    };
 
     /**
      * constructor
@@ -612,7 +622,6 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
         controller.getZoomInMenuItem().setOnAction((e) -> scrollPane.zoomBy(1.1, 1.1));
         controller.getZoomOutMenuItem().setOnAction((e) -> scrollPane.zoomBy(1 / 1.1, 1 / 1.1));
 
-
         controller.getIncreaseFontSizeMenuItem().setOnAction((x) -> {
             if (nodeSelectionModel.getSelectedItems().size() > 0 || edgeSelectionModel.getSelectedItems().size() > 0) {
                 getUndoManager().doAndAdd(new FontSizeIncrementCommand(2, nodeSelectionModel.getSelectedItems(),
@@ -677,6 +686,29 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
 
     public ArrayList<PolygonView2D> getPolygons() {
         return polygons;
+    }
+
+    public Function<NodeViewBase, EventHandler<? super ContextMenuEvent>> getNodeViewContextMenu() {
+        return nodeViewContextMenu;
+    }
+
+
+    public void setupNodeViewContextMenu(Document document) {
+        nodeViewContextMenu = nv -> {
+            if (nv.getNumberOfWorkingTaxonIds() > 0) {
+                final int taxonId = BitSetUtils.members(nv.getWorkingTaxa()).iterator().next();
+                final TaxaBlock taxaBlock = document.getWorkflow().getWorkingTaxaBlock();
+
+                if (taxonId > 0) {
+                    return x -> {
+                        final MenuItem menuItem = new MenuItem("Edit label");
+                        menuItem.setOnAction(z -> NodeLabelDialog.apply(taxaBlock.getDocument().getMainWindow(), taxonId, nv));
+                        (new ContextMenu(menuItem)).show(nv.getShapeGroup(), x.getScreenX(), x.getScreenY());
+                    };
+                }
+            }
+            return null;
+        };
     }
 }
 

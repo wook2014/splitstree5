@@ -140,13 +140,13 @@ public class SplitsViewTab extends Graph2DTab<PhyloSplitsGraph> implements ISpli
      * create a node view
      */
     @Override
-    public NodeView2D createNodeView(final Node v, Point2D location, String label) {
-        return createNodeView(v, location, null, 0, 0, label);
+    public NodeView2D createNodeView(final Node v, Iterable<Integer> workingTaxonIds, Point2D location, String label) {
+        return createNodeView(v, graph.getTaxa(v), location, null, 0, 0, label);
     }
 
     @Override
-    public NodeView2D createNodeView(Node v, Point2D location, NodeShape shape, double shapeWidth, double shapeHeight, String label) {
-        return new NodeView2D(v, location, shape, shapeWidth, shapeHeight, label);
+    public NodeView2D createNodeView(Node v, Iterable<Integer> workingTaxonIds, Point2D location, NodeShape shape, double shapeWidth, double shapeHeight, String label) {
+        return new NodeView2D(v, workingTaxonIds, location, shape, shapeWidth, shapeHeight, label);
     }
 
     /**
@@ -195,6 +195,7 @@ public class SplitsViewTab extends Graph2DTab<PhyloSplitsGraph> implements ISpli
             }
             x.consume();
         });
+        nodeView.getShapeGroup().setOnContextMenuRequested(z -> getNodeViewContextMenu().apply(nodeView).handle(z));
 
         if (nodeView.getLabelGroup() != null) {
             nodeView.getLabelGroup().setOnMouseClicked((x) -> {
@@ -208,8 +209,8 @@ public class SplitsViewTab extends Graph2DTab<PhyloSplitsGraph> implements ISpli
                     nodeSelectionModel.select(v);
                 x.consume();
             });
+            nodeView.getLabelGroup().setOnContextMenuRequested(z -> getNodeViewContextMenu().apply(nodeView).handle(z));
         }
-
         addNodeLabelMovementSupport(nodeView);
     }
 

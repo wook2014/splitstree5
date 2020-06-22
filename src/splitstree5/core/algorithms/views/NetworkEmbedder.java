@@ -154,7 +154,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
                 text = null;
 
             //String text = (graph.getLabel(v) != null ? graph.getLabel(v) : "Node " + v.getId());
-            final NodeView2D nodeView = viewTab.createNodeView(v, node2point.getValue(v), null, 0, 0, text);
+            final NodeView2D nodeView = viewTab.createNodeView(v, graph.getTaxa(v), node2point.getValue(v), null, 0, 0, text);
 
             viewTab.getNode2view().put(v, nodeView);
             viewTab.getNodesGroup().getChildren().addAll(nodeView.getShapeGroup());

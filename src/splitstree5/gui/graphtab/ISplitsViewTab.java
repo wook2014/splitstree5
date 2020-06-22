@@ -55,7 +55,7 @@ public interface ISplitsViewTab {
 
     Group getEdgeLabelsGroup();
 
-    NodeViewBase createNodeView(final Node v, Point2D location, String label);
+    NodeViewBase createNodeView(final Node v, Iterable<Integer> taxonIds, Point2D location, String label);
 
     void setupNodeView(NodeViewBase nv);
 

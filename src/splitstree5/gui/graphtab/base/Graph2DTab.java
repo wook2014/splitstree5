@@ -253,6 +253,7 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
      * creates a node view
      *
      * @param v
+     * @param workingTaxonIds
      * @param location
      * @param shape
      * @param shapeWidth
@@ -260,7 +261,7 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
      * @param label
      * @return
      */
-    abstract public NodeView2D createNodeView(Node v, Point2D location, NodeShape shape, double shapeWidth, double shapeHeight, String label);
+    abstract public NodeView2D createNodeView(Node v, Iterable<Integer> workingTaxonIds, Point2D location, NodeShape shape, double shapeWidth, double shapeHeight, String label);
 
     /**
      * creates a simple straight edge

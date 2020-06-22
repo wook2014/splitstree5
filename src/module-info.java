@@ -22,10 +22,13 @@ module splitstreefive {
     opens splitstree5.resources.images;
 
     exports splitstree5.main;
+    exports splitstree5.core;
     exports splitstree5.tools;
     exports splitstree5.utils;
     exports splitstree5.xtra;
     exports splitstree5.xtra.align;
+
+    exports splitstree5.core.algorithms.interfaces;
 
     opens splitstree5.core.algorithms;
     opens splitstree5.core.algorithms.genomes2distances;
@@ -56,7 +59,6 @@ module splitstreefive {
     opens splitstree5.dialogs.importer;
     opens splitstree5.dialogs.message;
     opens splitstree5.dialogs.importgenomes;
-
 
     opens splitstree5.gui.algorithmtab;
     opens splitstree5.gui.algorithmtab.rootbyoutgroup;

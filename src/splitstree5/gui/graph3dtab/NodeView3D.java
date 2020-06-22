@@ -58,8 +58,8 @@ public class NodeView3D extends NodeViewBase {
      * @param location
      * @param text
      */
-    public NodeView3D(Node v, Point3D location, String text) {
-        super(v);
+    public NodeView3D(Node v, Iterable<Integer> taxa, Point3D location, String text) {
+        super(v, taxa);
 
         setLocation(location);
         Sphere sphere = new Sphere(2);

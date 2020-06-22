@@ -424,6 +424,13 @@ public class MainWindow implements IMainWindow {
         }
     }
 
+    public void updateDataView(DataNode dataNode) {
+        if (aNode2ViewerTab.containsKey(dataNode)) {
+            final DataViewTab dataViewTab = (DataViewTab) aNode2ViewerTab.get(dataNode);
+            dataViewTab.bindToCodeArea(new SimpleStringProperty(dataNode.getDataBlock().getDisplayText()));
+        }
+    }
+
     /**
      * show a connector/algorithm node
      *

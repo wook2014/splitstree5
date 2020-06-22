@@ -258,7 +258,7 @@ public class EditTextViewTab extends ViewerTab {
 
     // replaces bind function for two properties
     // todo: is there better solution?
-    protected void bindToCodeArea(ReadOnlyStringProperty textProperty) {
+    public void bindToCodeArea(ReadOnlyStringProperty textProperty) {
         NexusHighlighter nexusHighlighter = new NexusHighlighter();
         IndexRange indexRange = new IndexRange(0, getCodeArea().getText().length());
 

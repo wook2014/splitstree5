@@ -77,7 +77,7 @@ public class TreeBasedTest {
                     }
 
                     System.out.println("------- Network " + (++count + " ---------"));
-                    //System.out.println("Number of taxa:   " + tree.getNumberOfTaxa());
+                    //System.out.println("Number of taxa:   " + tree.getNumberOfWorkingTaxonIds());
                     System.out.println("Number of leaves: " + tree.getNumberOfLeaves());
                     System.out.println("Number of nodes:  " + tree.getNumberOfNodes());
                     System.out.println("Number of edges:  " + tree.getNumberOfEdges());

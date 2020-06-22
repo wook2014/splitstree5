@@ -80,7 +80,7 @@ public class ViewerNexusOutput extends NexusIOBase implements INexusOutput<Viewe
                     else
                         w.write(",\n");
                     NodeView2D nodeView2D = (NodeView2D) graphTab.getNode2view().get(node);
-                    w.write("\t" + NodeViewIO.toString(nodeView2D));
+                    w.write("\t" + NodeViewIO.toOutputString(nodeView2D));
                 } else {
                     System.err.println("Not implemented");
                     break;

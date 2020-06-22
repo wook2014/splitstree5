@@ -30,14 +30,12 @@ import splitstree5.core.algorithms.interfaces.IFromTaxa;
 import splitstree5.core.algorithms.interfaces.IToTaxa;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TraitsBlock;
+import splitstree5.core.misc.Taxon;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.algorithmtab.AlgorithmPane;
 import splitstree5.gui.algorithmtab.taxafilterview.TaxaFilterPane;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * taxa filter
@@ -46,7 +44,6 @@ import java.util.Set;
 public class TaxaFilter extends Algorithm<TaxaBlock, TaxaBlock> implements IFromTaxa, IToTaxa, IFilter {
     private final ObjectProperty<String[]> optionEnabledTaxa = new SimpleObjectProperty<>(new String[0]);
     private final ObjectProperty<String[]> optionDisabledTaxa = new SimpleObjectProperty<>(new String[0]);
-
 
     @Override
     public String getToolTip(String optionName) {
@@ -62,6 +59,11 @@ public class TaxaFilter extends Algorithm<TaxaBlock, TaxaBlock> implements IFrom
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock ignored, TaxaBlock parent, TaxaBlock child) {
+        final Map<String, String> name2displayLabel = new HashMap<>();
+        for (int t = 1; t <= child.getNtax(); t++) {
+            final Taxon taxon = child.get(t);
+            name2displayLabel.put(taxon.getName(), taxon.getDisplayLabel());
+        }
         child.getTaxa().clear();
 
         if (numberEnabledTaxa() == 0 && numberDisabledTaxa() == 0) // nothing has been explicitly set, copy everything
@@ -70,8 +72,13 @@ public class TaxaFilter extends Algorithm<TaxaBlock, TaxaBlock> implements IFrom
         } else {
             final Set<String> disabled = new HashSet<>(Arrays.asList(getOptionDisabledTaxa()));
             for (String name : getOptionEnabledTaxa()) {
-                if (!disabled.contains(name))
+                if (!disabled.contains(name)) {
                     child.addTaxaByNames(Collections.singleton(name));
+                    if (parent.get(name).getDisplayLabel() != null)
+                        child.get(name).setDisplayLabel(parent.get(name).getDisplayLabel());
+                    else
+                        child.get(name).setDisplayLabel(name2displayLabel.get(name));
+                }
             }
         }
 

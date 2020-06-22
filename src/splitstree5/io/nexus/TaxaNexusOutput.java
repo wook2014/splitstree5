@@ -44,7 +44,7 @@ public class TaxaNexusOutput extends NexusIOBase {
         if (TaxaBlock.hasDisplayLabels(taxaBlock)) {
             w.write("DISPLAYLABELS\n");
             for (int i = 1; i <= taxaBlock.getNtax(); i++)
-                w.write("\t[" + i + "] '" + taxaBlock.get(i).getDisplayLabel() + "'\n");
+                w.write("\t[" + i + "] '" + taxaBlock.get(i).getDisplayLabelOrName() + "'\n");
             w.write(";\n");
         }
         if (TaxaBlock.hasInfos(taxaBlock)) {
