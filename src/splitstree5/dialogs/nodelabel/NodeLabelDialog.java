@@ -41,7 +41,7 @@ public class NodeLabelDialog {
         if (result.isPresent()) {
             final String newLabel = result.get();
             final TaxaBlock workingTaxaBlock = mainWindow.getWorkflow().getWorkingTaxaBlock();
-            mainWindow.getUndoRedoManager().doAndAdd(new ChangeValueCommand<>("Style", workingTaxaBlock.get(workingTaxonId).getDisplayLabel(), newLabel,
+            mainWindow.getUndoRedoManager().doAndAdd(new ChangeValueCommand<>("Label", workingTaxaBlock.get(workingTaxonId).getDisplayLabel(), newLabel,
                     (label) -> {
                         final Taxon workingTaxon = workingTaxaBlock.get(workingTaxonId);
                         workingTaxon.setDisplayLabel(label);

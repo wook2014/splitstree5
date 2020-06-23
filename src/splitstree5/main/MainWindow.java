@@ -26,6 +26,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.collections.SetChangeListener;
@@ -96,6 +97,11 @@ public class MainWindow implements IMainWindow {
 
     private final ObjectProperty<UndoManager> undoRedoManager = new SimpleObjectProperty<>();
 
+    private final ChangeListener<Boolean> undoChangeListener = (c, o, n) -> {
+        if (n)
+            getDocument().setDirty(true);
+    };
+
     private final WorkflowViewTab workflowViewTab;
     private final MethodsViewTab methodsViewTab;
     private InputTab inputTab;
@@ -115,6 +121,14 @@ public class MainWindow implements IMainWindow {
 
         Platform.setImplicitExit(false);
 
+        {
+            undoRedoManagerProperty().addListener((c, o, n) -> {
+                if (o != null)
+                    o.undoableProperty().removeListener(undoChangeListener);
+                if (n != null)
+                    n.undoableProperty().addListener(undoChangeListener);
+            });
+        }
 
         {
             final ExtendedFXMLLoader<MainWindowController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());

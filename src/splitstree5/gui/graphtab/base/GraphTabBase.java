@@ -46,6 +46,7 @@ import jloda.fx.control.ZoomableScrollPane;
 import jloda.fx.find.EdgeLabelSearcher;
 import jloda.fx.find.FindToolBar;
 import jloda.fx.find.NodeLabelSearcher;
+import jloda.fx.undo.ChangeValueCommand;
 import jloda.fx.util.Print;
 import jloda.fx.window.MainWindowManager;
 import jloda.graph.Edge;
@@ -69,6 +70,7 @@ import splitstree5.gui.graphtab.commands.ChangeEdgeLabelCommand;
 import splitstree5.gui.graphtab.commands.ChangeNodeLabelCommand;
 import splitstree5.gui.graphtab.commands.MoveEdgeLabelCommand;
 import splitstree5.gui.graphtab.commands.MoveNodeLabelCommand;
+import splitstree5.main.MainWindow;
 import splitstree5.menu.MenuController;
 
 import java.util.*;
@@ -94,6 +96,7 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
     protected G graph;
 
     protected final NodeLabelSearcher nodeLabelSearcher;
+    private NodeLabelSearcher.LabelChangedListener labelChangedListener;
     protected final EdgeLabelSearcher edgeLabelSearcher;
 
     protected NodeArray<NodeViewBase> node2view;
@@ -133,12 +136,12 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
         // setup find / replace tool bar:
         {
             nodeLabelSearcher = new NodeLabelSearcher("Nodes", graph, nodeSelectionModel);
-            nodeLabelSearcher.addLabelChangedListener(v -> Platform.runLater(() -> getUndoManager().doAndAdd(new ChangeNodeLabelCommand(v, node2view.get(v), graph))));
+            //nodeLabelSearcher.addLabelChangedListener(v -> Platform.runLater(() -> getUndoManager().doAndAdd(new ChangeNodeLabelCommand(v, node2view.get(v), graph))));
+
             edgeLabelSearcher = new EdgeLabelSearcher("Edges", graph, edgeSelectionModel);
             edgeLabelSearcher.addLabelChangedListener(e -> Platform.runLater(() -> getUndoManager().doAndAdd(new ChangeEdgeLabelCommand(e, edge2view.get(e), graph))));
 
             findToolBar = new FindToolBar(null, nodeLabelSearcher, edgeLabelSearcher);
-            //findToolBar.setShowReplaceToolBar(true);
 
             nodeLabelSearcher.foundProperty().addListener((c, o, n) -> {
                 if (n != null && scrollPane != null) {
@@ -270,6 +273,33 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
             nodeSelectionModel.getSelectedItems().removeListener(weakNodeSelectionChangeListener);
         if (weakDocumentTaxonSelectionChangeListener != null)
             document.getTaxaSelectionModel().getSelectedItems().removeListener(weakDocumentTaxonSelectionChangeListener);
+
+
+        if (true) {
+            if (labelChangedListener != null)
+                nodeLabelSearcher.removeLabelChangedListener(labelChangedListener);
+            labelChangedListener = v -> {
+                final MainWindow mainWindow = document.getMainWindow();
+                final TaxaBlock workingTaxaBlock = mainWindow.getWorkflow().getWorkingTaxaBlock();
+                final NodeViewBase nv = node2view.get(v);
+                if (nv.getNumberOfWorkingTaxonIds() > 0) {
+                    final int workingTaxonId = node2view.get(v).getWorkingTaxa().nextSetBit(1);
+                    Platform.runLater(() ->
+                            mainWindow.getUndoRedoManager().doAndAdd(new ChangeValueCommand<>("Change Label", workingTaxaBlock.get(workingTaxonId).getDisplayLabel(), graph.getLabel(v),
+                                    (label) -> {
+                                        final Taxon workingTaxon = workingTaxaBlock.get(workingTaxonId);
+                                        workingTaxon.setDisplayLabel(label);
+                                        mainWindow.updateDataView(mainWindow.getWorkflow().getWorkingTaxaNode());
+                                        nv.setLabel(workingTaxon.getDisplayLabelOrName());
+                                    })));
+                } else {
+                    Platform.runLater(() -> getUndoManager().doAndAdd(new ChangeNodeLabelCommand(v, node2view.get(v), graph)));
+                }
+            };
+            nodeLabelSearcher.addLabelChangedListener(labelChangedListener);
+
+        }
+
 
         Platform.runLater(() -> {
             nodeSelectionModel.clearSelection();
@@ -701,7 +731,7 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
 
                 if (taxonId > 0) {
                     return x -> {
-                        final MenuItem menuItem = new MenuItem("Edit label");
+                        final MenuItem menuItem = new MenuItem("Change label");
                         menuItem.setOnAction(z -> NodeLabelDialog.apply(taxaBlock.getDocument().getMainWindow(), taxonId, nv));
                         (new ContextMenu(menuItem)).show(nv.getShapeGroup(), x.getScreenX(), x.getScreenY());
                     };

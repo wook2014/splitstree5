@@ -81,14 +81,14 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
     /**
      * initialize data structures
      *
-     * @param phyloGraph
+     * @param graph
      */
-    public void init(G phyloGraph) {
-        this.graph = phyloGraph;
-        node2view = new NodeArray<>(phyloGraph);
-        edge2view = new EdgeArray<>(phyloGraph);
-        nodeLabelSearcher.setGraph(graph);
-        edgeLabelSearcher.setGraph(graph);
+    public void init(G graph) {
+        this.graph = graph;
+        node2view = new NodeArray<>(this.graph);
+        edge2view = new EdgeArray<>(this.graph);
+        nodeLabelSearcher.setGraph(this.graph);
+        edgeLabelSearcher.setGraph(this.graph);
 
         Platform.runLater(() -> {
             group.setScaleX(1);
