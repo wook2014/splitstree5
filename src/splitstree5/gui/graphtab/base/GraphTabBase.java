@@ -55,7 +55,6 @@ import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import jloda.phylo.PhyloGraph;
 import jloda.util.Basic;
-import jloda.util.BitSetUtils;
 import jloda.util.Single;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -725,19 +724,14 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
 
     public void setupNodeViewContextMenu(Document document) {
         nodeViewContextMenu = nv -> {
-            if (nv.getNumberOfWorkingTaxonIds() > 0) {
-                final int taxonId = BitSetUtils.members(nv.getWorkingTaxa()).iterator().next();
-                final TaxaBlock taxaBlock = document.getWorkflow().getWorkingTaxaBlock();
+            final int taxonId = (nv.getNumberOfWorkingTaxonIds() > 0 ? nv.getWorkingTaxa().nextSetBit(1) : 0);
+            final TaxaBlock taxaBlock = document.getWorkflow().getWorkingTaxaBlock();
 
-                if (taxonId > 0) {
-                    return x -> {
-                        final MenuItem menuItem = new MenuItem("Change label");
-                        menuItem.setOnAction(z -> NodeLabelDialog.apply(taxaBlock.getDocument().getMainWindow(), taxonId, nv));
-                        (new ContextMenu(menuItem)).show(nv.getShapeGroup(), x.getScreenX(), x.getScreenY());
-                    };
-                }
-            }
-            return null;
+            return x -> {
+                final MenuItem menuItem = new MenuItem("Change label");
+                menuItem.setOnAction(z -> NodeLabelDialog.apply(taxaBlock.getDocument().getMainWindow(), taxonId, nv));
+                (new ContextMenu(menuItem)).show(nv.getShapeGroup(), x.getScreenX(), x.getScreenY());
+            };
         };
     }
 }

@@ -36,17 +36,21 @@ import java.util.Optional;
 public class NodeLabelDialog {
 
     public static void apply(MainWindow mainWindow, int workingTaxonId, NodeViewBase nv) {
+        final String oldLabel = nv.getLabel() != null ? nv.getLabel().getText() : "";
         final EditLabelDialog editLabelDialog = new EditLabelDialog(mainWindow.getStage(), nv.getLabel());
         final Optional<String> result = editLabelDialog.showAndWait();
         if (result.isPresent()) {
             final String newLabel = result.get();
             final TaxaBlock workingTaxaBlock = mainWindow.getWorkflow().getWorkingTaxaBlock();
-            mainWindow.getUndoRedoManager().doAndAdd(new ChangeValueCommand<>("Label", workingTaxaBlock.get(workingTaxonId).getDisplayLabel(), newLabel,
+            mainWindow.getUndoRedoManager().doAndAdd(new ChangeValueCommand<>("Change Label", oldLabel, newLabel,
                     (label) -> {
-                        final Taxon workingTaxon = workingTaxaBlock.get(workingTaxonId);
-                        workingTaxon.setDisplayLabel(label);
-                        mainWindow.updateDataView(mainWindow.getWorkflow().getWorkingTaxaNode());
-                        nv.setLabel(workingTaxon.getDisplayLabelOrName());
+                        label = (label.trim().length() > 0 ? label.trim() : null);
+                        nv.setLabel(label);
+                        if (workingTaxaBlock.getTaxaSet().get(workingTaxonId)) {
+                            final Taxon workingTaxon = workingTaxaBlock.get(workingTaxonId);
+                            workingTaxon.setDisplayLabel(label);
+                            mainWindow.updateDataView(mainWindow.getWorkflow().getWorkingTaxaNode());
+                        }
                     }));
         }
     }
