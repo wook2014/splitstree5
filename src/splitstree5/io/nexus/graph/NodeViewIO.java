@@ -66,7 +66,7 @@ public class NodeViewIO {
             final RichTextLabel label = nv.getLabel();
 
 
-            buf.append(String.format(" L: '%s' %s %s", label.getText(),
+            buf.append(String.format(" L: '%s' %s %s", Basic.protectBackSlashes(label.getText()),
                     Basic.toString(label.getTranslateX(), 4),
                     Basic.toString(label.getTranslateY(), 4)));
             buf.append(String.format(" %s '%s'", label.getTextFill().toString(), FontUtils.toString(label.getFont())));

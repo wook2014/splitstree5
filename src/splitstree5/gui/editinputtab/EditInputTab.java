@@ -174,7 +174,7 @@ public class EditInputTab extends EditTextViewTab {
         applyButton.disableProperty().bind(Val.map(codeArea.lengthProperty(), n -> n == 0));
         //highlightButton.disableProperty().bind(getCodeArea().textProperty().isEmpty()); //+++
 
-        applyButton.setOnAction((e) -> {
+        applyButton.setOnAction(e -> {
             try {
                 if (tmpFile == null) {
                     tmpFile = Basic.getUniqueFileName(System.getProperty("user.dir"), "Untitled", "tmp");
@@ -259,15 +259,15 @@ public class EditInputTab extends EditTextViewTab {
         final CodeArea textArea = getCodeArea();
 
         return new ContextMenu(
-                createMenuItem("Undo", (e) -> textArea.undo()),
-                createMenuItem("Redo", (e) -> textArea.redo()),
-                createMenuItem("Cut", (e) -> textArea.cut()),
-                createMenuItem("Copy", (e) -> textArea.copy()),
-                createMenuItem("Paste", (e) -> textArea.paste()),
-                createMenuItem("Delete", (e) -> textArea.deleteText(textArea.getSelection())),
+                createMenuItem("Undo", e -> textArea.undo()),
+                createMenuItem("Redo", e -> textArea.redo()),
+                createMenuItem("Cut", e -> textArea.cut()),
+                createMenuItem("Copy", e -> textArea.copy()),
+                createMenuItem("Paste", e -> textArea.paste()),
+                createMenuItem("Delete", e -> textArea.deleteText(textArea.getSelection())),
                 new SeparatorMenuItem(),
-                createMenuItem("Select All", (e) -> textArea.selectAll()),
-                createMenuItem("Select Brackets", (e) -> selectBrackets(textArea)));
+                createMenuItem("Select All", e -> textArea.selectAll()),
+                createMenuItem("Select Brackets", e -> selectBrackets(textArea)));
     }
 
     private MenuItem createMenuItem(String name, EventHandler<ActionEvent> eventHandler) {
@@ -283,7 +283,7 @@ public class EditInputTab extends EditTextViewTab {
 
         final CodeArea codeArea = getCodeArea();
 
-        controller.getOpenMenuItem().setOnAction((e) -> {
+        controller.getOpenMenuItem().setOnAction(e -> {
             final File previousDir = new File(ProgramProperties.get("InputDir", ""));
 
             final FileChooser fileChooser = new FileChooser();
@@ -320,12 +320,12 @@ public class EditInputTab extends EditTextViewTab {
         controller.getImportGenomesMenuItem().disableProperty().bind(new SimpleBooleanProperty(true));
 
 
-        controller.getPasteMenuItem().setOnAction((e) -> {
+        controller.getPasteMenuItem().setOnAction(e -> {
             e.consume();
             codeArea.paste();
         });
 
-        controller.getSelectFromPreviousMenuItem().setOnAction((e) -> {
+        controller.getSelectFromPreviousMenuItem().setOnAction(e -> {
             for (String word : MainWindowManager.getPreviousSelection()) {
                 final Pattern pattern = Pattern.compile(word);
                 String source = codeArea.getText();
@@ -340,34 +340,34 @@ public class EditInputTab extends EditTextViewTab {
         controller.getSelectFromPreviousMenuItem().disableProperty().bind(Bindings.isEmpty(MainWindowManager.getPreviousSelection()));
 
         final MenuItem undoMenuItem = controller.getUndoMenuItem();
-        undoMenuItem.setOnAction((e) -> codeArea.undo());
+        undoMenuItem.setOnAction(e -> codeArea.undo());
         //undoMenuItem.setText("Undo edit");
         //undoMenuItem.disableProperty().bind(getTextArea().undoableProperty().not());
         undoMenuItem.disableProperty().bind(Val.map(codeArea.undoAvailableProperty(), n -> !n));
 
         final MenuItem redoMenuItem = controller.getRedoMenuItem();
-        redoMenuItem.setOnAction((e) -> codeArea.redo());
+        redoMenuItem.setOnAction(e -> codeArea.redo());
         //redoMenuItem.setText("Redo edit");
         //redoMenuItem.disableProperty().bind(getTextArea().redoableProperty().not());
         redoMenuItem.disableProperty().bind(Val.map(codeArea.redoAvailableProperty(), n -> !n));
 
-        controller.getReplaceMenuItem().setOnAction((e) -> findToolBar.setShowReplaceToolBar(true));
+        controller.getReplaceMenuItem().setOnAction(e -> findToolBar.setShowReplaceToolBar(true));
         controller.getReplaceMenuItem().setDisable(false);
 
-        controller.getCutMenuItem().setOnAction((e) -> {
+        controller.getCutMenuItem().setOnAction(e -> {
             e.consume();
             codeArea.cut();
         });
         //controller.getCutMenuItem().disableProperty().bind(getTextArea().selectedTextProperty().length().isEqualTo(0));
         controller.getCutMenuItem().disableProperty().bind(Val.map(codeArea.selectedTextProperty(), n -> n.length() == 0));
 
-        controller.getDeleteMenuItem().setOnAction((e) -> {
+        controller.getDeleteMenuItem().setOnAction(e -> {
             e.consume();
             codeArea.deleteText(getCodeArea().getSelection());
         });
         controller.getDeleteMenuItem().disableProperty().bind(Val.map(codeArea.selectedTextProperty(), n -> n.length() == 0));
 
-        controller.getDuplicateMenuItem().setOnAction((e) -> {
+        controller.getDuplicateMenuItem().setOnAction(e -> {
             e.consume();
             codeArea.replaceSelection(codeArea.getSelectedText() + codeArea.getSelectedText());
         });
