@@ -103,17 +103,17 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
                 taxaBlock = new TaxaBlock();
                 splitsBlock = new SplitsBlock();
                 final int s = SplitsUtilities.getTighestSplit(selectedTaxa, splitsBlock0);
-                final double weight = splitsBlock0.get(s).getWeight();
-                final Triplet<Integer, Double, Double> rootingSplit = new Triplet<>(s, 0.5 * weight, 0.5 * weight);
+                final Triplet<Integer, Double, Double> rootingSplit = SplitsUtilities.computeRootLocation(taxaBlock0.getNtax(), splitsBlock0, s, isOptionUseWeights(), progress);
                 setupForRootedNetwork(getOptionLayout() == Layout.RootBySelectedOutgroupAlt, rootingSplit, taxaBlock0, splitsBlock0, taxaBlock, splitsBlock, progress);
             } else {
                 NotificationManager.showWarning(selectedTaxa.cardinality() == 0 ? "No taxa selected" : "Invalid taxa selected");
-                return;
+                taxaBlock = taxaBlock0;
+                splitsBlock = splitsBlock0;
             }
         } else {
             taxaBlock = new TaxaBlock();
             splitsBlock = new SplitsBlock();
-            final Triplet<Integer, Double, Double> rootingSplit = SplitsUtilities.computeMidpoint(isOptionUseWeights(), taxaBlock0.getNtax(), splitsBlock0, progress);
+            final Triplet<Integer, Double, Double> rootingSplit = SplitsUtilities.computeRootLocation(taxaBlock0.getNtax(), splitsBlock0, 0, isOptionUseWeights(), progress);
             setupForRootedNetwork(getOptionLayout() == Layout.MidPointRootedAlt, rootingSplit, taxaBlock0, splitsBlock0, taxaBlock, splitsBlock, progress);
         }
 

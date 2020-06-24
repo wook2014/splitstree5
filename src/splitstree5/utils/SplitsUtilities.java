@@ -330,13 +330,33 @@ public class SplitsUtilities {
         return best;
     }
 
-    public static Triplet<Integer, Double, Double> computeMidpoint(boolean useWeights, int ntaxa, SplitsBlock splitsBlock, ProgressListener progress) throws CanceledException {
+    /**
+     * compute root split and weights for both sides for output rooting for given split. If given split is 0, uses midpoint rooting,
+     * otherwise does mid-point rooting restricted to the given split
+     *
+     * @param splitsBlock splits block
+     * @param split       split
+     * @param useWeights  observe weights
+     * @param progress
+     * @return split-id and weights for the two sides
+     * @throws CanceledException
+     */
+    public static Triplet<Integer, Double, Double> computeRootLocation(int ntaxa, SplitsBlock splitsBlock, int split, boolean useWeights, ProgressListener progress) throws CanceledException {
         progress.setSubtask("Computing root location");
 
         final ArrayList<Pair<Integer, Integer>> pairs = new ArrayList<>();
-        for (int a = 1; a <= ntaxa; a++) {
-            for (int b = a + 1; b <= ntaxa; b++) {
-                pairs.add(new Pair<>(a, b));
+
+        if (split <= 0) {
+            for (int a = 1; a <= ntaxa; a++) {
+                for (int b = a + 1; b <= ntaxa; b++) {
+                    pairs.add(new Pair<>(a, b));
+                }
+            }
+        } else {
+            for (int a : BitSetUtils.members(splitsBlock.get(split).getA())) {
+                for (int b : BitSetUtils.members(splitsBlock.get(split).getB())) {
+                    pairs.add(new Pair<>(a, b));
+                }
             }
         }
 
@@ -352,23 +372,11 @@ public class SplitsUtilities {
             final int a = pair.getFirst();
             final int b = pair.getSecond();
 
-            double remainingLength = 0;
-            final ArrayList<ASplit> separators = new ArrayList<>();
-            for (int s = 1; s <= splitsBlock.getNsplits(); s++) {
-                final ASplit split = splitsBlock.get(s);
-                if (split.isContainedInA(a) != split.isContainedInA(b)) {
-                    separators.add(split);
-                    remainingLength += (useWeights ? split.getWeight() : 1);
-                }
-            }
-            separators.sort(Comparator.comparingInt(p -> p.getPartContaining(a).cardinality()));
-            final ArrayList<ASplit> path = new ArrayList<>();
-            final Single<Double> length = new Single<>(0.0);
-            computeLongestPathRec(useWeights, separators, remainingLength, 0, new ArrayList<>(), 0, path, length);
+            final Pair<Double, ArrayList<ASplit>> lengthAndPath = computeBestPath(splitsBlock, a, b, useWeights);
             synchronized (bestLength) {
-                if (length.get() > bestLength.get()) {
-                    bestLength.set(length.get());
-                    bestPath.set(path);
+                if (lengthAndPath.getFirst() > bestLength.get()) {
+                    bestLength.set(lengthAndPath.getFirst());
+                    bestPath.set(lengthAndPath.getSecond());
                     start.set(a);
                 }
             }
@@ -381,20 +389,30 @@ public class SplitsUtilities {
         if (exception.get() != null)
             throw exception.get();
 
-        double accummulated = 0;
-        for (ASplit split : bestPath.get()) {
-            if (accummulated + (useWeights ? split.getWeight() : 1.0) >= 0.5 * bestLength.get()) {
-                double part1 = 0.5 * bestLength.get() - accummulated;
-                double part2 = (useWeights ? split.getWeight() : 1.0) - part1;
+        final Triplet<Integer, Double, Double> triplet = computeTriplet(splitsBlock, start.get(), bestLength, bestPath, useWeights);
+        if (split == 0 || triplet.getFirst() == split)
+            return triplet;
+        else if (bestPath.get().indexOf(splitsBlock.get(triplet.getFirst())) < (bestPath.get().indexOf(splitsBlock.get(split))))
+            return new Triplet<>(split, splitsBlock.get(split).getWeight(), 0.0);
+        else
+            return new Triplet<>(split, 0.0, splitsBlock.get(split).getWeight());
+    }
 
-                if (split.getPartContaining(1).get(start.get()))
-                    return new Triplet<>(splitsBlock.indexOf(split), part1, part2);
-                else
-                    return new Triplet<>(splitsBlock.indexOf(split), part2, part1);
+    private static Pair<Double, ArrayList<ASplit>> computeBestPath(SplitsBlock splitsBlock, int a, int b, boolean useWeights) {
+        double remainingLength = 0;
+        final ArrayList<ASplit> separators = new ArrayList<>();
+        for (int s = 1; s <= splitsBlock.getNsplits(); s++) {
+            final ASplit split = splitsBlock.get(s);
+            if (split.isContainedInA(a) != split.isContainedInA(b)) {
+                separators.add(split);
+                remainingLength += (useWeights ? split.getWeight() : 1);
             }
-            accummulated += (useWeights ? split.getWeight() : 1.0);
         }
-        return new Triplet<>(0, 0.0, 0.0);
+        separators.sort(Comparator.comparingInt(p -> p.getPartContaining(a).cardinality()));
+        final ArrayList<ASplit> path = new ArrayList<>();
+        final Single<Double> length = new Single<>(0.0);
+        computeLongestPathRec(useWeights, separators, remainingLength, 0, new ArrayList<>(), 0, path, length);
+        return new Pair<>(length.get(), path);
     }
 
     private static void computeLongestPathRec(boolean useWeights, ArrayList<ASplit> splits, double remainingLength, int pos, ArrayList<ASplit> path, double length, ArrayList<ASplit> bestPath, Single<Double> bestLength) {
@@ -416,6 +434,23 @@ public class SplitsUtilities {
                 path.remove(splits.get(pos));
             }
         }
+    }
+
+    private static Triplet<Integer, Double, Double> computeTriplet(SplitsBlock splitsBlock, int a, Single<Double> bestLength, Single<ArrayList<ASplit>> bestPath, boolean useWeights) {
+        double accummulated = 0;
+        for (ASplit split : bestPath.get()) {
+            if (accummulated + (useWeights ? split.getWeight() : 1.0) >= 0.5 * bestLength.get()) {
+                double part1 = 0.5 * bestLength.get() - accummulated;
+                double part2 = (useWeights ? split.getWeight() : 1.0) - part1;
+
+                if (!split.getPartContaining(1).get(a))
+                    return new Triplet<>(splitsBlock.indexOf(split), part1, part2);
+                else
+                    return new Triplet<>(splitsBlock.indexOf(split), part2, part1);
+            }
+            accummulated += (useWeights ? split.getWeight() : 1.0);
+        }
+        return new Triplet<>(0, 0.0, 0.0);
     }
 
     private static boolean isCompatibleWithAll(ArrayList<ASplit> splits, ASplit other) {
