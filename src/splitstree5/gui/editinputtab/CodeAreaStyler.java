@@ -20,9 +20,10 @@
 
 package splitstree5.gui.editinputtab;
 
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import org.fxmisc.richtext.CodeArea;
-import org.reactfx.value.Val;
+//import org.reactfx.value.Val;
 import splitstree5.gui.editinputtab.highlighters.Highlighter;
 import splitstree5.gui.editinputtab.highlighters.NexusHighlighter;
 import splitstree5.gui.editinputtab.highlighters.UniversalHighlighter;
@@ -54,45 +55,25 @@ public class CodeAreaStyler {
         /*
          * Add listeners for highlighting type checking
          */
-        Val.map(codeArea.textProperty(), n -> n.length() >= 6
-                && n.replaceAll("^\\n+", "").substring(0, 6).toLowerCase().equals("#nexus"))
-                .addListener(new javafx.beans.value.ChangeListener<Boolean>() {
-                    @Override
-                    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                        if (newValue) {
-                            if (debug)
-                                System.err.println("Use Nexus highlighter");
-                            highlighter = new NexusHighlighter();
-                        }
-                    }
-                });
 
-        Val.map(codeArea.textProperty(), n -> n.length() != 0 &&
-                n.replaceAll("^\\n+", "").startsWith("<"))
-                .addListener(new javafx.beans.value.ChangeListener<Boolean>() {
-                    @Override
-                    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                        if (newValue) {
-                            if (debug)
-                                System.err.println("Use xml highlighter");
-                            highlighter = new XMLHighlighter();
-                        }
-                    }
-                });
+        codeArea.textProperty().addListener((observableValue, s, t1) -> {
+            if (t1.length() >= 6 && t1.replaceAll("^\\n+", "").substring(0, 6).toLowerCase().equals("#nexus")){
+                highlighter = new NexusHighlighter();
+            }
+        });
 
-        Val.map(codeArea.textProperty(), n -> n.length() >= 6
-                && !n.replaceAll("^\\n+", "").substring(0, 6).toLowerCase().equals("#nexus")
-                && !n.replaceAll("^\\n+", "").startsWith("<"))
-                .addListener(new javafx.beans.value.ChangeListener<Boolean>() {
-                    @Override
-                    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                        if (newValue) {
-                            if (debug)
-                                System.err.println("Use universal highlighter");
-                            highlighter = new UniversalHighlighter();
-                        }
-                    }
-                });
+        codeArea.textProperty().addListener((observableValue, s, t1) -> {
+            if (t1.length() != 0 && t1.replaceAll("^\\n+", "").startsWith("<")){
+                highlighter = new XMLHighlighter();
+            }
+        });
+
+        codeArea.textProperty().addListener((observableValue, s, t1) -> {
+            if (t1.length() >= 6 && !t1.replaceAll("^\\n+", "").substring(0, 6).toLowerCase().equals("#nexus")
+                    && !t1.replaceAll("^\\n+", "").startsWith("<")){
+                highlighter = new UniversalHighlighter();
+            }
+        });
 
         /*
          * Block collapsing

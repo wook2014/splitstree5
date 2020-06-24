@@ -21,7 +21,7 @@
 package splitstree5.gui.editinputtab.collapsing;
 
 import org.fxmisc.richtext.CodeArea;
-import org.reactfx.collection.LiveList;
+//import org.reactfx.collection.LiveList;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,7 +42,7 @@ public class NexusBlockCollapser {
     private ArrayList<Integer> lineIndices = new ArrayList<>();
     private HashMap<Integer, String> tmpBlocksKeeper = new HashMap<>();
 
-    public NexusBlockCollapser(CodeArea codeArea, ArrayList<NexusBlockCollapseInfo> info){
+    /*public NexusBlockCollapser(CodeArea codeArea, ArrayList<NexusBlockCollapseInfo> info){
         this.codeArea = codeArea;
 
         this.nexusBlockCollapseInfos = info;
@@ -53,7 +53,7 @@ public class NexusBlockCollapser {
         int nLines = LiveList.sizeOf(codeArea.getParagraphs()).getValue();
         for (int i = 1; i<= nLines; i++)
             this.lineIndices.add(i);
-    }
+    }*/
 
     /**
      * Get nexus block by id = startLineNumber and collapse/uncollapse it
@@ -151,6 +151,16 @@ public class NexusBlockCollapser {
                 i.setEndPosition(i.getEndPosition() + range - insertion);
             }
         }
+    }
+
+    public ArrayList<Integer> getStartLines(){
+
+        ArrayList<Integer> allStartLines = new ArrayList<>();
+
+        for(NexusBlockCollapseInfo i : this.nexusBlockCollapseInfos)
+            allStartLines.add(i.getStartLine());
+
+        return allStartLines;
     }
 
 }
