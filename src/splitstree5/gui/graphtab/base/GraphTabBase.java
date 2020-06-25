@@ -95,6 +95,8 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
     protected G graph;
 
     protected final NodeLabelSearcher nodeLabelSearcher;
+    final Single<Long> nodeLabelSearchId = new Single<>(0L); // is this used to facilitate that undo/redo acts on all changes made in one search
+
     private NodeLabelSearcher.LabelChangedListener labelChangedListener;
     protected final EdgeLabelSearcher edgeLabelSearcher;
 
@@ -134,7 +136,12 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
 
         // setup find / replace tool bar:
         {
-            nodeLabelSearcher = new NodeLabelSearcher("Nodes", graph, nodeSelectionModel);
+            nodeLabelSearcher = new NodeLabelSearcher("Nodes", graph, nodeSelectionModel) {
+                @Override
+                public void updateView() {
+                    nodeLabelSearchId.set(nodeLabelSearchId.get() + 1);
+                }
+            };
             //nodeLabelSearcher.addLabelChangedListener(v -> Platform.runLater(() -> getUndoManager().doAndAdd(new ChangeNodeLabelCommand(v, node2view.get(v), graph))));
 
             edgeLabelSearcher = new EdgeLabelSearcher("Edges", graph, edgeSelectionModel);
@@ -284,12 +291,14 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
                 if (nv.getNumberOfWorkingTaxonIds() > 0) {
                     final int workingTaxonId = node2view.get(v).getWorkingTaxa().nextSetBit(1);
                     Platform.runLater(() ->
-                            mainWindow.getUndoRedoManager().doAndAdd(new ChangeValueCommand<>("Change Label", workingTaxaBlock.get(workingTaxonId).getDisplayLabel(), graph.getLabel(v),
+                            mainWindow.getUndoRedoManager().doAndAdd(new ChangeValueCommand<>("Change Label", nodeLabelSearchId.get(),
+                                    workingTaxaBlock.get(workingTaxonId).getDisplayLabel(), graph.getLabel(v),
                                     (label) -> {
                                         final Taxon workingTaxon = workingTaxaBlock.get(workingTaxonId);
                                         workingTaxon.setDisplayLabel(label);
                                         mainWindow.updateDataView(mainWindow.getWorkflow().getWorkingTaxaNode());
                                         nv.setLabel(workingTaxon.getDisplayLabelOrName());
+                                        graph.setLabel(v, workingTaxon.getDisplayLabelOrName());
                                     })));
                 } else {
                     Platform.runLater(() -> getUndoManager().doAndAdd(new ChangeNodeLabelCommand(v, node2view.get(v), graph)));
