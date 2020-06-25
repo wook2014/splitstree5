@@ -22,9 +22,7 @@ package splitstree5.gui.editinputtab;
 
 
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.IndexRange;
@@ -41,7 +39,6 @@ import jloda.util.ProgramProperties;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
-//import org.reactfx.value.Val;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.editinputtab.highlighters.NexusHighlighter;
 import splitstree5.menu.MenuController;

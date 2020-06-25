@@ -56,10 +56,6 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-//import org.reactfx.Subscription;
-//import org.reactfx.value.Val;
-//import splitstree5.gui.editinputtab.collapsing.LineNumberFactoryWithCollapsing;
-
 /**
  * tab for entering data
  * Daniel Huson, Daria Evseeva, 2.2018
@@ -91,30 +87,8 @@ public class EditInputTab extends EditTextViewTab {
         CodeAreaStyler codeAreaStyler = new CodeAreaStyler(codeArea);
         codeArea.setEditable(true);
 
-        // recompute the syntax highlighting 500 ms after user stops editing area
-        /*Subscription cleanupWhenNoLongerNeedIt = codeArea
-
-                // plain changes = ignore style changes that are emitted when syntax highlighting is reapplied
-                // multi plain changes = save computation by not rerunning the code multiple times
-                // when making multiple changes (e.g. renaming a method at multiple parts in file)
-                .multiPlainChanges()
-
-                // do not emit an event until 500 ms have passed since the last emission of previous stream
-                .successionEnds(Duration.ofMillis(500))
-
-                // run the following code block when previous stream emits an event
-                //.subscribe(ignore -> codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText())));
-                .subscribe(ignore -> codeArea.setStyleSpans(0,
-                        codeAreaStyler.getHighlighter().computeHighlighting(codeArea.getText())));*/
-
-
-
         codeArea.textProperty().addListener((observableValue, s, t1) ->
                 codeArea.setStyleSpans(0, codeAreaStyler.getHighlighter().computeHighlighting(codeArea.getText())));
-
-
-        /////codeArea.setAccessibleText("Input and edit data in any supported format");
-        //setPromptText("Input and edit data in any supported format");
 
         codeArea.setContextMenu(createContextMenu());
 

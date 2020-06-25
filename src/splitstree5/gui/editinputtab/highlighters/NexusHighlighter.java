@@ -65,7 +65,6 @@ public class NexusHighlighter implements Highlighter {
     private static final String PAREN_PATTERN = "[()]";
     private static final String COMMENT_PATTERN = "\\[(.|\\R)*?]";
     private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
-    private static final String NEW_LINE_PATTERN = "[\\r\\n]+";
 
     private static final Pattern PATTERN = Pattern.compile(
             "(" + KEYWORD_PATTERN + ")"
@@ -74,8 +73,6 @@ public class NexusHighlighter implements Highlighter {
                     + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
                     + "|(?<BLOCK>" + BLOCK_PATTERN + ")"
                     + "|(?<NK>" + NETWORK_KEYWORDS_PATTERN + ")"
-                    + "|(?<COLLAPSED><< Collapsed \\w+Block >>)"
-                    + "|(?<NEWLINE>Taxa)"
     );
 
     @Override
@@ -114,10 +111,10 @@ public class NexusHighlighter implements Highlighter {
                     matcher.group("KEYWORDSLINE") != null ? "keyword" :
                             matcher.group("BLOCK") != null ? "block"+collapsing :
                                     matcher.group("NK") != null ? "keyword" :
-                                            matcher.group("COLLAPSED") != null ? "collapsed" :
                                                     matcher.group("PAREN") != null ? "paren" :
                                                             matcher.group("COMMENT") != null ? "comment" :
-                                                                    null;
+                                                                    matcher.group("STRING") != null ? "string" :
+                                                                        null;
 
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
 
