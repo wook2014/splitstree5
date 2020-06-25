@@ -7,9 +7,9 @@ module splitstreefive {
     requires transitive java.sql;
     requires transitive java.desktop;
 
+    requires richtextfx.fat;
     requires junit;
     requires Jama;
-    requires richtextfx.fat;
     requires fx.platform.utils;
     requires com.install4j.runtime;
 

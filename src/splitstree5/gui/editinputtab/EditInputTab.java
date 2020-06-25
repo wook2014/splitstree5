@@ -44,24 +44,21 @@ import jloda.util.IOExceptionWithLineNumber;
 import jloda.util.ProgramProperties;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
-//import org.reactfx.Subscription;
-//import org.reactfx.value.Val;
 import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.dialogs.importer.ImporterManager;
-//import splitstree5.gui.editinputtab.collapsing.LineNumberFactoryWithCollapsing;
-import splitstree5.gui.editinputtab.collapsing.NexusBlockCollapseInfo;
-import splitstree5.gui.editinputtab.collapsing.NexusBlockCollapser;
 import splitstree5.gui.editinputtab.highlighters.NexusHighlighter;
 import splitstree5.io.nexus.workflow.WorkflowNexusInput;
 import splitstree5.main.MainWindow;
 import splitstree5.menu.MenuController;
 
 import java.io.*;
-import java.time.Duration;
-import java.util.ArrayList;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+//import org.reactfx.Subscription;
+//import org.reactfx.value.Val;
+//import splitstree5.gui.editinputtab.collapsing.LineNumberFactoryWithCollapsing;
 
 /**
  * tab for entering data
@@ -317,10 +314,10 @@ public class EditInputTab extends EditTextViewTab {
                     System.err.println("Running time EditInputTab: " + totalTime + " sec");
             }
         });
-        controller.getOpenMenuItem().disableProperty().bind(emptyProperty);
+        controller.getOpenMenuItem().disableProperty().bind(emptyProperty.not());
 
         RecentFilesManager.getInstance().setFileOpener(this::loadFile);
-        controller.getOpenRecentMenu().disableProperty().bind(emptyProperty);
+        controller.getOpenRecentMenu().disableProperty().bind(emptyProperty.not());
 
         controller.getImportMenuItem().disableProperty().bind(new SimpleBooleanProperty(true));
         controller.getInputEditorMenuItem().disableProperty().bind(new SimpleBooleanProperty(true));
