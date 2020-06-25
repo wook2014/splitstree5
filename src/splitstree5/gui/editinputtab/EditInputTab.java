@@ -44,11 +44,11 @@ import jloda.util.IOExceptionWithLineNumber;
 import jloda.util.ProgramProperties;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
-import org.reactfx.Subscription;
-import org.reactfx.value.Val;
+//import org.reactfx.Subscription;
+//import org.reactfx.value.Val;
 import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.dialogs.importer.ImporterManager;
-import splitstree5.gui.editinputtab.collapsing.LineNumberFactoryWithCollapsing;
+//import splitstree5.gui.editinputtab.collapsing.LineNumberFactoryWithCollapsing;
 import splitstree5.gui.editinputtab.collapsing.NexusBlockCollapseInfo;
 import splitstree5.gui.editinputtab.collapsing.NexusBlockCollapser;
 import splitstree5.gui.editinputtab.highlighters.NexusHighlighter;
@@ -78,6 +78,8 @@ public class EditInputTab extends EditTextViewTab {
     // todo undo doesn't work: collapse-uncollapce-undo. solution:dont delete blocks from the tmpBlocksKeeper after uncollapsing
     // todo zeilennummern, finding, performance?
 
+
+    // todo check all properties!
     /**
      * constructor
      *
@@ -93,7 +95,7 @@ public class EditInputTab extends EditTextViewTab {
         codeArea.setEditable(true);
 
         // recompute the syntax highlighting 500 ms after user stops editing area
-        Subscription cleanupWhenNoLongerNeedIt = codeArea
+        /*Subscription cleanupWhenNoLongerNeedIt = codeArea
 
                 // plain changes = ignore style changes that are emitted when syntax highlighting is reapplied
                 // multi plain changes = save computation by not rerunning the code multiple times
@@ -106,7 +108,13 @@ public class EditInputTab extends EditTextViewTab {
                 // run the following code block when previous stream emits an event
                 //.subscribe(ignore -> codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText())));
                 .subscribe(ignore -> codeArea.setStyleSpans(0,
-                        codeAreaStyler.getHighlighter().computeHighlighting(codeArea.getText())));
+                        codeAreaStyler.getHighlighter().computeHighlighting(codeArea.getText())));*/
+
+
+
+        codeArea.textProperty().addListener((observableValue, s, t1) ->
+                codeArea.setStyleSpans(0, codeAreaStyler.getHighlighter().computeHighlighting(codeArea.getText())));
+
 
         /////codeArea.setAccessibleText("Input and edit data in any supported format");
         //setPromptText("Input and edit data in any supported format");
@@ -147,7 +155,7 @@ public class EditInputTab extends EditTextViewTab {
             if(missingChar.getText().length() >= MAX_LENGTH_SPECIAL_CHAR_FIELD)
                 event.consume();  // todo use getDataType from ImporterManager
         });
-        missingChar.disableProperty().bind(Val.map(codeArea.lengthProperty(), n -> n == 0));
+        missingChar.disableProperty().bind(emptyProperty);
         missing.bind(missingChar.textProperty());
 
         final Label labelGapChar = new Label("gapChar");
@@ -157,7 +165,7 @@ public class EditInputTab extends EditTextViewTab {
             if (gapChar.getText().length() >= MAX_LENGTH_SPECIAL_CHAR_FIELD)
                 event.consume();
         });
-        gapChar.disableProperty().bind(Val.map(codeArea.lengthProperty(), n -> n == 0));
+        gapChar.disableProperty().bind(emptyProperty);
         gap.bind(gapChar.textProperty());
 
         //++++++ SPECIAL CHARACTERS EDITOR END
@@ -171,7 +179,7 @@ public class EditInputTab extends EditTextViewTab {
         } else
             toolBar.getItems().add(applyButton);
 
-        applyButton.disableProperty().bind(Val.map(codeArea.lengthProperty(), n -> n == 0));
+        applyButton.disableProperty().bind(emptyProperty);
         //highlightButton.disableProperty().bind(getCodeArea().textProperty().isEmpty()); //+++
 
         applyButton.setOnAction(e -> {
@@ -224,25 +232,25 @@ public class EditInputTab extends EditTextViewTab {
                     if (debug)
                         System.err.println("Block collapsing is active");
 
-                    ArrayList<NexusBlockCollapseInfo> info =
+                    /*ArrayList<NexusBlockCollapseInfo> info =
                             ((NexusHighlighter) codeAreaStyler.getHighlighter()).getNexusBlockCollapseInfos();
                     if (debug)
                         System.err.println("number ob blocks: " + info.size());
-                    NexusBlockCollapser nexusBlockCollapser = new NexusBlockCollapser(getCodeArea(), info);
-                    for (NexusBlockCollapseInfo i : info) {
+                    NexusBlockCollapser nexusBlockCollapser = new NexusBlockCollapser(getCodeArea(), info);*/
+                    /*for (NexusBlockCollapseInfo i : info) {
                         //int[] a = CodeAreaStyler.getLinesRangeByIndex(i.getStartPosition(), i.getEndPosition(), codeArea);
                         //System.err.println("lines" + a[0]+ a[1]);
                         if (debug)
                             System.err.println("block: " + i.getStartPosition() + "-" + i.getEndPosition() + " lines: " +
                                     i.getStartLine() + "-" + i.getEndLine());
-                    }
-                    if (debug)
+                    }*/
+                    /*if (debug)
                         System.err.println("Indices!");
                     if (debug)
                         for (Integer i : nexusBlockCollapser.getLineIndices())
-                            System.err.print(i + "-");
+                            System.err.print(i + "-");*/
 
-                    getCodeArea().setParagraphGraphicFactory(LineNumberFactoryWithCollapsing.get(getCodeArea(), nexusBlockCollapser));
+                    //getCodeArea().setParagraphGraphicFactory(LineNumberFactoryWithCollapsing.get(getCodeArea(), nexusBlockCollapser));
                     codeAreaStyler.setCollapsingActive(true);
                     ((NexusHighlighter) codeAreaStyler.getHighlighter()).setCollapsingActive(true);
                 }
@@ -309,10 +317,10 @@ public class EditInputTab extends EditTextViewTab {
                     System.err.println("Running time EditInputTab: " + totalTime + " sec");
             }
         });
-        controller.getOpenMenuItem().disableProperty().bind(Val.map(codeArea.lengthProperty(), n -> n != 0));
+        controller.getOpenMenuItem().disableProperty().bind(emptyProperty);
 
         RecentFilesManager.getInstance().setFileOpener(this::loadFile);
-        controller.getOpenRecentMenu().disableProperty().bind(Val.map(codeArea.lengthProperty(), n -> n != 0));
+        controller.getOpenRecentMenu().disableProperty().bind(emptyProperty);
 
         controller.getImportMenuItem().disableProperty().bind(new SimpleBooleanProperty(true));
         controller.getInputEditorMenuItem().disableProperty().bind(new SimpleBooleanProperty(true));
@@ -343,13 +351,13 @@ public class EditInputTab extends EditTextViewTab {
         undoMenuItem.setOnAction(e -> codeArea.undo());
         //undoMenuItem.setText("Undo edit");
         //undoMenuItem.disableProperty().bind(getTextArea().undoableProperty().not());
-        undoMenuItem.disableProperty().bind(Val.map(codeArea.undoAvailableProperty(), n -> !n));
+        undoMenuItem.disableProperty().bind(emptyProperty);
 
         final MenuItem redoMenuItem = controller.getRedoMenuItem();
         redoMenuItem.setOnAction(e -> codeArea.redo());
         //redoMenuItem.setText("Redo edit");
         //redoMenuItem.disableProperty().bind(getTextArea().redoableProperty().not());
-        redoMenuItem.disableProperty().bind(Val.map(codeArea.redoAvailableProperty(), n -> !n));
+        redoMenuItem.disableProperty().bind(emptyProperty);
 
         controller.getReplaceMenuItem().setOnAction(e -> findToolBar.setShowReplaceToolBar(true));
         controller.getReplaceMenuItem().setDisable(false);
@@ -359,19 +367,19 @@ public class EditInputTab extends EditTextViewTab {
             codeArea.cut();
         });
         //controller.getCutMenuItem().disableProperty().bind(getTextArea().selectedTextProperty().length().isEqualTo(0));
-        controller.getCutMenuItem().disableProperty().bind(Val.map(codeArea.selectedTextProperty(), n -> n.length() == 0));
+        controller.getCutMenuItem().disableProperty().bind(selectionEmpty);
 
         controller.getDeleteMenuItem().setOnAction(e -> {
             e.consume();
             codeArea.deleteText(getCodeArea().getSelection());
         });
-        controller.getDeleteMenuItem().disableProperty().bind(Val.map(codeArea.selectedTextProperty(), n -> n.length() == 0));
+        controller.getDeleteMenuItem().disableProperty().bind(selectionEmpty);
 
         controller.getDuplicateMenuItem().setOnAction(e -> {
             e.consume();
             codeArea.replaceSelection(codeArea.getSelectedText() + codeArea.getSelectedText());
         });
-        controller.getDuplicateMenuItem().disableProperty().bind(Val.map(codeArea.selectedTextProperty(), n -> n.length() == 0));
+        controller.getDuplicateMenuItem().disableProperty().bind(selectionEmpty);
     }
 
     // todo performance test

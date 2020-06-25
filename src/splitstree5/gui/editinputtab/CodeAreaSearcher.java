@@ -20,13 +20,14 @@
 
 package splitstree5.gui.editinputtab;
 
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.IndexRange;
 import jloda.fx.find.ITextSearcher;
 import org.fxmisc.richtext.CodeArea;
-import org.reactfx.value.Val;
+//import org.reactfx.value.Val;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -52,11 +53,20 @@ public class CodeAreaSearcher implements ITextSearcher {
     public CodeAreaSearcher(String name, CodeArea codeArea) {
         this.name = name;
         this.codeArea = codeArea;
+        BooleanBinding emptyProperty = new BooleanBinding() {
+            { super.bind(codeArea.getContent().lengthProperty()); }
+            @Override
+            protected boolean computeValue() {
+                return codeArea.getContent().getLength() == 0;
+            }
+        };
+
         if (codeArea != null) {
             //globalFindable.bind(codeArea.textProperty().isNotEmpty());
             //selectionReplaceable.bind(codeArea.selectedTextProperty().isNotEmpty());
-            globalFindable.bind(Val.map(codeArea.lengthProperty(), n -> n == 0));
-            selectionReplaceable.bind(Val.map(codeArea.lengthProperty(), n -> n == 0));
+            globalFindable.bind(emptyProperty);
+                    //Val.map(codeArea.lengthProperty(), n -> n == 0));
+            selectionReplaceable.bind(emptyProperty);
         }
     }
 

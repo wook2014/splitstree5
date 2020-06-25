@@ -22,6 +22,9 @@ package splitstree5.gui.editinputtab;
 
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.IndexRange;
@@ -38,7 +41,7 @@ import jloda.util.ProgramProperties;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
-import org.reactfx.value.Val;
+//import org.reactfx.value.Val;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.editinputtab.highlighters.NexusHighlighter;
 import splitstree5.menu.MenuController;
@@ -53,8 +56,25 @@ public class EditTextViewTab extends ViewerTab {
     //private final TextArea textArea;
     //private final TextAreaSearcher textAreaSearcher;
 
-    private final VirtualizedScrollPane<CodeArea> codeArea;
+    private final VirtualizedScrollPane<CodeArea> codeArea = new VirtualizedScrollPane<>(new CodeArea());;
     private final CodeAreaSearcher codeAreaSearcher;
+    BooleanBinding emptyProperty = new BooleanBinding() {
+        { super.bind(codeArea.getContent().lengthProperty()); }
+        @Override
+        protected boolean computeValue() {
+            return codeArea.getContent().getLength() == 0;
+        }
+    };
+
+    BooleanBinding selectionEmpty = new BooleanBinding() {
+        { super.bind(codeArea.getContent().selectionProperty()); }
+
+        @Override
+        protected boolean computeValue() {
+            return codeArea.getContent().getSelection().getLength() == 0;
+        }
+    };
+
 
     /**
      * constructor
@@ -76,7 +96,7 @@ public class EditTextViewTab extends ViewerTab {
         label.textProperty().bind(nameProperty);
         setGraphic(label);
         setText("");
-        codeArea = new VirtualizedScrollPane<>(new CodeArea());
+        //codeArea = new VirtualizedScrollPane<>(new CodeArea());
         //CodeArea codeArea = vsp.getContent();
         codeArea.getContent().setParagraphGraphicFactory(LineNumberFactory.get(codeArea.getContent()));
         //codeArea.getContent().setParagraphGraphicFactory(LineNumberFactoryWithCollapsing.get(codeArea.getContent()));
@@ -215,8 +235,8 @@ public class EditTextViewTab extends ViewerTab {
         //controller.getSelectNoneMenuItem().disableProperty().bind(codeArea.selectedTextProperty().isEmpty());
 
         controller.getSelectBracketsMenuItem().setOnAction((e) -> selectBrackets(codeArea.getContent()));
-        controller.getSelectBracketsMenuItem().disableProperty().bind
-                (Val.map(codeArea.getContent().lengthProperty(), n -> n == 0));
+        controller.getSelectBracketsMenuItem().disableProperty().bind(emptyProperty);
+                //(Val.map(codeArea.getContent().lengthProperty(), n -> n == 0));
 
         controller.getFindMenuItem().setOnAction((e) -> findToolBar.setShowFindToolBar(true));
         controller.getFindAgainMenuItem().setOnAction((e) -> findToolBar.findAgain());

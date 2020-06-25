@@ -34,7 +34,7 @@ public class NexusHighlighter implements Highlighter {
     private static boolean verbose = false;
 
     private boolean collapsingActive = false;
-    private ArrayList<NexusBlockCollapseInfo> nexusBlockCollapseInfos;
+    //private ArrayList<NexusBlockCollapseInfo> nexusBlockCollapseInfos;
     private int nexusBlockStart = 0;
     private int nexusBlockEnd = 0;
 
@@ -81,7 +81,7 @@ public class NexusHighlighter implements Highlighter {
     @Override
     public StyleSpans<Collection<String>> computeHighlighting(String text) {
 
-        nexusBlockCollapseInfos = new ArrayList<>();
+        //nexusBlockCollapseInfos = new ArrayList<>();
 
         String collapsing = "";
         if (collapsingActive)
@@ -107,7 +107,7 @@ public class NexusHighlighter implements Highlighter {
                 if (verbose)
                     System.err.println(matcher.group(0) + matcher.end(0));
                 nexusBlockEnd = matcher.end(0);
-                nexusBlockCollapseInfos.add(new NexusBlockCollapseInfo(nexusBlockStart, nexusBlockEnd));
+                //nexusBlockCollapseInfos.add(new NexusBlockCollapseInfo(nexusBlockStart, nexusBlockEnd));
             }
 
             String styleClass =
@@ -142,7 +142,7 @@ public class NexusHighlighter implements Highlighter {
         this.collapsingActive = active;
     }
 
-    public ArrayList<NexusBlockCollapseInfo> getNexusBlockCollapseInfos(){
+    /*public ArrayList<NexusBlockCollapseInfo> getNexusBlockCollapseInfos(){
         return this.nexusBlockCollapseInfos;
-    }
+    }*/
 }
