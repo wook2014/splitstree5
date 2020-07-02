@@ -289,9 +289,9 @@ public class GenomesImporter {
 
             for (Genome genome : genomesBlock.getGenomes()) {
                 final String name = RichTextLabel.getRawText(genome.getName());
-                System.err.println("Name: " + name);
                 final String uniqueName = taxaBlock.addTaxonByName(name);
-                taxaBlock.get(uniqueName).setDisplayLabel(genome.getName());
+                if (!uniqueName.equals(genome.getName()))
+                    taxaBlock.get(uniqueName).setDisplayLabel(genome.getName());
             }
 
             try (BufferedWriter w = new BufferedWriter(new FileWriter(fileName))) {
