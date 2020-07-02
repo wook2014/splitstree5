@@ -211,6 +211,22 @@ public class TaxaBlock extends DataBlock {
     }
 
     /**
+     * adds a name to the taxa, making it unique, if necessary
+     *
+     * @param name0 original name
+     * @return unique name
+     */
+    public String addTaxonByName(String name0) {
+        int count = 1;
+        String name = name0;
+        while (name2taxon.containsKey(name)) {
+            name = name0 + "-" + (count++);
+        }
+        getTaxa().add(new Taxon(name));
+        return name;
+    }
+
+    /**
      * computes index map for modified block
      *
      * @param modifiedTaxaBlock

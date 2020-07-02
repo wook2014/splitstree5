@@ -37,7 +37,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -290,9 +289,9 @@ public class GenomesImporter {
 
             for (Genome genome : genomesBlock.getGenomes()) {
                 final String name = RichTextLabel.getRawText(genome.getName());
-                taxaBlock.addTaxaByNames(Collections.singleton(name));
-                if (!name.equals(genome.getName()))
-                    taxaBlock.get(name).setDisplayLabel(genome.getName());
+                System.err.println("Name: " + name);
+                final String uniqueName = taxaBlock.addTaxonByName(name);
+                taxaBlock.get(uniqueName).setDisplayLabel(genome.getName());
             }
 
             try (BufferedWriter w = new BufferedWriter(new FileWriter(fileName))) {
@@ -317,9 +316,9 @@ public class GenomesImporter {
 
     public static class InputRecord {
         private String name;
-        private byte[] sequence;
-        private String file;
-        private long offset;
+        private final byte[] sequence;
+        private final String file;
+        private final long offset;
 
         public InputRecord(String name, byte[] sequence, String file, long offset) {
             this.name = name;

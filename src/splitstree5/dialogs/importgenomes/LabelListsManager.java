@@ -188,8 +188,7 @@ public class LabelListsManager {
         label.setText("Taxa: " + displayLabels.size());
         updateFrequentWordButtons();
     }
-
-
+    
     public Map<String, String> computeLine2Label() {
         final Map<String, String> map = new HashMap<>();
         for (String line : line2PosInDisplayLabels.keySet()) {
@@ -199,7 +198,7 @@ public class LabelListsManager {
                 name = displayLabels.get(pos);
             else
                 name = line.replaceAll("'", "_");
-            map.put(line, Basic.getUniqueName(name, map.values()));
+            map.put(line, name);
         }
         return map;
     }
