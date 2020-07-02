@@ -174,13 +174,16 @@ public class LabelListsManager {
         final ArrayList<String> oldDisplayLabels = new ArrayList<>(displayLabels);
         displayLabels.clear();
 
-        for (String label : getLabels(Arrays.asList(Basic.split(controller.getInputTextArea().getText(), ',')), controller.getTaxaChoiceBox().getValue())) {
-            final Integer pos = line2PosInDisplayLabels.get(label);
-            if (pos != null && pos < oldDisplayLabels.size())
-                displayLabels.add(oldDisplayLabels.get(pos));
-            else
-                displayLabels.add(label.replaceAll("'", "_"));
-            line2PosInDisplayLabels.put(label, displayLabels.size() - 1);
+        final List<String> labels = getLabels(Arrays.asList(Basic.split(controller.getInputTextArea().getText(), ',')), controller.getTaxaChoiceBox().getValue());
+        if (labels != null) {
+            for (String label : labels) {
+                final Integer pos = line2PosInDisplayLabels.get(label);
+                if (pos != null && pos < oldDisplayLabels.size())
+                    displayLabels.add(oldDisplayLabels.get(pos));
+                else
+                    displayLabels.add(label.replaceAll("'", "_"));
+                line2PosInDisplayLabels.put(label, displayLabels.size() - 1);
+            }
         }
         label.setText("Taxa: " + displayLabels.size());
         updateFrequentWordButtons();

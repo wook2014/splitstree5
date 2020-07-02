@@ -19,12 +19,15 @@
 
 package splitstree5.dialogs.importgenomes;
 
+import javafx.beans.binding.When;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.scene.Scene;
+import javafx.scene.layout.Region;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import jloda.fx.control.RichTextLabel;
 import jloda.fx.util.*;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
@@ -130,6 +133,12 @@ public class ImportGenomesDialog {
         controller.getCancelButton().setOnAction(c -> stage.close());
         controller.getCancelButton().disableProperty().bind(isRunning);
 
+        controller.getSupportedHTMLTextArea().setText("Supported HTML tags:\n" + RichTextLabel.getSupportedHTMLTags());
+        controller.getSupportedHTMLTextArea().visibleProperty().bind(controller.getHtmlInfoButton().selectedProperty());
+        controller.getSupportedHTMLTextArea().prefRowCountProperty().bind(new When(controller.getHtmlInfoButton().selectedProperty()).then(4).otherwise(0));
+        controller.getSupportedHTMLTextArea().prefHeightProperty().bind(new When(controller.getHtmlInfoButton().selectedProperty()).then(Region.USE_COMPUTED_SIZE).otherwise(0));
+
+
         controller.getDisplayLabelsListView().setItems(FXCollections.observableArrayList());
         final LabelListsManager labelListsManager = new LabelListsManager(controller);
         controller.getTaxonLabelsTab().selectedProperty().addListener((c, o, n) -> {
@@ -144,6 +153,13 @@ public class ImportGenomesDialog {
         });
 
         controller.getFilesTab().disableProperty().bind(isRunning);
+
+        final RichTextLabel richTextLabel = new RichTextLabel();
+        controller.getStatusFlowPane().getChildren().add(richTextLabel);
+
+        controller.getDisplayLabelsListView().getSelectionModel().selectedItemProperty().addListener((c, o, n) -> {
+            richTextLabel.setText(n != null ? n : "");
+        });
 
         controller.getApplyButton().setOnAction(c -> {
             final GenomesImporter genomesImporter = new GenomesImporter(Arrays.asList(Basic.split(controller.getInputTextArea().getText(), ',')),

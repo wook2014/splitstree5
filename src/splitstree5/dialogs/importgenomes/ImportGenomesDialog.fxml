@@ -24,6 +24,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
 <AnchorPane fx:id="rootPane" prefHeight="400.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8.0.111"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="splitstree5.dialogs.importgenomes.ImportGenomesController">
@@ -204,18 +205,38 @@
                                                     <children>
                                                         <VBox fx:id="displayLabelsVBox">
                                                             <children>
-                                                                <Label text="Edit display labels:">
+                                                                <HBox>
                                                                     <VBox.margin>
                                                                         <Insets bottom="5.0" left="5.0" right="5.0"
                                                                                 top="5.0"/>
                                                                     </VBox.margin>
-                                                                </Label>
+                                                                    <children>
+                                                                        <Label text="Set display labels (using HTML tags to style, if desired "/>
+                                                                        <ToggleButton fx:id="htmlInfoButton"
+                                                                                      alignment="CENTER"
+                                                                                      contentDisplay="TEXT_ONLY"
+                                                                                      focusTraversable="false"
+                                                                                      mnemonicParsing="false"
+                                                                                      style="-fx-background-radius: 5em; -fx-max-width: 16; -fx-min-width: 16; -fx-max-height: 16; -fx-min-height: 16;"
+                                                                                      text="?">
+                                                                            <font>
+                                                                                <Font size="8.0"/>
+                                                                            </font>
+                                                                        </ToggleButton>
+                                                                        <Label layoutX="10.0" layoutY="10.0" text=")"/>
+                                                                    </children>
+                                                                </HBox>
                                                             </children>
                                                             <padding>
                                                                 <Insets bottom="2.0" left="5.0" right="5.0" top="2.0"/>
                                                             </padding>
                                                         </VBox>
                                                         <HBox fx:id="additionalButtonsHBox" prefHeight="30.0"/>
+                                                        <TextArea fx:id="supportedHTMLTextArea" disable="true"
+                                                                  editable="false" focusTraversable="false"
+                                                                  minHeight="0.0" prefHeight="0.0" prefRowCount="0"
+                                                                  style="-fx-background-color: lightgray; -fx-border-color: transparent; -fx-border-width: 0;"
+                                                                  wrapText="true" VBox.vgrow="SOMETIMES"/>
                                                     </children>
                                                 </VBox>
                                             </top>
@@ -273,7 +294,7 @@
                 <HBox alignment="TOP_CENTER" maxWidth="1.7976931348623157E308" spacing="10.0"
                       style="-fx-border-color: lightgray;">
                     <children>
-                        <FlowPane fx:id="statusFlowPane" prefHeight="30.0" HBox.hgrow="ALWAYS"/>
+                        <FlowPane fx:id="statusFlowPane" hgap="10.0" prefHeight="30.0" vgap="5.0" HBox.hgrow="ALWAYS"/>
                         <Button fx:id="cancelButton" cancelButton="true" minWidth="-Infinity" mnemonicParsing="false"
                                 text="Close"/>
                         <Button fx:id="applyButton" defaultButton="true" layoutX="410.0" layoutY="10.0"

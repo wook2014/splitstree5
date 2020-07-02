@@ -49,6 +49,7 @@ import splitstree5.gui.graphtab.commands.MoveNodesCommand;
 import splitstree5.menu.MenuController;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The split network view tab
@@ -298,6 +299,11 @@ public class SplitsViewTab extends Graph2DTab<PhyloSplitsGraph> implements ISpli
                 nodeSelectionModel.clearSelection();
             }
             selectBySplit(graph, e, splitsSelectionModel, nodeSelectionModel, x.isControlDown());
+            if (x.isAltDown()) {
+                edgeSelectionModel.selectItems(e.getOwner().edgeStream()
+                        .filter(f -> !edgeSelectionModel.isSelected(f) && nodeSelectionModel.isSelected(f.getSource()) && nodeSelectionModel.isSelected(f.getTarget()))
+                        .collect(Collectors.toList()));
+            }
         };
 
         if (edgeView.getShape() != null)

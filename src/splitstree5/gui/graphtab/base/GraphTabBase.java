@@ -360,6 +360,11 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
 
         documentTaxonSelectionChangeListener = (c -> {
             if (!inSelection) {
+                // deselect all non-taxon nodes
+                for (Node v : graph.nodes()) {
+                    if (graph.getNumberOfTaxa(v) == 0)
+                        nodeSelectionModel.clearSelection(v);
+                }
                 while (c.next()) {
                     if (c.getAddedSize() > 0) {
                         for (Taxon taxon : c.getAddedSubList()) {

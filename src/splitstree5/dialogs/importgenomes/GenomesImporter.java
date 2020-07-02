@@ -20,6 +20,7 @@
 package splitstree5.dialogs.importgenomes;
 
 import javafx.scene.layout.FlowPane;
+import jloda.fx.control.RichTextLabel;
 import jloda.fx.util.AService;
 import jloda.fx.window.MainWindowManager;
 import jloda.fx.window.NotificationManager;
@@ -288,7 +289,10 @@ public class GenomesImporter {
                 throw new IOException("Too few genomes: " + genomesBlock.size());
 
             for (Genome genome : genomesBlock.getGenomes()) {
-                taxaBlock.addTaxaByNames(Collections.singleton(genome.getName()));
+                final String name = RichTextLabel.getRawText(genome.getName());
+                taxaBlock.addTaxaByNames(Collections.singleton(name));
+                if (!name.equals(genome.getName()))
+                    taxaBlock.get(name).setDisplayLabel(genome.getName());
             }
 
             try (BufferedWriter w = new BufferedWriter(new FileWriter(fileName))) {

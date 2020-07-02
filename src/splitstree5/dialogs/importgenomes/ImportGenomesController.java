@@ -90,6 +90,11 @@ public class ImportGenomesController {
     @FXML
     private Button clearInputButton;
 
+    @FXML
+    private ToggleButton htmlInfoButton;
+    @FXML
+    private TextArea supportedHTMLTextArea;
+
     public AnchorPane getRootPane() {
         return rootPane;
     }
@@ -173,5 +178,13 @@ public class ImportGenomesController {
 
     public Button getClearInputButton() {
         return clearInputButton;
+    }
+
+    public ToggleButton getHtmlInfoButton() {
+        return htmlInfoButton;
+    }
+
+    public TextArea getSupportedHTMLTextArea() {
+        return supportedHTMLTextArea;
     }
 }

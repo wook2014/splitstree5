@@ -35,6 +35,7 @@ import java.util.TreeSet;
  * Daniel Huson, 1.2019
  */
 public class MashSketch {
+    private final static Long MASK_32BIT = (1L << 32) - 1L;
     private final int sketchSize;
     private final int kSize;
     private final String name;
@@ -120,6 +121,8 @@ public class MashSketch {
                     }
 
                     final long hash = (use64Bits ? MurmurHash.hash64(seqUse, offsetUse, kMerSize, seed) : (long) MurmurHash.hash32(seqUse, offsetUse, kMerSize, seed));
+
+                    //  final long hash=(use64Bits? NTHash.NTP64(seqUse,kMerSize,offsetUse):MASK_32BIT&NTHash.NTP64(seqUse,kMerSize,offsetUse));
 
                     if (hash < sortedSet.last()) {
                         if (sortedSet.add(hash) && sortedSet.size() > sketchSize)
