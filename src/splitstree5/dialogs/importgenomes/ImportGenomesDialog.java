@@ -138,7 +138,6 @@ public class ImportGenomesDialog {
         controller.getSupportedHTMLTextArea().prefRowCountProperty().bind(new When(controller.getHtmlInfoButton().selectedProperty()).then(4).otherwise(0));
         controller.getSupportedHTMLTextArea().prefHeightProperty().bind(new When(controller.getHtmlInfoButton().selectedProperty()).then(Region.USE_COMPUTED_SIZE).otherwise(0));
 
-
         controller.getDisplayLabelsListView().setItems(FXCollections.observableArrayList());
         final LabelListsManager labelListsManager = new LabelListsManager(controller);
         controller.getTaxonLabelsTab().selectedProperty().addListener((c, o, n) -> {
@@ -148,8 +147,9 @@ public class ImportGenomesDialog {
         controller.getTaxonLabelsTab().disableProperty().bind(isRunning);
 
         controller.getInputTextArea().textProperty().addListener((c, o, n) -> {
-            if (n.length() == 0)
+            if (n.length() == 0) {
                 labelListsManager.clear();
+            }
         });
 
         controller.getFilesTab().disableProperty().bind(isRunning);

@@ -22,10 +22,6 @@ package splitstree5.core.algorithms.genomes2distances.mash;
 import jloda.util.Basic;
 import splitstree5.core.algorithms.genomes2distances.utils.GenomeDistanceType;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * compute the distance between two mash sketches
  * Daniel Huson, 1.2020
@@ -72,7 +68,7 @@ public class MashDistance {
      * @return Jaccard index
      */
     public static double computeJaccardIndex(MashSketch sketch1, MashSketch sketch2) {
-        final int sketchSize = Math.min(sketch1.getSketchSize(), sketch2.getSketchSize());
+        final int sketchSize = Basic.min(sketch1.getSketchSize(), sketch1.getValues().length, sketch2.getSketchSize(), sketch2.getValues().length);
 
         final long[] union = new long[sketchSize];
         final long[] values1 = sketch1.getValues();
@@ -120,21 +116,6 @@ public class MashDistance {
                 } else // one of values1[i] and values2[j] is larger than union[k], let k catch up
                     k++;
             }
-        }
-
-        if ((sketch1.getName().contains("AY278489") || sketch1.getName().contains("EF065509"))
-                && (sketch2.getName().contains("AY278489") || sketch2.getName().contains("EF065509"))) {
-            final Set<Long> a = new HashSet<>();
-            Arrays.stream(sketch1.getValues()).forEach(a::add);
-            final Set<Long> b = new HashSet<>();
-            Arrays.stream(sketch2.getValues()).forEach(b::add);
-
-            if (a.size() != b.size())
-                System.err.println("sizes differ: " + a.size() + " vs " + b.size());
-
-            System.err.println("Confirmed intersection size: " + Basic.intersection(a, b).size());
-
-
         }
 
         return (double) intersectionSize / (double) union.length;

@@ -87,10 +87,15 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
 
         // todo: warn when files not found
 
+        int countTooSmall = 0;
         for (final MashSketch sketch : sketches) {
-            if (sketch.getValues().length == 0)
-                throw new IOException("Sketch '" + sketch.getName() + "': too few different k-mers");
+            if (sketch.getValues().length < optionSketchSize.get())
+                countTooSmall++;
+
         }
+        if (countTooSmall > 0)
+            NotificationManager.showWarning(String.format("Too few k-mers for %,d genomes- rerun with smaller sketch size", countTooSmall));
+
 
         final List<Triplet<MashSketch, MashSketch, Double>> triplets = new ArrayList<>();
 
@@ -126,7 +131,7 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
                 countOnes++;
         }
         if (countOnes > 0)
-            NotificationManager.showWarning(String.format("Failed to estimate distance for %d pairs (distances set to 1)", countOnes));
+            NotificationManager.showWarning(String.format("Failed to estimate distance for %d pairs (distances set to 1) - increase sketch size or decrease k", countOnes));
     }
 
     @Override

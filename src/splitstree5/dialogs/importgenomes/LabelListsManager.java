@@ -163,6 +163,7 @@ public class LabelListsManager {
     public void clear() {
         displayLabels.clear();
         line2PosInDisplayLabels.clear();
+        undoManager.clear();
     }
 
     /**
@@ -188,7 +189,7 @@ public class LabelListsManager {
         label.setText("Taxa: " + displayLabels.size());
         updateFrequentWordButtons();
     }
-    
+
     public Map<String, String> computeLine2Label() {
         final Map<String, String> map = new HashMap<>();
         for (String line : line2PosInDisplayLabels.keySet()) {
