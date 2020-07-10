@@ -19,6 +19,9 @@
 
 package splitstree5.core.algorithms.genomes2distances.utils.bloomfilter;
 
+import jloda.util.ByteInputBuffer;
+import jloda.util.ByteOutputBuffer;
+
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -28,7 +31,7 @@ import java.util.Iterator;
  */
 public class LongBitSet implements Iterable<Long> {
     private final long[] bits;
-    private long size = 0;
+    private long cardinality = 0;
 
     private final Object[] sync = new Object[1024];
 
@@ -41,10 +44,10 @@ public class LongBitSet implements Iterable<Long> {
     /**
      * constructor
      *
-     * @param size
+     * @param maxCardinality
      */
-    public LongBitSet(long size) {
-        bits = new long[(int) (size >>> 6) + 1];
+    public LongBitSet(long maxCardinality) {
+        bits = new long[(int) (maxCardinality >>> 6) + 1];
     }
 
     /**
@@ -61,7 +64,7 @@ public class LongBitSet implements Iterable<Long> {
             try {
                 if ((bits[a] & b) == 0L) {
                     bits[a] |= b;
-                    size++;
+                    cardinality++;
                     return true;
                 } else
                     return false;
@@ -87,7 +90,7 @@ public class LongBitSet implements Iterable<Long> {
                     return false;
                 else {
                     bits[a] &= ~b;
-                    size--;
+                    cardinality--;
                     return true;
                 }
             } catch (IndexOutOfBoundsException ex) {
@@ -119,7 +122,7 @@ public class LongBitSet implements Iterable<Long> {
      */
     public void clear() {
         Arrays.fill(bits, 0);
-        size = 0;
+        cardinality = 0;
     }
 
     /**
@@ -128,7 +131,7 @@ public class LongBitSet implements Iterable<Long> {
      * @return number of elements
      */
     public long cardinality() {
-        return size;
+        return cardinality;
     }
 
     /**
@@ -138,13 +141,13 @@ public class LongBitSet implements Iterable<Long> {
      */
     @Override
     public Iterator<Long> iterator() {
-        return new Iterator<Long>() {
+        return new Iterator<>() {
             long pos = 0;
             long count = 0;
 
             @Override
             public boolean hasNext() {
-                return count < size;
+                return count < cardinality;
             }
 
             @Override
@@ -155,5 +158,42 @@ public class LongBitSet implements Iterable<Long> {
                 return pos++;
             }
         };
+    }
+
+    public long[] getBits() {
+        return bits;
+    }
+
+    /**
+     * gets a byte representation of the Bloom filter
+     *
+     * @return bytes
+     */
+    public byte[] getBytes() {
+        final ByteOutputBuffer buffer = new ByteOutputBuffer();
+        buffer.writeLongLittleEndian(cardinality);
+        buffer.writeIntLittleEndian(bits.length);
+        for (long word : bits)
+            buffer.writeLongLittleEndian(word);
+        return buffer.copyBytes();
+    }
+
+    /**
+     * parses the bytes representation
+     */
+    public static LongBitSet parseBytes(ByteInputBuffer buffer) {
+        final long cardinality = buffer.readLongLittleEndian();
+        final int bitsLength = buffer.readIntLittleEndian();
+
+        final LongBitSet bitset = new LongBitSet(64 * bitsLength - 1);
+        for (int i = 0; i < bitsLength; i++)
+            bitset.getBits()[i] = buffer.readLongLittleEndian();
+        bitset.cardinality = cardinality;
+        return bitset;
+    }
+
+    public void copy(LongBitSet bitSet) {
+        System.arraycopy(bitSet.getBits(), 0, this.bits, 0, bitSet.getBits().length);
+        cardinality = bitSet.cardinality;
     }
 }

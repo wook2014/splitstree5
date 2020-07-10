@@ -37,7 +37,7 @@ import java.util.Iterator;
 public class SimpleNewickParser {
     private static final String punctuationCharacters = "),;:";
     private static final String startOfNumber = "-.0123456789";
-    private boolean enforceLeafLabelsStartWithLetter = false;
+    private boolean enforceLabelDoesNotStartWithADigit = false;
 
     private PhyloTree tree;
     private boolean hasWeights;
@@ -113,7 +113,7 @@ public class SimpleNewickParser {
                         if (label.length() == 0)
                             throw new IOException("Expected label at position " + i0);
 
-                        if (enforceLeafLabelsStartWithLetter && w.getOutDegree() == 0 && !Character.isLetter(label.charAt(0))) {
+                        if (enforceLabelDoesNotStartWithADigit && w.getOutDegree() == 0 && !Character.isLetter(label.charAt(0))) {
                             label = "T" + label;
                         }
                         tree.setLabel(w, label);
@@ -140,7 +140,7 @@ public class SimpleNewickParser {
                     if (label.length() == 0)
                         throw new IOException("Expected label at position " + i0);
 
-                    if (enforceLeafLabelsStartWithLetter && w.getOutDegree() == 0 && !Character.isLetter(label.charAt(0))) {
+                    if (enforceLabelDoesNotStartWithADigit && w.getOutDegree() == 0 && Character.isDigit(label.charAt(0))) {
                         label = "T" + label;
                     }
 
@@ -222,11 +222,11 @@ public class SimpleNewickParser {
     }
 
 
-    public boolean isEnforceLeafLabelsStartWithLetter() {
-        return enforceLeafLabelsStartWithLetter;
+    public boolean isEnforceLabelDoesNotStartWithADigit() {
+        return enforceLabelDoesNotStartWithADigit;
     }
 
-    public void setEnforceLeafLabelsStartWithLetter(boolean enforceLeafLabelsStartWithLetter) {
-        this.enforceLeafLabelsStartWithLetter = enforceLeafLabelsStartWithLetter;
+    public void setEnforceLabelDoesNotStartWithADigit(boolean enforceLabelDoesNotStartWithADigit) {
+        this.enforceLabelDoesNotStartWithADigit = enforceLabelDoesNotStartWithADigit;
     }
 }

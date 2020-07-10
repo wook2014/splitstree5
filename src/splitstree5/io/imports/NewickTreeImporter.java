@@ -71,7 +71,7 @@ public class NewickTreeImporter implements IToTrees, IImportTrees {
                 final ArrayList<String> orderedTaxonNames = new ArrayList<>();
 
                 final SimpleNewickParser newickParser = new SimpleNewickParser();
-                newickParser.setEnforceLeafLabelsStartWithLetter(true);
+                newickParser.setEnforceLabelDoesNotStartWithADigit(true);
                 boolean partial = false;
                 final ArrayList<String> parts = new ArrayList<>();
 

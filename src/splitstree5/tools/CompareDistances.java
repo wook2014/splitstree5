@@ -33,11 +33,7 @@ import java.util.*;
  */
 public class CompareDistances {
     /**
-     * sort last MAF alignments
-     *
-     * @param args
-     * @throws UsageException
-     * @throws java.io.FileNotFoundException
+     * main
      */
     public static void main(String[] args) {
         try {
@@ -171,7 +167,6 @@ public class CompareDistances {
         System.err.println(String.format("Both one : %5d", bothOne));
         System.err.println(String.format("First one: %5d", firstOnlyOne));
         System.err.println(String.format("Second one: %5d", secondOnlyOne));
-
 
         System.err.println(String.format("Bad taxa (%d):", badCount.size()));
         badCount.entrySet().stream().sorted((x, y) -> -Integer.compare(x.getValue(), y.getValue()))

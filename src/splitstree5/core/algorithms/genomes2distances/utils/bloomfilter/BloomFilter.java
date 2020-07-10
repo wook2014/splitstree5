@@ -20,6 +20,11 @@
 package splitstree5.core.algorithms.genomes2distances.utils.bloomfilter;
 
 import jloda.thirdparty.MurmurHash;
+import jloda.util.Basic;
+import jloda.util.ByteInputBuffer;
+import jloda.util.ByteOutputBuffer;
+
+import java.io.IOException;
 
 /**
  * implementation of a Bloom filter
@@ -27,7 +32,7 @@ import jloda.thirdparty.MurmurHash;
  * Daniel Huson, 1.2019
  */
 public class BloomFilter {
-    private final int expectedNumberOfItems;
+    public static int MAGIC_INT = 1179405634; // BMFL
     private final int bitsPerItem;
     private final int numberOfHashFunctions;
     private final LongBitSet bitSet;
@@ -38,15 +43,14 @@ public class BloomFilter {
     /**
      * basic constructor
      *
-     * @param expectedNumberOfItems the approximate number of items that will be inserted
+     * @param totalBits             the total number of bits to use
      * @param bitsPerItem           bits per item
      * @param numberOfHashFunctions the number of hash functions to use
      */
-    public BloomFilter(int expectedNumberOfItems, int bitsPerItem, int numberOfHashFunctions) {
-        this.expectedNumberOfItems = expectedNumberOfItems;
+    public BloomFilter(long totalBits, int bitsPerItem, int numberOfHashFunctions) {
         this.bitsPerItem = bitsPerItem;
         this.numberOfHashFunctions = numberOfHashFunctions;
-        this.totalBits = ceilingPowerOf2((long) Math.ceil(expectedNumberOfItems * bitsPerItem));
+        this.totalBits = totalBits;
         this.hashBits = totalBits - 1;
         this.bitSet = new LongBitSet(totalBits);
     }
@@ -58,7 +62,6 @@ public class BloomFilter {
      * @param totalNumberOfBytes    bytes to use
      */
     public BloomFilter(int expectedNumberOfItems, int totalNumberOfBytes) {
-        this.expectedNumberOfItems = expectedNumberOfItems;
         this.bitsPerItem = Math.min(128, (int) Math.ceil((8d * totalNumberOfBytes) / expectedNumberOfItems));
         this.numberOfHashFunctions = (int) Math.ceil(bitsPerItem * Math.log(2));
         this.totalBits = ceilingPowerOf2((long) Math.ceil(expectedNumberOfItems * bitsPerItem));
@@ -73,7 +76,6 @@ public class BloomFilter {
      * @param falsePositiveProbability
      */
     public BloomFilter(int expectedNumberOfItems, double falsePositiveProbability) {
-        this.expectedNumberOfItems = expectedNumberOfItems;
         this.bitsPerItem = (int) Math.ceil(-Math.log(falsePositiveProbability) / (Math.log(2) * Math.log(2))); // m/n = -(log_2(p)/ln(2)) = -(ln(p)/(ln(2)*ln(2))
         this.totalBits = ceilingPowerOf2((long) Math.ceil(expectedNumberOfItems * bitsPerItem));
         this.numberOfHashFunctions = (int) (Math.ceil(-Math.log(falsePositiveProbability) / Math.log(2))); //  k = -ln(p)/(ln(2)
@@ -134,6 +136,49 @@ public class BloomFilter {
         return Math.pow((1 - Math.exp(-numberOfHashFunctions * (double) itemsAdded / (double) totalBits)), numberOfHashFunctions);
     }
 
+    public String getString() {
+        return String.format("b=%d i=%d h=%d a=%d:%s", totalBits, bitsPerItem, numberOfHashFunctions, itemsAdded, Basic.toString(bitSet.getBits(), ","));
+    }
+
+    public static BloomFilter parseString(String string) {
+        long totalBits = Basic.parseLong(Basic.getWordAfter("b=", string));
+        int bitsPerItem = Basic.parseInt(Basic.getWordAfter("i=", string));
+        int numberOfHashFunctions = Basic.parseInt(Basic.getWordAfter("h=", string));
+        int itemsAdded = Basic.parseInt(Basic.getWordAfter("a=", string));
+        final BloomFilter bloomFilter = new BloomFilter(totalBits, bitsPerItem, numberOfHashFunctions);
+        bloomFilter.itemsAdded = itemsAdded;
+        String[] numbers = Basic.split(Basic.getWordAfter(":", string), ',');
+        for (int i = 0; i < numbers.length; i++)
+            bloomFilter.bitSet.getBits()[i] = Basic.parseLong(numbers[i]);
+        return bloomFilter;
+    }
+
+    public byte[] getBytes() {
+        final ByteOutputBuffer buffer = new ByteOutputBuffer();
+        buffer.writeIntLittleEndian(MAGIC_INT);
+        buffer.writeLongLittleEndian(totalBits);
+        buffer.writeIntLittleEndian(bitsPerItem);
+        buffer.writeIntLittleEndian(numberOfHashFunctions);
+        buffer.writeIntLittleEndian(itemsAdded);
+        buffer.write(bitSet.getBytes());
+        return buffer.copyBytes();
+    }
+
+    public static BloomFilter parseBytes(byte[] bytes) throws IOException {
+        final ByteInputBuffer buffer = new ByteInputBuffer(bytes);
+        if (buffer.readIntLittleEndian() != MAGIC_INT)
+            throw new IOException("Incorrect magic number");
+
+        final long totalBits = buffer.readLongLittleEndian();
+        final int bitsPerItem = buffer.readIntLittleEndian();
+        final int numberOfHashFunctions = buffer.readIntLittleEndian();
+        final int itemsAdded = buffer.readIntLittleEndian();
+        final BloomFilter bloomFilter = new BloomFilter(totalBits, bitsPerItem, numberOfHashFunctions);
+        bloomFilter.itemsAdded = itemsAdded;
+        bloomFilter.bitSet.copy(LongBitSet.parseBytes(buffer));
+        return bloomFilter;
+    }
+
     public static void main(String[] args) {
         BloomFilter bloomFilter = new BloomFilter(512, 0.1);
 
@@ -145,6 +190,8 @@ public class BloomFilter {
             bloomFilter.add(word);
             added.add(i);
         }
+
+        BloomFilter other = BloomFilter.parseString(bloomFilter.getString());
 
         int truePositives = 0;
         int falsePositives = 0;
@@ -160,10 +207,14 @@ public class BloomFilter {
                     falsePositives++;
                 //System.err.println("contained " + Basic.toString(word) + ": " + bloomFilter.isContainedProbably(word) + (!added.contains(i) ? " false positive" : ""));
             }
+            if (bloomFilter.isContainedProbably(word) != other.isContainedProbably(word))
+                System.err.println("Differ!");
         }
 
         System.err.println(String.format("Expected false positive rate: %.1f", (100.0 * bloomFilter.expectedFalsePositiveRate())));
 
         System.err.println(String.format("False positive rate: %.1f", (100.0 * falsePositives / total)));
+
+
     }
 }

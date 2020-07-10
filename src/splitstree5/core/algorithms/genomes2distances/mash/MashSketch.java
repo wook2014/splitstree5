@@ -20,10 +20,7 @@
 package splitstree5.core.algorithms.genomes2distances.mash;
 
 import jloda.thirdparty.MurmurHash;
-import jloda.util.Basic;
-import jloda.util.CanceledException;
-import jloda.util.ProgressListener;
-import jloda.util.SequenceUtils;
+import jloda.util.*;
 import splitstree5.core.algorithms.genomes2distances.utils.bloomfilter.BloomFilter;
 
 import java.io.IOException;
@@ -35,6 +32,8 @@ import java.util.TreeSet;
  * Daniel Huson, 1.2019
  */
 public class MashSketch {
+    public static int MAGIC_INT = 1213415757; // 1213415757
+
     private final static Long MASK_32BIT = (1L << 32) - 1L;
     private final int sketchSize;
     private final int kSize;
@@ -186,5 +185,63 @@ public class MashSketch {
 
     public static boolean canCompare(MashSketch a, MashSketch b) {
         return a.getSketchSize() == b.getSketchSize() && a.getkSize() == b.getkSize() && a.isNucleotides() == b.isNucleotides();
+    }
+
+    public String getString() {
+        return String.format("s=%d k=%d b=%d:%s\n", sketchSize, kSize, use64Bits ? 64 : 32, Basic.toString(getValues(), ","));
+    }
+
+    public static MashSketch parse(String string) throws IOException {
+        int sketchSize = Basic.parseInt(Basic.getWordAfter("s=", string));
+        int kMerSize = Basic.parseInt(Basic.getWordAfter("k=", string));
+        int bits = Basic.parseInt(Basic.getWordAfter("b=", string));
+        String[] numbers = Basic.split(Basic.getWordAfter(":", string), ',');
+
+        if (numbers.length != sketchSize)
+            throw new IOException("Expected sketch size " + sketchSize + ", found: " + numbers.length);
+
+        long[] values = new long[numbers.length];
+        for (int i = 0; i < numbers.length; i++) {
+            values[i] = Basic.parseLong(numbers[i]);
+        }
+        final MashSketch sketch = new MashSketch(sketchSize, kMerSize, "", true, bits != 32);
+        sketch.setValues(values);
+        return sketch;
+    }
+
+    public byte[] getBytes() {
+        ByteOutputBuffer bytes = new ByteOutputBuffer();
+        bytes.writeIntLittleEndian(MAGIC_INT);
+        bytes.writeIntLittleEndian(sketchSize);
+        bytes.writeIntLittleEndian(kSize);
+        bytes.writeIntLittleEndian(use64Bits ? 64 : 32);
+        for (long value : values) {
+            if (use64Bits)
+                bytes.writeLongLittleEndian(value);
+            else
+                bytes.writeIntLittleEndian((int) value);
+        }
+        return bytes.copyBytes();
+    }
+
+    public static MashSketch parse(byte[] bytes) throws IOException {
+        final ByteInputBuffer buffer = new ByteInputBuffer(bytes);
+
+        if (buffer.readIntLittleEndian() != MAGIC_INT)
+            throw new IOException("Incorrect magic number");
+        int sketchSize = buffer.readIntLittleEndian();
+        int kMerSize = buffer.readIntLittleEndian();
+        boolean use64Bits = (buffer.readIntLittleEndian() != 32);
+
+        final long[] values = new long[sketchSize];
+        for (int i = 0; i < values.length; i++) {
+            if (use64Bits)
+                values[i] = buffer.readLongLittleEndian();
+            else
+                values[i] = buffer.readIntLittleEndian();
+        }
+        final MashSketch sketch = new MashSketch(sketchSize, kMerSize, "", true, use64Bits);
+        sketch.setValues(values);
+        return sketch;
     }
 }
