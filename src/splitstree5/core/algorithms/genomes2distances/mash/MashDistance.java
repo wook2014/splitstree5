@@ -71,23 +71,23 @@ public class MashDistance {
         final int sketchSize = Basic.min(sketch1.getSketchSize(), sketch1.getValues().length, sketch2.getSketchSize(), sketch2.getValues().length);
 
         final long[] union = new long[sketchSize];
-        final long[] values1 = sketch1.getValues();
-        final long[] values2 = sketch2.getValues();
 
         // compute the union:
         {
             int i = 0;
             int j = 0;
             for (int k = 0; k < sketchSize; k++) { // union upto MashSketch size
-                if (values1[i] < values2[j]) {
-                    union[k] = values1[i];
+                final long value1 = sketch1.getValue(i);
+                final long value2 = sketch2.getValue(j);
+                if (value1 < value2) {
+                    union[k] = value1;
                     i++;
-                } else if (values1[i] > values2[j]) {
-                    union[k] = values2[j];
+                } else if (value1 > value2) {
+                    union[k] = value2;
                     j++;
                 } else // if (values1[i] == values2[j])
                 {
-                    union[k] = values1[i];
+                    union[k] = value1;
                     i++;
                     j++;
                 }
@@ -100,15 +100,18 @@ public class MashDistance {
             int j = 0;
             int k = 0;
             while (k < sketchSize) {
-                if (values1[i] < union[k]) {
+                final long value1 = sketch1.getValue(i);
+                final long value2 = sketch2.getValue(j);
+
+                if (value1 < union[k]) {
                     i++;
                     if (i == sketchSize)
                         break;
-                } else if (values2[j] < union[k]) {
+                } else if (value2 < union[k]) {
                     j++;
                     if (j == sketchSize)
                         break;
-                } else if (values1[i] == union[k] && values2[j] == union[k]) {
+                } else if (value1 == union[k] && value2 == union[k]) {
                     intersectionSize++;
                     i++;
                     j++;

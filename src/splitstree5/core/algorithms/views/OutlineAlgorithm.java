@@ -52,7 +52,10 @@ import splitstree5.gui.graphtab.base.*;
 import splitstree5.utils.SplitsUtilities;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.List;
 
 import static splitstree5.core.algorithms.views.SplitsNetworkAlgorithm.setupForRootedNetwork;
 
@@ -144,15 +147,10 @@ public class OutlineAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implem
         final Font labelFont = Font.font(ProgramProperties.getDefaultFontFX().getFamily(), taxaBlock.getNtax() <= 64 ? 16 : Math.max(4, 12 - Math.log(taxaBlock.getNtax() - 64) / Math.log(2)));
         for (Node v : graph.nodes()) {
             final String text;
-            final int taxonId;
-            {
-                final Iterator<Integer> it = graph.getTaxa(v).iterator();
-                taxonId = (it.hasNext() ? it.next() : 0);
-            }
 
             if (graph.getLabel(v) != null && graph.getLabel(v).length() > 0)
-                if (TaxaBlock.hasDisplayLabels(taxaBlock) && taxonId > 0)
-                    text = taxaBlock.get(taxonId).getDisplayLabelOrName();
+                if (TaxaBlock.hasDisplayLabels(taxaBlock) && graph.getNumberOfTaxa(v) == 1)
+                    text = taxaBlock.get(graph.getTaxa(v).iterator().next()).getDisplayLabelOrName();
                 else
                     text = graph.getLabel(v);
             else if (graph.getNumberOfTaxa(v) > 0)

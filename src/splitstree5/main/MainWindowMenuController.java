@@ -227,7 +227,7 @@ public class MainWindowMenuController {
                 Basic.caught(ex);
             }
         });
-        controller.getSaveMenuItem().disableProperty().bind((document.hasSplitsTree5FileProperty().not()).or(document.dirtyProperty().not())
+        controller.getSaveMenuItem().disableProperty().bind(document.dirtyProperty().not()
                 .or(document.updatingProperty()).or(document.nameProperty().isEmpty()).or(mainWindow.getWorkflow().hasTopTaxaProperty().not()));
 
         controller.getSaveAsMenuItem().setOnAction(e -> {

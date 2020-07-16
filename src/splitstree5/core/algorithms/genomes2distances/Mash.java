@@ -67,16 +67,13 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, GenomesBlock genomesBlock, DistancesBlock distancesBlock) throws Exception {
 
         final boolean isNucleotideData = ((GenomesNexusFormat) genomesBlock.getFormat()).getCharactersType().equals(GenomesNexusFormat.CharactersType.dna);
-        final int alphabetSize = (isNucleotideData ? 5 : 21);
-
-        final boolean use64Bits = (Math.pow(alphabetSize, getOptionKMerSize()) >= Integer.MAX_VALUE);
 
         progress.setSubtask("Sketching");
         progress.setMaximum(genomesBlock.getNGenomes());
         progress.setProgress(0);
 
         final ArrayList<MashSketch> sketches = genomesBlock.getGenomes().parallelStream().map(g -> new Pair<>(g.getName(), g.parts()))
-                .map(pair -> MashSketch.compute(pair.getFirst(), Basic.asList(pair.getSecond()), isNucleotideData, getOptionSketchSize(), getOptionKMerSize(), getOptionHashSeed(), use64Bits, isOptionIgnoreUniqueKMers(), progress))
+                .map(pair -> MashSketch.compute(pair.getFirst(), Basic.asList(pair.getSecond()), isNucleotideData, getOptionSketchSize(), getOptionKMerSize(), getOptionHashSeed(), isOptionIgnoreUniqueKMers(), progress))
                 .collect(Collectors.toCollection(ArrayList::new));
 
         progress.checkForCancel();

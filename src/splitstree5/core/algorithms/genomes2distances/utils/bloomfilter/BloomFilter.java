@@ -25,6 +25,7 @@ import jloda.util.ByteInputBuffer;
 import jloda.util.ByteOutputBuffer;
 
 import java.io.IOException;
+import java.util.Collection;
 
 /**
  * implementation of a Bloom filter
@@ -100,6 +101,18 @@ public class BloomFilter {
         return add(string, 0, string.length);
     }
 
+    public void addAll(Collection<byte[]> strings) {
+        for (byte[] string : strings) {
+            add(string, 0, string.length);
+        }
+    }
+
+    public void addAll(byte[]... strings) {
+        for (byte[] string : strings) {
+            add(string, 0, string.length);
+        }
+    }
+
     /**
      * adds a string
      *
@@ -134,6 +147,10 @@ public class BloomFilter {
 
     public double expectedFalsePositiveRate() {
         return Math.pow((1 - Math.exp(-numberOfHashFunctions * (double) itemsAdded / (double) totalBits)), numberOfHashFunctions);
+    }
+
+    public int cardinality() {
+        return itemsAdded;
     }
 
     public String getString() {

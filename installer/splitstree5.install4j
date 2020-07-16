@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="8.0.4" transformSequenceNumber="8">
-  <directoryPresets config="../../javafx-jmods-11" />
+  <directoryPresets config="../tools/mash-sketches" />
   <application name="SplitsTree5" applicationId="4099-4251-9127-4263" mediaDir="../../../builds" shortName="splitstree5" publisher="Daniel Huson and David Bryant" publisherWeb="http://splitstree.husonlab.org" version="5.0.0" allPathsRelative="true" macVolumeId="b8c0a1154e563a9a" javaMinVersion="11">
     <codeSigning macEnabled="true" macPkcs12File="../../../../etc/application.p12" />
     <jreBundles jdkProviderId="AdoptOpenJDK" release="openjdk13/jdk-13.0.2+8">
@@ -30,6 +30,7 @@
       </dirEntry>
       <fileEntry mountPoint="1691243203" file="../jars/i4jruntime.jar" />
       <fileEntry mountPoint="1691242495" file="../tools/workflow-run" fileMode="755" overrideFileMode="true" />
+      <fileEntry mountPoint="1691242495" file="../tools/mash-sketches" fileMode="755" overrideFileMode="true" />
       <fileEntry mountPoint="1691242495" file="../tools/workflow-export" fileMode="755" overrideFileMode="true" />
       <fileEntry mountPoint="1691242153" file="../examples/fitch-margoliash-1967.nex" />
       <fileEntry mountPoint="1691242153" file="../test/nexus/trees49-taxa.nex" />
@@ -258,26 +259,9 @@ return console.askOkCancel(message, true);
                   <property name="itemName" type="string">${compiler:sys.fullName} ${compiler:sys.version}</property>
                 </serializedBean>
               </action>
-              <action id="1691242496" beanClass="com.install4j.runtime.beans.actions.files.SetModeAction" actionElevationType="elevated">
-                <serializedBean>
-                  <property name="files" type="array" class="java.io.File" length="2">
-                    <element index="0">
-                      <object class="java.io.File">
-                        <string>tools/workflow-run</string>
-                      </object>
-                    </element>
-                    <element index="1">
-                      <object class="java.io.File">
-                        <string>tools/workflow-export</string>
-                      </object>
-                    </element>
-                  </property>
-                  <property name="mode" type="string">755</property>
-                </serializedBean>
-              </action>
               <action id="1691242497" beanClass="com.install4j.runtime.beans.actions.text.ReplaceInstallerVariablesAction" actionElevationType="elevated">
                 <serializedBean>
-                  <property name="files" type="array" class="java.io.File" length="2">
+                  <property name="files" type="array" class="java.io.File" length="3">
                     <element index="0">
                       <object class="java.io.File">
                         <string>tools/workflow-run</string>
@@ -286,6 +270,11 @@ return console.askOkCancel(message, true);
                     <element index="1">
                       <object class="java.io.File">
                         <string>tools/workflow-export</string>
+                      </object>
+                    </element>
+                    <element index="2">
+                      <object class="java.io.File">
+                        <string>tools/mash-sketches</string>
                       </object>
                     </element>
                   </property>

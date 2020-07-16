@@ -20,15 +20,15 @@
 
 package splitstree5.io.nexus;
 
+import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
+import jloda.util.Basic;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.core.misc.Taxon;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.function.Function;
 
 /**
  * tree nexus output
@@ -58,9 +58,9 @@ public class TreesNexusOutput extends NexusIOBase implements INexusOutput<TreesB
             w.write(";\n");
         }
 
-        final Map<String, String> translator;
+        final Function<Node, String> labeler;
         if (format.isOptionTranslate()) {
-            translator = computeTranslationName2Number(taxaBlock);
+            labeler = computeLabelByNumber();
             w.write("TRANSLATE\n");
 
             for (int t = 1; t <= taxaBlock.getNtax(); t++) {
@@ -68,45 +68,50 @@ public class TreesNexusOutput extends NexusIOBase implements INexusOutput<TreesB
             }
             w.write(";\n");
         } else
-            translator = computeTranslationNumber2Name(taxaBlock);
+            labeler = computeLabelByName(taxaBlock);
 
         w.write("[TREES]\n");
         int t = 1;
         for (PhyloTree tree : treesBlock.getTrees()) {
             final String name = (tree.getName() != null && tree.getName().length() > 0 ? tree.getName() : "t" + t);
             w.write("\t\t[" + (t++) + "] tree '" + name + "'=" + getFlags(tree) + " ");
-            tree.write(w, format.isOptionWeights(), translator);
+            tree.write(w, format.isOptionWeights(), labeler);
             w.write(";\n");
         }
         w.write("END; [" + TreesBlock.BLOCK_NAME + "]\n");
     }
 
     /**
-     * compute translation from taxon names to number
-     *
-     * @param taxaBlock
-     * @return translation
+     * compute label-by-number labeler
      */
-    private static Map<String, String> computeTranslationName2Number(TaxaBlock taxaBlock) {
-        final Map<String, String> translation = new HashMap<>();
-        for (Taxon taxon : taxaBlock.getTaxa()) {
-            translation.put(taxon.getName(), "" + taxaBlock.indexOf(taxon));
-        }
-        return translation;
+    private static Function<Node, String> computeLabelByNumber() {
+        return v -> {
+            final PhyloTree tree = (PhyloTree) v.getOwner();
+            if (tree.getNumberOfTaxa(v) > 0)
+                return Basic.toString(tree.getTaxa(v), ",");
+            else
+                return null;
+        };
     }
 
     /**
-     * compute translation from taxon names to number
-     *
-     * @param taxaBlock
-     * @return translation
+     * compute label-by-name labeler
      */
-    private static Map<String, String> computeTranslationNumber2Name(TaxaBlock taxaBlock) {
-        final Map<String, String> translation = new HashMap<>();
-        for (Taxon taxon : taxaBlock.getTaxa()) {
-            translation.put("" + taxaBlock.indexOf(taxon), taxon.getName());
-        }
-        return translation;
+    private static Function<Node, String> computeLabelByName(TaxaBlock taxonBlock) {
+        return v -> {
+            final PhyloTree tree = (PhyloTree) v.getOwner();
+            if (tree.getNumberOfTaxa(v) > 0) {
+                final StringBuilder buf = new StringBuilder();
+                for (int taxId : tree.getTaxa(v)) {
+                    if (buf.length() > 0)
+                        buf.append(",");
+                    else
+                        buf.append(taxonBlock.getLabel(taxId));
+                }
+                return buf.toString();
+            } else
+                return null;
+        };
     }
 
     /**

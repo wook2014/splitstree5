@@ -66,7 +66,7 @@ public class Document {
             Platform.runLater(() -> name.set(Basic.getFileNameWithoutPath(fileName.get())));
         });
 
-        workflow.updatingProperty().addListener((InvalidationListener) (c) -> setDirty(true));
+        workflow.updatingProperty().addListener((InvalidationListener) c -> setDirty(true));
     }
 
     /**

@@ -53,7 +53,10 @@ import splitstree5.gui.graphtab.base.*;
 import splitstree5.utils.SplitsUtilities;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.List;
 
 /**
  * compute an implementing of a set of splits using the equals angle algorithm
@@ -165,15 +168,10 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
         final Font labelFont = Font.font(ProgramProperties.getDefaultFontFX().getFamily(), taxaBlock.getNtax() <= 64 ? 16 : Math.max(4, 12 - Math.log(taxaBlock.getNtax() - 64) / Math.log(2)));
         for (Node v : graph.nodes()) {
             final String text;
-            final int taxonId;
-            {
-                final Iterator<Integer> it = graph.getTaxa(v).iterator();
-                taxonId = (it.hasNext() ? it.next() : 0);
-            }
 
             if (graph.getLabel(v) != null && graph.getLabel(v).length() > 0) {
-                if (TaxaBlock.hasDisplayLabels(taxaBlock) && taxonId > 0)
-                    text = taxaBlock.get(taxonId).getDisplayLabelOrName();
+                if (TaxaBlock.hasDisplayLabels(taxaBlock) && graph.getNumberOfTaxa(v) == 1)
+                    text = taxaBlock.get(graph.getTaxa(v).iterator().next()).getDisplayLabelOrName();
                 else
                     text = graph.getLabel(v);
             } else if (graph.getNumberOfTaxa(v) > 0)
@@ -181,7 +179,7 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
             else text = null;
 
             final NodeViewBase nodeView = viewTab.createNodeView(v, graph.getTaxa(v), node2point.getValue(v), text);
-            if (taxonId > 0)
+            if (graph.getNumberOfTaxa(v) > 0)
                 BitSetUtils.addAll(nodeView.getWorkingTaxa(), graph.getTaxa(v));
             viewTab.setupNodeView(nodeView);
 
