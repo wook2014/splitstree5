@@ -64,10 +64,9 @@ public class ComputeMashSketches {
 
         options.comment("Input and output");
         final String[] input = options.getOptionMandatory("-i", "input", "Input fastA files (directory or .gz ok)", new String[0]);
-        final String[] output = options.getOptionMandatory("-o", "output", "Output mash sketch files (directory or .gz ok, use suffix .msketch)", new String[0]);
+        final String[] output = options.getOptionMandatory("-o", "output", "Output mash sketch files (directory or .gz ok, use suffix .msketch for files)", new String[0]);
+        final String outputFormat = options.getOption("-f", "format", "Sketch output format", new String[]{"binary", "text"}, "binary");
         final boolean createKMerFiles = options.getOption("-ok", "kMerFiles", "Create k-mer files, too", false);
-
-        final String outputFormat = options.getOption("-f", "format", "Sketch output format ", new String[]{"binary", "hashes", "kmers"}, "binary");
 
         options.comment("Mash parameters");
 
@@ -78,9 +77,9 @@ public class ComputeMashSketches {
 
         final boolean isNucleotideData = options.getOption("-st", "sequenceType", "Sequence type", new String[]{"dna", "protein"}, "dna").equalsIgnoreCase("dna");
 
-        options.comment("All kmers output");
-        final String allKMersOutputFile = options.getOption("-oak", "outputAllKMers", "Output file for all sketch k-mers (stdout or .gz ok, use suffix .kmers)", "");
-        final String bloomFilterOutputFile = options.getOption("-oabf", "outputAllBloomFilter", "Output file for Bloom filter for all sketch kmers (use suffix .bfilter)", "");
+        options.comment("Total kmers output");
+        final String allKMersOutputFile = options.getOption("-oak", "outputAllKMers", "Output file for all sketch k-mers (stdout or .gz ok, use suffix .kmers for file)", "");
+        final String bloomFilterOutputFile = options.getOption("-oabf", "outputAllBFilter", "Output file for Bloom filter for all sketch kmers (use suffix .bfilter)", "");
         final double fpProbability = options.getOption("-fp", "fpProb", "Probability of false positive error in Bloom filter", 0.0001);
         // options.comment(ArgsOptions.OTHER);
         // add number of cores option
@@ -201,25 +200,13 @@ public class ComputeMashSketches {
 
     private void saveSketch(String outputFile, MashSketch sketch, String outputFormat) throws IOException {
         try (OutputStream outs = Basic.getOutputStreamPossiblyZIPorGZIP(outputFile)) {
-            switch (outputFormat) {
-                case "hashes": {
-                    try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(outs))) {
-                        w.write(sketch.getString() + "\n");
-                    }
-                    break;
+            if (outputFormat.equals("text")) {
+                try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(outs))) {
+                    w.write(sketch.getString() + "\n");
                 }
-                case "binary": {
-                    try (BufferedOutputStream w = new BufferedOutputStream(outs)) {
-                        w.write(sketch.getBytes());
-                    }
-                    break;
-                }
-
-                case "kmers": {
-                    try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(outs))) {
-                        w.write(sketch.getKMersString());
-                    }
-                    break;
+            } else if (outputFormat.equals("binary")) {
+                try (BufferedOutputStream w = new BufferedOutputStream(outs)) {
+                    w.write(sketch.getBytes());
                 }
             }
         }
