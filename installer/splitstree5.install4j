@@ -3,7 +3,7 @@
   <directoryPresets config="../tools/mash-sketches" />
   <application name="SplitsTree5" applicationId="4099-4251-9127-4263" mediaDir="../../../builds" shortName="splitstree5" publisher="Daniel Huson and David Bryant" publisherWeb="http://splitstree.husonlab.org" version="5.0.0" allPathsRelative="true" macVolumeId="b8c0a1154e563a9a" javaMinVersion="11">
     <codeSigning macEnabled="true" macPkcs12File="../../../../etc/application.p12" />
-    <jreBundles jdkProviderId="AdoptOpenJDK" release="openjdk13/jdk-13.0.2+8">
+    <jreBundles jdkProviderId="Liberica" release="OpenJDK 13.0.2+9">
       <modules />
     </jreBundles>
   </application>
@@ -1163,7 +1163,7 @@ return true;</property>
     </windows>
   </mediaSets>
   <buildIds buildAll="false">
-    <mediaSet refId="1691242288" />
+    <mediaSet refId="1691242146" />
   </buildIds>
   <buildOptions disableSigning="true" disableNotarization="true" />
 </install4j>

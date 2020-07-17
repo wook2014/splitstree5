@@ -57,17 +57,6 @@ public class ComputeMashSketches {
      * run the program
      */
     public void run(String[] args) throws Exception {
-        if (args.length == 0 && System.getProperty("user.name").equals("huson")) {
-            args = new String[]{"-i", "/Users/huson/data/gtdb/release89/archaea",
-                    "-o", "/Users/huson/data/gtdb/release89/sketches",
-                    "-ok",
-                    "-oak", "/Users/huson/data/gtdb/release89/archaea.kmers",
-                    "-oabf", "/Users/huson/data/gtdb/release89/archaea.bfilter",
-                    "-s", "1000",
-                    "-v"
-            };
-        }
-
         final ArgsOptions options = new ArgsOptions(args, this.getClass(), "Computes mash sketches for FastA files");
         options.setVersion(ProgramProperties.getProgramVersion());
         options.setLicense("This is free software, licensed under the terms of the GNU General Public License, Version 3.");
