@@ -95,6 +95,9 @@ public class ComputeMashSketches {
             }
         }
 
+        if (inputFiles.size() == 0)
+            throw new UsageException("No input files");
+
         for (String name : inputFiles) {
             Basic.checkFileReadableNonEmpty(name);
         }
@@ -152,6 +155,7 @@ public class ComputeMashSketches {
                         final byte[] sequence = readSequences(inputFile);
                         final MashSketch sketch = MashSketch.compute(inputFile, Collections.singleton(sequence), isNucleotideData, sParameter, kParameter, randomSeed, filterUnique, true, progress);
                         saveSketch(inputOutputPair.getSecond(), sketch, outputFormat);
+
                         if (allKMersBloomFilter != null) {
                             synchronized (allKMersBloomFilter) {
                                 allKMersBloomFilter.addAll(sketch.getKmers());
@@ -160,6 +164,14 @@ public class ComputeMashSketches {
                         if (allKMersSet != null) {
                             synchronized (allKMersSet) {
                                 allKMersSet.addAll(Arrays.asList(sketch.getKmers()));
+                            }
+                            if (true) {
+                                final String sequenceString = Basic.toString(sequence);
+                                final String reverseComplement = SequenceUtils.getReverseComplement(sequenceString);
+                                for (String kmer : sketch.getKMersString().split("\\s+")) {
+                                    if (!sequenceString.contains(kmer) && !reverseComplement.contains(kmer))
+                                        System.err.println("kmer not found: " + kmer);
+                                }
                             }
                         }
                         if (createKMerFiles) {

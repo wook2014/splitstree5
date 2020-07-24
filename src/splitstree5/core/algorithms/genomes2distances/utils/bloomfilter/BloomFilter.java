@@ -119,7 +119,7 @@ public class BloomFilter {
      * @param string
      * @return true, if definitely newly added
      */
-    public boolean add(byte[] string, int offset, int length) {
+    public synchronized boolean add(byte[] string, int offset, int length) {
         boolean definitelyAdded = false;
         for (int i = 0; i < numberOfHashFunctions; i++) {
             long hash = Math.abs(MurmurHash.hash64(string, offset, length, i));
@@ -196,42 +196,12 @@ public class BloomFilter {
         return bloomFilter;
     }
 
-    public static void main(String[] args) {
-        BloomFilter bloomFilter = new BloomFilter(512, 0.1);
-
-        LongBitSet added = new LongBitSet(2000);
-
-        for (int i = 0; i < 512; i++) {
-            byte[] word = String.format("%d-%d-%d", i, 2 * i, 3 * i).getBytes();
-            //System.err.println("adding "+ Basic.toString(word)+": "+bloomFilter.add(word));
-            bloomFilter.add(word);
-            added.add(i);
+    public int countContainedProbably(Iterable<String> queries) {
+        int count = 0;
+        for (String query : queries) {
+            if (isContainedProbably(query.getBytes()))
+                count++;
         }
-
-        BloomFilter other = BloomFilter.parseString(bloomFilter.getString());
-
-        int truePositives = 0;
-        int falsePositives = 0;
-        int total = 0;
-
-        for (int i = 0; i < 1000; i++) {
-            total++;
-            byte[] word = String.format("%d-%d-%d", i, 2 * i, 3 * i).getBytes();
-            if (bloomFilter.isContainedProbably(word)) {
-                if (added.contains(i))
-                    truePositives++;
-                else
-                    falsePositives++;
-                //System.err.println("contained " + Basic.toString(word) + ": " + bloomFilter.isContainedProbably(word) + (!added.contains(i) ? " false positive" : ""));
-            }
-            if (bloomFilter.isContainedProbably(word) != other.isContainedProbably(word))
-                System.err.println("Differ!");
-        }
-
-        System.err.println(String.format("Expected false positive rate: %.1f", (100.0 * bloomFilter.expectedFalsePositiveRate())));
-
-        System.err.println(String.format("False positive rate: %.1f", (100.0 * falsePositives / total)));
-
-
+        return count;
     }
 }
