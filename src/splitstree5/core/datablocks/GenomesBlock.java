@@ -27,6 +27,8 @@ import splitstree5.core.algorithms.interfaces.IToGenomes;
 import splitstree5.core.data.Genome;
 import splitstree5.io.nexus.GenomesNexusFormat;
 
+import java.io.IOException;
+
 /**
  * A genomes block
  * Daniel Huson, 2.2020
@@ -116,4 +118,10 @@ public class GenomesBlock extends DataBlock {
         return BLOCK_NAME;
     }
 
+    public void checkGenomesPresent() throws IOException {
+        for (int t = 1; t <= getNGenomes(); t++) {
+            if (getGenome(t).getLength() == 0)
+                throw new IOException("Genome(" + t + "): not present or length 0");
+        }
+    }
 }

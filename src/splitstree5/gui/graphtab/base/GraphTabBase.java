@@ -315,44 +315,46 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
         });
 
         nodeSelectionChangeListener = (c -> {
-            try {
-                inSelection = true;
-                while (c.next()) {
-                    if (c.getAddedSize() > 0) {
-                        for (Node v : c.getAddedSubList()) {
-                            if (v.getOwner() == graph) {
-                                String name = graph.getLabel(v);
-                                if (name != null) {
-                                    Taxon taxon = taxaBlock.get(name);
-                                    if (taxon != null)
-                                        document.getTaxaSelectionModel().select(taxon);
-                                    for (Integer taxId : graph.getTaxa(v)) {
-                                        if (taxId <= taxaBlock.getNtax())
-                                            document.getTaxaSelectionModel().select(taxaBlock.get(taxId));
+            if (!inSelection) {
+                try {
+                    inSelection = true;
+                    while (c.next()) {
+                        if (c.getAddedSize() > 0) {
+                            for (Node v : c.getAddedSubList()) {
+                                if (v.getOwner() == graph) {
+                                    String name = graph.getLabel(v);
+                                    if (name != null) {
+                                        Taxon taxon = taxaBlock.get(name);
+                                        if (taxon != null)
+                                            document.getTaxaSelectionModel().select(taxon);
+                                        for (Integer taxId : graph.getTaxa(v)) {
+                                            if (taxId <= taxaBlock.getNtax())
+                                                document.getTaxaSelectionModel().select(taxaBlock.get(taxId));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (c.getRemovedSize() > 0) {
+                            for (Node v : c.getRemoved()) {
+                                if (v.getOwner() == graph) {
+                                    String name = graph.getLabel(v);
+                                    if (name != null) {
+                                        Taxon taxon = taxaBlock.get(name);
+                                        if (taxon != null)
+                                            document.getTaxaSelectionModel().clearSelection(taxon);
+                                        for (Integer taxId : graph.getTaxa(v)) {
+                                            if (taxId <= taxaBlock.getNtax())
+                                                document.getTaxaSelectionModel().clearSelection(taxaBlock.get(taxId));
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                    if (c.getRemovedSize() > 0) {
-                        for (Node v : c.getRemoved()) {
-                            if (v.getOwner() == graph) {
-                                String name = graph.getLabel(v);
-                                if (name != null) {
-                                    Taxon taxon = taxaBlock.get(name);
-                                    if (taxon != null)
-                                        document.getTaxaSelectionModel().clearSelection(taxon);
-                                    for (Integer taxId : graph.getTaxa(v)) {
-                                        if (taxId <= taxaBlock.getNtax())
-                                            document.getTaxaSelectionModel().clearSelection(taxaBlock.get(taxId));
-                                    }
-                                }
-                            }
-                        }
-                    }
+                } finally {
+                    inSelection = false;
                 }
-            } finally {
-                inSelection = false;
             }
         });
         weakNodeSelectionChangeListener = new WeakListChangeListener<>(nodeSelectionChangeListener);
@@ -360,46 +362,51 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
 
         documentTaxonSelectionChangeListener = (c -> {
             if (!inSelection) {
-                // deselect all non-taxon nodes
-                for (Node v : graph.nodes()) {
-                    if (graph.getNumberOfTaxa(v) == 0)
-                        nodeSelectionModel.clearSelection(v);
-                }
-                while (c.next()) {
-                    if (c.getAddedSize() > 0) {
-                        for (Taxon taxon : c.getAddedSubList()) {
-                            final Node v = graph.getTaxon2Node(taxaBlock.indexOf(taxon));
-                            if (v != null) {
-                                nodeSelectionModel.select(v);
-                            } else {
-                                final String label = taxon.getName();
-                                for (Node w : graph.nodes()) {
-                                    if (graph.getLabel(w) != null) {
-                                        if (label.equals(graph.getLabel(w))) {
-                                            nodeSelectionModel.select(w);
+                inSelection = true;
+                try {
+                    // deselect all non-taxon nodes
+                    for (Node v : graph.nodes()) {
+                        if (graph.getNumberOfTaxa(v) == 0)
+                            nodeSelectionModel.clearSelection(v);
+                    }
+                    while (c.next()) {
+                        if (c.getAddedSize() > 0) {
+                            for (Taxon taxon : c.getAddedSubList()) {
+                                final Node v = graph.getTaxon2Node(taxaBlock.indexOf(taxon));
+                                if (v != null) {
+                                    nodeSelectionModel.select(v);
+                                } else {
+                                    final String label = taxon.getName();
+                                    for (Node w : graph.nodes()) {
+                                        if (graph.getLabel(w) != null) {
+                                            if (label.equals(graph.getLabel(w))) {
+                                                nodeSelectionModel.select(w);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (c.getRemovedSize() > 0) {
+                            for (Taxon taxon : c.getRemoved()) {
+                                final Node v = graph.getTaxon2Node(taxaBlock.indexOf(taxon));
+                                if (v != null) {
+                                    nodeSelectionModel.clearSelection(v);
+                                } else {
+                                    String label = taxon.getName();
+                                    for (Node w : graph.nodes()) {
+                                        if (graph.getLabel(w) != null) {
+                                            if (label.equals(graph.getLabel(w))) {
+                                                nodeSelectionModel.clearSelection(w);
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                    if (c.getRemovedSize() > 0) {
-                        for (Taxon taxon : c.getRemoved()) {
-                            final Node v = graph.getTaxon2Node(taxaBlock.indexOf(taxon));
-                            if (v != null) {
-                                nodeSelectionModel.clearSelection(v);
-                            } else {
-                                String label = taxon.getName();
-                                for (Node w : graph.nodes()) {
-                                    if (graph.getLabel(w) != null) {
-                                        if (label.equals(graph.getLabel(w))) {
-                                            nodeSelectionModel.clearSelection(w);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                } finally {
+                    inSelection = false;
                 }
             }
         });

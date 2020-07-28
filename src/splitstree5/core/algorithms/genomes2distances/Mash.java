@@ -72,6 +72,8 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
         progress.setMaximum(genomesBlock.getNGenomes());
         progress.setProgress(0);
 
+        genomesBlock.checkGenomesPresent();
+
         final ArrayList<MashSketch> sketches = genomesBlock.getGenomes().parallelStream().map(g -> new Pair<>(g.getName(), g.parts()))
                 .map(pair -> MashSketch.compute(pair.getFirst(), Basic.asList(pair.getSecond()), isNucleotideData, getOptionSketchSize(), getOptionKMerSize(), getOptionHashSeed(), isOptionIgnoreUniqueKMers(), progress))
                 .collect(Collectors.toCollection(ArrayList::new));

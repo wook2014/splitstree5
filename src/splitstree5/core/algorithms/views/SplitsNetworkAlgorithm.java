@@ -53,10 +53,7 @@ import splitstree5.gui.graphtab.base.*;
 import splitstree5.utils.SplitsUtilities;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * compute an implementing of a set of splits using the equals angle algorithm
@@ -105,8 +102,7 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
             if (selectedTaxa.cardinality() > 0 && selectedTaxa.nextSetBit(1) <= taxaBlock0.getNtax()) {
                 taxaBlock = new TaxaBlock();
                 splitsBlock = new SplitsBlock();
-                final int s = SplitsUtilities.getTighestSplit(selectedTaxa, splitsBlock0);
-                final Triplet<Integer, Double, Double> rootingSplit = SplitsUtilities.computeRootLocation(taxaBlock0.getNtax(), splitsBlock0, s, isOptionUseWeights(), progress);
+                final Triplet<Integer, Double, Double> rootingSplit = SplitsUtilities.computeRootLocation(getOptionLayout() == Layout.RootBySelectedOutgroupAlt, taxaBlock0.getNtax(), new HashSet<>(BitSetUtils.asList(selectedTaxa)), splitsBlock0.getCycle(), splitsBlock0, isOptionUseWeights(), progress);
                 setupForRootedNetwork(getOptionLayout() == Layout.RootBySelectedOutgroupAlt, rootingSplit, taxaBlock0, splitsBlock0, taxaBlock, splitsBlock, progress);
             } else {
                 NotificationManager.showWarning(selectedTaxa.cardinality() == 0 ? "No taxa selected" : "Invalid taxa selected");
@@ -116,7 +112,7 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
         } else {
             taxaBlock = new TaxaBlock();
             splitsBlock = new SplitsBlock();
-            final Triplet<Integer, Double, Double> rootingSplit = SplitsUtilities.computeRootLocation(taxaBlock0.getNtax(), splitsBlock0, 0, isOptionUseWeights(), progress);
+            final Triplet<Integer, Double, Double> rootingSplit = SplitsUtilities.computeRootLocation(getOptionLayout() == Layout.MidPointRootedAlt, taxaBlock0.getNtax(), new HashSet<>(), splitsBlock0.getCycle(), splitsBlock0, isOptionUseWeights(), progress);
             setupForRootedNetwork(getOptionLayout() == Layout.MidPointRootedAlt, rootingSplit, taxaBlock0, splitsBlock0, taxaBlock, splitsBlock, progress);
         }
 
@@ -214,7 +210,8 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
                 }
             }
             final Tooltip tooltip = new Tooltip("Split " + split);
-            Tooltip.install(edgeView.getEdgeShape(), tooltip);
+            if (edgeView.getEdgeShape() != null)
+                Tooltip.install(edgeView.getEdgeShape(), tooltip);
         }
 
         Platform.runLater(() -> viewTab.updateSelectionModels(graph, taxaBlock, viewerBlock.getDocument()));

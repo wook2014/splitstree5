@@ -289,4 +289,8 @@ public final class ASplit implements Comparable<ASplit> {
     public boolean isTrivial() {
         return getSmallerPart().cardinality() == 1;
     }
+
+    public boolean separates(int a, int b) {
+        return getPartContaining(a) != getPartContaining(b);
+    }
 }

@@ -26,10 +26,11 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ASplit;
-import splitstree5.core.misc.Compatibility;
 
 import java.io.PrintStream;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * utilities for splits
@@ -331,135 +332,127 @@ public class SplitsUtilities {
     }
 
     /**
-     * compute root split and weights for both sides for output rooting for given split. If given split is 0, uses midpoint rooting,
-     * otherwise does mid-point rooting restricted to the given split
+     * computes the midpoint root location
      *
-     * @param splitsBlock splits block
-     * @param split       split
-     * @param useWeights  observe weights
+     * @param alt         use alternative side
+     * @param ntaxa       number of taxa
+     * @param outgroup    outgroup taxa or empty, if performing simple midpoint rooting
+     * @param cycle
+     * @param splitsBlock
+     * @param useWeights  use split weights or otherwise give all splits weight 1
      * @param progress
-     * @return split-id and weights for the two sides
+     * @return rooting split and both distances
      * @throws CanceledException
      */
-    public static Triplet<Integer, Double, Double> computeRootLocation(int ntaxa, SplitsBlock splitsBlock, int split, boolean useWeights, ProgressListener progress) throws CanceledException {
+    public static Triplet<Integer, Double, Double> computeRootLocation(boolean alt, int ntaxa, Set<Integer> outgroup, int[] cycle, SplitsBlock splitsBlock, boolean useWeights, ProgressListener progress) throws CanceledException {
         progress.setSubtask("Computing root location");
 
-        final ArrayList<Pair<Integer, Integer>> pairs = new ArrayList<>();
-
-        if (split <= 0) {
-            for (int a = 1; a <= ntaxa; a++) {
-                for (int b = a + 1; b <= ntaxa; b++) {
-                    pairs.add(new Pair<>(a, b));
-                }
+        final double[][] distances = new double[ntaxa + 1][ntaxa + 1];
+        for (ASplit split : splitsBlock.getSplits()) {
+            for (int a : BitSetUtils.members(split.getA())) {
+                for (int b : BitSetUtils.members(split.getB()))
+                    distances[a][b] += useWeights ? split.getWeight() : 1;
             }
+        }
+        final Set<Integer> setA = new TreeSet<>();
+        final Set<Integer> setB = new TreeSet<>();
+        if (outgroup.size() > 0) {
+            setA.addAll(outgroup);
+            setB.addAll(IntStream.rangeClosed(1, ntaxa).filter(i -> !outgroup.contains(i)).boxed().collect(Collectors.toList()));
         } else {
-            for (int a : BitSetUtils.members(splitsBlock.get(split).getA())) {
-                for (int b : BitSetUtils.members(splitsBlock.get(split).getB())) {
-                    pairs.add(new Pair<>(a, b));
+            setA.addAll(IntStream.rangeClosed(1, ntaxa).boxed().collect(Collectors.toList()));
+            setB.addAll(setA);
+        }
+
+        double maxDistance = 0;
+        final Pair<Integer, Integer> furthestPair = new Pair<>(0, 0);
+
+        for (int a : setA) {
+            for (int b : setB) {
+                if (b != a && distances[a][b] > maxDistance) {
+                    maxDistance = distances[a][b];
+                    furthestPair.set(a, b);
                 }
             }
         }
 
-        final Single<Double> bestLength = new Single<>(0.0);
-        final Single<ArrayList<ASplit>> bestPath = new Single<>(new ArrayList<>());
-        final Single<Integer> start = new Single<>(0);
+        final Map<ASplit, Integer> split2id = new HashMap<>();
 
-        progress.setMaximum(pairs.size());
-
-        final Single<CanceledException> exception = new Single<>();
-
-        pairs.parallelStream().forEach(pair -> {
-            final int a = pair.getFirst();
-            final int b = pair.getSecond();
-
-            final Pair<Double, ArrayList<ASplit>> lengthAndPath = computeBestPath(splitsBlock, a, b, useWeights);
-            synchronized (bestLength) {
-                if (lengthAndPath.getFirst() > bestLength.get()) {
-                    bestLength.set(lengthAndPath.getFirst());
-                    bestPath.set(lengthAndPath.getSecond());
-                    start.set(a);
-                }
-            }
-            try {
-                progress.incrementProgress();
-            } catch (CanceledException e) {
-                exception.setIfCurrentValueIsNull(e);
-            }
-        });
-        if (exception.get() != null)
-            throw exception.get();
-
-        final Triplet<Integer, Double, Double> triplet = computeTriplet(splitsBlock, start.get(), bestLength, bestPath, useWeights);
-        if (split == 0 || triplet.getFirst() == split)
-            return triplet;
-        else if (bestPath.get().indexOf(splitsBlock.get(triplet.getFirst())) < (bestPath.get().indexOf(splitsBlock.get(split))))
-            return new Triplet<>(split, splitsBlock.get(split).getWeight(), 0.0);
-        else
-            return new Triplet<>(split, 0.0, splitsBlock.get(split).getWeight());
-    }
-
-    private static Pair<Double, ArrayList<ASplit>> computeBestPath(SplitsBlock splitsBlock, int a, int b, boolean useWeights) {
-        double remainingLength = 0;
-        final ArrayList<ASplit> separators = new ArrayList<>();
+        final ArrayList<ASplit> splits = new ArrayList<>();
         for (int s = 1; s <= splitsBlock.getNsplits(); s++) {
             final ASplit split = splitsBlock.get(s);
-            if (split.isContainedInA(a) != split.isContainedInA(b)) {
-                separators.add(split);
-                remainingLength += (useWeights ? split.getWeight() : 1);
+            if (split.separates(furthestPair.getFirst(), furthestPair.getSecond())) {
+                splits.add(split);
+                split2id.put(split, s);
             }
         }
-        separators.sort(Comparator.comparingInt(p -> p.getPartContaining(a).cardinality()));
-        final ArrayList<ASplit> path = new ArrayList<>();
-        final Single<Double> length = new Single<>(0.0);
-        computeLongestPathRec(useWeights, separators, remainingLength, 0, new ArrayList<>(), 0, path, length);
-        return new Pair<>(length.get(), path);
-    }
 
-    private static void computeLongestPathRec(boolean useWeights, ArrayList<ASplit> splits, double remainingLength, int pos, ArrayList<ASplit> path, double length, ArrayList<ASplit> bestPath, Single<Double> bestLength) {
-        if (pos >= splits.size()) {
-            if (length > bestLength.get()) {
-                bestPath.clear();
-                bestPath.addAll(path);
-                bestLength.set(length);
-            }
-        } else {
-            final ASplit split = splits.get(pos);
-            final double weight = (useWeights ? split.getWeight() : 1);
+        final BitSet interval = computeInterval(ntaxa, furthestPair.getFirst(), furthestPair.getSecond(), cycle, alt);
 
-            if (length + remainingLength - weight > bestLength.get())
-                computeLongestPathRec(useWeights, splits, remainingLength - weight, pos + 1, path, length, bestPath, bestLength);
-            if (length + remainingLength > bestLength.get() && isCompatibleWithAll(splits, splits.get(pos))) {
-                path.add(split);
-                computeLongestPathRec(useWeights, splits, remainingLength - weight, pos + 1, path, length + weight, bestPath, bestLength);
-                path.remove(splits.get(pos));
-            }
-        }
-    }
+        splits.sort((s1, s2) -> {
+            final BitSet a1 = s1.getPartContaining(furthestPair.getFirst());
+            final BitSet a2 = s2.getPartContaining(furthestPair.getFirst());
+            final int size1 = BitSetUtils.intersection(a1, interval).cardinality();
+            final int size2 = BitSetUtils.intersection(a2, interval).cardinality();
 
-    private static Triplet<Integer, Double, Double> computeTriplet(SplitsBlock splitsBlock, int a, Single<Double> bestLength, Single<ArrayList<ASplit>> bestPath, boolean useWeights) {
-        double accummulated = 0;
-        for (ASplit split : bestPath.get()) {
-            if (accummulated + (useWeights ? split.getWeight() : 1.0) >= 0.5 * bestLength.get()) {
-                double part1 = 0.5 * bestLength.get() - accummulated;
-                double part2 = (useWeights ? split.getWeight() : 1.0) - part1;
+            if (size1 < size2)
+                return -1;
+            else if (size1 > size2)
+                return 1;
+            else
+                return Integer.compare(a1.cardinality(), a2.cardinality());
+        });
 
-                if (!split.getPartContaining(1).get(a))
-                    return new Triplet<>(splitsBlock.indexOf(split), part1, part2);
-                else
-                    return new Triplet<>(splitsBlock.indexOf(split), part2, part1);
-            }
-            accummulated += (useWeights ? split.getWeight() : 1.0);
-        }
-        return new Triplet<>(0, 0.0, 0.0);
-    }
-
-    private static boolean isCompatibleWithAll(ArrayList<ASplit> splits, ASplit other) {
+        double sum = 0;
         for (ASplit split : splits) {
-            if (!split.equals(other)) {
-                if (!Compatibility.areCompatible(split, other))
-                    return false;
+            final double weight = (useWeights ? split.getWeight() : 1);
+            final double delta = (sum + weight - 0.5 * maxDistance);
+            if (delta > 0) {
+                return new Triplet<>(split2id.get(split), weight - delta, delta);
+            }
+            sum += weight;
+        }
+        return new Triplet<>(1, 0.0, useWeights ? splitsBlock.get(1).getWeight() : 1);
+    }
+
+    private static BitSet computeInterval(int ntaxa, int a, int b, int[] cycle, boolean alt) {
+        final BitSet set = new BitSet();
+
+        if (cycle.length > 0) {
+            if (alt) {
+                boolean in = false;
+                int i = cycle.length - 1;
+                while (true) {
+                    if (cycle[i] == a) {
+                        set.set(a);
+                        in = true;
+                    }
+                    if (in && cycle[i] == b) {
+                        break;
+                    }
+                    if (i == 1)
+                        i = cycle.length - 1;
+                    else
+                        i--;
+                }
+            } else {
+                boolean in = false;
+                int i = 1;
+                while (true) {
+                    if (cycle[i] == a) {
+                        set.set(a);
+                        in = true;
+                    }
+                    if (in && cycle[i] == b) {
+                        break;
+                    }
+                    if (i >= cycle.length - 1)
+                        i = 1;
+                    else
+                        i++;
+                }
             }
         }
-        return true;
+        return set;
     }
 }
