@@ -21,12 +21,14 @@
 package splitstree5.tools;
 
 import jloda.fx.util.ArgsOptions;
+import jloda.thirdparty.HexUtils;
 import jloda.util.*;
 import splitstree5.core.algorithms.genomes2distances.mash.MashSketch;
-import splitstree5.core.algorithms.genomes2distances.utils.bloomfilter.BloomFilter;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -65,7 +67,7 @@ public class ComputeMashSketches {
         options.comment("Input and output");
         final String[] input = options.getOptionMandatory("-i", "input", "Input fastA files (directory or .gz ok)", new String[0]);
         final String[] output = options.getOptionMandatory("-o", "output", "Output mash sketch files (directory or .gz ok, use suffix .msketch for files)", new String[0]);
-        final String outputFormat = options.getOption("-f", "format", "Sketch output format", new String[]{"binary", "text"}, "binary");
+        final String outputFormat = options.getOption("-f", "format", "Sketch output format", new String[]{"hex", "binary", "text"}, "hex");
         final boolean createKMerFiles = options.getOption("-ok", "kMerFiles", "Create k-mer files, too", false);
 
         options.comment("Mash parameters");
@@ -76,13 +78,6 @@ public class ComputeMashSketches {
         final boolean filterUnique = options.getOption("-fu", "filterUnique", "Filter unique k-mers (use only for error-prone reads)", false);
 
         final boolean isNucleotideData = options.getOption("-st", "sequenceType", "Sequence type", new String[]{"dna", "protein"}, "dna").equalsIgnoreCase("dna");
-
-        options.comment("Total kmers output");
-        final String allKMersOutputFile = options.getOption("-oak", "outputAllKMers", "Output file for all sketch k-mers (stdout or .gz ok, use suffix .kmers for file)", "");
-        final String bloomFilterOutputFile = options.getOption("-oabf", "outputAllBFilter", "Output file for Bloom filter for all sketch kmers (use suffix .bfilter)", "");
-        final double fpProbability = options.getOption("-fp", "fpProb", "Probability of false positive error in Bloom filter", 0.0001);
-        // options.comment(ArgsOptions.OTHER);
-        // add number of cores option
 
         options.done();
 
@@ -123,20 +118,6 @@ public class ComputeMashSketches {
         } else
             throw new UsageException("Input and output files don't match");
 
-        final BloomFilter allKMersBloomFilter;
-
-        if (bloomFilterOutputFile.length() > 0) {
-            final int estimatedSize = sParameter * inputFiles.size();
-            allKMersBloomFilter = new BloomFilter(estimatedSize, fpProbability);
-        } else
-            allKMersBloomFilter = null;
-
-        final Set<byte[]> allKMersSet;
-        if (allKMersOutputFile.length() > 0)
-            allKMersSet = new HashSet<>();
-        else
-            allKMersSet = null;
-
         final ArrayList<Pair<String, String>> inputOutputPairs = new ArrayList<>();
 
         for (int i = 0; i < inputFiles.size(); i++) {
@@ -156,24 +137,6 @@ public class ComputeMashSketches {
                         final MashSketch sketch = MashSketch.compute(inputFile, Collections.singleton(sequence), isNucleotideData, sParameter, kParameter, randomSeed, filterUnique, true, progress);
                         saveSketch(inputOutputPair.getSecond(), sketch, outputFormat);
 
-                        if (allKMersBloomFilter != null) {
-                            synchronized (allKMersBloomFilter) {
-                                allKMersBloomFilter.addAll(sketch.getKmers());
-                            }
-                        }
-                        if (allKMersSet != null) {
-                            synchronized (allKMersSet) {
-                                allKMersSet.addAll(Arrays.asList(sketch.getKmers()));
-                            }
-                            if (true) {
-                                final String sequenceString = Basic.toString(sequence);
-                                final String reverseComplement = SequenceUtils.getReverseComplement(sequenceString);
-                                for (String kmer : sketch.getKMersString().split("\\s+")) {
-                                    if (!sequenceString.contains(kmer) && !reverseComplement.contains(kmer))
-                                        System.err.println("kmer not found: " + kmer);
-                                }
-                            }
-                        }
                         if (createKMerFiles) {
                             try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(Basic.getOutputStreamPossiblyZIPorGZIP(Basic.replaceFileSuffixKeepGZ(inputOutputPair.getSecond(), ".kmers"))))) {
                                 w.write(sketch.getKMersString());
@@ -188,20 +151,7 @@ public class ComputeMashSketches {
         }
         if (exception.get() != null)
             throw exception.get();
-        System.err.println(String.format("Wrote %,d files", inputOutputPairs.size()));
-
-        if (allKMersBloomFilter != null) {
-            try (OutputStream outs = Basic.getOutputStreamPossiblyZIPorGZIP(bloomFilterOutputFile)) {
-                outs.write(allKMersBloomFilter.getBytes());
-            }
-        }
-        if (allKMersSet != null) {
-            try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(Basic.getOutputStreamPossiblyZIPorGZIP(allKMersOutputFile)))) {
-                for (byte[] kmer : allKMersSet) {
-                    w.write(Basic.toString(kmer) + "\n");
-                }
-            }
-        }
+        System.err.printf("Wrote %,d files%n", inputOutputPairs.size());
     }
 
     private byte[] readSequences(String fileName) throws IOException {
@@ -212,14 +162,22 @@ public class ComputeMashSketches {
 
     private void saveSketch(String outputFile, MashSketch sketch, String outputFormat) throws IOException {
         try (OutputStream outs = Basic.getOutputStreamPossiblyZIPorGZIP(outputFile)) {
-            if (outputFormat.equals("text")) {
-                try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(outs))) {
-                    w.write(sketch.getString() + "\n");
-                }
-            } else if (outputFormat.equals("binary")) {
-                try (BufferedOutputStream w = new BufferedOutputStream(outs)) {
-                    w.write(sketch.getBytes());
-                }
+            switch (outputFormat) {
+                case "text":
+                    try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(outs))) {
+                        w.write(sketch.getString() + "\n");
+                    }
+                    break;
+                case "hex":
+                    try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(outs))) {
+                        w.write(HexUtils.encodeHexString(sketch.getBytes()) + "\n");
+                    }
+                    break;
+                case "binary":
+                    try (BufferedOutputStream w = new BufferedOutputStream(outs)) {
+                        w.write(sketch.getBytes());
+                    }
+                    break;
             }
         }
     }

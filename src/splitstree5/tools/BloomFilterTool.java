@@ -22,6 +22,7 @@ package splitstree5.tools;
 
 import jloda.fx.util.ArgsOptions;
 import jloda.fx.util.ProgramExecutorService;
+import jloda.thirdparty.HexUtils;
 import jloda.util.*;
 import splitstree5.core.algorithms.genomes2distances.utils.bloomfilter.BloomFilter;
 
@@ -80,6 +81,8 @@ public class BloomFilterTool {
         else
             output = options.getOption("-o", "output", "Output file (stdout ok)", "stdout");
 
+        final boolean useHexEncoding = options.getOption("-f", "format", "Bloom filter output format", new String[]{"hex", "binary"}, "hex").equalsIgnoreCase("hex");
+
         options.comment("MAKE options");
         final double fpProbability;
         if (options.isDoHelp() || command.equals("make"))
@@ -126,8 +129,6 @@ public class BloomFilterTool {
                                         return 0L;
                                     }).sum()).get();
 
-                } catch (InterruptedException | ExecutionException e) {
-                    throw e;
                 } finally {
                     threadPool.shutdown();
                 }
@@ -173,8 +174,14 @@ public class BloomFilterTool {
             }
 
             System.err.println("Writing Bloom filter to file: " + output);
-            try (OutputStream outs = Basic.getOutputStreamPossiblyZIPorGZIP(output)) {
-                outs.write(allKMersBloomFilter.getBytes());
+            if (useHexEncoding) {
+                try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(Basic.getOutputStreamPossiblyZIPorGZIP(output)))) {
+                    w.write(HexUtils.encodeHexString(allKMersBloomFilter.getBytes()) + "\n");
+                }
+            } else {
+                try (OutputStream outs = Basic.getOutputStreamPossiblyZIPorGZIP(output)) {
+                    outs.write(allKMersBloomFilter.getBytes());
+                }
             }
             System.err.println("Size: " + Basic.getMemorySizeString((new File(output)).length()));
         } else if (command.equals("contains")) {
@@ -188,7 +195,12 @@ public class BloomFilterTool {
                         bloomFilterFiles.parallelStream()
                                 .mapToInt(name -> {
                                     try {
-                                        final BloomFilter bloomFilter = BloomFilter.parseBytes(Files.readAllBytes((new File(name).toPath())));
+                                        final byte[] bytes;
+                                        if (useHexEncoding)
+                                            bytes = HexUtils.decodeHexString(Files.readString((new File(name).toPath())).trim());
+                                        else
+                                            bytes = Files.readAllBytes((new File(name).toPath()));
+                                        final BloomFilter bloomFilter = BloomFilter.parseBytes(bytes);
                                         synchronized (bloomFilters) {
                                             bloomFilters.put(name, bloomFilter);
                                         }

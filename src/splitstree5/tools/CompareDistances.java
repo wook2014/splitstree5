@@ -62,7 +62,7 @@ public class CompareDistances {
         options.setLicense("This is free software, licensed under the terms of the GNU General Public License, Version 3.");
         options.setAuthors("Daniel H. Huson");
 
-        final String[] inputFiles = options.getOptionMandatory("-i", "input", "Two nput files", new String[0]);
+        final String[] inputFiles = options.getOptionMandatory("-i", "input", "Two input files", new String[0]);
         //final String outputFile = options.getOption("-o", "output", "Output file (stdout for console output)", "stdout");
 
         final double delta = options.getOption("-d", "delta", "Delta for comparison", 0.001);
