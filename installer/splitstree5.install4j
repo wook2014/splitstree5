@@ -2,7 +2,13 @@
 <install4j version="8.0.4" transformSequenceNumber="8">
   <directoryPresets config="../tools/bfilter-tool" />
   <application name="SplitsTree5" applicationId="4099-4251-9127-4263" mediaDir="../../../builds" shortName="splitstree5" publisher="Daniel Huson and David Bryant" publisherWeb="http://splitstree.husonlab.org" version="5.0.0" allPathsRelative="true" macVolumeId="b8c0a1154e563a9a" javaMinVersion="11">
-    <codeSigning macEnabled="true" macPkcs12File="../../../../etc/application.p12" />
+    <codeSigning macEnabled="true" macPkcs12File="../../../../etc/application.p12">
+      <macSearchedJars>
+        <entry>jna-*</entry>
+        <entry>swt-*</entry>
+        <entry>sqlite-*</entry>
+      </macSearchedJars>
+    </codeSigning>
     <jreBundles jdkProviderId="Liberica" release="OpenJDK 13.0.2+9">
       <modules />
     </jreBundles>
