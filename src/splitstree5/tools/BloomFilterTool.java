@@ -21,16 +21,19 @@
 package splitstree5.tools;
 
 import jloda.fx.util.ArgsOptions;
-import jloda.fx.util.ProgramExecutorService;
+import jloda.kmers.bloomfilter.BloomFilter;
 import jloda.thirdparty.HexUtils;
 import jloda.util.*;
-import splitstree5.core.algorithms.genomes2distances.utils.bloomfilter.BloomFilter;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -99,75 +102,82 @@ public class BloomFilterTool {
 
         options.comment(ArgsOptions.OTHER);
         // add number of cores option
-        ProgramExecutorService.setNumberOfCoresToUse(options.getOption("-t", "threads", "Number of threads", 8));
+        final int threads = options.getOption("-t", "threads", "Number of threads", 8);
 
         options.done();
 
         final ArrayList<String> inputFiles = getInputFiles(kmerInput, ".kmers", ".kmers.gz");
 
         if (command.equals("make")) {
-            final long numberOfLines;
-            {
-                final Single<IOException> exception = new Single<>(null);
-                final ForkJoinPool threadPool = new ForkJoinPool(ProgramExecutorService.getNumberOfCoresToUse());
-                try (ProgressPercentage progress = new ProgressPercentage("Counting input lines", inputFiles.size())) {
-                    // there is one job per core, so no need to setup threads:
-                    numberOfLines = threadPool.submit(() ->
-                            inputFiles.parallelStream().
-                                    mapToLong(name -> {
-                                        if (exception.get() == null) {
-                                            try {
-                                                return Files.lines((new File(name)).toPath()).count();
-                                            } catch (IOException e) {
-                                                exception.setIfCurrentValueIsNull(e);
-                                            } finally {
-                                                synchronized (progress) {
-                                                    progress.incrementProgress();
-                                                }
-                                            }
-                                        }
-                                        return 0L;
-                                    }).sum()).get();
+            final Counter numberOfLines = new Counter(0);
 
+            try (ProgressPercentage progress = new ProgressPercentage("Counting input lines", inputFiles.size())) {
+                final ExecutorService service = Executors.newFixedThreadPool(threads);
+                final Single<IOException> exception = new Single<>(null);
+                try {
+                    inputFiles.forEach(fileName -> {
+                        if (Basic.fileExistsAndIsNonEmpty(fileName)) {
+                            service.submit(() -> {
+                                if (exception.isNull()) {
+                                    try (FileLineIterator it = new FileLineIterator(fileName)) {
+                                        while (it.hasNext()) {
+                                            final String line = it.next();
+                                            if (line.trim().length() > 0)
+                                                numberOfLines.increment();
+                                        }
+                                    } catch (IOException e) {
+                                        exception.setIfCurrentValueIsNull(e);
+                                    } finally {
+                                        synchronized (progress) {
+                                            progress.incrementProgress();
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    });
                 } finally {
-                    threadPool.shutdown();
+                    service.shutdown();
+                    service.awaitTermination(1000, TimeUnit.DAYS);
                 }
                 if (exception.get() != null)
                     throw exception.get();
-                System.err.println("Input lines: " + numberOfLines);
             }
 
-            final BloomFilter allKMersBloomFilter = new BloomFilter((int) numberOfLines, fpProbability);
-            {
+            final BloomFilter allKMersBloomFilter = new BloomFilter((int) numberOfLines.get(), fpProbability);
+            try (ProgressPercentage progress = new ProgressPercentage("Processing input lines", inputFiles.size())) {
+                final ExecutorService service = Executors.newFixedThreadPool(threads);
                 final Single<IOException> exception = new Single<>(null);
-                final ForkJoinPool threadPool = new ForkJoinPool(ProgramExecutorService.getNumberOfCoresToUse());
-                try (ProgressPercentage progress = new ProgressPercentage("Processing input lines", inputFiles.size())) {
-                    final int dummy = threadPool.submit(() ->
-                            inputFiles.parallelStream().
-                                    map(name -> {
-                                        if (exception.get() == null) {
-                                            try {
-                                                return Files.lines((new File(name)).toPath());
-                                            } catch (IOException e) {
-                                                exception.setIfCurrentValueIsNull(e);
-                                            } finally {
-                                                synchronized (progress) {
-                                                    progress.incrementProgress();
-                                                }
+                try {
+                    inputFiles.forEach(fileName -> {
+                        if (Basic.fileExistsAndIsNonEmpty(fileName)) {
+                            service.submit(() -> {
+                                if (exception.isNull()) {
+                                    try (FileLineIterator it = new FileLineIterator(fileName)) {
+                                        final ArrayList<byte[]> list = new ArrayList<>();
+                                        while (it.hasNext()) {
+                                            final byte[] bytes = it.next().trim().getBytes();
+                                            if (bytes.length > 0) {
+                                                list.add(bytes);
                                             }
                                         }
-                                        return null;
-                                    })
-                                    .filter(Objects::nonNull)
-                                    .mapToInt(list -> {
-                                        list.forEach(s -> allKMersBloomFilter.add(s.getBytes()));
-                                        return 1;
-                                    }).sum()).get();  // forces wait until parallel threads completed
-
-                } catch (InterruptedException | ExecutionException e) {
-                    exception.setIfCurrentValueIsNull(new IOException(e));
+                                        synchronized (allKMersBloomFilter) {
+                                            allKMersBloomFilter.addAll(list);
+                                        }
+                                    } catch (IOException e) {
+                                        exception.setIfCurrentValueIsNull(e);
+                                    } finally {
+                                        synchronized (progress) {
+                                            progress.incrementProgress();
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    });
                 } finally {
-                    threadPool.shutdown();
+                    service.shutdown();
+                    service.awaitTermination(1000, TimeUnit.DAYS);
                 }
                 if (exception.get() != null)
                     throw exception.get();
@@ -188,35 +198,42 @@ public class BloomFilterTool {
             final ArrayList<String> bloomFilterFiles = getInputFiles(bloomFilterInput, ".bfilter", ".bfilter.gz");
             final Map<String, BloomFilter> bloomFilters = new HashMap<>();
 
-            final Single<IOException> exception = new Single<>(null);
-            final ForkJoinPool threadPool = new ForkJoinPool(ProgramExecutorService.getNumberOfCoresToUse());
             try (ProgressPercentage progress = new ProgressPercentage("Reading bloom filters", bloomFilterFiles.size())) {
-                final int dummy = threadPool.submit(() ->
-                        bloomFilterFiles.parallelStream()
-                                .mapToInt(name -> {
+                final ExecutorService service = Executors.newFixedThreadPool(threads);
+                final Single<IOException> exception = new Single<>(null);
+                try {
+                    bloomFilterFiles.forEach(fileName -> {
+                        if (Basic.fileExistsAndIsNonEmpty(fileName)) {
+                            service.submit(() -> {
+                                if (exception.isNull()) {
                                     try {
                                         final byte[] bytes;
                                         if (useHexEncoding)
-                                            bytes = HexUtils.decodeHexString(Files.readString((new File(name).toPath())).trim());
+                                            bytes = HexUtils.decodeHexString(Files.readString((new File(fileName).toPath())).trim());
                                         else
-                                            bytes = Files.readAllBytes((new File(name).toPath()));
+                                            bytes = Files.readAllBytes((new File(fileName).toPath()));
                                         final BloomFilter bloomFilter = BloomFilter.parseBytes(bytes);
                                         synchronized (bloomFilters) {
-                                            bloomFilters.put(name, bloomFilter);
+                                            bloomFilters.put(fileName, bloomFilter);
                                         }
-                                        progress.incrementProgress();
                                     } catch (IOException e) {
                                         exception.setIfCurrentValueIsNull(e);
+                                    } finally {
+                                        synchronized (progress) {
+                                            progress.incrementProgress();
+                                        }
                                     }
-                                    return 1;
-                                }).sum()).get(); // forces wait until parallel threads completed
-            } catch (InterruptedException | ExecutionException e) {
-                exception.setIfCurrentValueIsNull(new IOException(e));
-            } finally {
-                threadPool.shutdown();
+                                }
+                            });
+                        }
+                    });
+                } finally {
+                    service.shutdown();
+                    service.awaitTermination(1000, TimeUnit.DAYS);
+                }
+                if (exception.get() != null)
+                    throw exception.get();
             }
-            if (exception.get() != null)
-                throw exception.get();
 
             try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(Basic.getOutputStreamPossiblyZIPorGZIP(output)))) {
                 if (bloomFilterFiles.size() > 1)

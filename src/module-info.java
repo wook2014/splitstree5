@@ -7,6 +7,7 @@ module splitstreefive {
     requires transitive java.sql;
     requires transitive java.desktop;
 
+    requires sqlite.jdbc;
     requires richtextfx.fat;
     requires junit;
     requires Jama;
@@ -33,9 +34,7 @@ module splitstreefive {
     opens splitstree5.core.algorithms;
     opens splitstree5.core.algorithms.genomes2distances;
 
-    exports splitstree5.core.algorithms.genomes2distances.mash;
-    exports splitstree5.core.algorithms.genomes2distances.dashing;
-    exports splitstree5.core.algorithms.genomes2distances.utils;
+    exports splitstree5.untested.dashing;
 
     opens splitstree5.core.algorithms.characters2distances;
     opens splitstree5.core.algorithms.characters2network;

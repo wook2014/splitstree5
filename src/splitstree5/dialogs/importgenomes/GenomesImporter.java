@@ -37,9 +37,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -53,7 +51,9 @@ public class GenomesImporter {
     private final boolean perFile;
     private final boolean useFileName;
     private final int minLength;
-    private final boolean storeFileReferences;
+    private final boolean storeFileLocations;
+
+    private final Map<String, String> referenceFile2Names = new HashMap<>();
 
     private final Map<String, String> line2label;
 
@@ -63,13 +63,13 @@ public class GenomesImporter {
      * @param fileNames
      * @param line2label
      */
-    public GenomesImporter(List<String> fileNames, ImportGenomesDialog.TaxonIdentification taxonIdentification, Map<String, String> line2label, int minLength, boolean storeFileReferences) {
-        this.fileNames = fileNames;
+    public GenomesImporter(List<String> fileNames, ImportGenomesDialog.TaxonIdentification taxonIdentification, Map<String, String> line2label, int minLength, boolean storeFileLocations) {
+        this.fileNames = new ArrayList<>(fileNames);
         perFile = (taxonIdentification == ImportGenomesDialog.TaxonIdentification.PerFile || taxonIdentification == ImportGenomesDialog.TaxonIdentification.PerFileUsingFileName);
         useFileName = (taxonIdentification == ImportGenomesDialog.TaxonIdentification.PerFileUsingFileName);
         this.line2label = line2label;
         this.minLength = minLength;
-        this.storeFileReferences = storeFileReferences;
+        this.storeFileLocations = storeFileLocations;
     }
 
     /**
@@ -122,34 +122,7 @@ public class GenomesImporter {
             private InputRecord next;
 
             {
-                if (progressListener != null) {
-                    progressListener.setMaximum(fileNames.size());
-                    try {
-                        progressListener.setProgress(0);
-                    } catch (CanceledException ignored) {
-                    }
-                }
-                try {
-                    if (whichFile < fileNames.size()) {
-                        if (perFile)
-                            next = getDataFromAFile(fileNames.get(whichFile++), useFileName);
-                        else {
-                            do {
-                                fastaIterator = FastAFileIterator.getFastAOrFastQAsFastAIterator(fileNames.get(whichFile));
-                                if (fastaIterator.hasNext()) {
-                                    final Pair<String, String> pair = fastaIterator.next();
-                                    next = new InputRecord(Basic.swallowLeadingGreaterSign(pair.getFirst()), pair.getSecond().getBytes(), fileNames.get(whichFile), fastaIterator.getPosition());
-                                } else {
-                                    fastaIterator.close();
-                                    whichFile++;
-                                }
-                            }
-                            while (next == null && whichFile < fileNames.size());
-                        }
-                    }
-                } catch (IOException ex) {
-                    next = null;
-                }
+                next(); // this will set next to first result
             }
 
             @Override
@@ -158,7 +131,6 @@ public class GenomesImporter {
                     try {
                         if (fastaIterator != null)
                             fastaIterator.close();
-                        ;
                     } catch (IOException ignored) {
                     }
                 }
@@ -171,28 +143,36 @@ public class GenomesImporter {
                 try {
                     next = null;
 
-                    if (perFile) {
-                        if (whichFile < fileNames.size())
-                            next = getDataFromAFile(fileNames.get(whichFile++), useFileName);
-                    } else {
-                        while (fastaIterator != null && !fastaIterator.hasNext()) {
-                            fastaIterator.close();
+                    if (whichFile < fileNames.size()) {
+                        final String fileName = fileNames.get(whichFile);
+                        if (referenceFile2Names.containsKey(fileName)) {
+                            next = getDataFromAFile(fileName, true);
+                            if (next != null)
+                                next.setName(referenceFile2Names.get(fileName));
                             whichFile++;
-                            if (whichFile < fileNames.size()) {
-                                fastaIterator = new FastAFileIterator(fileNames.get(whichFile));
-                            } else {
-                                fastaIterator = null;
+                        } else if (perFile) {
+                            next = getDataFromAFile(fileNames.get(whichFile++), useFileName);
+                        } else {
+                            while (fastaIterator != null && !fastaIterator.hasNext()) {
+                                fastaIterator.close();
+                                whichFile++;
+                                if (whichFile < fileNames.size()) {
+                                    fastaIterator = new FastAFileIterator(fileNames.get(whichFile));
+                                } else {
+                                    fastaIterator = null;
+                                }
                             }
-                        }
-                        if (fastaIterator != null) {
-                            final Pair<String, String> pair = fastaIterator.next();
-                            next = new InputRecord(Basic.swallowLeadingGreaterSign(pair.getFirst()), pair.getSecond().toUpperCase().getBytes(), fileNames.get(whichFile), fastaIterator.getPosition());
+                            if (fastaIterator != null) {
+                                final Pair<String, String> pair = fastaIterator.next();
+                                next = new InputRecord(Basic.swallowLeadingGreaterSign(pair.getFirst()), pair.getSecond().toUpperCase().getBytes(), fileNames.get(whichFile), fastaIterator.getPosition());
+                            }
                         }
                     }
                 } catch (IOException ex) {
                     next = null;
                 }
-                result.setName(line2label.getOrDefault(result.getName(), result.getName().replaceAll("'", "_")));
+                if (result != null)
+                    result.setName(line2label.getOrDefault(result.getName(), result.getName().replaceAll("'", "_")));
 
                 if (progressListener != null) {
                     try {
@@ -260,7 +240,7 @@ public class GenomesImporter {
                     genome.setName(inputRecord.getName());
                     final Genome.GenomePart genomePart = new Genome.GenomePart();
                     genomePart.setName("part");
-                    if (storeFileReferences) {
+                    if (storeFileLocations) {
                         genomePart.setFile(inputRecord.getFile(), inputRecord.getOffset(), inputRecord.getSequence().length);
                     } else {
                         genomePart.setSequence(inputRecord.getSequence(), inputRecord.getSequence().length);
@@ -312,6 +292,11 @@ public class GenomesImporter {
                     e -> NotificationManager.showError("Genome import failed: " + e));
         });
         aService.start();
+    }
+
+    public void addReferenceFile2Names(Map<String, String> referenceFile2Names) {
+        this.referenceFile2Names.putAll(referenceFile2Names);
+        this.fileNames.addAll(referenceFile2Names.keySet());
     }
 
     public static class InputRecord {

@@ -22,20 +22,20 @@ package splitstree5.core.algorithms.genomes2distances;
 
 import javafx.beans.property.*;
 import jloda.fx.window.NotificationManager;
+import jloda.kmers.GenomeDistanceType;
 import jloda.util.Basic;
 import jloda.util.Pair;
 import jloda.util.ProgressListener;
 import jloda.util.Triplet;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.algorithms.genomes2distances.dashing.DashingDistance;
-import splitstree5.core.algorithms.genomes2distances.dashing.DashingSketch;
-import splitstree5.core.algorithms.genomes2distances.utils.GenomeDistanceType;
 import splitstree5.core.algorithms.interfaces.IFromGenomes;
 import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.GenomesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.nexus.GenomesNexusFormat;
+import splitstree5.untested.dashing.DashingDistance;
+import splitstree5.untested.dashing.DashingSketch;
 
 import java.io.IOException;
 import java.util.*;

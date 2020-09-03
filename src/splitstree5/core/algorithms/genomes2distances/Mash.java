@@ -21,12 +21,13 @@
 package splitstree5.core.algorithms.genomes2distances;
 
 import javafx.beans.property.*;
+import jloda.fx.util.ProgramExecutorService;
 import jloda.fx.window.NotificationManager;
+import jloda.kmers.GenomeDistanceType;
+import jloda.kmers.mash.MashDistance;
+import jloda.kmers.mash.MashSketch;
 import jloda.util.*;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.algorithms.genomes2distances.mash.MashDistance;
-import splitstree5.core.algorithms.genomes2distances.mash.MashSketch;
-import splitstree5.core.algorithms.genomes2distances.utils.GenomeDistanceType;
 import splitstree5.core.algorithms.interfaces.IFromGenomes;
 import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.DistancesBlock;
@@ -36,6 +37,9 @@ import splitstree5.io.nexus.GenomesNexusFormat;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -74,11 +78,33 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
 
         genomesBlock.checkGenomesPresent();
 
-        final ArrayList<MashSketch> sketches = genomesBlock.getGenomes().parallelStream().map(g -> new Pair<>(g.getName(), g.parts()))
-                .map(pair -> MashSketch.compute(pair.getFirst(), Basic.asList(pair.getSecond()), isNucleotideData, getOptionSketchSize(), getOptionKMerSize(), getOptionHashSeed(), isOptionIgnoreUniqueKMers(), progress))
-                .collect(Collectors.toCollection(ArrayList::new));
-
-        progress.checkForCancel();
+        final ArrayList<MashSketch> sketches = new ArrayList<>(genomesBlock.size());
+        {
+            final ExecutorService service = Executors.newFixedThreadPool(ProgramExecutorService.getNumberOfCoresToUse());
+            final Single<Exception> exception = new Single<>(null);
+            try {
+                genomesBlock.getGenomes().forEach(genome -> {
+                    service.submit(() -> {
+                        if (exception.get() == null) {
+                            try {
+                                final MashSketch sketch = MashSketch.compute(genome.getName(), Basic.asList(genome.parts()), isNucleotideData, getOptionSketchSize(), getOptionKMerSize(), getOptionHashSeed(), isOptionIgnoreUniqueKMers(), progress);
+                                synchronized (sketches) {
+                                    progress.checkForCancel();
+                                    sketches.add(sketch);
+                                }
+                            } catch (Exception ex) {
+                                exception.setIfCurrentValueIsNull(ex);
+                            }
+                        }
+                    });
+                });
+            } finally {
+                service.shutdown();
+                service.awaitTermination(1000, TimeUnit.DAYS);
+            }
+            if (exception.get() != null)
+                throw exception.get();
+        }
 
         if (sketches.size() < 4) {
             throw new IOException("Too few genomes: " + sketches.size());
@@ -94,7 +120,6 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
         }
         if (countTooSmall > 0)
             NotificationManager.showWarning(String.format("Too few k-mers for %,d genomes- rerun with smaller sketch size", countTooSmall));
-
 
         final List<Triplet<MashSketch, MashSketch, Double>> triplets = new ArrayList<>();
 

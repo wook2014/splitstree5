@@ -21,14 +21,18 @@
 package splitstree5.tools;
 
 import jloda.fx.util.ArgsOptions;
+import jloda.fx.util.ProgramExecutorService;
+import jloda.kmers.mash.MashSketch;
 import jloda.thirdparty.HexUtils;
 import jloda.util.*;
-import splitstree5.core.algorithms.genomes2distances.mash.MashSketch;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -79,6 +83,10 @@ public class ComputeMashSketches {
 
         final boolean isNucleotideData = options.getOption("-st", "sequenceType", "Sequence type", new String[]{"dna", "protein"}, "dna").equalsIgnoreCase("dna");
 
+        options.comment(ArgsOptions.OTHER);
+        // add number of cores option
+        ProgramExecutorService.setNumberOfCoresToUse(options.getOption("-t", "threads", "Number of threads", 8));
+
         options.done();
 
         final ArrayList<String> inputFiles = new ArrayList<>();
@@ -124,36 +132,42 @@ public class ComputeMashSketches {
             inputOutputPairs.add(new Pair<>(inputFiles.get(i), outputFiles.get(outputFiles.size() == 1 ? 0 : i)));
         }
 
-        final Single<IOException> exception = new Single<>();
+        if (Basic.isDirectory(output[0]))
+            System.err.println("Writing to directory: " + output[0]);
+
         try (final ProgressPercentage progress = new ProgressPercentage("Sketching...", inputOutputPairs.size())) {
-            if (Basic.isDirectory(output[0]))
-                System.err.println("Writing to directory: " + output[0]);
+            final Single<IOException> exception = new Single<>();
+            final ExecutorService executor = Executors.newFixedThreadPool(ProgramExecutorService.getNumberOfCoresToUse());
+            try {
+                inputOutputPairs.forEach(inputOutputPair -> executor.submit(() -> {
+                    if (exception.isNull()) {
+                        try {
+                            final String inputFile = inputOutputPair.getFirst();
+                            final byte[] sequence = readSequences(inputFile);
+                            final MashSketch sketch = MashSketch.compute(inputFile, Collections.singleton(sequence), isNucleotideData, sParameter, kParameter, randomSeed, filterUnique, true, progress);
+                            saveSketch(inputOutputPair.getSecond(), sketch, outputFormat);
 
-            inputOutputPairs.parallelStream().forEach(inputOutputPair -> {
-                if (exception.get() == null) {
-                    try {
-                        final String inputFile = inputOutputPair.getFirst();
-                        final byte[] sequence = readSequences(inputFile);
-                        final MashSketch sketch = MashSketch.compute(inputFile, Collections.singleton(sequence), isNucleotideData, sParameter, kParameter, randomSeed, filterUnique, true, progress);
-                        saveSketch(inputOutputPair.getSecond(), sketch, outputFormat);
-
-                        if (createKMerFiles) {
-                            try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(Basic.getOutputStreamPossiblyZIPorGZIP(Basic.replaceFileSuffixKeepGZ(inputOutputPair.getSecond(), ".kmers"))))) {
-                                w.write(sketch.getKMersString());
+                            if (createKMerFiles) {
+                                try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(Basic.getOutputStreamPossiblyZIPorGZIP(Basic.replaceFileSuffixKeepGZ(inputOutputPair.getSecond(), ".kmers"))))) {
+                                    w.write(sketch.getKMersString());
+                                }
                             }
+                            progress.checkForCancel();
+                        } catch (IOException ex) {
+                            exception.setIfCurrentValueIsNull(ex);
                         }
-                        progress.checkForCancel();
-                    } catch (IOException ex) {
-                        exception.setIfCurrentValueIsNull(ex);
                     }
-                }
-            });
+                }));
+            } finally {
+                executor.shutdown();
+                executor.awaitTermination(1000, TimeUnit.DAYS);
+            }
+            if (exception.get() != null)
+                throw exception.get();
         }
-        if (exception.get() != null)
-            throw exception.get();
         System.err.printf("Wrote %,d files%n", inputOutputPairs.size());
     }
-
+    
     private byte[] readSequences(String fileName) throws IOException {
         try (FileLineIterator it = new FileLineIterator(fileName)) {
             return it.stream().filter(line -> !line.startsWith(">")).map(line -> line.replaceAll("\\s+", "")).collect(Collectors.joining()).getBytes();

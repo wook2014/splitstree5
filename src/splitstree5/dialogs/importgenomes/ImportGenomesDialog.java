@@ -19,26 +19,33 @@
 
 package splitstree5.dialogs.importgenomes;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.When;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import jloda.fx.control.RichTextLabel;
 import jloda.fx.util.*;
+import jloda.fx.window.NotificationManager;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
 import splitstree5.main.Version;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
- * importgenomes analysis dialog
+ * import genomes dialog
  * Daniel Huson, 2.2020
  */
 public class ImportGenomesDialog {
@@ -47,6 +54,10 @@ public class ImportGenomesDialog {
     public enum TaxonIdentification {PerFastARecord, PerFile, PerFileUsingFileName}
 
     private final Stage stage;
+
+    private final ObjectProperty<AccessReferenceDatabase> referencesDatabase = new SimpleObjectProperty<>(null);
+    private final ObservableList<Integer> referenceIds = FXCollections.observableArrayList();
+    private final BooleanProperty running = new SimpleBooleanProperty(false);
 
     /**
      * constructor
@@ -73,10 +84,8 @@ public class ImportGenomesDialog {
     }
 
     private void controlBindings(Stage stage, ImportGenomesController controller) {
-        final BooleanProperty isRunning = new SimpleBooleanProperty(false);
-
         stage.setOnCloseRequest(c -> {
-            if (isRunning.get())
+            if (isRunning())
                 c.consume();
         });
 
@@ -131,7 +140,7 @@ public class ImportGenomesDialog {
         controller.getStoreOnlyReferencesCheckBox().selectedProperty().addListener((c, o, n) -> ProgramProperties.put("StoreOnlyReferences", n));
 
         controller.getCancelButton().setOnAction(c -> stage.close());
-        controller.getCancelButton().disableProperty().bind(isRunning);
+        controller.getCancelButton().disableProperty().bind(running);
 
         controller.getSupportedHTMLTextArea().setText("Supported HTML tags:\n" + RichTextLabel.getSupportedHTMLTags());
         controller.getSupportedHTMLTextArea().visibleProperty().bind(controller.getHtmlInfoButton().selectedProperty());
@@ -144,7 +153,7 @@ public class ImportGenomesDialog {
             if (n)
                 labelListsManager.update(controller);
         });
-        controller.getTaxonLabelsTab().disableProperty().bind(isRunning);
+        controller.getTaxonLabelsTab().disableProperty().bind(running);
 
         controller.getInputTextArea().textProperty().addListener((c, o, n) -> {
             if (n.length() == 0) {
@@ -152,7 +161,7 @@ public class ImportGenomesDialog {
             }
         });
 
-        controller.getFilesTab().disableProperty().bind(isRunning);
+        controller.getFilesTab().disableProperty().bind(running);
 
         final RichTextLabel richTextLabel = new RichTextLabel();
         controller.getStatusFlowPane().getChildren().add(richTextLabel);
@@ -162,14 +171,155 @@ public class ImportGenomesDialog {
         });
 
         controller.getApplyButton().setOnAction(c -> {
+
             final GenomesImporter genomesImporter = new GenomesImporter(Arrays.asList(Basic.split(controller.getInputTextArea().getText(), ',')),
                     controller.getTaxaChoiceBox().getValue(), labelListsManager.computeLine2Label(), Basic.parseInt(controller.getMinLengthTextField().getText()),
                     controller.getStoreOnlyReferencesCheckBox().isSelected());
 
-            genomesImporter.saveData(controller.getOutputFileTextField().getText(), controller.getStatusFlowPane(), isRunning::set);
+            if (referenceIds.size() > 0 && getReferencesDatabase() != null) {
+                try {
+                    genomesImporter.addReferenceFile2Names(getReferencesDatabase().getReferenceFile2Name(referenceIds));
+                } catch (SQLException e) {
+                    NotificationManager.showError("Failed to load reference sequences: " + e.getMessage());
+                }
+            }
+
+            genomesImporter.saveData(controller.getOutputFileTextField().getText(), controller.getStatusFlowPane(), running::set);
         });
-        controller.getApplyButton().disableProperty().bind(controller.getInputTextArea().textProperty().isEmpty().or(isRunning).or(labelListsManager.applicableProperty().not()));
+        controller.getApplyButton().disableProperty().bind(controller.getInputTextArea().textProperty().isEmpty().or(running).or(labelListsManager.applicableProperty().not()));
+
+        setupReferenceDatabaseTab(stage, controller, labelListsManager, referencesDatabase, referenceIds, runningProperty());
     }
+
+    private static void setupReferenceDatabaseTab(Stage stage, ImportGenomesController controller, LabelListsManager labelListsManager, ObjectProperty<AccessReferenceDatabase> database, ObservableList<Integer> referenceIds, BooleanProperty running) {
+        final ObservableList<Map.Entry<Integer, Double>> references = FXCollections.observableArrayList();
+        final DoubleProperty threshold = new SimpleDoubleProperty(0.1);
+        final IntegerProperty maxCount = new SimpleIntegerProperty(0);
+
+        final Label floatingLabel = new Label();
+        controller.getAddedReferencesLabel().setText(String.valueOf(referenceIds.size()));
+        referenceIds.addListener((InvalidationListener) e -> {
+            controller.getAddedReferencesLabel().setText(String.valueOf(referenceIds.size()));
+            floatingLabel.setText("Added: " + referenceIds.size());
+            if (referenceIds.size() == 0)
+                controller.getStatusFlowPane().getChildren().remove(floatingLabel);
+            else if (!controller.getStatusFlowPane().getChildren().contains(floatingLabel))
+                controller.getStatusFlowPane().getChildren().add(floatingLabel);
+        });
+
+        controller.getReferencesDatabaseButton().setOnAction(e -> {
+            final File file = getReferenceDatabaseFile(stage);
+            if (file != null)
+                controller.getReferencesDatabaseTextField().setText(file.getPath());
+        });
+        controller.getReferencesDatabaseButton().disableProperty().bind(running);
+
+        controller.getReferencesDatabaseTextField().textProperty().addListener(e -> {
+            if (AccessReferenceDatabase.isDatabaseFile(controller.getReferencesDatabaseTextField().getText())) {
+                database.set(null);
+                try {
+                    database.set(new AccessReferenceDatabase(controller.getReferencesDatabaseTextField().getText()));
+                } catch (IOException | SQLException ex) {
+                    NotificationManager.showError("Open reference database failed: " + ex.getMessage());
+                }
+            }
+        });
+        controller.getReferencesDatabaseTextField().disableProperty().bind(running);
+
+        final XYChart.Series<Double, Integer> thresholdLine = createThresholdLine(threshold, references);
+
+        controller.getFindReferencesButton().setOnAction(e -> {
+            final AService<Collection<Map.Entry<Integer, Double>>> service = new AService<>(controller.getStatusFlowPane());
+            service.setCallable(new TaskWithProgressListener<>() {
+                @Override
+                public Collection<Map.Entry<Integer, Double>> call() throws Exception {
+                    final GenomesImporter genomesImporter = new GenomesImporter(Arrays.asList(Basic.split(controller.getInputTextArea().getText(), ',')),
+                            controller.getTaxaChoiceBox().getValue(), labelListsManager.computeLine2Label(), Basic.parseInt(controller.getMinLengthTextField().getText()),
+                            controller.getStoreOnlyReferencesCheckBox().isSelected());
+
+                    final ArrayList<byte[]> queries = new ArrayList<>();
+                    for (GenomesImporter.InputRecord record : genomesImporter.iterable(getProgressListener())) {
+                        queries.add(record.getSequence());
+                    }
+                    return database.get().findSimilar(service.getProgressListener(), queries);
+                }
+            });
+            service.runningProperty().addListener((c, o, n) -> running.set(n));
+            references.clear();
+            referenceIds.clear();
+            controller.getMashDistancesChart().getData().clear();
+            service.setOnSucceeded(z -> {
+                references.setAll(service.getValue());
+                final ObservableList<XYChart.Data<Double, Integer>> data = FXCollections.observableArrayList();
+                int runningSum = 0;
+                for (Map.Entry<Integer, Double> pair : references) {
+                    data.add(new XYChart.Data<>(pair.getValue(), runningSum++));
+                }
+                controller.getMashDistancesChart().getData().add(new XYChart.Series<>(data));
+                controller.getMashDistancesChart().getData().add(thresholdLine);
+            });
+            service.start();
+        });
+
+        controller.getFindReferencesButton().disableProperty().bind(controller.getApplyButton().disabledProperty().or(database.isNull()).or(running));
+        controller.getMaxDistanceSlider().disableProperty().bind(controller.getFindReferencesButton().disabledProperty().or(running));
+        threshold.bindBidirectional(controller.getMaxDistanceSlider().valueProperty());
+
+        final BooleanProperty inThesholdUpdate = new SimpleBooleanProperty(false);
+        threshold.addListener((c, o, n) -> {
+            if (!inThesholdUpdate.get()) {
+                inThesholdUpdate.set(true);
+                try {
+                    controller.getMaxToAddTextField().setText(String.valueOf(references.stream().filter(p -> p.getValue() <= n.doubleValue()).count()));
+                } finally {
+                    inThesholdUpdate.set(false);
+                }
+            }
+        });
+
+        controller.getMaxToAddTextField().textProperty().addListener((c, o, n) -> {
+            final int max = Math.min(references.size(), Math.max(0, Basic.parseInt(n)));
+            maxCount.set(max);
+        });
+
+        maxCount.addListener((c, o, n) -> {
+            if (!inThesholdUpdate.get()) {
+                inThesholdUpdate.set(true);
+                try {
+                    OptionalDouble thresholdValue = references.stream().limit(n.intValue()).mapToDouble(Map.Entry::getValue).max();
+                    if (thresholdValue.isPresent())
+                        threshold.setValue(thresholdValue.getAsDouble());
+                } finally {
+                    inThesholdUpdate.set(false);
+                }
+            }
+        });
+
+        controller.getRemoveAllReferencesButton().setOnAction(e -> referenceIds.clear());
+        controller.getRemoveAllReferencesButton().disableProperty().bind(Bindings.isEmpty(referenceIds));
+
+        controller.getMaxToAddTextField().disableProperty().bind(controller.getFindReferencesButton().disabledProperty().or(running));
+
+        controller.getAddReferencesButton().setOnAction(e -> {
+            referenceIds.setAll(references.stream().limit(maxCount.intValue()).filter(p -> p.getValue() <= threshold.get()).map(Map.Entry::getKey).collect(Collectors.toList()));
+        });
+        controller.getAddReferencesButton().disableProperty().bind(Bindings.isEmpty(references).or(database.isNull()).or(running));
+        controller.getMashDistancesChart().disableProperty().bind(controller.getAddReferencesButton().disabledProperty());
+    }
+
+    private static XYChart.Series<Double, Integer> createThresholdLine(DoubleProperty threshold, ObservableList<Map.Entry<Integer, Double>> references) {
+        final ObservableList<XYChart.Data<Double, Integer>> data = FXCollections.observableArrayList();
+        final XYChart.Series<Double, Integer> series = new XYChart.Series<>(data);
+        final InvalidationListener listener = e -> {
+            data.clear();
+            data.add(new XYChart.Data<>(threshold.get(), 0));
+            data.add(new XYChart.Data<>(threshold.get(), references.size()));
+        };
+        threshold.addListener(listener);
+        references.addListener(listener);
+        return series;
+    }
+
 
     /**
      * create a default output file name
@@ -177,7 +327,7 @@ public class ImportGenomesDialog {
      * @param parentFile
      * @return name
      */
-    private String createOutputName(File parentFile) {
+    private static String createOutputName(File parentFile) {
         File file = new File(parentFile, "genomes.stree5");
         int count = 0;
         while (file.exists()) {
@@ -186,7 +336,7 @@ public class ImportGenomesDialog {
         return file.getPath();
     }
 
-    public List<File> getFiles(Stage owner) {
+    private static List<File> getFiles(Stage owner) {
         final File previousDir = new File(ProgramProperties.get("GenomesDir", ""));
         final FileChooser fileChooser = new FileChooser();
         if (previousDir.isDirectory())
@@ -197,7 +347,7 @@ public class ImportGenomesDialog {
         return fileChooser.showOpenMultipleDialog(owner);
     }
 
-    public File getOutputFile(Stage owner, String defaultName) {
+    private static File getOutputFile(Stage owner, String defaultName) {
         final FileChooser fileChooser = new FileChooser();
         if (defaultName.length() > 0) {
             final File previousDir = new File(defaultName);
@@ -211,7 +361,47 @@ public class ImportGenomesDialog {
         return fileChooser.showSaveDialog(owner);
     }
 
+    private static File getReferenceDatabaseFile(Stage owner) {
+        final String previous = ProgramProperties.get("ReferencesDatabase", "");
+        final FileChooser fileChooser = new FileChooser();
+        if (previous.length() > 0) {
+            fileChooser.setInitialDirectory((new File(previous)).getParentFile());
+            fileChooser.setInitialFileName(Basic.getFileNameWithoutPath(previous));
+        }
+        fileChooser.setTitle("SplitsTree5 References Database");
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("SplitsTree5 References Database", "*.st5db"));
+
+        final File result = fileChooser.showOpenDialog(owner);
+        if (result != null)
+            ProgramProperties.put("ReferencesDatabase", result.getPath());
+        return result;
+    }
+
     public Stage getStage() {
         return stage;
+    }
+
+    public AccessReferenceDatabase getReferencesDatabase() {
+        return referencesDatabase.get();
+    }
+
+    public ObjectProperty<AccessReferenceDatabase> referencesDatabaseProperty() {
+        return referencesDatabase;
+    }
+
+    public ObservableList<Integer> getReferenceIds() {
+        return referenceIds;
+    }
+
+    public boolean isRunning() {
+        return running.get();
+    }
+
+    public BooleanProperty runningProperty() {
+        return running;
+    }
+
+    public void setRunning(boolean running) {
+        this.running.set(running);
     }
 }

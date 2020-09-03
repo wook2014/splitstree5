@@ -20,6 +20,8 @@
 package splitstree5.dialogs.importgenomes;
 
 import javafx.fxml.FXML;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
@@ -94,6 +96,56 @@ public class ImportGenomesController {
     private ToggleButton htmlInfoButton;
     @FXML
     private TextArea supportedHTMLTextArea;
+
+    @FXML
+    private Tab relatedTab;
+
+    @FXML
+    private TextField referencesDatabaseTextField;
+
+    @FXML
+    private Button referencesDatabaseButton;
+
+    @FXML
+    private Slider maxDistanceSlider;
+
+    @FXML
+    private TextField maxToAddTextField;
+
+    @FXML
+    private Label addedReferencesLabel;
+
+    @FXML
+    private LineChart<Double, Integer> mashDistancesChart;
+
+    @FXML
+    private NumberAxis mashDistancesXAxis;
+
+    @FXML
+    private NumberAxis mashDistancesYAxis;
+
+    @FXML
+    private Button findReferencesButton;
+
+    @FXML
+    private Button addReferencesButton;
+
+    @FXML
+    private Button removeAllReferencesButton;
+
+
+    public void initialize() {
+        mashDistancesChart.setLegendVisible(false);
+        mashDistancesChart.setAnimated(false);
+        mashDistancesXAxis.setLabel("Mash distance");
+        mashDistancesXAxis.setLowerBound(0);
+        mashDistancesXAxis.setUpperBound(0.9);
+        mashDistancesXAxis.setTickUnit(0.1);
+
+        mashDistancesYAxis.setForceZeroInRange(true);
+        mashDistancesYAxis.setAutoRanging(true);
+        mashDistancesYAxis.setLabel("Count");
+    }
 
     public AnchorPane getRootPane() {
         return rootPane;
@@ -186,5 +238,53 @@ public class ImportGenomesController {
 
     public TextArea getSupportedHTMLTextArea() {
         return supportedHTMLTextArea;
+    }
+
+    public Tab getRelatedTab() {
+        return relatedTab;
+    }
+
+    public TextField getReferencesDatabaseTextField() {
+        return referencesDatabaseTextField;
+    }
+
+    public Button getReferencesDatabaseButton() {
+        return referencesDatabaseButton;
+    }
+
+    public Slider getMaxDistanceSlider() {
+        return maxDistanceSlider;
+    }
+
+    public TextField getMaxToAddTextField() {
+        return maxToAddTextField;
+    }
+
+    public LineChart<Double, Integer> getMashDistancesChart() {
+        return mashDistancesChart;
+    }
+
+    public NumberAxis getMashDistancesXAxis() {
+        return mashDistancesXAxis;
+    }
+
+    public NumberAxis getMashDistancesYAxis() {
+        return mashDistancesYAxis;
+    }
+
+    public Button getFindReferencesButton() {
+        return findReferencesButton;
+    }
+
+    public Button getAddReferencesButton() {
+        return addReferencesButton;
+    }
+
+    public Button getRemoveAllReferencesButton() {
+        return removeAllReferencesButton;
+    }
+
+    public Label getAddedReferencesLabel() {
+        return addedReferencesLabel;
     }
 }
