@@ -186,7 +186,7 @@ public class LabelListsManager {
                 line2PosInDisplayLabels.put(label, displayLabels.size() - 1);
             }
         }
-        label.setText("Taxa: " + displayLabels.size());
+        label.setText("Input: " + displayLabels.size());
         updateFrequentWordButtons();
     }
 

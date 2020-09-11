@@ -19,6 +19,7 @@
 
 package splitstree5.dialogs.importgenomes;
 
+import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.When;
@@ -29,6 +30,7 @@ import javafx.scene.Scene;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import jloda.fx.control.RichTextLabel;
@@ -171,20 +173,22 @@ public class ImportGenomesDialog {
         });
 
         controller.getApplyButton().setOnAction(c -> {
-
             final GenomesImporter genomesImporter = new GenomesImporter(Arrays.asList(Basic.split(controller.getInputTextArea().getText(), ',')),
                     controller.getTaxaChoiceBox().getValue(), labelListsManager.computeLine2Label(), Basic.parseInt(controller.getMinLengthTextField().getText()),
                     controller.getStoreOnlyReferencesCheckBox().isSelected());
 
-            if (referenceIds.size() > 0 && getReferencesDatabase() != null) {
-                try {
-                    genomesImporter.addReferenceFile2Names(getReferencesDatabase().getReferenceFile2Name(referenceIds));
-                } catch (SQLException e) {
-                    NotificationManager.showError("Failed to load reference sequences: " + e.getMessage());
+            if (referencesDatabase.get() != null && referenceIds.size() > 0) {
+                String fileCacheDirectory = ProgramProperties.get("fileCacheDirectory", "");
+                if (fileCacheDirectory.equals("") || !Basic.isDirectory(fileCacheDirectory)) {
+                    final File dir = chooseCacheDirectory(stage, referencesDatabase.get().getDbFile().getParentFile());
+                    if (dir == null || !dir.canWrite())
+                        return;
+                    else
+                        ProgramProperties.put("fileCacheDirectory", dir.getPath());
                 }
             }
 
-            genomesImporter.saveData(controller.getOutputFileTextField().getText(), controller.getStatusFlowPane(), running::set);
+            genomesImporter.saveData(getReferencesDatabase(), referenceIds, controller.getOutputFileTextField().getText(), controller.getStatusFlowPane(), running::set);
         });
         controller.getApplyButton().disableProperty().bind(controller.getInputTextArea().textProperty().isEmpty().or(running).or(labelListsManager.applicableProperty().not()));
 
@@ -207,6 +211,9 @@ public class ImportGenomesDialog {
                 controller.getStatusFlowPane().getChildren().add(floatingLabel);
         });
 
+        controller.getFoundReferencesLabel().setText("");
+        references.addListener((InvalidationListener) e -> controller.getFoundReferencesLabel().setText("Found: " + references.size()));
+
         controller.getReferencesDatabaseButton().setOnAction(e -> {
             final File file = getReferenceDatabaseFile(stage);
             if (file != null)
@@ -215,15 +222,18 @@ public class ImportGenomesDialog {
         controller.getReferencesDatabaseButton().disableProperty().bind(running);
 
         controller.getReferencesDatabaseTextField().textProperty().addListener(e -> {
-            if (AccessReferenceDatabase.isDatabaseFile(controller.getReferencesDatabaseTextField().getText())) {
+            final String fileName = controller.getReferencesDatabaseTextField().getText();
+            if (AccessReferenceDatabase.isDatabaseFile(fileName)) {
                 database.set(null);
                 try {
-                    database.set(new AccessReferenceDatabase(controller.getReferencesDatabaseTextField().getText()));
+                    database.set(new AccessReferenceDatabase(fileName));
+                    ProgramProperties.put("ReferenceDatabaseFile", fileName);
                 } catch (IOException | SQLException ex) {
                     NotificationManager.showError("Open reference database failed: " + ex.getMessage());
                 }
             }
         });
+        controller.getReferencesDatabaseTextField().setText(ProgramProperties.get("ReferenceDatabaseFile", ""));
         controller.getReferencesDatabaseTextField().disableProperty().bind(running);
 
         final XYChart.Series<Double, Integer> thresholdLine = createThresholdLine(threshold, references);
@@ -241,7 +251,7 @@ public class ImportGenomesDialog {
                     for (GenomesImporter.InputRecord record : genomesImporter.iterable(getProgressListener())) {
                         queries.add(record.getSequence());
                     }
-                    return database.get().findSimilar(service.getProgressListener(), queries);
+                    return database.get().findSimilar(service.getProgressListener(), Basic.parseInt(controller.getMinSharedKMersTextField().getText()), queries);
                 }
             });
             service.runningProperty().addListener((c, o, n) -> running.set(n));
@@ -262,6 +272,7 @@ public class ImportGenomesDialog {
         });
 
         controller.getFindReferencesButton().disableProperty().bind(controller.getApplyButton().disabledProperty().or(database.isNull()).or(running));
+
         controller.getMaxDistanceSlider().disableProperty().bind(controller.getFindReferencesButton().disabledProperty().or(running));
         threshold.bindBidirectional(controller.getMaxDistanceSlider().valueProperty());
 
@@ -305,6 +316,19 @@ public class ImportGenomesDialog {
         });
         controller.getAddReferencesButton().disableProperty().bind(Bindings.isEmpty(references).or(database.isNull()).or(running));
         controller.getMashDistancesChart().disableProperty().bind(controller.getAddReferencesButton().disabledProperty());
+
+        controller.getMinSharedKMersTextField().textProperty().addListener((c, o, n) -> {
+            if (!Basic.isInteger(n) || Basic.parseInt(n) <= 0)
+                Platform.runLater(() -> controller.getMinSharedKMersTextField().setText(o));
+        });
+        controller.getMinSharedKMersTextField().disableProperty().bind(controller.getFindReferencesButton().disableProperty());
+
+        controller.getCacheButton().setOnAction(e -> {
+            final File dir = chooseCacheDirectory(stage, new File(ProgramProperties.get("fileCacheDirectory", database.get().getDbFile().getParent())));
+            if (dir != null && dir.canRead())
+                ProgramProperties.put("fileCacheDirectory", dir.getPath());
+        });
+        controller.getCacheButton().disableProperty().bind(controller.getFindReferencesButton().disabledProperty());
     }
 
     private static XYChart.Series<Double, Integer> createThresholdLine(DoubleProperty threshold, ObservableList<Map.Entry<Integer, Double>> references) {
@@ -319,7 +343,6 @@ public class ImportGenomesDialog {
         references.addListener(listener);
         return series;
     }
-
 
     /**
      * create a default output file name
@@ -369,12 +392,24 @@ public class ImportGenomesDialog {
             fileChooser.setInitialFileName(Basic.getFileNameWithoutPath(previous));
         }
         fileChooser.setTitle("SplitsTree5 References Database");
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("SplitsTree5 References Database", "*.st5db"));
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("SplitsTree5 References Database", "*.db", "*.st5db"));
 
         final File result = fileChooser.showOpenDialog(owner);
         if (result != null)
             ProgramProperties.put("ReferencesDatabase", result.getPath());
         return result;
+    }
+
+    public static File chooseCacheDirectory(Stage stage, File defaultDir) {
+        final DirectoryChooser fileChooser = new DirectoryChooser();
+        fileChooser.setTitle("Choose file cache directory");
+        fileChooser.setInitialDirectory(defaultDir);
+
+        final File dir = fileChooser.showDialog(stage);
+        if (dir == null || !dir.canWrite())
+            return null;
+        else
+            return dir;
     }
 
     public Stage getStage() {

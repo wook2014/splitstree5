@@ -610,12 +610,12 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
             controller.getSelectAllEdgesMenuItem().disableProperty().bind(Bindings.size(edgeSelectionModel.getSelectedItems()).isEqualTo(graph.getNumberOfEdges()));
         }
 
-        controller.getCopyMenuItem().setOnAction((x) -> {
+        controller.getCopyMenuItem().setOnAction(x -> {
             final Set<String> set = new TreeSet<>();
             for (Node v : nodeSelectionModel.getSelectedItems()) {
                 final NodeViewBase nv = node2view.get(v);
                 if (nv.getLabel() != null && nv.getLabel().getText().length() > 0)
-                    set.add(nv.getLabel().getText());
+                    set.add(nv.getLabel().getRawText());
             }
             for (Edge e : edgeSelectionModel.getSelectedItems()) {
                 final EdgeViewBase ev = edge2view.get(e);

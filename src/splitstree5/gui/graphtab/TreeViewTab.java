@@ -195,12 +195,12 @@ public class TreeViewTab extends Graph2DTab<PhyloTree> {
         super.updateMenus(controller);
 
         final EventHandler<ActionEvent> copyLabels = controller.getCopyMenuItem().getOnAction();
-        controller.getCopyMenuItem().setOnAction((e) -> {
+        controller.getCopyMenuItem().setOnAction(e -> {
             if (nodeSelectionModel.isEmpty() && edgeSelectionModel.isEmpty()) {
                 Map<String, String> translate = new HashMap<>();
                 for (Node v : graph.nodes()) {
                     if (v.isLeaf() && graph.getLabel(v) != null) {
-                        translate.put(graph.getLabel(v), node2view.get(v).getLabel().getText());
+                        translate.put(graph.getLabel(v), node2view.get(v).getLabel().getRawText());
                     }
                 }
                 final Clipboard clipboard = Clipboard.getSystemClipboard();
@@ -214,7 +214,7 @@ public class TreeViewTab extends Graph2DTab<PhyloTree> {
         controller.getCopyMenuItem().setDisable(false);
 
 
-        controller.getSelectAllBelowMenuItem().setOnAction((e) -> {
+        controller.getSelectAllBelowMenuItem().setOnAction(e -> {
             final Stack<Node> stack = new Stack<>();
             final Set<Node> nodesToSelect = new HashSet<>();
             stack.addAll(nodeSelectionModel.getSelectedItems());
@@ -230,7 +230,7 @@ public class TreeViewTab extends Graph2DTab<PhyloTree> {
         });
         controller.getSelectAllBelowMenuItem().disableProperty().bind(nodeSelectionModel.emptyProperty());
 
-        controller.getSelectAllEdgesBelowMenuItem().setOnAction((e) -> {
+        controller.getSelectAllEdgesBelowMenuItem().setOnAction(e -> {
             final Stack<Node> stack = new Stack<>();
             final Set<Edge> edgesToSelect = new HashSet<>();
             stack.addAll(nodeSelectionModel.getSelectedItems());

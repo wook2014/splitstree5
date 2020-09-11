@@ -130,48 +130,48 @@ public class TextViewTab extends ViewerTab {
     public void updateMenus(MenuController controller) {
 
         // for some reason minus key is ignored otherwise:
-        getTextArea().setOnKeyPressed((e) -> {
+        getTextArea().setOnKeyPressed(e -> {
             if (e.isShortcutDown() && (e.getCode() == KeyCode.MINUS || e.getCode() == KeyCode.UNDERSCORE)) {
                 e.consume();
                 controller.getDecreaseFontSizeMenuItem().fire();
             }
         });
 
-        controller.getPageSetupMenuItem().setOnAction((e) -> Print.showPageLayout(getMainWindow().getStage()));
-        controller.getPrintMenuitem().setOnAction((e) -> Print.print(getMainWindow().getStage(), textArea));
+        controller.getPageSetupMenuItem().setOnAction(e -> Print.showPageLayout(getMainWindow().getStage()));
+        controller.getPrintMenuitem().setOnAction(e -> Print.print(getMainWindow().getStage(), textArea));
 
         if (getUndoManager() != null) {
-            controller.getUndoMenuItem().setOnAction((e) -> {
+            controller.getUndoMenuItem().setOnAction(e -> {
                 getUndoManager().undo();
             });
             controller.getUndoMenuItem().disableProperty().bind(getUndoManager().undoableProperty().not());
             controller.getUndoMenuItem().textProperty().bind(getUndoManager().undoNameProperty());
 
-            controller.getRedoMenuItem().setOnAction((e) -> {
+            controller.getRedoMenuItem().setOnAction(e -> {
                 getUndoManager().redo();
             });
             controller.getRedoMenuItem().disableProperty().bind(getUndoManager().redoableProperty().not());
             controller.getRedoMenuItem().textProperty().bind(getUndoManager().redoNameProperty());
         }
 
-        controller.getCopyMenuItem().setOnAction((e) -> {
+        controller.getCopyMenuItem().setOnAction(e -> {
             e.consume();
             textArea.copy();
         });
         controller.getCopyMenuItem().disableProperty().bind(textArea.selectedTextProperty().isEmpty());
 
-        controller.getSelectAllMenuItem().setOnAction((e) -> textArea.selectAll());
-        controller.getSelectNoneMenuItem().setOnAction((e) -> textArea.selectHome());
+        controller.getSelectAllMenuItem().setOnAction(e -> textArea.selectAll());
+        controller.getSelectNoneMenuItem().setOnAction(e -> textArea.selectHome());
         controller.getSelectNoneMenuItem().disableProperty().bind(textArea.selectedTextProperty().isEmpty());
 
-        controller.getSelectBracketsMenuItem().setOnAction((e) -> selectBrackets(textArea));
+        controller.getSelectBracketsMenuItem().setOnAction(e -> selectBrackets(textArea));
         controller.getSelectBracketsMenuItem().disableProperty().bind(textArea.textProperty().isEmpty());
 
-        controller.getFindMenuItem().setOnAction((e) -> findToolBar.setShowFindToolBar(true));
-        controller.getFindAgainMenuItem().setOnAction((e) -> findToolBar.findAgain());
+        controller.getFindMenuItem().setOnAction(e -> findToolBar.setShowFindToolBar(true));
+        controller.getFindAgainMenuItem().setOnAction(e -> findToolBar.findAgain());
         controller.getFindAgainMenuItem().disableProperty().bind(findToolBar.canFindAgainProperty().not());
 
-        controller.getGotoLineMenuItem().setOnAction((e) -> {
+        controller.getGotoLineMenuItem().setOnAction(e -> {
             final TextInputDialog dialog = new TextInputDialog("");
             dialog.setTitle("Go to Line - " + ProgramProperties.getProgramName());
             dialog.initStyle(StageStyle.UTILITY);

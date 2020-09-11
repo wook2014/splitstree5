@@ -19,6 +19,7 @@
 
 package splitstree5.dialogs.importgenomes;
 
+import javafx.collections.ObservableList;
 import javafx.scene.layout.FlowPane;
 import jloda.fx.control.RichTextLabel;
 import jloda.fx.util.AService;
@@ -37,6 +38,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -224,11 +226,19 @@ public class GenomesImporter {
      * @param statusFlowPane
      * @throws IOException
      */
-    public void saveData(String fileName, FlowPane statusFlowPane, Consumer<Boolean> running) {
+    public void saveData(AccessReferenceDatabase referenceDatabase, ObservableList<Integer> referenceIds, String fileName, FlowPane statusFlowPane, Consumer<Boolean> running) {
         AService<Integer> aService = new AService<>(statusFlowPane);
 
         aService.setCallable(() -> {
-            aService.getProgressListener().setTasks("Processing files", "");
+            aService.getProgressListener().setTasks("Import", "");
+
+            if (referenceIds.size() > 0 && referenceDatabase != null) {
+                try {
+                    addReferenceFile2Names(referenceDatabase.getReferenceFile2Name(referenceIds, aService.getProgressListener()));
+                } catch (SQLException | IOException e) {
+                    NotificationManager.showError("Failed to load reference sequences: " + e.getMessage());
+                }
+            }
 
             final GenomesBlock genomesBlock = new GenomesBlock();
 

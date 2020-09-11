@@ -133,6 +133,14 @@ public class ImportGenomesController {
     @FXML
     private Button removeAllReferencesButton;
 
+    @FXML
+    private Label foundReferencesLabel;
+
+    @FXML
+    private TextField minSharedKMersTextField;
+
+    @FXML
+    private Button cacheButton;
 
     public void initialize() {
         mashDistancesChart.setLegendVisible(false);
@@ -286,5 +294,17 @@ public class ImportGenomesController {
 
     public Label getAddedReferencesLabel() {
         return addedReferencesLabel;
+    }
+
+    public Label getFoundReferencesLabel() {
+        return foundReferencesLabel;
+    }
+
+    public TextField getMinSharedKMersTextField() {
+        return minSharedKMersTextField;
+    }
+
+    public Button getCacheButton() {
+        return cacheButton;
     }
 }

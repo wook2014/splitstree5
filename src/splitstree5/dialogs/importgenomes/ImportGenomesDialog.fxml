@@ -27,7 +27,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<AnchorPane fx:id="rootPane" prefHeight="380.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/8.0.111"
+<AnchorPane fx:id="rootPane" prefHeight="440.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/8.0.111"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="splitstree5.dialogs.importgenomes.ImportGenomesController">
     <children>
@@ -289,7 +289,7 @@
                                 </AnchorPane>
                             </content>
                         </Tab>
-                        <Tab fx:id="relatedTab" text="Find related">
+                        <Tab fx:id="relatedTab" text="Find similar">
                             <content>
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                     <children>
@@ -325,6 +325,45 @@
                                                         </Button>
                                                     </children>
                                                 </HBox>
+                                                <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0"
+                                                      spacing="10.0">
+                                                    <children>
+                                                        <Button fx:id="findReferencesButton" mnemonicParsing="false"
+                                                                text="Find all similar">
+                                                            <tooltip>
+                                                                <Tooltip text="Search for similar reference sequences"/>
+                                                            </tooltip>
+                                                            <HBox.margin>
+                                                                <Insets right="10.0"/>
+                                                            </HBox.margin>
+                                                        </Button>
+                                                        <Label layoutX="124.0" layoutY="20.0" text="Min shared k-mers:"
+                                                               textFill="#0d0d0d">
+                                                            <tooltip>
+                                                                <Tooltip text="Number of similar sequences found"/>
+                                                            </tooltip>
+                                                            <HBox.margin>
+                                                                <Insets left="15.0"/>
+                                                            </HBox.margin>
+                                                        </Label>
+                                                        <TextField fx:id="minSharedKMersTextField" prefColumnCount="6"
+                                                                   text="1">
+                                                            <tooltip>
+                                                                <Tooltip text="Number of reference genomes to add"/>
+                                                            </tooltip>
+                                                        </TextField>
+                                                        <Label fx:id="foundReferencesLabel" layoutX="339.0"
+                                                               layoutY="20.0" text="Found" textFill="GREY">
+                                                            <tooltip>
+                                                                <Tooltip text="Number of similar sequences found"/>
+                                                            </tooltip>
+                                                        </Label>
+                                                    </children>
+                                                    <VBox.margin>
+                                                        <Insets bottom="5.0" top="5.0"/>
+                                                    </VBox.margin>
+                                                </HBox>
+                                                <Separator prefWidth="200.0"/>
                                                 <HBox alignment="CENTER" layoutX="20.0" layoutY="20.0" spacing="20.0">
                                                     <children>
                                                         <Label text="Dist:"/>
@@ -336,7 +375,7 @@
                                                                 <Insets/>
                                                             </HBox.margin>
                                                             <padding>
-                                                                <Insets top="15.0"/>
+                                                                <Insets top="4.0"/>
                                                             </padding>
                                                             <tooltip>
                                                                 <Tooltip text="Mash distance threshold"/>
@@ -375,16 +414,6 @@
                                                                 <HBox alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT"
                                                                       spacing="10.0">
                                                                     <children>
-                                                                        <Button fx:id="findReferencesButton"
-                                                                                mnemonicParsing="false" text="Find">
-                                                                            <tooltip>
-                                                                                <Tooltip
-                                                                                        text="Search for similar reference sequences"/>
-                                                                            </tooltip>
-                                                                            <HBox.margin>
-                                                                                <Insets/>
-                                                                            </HBox.margin>
-                                                                        </Button>
                                                                         <Button fx:id="addReferencesButton"
                                                                                 mnemonicParsing="false" text="Add">
                                                                             <tooltip>
@@ -418,6 +447,21 @@
                                                                             </tooltip>
                                                                         </Button>
                                                                     </children>
+                                                                </HBox>
+                                                                <HBox alignment="CENTER" layoutX="10.0" layoutY="74.0"
+                                                                      nodeOrientation="LEFT_TO_RIGHT">
+                                                                    <children>
+                                                                        <Button fx:id="cacheButton" minWidth="-Infinity"
+                                                                                mnemonicParsing="false" text="Cache...">
+                                                                            <tooltip>
+                                                                                <Tooltip
+                                                                                        text="Select the genome cache directory"/>
+                                                                            </tooltip>
+                                                                        </Button>
+                                                                    </children>
+                                                                    <VBox.margin>
+                                                                        <Insets top="15.0"/>
+                                                                    </VBox.margin>
                                                                 </HBox>
                                                             </children>
                                                         </VBox>
