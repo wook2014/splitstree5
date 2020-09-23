@@ -49,8 +49,8 @@ import java.util.stream.Collectors;
  */
 public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFromGenomes, IToDistances {
 
-    private final IntegerProperty optionKMerSize = new SimpleIntegerProperty(21);
-    private final IntegerProperty optionSketchSize = new SimpleIntegerProperty(1000);
+    private final IntegerProperty optionKMerSize = new SimpleIntegerProperty(15);
+    private final IntegerProperty optionSketchSize = new SimpleIntegerProperty(10000);
     private final ObjectProperty<GenomeDistanceType> optionDistances = new SimpleObjectProperty<>(GenomeDistanceType.Mash);
 
     private final BooleanProperty optionIgnoreUniqueKMers = new SimpleBooleanProperty(false);

@@ -231,7 +231,7 @@ public class AccessReferenceDatabase implements Closeable {
     }
 
     public Map<String, String> getReferenceFile2Name(ObservableList<Integer> taxonIds, ProgressListener progress) throws SQLException, IOException {
-        progress.setSubtask("downloading");
+        progress.setSubtask("Acquiring reference files");
         progress.setMaximum(taxonIds.size());
         progress.setProgress(0);
 
@@ -247,6 +247,7 @@ public class AccessReferenceDatabase implements Closeable {
         for (int taxonId : taxonIds) {
             final File cacheFile = new File(fileCacheDirectory, Basic.getFileNameWithoutPath(id2file.get(taxonId)));
             if (!Basic.fileExistsAndIsNonEmpty(cacheFile)) {
+                System.err.println("Caching file: " + id2file.get(taxonId));
                 Basic.copy(id2file.get(taxonId), cacheFile.getPath());
             }
             result.put(cacheFile.getPath(), "<c GRAY>" + id2name.get(taxonId) + "</c>");
