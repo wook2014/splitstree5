@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.dialogs.importgenomes;
+package splitstree5.dialogs.analyzegenomes;
 
 import javafx.collections.ObservableList;
 import javafx.scene.layout.FlowPane;
@@ -48,7 +48,7 @@ import java.util.stream.StreamSupport;
  * performs genome import
  * Daniel Huson, 2.2020
  */
-public class GenomesImporter {
+public class GenomesAnalyzer {
     private final List<String> fileNames;
     private final boolean perFile;
     private final boolean useFileName;
@@ -65,10 +65,10 @@ public class GenomesImporter {
      * @param fileNames
      * @param line2label
      */
-    public GenomesImporter(List<String> fileNames, ImportGenomesDialog.TaxonIdentification taxonIdentification, Map<String, String> line2label, int minLength, boolean storeFileLocations) {
+    public GenomesAnalyzer(List<String> fileNames, AnalyzeGenomesDialog.TaxonIdentification taxonIdentification, Map<String, String> line2label, int minLength, boolean storeFileLocations) {
         this.fileNames = new ArrayList<>(fileNames);
-        perFile = (taxonIdentification == ImportGenomesDialog.TaxonIdentification.PerFile || taxonIdentification == ImportGenomesDialog.TaxonIdentification.PerFileUsingFileName);
-        useFileName = (taxonIdentification == ImportGenomesDialog.TaxonIdentification.PerFileUsingFileName);
+        perFile = (taxonIdentification == AnalyzeGenomesDialog.TaxonIdentification.PerFile || taxonIdentification == AnalyzeGenomesDialog.TaxonIdentification.PerFileUsingFileName);
+        useFileName = (taxonIdentification == AnalyzeGenomesDialog.TaxonIdentification.PerFastARecordUsingFileName || taxonIdentification == AnalyzeGenomesDialog.TaxonIdentification.PerFileUsingFileName);
         this.line2label = line2label;
         this.minLength = minLength;
         this.storeFileLocations = storeFileLocations;
@@ -81,7 +81,7 @@ public class GenomesImporter {
      */
     public Iterable<InputRecord> iterable(ProgressListener progressListener) {
         return () -> new Iterator<>() {
-            final Iterator<InputRecord> iterator = GenomesImporter.this.iterator(progressListener);
+            final Iterator<InputRecord> iterator = GenomesAnalyzer.this.iterator(progressListener);
             InputRecord next = null;
 
             {
@@ -121,6 +121,7 @@ public class GenomesImporter {
             private IFastAIterator fastaIterator;
 
             private int whichFile = 0;
+            private int countInFile = 0;
             private InputRecord next;
 
             {
@@ -154,10 +155,14 @@ public class GenomesImporter {
                             whichFile++;
                         } else if (perFile) {
                             next = getDataFromAFile(fileNames.get(whichFile++), useFileName);
-                        } else {
+                        } else { // perFastA
+                            if (fastaIterator == null)
+                                fastaIterator = new FastAFileIterator(fileNames.get(whichFile));
+
                             while (fastaIterator != null && !fastaIterator.hasNext()) {
                                 fastaIterator.close();
                                 whichFile++;
+                                countInFile = 0;
                                 if (whichFile < fileNames.size()) {
                                     fastaIterator = new FastAFileIterator(fileNames.get(whichFile));
                                 } else {
@@ -166,7 +171,10 @@ public class GenomesImporter {
                             }
                             if (fastaIterator != null) {
                                 final Pair<String, String> pair = fastaIterator.next();
+                                countInFile++;
                                 next = new InputRecord(Basic.swallowLeadingGreaterSign(pair.getFirst()), pair.getSecond().toUpperCase().getBytes(), fileNames.get(whichFile), fastaIterator.getPosition());
+                                if (useFileName)
+                                    next.setName(Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(fileName), "") + ":" + countInFile);
                             }
                         }
                     }
@@ -210,11 +218,9 @@ public class GenomesImporter {
         }
 
         try (IFastAIterator it = FastAFileIterator.getFastAOrFastQAsFastAIterator(fileName)) {
-            return new InputRecord(name, it.stream().map(Pair::getSecond).collect(Collectors.joining()).getBytes(),
-                    fileName, 0L);
-
+            return new InputRecord(name, it.stream().map(Pair::getSecond).collect(Collectors.joining()).getBytes(), fileName, 0L);
         } catch (IOException e) {
-            Basic.caught(e);
+            NotificationManager.showError("File " + fileName + ": " + e.getMessage());
             return null;
         }
     }
@@ -230,7 +236,7 @@ public class GenomesImporter {
         AService<Integer> aService = new AService<>(statusFlowPane);
 
         aService.setCallable(() -> {
-            aService.getProgressListener().setTasks("Import", "");
+            aService.getProgressListener().setTasks("Find similar", "");
 
             if (referenceIds.size() > 0 && referenceDatabase != null) {
                 try {

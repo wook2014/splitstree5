@@ -18,9 +18,10 @@
  *
  */
 
-package splitstree5.dialogs.importgenomes;
+package splitstree5.dialogs.analyzegenomes;
 
 import javafx.collections.ObservableList;
+import jloda.fx.util.ProgramExecutorService;
 import jloda.fx.window.NotificationManager;
 import jloda.kmers.bloomfilter.BloomFilter;
 import jloda.kmers.mash.MashDistance;
@@ -30,17 +31,21 @@ import jloda.util.*;
 import org.sqlite.SQLiteConfig;
 import splitstree5.dialogs.UrlUtilities;
 
-import java.io.Closeable;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
- * provides access to the st5db database representing a reference database
+ * provides access to a reference database
  * Daniel Huson, 8.2020
  */
 public class AccessReferenceDatabase implements Closeable {
@@ -248,11 +253,16 @@ public class AccessReferenceDatabase implements Closeable {
             final File cacheFile = new File(fileCacheDirectory, Basic.getFileNameWithoutPath(id2file.get(taxonId)));
             if (!Basic.fileExistsAndIsNonEmpty(cacheFile)) {
                 System.err.println("Caching file: " + id2file.get(taxonId));
-                Basic.copy(id2file.get(taxonId), cacheFile.getPath());
+
+                try (InputStream ins = (new URL(id2file.get(taxonId)).openStream()); OutputStream outs = new FileOutputStream(cacheFile)) {
+                    ins.transferTo(outs);
+                } catch (IOException ex) {
+                    if (cacheFile.exists())
+                        cacheFile.delete();
+                }
             }
             result.put(cacheFile.getPath(), "<c GRAY>" + id2name.get(taxonId) + "</c>");
             progress.incrementProgress();
-
         }
         return result;
     }
@@ -272,7 +282,7 @@ public class AccessReferenceDatabase implements Closeable {
 
         System.err.println("Using mash_k=" + mash_k + ", mash_s=" + mash_s + ", mash_seed=" + mash_seed);
 
-        progress.setTasks("Find references", "Sketching");
+        progress.setTasks("Find similar", "Sketching");
         progress.setMaximum(queries.size());
         progress.setProgress(0);
         final List<MashSketch> querySketches = queries.parallelStream()
@@ -297,42 +307,69 @@ public class AccessReferenceDatabase implements Closeable {
         progress.setMaximum(countBloomFilters());
         progress.setProgress(0);
 
-        final Map<Integer, Double> id2distance = new HashMap<>();
+        final ConcurrentHashMap<Integer, Double> id2distance = new ConcurrentHashMap<>();
 
-        final Queue<Integer> queue = new LinkedList<>();
-        queue.add(getTaxonomyRoot());
-        while (queue.size() > 0) {
-            final Collection<Integer> ids = getTaxonomyChildren(queue.poll());
-            final ArrayList<Pair<Integer, BloomFilter>> bloomFilters = getBloomFilters(ids);
-            for (Pair<Integer, BloomFilter> pair : bloomFilters) {
-                final BloomFilter bloomFilter = pair.getSecond();
-                if (bloomFilter.countContainedProbably(kmers) >= minSharedKMers) {
-                    final int id = pair.getFirst();
-                    queue.add(id);
-                    //System.err.println("Adding bloom filter for " + id);
-                }
-                progress.incrementProgress();
-            }
-            final ArrayList<Pair<Integer, MashSketch>> mashSketches = getMashSketches(ids);
-
-            for (Pair<Integer, MashSketch> pair : mashSketches) {
-                final MashSketch mashSketch = pair.getSecond();
-                for (MashSketch sketch : querySketches) {
-                    if (MashDistance.computeJaccardIndex(mashSketch, sketch, false) >= minSharedKMers) {
-                        final int id = pair.getFirst();
-                        final double distance = MashDistance.compute(mashSketch, sketch);
-                        if (!id2distance.containsKey(id) || id2distance.get(id) > distance)
-                            id2distance.put(id, distance);
-                        System.err.println("Found similar: " + id + " JI: " + MashDistance.computeJaccardIndex(mashSketch, sketch) + " dist: " + distance);
-                    }
-                }
-                progress.incrementProgress();
-            }
+        final ExecutorService service = Executors.newFixedThreadPool(ProgramExecutorService.getNumberOfCoresToUse());
+        final Single<Exception> exception = new Single<>();
+        final AtomicInteger jobs = new AtomicInteger(1);
+        service.submit(createTasksRec(getTaxonomyRoot(), querySketches, kmers, minSharedKMers, id2distance, progress, exception, jobs, service));
+        if (exception.get() != null)
+            throw new IOException(exception.get());
+        try {
+            service.awaitTermination(1000, TimeUnit.DAYS);
+        } catch (InterruptedException ignored) {
         }
 
         final ArrayList<Map.Entry<Integer, Double>> result = new ArrayList<>(id2distance.entrySet());
         result.sort(Comparator.comparingDouble(Map.Entry::getValue));
         return result;
+    }
+
+    /**
+     * creates a task to submitted to the service. This task will recursively submit further tasks and will call shutdown() once all tasks have been completed
+     */
+    private Runnable createTasksRec(int taxonId, Collection<MashSketch> querySketches, Set<String> kmers, int minSharedKMers, ConcurrentHashMap<Integer, Double> id2distance,
+                                    ProgressListener progress, Single<Exception> exception, AtomicInteger jobCount, ExecutorService service) {
+        return () -> {
+            if (exception.get() == null) {
+                try {
+                    final Collection<Integer> ids = getTaxonomyChildren(taxonId);
+                    final ArrayList<Pair<Integer, BloomFilter>> bloomFilters = getBloomFilters(ids);
+                    for (Pair<Integer, BloomFilter> pair : bloomFilters) {
+                        final BloomFilter bloomFilter = pair.getSecond();
+                        if (bloomFilter.countContainedProbably(kmers) >= minSharedKMers) {
+                            final int id = pair.getFirst();
+                            jobCount.incrementAndGet();
+                            service.submit(createTasksRec(id, querySketches, kmers, minSharedKMers, id2distance, progress, exception, jobCount, service));
+                            //System.err.println("Adding bloom filter for " + id);
+                        }
+                        progress.incrementProgress();
+                    }
+                    final ArrayList<Pair<Integer, MashSketch>> mashSketches = getMashSketches(ids);
+
+                    for (Pair<Integer, MashSketch> pair : mashSketches) {
+                        final MashSketch mashSketch = pair.getSecond();
+                        for (MashSketch sketch : querySketches) {
+                            if (MashDistance.computeJaccardIndex(mashSketch, sketch, false) >= minSharedKMers) {
+                                final int id = pair.getFirst();
+                                final double distance = MashDistance.compute(mashSketch, sketch);
+                                synchronized (id2distance) {
+                                    if (!id2distance.containsKey(id) || id2distance.get(id) > distance) {
+                                        id2distance.put(id, distance);
+                                    }
+                                }
+                                System.err.printf("Found similar: " + id + " JI: %f dist: %.8f%n", MashDistance.computeJaccardIndex(mashSketch, sketch), distance);
+                            }
+                        }
+                        progress.incrementProgress();
+                    }
+                } catch (IOException | SQLException ex) {
+                    exception.setIfCurrentValueIsNull(ex);
+                }
+            }
+            if (jobCount.decrementAndGet() <= 0)
+                service.shutdown();
+        };
     }
 
     public File getDbFile() {

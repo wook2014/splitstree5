@@ -66,11 +66,11 @@ import splitstree5.core.datablocks.*;
 import splitstree5.core.workflow.*;
 import splitstree5.dialogs.SaveChangesDialog;
 import splitstree5.dialogs.SaveDialog;
+import splitstree5.dialogs.analyzegenomes.AnalyzeGenomesDialog;
 import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.dialogs.importer.ImportDialog;
 import splitstree5.dialogs.importer.ImportMultipleTreeFilesDialog;
 import splitstree5.dialogs.importer.ImporterManager;
-import splitstree5.dialogs.importgenomes.ImportGenomesDialog;
 import splitstree5.dialogs.message.MessageWindow;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.utils.CharactersUtilities;
@@ -106,13 +106,13 @@ public class MainWindowMenuController {
 
         controller.getImportMenuItem().setOnAction(e -> ImportDialog.show(mainWindow));
 
-        controller.getImportGenomesMenuItem().setOnAction(e -> {
-            if (MainWindow.importGenomesDialog.get() == null) {
-                MainWindow.importGenomesDialog.set(new ImportGenomesDialog(mainWindow.getStage()));
-                MainWindowManager.getInstance().addAuxiliaryWindow(mainWindow, MainWindow.importGenomesDialog.get().getStage());
+        controller.getAnalyzeGenomesMenuItem().setOnAction(e -> {
+            if (MainWindow.analyzeGenomesDialog.get() == null) {
+                MainWindow.analyzeGenomesDialog.set(new AnalyzeGenomesDialog(mainWindow.getStage()));
+                MainWindowManager.getInstance().addAuxiliaryWindow(mainWindow, MainWindow.analyzeGenomesDialog.get().getStage());
             }
-            MainWindow.importGenomesDialog.get().getStage().show();
-            MainWindow.importGenomesDialog.get().getStage().toFront();
+            MainWindow.analyzeGenomesDialog.get().getStage().show();
+            MainWindow.analyzeGenomesDialog.get().getStage().toFront();
         });
 
         controller.getImportMultipleTreeFilesMenuItem().setOnAction(e -> ImportMultipleTreeFilesDialog.apply(mainWindow));

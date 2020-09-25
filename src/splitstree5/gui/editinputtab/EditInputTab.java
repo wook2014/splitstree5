@@ -296,7 +296,7 @@ public class EditInputTab extends EditTextViewTab {
         controller.getImportMenuItem().disableProperty().bind(new SimpleBooleanProperty(true));
         controller.getInputEditorMenuItem().disableProperty().bind(new SimpleBooleanProperty(true));
 
-        controller.getImportGenomesMenuItem().disableProperty().bind(new SimpleBooleanProperty(true));
+        controller.getAnalyzeGenomesMenuItem().disableProperty().bind(new SimpleBooleanProperty(true));
 
 
         controller.getPasteMenuItem().setOnAction(e -> {

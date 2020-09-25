@@ -29,19 +29,19 @@
 <?import javafx.scene.text.Font?>
 <AnchorPane fx:id="rootPane" prefHeight="440.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/8.0.111"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="splitstree5.dialogs.importgenomes.ImportGenomesController">
+            fx:controller="splitstree5.dialogs.analyzegenomes.AnalyzeGenomesController">
     <children>
         <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
                     AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <top>
                 <HBox alignment="CENTER" prefHeight="30.0" BorderPane.alignment="CENTER">
                     <children>
-                        <Label text="Import genomes and other unaligned sequences"/>
+                        <Label text="Analyze contigs, genomes and other unaligned sequences"/>
                     </children>
                 </HBox>
             </top>
             <center>
-                <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE"
+                <TabPane fx:id="mainTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE"
                          BorderPane.alignment="CENTER">
                     <tabs>
                         <Tab fx:id="filesTab" text="Files">
@@ -490,7 +490,7 @@
                         <Button fx:id="cancelButton" cancelButton="true" minWidth="-Infinity" mnemonicParsing="false"
                                 prefWidth="54.0" text="Close"/>
                         <Button fx:id="applyButton" layoutX="410.0" layoutY="10.0" minWidth="-Infinity"
-                                mnemonicParsing="false" text="Import"/>
+                                mnemonicParsing="false" text="Analyze"/>
                     </children>
                     <BorderPane.margin>
                         <Insets/>

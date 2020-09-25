@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.dialogs.importgenomes;
+package splitstree5.dialogs.analyzegenomes;
 
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
@@ -28,6 +28,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.stage.DirectoryChooser;
@@ -50,15 +52,17 @@ import java.util.stream.Collectors;
  * import genomes dialog
  * Daniel Huson, 2.2020
  */
-public class ImportGenomesDialog {
+public class AnalyzeGenomesDialog {
     public enum Sequence {DNA, Protein}
 
-    public enum TaxonIdentification {PerFastARecord, PerFile, PerFileUsingFileName}
+    public enum TaxonIdentification {PerFastARecord, PerFastARecordUsingFileName, PerFile, PerFileUsingFileName}
 
     private final Stage stage;
 
     private final ObjectProperty<AccessReferenceDatabase> referencesDatabase = new SimpleObjectProperty<>(null);
     private final ObservableList<Integer> referenceIds = FXCollections.observableArrayList();
+    private final ObservableList<Map.Entry<Integer, Double>> references = FXCollections.observableArrayList();
+
     private final BooleanProperty running = new SimpleBooleanProperty(false);
 
     /**
@@ -66,12 +70,12 @@ public class ImportGenomesDialog {
      *
      * @param initialParent
      */
-    public ImportGenomesDialog(Stage initialParent) {
-        final ExtendedFXMLLoader<ImportGenomesController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
-        final ImportGenomesController controller = extendedFXMLLoader.getController();
+    public AnalyzeGenomesDialog(Stage initialParent) {
+        final ExtendedFXMLLoader<AnalyzeGenomesController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
+        final AnalyzeGenomesController controller = extendedFXMLLoader.getController();
 
         stage = new Stage();
-        stage.setTitle("Import Genomes - " + Version.NAME);
+        stage.setTitle("Analyze Genomes - " + Version.NAME);
         stage.getIcons().setAll(ProgramProperties.getProgramIconsFX());
 
         stage.setScene(new Scene(extendedFXMLLoader.getRoot()));
@@ -85,7 +89,7 @@ public class ImportGenomesDialog {
         stage.show();
     }
 
-    private void controlBindings(Stage stage, ImportGenomesController controller) {
+    private void controlBindings(Stage stage, AnalyzeGenomesController controller) {
         stage.setOnCloseRequest(c -> {
             if (isRunning())
                 c.consume();
@@ -108,6 +112,7 @@ public class ImportGenomesDialog {
                     controller.getOutputFileTextField().setText(createOutputName(inputFile.getParentFile()));
                 }
             }
+            clearReferences(controller);
         });
 
         controller.getOutputBrowseButton().setOnAction(c -> {
@@ -173,13 +178,25 @@ public class ImportGenomesDialog {
         });
 
         controller.getApplyButton().setOnAction(c -> {
-            final GenomesImporter genomesImporter = new GenomesImporter(Arrays.asList(Basic.split(controller.getInputTextArea().getText(), ',')),
+            final GenomesAnalyzer genomesAnalyzer = new GenomesAnalyzer(Arrays.asList(Basic.split(controller.getInputTextArea().getText(), ',')),
                     controller.getTaxaChoiceBox().getValue(), labelListsManager.computeLine2Label(), Basic.parseInt(controller.getMinLengthTextField().getText()),
                     controller.getStoreOnlyReferencesCheckBox().isSelected());
 
             if (referencesDatabase.get() != null && referenceIds.size() > 0) {
                 String fileCacheDirectory = ProgramProperties.get("fileCacheDirectory", "");
+
                 if (fileCacheDirectory.equals("") || !Basic.isDirectory(fileCacheDirectory)) {
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle("Confirmation Dialog - " + ProgramProperties.getProgramName());
+                    alert.setHeaderText("SplitsTree5 will download and cache reference genomes");
+                    alert.setContentText("Do you want to proceed and choose a cache directory?");
+
+                    final Optional<ButtonType> result = alert.showAndWait();
+                    if (result.isPresent() && result.get() != ButtonType.OK) {
+                        NotificationManager.showWarning("User canceled");
+                        return;
+                    }
+
                     final File dir = chooseCacheDirectory(stage, referencesDatabase.get().getDbFile().getParentFile());
                     if (dir == null || !dir.canWrite())
                         return;
@@ -188,15 +205,15 @@ public class ImportGenomesDialog {
                 }
             }
 
-            genomesImporter.saveData(getReferencesDatabase(), referenceIds, controller.getOutputFileTextField().getText(), controller.getStatusFlowPane(), running::set);
+            genomesAnalyzer.saveData(getReferencesDatabase(), referenceIds, controller.getOutputFileTextField().getText(), controller.getStatusFlowPane(), running::set);
         });
-        controller.getApplyButton().disableProperty().bind(controller.getInputTextArea().textProperty().isEmpty().or(running).or(labelListsManager.applicableProperty().not()));
+        controller.getApplyButton().disableProperty().bind(controller.getInputTextArea().textProperty().isEmpty().or(running).or(labelListsManager.applicableProperty().not())
+                .or(controller.getMainTabPane().getSelectionModel().selectedItemProperty().isEqualTo(controller.getRelatedTab()).and(Bindings.isEmpty(referenceIds))));
 
         setupReferenceDatabaseTab(stage, controller, labelListsManager, referencesDatabase, referenceIds, runningProperty());
     }
 
-    private static void setupReferenceDatabaseTab(Stage stage, ImportGenomesController controller, LabelListsManager labelListsManager, ObjectProperty<AccessReferenceDatabase> database, ObservableList<Integer> referenceIds, BooleanProperty running) {
-        final ObservableList<Map.Entry<Integer, Double>> references = FXCollections.observableArrayList();
+    private void setupReferenceDatabaseTab(Stage stage, AnalyzeGenomesController controller, LabelListsManager labelListsManager, ObjectProperty<AccessReferenceDatabase> database, ObservableList<Integer> referenceIds, BooleanProperty running) {
         final DoubleProperty threshold = new SimpleDoubleProperty(0.1);
         final IntegerProperty maxCount = new SimpleIntegerProperty(0);
 
@@ -243,21 +260,19 @@ public class ImportGenomesDialog {
             service.setCallable(new TaskWithProgressListener<>() {
                 @Override
                 public Collection<Map.Entry<Integer, Double>> call() throws Exception {
-                    final GenomesImporter genomesImporter = new GenomesImporter(Arrays.asList(Basic.split(controller.getInputTextArea().getText(), ',')),
+                    final GenomesAnalyzer genomesAnalyzer = new GenomesAnalyzer(Arrays.asList(Basic.split(controller.getInputTextArea().getText(), ',')),
                             controller.getTaxaChoiceBox().getValue(), labelListsManager.computeLine2Label(), Basic.parseInt(controller.getMinLengthTextField().getText()),
                             controller.getStoreOnlyReferencesCheckBox().isSelected());
 
                     final ArrayList<byte[]> queries = new ArrayList<>();
-                    for (GenomesImporter.InputRecord record : genomesImporter.iterable(getProgressListener())) {
+                    for (GenomesAnalyzer.InputRecord record : genomesAnalyzer.iterable(getProgressListener())) {
                         queries.add(record.getSequence());
                     }
                     return database.get().findSimilar(service.getProgressListener(), Basic.parseInt(controller.getMinSharedKMersTextField().getText()), queries);
                 }
             });
             service.runningProperty().addListener((c, o, n) -> running.set(n));
-            references.clear();
-            referenceIds.clear();
-            controller.getMashDistancesChart().getData().clear();
+            clearReferences(controller);
             service.setOnSucceeded(z -> {
                 references.setAll(service.getValue());
                 final ObservableList<XYChart.Data<Double, Integer>> data = FXCollections.observableArrayList();
@@ -271,7 +286,7 @@ public class ImportGenomesDialog {
             service.start();
         });
 
-        controller.getFindReferencesButton().disableProperty().bind(controller.getApplyButton().disabledProperty().or(database.isNull()).or(running));
+        controller.getFindReferencesButton().disableProperty().bind(controller.getInputTextArea().textProperty().isEmpty().or(running).or(labelListsManager.applicableProperty().not()));
 
         controller.getMaxDistanceSlider().disableProperty().bind(controller.getFindReferencesButton().disabledProperty().or(running));
         threshold.bindBidirectional(controller.getMaxDistanceSlider().valueProperty());
@@ -331,6 +346,13 @@ public class ImportGenomesDialog {
         controller.getCacheButton().disableProperty().bind(controller.getFindReferencesButton().disabledProperty());
     }
 
+    public void clearReferences(AnalyzeGenomesController controller) {
+        references.clear();
+        referenceIds.clear();
+        controller.getMashDistancesChart().getData().clear();
+
+    }
+
     private static XYChart.Series<Double, Integer> createThresholdLine(DoubleProperty threshold, ObservableList<Map.Entry<Integer, Double>> references) {
         final ObservableList<XYChart.Data<Double, Integer>> data = FXCollections.observableArrayList();
         final XYChart.Series<Double, Integer> series = new XYChart.Series<>(data);
@@ -366,8 +388,10 @@ public class ImportGenomesDialog {
             fileChooser.setInitialDirectory(previousDir);
         fileChooser.setTitle("Genome Files");
         fileChooser.getExtensionFilters().addAll(FastAFileFilter.getInstance(), FastQFileFilter.getInstance(), AllFileFilter.getInstance());
-
-        return fileChooser.showOpenMultipleDialog(owner);
+        List<File> result = fileChooser.showOpenMultipleDialog(owner);
+        if (result != null && result.size() > 0)
+            ProgramProperties.put("GenomesDir", result.get(0).getParent());
+        return result;
     }
 
     private static File getOutputFile(Stage owner, String defaultName) {

@@ -45,18 +45,18 @@
                         <KeyCodeCombination alt="UP" code="I" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
-                <MenuItem fx:id="importGenomesMenuItem" text="Import Genomes..."/>
                 <MenuItem fx:id="replaceDataMenuItem" text="Replace Data...">
                     <accelerator>
                         <KeyCodeCombination alt="UP" code="I" control="UP" meta="UP" shift="DOWN" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
-                <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="inputEditorMenuItem" text="Input Editor...">
                     <accelerator>
                         <KeyCodeCombination alt="UP" code="U" control="UP" meta="UP" shift="UP" shortcut="DOWN"/>
                     </accelerator>
                 </MenuItem>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <MenuItem fx:id="analyzeGenomesMenuItem" text="Analyze Genomes..."/>
                 <SeparatorMenuItem mnemonicParsing="false"/>
                 <MenuItem fx:id="saveMenuItem" text="Save">
                     <accelerator>

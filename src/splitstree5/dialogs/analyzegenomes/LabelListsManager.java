@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.dialogs.importgenomes;
+package splitstree5.dialogs.analyzegenomes;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
  * Daniel Huson, 2.2020
  */
 public class LabelListsManager {
-    private final ImportGenomesController controller;
+    private final AnalyzeGenomesController controller;
     private final Label label = new Label();
 
     private final UndoManager undoManager;
@@ -66,7 +66,7 @@ public class LabelListsManager {
      *
      * @param controller
      */
-    public LabelListsManager(ImportGenomesController controller) {
+    public LabelListsManager(AnalyzeGenomesController controller) {
         this.controller = controller;
         displayLabels = controller.getDisplayLabelsListView().getItems();
 
@@ -102,7 +102,6 @@ public class LabelListsManager {
                 undoManager.add(UndoableRedoableCommand.create("replace", () -> displayLabels.setAll(original), () -> displayLabels.setAll(replaced)));
             });
         }
-
 
         Button removeFirstButton = new Button("- first word");
         removeFirstButton.setOnAction(c -> {
@@ -171,19 +170,23 @@ public class LabelListsManager {
      *
      * @param controller
      */
-    public void update(ImportGenomesController controller) {
+    public void update(AnalyzeGenomesController controller) {
         final ArrayList<String> oldDisplayLabels = new ArrayList<>(displayLabels);
         displayLabels.clear();
 
         final List<String> labels = getLabels(Arrays.asList(Basic.split(controller.getInputTextArea().getText(), ',')), controller.getTaxaChoiceBox().getValue());
         if (labels != null) {
-            for (String label : labels) {
-                final Integer pos = line2PosInDisplayLabels.get(label);
-                if (pos != null && pos < oldDisplayLabels.size())
-                    displayLabels.add(oldDisplayLabels.get(pos));
-                else
-                    displayLabels.add(label.replaceAll("'", "_"));
-                line2PosInDisplayLabels.put(label, displayLabels.size() - 1);
+            if (true) { // this clobbers all changes....
+                displayLabels.setAll(labels);
+            } else {
+                for (String label : labels) {
+                    final Integer pos = line2PosInDisplayLabels.get(label);
+                    if (pos != null && pos < oldDisplayLabels.size())
+                        displayLabels.add(oldDisplayLabels.get(pos));
+                    else
+                        displayLabels.add(label.replaceAll("'", "_"));
+                    line2PosInDisplayLabels.put(label, displayLabels.size() - 1);
+                }
             }
         }
         label.setText("Input: " + displayLabels.size());
@@ -251,11 +254,11 @@ public class LabelListsManager {
         return result.length() > 0 ? result : original;
     }
 
-    private static List<String> getLabels(List<String> inputFiles, ImportGenomesDialog.TaxonIdentification taxonIdentification) {
+    private static List<String> getLabels(List<String> inputFiles, AnalyzeGenomesDialog.TaxonIdentification taxonIdentification) {
         final List<String> labels;
-        if (taxonIdentification == ImportGenomesDialog.TaxonIdentification.PerFileUsingFileName) {
+        if (taxonIdentification == AnalyzeGenomesDialog.TaxonIdentification.PerFileUsingFileName) {
             labels = inputFiles.stream().map(s -> Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(s), "")).collect(Collectors.toList());
-        } else if (taxonIdentification == ImportGenomesDialog.TaxonIdentification.PerFile) {
+        } else if (taxonIdentification == AnalyzeGenomesDialog.TaxonIdentification.PerFile) {
             labels = new ArrayList<>();
 
             for (String fileName : inputFiles) {
@@ -270,10 +273,16 @@ public class LabelListsManager {
             labels = new ArrayList<>();
 
             for (String fileName : inputFiles) {
+                final String shortName = Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(fileName), "");
                 try (IFastAIterator it = FastAFileIterator.getFastAOrFastQAsFastAIterator(fileName)) {
+                    int count = 0;
                     while (it.hasNext()) {
+                        count++;
                         final String line = it.next().getFirst();
-                        labels.add(line.startsWith(">") || line.startsWith("@") ? line.substring(1).trim() : line);
+                        if (taxonIdentification == AnalyzeGenomesDialog.TaxonIdentification.PerFastARecord)
+                            labels.add(line.startsWith(">") || line.startsWith("@") ? line.substring(1).trim() : line);
+                        else
+                            labels.add(shortName + ":" + count);
                         if (labels.size() > 1000)
                             throw new IOException("Too many taxon labels (>1000)");
 

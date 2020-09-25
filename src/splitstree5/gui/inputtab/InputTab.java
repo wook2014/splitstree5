@@ -191,7 +191,7 @@ public class InputTab extends TextViewTab {
         controller.getOpenRecentMenu().disableProperty().bind(textArea.textProperty().isNotEmpty());
 
         controller.getImportMenuItem().disableProperty().bind(new SimpleBooleanProperty(true));
-        controller.getImportGenomesMenuItem().disableProperty().bind(new SimpleBooleanProperty(true));
+        controller.getAnalyzeGenomesMenuItem().disableProperty().bind(new SimpleBooleanProperty(true));
 
         controller.getInputEditorMenuItem().disableProperty().bind(new SimpleBooleanProperty(true));
 

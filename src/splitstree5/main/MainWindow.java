@@ -52,7 +52,7 @@ import splitstree5.core.workflow.Connector;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.Workflow;
 import splitstree5.core.workflow.WorkflowNode;
-import splitstree5.dialogs.importgenomes.ImportGenomesDialog;
+import splitstree5.dialogs.analyzegenomes.AnalyzeGenomesDialog;
 import splitstree5.gui.ISavesPreviousSelection;
 import splitstree5.gui.ViewerTab;
 import splitstree5.gui.algorithmtab.AlgorithmTab;
@@ -69,7 +69,7 @@ import splitstree5.toolbar.MainToolBarController;
 import java.io.IOException;
 
 public class MainWindow implements IMainWindow {
-    static final Single<ImportGenomesDialog> importGenomesDialog = new Single<>();
+    static final Single<AnalyzeGenomesDialog> analyzeGenomesDialog = new Single<>();
     private final Document document;
     private final Workflow workflow;
 
@@ -205,7 +205,7 @@ public class MainWindow implements IMainWindow {
             importItem.disableProperty().bind(workflow.hasWorkingTaxonNodeForFXThreadProperty());
 
             MenuItem importGenomesItem = new MenuItem("Import Genomes...");
-            importGenomesItem.setOnAction((e) -> menuController.getImportGenomesMenuItem().fire());
+            importGenomesItem.setOnAction((e) -> menuController.getAnalyzeGenomesMenuItem().fire());
             importGenomesItem.disableProperty().bind(workflow.hasWorkingTaxonNodeForFXThreadProperty());
 
 
@@ -631,8 +631,8 @@ public class MainWindow implements IMainWindow {
 
     @Override
     public void close() {
-        if (importGenomesDialog.get() != null)
-            importGenomesDialog.get().getStage().hide();
+        if (analyzeGenomesDialog.get() != null)
+            analyzeGenomesDialog.get().getStage().hide();
         mainTabPane.redockAll();
         algorithmsTabPane.redockAll();
         stage.hide();

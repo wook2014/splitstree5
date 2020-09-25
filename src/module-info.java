@@ -57,7 +57,7 @@ module splitstreefive {
     opens splitstree5.dialogs.exporter;
     opens splitstree5.dialogs.importer;
     opens splitstree5.dialogs.message;
-    opens splitstree5.dialogs.importgenomes;
+    opens splitstree5.dialogs.analyzegenomes;
 
     opens splitstree5.gui.algorithmtab;
     opens splitstree5.gui.algorithmtab.rootbyoutgroup;

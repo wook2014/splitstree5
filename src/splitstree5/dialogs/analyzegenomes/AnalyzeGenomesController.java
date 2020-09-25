@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package splitstree5.dialogs.importgenomes;
+package splitstree5.dialogs.analyzegenomes;
 
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
@@ -28,7 +28,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-public class ImportGenomesController {
+public class AnalyzeGenomesController {
 
     @FXML
     private AnchorPane rootPane;
@@ -40,10 +40,10 @@ public class ImportGenomesController {
     private Button inputBrowseButton;
 
     @FXML
-    private ChoiceBox<ImportGenomesDialog.TaxonIdentification> taxaChoiceBox;
+    private ChoiceBox<AnalyzeGenomesDialog.TaxonIdentification> taxaChoiceBox;
 
     @FXML
-    private ChoiceBox<ImportGenomesDialog.Sequence> sequenceTypeChoiceBox;
+    private ChoiceBox<AnalyzeGenomesDialog.Sequence> sequenceTypeChoiceBox;
 
     @FXML
     private TextField minLengthTextField;
@@ -142,6 +142,9 @@ public class ImportGenomesController {
     @FXML
     private Button cacheButton;
 
+    @FXML
+    private TabPane mainTabPane;
+
     public void initialize() {
         mashDistancesChart.setLegendVisible(false);
         mashDistancesChart.setAnimated(false);
@@ -167,7 +170,7 @@ public class ImportGenomesController {
         return inputBrowseButton;
     }
 
-    public ChoiceBox<ImportGenomesDialog.TaxonIdentification> getTaxaChoiceBox() {
+    public ChoiceBox<AnalyzeGenomesDialog.TaxonIdentification> getTaxaChoiceBox() {
         return taxaChoiceBox;
     }
 
@@ -183,7 +186,7 @@ public class ImportGenomesController {
         return outputBrowseButton;
     }
 
-    public ChoiceBox<ImportGenomesDialog.Sequence> getSequenceTypeChoiceBox() {
+    public ChoiceBox<AnalyzeGenomesDialog.Sequence> getSequenceTypeChoiceBox() {
         return sequenceTypeChoiceBox;
     }
 
@@ -306,5 +309,9 @@ public class ImportGenomesController {
 
     public Button getCacheButton() {
         return cacheButton;
+    }
+
+    public TabPane getMainTabPane() {
+        return mainTabPane;
     }
 }
