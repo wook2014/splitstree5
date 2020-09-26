@@ -21,10 +21,11 @@
 package splitstree5.core.algorithms.genomes2distances;
 
 import javafx.beans.property.*;
+import jloda.fx.util.ProgramExecutorService;
 import jloda.fx.window.NotificationManager;
 import jloda.kmers.GenomeDistanceType;
 import jloda.util.Basic;
-import jloda.util.Pair;
+import jloda.util.ExecuteInParallel;
 import jloda.util.ProgressListener;
 import jloda.util.Triplet;
 import splitstree5.core.algorithms.Algorithm;
@@ -39,7 +40,6 @@ import splitstree5.untested.dashing.DashingSketch;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 /**
@@ -71,15 +71,14 @@ public class DashingUntested extends Algorithm<GenomesBlock, DistancesBlock> imp
 
         final boolean isNucleotideData = ((GenomesNexusFormat) genomesBlock.getFormat()).getCharactersType().equals(GenomesNexusFormat.CharactersType.dna);
 
+
+        final ArrayList<DashingSketch> sketches = new ArrayList<>();
+
         progress.setSubtask("Sketching");
-        progress.setMaximum(genomesBlock.getNGenomes());
-        progress.setProgress(0);
-
-        final ArrayList<DashingSketch> sketches = genomesBlock.getGenomes().parallelStream().map(g -> new Pair<>(g.getName(), g.parts()))
-                .map(pair -> DashingSketch.compute(pair.getFirst(), Basic.asList(pair.getSecond()), getOptionKMerSize(), getOptionPrefixSize(), getOptionHashSeed(), isOptionIgnoreUniqueKMers(), progress))
-                .collect(Collectors.toCollection(ArrayList::new));
-
-        progress.checkForCancel();
+        ExecuteInParallel.apply(genomesBlock.getGenomes(), g ->
+                        Collections.singleton(DashingSketch.compute(g.getName(), Basic.asList(g.parts()), getOptionKMerSize(), getOptionPrefixSize(), getOptionHashSeed(), isOptionIgnoreUniqueKMers(), progress)),
+                sketches, ProgramExecutorService.getNumberOfCoresToUse(), progress);
+        progress.reportTaskCompleted();
 
         if (sketches.size() < 4) {
             throw new IOException("Too few genomes: " + sketches.size());
@@ -102,9 +101,9 @@ public class DashingUntested extends Algorithm<GenomesBlock, DistancesBlock> imp
             }
         }
 
-        triplets.parallelStream().forEach(t -> t.setThird(DashingDistance.compute(t.get1(), t.get2(), getOptionDistances())));
-
-        progress.checkForCancel();
+        progress.setSubtask("distances");
+        ExecuteInParallel.apply(triplets, t -> t.setThird(DashingDistance.compute(t.get1(), t.get2(), getOptionDistances())), ProgramExecutorService.getNumberOfCoresToUse(), progress);
+        progress.reportTaskCompleted();
 
         final Map<String, Integer> name2rank = new HashMap<>();
 

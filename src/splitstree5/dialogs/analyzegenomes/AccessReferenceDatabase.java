@@ -42,7 +42,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 /**
  * provides access to a reference database
@@ -257,6 +256,7 @@ public class AccessReferenceDatabase implements Closeable {
                 try (InputStream ins = (new URL(id2file.get(taxonId)).openStream()); OutputStream outs = new FileOutputStream(cacheFile)) {
                     ins.transferTo(outs);
                 } catch (IOException ex) {
+                    NotificationManager.showError("Failed to cache file: " + id2file.get(taxonId));
                     if (cacheFile.exists())
                         cacheFile.delete();
                 }
@@ -285,16 +285,14 @@ public class AccessReferenceDatabase implements Closeable {
         progress.setTasks("Find similar", "Sketching");
         progress.setMaximum(queries.size());
         progress.setProgress(0);
-        final List<MashSketch> querySketches = queries.parallelStream()
-                .map(q -> MashSketch.compute("", Collections.singletonList(q), true, mash_s, mash_k, mash_seed, false, true, progress))
-                .peek(s -> {
-                    try {
-                        progress.incrementProgress();
-                    } catch (CanceledException ignored) {
-                    }
-                }).collect(Collectors.toList());
-        if (progress.isUserCancelled())
-            throw new CanceledException();
+        final List<MashSketch> querySketches = new ArrayList<>();
+        try {
+            ExecuteInParallel.apply(queries,
+                    q -> Collections.singleton(MashSketch.compute("", Collections.singletonList(q), true, mash_s, mash_k, mash_seed, false, true, progress)),
+                    querySketches, ProgramExecutorService.getNumberOfCoresToUse());
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
 
         final Set<String> kmers = new HashSet<>();
         for (MashSketch sketch : querySketches) {

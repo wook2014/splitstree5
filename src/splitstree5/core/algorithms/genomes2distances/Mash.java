@@ -129,10 +129,10 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
             }
         }
 
-        triplets.parallelStream().forEach(t -> t.setThird(MashDistance.compute(t.get1(), t.get2(), getOptionDistances())));
-
-        progress.checkForCancel();
-
+        progress.setSubtask("distances");
+        ExecuteInParallel.apply(triplets, t -> t.setThird(MashDistance.compute(t.get1(), t.get2(), getOptionDistances())), ProgramExecutorService.getNumberOfCoresToUse(), progress);
+        progress.reportTaskCompleted();
+        
         final Map<String, Integer> name2rank = new HashMap<>();
 
         for (int i = 0; i < sketches.size(); i++) {
