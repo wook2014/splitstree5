@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="8.0.4" transformSequenceNumber="8">
-  <directoryPresets config="../tools/bfilter-tool" />
+  <directoryPresets config="../tools/genome-context" />
   <application name="SplitsTree5" applicationId="4099-4251-9127-4263" mediaDir="../../../builds" shortName="splitstree5" publisher="Daniel Huson and David Bryant" publisherWeb="http://splitstree.husonlab.org" version="5.0.0" allPathsRelative="true" macVolumeId="b8c0a1154e563a9a" javaMinVersion="11">
     <codeSigning macEnabled="true" macPkcs12File="../../../../etc/application.p12">
       <macSearchedJars>
@@ -39,6 +39,7 @@
       <fileEntry mountPoint="1691242495" file="../tools/mash-sketches" fileMode="755" overrideFileMode="true" />
       <fileEntry mountPoint="1691242495" file="../tools/workflow-export" fileMode="755" overrideFileMode="true" />
       <fileEntry mountPoint="1691242495" file="../tools/bfilter-tool" fileMode="755" overrideFileMode="true" />
+      <fileEntry mountPoint="1691242495" file="../tools/genome-context" fileMode="755" overrideFileMode="true" />
       <fileEntry mountPoint="1691242153" file="../examples/fitch-margoliash-1967.nex" />
       <fileEntry mountPoint="1691242153" file="../test/nexus/trees49-taxa.nex" />
       <fileEntry mountPoint="1691242153" file="../test/nexus/dolphins_binary.nex" />
@@ -268,7 +269,7 @@ return console.askOkCancel(message, true);
               </action>
               <action id="1691242497" beanClass="com.install4j.runtime.beans.actions.text.ReplaceInstallerVariablesAction" actionElevationType="elevated">
                 <serializedBean>
-                  <property name="files" type="array" class="java.io.File" length="4">
+                  <property name="files" type="array" class="java.io.File" length="5">
                     <element index="0">
                       <object class="java.io.File">
                         <string>tools/workflow-run</string>
@@ -287,6 +288,11 @@ return console.askOkCancel(message, true);
                     <element index="3">
                       <object class="java.io.File">
                         <string>tools/bfilter-tool</string>
+                      </object>
+                    </element>
+                    <element index="4">
+                      <object class="java.io.File">
+                        <string>tools/genome-context</string>
                       </object>
                     </element>
                   </property>
