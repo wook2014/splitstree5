@@ -48,6 +48,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Daniel Huson, 8.2020
  */
 public class AccessReferenceDatabase implements Closeable {
+    private boolean verbose = false;
 
     private final Connection connection;
     private final File dbFile;
@@ -175,6 +176,21 @@ public class AccessReferenceDatabase implements Closeable {
         return result;
     }
 
+    public Map<Integer, List<Integer>> getAncestors(Collection<Integer> taxonIds) throws SQLException {
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (var taxonId : taxonIds) {
+            // todo: replace following lines by single query:
+            final List<Integer> ancestors = new LinkedList<>();
+            int id = taxonId;
+            while (id != 0) {
+                ancestors.add(0, id);
+                id = executeQueryInt("select parent_id from taxonomy where taxon_id='" + id + "';", 1).get(0);
+            }
+            map.put(taxonId, ancestors);
+        }
+        return map;
+    }
+
     public ArrayList<Integer> getAllTaxonIds() throws SQLException {
         final String query = "select taxon_id from taxa;";
 
@@ -212,7 +228,6 @@ public class AccessReferenceDatabase implements Closeable {
     public int countMashSketches() throws SQLException {
         return executeQueryInt("select count(*) from mash_sketches;", 1).get(0);
     }
-
 
     public int getMashK() throws SQLException {
         return executeQueryInt("select value from info where key='mash_k';", 1).get(0);
@@ -268,26 +283,22 @@ public class AccessReferenceDatabase implements Closeable {
     }
 
     /**
-     * find all genomes that have non-zero Jaccard index
-     *
-     * @param queries
-     * @return taxa in decreasing order of min distance from queries
-     * @throws SQLException
-     * @throws IOException
+     * find all genomes that have non-zero Jaccard index when compared with the query
      */
-    public Collection<Map.Entry<Integer, Double>> findSimilar(ProgressListener progress, int minSharedKMers, Collection<byte[]> queries) throws SQLException, IOException {
+    public Collection<Map.Entry<Integer, Double>> findSimilar(ProgressListener progress, int minSharedKMers, Collection<byte[]> query) throws SQLException, IOException {
         final int mash_k = getMashK();
         final int mash_s = getMashS();
         final int mash_seed = getMashSeed();
 
-        System.err.println("Using mash_k=" + mash_k + ", mash_s=" + mash_s + ", mash_seed=" + mash_seed);
+        if (verbose)
+            System.err.println("Using mash_k=" + mash_k + ", mash_s=" + mash_s + ", mash_seed=" + mash_seed);
 
         progress.setTasks("Find similar", "Sketching");
-        progress.setMaximum(queries.size());
+        progress.setMaximum(query.size());
         progress.setProgress(0);
         final List<MashSketch> querySketches = new ArrayList<>();
         try {
-            ExecuteInParallel.apply(queries,
+            ExecuteInParallel.apply(query,
                     q -> Collections.singleton(MashSketch.compute("", Collections.singletonList(q), true, mash_s, mash_k, mash_seed, false, true, progress)),
                     querySketches, ProgramExecutorService.getNumberOfCoresToUse());
         } catch (Exception e) {
@@ -356,7 +367,8 @@ public class AccessReferenceDatabase implements Closeable {
                                         id2distance.put(id, distance);
                                     }
                                 }
-                                System.err.printf("Found similar: " + id + " JI: %f dist: %.8f%n", MashDistance.computeJaccardIndex(mashSketch, sketch), distance);
+                                if (verbose)
+                                    System.err.printf("Found similar: " + id + " JI: %f dist: %.8f%n", MashDistance.computeJaccardIndex(mashSketch, sketch), distance);
                             }
                         }
                         progress.incrementProgress();

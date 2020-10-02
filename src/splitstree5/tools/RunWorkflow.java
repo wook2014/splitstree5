@@ -98,7 +98,7 @@ RunWorkflow extends Application {
 
         final ArgsOptions options = new ArgsOptions(args, RunWorkflow.class, "Exports data from a SplitsTree5 workflow");
         options.setVersion(ProgramProperties.getProgramVersion());
-        options.setLicense("Copyright (C) 2019 Daniel H. Huson. This program comes with ABSOLUTELY NO WARRANTY.");
+        options.setLicense("Copyright (C) 2020 Daniel H. Huson. This program comes with ABSOLUTELY NO WARRANTY.");
         options.setAuthors("Daniel H. Huson");
 
         options.comment("Input Output:");

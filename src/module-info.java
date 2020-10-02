@@ -29,8 +29,6 @@ module splitstreefive {
     exports splitstree5.xtra;
     exports splitstree5.xtra.align;
 
-    exports splitstree5.core.algorithms.interfaces;
-
     opens splitstree5.core.algorithms;
     opens splitstree5.core.algorithms.genomes2distances;
 

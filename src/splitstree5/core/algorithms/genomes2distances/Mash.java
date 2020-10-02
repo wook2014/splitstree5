@@ -64,7 +64,7 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
 
     @Override
     public String getCitation() {
-        return "Ondov et al 2016; Brian D. Ondov, Todd J. Treangen, Páll Melsted, Adam B. Mallonee, Nicholas H. Bergman, Sergey Koren & Adam M. Phillippy. Mash: fast importgenomes and metagenome distance estimation using MinHash. Genome Biol 17, 132 (2016).";
+        return "Ondov et al 2016; Brian D. Ondov, Todd J. Treangen, Páll Melsted, Adam B. Mallonee, Nicholas H. Bergman, Sergey Koren & Adam M. Phillippy. Mash: fast genome and metagenome distance estimation using MinHash. Genome Biol 17, 132 (2016).";
     }
 
     @Override
