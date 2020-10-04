@@ -48,7 +48,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Daniel Huson, 8.2020
  */
 public class AccessReferenceDatabase implements Closeable {
-    private boolean verbose = false;
+    private static boolean verbose = false;
 
     private final Connection connection;
     private final File dbFile;
@@ -177,14 +177,23 @@ public class AccessReferenceDatabase implements Closeable {
     }
 
     public Map<Integer, List<Integer>> getAncestors(Collection<Integer> taxonIds) throws SQLException {
-        Map<Integer, List<Integer>> map = new HashMap<>();
+        final String queryFormat = "\n" +
+                "WITH RECURSIVE\n" +
+                "  parent_of(taxon_id, parent) AS\n" +
+                "    (SELECT taxon_id, parent_id FROM taxonomy),\n" +
+                "  ancestor(taxon_id) AS\n" +
+                "    (SELECT parent FROM parent_of WHERE taxon_id=%d\n" +
+                "     UNION ALL\n" +
+                "     SELECT parent FROM parent_of JOIN ancestor USING(taxon_id))\n" +
+                "SELECT taxonomy.taxon_id FROM ancestor, taxonomy\n" +
+                " WHERE ancestor.taxon_id=taxonomy.taxon_id;\n";
+
+        final Map<Integer, List<Integer>> map = new HashMap<>();
         for (var taxonId : taxonIds) {
-            // todo: replace following lines by single query:
-            final List<Integer> ancestors = new LinkedList<>();
-            int id = taxonId;
-            while (id != 0) {
-                ancestors.add(0, id);
-                id = executeQueryInt("select parent_id from taxonomy where taxon_id='" + id + "';", 1).get(0);
+            final ResultSet rs = connection.createStatement().executeQuery(String.format(queryFormat, taxonId));
+            final LinkedList<Integer> ancestors = new LinkedList<>();
+            while (rs.next()) {
+                ancestors.add(0, rs.getInt(1));
             }
             map.put(taxonId, ancestors);
         }
@@ -321,7 +330,9 @@ public class AccessReferenceDatabase implements Closeable {
         final ExecutorService service = Executors.newFixedThreadPool(ProgramExecutorService.getNumberOfCoresToUse());
         final Single<Exception> exception = new Single<>();
         final AtomicInteger jobs = new AtomicInteger(1);
-        service.submit(createTasksRec(getTaxonomyRoot(), querySketches, kmers, minSharedKMers, id2distance, progress, exception, jobs, service));
+        service.submit(
+                createTasksRec(getTaxonomyRoot(), querySketches, kmers, minSharedKMers, id2distance, progress, exception, jobs, service));
+
         if (exception.get() != null)
             throw new IOException(exception.get());
         try {
@@ -384,5 +395,27 @@ public class AccessReferenceDatabase implements Closeable {
 
     public File getDbFile() {
         return dbFile;
+    }
+
+    private class ParallelDatabaseAccess implements Closeable {
+        private final AccessReferenceDatabase[] databases;
+        private final Random random = new Random();
+
+        ParallelDatabaseAccess(int size, String fileName) throws IOException, SQLException {
+            databases = new AccessReferenceDatabase[size];
+            for (int i = 0; i < size; i++)
+                databases[i] = new AccessReferenceDatabase(fileName);
+        }
+
+        public AccessReferenceDatabase getDatabase() {
+            return databases[random.nextInt(databases.length)];
+        }
+
+        @Override
+        public void close() {
+            for (var database : databases) {
+                database.close();
+            }
+        }
     }
 }
