@@ -66,7 +66,7 @@ public class GenomesBlock extends DataBlock {
     }
 
     /**
-     * access the trees
+     * next the trees
      *
      * @return trees
      */

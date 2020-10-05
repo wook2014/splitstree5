@@ -268,7 +268,9 @@ public class AnalyzeGenomesDialog {
                     for (GenomesAnalyzer.InputRecord record : genomesAnalyzer.iterable(getProgressListener())) {
                         queries.add(record.getSequence());
                     }
-                    return database.get().findSimilar(service.getProgressListener(), Basic.parseInt(controller.getMinSharedKMersTextField().getText()), queries);
+                    try (AccessReferenceDatabase.MultiAccess multiAccess = new AccessReferenceDatabase.MultiAccess(ProgramExecutorService.getNumberOfCoresToUse(), database.get().getDbFile().getPath())) {
+                        return AccessReferenceDatabase.findSimilar(multiAccess, service.getProgressListener(), Basic.parseInt(controller.getMinSharedKMersTextField().getText()), queries);
+                    }
                 }
             });
             service.runningProperty().addListener((c, o, n) -> running.set(n));

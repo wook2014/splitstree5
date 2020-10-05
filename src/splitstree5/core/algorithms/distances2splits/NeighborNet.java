@@ -90,7 +90,7 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
 
     /**
      * A scaled down version of NeighborNet that only returns the ordering, and does not
-     * access the document or progress bar.
+     * next the document or progress bar.
      *
      * @param dist Distance matrix
      */

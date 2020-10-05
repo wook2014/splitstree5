@@ -70,7 +70,7 @@ public abstract class DNAdistance extends Algorithm<CharactersBlock, DistancesBl
         for(DoubleProperty dp : baseFreq)
             dp = new SimpleDoubleProperty(0.25); //.setValue(0.25);*/
 
-        //todo: connector = null, need access to charatersBlock for updateSetting function!
+        //todo: connector = null, need next to charatersBlock for updateSetting function!
 
         connectorProperty().addListener((c) -> {
             System.err.println("Connector Listener");

@@ -71,7 +71,7 @@ public class TreesBlock extends DataBlock {
     }
 
     /**
-     * access the trees
+     * next the trees
      *
      * @return trees
      */

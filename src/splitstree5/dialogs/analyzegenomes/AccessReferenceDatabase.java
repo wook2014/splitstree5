@@ -44,7 +44,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * provides access to a reference database
+ * provides next to a reference database
  * Daniel Huson, 8.2020
  */
 public class AccessReferenceDatabase implements Closeable {
@@ -62,10 +62,6 @@ public class AccessReferenceDatabase implements Closeable {
      * CREATE TABLE mash_sketches (taxon_id INTEGER PRIMARY KEY, mash_sketch TEXT NOT NULL) WITHOUT ROWID;
      * CREATE TABLE bloom_filters (taxon_id INTEGER PRIMARY KEY, bloom_filter TEXT NOT NULL) WITHOUT ROWID;
      * CREATE TABLE taxonomy (taxon_id INTEGER PRIMARY KEY, parent_id INTEGER NOT NULL) WITHOUT ROWID;
-     *
-     * @param dbFile
-     * @throws IOException
-     * @throws SQLException
      */
     public AccessReferenceDatabase(String dbFile) throws IOException, SQLException {
         this.dbFile = new File(dbFile);
@@ -150,7 +146,7 @@ public class AccessReferenceDatabase implements Closeable {
     }
 
     public ArrayList<Pair<Integer, BloomFilter>> getBloomFilters(Collection<Integer> taxonIds) throws SQLException, IOException {
-        final String query = String.format("select taxon_id,bloom_filter from bloom_filters where taxon_id in('%s');", Basic.toString(taxonIds, "','"));
+        final String query = String.format("SELECT taxon_id,bloom_filter FROM bloom_filters WHERE taxon_id IN('%s');", Basic.toString(taxonIds, "','"));
 
         final ResultSet rs = connection.createStatement().executeQuery(query);
 
@@ -165,7 +161,7 @@ public class AccessReferenceDatabase implements Closeable {
     }
 
     public Map<Integer, String> getNames(Collection<Integer> taxonIds) throws SQLException {
-        final String query = String.format("select taxon_id,taxon_name from taxa where taxon_id in('%s');", Basic.toString(taxonIds, "','"));
+        final String query = String.format("SELECT taxon_id,taxon_name FROM taxa WHERE taxon_id IN('%s');", Basic.toString(taxonIds, "','"));
 
         final ResultSet rs = connection.createStatement().executeQuery(query);
 
@@ -179,14 +175,14 @@ public class AccessReferenceDatabase implements Closeable {
     public Map<Integer, List<Integer>> getAncestors(Collection<Integer> taxonIds) throws SQLException {
         final String queryFormat = "\n" +
                 "WITH RECURSIVE\n" +
-                "  parent_of(taxon_id, parent) AS\n" +
-                "    (SELECT taxon_id, parent_id FROM taxonomy),\n" +
-                "  ancestor(taxon_id) AS\n" +
-                "    (SELECT parent FROM parent_of WHERE taxon_id=%d\n" +
-                "     UNION ALL\n" +
-                "     SELECT parent FROM parent_of JOIN ancestor USING(taxon_id))\n" +
+                "parent_of(taxon_id, parent) AS\n" +
+                "(SELECT taxon_id, parent_id FROM taxonomy),\n" +
+                "ancestor(taxon_id) AS\n" +
+                "(SELECT parent FROM parent_of WHERE taxon_id=%d\n" +
+                "UNION ALL\n" +
+                "SELECT parent FROM parent_of JOIN ancestor USING(taxon_id))\n" +
                 "SELECT taxonomy.taxon_id FROM ancestor, taxonomy\n" +
-                " WHERE ancestor.taxon_id=taxonomy.taxon_id;\n";
+                "WHERE ancestor.taxon_id=taxonomy.taxon_id;\n";
 
         final Map<Integer, List<Integer>> map = new HashMap<>();
         for (var taxonId : taxonIds) {
@@ -201,7 +197,7 @@ public class AccessReferenceDatabase implements Closeable {
     }
 
     public ArrayList<Integer> getAllTaxonIds() throws SQLException {
-        final String query = "select taxon_id from taxa;";
+        final String query = "SELECT taxon_id FROM taxa;";
 
         final ResultSet rs = connection.createStatement().executeQuery(query);
 
@@ -213,7 +209,7 @@ public class AccessReferenceDatabase implements Closeable {
     }
 
     public Map<Integer, String> getFiles(Collection<Integer> taxonIds) throws SQLException, IOException {
-        final String query = String.format("select taxon_id,fasta_url from genomes where taxon_id in('%s');", Basic.toString(taxonIds, "','"));
+        final String query = String.format("SELECT taxon_id,fasta_url FROM genomes WHERE taxon_id IN('%s');", Basic.toString(taxonIds, "','"));
 
         final ResultSet rs = connection.createStatement().executeQuery(query);
 
@@ -227,35 +223,35 @@ public class AccessReferenceDatabase implements Closeable {
     }
 
     public int countGenomes() throws SQLException {
-        return executeQueryInt("select count(*) from genomes;", 1).get(0);
+        return executeQueryInt("SELECT count(*) FROM genomes;", 1).get(0);
     }
 
     public int countBloomFilters() throws SQLException {
-        return executeQueryInt("select count(*) from bloom_filters;", 1).get(0);
+        return executeQueryInt("SELECT count(*) FROM bloom_filters;", 1).get(0);
     }
 
     public int countMashSketches() throws SQLException {
-        return executeQueryInt("select count(*) from mash_sketches;", 1).get(0);
+        return executeQueryInt("SELECT count(*) FROM mash_sketches;", 1).get(0);
     }
 
     public int getMashK() throws SQLException {
-        return executeQueryInt("select value from info where key='mash_k';", 1).get(0);
+        return executeQueryInt("SELECT value FROM info WHERE key='mash_k';", 1).get(0);
     }
 
     public int getMashS() throws SQLException {
-        return executeQueryInt("select value from info where key='mash_s';", 1).get(0);
+        return executeQueryInt("SELECT value FROM info WHERE key='mash_s';", 1).get(0);
     }
 
     public int getMashSeed() throws SQLException {
-        return executeQueryInt("select value from info where key='mash_seed';", 1).get(0);
+        return executeQueryInt("SELECT value FROM info WHERE key='mash_seed';", 1).get(0);
     }
 
     public int getTaxonomyRoot() throws SQLException {
-        return executeQueryInt("select taxon_id from taxonomy where parent_id=0;", 1).get(0);
+        return executeQueryInt("SELECT taxon_id FROM taxonomy WHERE parent_id=0;", 1).get(0);
     }
 
     public Collection<Integer> getTaxonomyChildren(int parent_id) throws SQLException {
-        return new ArrayList<>(executeQueryInt("select taxon_id from taxonomy where parent_id=" + parent_id + ";", 1));
+        return new ArrayList<>(executeQueryInt("SELECT taxon_id FROM taxonomy WHERE parent_id=" + parent_id + ";", 1));
     }
 
     public Map<String, String> getReferenceFile2Name(ObservableList<Integer> taxonIds, ProgressListener progress) throws SQLException, IOException {
@@ -294,10 +290,11 @@ public class AccessReferenceDatabase implements Closeable {
     /**
      * find all genomes that have non-zero Jaccard index when compared with the query
      */
-    public Collection<Map.Entry<Integer, Double>> findSimilar(ProgressListener progress, int minSharedKMers, Collection<byte[]> query) throws SQLException, IOException {
-        final int mash_k = getMashK();
-        final int mash_s = getMashS();
-        final int mash_seed = getMashSeed();
+    public static Collection<Map.Entry<Integer, Double>> findSimilar(MultiAccess multiAccess, ProgressListener progress, int minSharedKMers, Collection<byte[]> query) throws SQLException, IOException {
+        final AccessReferenceDatabase database = multiAccess.next();
+        final int mash_k = database.getMashK();
+        final int mash_s = database.getMashS();
+        final int mash_seed = database.getMashSeed();
 
         if (verbose)
             System.err.println("Using mash_k=" + mash_k + ", mash_s=" + mash_s + ", mash_seed=" + mash_seed);
@@ -322,7 +319,7 @@ public class AccessReferenceDatabase implements Closeable {
         }
 
         progress.setSubtask("Searching");
-        progress.setMaximum(countBloomFilters());
+        progress.setMaximum(database.countBloomFilters());
         progress.setProgress(0);
 
         final ConcurrentHashMap<Integer, Double> id2distance = new ConcurrentHashMap<>();
@@ -331,7 +328,7 @@ public class AccessReferenceDatabase implements Closeable {
         final Single<Exception> exception = new Single<>();
         final AtomicInteger jobs = new AtomicInteger(1);
         service.submit(
-                createTasksRec(getTaxonomyRoot(), querySketches, kmers, minSharedKMers, id2distance, progress, exception, jobs, service));
+                createTasksRec(multiAccess, database.getTaxonomyRoot(), querySketches, kmers, minSharedKMers, id2distance, progress, exception, jobs, service));
 
         if (exception.get() != null)
             throw new IOException(exception.get());
@@ -348,24 +345,25 @@ public class AccessReferenceDatabase implements Closeable {
     /**
      * creates a task to submitted to the service. This task will recursively submit further tasks and will call shutdown() once all tasks have been completed
      */
-    private Runnable createTasksRec(int taxonId, Collection<MashSketch> querySketches, Set<String> kmers, int minSharedKMers, ConcurrentHashMap<Integer, Double> id2distance,
-                                    ProgressListener progress, Single<Exception> exception, AtomicInteger jobCount, ExecutorService service) {
+    private static Runnable createTasksRec(MultiAccess multiAccess, int taxonId, Collection<MashSketch> querySketches, Set<String> kmers, int minSharedKMers, ConcurrentHashMap<Integer, Double> id2distance,
+                                           ProgressListener progress, Single<Exception> exception, AtomicInteger jobCount, ExecutorService service) {
         return () -> {
             if (exception.get() == null) {
                 try {
-                    final Collection<Integer> ids = getTaxonomyChildren(taxonId);
-                    final ArrayList<Pair<Integer, BloomFilter>> bloomFilters = getBloomFilters(ids);
+                    final AccessReferenceDatabase database = multiAccess.next();
+                    final Collection<Integer> ids = database.getTaxonomyChildren(taxonId);
+                    final ArrayList<Pair<Integer, BloomFilter>> bloomFilters = database.getBloomFilters(ids);
                     for (Pair<Integer, BloomFilter> pair : bloomFilters) {
                         final BloomFilter bloomFilter = pair.getSecond();
                         if (bloomFilter.countContainedProbably(kmers) >= minSharedKMers) {
                             final int id = pair.getFirst();
                             jobCount.incrementAndGet();
-                            service.submit(createTasksRec(id, querySketches, kmers, minSharedKMers, id2distance, progress, exception, jobCount, service));
+                            service.submit(createTasksRec(multiAccess, id, querySketches, kmers, minSharedKMers, id2distance, progress, exception, jobCount, service));
                             //System.err.println("Adding bloom filter for " + id);
                         }
                         progress.incrementProgress();
                     }
-                    final ArrayList<Pair<Integer, MashSketch>> mashSketches = getMashSketches(ids);
+                    final ArrayList<Pair<Integer, MashSketch>> mashSketches = database.getMashSketches(ids);
 
                     for (Pair<Integer, MashSketch> pair : mashSketches) {
                         final MashSketch mashSketch = pair.getSecond();
@@ -397,18 +395,18 @@ public class AccessReferenceDatabase implements Closeable {
         return dbFile;
     }
 
-    private class ParallelDatabaseAccess implements Closeable {
+    public static class MultiAccess implements Closeable {
         private final AccessReferenceDatabase[] databases;
-        private final Random random = new Random();
+        private final AtomicInteger which = new AtomicInteger(0);
 
-        ParallelDatabaseAccess(int size, String fileName) throws IOException, SQLException {
-            databases = new AccessReferenceDatabase[size];
-            for (int i = 0; i < size; i++)
-                databases[i] = new AccessReferenceDatabase(fileName);
+        public MultiAccess(int count, String dbFile) throws IOException, SQLException {
+            databases = new AccessReferenceDatabase[count];
+            for (int i = 0; i < databases.length; i++)
+                databases[i] = new AccessReferenceDatabase(dbFile);
         }
 
-        public AccessReferenceDatabase getDatabase() {
-            return databases[random.nextInt(databases.length)];
+        public AccessReferenceDatabase next() {
+            return databases[which.incrementAndGet() % databases.length];
         }
 
         @Override
