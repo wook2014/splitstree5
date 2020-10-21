@@ -243,7 +243,7 @@ public class AnalyzeGenomesDialog {
             if (AccessReferenceDatabase.isDatabaseFile(fileName)) {
                 database.set(null);
                 try {
-                    database.set(new AccessReferenceDatabase(fileName));
+                    database.set(new AccessReferenceDatabase(fileName, 2 * ProgramExecutorService.getNumberOfCoresToUse()));
                     ProgramProperties.put("ReferenceDatabaseFile", fileName);
                 } catch (IOException | SQLException ex) {
                     NotificationManager.showError("Open reference database failed: " + ex.getMessage());
@@ -268,9 +268,7 @@ public class AnalyzeGenomesDialog {
                     for (GenomesAnalyzer.InputRecord record : genomesAnalyzer.iterable(getProgressListener())) {
                         queries.add(record.getSequence());
                     }
-                    try (AccessReferenceDatabase.MultiAccess multiAccess = new AccessReferenceDatabase.MultiAccess(ProgramExecutorService.getNumberOfCoresToUse(), database.get().getDbFile().getPath())) {
-                        return AccessReferenceDatabase.findSimilar(multiAccess, service.getProgressListener(), Basic.parseInt(controller.getMinSharedKMersTextField().getText()), queries);
-                    }
+                    return database.get().findSimilar(service.getProgressListener(), Basic.parseInt(controller.getMinSharedKMersTextField().getText()), queries, true);
                 }
             });
             service.runningProperty().addListener((c, o, n) -> running.set(n));

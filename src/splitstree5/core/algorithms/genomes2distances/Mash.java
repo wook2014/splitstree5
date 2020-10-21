@@ -78,36 +78,33 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
 
         genomesBlock.checkGenomesPresent();
 
-        final ArrayList<MashSketch> sketches = new ArrayList<>(genomesBlock.size());
+        final MashSketch[] sketches = new MashSketch[genomesBlock.size()];
         {
             final ExecutorService service = Executors.newFixedThreadPool(ProgramExecutorService.getNumberOfCoresToUse());
             final Single<Exception> exception = new Single<>(null);
             try {
-                genomesBlock.getGenomes().forEach(genome -> {
+                for (final int g : BitSetUtils.range(0, genomesBlock.getNGenomes())) {
                     service.submit(() -> {
                         if (exception.get() == null) {
                             try {
+                                final var genome = genomesBlock.getGenome(g + 1);
                                 final MashSketch sketch = MashSketch.compute(genome.getName(), Basic.asList(genome.parts()), isNucleotideData, getOptionSketchSize(), getOptionKMerSize(), getOptionHashSeed(), isOptionIgnoreUniqueKMers(), progress);
                                 synchronized (sketches) {
                                     progress.checkForCancel();
-                                    sketches.add(sketch);
+                                    sketches[g] = sketch;
                                 }
                             } catch (Exception ex) {
                                 exception.setIfCurrentValueIsNull(ex);
                             }
                         }
                     });
-                });
+                }
             } finally {
                 service.shutdown();
                 service.awaitTermination(1000, TimeUnit.DAYS);
             }
             if (exception.get() != null)
                 throw exception.get();
-        }
-
-        if (sketches.size() < 4) {
-            throw new IOException("Too few genomes: " + sketches.size());
         }
 
         // todo: warn when files not found
@@ -123,20 +120,20 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
 
         final List<Triplet<MashSketch, MashSketch, Double>> triplets = new ArrayList<>();
 
-        for (int i = 0; i < sketches.size(); i++) {
-            for (int j = i + 1; j < sketches.size(); j++) {
-                triplets.add(new Triplet<>(sketches.get(i), sketches.get(j), 0.0));
+        for (int i = 0; i < sketches.length; i++) {
+            for (int j = i + 1; j < sketches.length; j++) {
+                triplets.add(new Triplet<>(sketches[i], sketches[j], 0.0));
             }
         }
 
         progress.setSubtask("distances");
         ExecuteInParallel.apply(triplets, t -> t.setThird(MashDistance.compute(t.get1(), t.get2(), getOptionDistances())), ProgramExecutorService.getNumberOfCoresToUse(), progress);
         progress.reportTaskCompleted();
-        
+
         final Map<String, Integer> name2rank = new HashMap<>();
 
-        for (int i = 0; i < sketches.size(); i++) {
-            final String name = sketches.get(i).getName();
+        for (int i = 0; i < sketches.length; i++) {
+            final String name = sketches[i].getName();
             name2rank.put(name, i + 1);
         }
 

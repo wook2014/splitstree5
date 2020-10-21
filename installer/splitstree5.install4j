@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="8.0.4" transformSequenceNumber="8">
-  <directoryPresets config="../tools/genome-context" />
+  <directoryPresets config="../../javafx-jmods" />
   <application name="SplitsTree5" applicationId="4099-4251-9127-4263" mediaDir="../../../builds" shortName="splitstree5" publisher="Daniel Huson and David Bryant" publisherWeb="http://splitstree.husonlab.org" version="5.0.0" allPathsRelative="true" macVolumeId="b8c0a1154e563a9a" javaMinVersion="11">
     <codeSigning macEnabled="true" macPkcs12File="../../../../etc/application.p12">
       <macSearchedJars>
@@ -57,7 +57,6 @@
         <include>
           <entry location="jars" />
           <entry location="jars2" />
-          <entry location="openjfx" />
           <entry location="tools" />
           <entry location="License.txt" />
           <entry location="SplitsTree5" fileType="launcher" />
@@ -73,8 +72,8 @@
   </files>
   <launchers>
     <launcher name="SplitsTree" id="1691242142" menuName="SplitsTree5">
-      <executable name="SplitsTree5" iconSet="true" executableMode="gui" changeWorkingDirectory="false" singleInstance="true" dpiAware="false">
-        <versionInfo include="true" fileDescription="SplitsTree5 phylogeny program" legalCopyright="Copyright (C)  2019 ${compiler:sys.publisher}" internalName="SplitsTree5" />
+      <executable name="SplitsTree5" iconSet="true" executableMode="gui" changeWorkingDirectory="false" singleInstance="true">
+        <versionInfo include="true" fileDescription="SplitsTree5 phylogeny program" legalCopyright="Copyright (C)  2020 ${compiler:sys.publisher}" internalName="SplitsTree5" />
       </executable>
       <splashScreen width="450" height="300" bitmapFile="./pics/jsplits.png">
         <text>
@@ -84,8 +83,6 @@
       </splashScreen>
       <java mainClass="splitstreefive/splitstree5.main.SplitsTree5" mainMode="module" vmParameters="-server -Dapple.laf.useScreenMenuBar=true -Duser.language=en -Duser.region=US --add-modules=splitstreefive">
         <modulePath>
-          <directory location="jars" failOnError="false" />
-          <directory location="openjfx/${compiler:sys.platform}/lib" failOnError="false" />
           <directory location="jars" failOnError="false" />
         </modulePath>
       </java>
@@ -1175,12 +1172,12 @@ return true;</property>
       </variables>
       <jreBundle jreBundleSource="generated" includedJre="windows-amd64-12.0.1" installOnlyIfNecessary="true">
         <modules>
-          <jmodDirectory location="../../javafx-jmods-11/windows" />
+          <jmodDirectory location="../../javafx-jmods/windows" />
         </modules>
       </jreBundle>
     </windows>
   </mediaSets>
-  <buildIds buildAll="false">
+  <buildIds>
     <mediaSet refId="1691242146" />
   </buildIds>
   <buildOptions disableSigning="true" disableNotarization="true" />

@@ -122,97 +122,96 @@ public class GenomeContext {
         }
 
         try (Writer w = new OutputStreamWriter(Basic.getOutputStreamPossiblyZIPorGZIP(outputFile))) {
-            try (AccessReferenceDatabase.MultiAccess multiAccess = new AccessReferenceDatabase.MultiAccess(ProgramExecutorService.getNumberOfCoresToUse(), databaseFile)) {
-                final AccessReferenceDatabase database = multiAccess.next();
-                final int mashK = database.getMashK();
-                final int mashS = database.getMashS();
+            final AccessReferenceDatabase database = new AccessReferenceDatabase(databaseFile, 2 * ProgramExecutorService.getNumberOfCoresToUse());
+            final int mashK = database.getMashK();
+            final int mashS = database.getMashS();
 
-                try (final ProgressPercentage progress = new ProgressPercentage("Processing input files (" + inputFiles.size() + "):", inputFiles.size())) {
-                    for (var fileName : inputFiles) {
-                        final List<Pair<String, String>> pairs = new ArrayList<>();
-                        try (var it = new FastAFileIterator(fileName)) {
-                            while (it.hasNext()) {
-                                pairs.add(it.next());
-                            }
+            try (final ProgressPercentage progress = new ProgressPercentage("Processing input files (" + inputFiles.size() + "):", inputFiles.size())) {
+                for (var fileName : inputFiles) {
+                    final List<Pair<String, String>> pairs = new ArrayList<>();
+                    try (var it = new FastAFileIterator(fileName)) {
+                        while (it.hasNext()) {
+                            pairs.add(it.next());
                         }
-
-                        if (perFastARecord) {
-                            if (!useFastAHeaders) {
-                                final var name = Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(fileName), "");
-                                int count = 0;
-                                for (var pair : pairs) {
-                                    pair.setFirst(name + (++count));
-                                }
-                            }
-                        } else { // per file
-                            final List<String> sequences = pairs.stream().map(Pair::getSecond).collect(Collectors.toList());
-                            final var name = (useFastAHeaders ? pairs.get(0).getFirst() : Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(fileName), ""));
-                            pairs.clear();
-                            pairs.add(new Pair<>(name, Basic.toString(sequences, "").replaceAll("\\s", "")));
-                        }
-
-                        // todo: update minSketchIntersection from maxDistance
-                        if (maxDistance < 1)
-                            minSketchIntersection = Math.max(minSketchIntersection, computeMinSketchIntersection(maxDistance, mashK, mashS));
-
-                        for (var pair : pairs) {
-                            final Collection<Map.Entry<Integer, Double>> list = AccessReferenceDatabase.findSimilar(multiAccess, new ProgressSilent(), minSketchIntersection, Collections.singleton(pair.getSecond().getBytes()));
-
-                            final Map<Integer, String> id2name = new HashMap<>();
-                            if (reportName) {
-                                id2name.putAll(database.getNames(list.stream().map(Map.Entry::getKey).collect(Collectors.toList())));
-                            }
-                            final Map<Integer, String> id2file = new HashMap<>();
-                            if (reportFile) {
-                                id2file.putAll(database.getFiles(list.stream().map(Map.Entry::getKey).collect(Collectors.toList())));
-                            }
-
-
-                            int count = 0;
-                            final Set<Integer> taxa = new HashSet<>();
-                            final StringBuilder buf = new StringBuilder();
-
-                            buf.append("Query: ").append(pair.getFirst()).append("\n");
-
-                            buf.append("Results: ").append(Math.min(list.size(), maxCount)).append("\n");
-
-                            double smallestDistance = 1.0;
-
-                            for (var result : list) {
-                                if (++count >= maxCount)
-                                    break;
-                                if (count == 1)
-                                    smallestDistance = result.getValue();
-                                else if (best && result.getValue() > smallestDistance)
-                                    break;
-
-                                taxa.add(result.getKey());
-                                buf.append(count);
-                                if (reportName) {
-                                    buf.append("\t").append(id2name.get(result.getKey()));
-                                }
-                                if (reportId) {
-                                    buf.append("\t").append(result.getKey());
-                                }
-                                if (reportFile) {
-                                    buf.append("\t").append(id2file.get(result.getKey()));
-                                }
-                                if (reportDistance) {
-                                    buf.append("\t").append(result.getValue());
-                                }
-                                if (buf.length() > 0)
-                                    buf.append("\n");
-                            }
-
-                            if (reportLCA && taxa.size() > 0) {
-                                final int lca = computeLCA(database, taxa);
-                                buf.append("LCA: ").append(lca).append(" ").append(database.getNames(Collections.singleton(lca)).get(lca));
-                            }
-                            w.write(buf.toString() + "\n\n");
-                            w.flush();
-                        }
-                        progress.incrementProgress();
                     }
+
+                    if (perFastARecord) {
+                        if (!useFastAHeaders) {
+                            final var name = Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(fileName), "");
+                            int count = 0;
+                            for (var pair : pairs) {
+                                pair.setFirst(name + (++count));
+                            }
+                        }
+                    } else { // per file
+                        final List<String> sequences = pairs.stream().map(Pair::getSecond).collect(Collectors.toList());
+                        final var name = (useFastAHeaders ? pairs.get(0).getFirst() : Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(fileName), ""));
+                        pairs.clear();
+                        pairs.add(new Pair<>(name, Basic.toString(sequences, "").replaceAll("\\s", "")));
+                    }
+
+                    // todo: update minSketchIntersection from maxDistance
+                    if (maxDistance < 1)
+                        minSketchIntersection = Math.max(minSketchIntersection, computeMinSketchIntersection(maxDistance, mashK, mashS));
+
+                    for (var pair : pairs) {
+                        final Collection<Map.Entry<Integer, Double>> list = database.findSimilar(new ProgressSilent(), minSketchIntersection, Collections.singleton(pair.getSecond().getBytes()), false);
+
+                        final Map<Integer, String> id2name = new HashMap<>();
+                        if (reportName) {
+                            id2name.putAll(database.getNames(list.stream().map(Map.Entry::getKey).collect(Collectors.toList())));
+                        }
+                        final Map<Integer, String> id2file = new HashMap<>();
+                        if (reportFile) {
+                            id2file.putAll(database.getFiles(list.stream().map(Map.Entry::getKey).collect(Collectors.toList())));
+                        }
+
+                        int count = 0;
+                        final Set<Integer> taxa = new HashSet<>();
+
+                        w.write("Query: " + pair.getFirst() + "\n");
+                        w.write("Results: " + Math.min(list.size(), maxCount) + "\n");
+
+                        double smallestDistance = 1.0;
+
+                        final StringBuilder buf = new StringBuilder();
+                        for (var result : list) {
+                            if (++count >= maxCount)
+                                break;
+                            if (count == 1)
+                                smallestDistance = result.getValue();
+                            else if (best && result.getValue() > smallestDistance)
+                                break;
+
+                            taxa.add(result.getKey());
+                            buf.append(count);
+                            if (reportName) {
+                                buf.append("\t").append(id2name.get(result.getKey()));
+                            }
+                            if (reportId) {
+                                buf.append("\t").append(result.getKey());
+                            }
+                            if (reportFile) {
+                                buf.append("\t").append(id2file.get(result.getKey()));
+                            }
+                            if (reportDistance) {
+                                buf.append("\t").append(result.getValue());
+                            }
+                            if (buf.length() > 0)
+                                buf.append("\n");
+                        }
+
+                        if (reportLCA && taxa.size() > 0) {
+                            final int lca = computeLCA(database, taxa);
+                            buf.append("LCA: ").append(lca).append(" ").append(database.getNames(Collections.singleton(lca)).get(lca));
+                        }
+                        if (buf.length() > 0) {
+                            w.write(buf.toString() + "\n");
+                        }
+                        w.write("\n");
+                        w.flush();
+                    }
+                    progress.incrementProgress();
                 }
             }
         }
@@ -228,6 +227,11 @@ public class GenomeContext {
     }
 
     private static int computeLCA(AccessReferenceDatabase database, Collection<Integer> taxonIds) throws SQLException {
+        if (taxonIds.size() == 0)
+            return 0;
+        else if (taxonIds.size() == 1)
+            return taxonIds.iterator().next();
+
         final Collection<List<Integer>> list = database.getAncestors(taxonIds).values();
         if (list.size() == 0) {
             return 0;

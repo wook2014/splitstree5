@@ -42,13 +42,19 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * provides next to a reference database
  * Daniel Huson, 8.2020
  */
 public class AccessReferenceDatabase implements Closeable {
+    private final AccessReferenceDatabase[] copiesForSearching;
+    private final AtomicInteger which = new AtomicInteger(0);
+
     private static boolean verbose = false;
+
+    private final Set<Integer> unusableTaxa = new TreeSet<>();
 
     private final Connection connection;
     private final File dbFile;
@@ -63,8 +69,11 @@ public class AccessReferenceDatabase implements Closeable {
      * CREATE TABLE bloom_filters (taxon_id INTEGER PRIMARY KEY, bloom_filter TEXT NOT NULL) WITHOUT ROWID;
      * CREATE TABLE taxonomy (taxon_id INTEGER PRIMARY KEY, parent_id INTEGER NOT NULL) WITHOUT ROWID;
      */
-    public AccessReferenceDatabase(String dbFile) throws IOException, SQLException {
+    public AccessReferenceDatabase(String dbFile, int copies) throws IOException, SQLException {
         this.dbFile = new File(dbFile);
+        copiesForSearching = new AccessReferenceDatabase[copies];
+        for (int i = 0; i < copiesForSearching.length; i++)
+            copiesForSearching[i] = new AccessReferenceDatabase(dbFile, 0);
 
         if (!Basic.fileExistsAndIsNonEmpty(dbFile))
             throw new IOException("File not found or unreadable: " + dbFile);
@@ -74,6 +83,8 @@ public class AccessReferenceDatabase implements Closeable {
         config.setReadOnly(true);
 
         connection = config.createConnection("jdbc:sqlite:" + dbFile);
+
+        unusableTaxa.addAll(executeQueryInt("SELECT taxon_id FROM genomes WHERE fasta_url is NULL or fasta_url='';", 1));
     }
 
     public static boolean isDatabaseFile(String fileName) {
@@ -121,10 +132,9 @@ public class AccessReferenceDatabase implements Closeable {
                 Basic.caught(e);
             }
         }
-    }
-
-    public String getNewick() throws SQLException {
-        return executeQueryString("select value from tree where key='newick';", 1).get(0);
+        for (AccessReferenceDatabase copy : copiesForSearching) {
+            copy.close();
+        }
     }
 
     public ArrayList<Pair<Integer, MashSketch>> getMashSketches(Collection<Integer> taxonIds) throws SQLException, IOException {
@@ -290,11 +300,10 @@ public class AccessReferenceDatabase implements Closeable {
     /**
      * find all genomes that have non-zero Jaccard index when compared with the query
      */
-    public static Collection<Map.Entry<Integer, Double>> findSimilar(MultiAccess multiAccess, ProgressListener progress, int minSharedKMers, Collection<byte[]> query) throws SQLException, IOException {
-        final AccessReferenceDatabase database = multiAccess.next();
-        final int mash_k = database.getMashK();
-        final int mash_s = database.getMashS();
-        final int mash_seed = database.getMashSeed();
+    public Collection<Map.Entry<Integer, Double>> findSimilar(ProgressListener progress, int minSharedKMers, Collection<byte[]> query, boolean ignoreUnusableTaxa) throws SQLException, IOException {
+        final int mash_k = getMashK();
+        final int mash_s = getMashS();
+        final int mash_seed = getMashSeed();
 
         if (verbose)
             System.err.println("Using mash_k=" + mash_k + ", mash_s=" + mash_s + ", mash_seed=" + mash_seed);
@@ -319,7 +328,7 @@ public class AccessReferenceDatabase implements Closeable {
         }
 
         progress.setSubtask("Searching");
-        progress.setMaximum(database.countBloomFilters());
+        progress.setMaximum(countBloomFilters());
         progress.setProgress(0);
 
         final ConcurrentHashMap<Integer, Double> id2distance = new ConcurrentHashMap<>();
@@ -327,8 +336,8 @@ public class AccessReferenceDatabase implements Closeable {
         final ExecutorService service = Executors.newFixedThreadPool(ProgramExecutorService.getNumberOfCoresToUse());
         final Single<Exception> exception = new Single<>();
         final AtomicInteger jobs = new AtomicInteger(1);
-        service.submit(
-                createTasksRec(multiAccess, database.getTaxonomyRoot(), querySketches, kmers, minSharedKMers, id2distance, progress, exception, jobs, service));
+
+        service.submit(createTasksRec(getTaxonomyRoot(), querySketches, kmers, minSharedKMers, id2distance, progress, exception, jobs, service));
 
         if (exception.get() != null)
             throw new IOException(exception.get());
@@ -339,18 +348,21 @@ public class AccessReferenceDatabase implements Closeable {
 
         final ArrayList<Map.Entry<Integer, Double>> result = new ArrayList<>(id2distance.entrySet());
         result.sort(Comparator.comparingDouble(Map.Entry::getValue));
+        if (ignoreUnusableTaxa && getUnusableTaxa().size() > 0) {
+            return result.stream().filter(entry -> !getUnusableTaxa().contains(entry.getKey())).collect(Collectors.toList());
+        }
         return result;
     }
 
     /**
      * creates a task to submitted to the service. This task will recursively submit further tasks and will call shutdown() once all tasks have been completed
      */
-    private static Runnable createTasksRec(MultiAccess multiAccess, int taxonId, Collection<MashSketch> querySketches, Set<String> kmers, int minSharedKMers, ConcurrentHashMap<Integer, Double> id2distance,
-                                           ProgressListener progress, Single<Exception> exception, AtomicInteger jobCount, ExecutorService service) {
+    private Runnable createTasksRec(int taxonId, Collection<MashSketch> querySketches, Set<String> kmers, int minSharedKMers, ConcurrentHashMap<Integer, Double> id2distance,
+                                    ProgressListener progress, Single<Exception> exception, AtomicInteger jobCount, ExecutorService service) {
         return () -> {
             if (exception.get() == null) {
                 try {
-                    final AccessReferenceDatabase database = multiAccess.next();
+                    final AccessReferenceDatabase database = getCopy();
                     final Collection<Integer> ids = database.getTaxonomyChildren(taxonId);
                     final ArrayList<Pair<Integer, BloomFilter>> bloomFilters = database.getBloomFilters(ids);
                     for (Pair<Integer, BloomFilter> pair : bloomFilters) {
@@ -358,7 +370,7 @@ public class AccessReferenceDatabase implements Closeable {
                         if (bloomFilter.countContainedProbably(kmers) >= minSharedKMers) {
                             final int id = pair.getFirst();
                             jobCount.incrementAndGet();
-                            service.submit(createTasksRec(multiAccess, id, querySketches, kmers, minSharedKMers, id2distance, progress, exception, jobCount, service));
+                            service.submit(createTasksRec(id, querySketches, kmers, minSharedKMers, id2distance, progress, exception, jobCount, service));
                             //System.err.println("Adding bloom filter for " + id);
                         }
                         progress.incrementProgress();
@@ -368,7 +380,7 @@ public class AccessReferenceDatabase implements Closeable {
                     for (Pair<Integer, MashSketch> pair : mashSketches) {
                         final MashSketch mashSketch = pair.getSecond();
                         for (MashSketch sketch : querySketches) {
-                            if (MashDistance.computeJaccardIndex(mashSketch, sketch, false) >= minSharedKMers) {
+                            if (MashDistance.computeIntersection(mashSketch, sketch) >= minSharedKMers) {
                                 final int id = pair.getFirst();
                                 final double distance = MashDistance.compute(mashSketch, sketch);
                                 synchronized (id2distance) {
@@ -391,29 +403,15 @@ public class AccessReferenceDatabase implements Closeable {
         };
     }
 
+    public Set<Integer> getUnusableTaxa() {
+        return unusableTaxa;
+    }
+
     public File getDbFile() {
         return dbFile;
     }
 
-    public static class MultiAccess implements Closeable {
-        private final AccessReferenceDatabase[] databases;
-        private final AtomicInteger which = new AtomicInteger(0);
-
-        public MultiAccess(int count, String dbFile) throws IOException, SQLException {
-            databases = new AccessReferenceDatabase[count];
-            for (int i = 0; i < databases.length; i++)
-                databases[i] = new AccessReferenceDatabase(dbFile);
-        }
-
-        public AccessReferenceDatabase next() {
-            return databases[which.incrementAndGet() % databases.length];
-        }
-
-        @Override
-        public void close() {
-            for (var database : databases) {
-                database.close();
-            }
-        }
+    private AccessReferenceDatabase getCopy() {
+        return copiesForSearching[which.incrementAndGet() % copiesForSearching.length];
     }
 }

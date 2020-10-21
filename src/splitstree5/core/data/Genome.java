@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Optional;
 
 /**
  * represents data associated with a importgenomes
@@ -129,6 +130,32 @@ public class Genome {
             length += length(i);
         return length;
     }
+
+    public Optional<String> getMissingFile() {
+        for (var part : getParts()) {
+            if (part.getSequence() == null && !Basic.fileExistsAndIsNonEmpty(part.getFile()))
+                return Optional.of(part.getFile());
+        }
+        return Optional.empty();
+    }
+
+    public void replaceMissingFile(String oldPath, String newPath) {
+        int i = oldPath.length();
+        int j = newPath.length();
+        while (i > 0 && j > 0 && oldPath.charAt(i - 1) == newPath.charAt(j - 1)) {
+            i--;
+            j--;
+        }
+        final String commonSuffix = newPath.substring(j);
+        final String oldPrefix = oldPath.substring(0, oldPath.length() - commonSuffix.length());
+        final String newPrefix = newPath.substring(0, newPath.length() - commonSuffix.length());
+
+        for (var part : getParts()) {
+            if (part.getFile().startsWith(oldPrefix))
+                part.setFile(newPrefix + part.getFile().substring(oldPrefix.length()), part.getOffset(), part.getLength());
+        }
+    }
+
 
     public static class GenomePart {
         private String name;
