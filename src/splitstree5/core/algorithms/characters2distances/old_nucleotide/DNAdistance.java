@@ -280,7 +280,7 @@ public abstract class DNAdistance extends Algorithm<CharactersBlock, DistancesBl
         return baseFreq;
     }
 
-    public void setBaseFreq(double [] baseFreq){
+    public void setBaseFreq(double[] baseFreq) {
         this.baseFreq = baseFreq;
     }
     /*public DoubleProperty[] optionBaseFreqProperty() {

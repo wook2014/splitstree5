@@ -95,8 +95,8 @@ public abstract class CharactersFormat {
      * Estimates data type of tha imported characters (dna, protein, standard)
      *
      * @param foundSymbols list of all symbols present in characters
-     * @param characters character block
-     * @param frequency frequencies list for the "foundSymbols"
+     * @param characters   character block
+     * @param frequency    frequencies list for the "foundSymbols"
      * @throws IOException
      */
     void estimateDataType(String foundSymbols, CharactersBlock characters, Map<Character, Integer> frequency) throws IOException {
@@ -219,6 +219,7 @@ public abstract class CharactersFormat {
     public char getGap() {
         return gap;
     }
+
     public void setGap(char newGap) {
         gap = newGap;
     }
@@ -226,6 +227,7 @@ public abstract class CharactersFormat {
     public char getMissing() {
         return missing;
     }
+
     public void setMissing(char newMissing) {
         missing = newMissing;
     }
@@ -233,6 +235,7 @@ public abstract class CharactersFormat {
     public char getMatchChar() {
         return matchChar;
     }
+
     public void setMatchChar(char newMatchChar) {
         matchChar = newMatchChar;
     }

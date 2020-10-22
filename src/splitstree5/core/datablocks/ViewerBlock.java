@@ -35,6 +35,7 @@ import splitstree5.gui.graphtab.base.GraphTabBase;
  */
 public class ViewerBlock extends DataBlock {
     public final static String BLOCK_NAME = "VIEWER";
+
     public enum Type {TreeViewer, TreesGrid, SplitsNetworkViewer, SplitsNetwork3DViewer, NetworkViewer}
 
     private final GraphTabBase viewerTab;

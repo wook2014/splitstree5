@@ -53,10 +53,14 @@ public class EditTextViewTab extends ViewerTab {
     //private final TextArea textArea;
     //private final TextAreaSearcher textAreaSearcher;
 
-    private final VirtualizedScrollPane<CodeArea> codeArea = new VirtualizedScrollPane<>(new CodeArea());;
+    private final VirtualizedScrollPane<CodeArea> codeArea = new VirtualizedScrollPane<>(new CodeArea());
+    ;
     private final CodeAreaSearcher codeAreaSearcher;
     BooleanBinding emptyProperty = new BooleanBinding() {
-        { super.bind(codeArea.getContent().lengthProperty()); }
+        {
+            super.bind(codeArea.getContent().lengthProperty());
+        }
+
         @Override
         protected boolean computeValue() {
             return codeArea.getContent().getLength() == 0;
@@ -64,7 +68,9 @@ public class EditTextViewTab extends ViewerTab {
     };
 
     BooleanBinding selectionEmpty = new BooleanBinding() {
-        { super.bind(codeArea.getContent().selectionProperty()); }
+        {
+            super.bind(codeArea.getContent().selectionProperty());
+        }
 
         @Override
         protected boolean computeValue() {
@@ -233,7 +239,7 @@ public class EditTextViewTab extends ViewerTab {
 
         controller.getSelectBracketsMenuItem().setOnAction((e) -> selectBrackets(codeArea.getContent()));
         controller.getSelectBracketsMenuItem().disableProperty().bind(emptyProperty);
-                //(Val.map(codeArea.getContent().lengthProperty(), n -> n == 0));
+        //(Val.map(codeArea.getContent().lengthProperty(), n -> n == 0));
 
         controller.getFindMenuItem().setOnAction((e) -> findToolBar.setShowFindToolBar(true));
         controller.getFindAgainMenuItem().setOnAction((e) -> findToolBar.findAgain());

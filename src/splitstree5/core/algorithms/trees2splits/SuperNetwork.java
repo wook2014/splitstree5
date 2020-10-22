@@ -278,7 +278,8 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
     /**
      * set the weight to the mean weight of all projections of this split and confidence to
      * the count of trees containing a projection of the split
-     *  @param pSplits
+     *
+     * @param pSplits
      * @param supportSet
      * @param splits
      */

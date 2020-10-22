@@ -58,7 +58,7 @@ public class DataLoader {
     /**
      * loads data into document
      *
-     * @param reload if true, attempt to reload into current workflow, otherwise open new window
+     * @param reload       if true, attempt to reload into current workflow, otherwise open new window
      * @param taxaBlock
      * @param dataBlock
      * @param parentWindow
@@ -121,46 +121,46 @@ public class DataLoader {
             } else if (dataBlock instanceof DistancesBlock) {
                 workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
                 final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
-            workflow.createConnector(workflow.getWorkingDataNode(), splits, new NeighborNet());
-            final DataNode<ViewerBlock> viewNode = workflow.createDataNode(new ViewerBlock.SplitsNetworkViewerBlock());
-            workflow.createConnector(splits, viewNode, new SplitsNetworkAlgorithm());
-        } else if (dataBlock instanceof SplitsBlock) {
-            workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
-            final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
-            workflow.createConnector(workflow.getWorkingDataNode(), splits, new SplitsFilter());
-            final DataNode<ViewerBlock> viewNode = workflow.createDataNode(new ViewerBlock.SplitsNetworkViewerBlock());
-            workflow.createConnector(splits, viewNode, new SplitsNetworkAlgorithm());
-        } else if (dataBlock instanceof TreesBlock) {
-            workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
-            if (dataBlock.size() == 1) { // only one tree, don't need a filter
-                final DataNode<ViewerBlock> viewNode = workflow.createDataNode(new ViewerBlock.TreeViewerBlock());
-                workflow.createConnector(workflow.getWorkingDataNode(), viewNode, new TreeEmbedder());
-            } else { // more than one tree, need a filter:
-                final DataNode<TreesBlock> trees = workflow.createDataNode(new TreesBlock());
-
-                workflow.createConnector(workflow.getWorkingDataNode(), trees, new TreesFilter());
-
-                final DataNode<SplitsBlock> splits0 = workflow.createDataNode(new SplitsBlock());
-                if (((TreesBlock) dataBlock).isPartial()) {
-                    workflow.createConnector(trees, splits0, new SuperNetwork());
-                } else {
-                    workflow.createConnector(trees, splits0, new ConsensusNetwork());
-                }
-                final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
-                workflow.createConnector(splits0, splits, new SplitsFilter());
-
+                workflow.createConnector(workflow.getWorkingDataNode(), splits, new NeighborNet());
                 final DataNode<ViewerBlock> viewNode = workflow.createDataNode(new ViewerBlock.SplitsNetworkViewerBlock());
                 workflow.createConnector(splits, viewNode, new SplitsNetworkAlgorithm());
+            } else if (dataBlock instanceof SplitsBlock) {
+                workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
+                final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
+                workflow.createConnector(workflow.getWorkingDataNode(), splits, new SplitsFilter());
+                final DataNode<ViewerBlock> viewNode = workflow.createDataNode(new ViewerBlock.SplitsNetworkViewerBlock());
+                workflow.createConnector(splits, viewNode, new SplitsNetworkAlgorithm());
+            } else if (dataBlock instanceof TreesBlock) {
+                workflow.setupTopAndWorkingNodes(taxaBlock, dataBlock);
+                if (dataBlock.size() == 1) { // only one tree, don't need a filter
+                    final DataNode<ViewerBlock> viewNode = workflow.createDataNode(new ViewerBlock.TreeViewerBlock());
+                    workflow.createConnector(workflow.getWorkingDataNode(), viewNode, new TreeEmbedder());
+                } else { // more than one tree, need a filter:
+                    final DataNode<TreesBlock> trees = workflow.createDataNode(new TreesBlock());
+
+                    workflow.createConnector(workflow.getWorkingDataNode(), trees, new TreesFilter());
+
+                    final DataNode<SplitsBlock> splits0 = workflow.createDataNode(new SplitsBlock());
+                    if (((TreesBlock) dataBlock).isPartial()) {
+                        workflow.createConnector(trees, splits0, new SuperNetwork());
+                    } else {
+                        workflow.createConnector(trees, splits0, new ConsensusNetwork());
+                    }
+                    final DataNode<SplitsBlock> splits = workflow.createDataNode(new SplitsBlock());
+                    workflow.createConnector(splits0, splits, new SplitsFilter());
+
+                    final DataNode<ViewerBlock> viewNode = workflow.createDataNode(new ViewerBlock.SplitsNetworkViewerBlock());
+                    workflow.createConnector(splits, viewNode, new SplitsNetworkAlgorithm());
+                }
+            } else if (dataBlock instanceof NetworkBlock) {
+                final DataNode<ViewerBlock> viewNode = workflow.createDataNode(new ViewerBlock.SplitsNetworkViewerBlock());
+                workflow.createConnector(workflow.getTopDataNode(), viewNode, new NetworkEmbedder());
             }
-        } else if (dataBlock instanceof NetworkBlock) {
-            final DataNode<ViewerBlock> viewNode = workflow.createDataNode(new ViewerBlock.SplitsNetworkViewerBlock());
-            workflow.createConnector(workflow.getTopDataNode(), viewNode, new NetworkEmbedder());
-        }
 
-        if (taxaBlock.getTraitsBlock() != null)
-            workflow.createTopTraitsAndWorkingTraitsNodes(taxaBlock.getTraitsBlock());
+            if (taxaBlock.getTraitsBlock() != null)
+                workflow.createTopTraitsAndWorkingTraitsNodes(taxaBlock.getTraitsBlock());
 
-        document.setupTaxonSelectionModel();
+            document.setupTaxonSelectionModel();
 
             document.setDirty(true);
             if (mainWindow == parentWindow) // are using an existing window

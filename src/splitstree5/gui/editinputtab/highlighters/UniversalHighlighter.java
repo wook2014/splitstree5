@@ -55,7 +55,7 @@ public class UniversalHighlighter implements Highlighter {
         StyleSpansBuilder<Collection<String>> spansBuilder
                 = new StyleSpansBuilder<>();
 
-        while(matcher.find()) {
+        while (matcher.find()) {
             String styleClass =
                     matcher.group("NUMBER") != null ? "number" :
                             matcher.group("PAREN") != null ? "paren" :

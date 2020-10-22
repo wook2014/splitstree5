@@ -81,8 +81,8 @@ public abstract class NucleotideModel implements SubstitutionModel {
     /**
      * Set the rate matrix and base frequencies and compute diagonalisation
      *
-     * @param Q rate matrix (0..3 x 0..3). Diagonal values are ignored
-     * @param baseFrequencies  (0..3)
+     * @param Q               rate matrix (0..3 x 0..3). Diagonal values are ignored
+     * @param baseFrequencies (0..3)
      */
     public void setRateMatrix(double[][] Q, double[] baseFrequencies) {
         //Test GTR property.

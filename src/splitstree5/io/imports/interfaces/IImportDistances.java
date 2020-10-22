@@ -42,5 +42,6 @@ public interface IImportDistances extends IImporter {
      * set if the values in the matrix should be considered as similarities
      */
     void setSimilarities(boolean similarities);
+
     void setSimilaritiesCalculation(String similaritiesCalculation);
 }

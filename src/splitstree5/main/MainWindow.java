@@ -490,10 +490,10 @@ public class MainWindow implements IMainWindow {
         // if(inputTab!=null && getMainWindowController().getMainTabPane().getTabs().contains(inputTab))
         //     getMainWindowController().getMainTabPane().getTabs().remove(inputTab);
 
-            mainWindowController.getTreeView().getRoot().getChildren().clear();
+        mainWindowController.getTreeView().getRoot().getChildren().clear();
 
-            workflowViewTab.clear();
-            document.updateMethodsText();
+        workflowViewTab.clear();
+        document.updateMethodsText();
     }
 
     public void showFormatTab() {

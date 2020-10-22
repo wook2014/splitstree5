@@ -126,8 +126,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
                                     factor = 1;
                                 } else
                                     factor = 1.0 / treeWeight;
-                            }
-                            else
+                            } else
                                 factor = 1;
 
                             //System.err.println("Tree "+which+": "+factor);
@@ -148,7 +147,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
                                 }
                             }
                             if (threadNumber == 0) {
-                                    progress.setProgress((long) (which * 80.0 / trees.size()));
+                                progress.setProgress((long) (which * 80.0 / trees.size()));
                             }
                             if (exception.get() != null)
                                 return;

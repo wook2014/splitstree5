@@ -52,7 +52,6 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> imple
 
     /**
      * compute the neighbor joining tree
-     *
      */
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees)
             throws InterruptedException, CanceledException {

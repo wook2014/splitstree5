@@ -195,8 +195,8 @@ public class NeXMLExporter implements
 
                 writeNewLineWithTabs(xmlWriter, 2);
                 xmlWriter.writeStartElement("tree");
-                xmlWriter.writeAttribute("id", "tree"+treesCounter);
-                xmlWriter.writeAttribute("label", "tree"+treesCounter);
+                xmlWriter.writeAttribute("id", "tree" + treesCounter);
+                xmlWriter.writeAttribute("label", "tree" + treesCounter);
                 xmlWriter.writeAttribute("xsi:type", "nex:FloatTree");
 
                 NodeSet nodes = tree.getNodesAsSet();
@@ -277,7 +277,7 @@ public class NeXMLExporter implements
                 int i;
                 Object o = graph.getTaxa(node).iterator().next();
                 if (o != null) {
-                    i  = (int) o;
+                    i = (int) o;
                     xmlWriter.writeAttribute("otu", taxa.getLabel(i + 1));
                 }
 
@@ -289,7 +289,7 @@ public class NeXMLExporter implements
                     writeNewLineWithTabs(xmlWriter, 4);
                     xmlWriter.writeEmptyElement("meta");
                     for (String key : nodeData.keySet())
-                        if(key.contains("metadata_"))
+                        if (key.contains("metadata_"))
                             xmlWriter.writeAttribute(key.replace("metadata_", ""), nodeData.get(key));
                         else
                             xmlWriter.writeAttribute("sp5:" + key, nodeData.get(key));
@@ -335,7 +335,7 @@ public class NeXMLExporter implements
                     writeNewLineWithTabs(xmlWriter, 4);
                     xmlWriter.writeEmptyElement("meta");
                     for (String key : edgeData.keySet())
-                        if(key.contains("metadata_"))
+                        if (key.contains("metadata_"))
                             xmlWriter.writeAttribute(key.replace("metadata_", ""), edgeData.get(key));
                         else
                             xmlWriter.writeAttribute("sp5:" + key, edgeData.get(key));

@@ -25,7 +25,6 @@ package splitstree5.core.models.proteinModels;
 /**
  * RhodopsinModel
  * Dave Bryant, 2005?
- *
  */
 public class RhodopsinModel extends ProteinModel {
 

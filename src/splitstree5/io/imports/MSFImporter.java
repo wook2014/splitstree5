@@ -64,7 +64,7 @@ public class MSFImporter extends CharactersFormat implements IToCharacters, IImp
                 final String line = it.next();
                 final String line_no_spaces = line.replaceAll("\\s", "");
 
-                if (!charStarted && line.contains("Name:")){
+                if (!charStarted && line.contains("Name:")) {
                     StringTokenizer tokens = new StringTokenizer(line);
                     tokens.nextToken();
                     String taxon = tokens.nextToken();
@@ -76,17 +76,17 @@ public class MSFImporter extends CharactersFormat implements IToCharacters, IImp
                     taxa2seq.put(taxon, "");
                 }
 
-                if (line_no_spaces.equals("//")){
+                if (line_no_spaces.equals("//")) {
                     charStarted = true;
                 }
 
-                if(charStarted){
+                if (charStarted) {
                     String taxon = cutTaxonFromLine(line, taxa2seq.keySet());
-                    if (!taxon.equals("")){
+                    if (!taxon.equals("")) {
                         String chars = line.replaceAll("\\s+", "");
                         chars = chars.substring(taxon.length());
-                        checkIfCharactersValid(chars, linesCounter, "" + getMissing() + getMatchChar()+ getGap());
-                        taxa2seq.replace(taxon, taxa2seq.get(taxon)+chars);
+                        checkIfCharactersValid(chars, linesCounter, "" + getMissing() + getMatchChar() + getGap());
+                        taxa2seq.replace(taxon, taxa2seq.get(taxon) + chars);
                     }
                 }
 
@@ -117,7 +117,7 @@ public class MSFImporter extends CharactersFormat implements IToCharacters, IImp
         for (String label : taxa2seq.keySet()) {
             if (taxa2seq.get(label).length() != nchar)
                 throw new IOException("The sequences in the alignment have different lengths! " +
-                        "Length of sequence: "+label+" differ from the length of previous sequences :"+nchar);
+                        "Length of sequence: " + label + " differ from the length of previous sequences :" + nchar);
 
             for (int j = 1; j <= nchar; j++) {
                 char symbol = Character.toLowerCase(taxa2seq.get(label).charAt(j - 1));
@@ -127,7 +127,7 @@ public class MSFImporter extends CharactersFormat implements IToCharacters, IImp
         }
     }
 
-    private String cutTaxonFromLine(String line, Set<String> taxaKeys){
+    private String cutTaxonFromLine(String line, Set<String> taxaKeys) {
         for (String t : taxaKeys) {
             if (line.contains(t))
                 return t;

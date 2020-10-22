@@ -130,7 +130,7 @@ public class TaxaNexusInput extends NexusIOBase {
             }
             np.matchIgnoreCase(";");
         }
-        
+
         if (labelsDetected && np.peekMatchIgnoreCase("taxInfo")) // get info for labels
         {
             np.matchIgnoreCase("taxInfo");

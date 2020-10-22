@@ -44,7 +44,7 @@ public class WorkflowNexusOutput {
      * save the workflow in nexus format
      *
      * @param workflow
-     * @param file file or stdout
+     * @param file     file or stdout
      * @throws IOException
      */
     public void save(Workflow workflow, final File file, boolean asWorkflowOnly) throws IOException {

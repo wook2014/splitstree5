@@ -97,9 +97,9 @@ public class AmbiguityCodes {
             return false;
         }
 
-        for (int t = 0; t < charactersBlock.getNtax(); t++){
+        for (int t = 0; t < charactersBlock.getNtax(); t++) {
             for (char c : charactersBlock.getRow0(t))
-                if (isAmbiguityCode(c)){
+                if (isAmbiguityCode(c)) {
                     charactersBlock.setHasAmbiguityCodes(true);
                     return true;
                 }

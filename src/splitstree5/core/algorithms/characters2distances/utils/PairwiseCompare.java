@@ -19,6 +19,7 @@
  */
 
 package splitstree5.core.algorithms.characters2distances.utils;
+
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.models.SubstitutionModel;
@@ -46,8 +47,6 @@ public class PairwiseCompare { // todo: add support for character weights
      */
 
     // TODO: SOMETHING SLOWS DOWN THE ALGORITHM WHILE OPEN AMBIG. CHARACTERS. NEED TO FIND OUT!
-
-
     public PairwiseCompare(final CharactersBlock characters, final int i, final int j) throws SplitsException {
         numStates = characters.getSymbols().length();
         // The fCount matrix has rows and columns for missing and gap states as well

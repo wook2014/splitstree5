@@ -32,8 +32,6 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import org.fxmisc.richtext.GenericStyledArea;
-//import org.reactfx.collection.LiveList;
-//import org.reactfx.value.Val;
 
 import java.util.function.IntFunction;
 
@@ -164,23 +162,23 @@ public class LineNumberFactoryWithCollapsing implements IntFunction<Node> {
             lineNo.setStyle("-fx-text-fill: blue");*/
 
         lineNo.setOnMouseClicked(click -> {
-            System.err.println("Clicked on label! "+lineNo.getText());
+            System.err.println("Clicked on label! " + lineNo.getText());
 
-            int labelId = Integer.parseInt(lineNo.getText().replaceAll("\\s",""));
+            int labelId = Integer.parseInt(lineNo.getText().replaceAll("\\s", ""));
             nexusBlockCollapser.handleBlock(labelId);
             System.err.println("Indices!");
-            for(Integer i : nexusBlockCollapser.getLineIndices())
-                System.err.print(i+"-");
+            for (Integer i : nexusBlockCollapser.getLineIndices())
+                System.err.print(i + "-");
         });
         lineNo.setOnMouseEntered(e -> {
             //System.err.println("Over label! ");
             if (canBeCollapsed(lineNo))
                 lineNo.setStyle("-fx-font-weight: bold; " +
-                    "-fx-font: 16px \"monospace\"; -fx-text-fill: black");
+                        "-fx-font: 16px \"monospace\"; -fx-text-fill: black");
         });
         lineNo.setOnMouseExited(e -> {
             //System.err.println("Exited label! ");
-            if (canBeCollapsed(lineNo)){
+            if (canBeCollapsed(lineNo)) {
                 lineNo.setStyle(DEFAULT_FONT.toString());
             }
         });
@@ -188,19 +186,19 @@ public class LineNumberFactoryWithCollapsing implements IntFunction<Node> {
     }
 
     private String format(int x, int max) {
-        int digits = (int)Math.floor(Math.log10((double)max)) + 1;
-        return String.format((String)this.format.apply(digits), x);
+        int digits = (int) Math.floor(Math.log10((double) max)) + 1;
+        return String.format((String) this.format.apply(digits), x);
     }
 
     //+++
     private String format(String x, int max) {
-        int digits = (int)Math.floor(Math.log10((double)max)) + 1;
-        return String.format((String)this.format.apply(digits), x);
+        int digits = (int) Math.floor(Math.log10((double) max)) + 1;
+        return String.format((String) this.format.apply(digits), x);
     }
 
     static {
         DEFAULT_FONT = Font.font("monospace", FontPosture.ITALIC, 13.0D);
-        DEFAULT_BACKGROUND = new Background(new BackgroundFill[]{new BackgroundFill(Color.web("#ddd"), (CornerRadii)null, (Insets)null)});
+        DEFAULT_BACKGROUND = new Background(new BackgroundFill[]{new BackgroundFill(Color.web("#ddd"), (CornerRadii) null, (Insets) null)});
     }
 
     ///
@@ -208,8 +206,8 @@ public class LineNumberFactoryWithCollapsing implements IntFunction<Node> {
         this.hide = i;
     }*/
 
-    private boolean canBeCollapsed(Label lineNo){
-        int labelId = Integer.parseInt(lineNo.getText().replaceAll(" ",""));
+    private boolean canBeCollapsed(Label lineNo) {
+        int labelId = Integer.parseInt(lineNo.getText().replaceAll(" ", ""));
         return nexusBlockCollapser.getStartLines().indexOf(labelId) != -1;
     }
 }

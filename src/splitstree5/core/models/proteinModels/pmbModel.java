@@ -29,7 +29,6 @@ package splitstree5.core.models.proteinModels;
 /**
  * pmbModel
  * Dave Bryant, 2005?
- *
  */
 public class pmbModel extends ProteinModel {
 

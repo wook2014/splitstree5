@@ -20,10 +20,7 @@
 
 package splitstree5.gui.editinputtab;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import org.fxmisc.richtext.CodeArea;
-//import org.reactfx.value.Val;
 import splitstree5.gui.editinputtab.highlighters.Highlighter;
 import splitstree5.gui.editinputtab.highlighters.NexusHighlighter;
 import splitstree5.gui.editinputtab.highlighters.UniversalHighlighter;
@@ -50,27 +47,27 @@ public class CodeAreaStyler {
     private int chIdx;
     private HashMap<String, String> tmpBlocksKeeper = new HashMap<>();
 
-    public CodeAreaStyler(CodeArea codeArea){
+    public CodeAreaStyler(CodeArea codeArea) {
 
         /*
          * Add listeners for highlighting type checking
          */
 
         codeArea.textProperty().addListener((observableValue, s, t1) -> {
-            if (t1.length() >= 6 && t1.replaceAll("^\\n+", "").substring(0, 6).toLowerCase().equals("#nexus")){
+            if (t1.length() >= 6 && t1.replaceAll("^\\n+", "").substring(0, 6).toLowerCase().equals("#nexus")) {
                 highlighter = new NexusHighlighter();
             }
         });
 
         codeArea.textProperty().addListener((observableValue, s, t1) -> {
-            if (t1.length() != 0 && t1.replaceAll("^\\n+", "").startsWith("<")){
+            if (t1.length() != 0 && t1.replaceAll("^\\n+", "").startsWith("<")) {
                 highlighter = new XMLHighlighter();
             }
         });
 
         codeArea.textProperty().addListener((observableValue, s, t1) -> {
             if (t1.length() >= 6 && !t1.replaceAll("^\\n+", "").substring(0, 6).toLowerCase().equals("#nexus")
-                    && !t1.replaceAll("^\\n+", "").startsWith("<")){
+                    && !t1.replaceAll("^\\n+", "").startsWith("<")) {
                 highlighter = new UniversalHighlighter();
             }
         });
@@ -171,7 +168,7 @@ public class CodeAreaStyler {
     }
 
 
-    private static String returnFirstLine(String s){
+    private static String returnFirstLine(String s) {
         if (s.length() == 0 || !s.contains("\\n"))
             return s;
         else
@@ -235,15 +232,15 @@ public class CodeAreaStyler {
         int rightPos = position;
 
         if (collapse) {
-            while(Character.isLetter(codeArea.getText().charAt(leftPos)))
+            while (Character.isLetter(codeArea.getText().charAt(leftPos)))
                 leftPos--;
-            while(Character.isLetter(codeArea.getText().charAt(rightPos)))
+            while (Character.isLetter(codeArea.getText().charAt(rightPos)))
                 rightPos++;
             leftPos++;
         } else {
-            while(codeArea.getText().charAt(leftPos) != '<')
+            while (codeArea.getText().charAt(leftPos) != '<')
                 leftPos--;
-            while(codeArea.getText().charAt(leftPos) != '>')
+            while (codeArea.getText().charAt(leftPos) != '>')
                 rightPos++;
             rightPos++;
         }
@@ -251,7 +248,7 @@ public class CodeAreaStyler {
     }
 
 
-    private int[] getLinesRangeByIndex(int startIdx, int endItx, CodeArea codeArea){
+    private int[] getLinesRangeByIndex(int startIdx, int endItx, CodeArea codeArea) {
 
         /*int startLine = 0;
         int sum = 0;
@@ -286,11 +283,11 @@ public class CodeAreaStyler {
     }
 
 
-    public Highlighter getHighlighter(){
+    public Highlighter getHighlighter() {
         return this.highlighter;
     }
 
-    public void setCollapsingActive(boolean active){
+    public void setCollapsingActive(boolean active) {
         this.collapsingActive = active;
     }
 }

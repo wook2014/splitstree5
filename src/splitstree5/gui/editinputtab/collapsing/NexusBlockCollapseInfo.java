@@ -44,7 +44,7 @@ public class NexusBlockCollapseInfo {
     2. if bigger and collapsed add length as offset
      */
 
-    public NexusBlockCollapseInfo(int start, int end){
+    public NexusBlockCollapseInfo(int start, int end) {
         this.startPosition = start;
         this.endPosition = end;
 
@@ -53,48 +53,48 @@ public class NexusBlockCollapseInfo {
         this.endLine = -1;
     }
 
-    public void setLinesRangeByIndex(CodeArea codeArea){
+    public void setLinesRangeByIndex(CodeArea codeArea) {
         this.endLine = codeArea.getText(0, this.endPosition).split("\n").length;
         this.startLine = endLine - codeArea.getText(this.startPosition, this.endPosition).split("\n").length + 1;
     }
 
-    public int getStartPosition(){
+    public int getStartPosition() {
         return this.startPosition;
     }
 
-    public int getEndPosition(){
+    public int getEndPosition() {
         return this.endPosition;
     }
 
-    public int getStartLine(){
+    public int getStartLine() {
         return this.startLine;
     }
 
-    public int getEndLine(){
+    public int getEndLine() {
         return this.endLine;
     }
 
-    public void setStartPosition(int startPosition){
+    public void setStartPosition(int startPosition) {
         this.startPosition = startPosition;
     }
 
-    public void setEndPosition(int endPosition){
+    public void setEndPosition(int endPosition) {
         this.endPosition = endPosition;
     }
 
-    public void setStartLine(int startLine){
+    public void setStartLine(int startLine) {
         this.startLine = startLine;
     }
 
-    public void setEndLine(int endLine){
+    public void setEndLine(int endLine) {
         this.endLine = endLine;
     }
 
-    public boolean getCollapsed(){
+    public boolean getCollapsed() {
         return this.collapsed;
     }
 
-    public void setCollapsed(boolean collapsed){
+    public void setCollapsed(boolean collapsed) {
         this.collapsed = collapsed;
     }
 }

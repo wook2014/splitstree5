@@ -333,17 +333,21 @@ public class AccessReferenceDatabase implements Closeable {
 
         final ConcurrentHashMap<Integer, Double> id2distance = new ConcurrentHashMap<>();
 
-        final ExecutorService service = Executors.newFixedThreadPool(ProgramExecutorService.getNumberOfCoresToUse());
         final Single<Exception> exception = new Single<>();
         final AtomicInteger jobs = new AtomicInteger(1);
 
-        service.submit(createTasksRec(getTaxonomyRoot(), querySketches, kmers, minSharedKMers, id2distance, progress, exception, jobs, service));
-
-        if (exception.get() != null)
-            throw new IOException(exception.get());
+        final ExecutorService service = Executors.newFixedThreadPool(ProgramExecutorService.getNumberOfCoresToUse());
         try {
-            service.awaitTermination(1000, TimeUnit.DAYS);
-        } catch (InterruptedException ignored) {
+            service.submit(createTasksRec(getTaxonomyRoot(), querySketches, kmers, minSharedKMers, id2distance, progress, exception, jobs, service));
+
+            if (exception.get() != null)
+                throw new IOException(exception.get());
+            try {
+                service.awaitTermination(1000, TimeUnit.DAYS);
+            } catch (InterruptedException ignored) {
+            }
+        } finally {
+            service.shutdown();
         }
 
         final ArrayList<Map.Entry<Integer, Double>> result = new ArrayList<>(id2distance.entrySet());

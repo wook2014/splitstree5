@@ -393,7 +393,7 @@ public class CharactersBlock extends DataBlock {
                 this.hasAmbiguityCodes;
     }
 
-    public void setHasAmbiguityCodes(boolean hasAmbiguityCodes){
+    public void setHasAmbiguityCodes(boolean hasAmbiguityCodes) {
         this.hasAmbiguityCodes = hasAmbiguityCodes;
     }
 

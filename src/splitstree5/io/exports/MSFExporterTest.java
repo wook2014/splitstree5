@@ -34,7 +34,7 @@ public class MSFExporterTest {
     private MSFExporter msfExporter = new MSFExporter();
 
     @Test
-    public void export() throws IOException{
+    public void export() throws IOException {
 
         File file = new File("test/exports/TEST_MSF.msf");
         Writer writer = new BufferedWriter(new FileWriter(file));

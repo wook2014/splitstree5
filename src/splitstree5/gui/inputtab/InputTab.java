@@ -55,6 +55,7 @@ import java.util.regex.Pattern;
  */
 public class InputTab extends TextViewTab {
     private File tmpFile;
+
     /**
      * constructor
      *
@@ -178,7 +179,7 @@ public class InputTab extends TextViewTab {
                 // todo check running time
                 long startTime = System.nanoTime() / (long) Math.pow(10, 9);
                 loadFile(selectedFile.getPath());
-                long endTime   = System.nanoTime() / (long) Math.pow(10, 9);
+                long endTime = System.nanoTime() / (long) Math.pow(10, 9);
                 long totalTime = endTime - startTime;
                 System.err.println();
                 System.err.println(this.getClass() + ":" + selectedFile.getPath());

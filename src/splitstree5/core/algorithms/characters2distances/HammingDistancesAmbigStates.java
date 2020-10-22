@@ -40,7 +40,9 @@ import java.util.List;
 
 public class HammingDistancesAmbigStates extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
 
-    public enum AmbiguousOptions {Ignore, AverageStates, MatchStates};
+    public enum AmbiguousOptions {Ignore, AverageStates, MatchStates}
+
+    ;
 
     private BooleanProperty optionNormalize = new SimpleBooleanProperty(true);
     private Property<AmbiguousOptions> optionHandleAmbiguousStates = new SimpleObjectProperty<>(AmbiguousOptions.Ignore);
@@ -113,7 +115,8 @@ public class HammingDistancesAmbigStates extends Algorithm<CharactersBlock, Dist
 
     /**
      * Computes 'Best match' Hamming distances with a given characters block.
-     *  @param taxa       the taxa
+     *
+     * @param taxa       the taxa
      * @param characters the input characters
      */
     private void computeMatchStatesHamming(TaxaBlock taxa, CharactersBlock characters, DistancesBlock distances) {
@@ -205,11 +208,11 @@ public class HammingDistancesAmbigStates extends Algorithm<CharactersBlock, Dist
         this.optionNormalize.setValue(optionNormalize);
     }
 
-    public AmbiguousOptions getOptionHandleAmbiguousStates(){
+    public AmbiguousOptions getOptionHandleAmbiguousStates() {
         return this.optionHandleAmbiguousStates.getValue();
     }
 
-    public Property<AmbiguousOptions> optionHandleAmbiguousStatesProperty(){
+    public Property<AmbiguousOptions> optionHandleAmbiguousStatesProperty() {
         return this.optionHandleAmbiguousStates;
     }
 

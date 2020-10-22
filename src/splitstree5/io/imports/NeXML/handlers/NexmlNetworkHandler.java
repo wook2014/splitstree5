@@ -130,8 +130,8 @@ public class NexmlNetworkHandler extends DefaultHandler {
             if (currentElement instanceof Node) {
                 NetworkBlock.NodeData nodeData = networkBlock.getNodeData((Node) currentElement);
 
-                for (int i = 0; i<attributes.getLength(); i++)
-                    nodeData.put("metadata_"+attributes.getLocalName(i), attributes.getValue(i));
+                for (int i = 0; i < attributes.getLength(); i++)
+                    nodeData.put("metadata_" + attributes.getLocalName(i), attributes.getValue(i));
 
 
                 networkBlock.getNode2data().put((Node) currentElement, nodeData);
@@ -140,8 +140,8 @@ public class NexmlNetworkHandler extends DefaultHandler {
             if (currentElement instanceof Edge) {
                 NetworkBlock.EdgeData edgeData = networkBlock.getEdgeData((Edge) currentElement);
 
-                for (int i = 0; i<attributes.getLength(); i++)
-                    edgeData.put("metadata_"+attributes.getLocalName(i), attributes.getValue(i));
+                for (int i = 0; i < attributes.getLength(); i++)
+                    edgeData.put("metadata_" + attributes.getLocalName(i), attributes.getValue(i));
 
                 networkBlock.getEdge2data().put((Edge) currentElement, edgeData);
             }

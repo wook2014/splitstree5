@@ -636,7 +636,6 @@ public class Workflow {
     }
 
 
-
     /**
      * gets node and all its descendants
      *

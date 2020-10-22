@@ -108,8 +108,7 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
             final DistancesBlock newBlock = new DistancesBlock();
             newBlock.setFormat(distances.getFormat());
             output.write(w, new TaxaBlock(), newBlock);
-        }
-        else
+        } else
             output.write(w, taxa, distances);
     }
 
@@ -138,8 +137,7 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
             final SplitsBlock newBlock = new SplitsBlock();
             newBlock.setFormat(block.getFormat());
             output.write(w, new TaxaBlock(), newBlock);
-        }
-        else
+        } else
             output.write(w, taxa, block);
     }
 
@@ -153,8 +151,7 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
             final TreesBlock newBlock = new TreesBlock();
             newBlock.setFormat(block.getFormat());
             output.write(w, new TaxaBlock(), newBlock);
-        }
-        else
+        } else
             output.write(w, taxa, block);
     }
 

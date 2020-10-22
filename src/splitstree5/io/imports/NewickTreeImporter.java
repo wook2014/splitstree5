@@ -58,114 +58,114 @@ public class NewickTreeImporter implements IToTrees, IImportTrees {
      * @throws CanceledException
      */
     public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, TreesBlock trees) throws IOException, CanceledException {
-            taxa.clear();
-            trees.clear();
+        taxa.clear();
+        trees.clear();
 
-            int lineno = 0;
-            try (FileLineIterator it = new FileLineIterator(inputFile)) {
-                progressListener.setMaximum(it.getMaximumProgress());
-                progressListener.setProgress(0);
+        int lineno = 0;
+        try (FileLineIterator it = new FileLineIterator(inputFile)) {
+            progressListener.setMaximum(it.getMaximumProgress());
+            progressListener.setProgress(0);
 
-                final Map<String, Integer> taxName2Id = new HashMap<>(); // starts at 1
-                final Set<String> taxonNamesFound = new HashSet<>();
-                final ArrayList<String> orderedTaxonNames = new ArrayList<>();
+            final Map<String, Integer> taxName2Id = new HashMap<>(); // starts at 1
+            final Set<String> taxonNamesFound = new HashSet<>();
+            final ArrayList<String> orderedTaxonNames = new ArrayList<>();
 
-                final SimpleNewickParser newickParser = new SimpleNewickParser();
-                newickParser.setEnforceLabelDoesNotStartWithADigit(true);
-                boolean partial = false;
-                final ArrayList<String> parts = new ArrayList<>();
+            final SimpleNewickParser newickParser = new SimpleNewickParser();
+            newickParser.setEnforceLabelDoesNotStartWithADigit(true);
+            boolean partial = false;
+            final ArrayList<String> parts = new ArrayList<>();
 
-                // read in the trees
-                while (it.hasNext()) {
-                    lineno++;
-                    final String line = Basic.removeComments(it.next(), '[', ']');
-                    if (line.endsWith(";")) {
-                        final String treeLine;
-                        if (parts.size() > 0) {
-                            parts.add(line);
-                            treeLine = Basic.toString(parts, "");
-                            parts.clear();
-                        } else
-                            treeLine = line;
-                        final PhyloTree tree;
-                        try {
-                            tree = newickParser.parse(treeLine);
-                        } catch (IOException ex) {
-                            throw new IOExceptionWithLineNumber(lineno, ex);
-                        }
-                        if (TreesUtilities.hasNumbersOnLeafNodes(tree)) {
-                            throw new IOExceptionWithLineNumber(lineno, "Leaf labels must begin with a letter");
-                        }
-                        if (TreesUtilities.hasNumbersOnInternalNodes(tree)) {
-                            TreesUtilities.changeNumbersOnInternalNodesToEdgeConfidencies(tree);
-                        }
-                        final List<String> leafLabelList = IterationUtils.asList(newickParser.leafLabels());
-                        final Set<String> leafLabelSet = new HashSet<>(leafLabelList);
-                        final boolean multiLabeled = (leafLabelSet.size() < leafLabelList.size());
+            // read in the trees
+            while (it.hasNext()) {
+                lineno++;
+                final String line = Basic.removeComments(it.next(), '[', ']');
+                if (line.endsWith(";")) {
+                    final String treeLine;
+                    if (parts.size() > 0) {
+                        parts.add(line);
+                        treeLine = Basic.toString(parts, "");
+                        parts.clear();
+                    } else
+                        treeLine = line;
+                    final PhyloTree tree;
+                    try {
+                        tree = newickParser.parse(treeLine);
+                    } catch (IOException ex) {
+                        throw new IOExceptionWithLineNumber(lineno, ex);
+                    }
+                    if (TreesUtilities.hasNumbersOnLeafNodes(tree)) {
+                        throw new IOExceptionWithLineNumber(lineno, "Leaf labels must begin with a letter");
+                    }
+                    if (TreesUtilities.hasNumbersOnInternalNodes(tree)) {
+                        TreesUtilities.changeNumbersOnInternalNodesToEdgeConfidencies(tree);
+                    }
+                    final List<String> leafLabelList = IterationUtils.asList(newickParser.leafLabels());
+                    final Set<String> leafLabelSet = new HashSet<>(leafLabelList);
+                    final boolean multiLabeled = (leafLabelSet.size() < leafLabelList.size());
 
-                        if (multiLabeled) {
-                            if (isOptionConvertMultiLabeledTree()) {
-                                final Set<String> seen = new HashSet<>();
-                                for (Node v : tree.nodes()) {
-                                    String label = tree.getLabel(v);
-                                    if (label != null) {
-                                        int count = 1;
-                                        while (seen.contains(label)) {
-                                            label = tree.getLabel(v) + "-" + (++count);
-                                        }
-                                        if (count > 1)
-                                            tree.setLabel(v, label);
-                                        seen.add(label);
+                    if (multiLabeled) {
+                        if (isOptionConvertMultiLabeledTree()) {
+                            final Set<String> seen = new HashSet<>();
+                            for (Node v : tree.nodes()) {
+                                String label = tree.getLabel(v);
+                                if (label != null) {
+                                    int count = 1;
+                                    while (seen.contains(label)) {
+                                        label = tree.getLabel(v) + "-" + (++count);
                                     }
+                                    if (count > 1)
+                                        tree.setLabel(v, label);
+                                    seen.add(label);
                                 }
-                            } else {
-                                for (String z : leafLabelSet) {
-                                    leafLabelList.remove(z);
-                                }
-                                throw new IOExceptionWithLineNumber(lineno, "Name appears multiple times in tree:" + leafLabelList.get(0));
-                            }
-                        }
-
-                        if (taxonNamesFound.size() == 0) {
-                            for (String name : newickParser.leafLabels()) {
-                                taxonNamesFound.add(name);
-                                orderedTaxonNames.add(name);
-                                taxName2Id.put(name, orderedTaxonNames.size());
                             }
                         } else {
-                            if (!taxonNamesFound.equals(IterationUtils.asSet(newickParser.leafLabels()))) {
-                                partial = true;
-                                for (String name : newickParser.leafLabels()) {
-                                    if (!taxonNamesFound.contains(name)) {
-                                        System.err.println("Additional taxon name: " + name);
-                                        taxonNamesFound.add(name);
-                                        orderedTaxonNames.add(name);
-                                        taxName2Id.put(name, orderedTaxonNames.size());
-                                    }
-                                }
+                            for (String z : leafLabelSet) {
+                                leafLabelList.remove(z);
                             }
+                            throw new IOExceptionWithLineNumber(lineno, "Name appears multiple times in tree:" + leafLabelList.get(0));
                         }
-                        for (Node v : tree.nodes()) {
-                            final String label = tree.getLabel(v);
-                            if (label != null && label.length() > 0) {
-                                if (taxonNamesFound.contains(label)) { // need to check that this is a taxon name, could also be a number placed on the root...
-                                    tree.addTaxon(v, taxName2Id.get(label));
-                                }
-                            }
-                        }
-                        trees.getTrees().add(tree);
-                        tree.setName("tree-" + trees.size());
+                    }
 
-                        progressListener.setProgress(it.getProgress());
-                    } else
-                        parts.add(line);
-                }
-                if (parts.size() > 0)
-                    System.err.println("Ignoring trailing lines at end of file:\n" + Basic.abbreviateDotDotDot(Basic.toString(parts, "\n"), 400));
-                taxa.addTaxaByNames(orderedTaxonNames);
-                trees.setPartial(partial);
-                trees.setRooted(true);
+                    if (taxonNamesFound.size() == 0) {
+                        for (String name : newickParser.leafLabels()) {
+                            taxonNamesFound.add(name);
+                            orderedTaxonNames.add(name);
+                            taxName2Id.put(name, orderedTaxonNames.size());
+                        }
+                    } else {
+                        if (!taxonNamesFound.equals(IterationUtils.asSet(newickParser.leafLabels()))) {
+                            partial = true;
+                            for (String name : newickParser.leafLabels()) {
+                                if (!taxonNamesFound.contains(name)) {
+                                    System.err.println("Additional taxon name: " + name);
+                                    taxonNamesFound.add(name);
+                                    orderedTaxonNames.add(name);
+                                    taxName2Id.put(name, orderedTaxonNames.size());
+                                }
+                            }
+                        }
+                    }
+                    for (Node v : tree.nodes()) {
+                        final String label = tree.getLabel(v);
+                        if (label != null && label.length() > 0) {
+                            if (taxonNamesFound.contains(label)) { // need to check that this is a taxon name, could also be a number placed on the root...
+                                tree.addTaxon(v, taxName2Id.get(label));
+                            }
+                        }
+                    }
+                    trees.getTrees().add(tree);
+                    tree.setName("tree-" + trees.size());
+
+                    progressListener.setProgress(it.getProgress());
+                } else
+                    parts.add(line);
             }
+            if (parts.size() > 0)
+                System.err.println("Ignoring trailing lines at end of file:\n" + Basic.abbreviateDotDotDot(Basic.toString(parts, "\n"), 400));
+            taxa.addTaxaByNames(orderedTaxonNames);
+            trees.setPartial(partial);
+            trees.setRooted(true);
+        }
     }
 
     @Override

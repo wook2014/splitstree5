@@ -25,7 +25,6 @@ package splitstree5.core.models.proteinModels;
 /**
  * WaGModel
  * Dave Bryant, 2005?
- *
  */
 public class WagModel extends ProteinModel {
 

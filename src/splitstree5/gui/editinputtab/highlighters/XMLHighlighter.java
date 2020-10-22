@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 public class XMLHighlighter implements Highlighter {
 
     private static final Pattern XML_TAG = Pattern.compile("(?<ELEMENT>(</?\\h*)(\\w+[:])?(\\w+)([^<>]*)(\\h*/?>))"
-            +"|(?<COMMENT><!--[^<>]+-->)");
+            + "|(?<COMMENT><!--[^<>]+-->)");
 
     private static final Pattern ATTRIBUTES = Pattern.compile(
             "((?!xmlns:)\\w+[:])?" + //namespace prefix not equals xmlns:
@@ -56,13 +56,13 @@ public class XMLHighlighter implements Highlighter {
         Matcher matcher = XML_TAG.matcher(text);
         int lastKwEnd = 0;
         StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
-        while(matcher.find()) {
+        while (matcher.find()) {
 
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
-            if(matcher.group("COMMENT") != null) {
+            if (matcher.group("COMMENT") != null) {
                 spansBuilder.add(Collections.singleton("xml-comment"), matcher.end() - matcher.start());
             } else {
-                if(matcher.group("ELEMENT") != null) {
+                if (matcher.group("ELEMENT") != null) {
                     String attributesText = matcher.group(GROUP_ATTRIBUTES_SECTION);
 
                     spansBuilder.add(Collections.singleton("xml-tagmark"),
@@ -78,12 +78,12 @@ public class XMLHighlighter implements Highlighter {
                                 matcher.end(GROUP_ELEMENT_NAME) - matcher.end(GROUP_OPEN_BRACKET));
                     }
 
-                    if(!attributesText.isEmpty()) {
+                    if (!attributesText.isEmpty()) {
 
                         lastKwEnd = 0;
 
                         Matcher amatcher = ATTRIBUTES.matcher(attributesText);
-                        while(amatcher.find()) {
+                        while (amatcher.find()) {
                             spansBuilder.add(Collections.emptyList(),
                                     amatcher.start() - lastKwEnd);
 
@@ -110,7 +110,7 @@ public class XMLHighlighter implements Highlighter {
                                     amatcher.end(GROUP_ATTRIBUTE_VALUE) - amatcher.end(GROUP_EQUAL_SYMBOL));
                             lastKwEnd = amatcher.end();
                         }
-                        if(attributesText.length() > lastKwEnd)
+                        if (attributesText.length() > lastKwEnd)
                             spansBuilder.add(Collections.emptyList(), attributesText.length() - lastKwEnd);
                     }
 

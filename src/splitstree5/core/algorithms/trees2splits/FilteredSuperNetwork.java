@@ -102,7 +102,7 @@ public class FilteredSuperNetwork extends SuperNetwork implements IFromTrees, IT
 
                     if (treeTaxaAndA.cardinality() > 1 && treeTaxaAndB.cardinality() > 1) {
                         final PhyloTree tree = trees.getTree(t);
-                            totalScore += Distortion.computeDistortionForSplit(tree, A, B);
+                        totalScore += Distortion.computeDistortionForSplit(tree, A, B);
                     }
                     progress.incrementProgress();
                 }
@@ -127,12 +127,12 @@ public class FilteredSuperNetwork extends SuperNetwork implements IFromTrees, IT
 
                     if (treeTaxaAndA.cardinality() > 1 && treeTaxaAndB.cardinality() > 1) {
                         final PhyloTree tree = trees.getTree(t);
-                            int score = Distortion.computeDistortionForSplit(tree, A, B);
-                            //System.err.print(" " + score);
-                            if (score <= getOptionMaxDistortionScore())
-                                count++;
-                            if (count + (trees.getNTrees() - t) < getOptionMinNumberTrees())
-                                break; // no hope to get above threshold
+                        int score = Distortion.computeDistortionForSplit(tree, A, B);
+                        //System.err.print(" " + score);
+                        if (score <= getOptionMaxDistortionScore())
+                            count++;
+                        if (count + (trees.getNTrees() - t) < getOptionMinNumberTrees())
+                            break; // no hope to get above threshold
                     } else if ((A.cardinality() == 1 || B.cardinality() == 1)
                             && treeTaxaAndB.cardinality() > 0 && treeTaxaAndB.cardinality() > 0) {
                         count++; // is confirmed split

@@ -55,6 +55,7 @@ import java.util.List;
  */
 public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implements IFromNetwork, IToViewer {
     public enum MutationView {Hatches, Labels, Count, None}
+
     public enum Algorithm {SpringEmbedder}
 
     private final ObjectProperty<Algorithm> optionAlgorithm = new SimpleObjectProperty<>(Algorithm.SpringEmbedder);
@@ -427,6 +428,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
     public boolean isOptionShowPieCharts() {
         return optionShowPieCharts.get();
     }
+
     public BooleanProperty optionShowPieChartsProperty() {
         return optionShowPieCharts;
     }

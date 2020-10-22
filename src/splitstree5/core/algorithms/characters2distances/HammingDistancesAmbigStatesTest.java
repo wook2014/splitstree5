@@ -39,7 +39,7 @@ import static org.junit.Assert.assertEquals;
 public class HammingDistancesAmbigStatesTest {
 
     @Test
-    public void compute() throws Exception{
+    public void compute() throws Exception {
 
 
         // todo no ambig -> different results(must be the same!): MAtch case!
@@ -80,7 +80,7 @@ public class HammingDistancesAmbigStatesTest {
     }
 
     @Test
-    public void computeIgnore() throws Exception{
+    public void computeIgnore() throws Exception {
 
 
         // todo no ambig -> different results(must be the same!): MAtch case!

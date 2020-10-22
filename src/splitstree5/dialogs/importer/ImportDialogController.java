@@ -167,15 +167,15 @@ public class ImportDialogController {
         return missingInput;
     }
 
-    public CheckBox getSimilarityValues(){
+    public CheckBox getSimilarityValues() {
         return similarityValues;
     }
 
-    public CheckBox getInnerNodesLabeling(){
+    public CheckBox getInnerNodesLabeling() {
         return innerNodesLabeling;
     }
 
-    public ComboBox<String> getSimilarityCalculation(){
+    public ComboBox<String> getSimilarityCalculation() {
         return similarityCalculation;
     }
 }

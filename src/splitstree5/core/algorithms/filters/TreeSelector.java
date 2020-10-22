@@ -56,6 +56,7 @@ public class TreeSelector extends Algorithm<TreesBlock, TreesBlock> implements I
         }
         return optionName;
     }
+
     @Override
     public void compute(ProgressListener progress, TaxaBlock ignored, TreesBlock parent, TreesBlock child) throws CanceledException {
         setOptionWhich(Math.max(1, Math.min(parent.size(), optionWhich.get())));

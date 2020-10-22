@@ -61,7 +61,7 @@ public class LabelsEditor {
     private String originalLabel;
     private boolean imgAdded = false;
 
-    public LabelsEditor(){
+    public LabelsEditor() {
 
         // todo: clear after Format calling, extra button for Format
 
@@ -123,7 +123,7 @@ public class LabelsEditor {
         controller.getSeparator().setVisible(false);
     }
 
-    public LabelsEditor(NodeLabelSearcher nodeLabelSearcher, GraphTabBase graphTabBase){
+    public LabelsEditor(NodeLabelSearcher nodeLabelSearcher, GraphTabBase graphTabBase) {
         this();
         controller.getFindAll().setVisible(true);
         controller.getApply2all().setVisible(true);
@@ -132,7 +132,7 @@ public class LabelsEditor {
         searchManager.setSearcher(nodeLabelSearcher);
         controller.getApply2all().setOnAction(event -> {
             // todo does not work for numbers!
-            for (jloda.graph.Node n : nodeLabelSearcher.getSelectionModel().getSelectedItems()){
+            for (jloda.graph.Node n : nodeLabelSearcher.getSelectionModel().getSelectedItems()) {
                 //System.err.println("node "+n.toString());
                 NodeViewBase nv = (NodeViewBase) graphTabBase.getNode2view().get(n);
                 nv.setLabel(mergeHTMLStyles(nv.getLabel().getText(), htmlEditor.getHtmlText()));
@@ -156,14 +156,14 @@ public class LabelsEditor {
         this.originalLabel = htmlEditor.getHtmlText();
     }
 
-    private void setStyledText(Labeled label){
+    private void setStyledText(Labeled label) {
         //todo
         Font font = label.getFont();
 
         htmlEditor.setHtmlText(label.getText());
     }
 
-    private String mergeHTMLStyles(String newLabel, String insertion){
+    private String mergeHTMLStyles(String newLabel, String insertion) {
 
         //newLabel = newLabel.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", "");
         insertion = insertion.replaceAll("</?(html|body|head)[^>]*>", "");
@@ -182,7 +182,7 @@ public class LabelsEditor {
     ".html-editor-strike", ".html-editor-hr"
      */
 
-    private void customizeHTMLEditor(){
+    private void customizeHTMLEditor() {
 
         Platform.runLater(() -> {
 
@@ -199,13 +199,13 @@ public class LabelsEditor {
                     ".html-editor-hr"
             };
 
-            for (String s : toDelete){
+            for (String s : toDelete) {
                 htmlEditor.lookup(s).setVisible(false);
                 htmlEditor.lookup(s).setManaged(false);
             }
 
             // horizontal lines between the buttons
-            for (Node n : htmlEditor.lookupAll(".separator")){
+            for (Node n : htmlEditor.lookupAll(".separator")) {
                 n.setVisible(false);
                 n.setManaged(false);
             }
@@ -239,13 +239,13 @@ public class LabelsEditor {
 
                 CheckBox showText = new CheckBox("Show text");
 
-                if (label.getGraphic() == null){
+                if (label.getGraphic() == null) {
                     imgScale.setDisable(true);
                     showText.setDisable(true);
                 }
                 label.graphicProperty().addListener((observable, oldValue, newValue) -> {
                     imgScale.adjustValue(1);
-                    if (label.graphicProperty().isNull().get()){
+                    if (label.graphicProperty().isNull().get()) {
                         imgScale.setDisable(true);
                         showText.setDisable(true);
                     } else {
@@ -267,7 +267,7 @@ public class LabelsEditor {
                         label.setContentDisplay(ContentDisplay.TOP);
                 });
 
-                if (!imgAdded){
+                if (!imgAdded) {
                     bar.getItems().addAll(separator, loadImg, label1ImgScale, imgScale); //showText);
                     imgAdded = true;
                 }
@@ -288,7 +288,7 @@ public class LabelsEditor {
             try {
                 String mimetype = Files.probeContentType(file.toPath());
                 if (mimetype != null && mimetype.split("/")[0].equals("image")) {
-                    htmlEditor.setHtmlText(label.getText()+"<img src=\""+ "file:///"+file.getAbsolutePath() + "\">");
+                    htmlEditor.setHtmlText(label.getText() + "<img src=\"" + "file:///" + file.getAbsolutePath() + "\">");
                 } else {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Image parsing error");
@@ -302,7 +302,7 @@ public class LabelsEditor {
         }
     }
 
-    public static ImageView takeSnapshot(WebView wb){
+    public static ImageView takeSnapshot(WebView wb) {
         final int scalingFactor = 3;
         SnapshotParameters sp = new SnapshotParameters();
         sp.setTransform(Transform.scale(scalingFactor, scalingFactor)); // improve quality
@@ -316,29 +316,29 @@ public class LabelsEditor {
         return iw;
     }
 
-    public static Rectangle2D applyTransparency(WritableImage writableImage){
+    public static Rectangle2D applyTransparency(WritableImage writableImage) {
         PixelWriter raster = writableImage.getPixelWriter();
         //final int scrollbarOffset = 42; //todo?
         double width = writableImage.getWidth(); //- scrollbarOffset;
         double height = writableImage.getHeight(); //- scrollbarOffset;
         double top = height / 2;
         double bottom = 0;
-        double left = width / 2 ;
+        double left = width / 2;
         double right = 0;
-        for (int x = 0; x < width; x++){
-            for (int y = 0; y < height; y++){
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
                 Color c = writableImage.getPixelReader().getColor(x, y);
                 if (c.equals(Color.WHITE))
                     raster.setColor(x, y, Color.TRANSPARENT);
                 else {
-                    top    = Math.min(top, y);
+                    top = Math.min(top, y);
                     bottom = Math.max(bottom, y);
-                    left   = Math.min(left, x);
-                    right  = Math.max(right, x);
+                    left = Math.min(left, x);
+                    right = Math.max(right, x);
                 }
             }
         }
-        return new Rectangle2D(left, top, right-left, bottom-top);
+        return new Rectangle2D(left, top, right - left, bottom - top);
     }
 
 }

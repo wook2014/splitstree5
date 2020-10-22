@@ -225,8 +225,8 @@ public class ImportDialog {
      * @param other
      */
     public static void show(MainWindow other, String file) {
-            ImportDialog importDialog = new ImportDialog(other, file);
-            importDialog.show();
+        ImportDialog importDialog = new ImportDialog(other, file);
+        importDialog.show();
     }
 
     public ImportDialogController getController() {
@@ -242,8 +242,8 @@ public class ImportDialog {
     add user defined setting to the importer
      */
 
-    private void setupImporter(IImporter importer){
-        if (importer instanceof IImportCharacters){
+    private void setupImporter(IImporter importer) {
+        if (importer instanceof IImportCharacters) {
             if (controller.getMissingInput().getText().length() > 0)
                 ((IImportCharacters) importer).setMissing(controller.getMissingInput().getText().charAt(0));
             if (controller.getGapInput().getText().length() > 0)

@@ -95,9 +95,11 @@ public class K3ST_old extends DNAdistance implements IFromChararacters, IToDista
     public void setOptionAC_vs_ATRatio(double value) {
         this.optionACvsAT.setValue(value);
     }
+
     public double getOptionAC_vs_ATRatio() {
         return this.optionACvsAT.getValue();
     }
+
     public DoubleProperty optionACvsATProperty() {
         return this.optionACvsAT;
     }

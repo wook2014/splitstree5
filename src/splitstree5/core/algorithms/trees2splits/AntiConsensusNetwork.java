@@ -518,7 +518,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
      *
      * @param split
      * @param referenceSplits
-     * @param incompatible will contain indices of incompatible splits
+     * @param incompatible    will contain indices of incompatible splits
      * @return count
      */
     public static double computeTotalWeightOfIncompatibleReferenceSplits(ASplit split, SplitsBlock referenceSplits, BitSet incompatible) {

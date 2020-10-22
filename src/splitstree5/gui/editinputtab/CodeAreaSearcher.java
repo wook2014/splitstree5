@@ -27,7 +27,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.IndexRange;
 import jloda.fx.find.ITextSearcher;
 import org.fxmisc.richtext.CodeArea;
-//import org.reactfx.value.Val;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -54,7 +53,10 @@ public class CodeAreaSearcher implements ITextSearcher {
         this.name = name;
         this.codeArea = codeArea;
         BooleanBinding emptyProperty = new BooleanBinding() {
-            { super.bind(codeArea.getContent().lengthProperty()); }
+            {
+                super.bind(codeArea.getContent().lengthProperty());
+            }
+
             @Override
             protected boolean computeValue() {
                 return codeArea.getContent().getLength() == 0;
@@ -65,7 +67,7 @@ public class CodeAreaSearcher implements ITextSearcher {
             //globalFindable.bind(codeArea.textProperty().isNotEmpty());
             //selectionReplaceable.bind(codeArea.selectedTextProperty().isNotEmpty());
             globalFindable.bind(emptyProperty);
-                    //Val.map(codeArea.lengthProperty(), n -> n == 0));
+            //Val.map(codeArea.lengthProperty(), n -> n == 0));
             selectionReplaceable.bind(emptyProperty);
         }
     }

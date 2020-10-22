@@ -129,7 +129,7 @@ public class AlgorithmTab<P extends DataBlock, C extends DataBlock> extends View
                         };
                     }
                 });
-        
+
         final ArrayList<Algorithm<P, C>> algorithms = connector.getAllAlgorithms();
         if (currentAlgorithm != null) { // if algorithm already set, make sure we use the existing algorithm object
             for (int i = 0; i < algorithms.size(); i++) {

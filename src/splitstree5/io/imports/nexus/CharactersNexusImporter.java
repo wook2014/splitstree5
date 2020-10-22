@@ -48,8 +48,10 @@ public class CharactersNexusImporter extends NexusImporterBase<CharactersBlock> 
     }
 
     @Override
-    public void setGap(char c) {}
+    public void setGap(char c) {
+    }
 
     @Override
-    public void setMissing(char m) {}
+    public void setMissing(char m) {
+    }
 }

@@ -206,7 +206,7 @@ RunWorkflow extends Application {
 
         for (int i = 0; i < inputFiles.length; i++) {
             final String inputFile = inputFiles[i];
-                System.err.println("++++ Processing " + inputFile + " (" + (i + 1) + " of " + inputFiles.length + ") ++++");
+            System.err.println("++++ Processing " + inputFile + " (" + (i + 1) + " of " + inputFiles.length + ") ++++");
 
             final CountDownLatch latch = new CountDownLatch(1);
 

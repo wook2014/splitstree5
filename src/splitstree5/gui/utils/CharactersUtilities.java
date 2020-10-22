@@ -36,7 +36,7 @@ public class CharactersUtilities {
     /**
      * Group identical haplotype function
      *
-     * @param taxa taxa to group
+     * @param taxa     taxa to group
      * @param topBlock characters or distances block
      * @return pair of new taxa and new topblock, if collapsed and null, else
      */
@@ -45,92 +45,92 @@ public class CharactersUtilities {
     static public Pair<TaxaBlock, DataBlock> collapseByType(TaxaBlock taxa, DataBlock topBlock) throws IOException, CanceledException {
         final int ntax = taxa.getNtax();
 
-            int typecount = 0;
-            int numNonSingleClasses = 0;
+        int typecount = 0;
+        int numNonSingleClasses = 0;
 
-            int[] taxaTypes = new int[taxa.getNtax() + 1];
-            int[] representatives = new int[taxa.getNtax() + 1]; //Representative taxon of each type.
+        int[] taxaTypes = new int[taxa.getNtax() + 1];
+        int[] representatives = new int[taxa.getNtax() + 1]; //Representative taxon of each type.
 
-            TaxaBlock newTaxa = new TaxaBlock();
+        TaxaBlock newTaxa = new TaxaBlock();
 
-            //Use a breadth-first search to identify classes of identical sequences or distance matrix rows.
-            //Build up new taxa block. Classes of size one give new taxa with the same name, larger classes
-            //are named TYPEn for n=1,2,3...
-            for (int i = 1; i <= ntax; i++) {
-                if (taxaTypes[i] != 0)  //Already been 'typed'
+        //Use a breadth-first search to identify classes of identical sequences or distance matrix rows.
+        //Build up new taxa block. Classes of size one give new taxa with the same name, larger classes
+        //are named TYPEn for n=1,2,3...
+        for (int i = 1; i <= ntax; i++) {
+            if (taxaTypes[i] != 0)  //Already been 'typed'
+                continue;
+            typecount++;
+            taxaTypes[i] = typecount;
+            representatives[typecount] = i;
+            int numberOfThisType = 1;
+            String info = taxa.getLabel(i); //Start building up the info string for this taxon.
+
+
+            for (int j = i + 1; j <= ntax; j++) {
+                if (taxaTypes[j] != 0)
                     continue;
-                typecount++;
-                taxaTypes[i] = typecount;
-                representatives[typecount] = i;
-                int numberOfThisType = 1;
-                String info = taxa.getLabel(i); //Start building up the info string for this taxon.
-
-
-                for (int j = i + 1; j <= ntax; j++) {
-                    if (taxaTypes[j] != 0)
-                        continue;
-                    boolean taxaIdentical;
-                    if (topBlock instanceof CharactersBlock)
-                        taxaIdentical = taxaIdentical((CharactersBlock) topBlock, i, j);
-                    else
-                        taxaIdentical = taxaIdentical((DistancesBlock) topBlock, i, j);
-                    if (taxaIdentical) {
-                        taxaTypes[j] = typecount;
-                        numberOfThisType++;
-                        info += ", " + taxa.getLabel(j);
-                    }
-                }
-
-                if (numberOfThisType > 1) {
-                    numNonSingleClasses++;
-                    Taxon t = new Taxon("TYPE" + numNonSingleClasses);
-                    t.setInfo(info);
-                    newTaxa.add(t);
-                } else {
-                    Taxon t = new Taxon(info);
-                    t.setInfo(info);
-                    newTaxa.add(t); //Info is the same as taxa label.
+                boolean taxaIdentical;
+                if (topBlock instanceof CharactersBlock)
+                    taxaIdentical = taxaIdentical((CharactersBlock) topBlock, i, j);
+                else
+                    taxaIdentical = taxaIdentical((DistancesBlock) topBlock, i, j);
+                if (taxaIdentical) {
+                    taxaTypes[j] = typecount;
+                    numberOfThisType++;
+                    info += ", " + taxa.getLabel(j);
                 }
             }
+
+            if (numberOfThisType > 1) {
+                numNonSingleClasses++;
+                Taxon t = new Taxon("TYPE" + numNonSingleClasses);
+                t.setInfo(info);
+                newTaxa.add(t);
+            } else {
+                Taxon t = new Taxon(info);
+                t.setInfo(info);
+                newTaxa.add(t); //Info is the same as taxa label.
+            }
+        }
 
         if (newTaxa.getNtax() == taxa.getNtax())
             return null;
 
-            //Set up the new characters block, if one exists.
-            if (topBlock instanceof CharactersBlock) {
-                final CharactersBlock characters = (CharactersBlock) topBlock;
-                final CharactersBlock newCharacters = new CharactersBlock();
-                newCharacters.copy(taxa, characters); // need to copy formating
+        //Set up the new characters block, if one exists.
+        if (topBlock instanceof CharactersBlock) {
+            final CharactersBlock characters = (CharactersBlock) topBlock;
+            final CharactersBlock newCharacters = new CharactersBlock();
+            newCharacters.copy(taxa, characters); // need to copy formating
 
-                newCharacters.setDimension(newTaxa.getNtax(), characters.getNchar());
-                for (int i = 1; i <= newTaxa.getNtax(); i++) {
-                    int old_i = representatives[i];
-                    for (int k = 1; k <= characters.getNchar(); k++)
-                        newCharacters.set(i, k, characters.get(old_i, k));
-                }
-                return new Pair<>(newTaxa, newCharacters);
-
-            } else if (topBlock instanceof DistancesBlock) {
-                //Set up the new distances block
-                final DistancesBlock distances = (DistancesBlock) topBlock;
-                final DistancesBlock newDistances = new DistancesBlock();
-                newDistances.copy(distances);
-                newDistances.setNtax(newTaxa.getNtax());
-
-                for (int i = 1; i <= newTaxa.getNtax(); i++) {
-                    int old_i = representatives[i];
-                    for (int j = 1; j < i; j++) {
-                        int old_j = representatives[j];
-                        double val = distances.get(old_i, old_j);
-                        newDistances.set(i, j, val);
-                        newDistances.set(j, i, val);
-                    }
-                }
-
-                return new Pair<>(newTaxa, newDistances);
-            } else {
-                throw new IOException("Group haplotypes not implemented for: " + Basic.getShortName(topBlock.getClass()));
+            newCharacters.setDimension(newTaxa.getNtax(), characters.getNchar());
+            for (int i = 1; i <= newTaxa.getNtax(); i++) {
+                int old_i = representatives[i];
+                for (int k = 1; k <= characters.getNchar(); k++)
+                    newCharacters.set(i, k, characters.get(old_i, k));
             }
+            return new Pair<>(newTaxa, newCharacters);
+
+        } else if (topBlock instanceof DistancesBlock) {
+            //Set up the new distances block
+            final DistancesBlock distances = (DistancesBlock) topBlock;
+            final DistancesBlock newDistances = new DistancesBlock();
+            newDistances.copy(distances);
+            newDistances.setNtax(newTaxa.getNtax());
+
+            for (int i = 1; i <= newTaxa.getNtax(); i++) {
+                int old_i = representatives[i];
+                for (int j = 1; j < i; j++) {
+                    int old_j = representatives[j];
+                    double val = distances.get(old_i, old_j);
+                    newDistances.set(i, j, val);
+                    newDistances.set(j, i, val);
+                }
+            }
+
+            return new Pair<>(newTaxa, newDistances);
+        } else {
+            throw new IOException("Group haplotypes not implemented for: " + Basic.getShortName(topBlock.getClass()));
+        }
 
     }
 

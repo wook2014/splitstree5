@@ -98,9 +98,11 @@ public class HammingDistances extends Algorithm<CharactersBlock, DistancesBlock>
     public boolean isOptionNormalize() {
         return optionNormalize.getValue();
     }
+
     public BooleanProperty optionNormalizeProperty() {
         return optionNormalize;
     }
+
     public void setOptionNormalize(boolean optionNormalize) {
         this.optionNormalize.setValue(optionNormalize);
     }

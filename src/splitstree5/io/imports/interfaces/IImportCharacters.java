@@ -40,5 +40,6 @@ public interface IImportCharacters extends IImporter {
             throws CanceledException, IOException;
 
     void setGap(char g);
+
     void setMissing(char m);
 }

@@ -33,7 +33,6 @@ import java.util.Random;
 /**
  * ProteinModel
  * Dave Bryant, 2005?
- *
  */
 //ToDO: Copy changes and java doc from Nucleotide Model
 

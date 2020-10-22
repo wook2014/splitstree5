@@ -73,6 +73,7 @@ public class EditInputTab extends EditTextViewTab {
 
 
     // todo check all properties!
+
     /**
      * constructor
      *
@@ -122,8 +123,8 @@ public class EditInputTab extends EditTextViewTab {
         final Label labelMissingChar = new Label("missingChar");
         final TextField missingChar = new TextField();
         missingChar.setPrefColumnCount(1);
-        missingChar.setOnKeyTyped(event ->{
-            if(missingChar.getText().length() >= MAX_LENGTH_SPECIAL_CHAR_FIELD)
+        missingChar.setOnKeyTyped(event -> {
+            if (missingChar.getText().length() >= MAX_LENGTH_SPECIAL_CHAR_FIELD)
                 event.consume();  // todo use getDataType from ImporterManager
         });
         missingChar.disableProperty().bind(emptyProperty);
@@ -192,14 +193,14 @@ public class EditInputTab extends EditTextViewTab {
         collapseButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if(oldValue) {
+                if (oldValue) {
                     if (debug)
                         System.err.println("Block collapsing is disabled");
                     getCodeArea().setParagraphGraphicFactory(LineNumberFactory.get(getCodeArea()));
                     codeAreaStyler.setCollapsingActive(false);
                     ((NexusHighlighter) codeAreaStyler.getHighlighter()).setCollapsingActive(false);
                 }
-                if(newValue) {
+                if (newValue) {
                     if (debug)
                         System.err.println("Block collapsing is active");
 
@@ -368,9 +369,10 @@ public class EditInputTab extends EditTextViewTab {
 
     }
 
-    public String getMissing(){
+    public String getMissing() {
         return this.missing.getValue();
     }
+
     public String getGap() {
         return this.gap.getValue();
     }

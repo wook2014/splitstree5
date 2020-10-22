@@ -169,9 +169,11 @@ public class MinSpanningNetwork extends Algorithm<DistancesBlock, NetworkBlock> 
     public double getOptionEpsilon() {
         return optionEpsilon.getValue();
     }
+
     public DoubleProperty optionEpsilonProperty() {
         return optionEpsilon;
     }
+
     public void setOptionEpsilon(double optionEpsilon) {
         this.optionEpsilon.setValue(optionEpsilon);
     }
@@ -179,9 +181,11 @@ public class MinSpanningNetwork extends Algorithm<DistancesBlock, NetworkBlock> 
     public boolean isOptionMinSpanningTree() {
         return optionMinSpanningTree.getValue();
     }
+
     public BooleanProperty optionMinSpanningTreeProperty() {
         return optionMinSpanningTree;
     }
+
     public void setOptionMinSpanningTree(boolean optionMinSpanningTree) {
         this.optionMinSpanningTree.setValue(optionMinSpanningTree);
     }
