@@ -322,7 +322,7 @@ public class AnalyzeGenomesDialog {
         });
 
         controller.getRemoveAllReferencesButton().setOnAction(e -> referenceIds.clear());
-        controller.getRemoveAllReferencesButton().disableProperty().bind(Bindings.isEmpty(referenceIds));
+        controller.getRemoveAllReferencesButton().disableProperty().bind(Bindings.isEmpty(referenceIds).or(running));
 
         controller.getMaxToAddTextField().disableProperty().bind(controller.getFindReferencesButton().disabledProperty().or(running));
 

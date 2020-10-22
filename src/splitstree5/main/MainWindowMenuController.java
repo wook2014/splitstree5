@@ -228,7 +228,7 @@ public class MainWindowMenuController {
             }
         });
         controller.getSaveMenuItem().disableProperty().bind(document.dirtyProperty().not()
-                .or(document.updatingProperty()).or(document.nameProperty().isEmpty()).or(mainWindow.getWorkflow().hasTopTaxaProperty().not()));
+                .or(document.updatingProperty()).or(document.nameProperty().isEmpty()).or(document.tmpFileProperty()).or(mainWindow.getWorkflow().hasTopTaxaProperty().not()));
 
         controller.getSaveAsMenuItem().setOnAction(e -> {
             SaveDialog.showSaveDialog(mainWindow, false);

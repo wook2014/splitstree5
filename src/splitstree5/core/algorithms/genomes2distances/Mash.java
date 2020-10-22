@@ -139,7 +139,7 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
 
         distancesBlock.clear();
 
-        int countOnes = 0;
+        int countUndefined = 0;
 
         distancesBlock.setNtax(taxaBlock.getNtax());
         for (Triplet<MashSketch, MashSketch, Double> triplet : triplets) {
@@ -148,11 +148,11 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
             final double dist = triplet.getThird();
             distancesBlock.set(t1, t2, dist);
             distancesBlock.set(t2, t1, dist);
-            if (dist == 1.0)
-                countOnes++;
+            if (dist == 0.75)
+                countUndefined++;
         }
-        if (countOnes > 0)
-            NotificationManager.showWarning(String.format("Failed to estimate distance for %d pairs (distances set to 1) - increase sketch size or decrease k", countOnes));
+        if (countUndefined > 0)
+            NotificationManager.showWarning(String.format("Failed to estimate distance for %d pairs (distances set to 0.75) - increase sketch size or decrease k", countUndefined));
     }
 
     @Override

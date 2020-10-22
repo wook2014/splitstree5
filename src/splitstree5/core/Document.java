@@ -53,6 +53,8 @@ public class Document {
 
     private final BooleanProperty hasSplitsTree5File = new SimpleBooleanProperty(false);
 
+    private final BooleanProperty tmpFile = new SimpleBooleanProperty(true);
+
     /**
      * constructor
      */
@@ -63,7 +65,10 @@ public class Document {
         workflow.incrementTopologyChanged();
 
         fileName.addListener((c, o, n) -> {
-            Platform.runLater(() -> name.set(Basic.getFileNameWithoutPath(fileName.get())));
+            Platform.runLater(() -> {
+                name.set(Basic.getFileNameWithoutPath(fileName.get()));
+                tmpFile.set(n.endsWith(".tmp"));
+            });
         });
 
         workflow.updatingProperty().addListener((InvalidationListener) c -> setDirty(true));
@@ -153,5 +158,13 @@ public class Document {
 
     public void setHasSplitsTree5File(boolean hasSplitsTree5File) {
         this.hasSplitsTree5File.set(hasSplitsTree5File);
+    }
+
+    public boolean isTmpFile() {
+        return tmpFile.get();
+    }
+
+    public ReadOnlyBooleanProperty tmpFileProperty() {
+        return tmpFile;
     }
 }
