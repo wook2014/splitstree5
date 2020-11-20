@@ -1,5 +1,7 @@
 package splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG;
 
+import splitstree5.resources.css._Dummy;
+
 public class CircularSplitAlgorithms {
 
     /**
@@ -145,4 +147,51 @@ public class CircularSplitAlgorithms {
         }
         return x;
     }
+
+    static public double[] circularAinvT(int n, double[] x) {
+        int npairs = n*(n-1)/2;
+        double[] y = new double[npairs+1];
+
+        //Suppose B = inv(A). Evaluates B*x column by column:
+        // B*x = \sum_{ij} B(:,ij) * x(ij)
+
+        y[1] = 0.5*x[1];
+        y[n-1] = 0.5*x[1];
+        y[2*n-3] = -0.5*x[1];
+
+        int ij=2;
+        for (int j=3;j<=n-1;j++) {
+            //pair ij = (1,j)
+            //Nonzero in column: (j-1,n), (1,j),-(j,n),-(1,j-1)
+            y[(j-1)*(2*n-j)/2] += 0.5*x[ij];
+            y[ij] += 0.5*x[ij];
+            y[j*(2*n-j-1)/2] += -0.5*x[ij];
+            y[ij-1] += - 0.5*x[ij];
+            ij++;
+        }
+
+        y[n-1]+=0.5*x[ij];
+        y[npairs]+=0.5*x[ij];
+        y[n-2] += -0.5*x[ij];
+        ij++;
+
+        for(int i=2;i<=n-1;i++) {
+            //(i,i+1)
+            y[ij+i-n-1] +=  0.5 * x[ij];
+            y[ij] += 0.5 * x[ij];
+            y[ij+i-n] += - 0.5*x[ij];
+            ij++;
+
+            for (int j=i+2;j<=n;j++) {
+                y[ij+i-n-1] +=0.5*x[ij];
+                y[ij] += 0.5*x[ij];
+                y[ij+i-n] +=  - 0.5*x[ij];
+                y[ij-1] += - 0.5*x[ij];
+                ij++;
+            }
+        }
+        return y;
+    }
+
+
 }

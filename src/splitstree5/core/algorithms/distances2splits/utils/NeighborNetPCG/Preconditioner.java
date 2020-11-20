@@ -1,6 +1,7 @@
 package splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG;
 
 import static splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.TridiagonalMatrix.multiplyLU;
+import static splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.VectorUtilities.minus;
 
 public class Preconditioner {
 
@@ -198,17 +199,5 @@ public class Preconditioner {
         return nu;
     }
 
-    /**
-     * Subtract one vector from another
-     * @param x array
-     * @param y array of the same length as x
-     * @return array with x-y.
-     */
-    private double[] minus(double[] x, double[] y) {
-        assert x.length == y.length : "Computing difference between vectors of different sizes";
-        double[] z = new double[x.length];
-        for(int i=0;i<x.length;i++)
-            z[i] = x[i] - y[i];
-        return z;
-    }
+
 }

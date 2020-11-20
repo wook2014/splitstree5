@@ -2,6 +2,8 @@ package splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG;
 
 import java.util.Arrays;
 
+import static splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.VectorUtilities.add;
+
 public class BlockXMatrix {
     public int n;  //Number of taxa = one more than the number of blocks
     public int[] m; //Array of block sizes.
@@ -132,18 +134,6 @@ public class BlockXMatrix {
         return y;
     }
 
-    /**
-     * Add two arrays of doubles
-     * @param x array of doubles
-     * @param y array of doubles with the same length as x
-     * @return x+y
-     */
-    static public double[] add(double[] x,double[] y) {
-        assert x.length==y.length:"Adding arrays with different lengths";
-        double[] z = new double[x.length];
-        for(int i=0;i<x.length;i++)
-            z[i] = x[i] + y[i];
-        return z;
-    }
+
 
 }
