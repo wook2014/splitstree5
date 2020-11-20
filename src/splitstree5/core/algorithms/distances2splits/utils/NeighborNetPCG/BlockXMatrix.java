@@ -10,6 +10,12 @@ public class BlockXMatrix {
     public SparseRowMatrix[] C; //Blocks in the last row/column.
     public boolean hasCorners; //Flag indicating wether the top right and bottom left entries of A[n-1] are present.
 
+    /**
+     * BlockXMatrix
+     *
+     * Construct a full X matrix, with all rows and columns. This is a block matrix, specified in the pdf.
+     * @param n   number of taxa.
+     */
     public BlockXMatrix(int n) {
         this.n = n;
 
@@ -72,6 +78,11 @@ public class BlockXMatrix {
         }
     }
 
+    /**
+     * Construct a block X matrix, restricted to rows/columns specified in gcell
+     * @param n   number of taxa
+     * @param gcell   (n-1) dimensional array of boolean arrays, indicating which rows/cols in each block to keep.
+     */
     public BlockXMatrix(int n,boolean[][] gcell) {
         BlockXMatrix X = new BlockXMatrix(n);
         this.n = n;
@@ -91,7 +102,48 @@ public class BlockXMatrix {
         hasCorners = gcell[n-1][1] && gcell[n-1][m[n-1]];
     }
 
+    public double[][] multiply(double[][] x) {
+        double[][] y = new double[n][];
+        for (int i=1;i<=n-2;i++) {
+            if (m[i]>0) {
+                double[] yi = A[i].multiply(x[i]);
+                if (i>1 && m[i-1]>0)
+                    yi = add(yi,B[i-1].multiplyTranspose(x[i-1])); //TODO do this without reallocating yi
+                if (i<n-2 && m[i+1]>0)
+                    yi = add(yi,B[i].multiplyTranspose(x[i+1]));
+                if (m[n-1]>0)
+                    yi = add(yi,C[i].multiplyTranspose(x[n-1]));
+                y[i] = yi;
+            }
+        }
 
+        if (m[n-1]>0) {
+            double[] ylast = A[n-1].multiply(x[n-1]);
+            if (hasCorners) {
+                ylast[1] += 0.25 * x[n - 1][m[n - 1]];
+                ylast[m[n - 1]] += 0.25 * x[n - 1][1];
+            }
+            for (int i=1;i<=n-2;i++) {
+                if (m[i]>0)
+                    ylast = add(ylast,C[i].multiply(x[i]));
+            }
+            y[n-1] = ylast;
+        }
+        return y;
+    }
 
+    /**
+     * Add two arrays of doubles
+     * @param x array of doubles
+     * @param y array of doubles with the same length as x
+     * @return x+y
+     */
+    static public double[] add(double[] x,double[] y) {
+        assert x.length==y.length:"Adding arrays with different lengths";
+        double[] z = new double[x.length];
+        for(int i=0;i<x.length;i++)
+            z[i] = x[i] + y[i];
+        return z;
+    }
 
 }

@@ -17,12 +17,36 @@ public class TridiagonalMatrix {
     public int[] s,t;
     public double[] v,w;
 
+    public TridiagonalMatrix clone() {
+        TridiagonalMatrix T = new TridiagonalMatrix();
+        T.n = n;
+        if (a!=null)
+            T.a = a.clone();
+        if (b!=null)
+            T.b = b.clone();
+        if (c!=null)
+            T.c = c.clone();
+
+        if (d!=null)
+            T.d = d.clone();
+        if (s!=null)
+            T.s = s.clone();
+        if (t!=null)
+            T.t = t.clone();
+        if (v!=null)
+            T.v = v.clone();
+        if (w!=null)
+            T.w=w.clone();
+        return T;
+    }
+
+
     /**
      * solveL
      *
      * solves  Mx = y in the case that this matrix is lower bidiagonal (c = null)
-     * @param y n-dimensional vector, with starting index 1.
-     * @return x n-dimensional vector solving MX = y, if M is this matrix.
+     * @param y vector
+     * @return x vector solving Mx = y, if M is this matrix.
      */
     public double[] solveL(double[] y) {
         assert c==null : "Applying solveL to a matrix which is not bidiagonal";
@@ -131,9 +155,9 @@ public class TridiagonalMatrix {
      * @param T2 Tridiagonal matrix with the same dimensions as T1
      * @return T1-T2
      */
-    public TridiagonalMatrix minus(TridiagonalMatrix T1, TridiagonalMatrix T2) {
+    public static TridiagonalMatrix minus(TridiagonalMatrix T1, TridiagonalMatrix T2) {
         assert T1.n==T2.n:"Trying to subtract matrices with different sizes";
-
+        int n = T1.n;
         TridiagonalMatrix T3 = new TridiagonalMatrix();
         T3.n = T1.n;
         T3.a = new double[n+1];
@@ -165,6 +189,35 @@ public class TridiagonalMatrix {
         }
         return y;
     }
+
+    /**
+     * Multiple two bidigaonal matrices
+     * @param L Lower bidiagonal matrix
+     * @param U Upper bidigaonal matrix
+     * @return Product L*U
+     */
+    public static TridiagonalMatrix multiplyLU(TridiagonalMatrix L,TridiagonalMatrix U) {
+        assert L.c==null && U.b == null : "Applying multiplyLU to matrices that are not lower and upper bidiagonal";
+        assert L.n == U.n : "Applying multiplyLU to matrices with different sizes";
+        int n = L.n;
+
+        TridiagonalMatrix T = new TridiagonalMatrix();
+        T.n = n;
+        T.a = new double[n+1];
+        T.b = new double[n];
+        T.c = new double[n];
+
+        T.a[1] = L.a[1]*U.a[1];
+        for (int i=2;i<=n;i++) {
+            T.a[i] = L.b[i-1]*U.c[i-1] + L.a[i]*U.a[i];
+            T.b[i-1] = L.b[i-1]*U.a[i-1];
+            T.c[i-1] = L.a[i-1]*U.c[i-1];
+        }
+        return T;
+    }
+
+
+
 
     /**
      * Compute data structures which enable constant time querying of inverse matrix.
