@@ -1,5 +1,8 @@
 package splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG;
 
+/**
+ * A few utility classes for handing arrays of doubles. Maybe this is standard?
+ */
 public class VectorUtilities {
     /**
      * Add two arrays of doubles

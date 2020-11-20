@@ -1,7 +1,5 @@
 package splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG;
 
-import splitstree5.resources.css._Dummy;
-
 public class CircularSplitAlgorithms {
 
     /**
@@ -148,6 +146,15 @@ public class CircularSplitAlgorithms {
         return x;
     }
 
+    /**
+     * Computes inv(A)' * x  where A is the matrix for a full circular split system. The indices of the rows and columns
+     * of A and x correspond to an ordering of pairs (1,2),(1,3),...,(1,n),(2,3),...,(2,n),...,(n-1,n).
+     * In A we have A{(i,j)(k,l)} = 1 if i and j are on opposite sides of the split {k,k+1,...,l-1}|...
+     * This algorithm runs in O(n^2) time, which is the number of entries of x.
+     * @param n Number of taxa.
+     * @param x vector with dimension n(n-1)/2
+     * @return vector inv(A)'*x which has dimension n(n-1)/2
+     */
     static public double[] circularAinvT(int n, double[] x) {
         int npairs = n*(n-1)/2;
         double[] y = new double[npairs+1];
