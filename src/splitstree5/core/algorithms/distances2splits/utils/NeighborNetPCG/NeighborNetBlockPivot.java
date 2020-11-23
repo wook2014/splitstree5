@@ -8,7 +8,7 @@ import static splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.
 public class NeighborNetBlockPivot {
 
 
-    public double[] circularBlockPivot(int n, double[] d) {
+    static public double[] circularBlockPivot(int n, double[] d) {
         int npairs = n*(n-1)/2;
         //boolean[] F = new boolean[npairs+1];
         //Arrays.fill(F,false);

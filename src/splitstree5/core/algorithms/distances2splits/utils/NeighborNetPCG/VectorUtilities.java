@@ -32,5 +32,12 @@ public class VectorUtilities {
         return z;
     }
 
+    static public double diff(double[] x, double[] y) {
+        double ss=0.0;
+        for(int i=0;i<x.length;i++)
+            ss += (x[i]-y[i])*(x[i]-y[i]);
+        return Math.sqrt(ss);
+    }
+
 
 }

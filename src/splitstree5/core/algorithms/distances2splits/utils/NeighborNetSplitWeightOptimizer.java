@@ -20,6 +20,7 @@
 
 package splitstree5.core.algorithms.distances2splits.utils;
 
+import splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.NeighborNetBlockPivot;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.misc.ASplit;
 
@@ -65,6 +66,7 @@ public class NeighborNetSplitWeightOptimizer {
     static public ArrayList<ASplit> computeWeightedSplits(int[] cycle, DistancesBlock distances, double cutoff, LeastSquares leastSquares, Regularization regularization, double lambdaFrac) {
         int ntax = distances.getNtax();
         int npairs = (ntax * (ntax - 1)) / 2;
+        final boolean runPCG = true;
 
         //Handle n=1,2 separately.
         if (ntax == 1) {
@@ -96,7 +98,10 @@ public class NeighborNetSplitWeightOptimizer {
         }
         /* Find the constrained optimal values for x */
 
-        runActiveConjugate(ntax, d, W, x, regularization, lambdaFrac);
+        if (runPCG)
+            x = NeighborNetBlockPivot.circularBlockPivot(ntax,d);
+        else
+            runActiveConjugate(ntax, d, W, x, regularization, lambdaFrac);
 
         /* Construct the splits with the appropriate weights */
         final ArrayList<ASplit> splits = new ArrayList<>();

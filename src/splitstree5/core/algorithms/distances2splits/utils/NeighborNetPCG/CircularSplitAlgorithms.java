@@ -1,5 +1,10 @@
 package splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG;
 
+import Jama.Matrix;
+
+import java.util.Random;
+import java.util.Vector;
+
 public class CircularSplitAlgorithms {
 
     /**
@@ -199,6 +204,88 @@ public class CircularSplitAlgorithms {
         }
         return y;
     }
+
+    /**
+     * Constructs 0-1 design matrix for a full collection of circular splits. Note: JAMA matrix index from 0,1,2,...
+     * @param n int, ntaxa.
+     * @return Matrix
+     */
+    static public Matrix makeA(int n) {
+        int npairs = n*(n-1)/2;
+        Matrix A = new Matrix(npairs,npairs);
+        int ij=1;
+        for(int i=1;i<=n;i++) {
+            for (int j=i+1;j<=n;j++) {
+                int kl=1;
+                for(int k=1;k<=n;k++) {
+                    for(int l=k+1;l<=n;l++) {
+                        if (i<k && k<=j && j<l)
+                            A.set(ij-1,kl-1,1);
+                        else if (k<=i && i<l && l<=j)
+                            A.set(ij-1,kl-1,1);
+                        else
+                            A.set(ij-1,kl-1,0);
+                        kl++;
+                    }
+                }
+                ij++;
+            }
+        }
+        return A;
+    }
+
+    static public void test(int n) {
+        //Test Ax.
+        int npairs = n*(n-1)/2;
+        double[] x = new double[npairs+1];
+        Random rand = new Random();
+        for(int i=1;i<=npairs;i++)
+            x[i] = rand.nextDouble();
+        double[] y = circularAx(n,x);
+
+        Matrix xJ = new Matrix(npairs,1);
+        for(int i=1;i<=npairs;i++)
+            xJ.set(i-1,0,x[i]);
+        Matrix A = makeA(n);
+
+        Matrix yJ = A.times(xJ);
+        double[] y2 = new double[npairs+1];
+        for(int i=1;i<=npairs;i++)
+            y2[i] = yJ.get(i-1,0);
+
+        double err = VectorUtilities.diff(y,y2);
+        System.err.println("Compare CircularAx, err = "+ err);
+
+        y = circularAinvT(n,x);
+        yJ = (A.transpose()).inverse().times(xJ);
+        for(int i=1;i<=npairs;i++)
+            y2[i] = yJ.get(i-1,0);
+         err = VectorUtilities.diff(y,y2);
+        System.err.println("Compare CircularAinvTx, err = "+ err);
+
+
+        y = circularAtx(n,x);
+        yJ = (A.transpose()).times(xJ);
+        for(int i=1;i<=npairs;i++)
+            y2[i] = yJ.get(i-1,0);
+         err = VectorUtilities.diff(y,y2);
+        System.err.println("Compare CircularATx, err = "+ err);
+
+        y = circularSolve(n,x);
+        yJ = (A.inverse()).times(xJ);
+        for(int i=1;i<=npairs;i++)
+            y2[i] = yJ.get(i-1,0);
+         err = VectorUtilities.diff(y,y2);
+        System.err.println("Compare CircularSolve, err = "+ err);
+
+
+
+    }
+
+
+
+
+
 
 
 }
