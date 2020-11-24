@@ -24,6 +24,8 @@ public class Preconditioner {
 
         L = new TridiagonalMatrix[n];
         U = new TridiagonalMatrix[n];
+        Y = new SparseRowMatrix[n-1];
+        Z = new SparseRowMatrix[n-1];
         if (m[1]>0) {
             TridiagonalMatrix[] LU = X.A[1].trilu();
             L[1] = LU[0];
@@ -51,6 +53,8 @@ public class Preconditioner {
                     TridiagonalMatrix[] LU = X.A[i].trilu();
                     L[i] = LU[0];
                     U[i] = LU[1];
+                    Y[i] = X.C[i];
+                    Z[i] = X.C[i];
                 }
             }
         }
@@ -135,7 +139,7 @@ public class Preconditioner {
             int i1 = X.ind[i][k1];
             if (i1!=0) {
                 double x = X.val[i][k1];
-                for(int k2=2;k2<=Y.N;k2++) {
+                for(int k2=1;k2<=Y.N;k2++) {
                     int i2 = Y.ind[j][k2];
                     if (i2!=0) {
                         double y = Y.ind[j][k2];

@@ -1,6 +1,7 @@
 package splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG;
 
 import java.util.Arrays;
+import java.util.Random;
 
 import static splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.CircularSplitAlgorithms.*;
 import static splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.VectorUtilities.minus;
@@ -136,7 +137,7 @@ public class NeighborNetBlockPivot {
             if (G[i])
                 x[i] = y[i];
         }
-        return y;
+        return x;
     }
 
     /**
@@ -146,7 +147,7 @@ public class NeighborNetBlockPivot {
      * @param G   boolean vector, size n(n-1)/2
      * @return array of boolean arrays, one for each block.
      */
-    private static boolean[][] mask2blockmask(int n,boolean[] G) {
+    public static boolean[][] mask2blockmask(int n,boolean[] G) {
 
         //Allocate arrays, initialising as false.
         boolean[][] gcell = new boolean[n][];
@@ -178,7 +179,7 @@ public class NeighborNetBlockPivot {
      * @param G   boolean vector, size n(n-1)/2, indicating blocks
      * @return array of double arrays, one for each block.
      */
-    private static double[][] vector2blocks(int n, double[] v, boolean[] G) {
+    public static double[][] vector2blocks(int n, double[] v, boolean[] G) {
         //TODO: Make this simpler using a map from pairs to blocks.
 
         double[][] vcell = new double[n][];
@@ -200,7 +201,7 @@ public class NeighborNetBlockPivot {
                 index++;
             }
             if (counti > 0)
-                vcell[i] = Arrays.copyOfRange(vi, 0, counti);
+                vcell[i] = Arrays.copyOfRange(vi, 0, counti+1);
 
             if (G[index]) {
                 countlast++;
@@ -209,7 +210,7 @@ public class NeighborNetBlockPivot {
             index++;
         }
         if (countlast>0) {
-            vcell[n-1] = Arrays.copyOfRange(vlast,0,countlast);
+            vcell[n-1] = Arrays.copyOfRange(vlast,0,countlast+1);
         }
         return vcell;
     }
@@ -226,10 +227,12 @@ public class NeighborNetBlockPivot {
         double[][] z = new double[x.length][];
 
         for (int i=1;i<x.length;i++) {
-            assert x[i].length==y[i].length:"Trying to add block vectors with different row lengths";
-            z[i] = new double[x[i].length];
-            for(int j=1;j<x[i].length;j++)
-                z[i][j] = x[i][j] + alpha*y[i][j];
+            if (x[i]!=null) {
+                assert x[i].length == y[i].length : "Trying to add block vectors with different row lengths";
+                z[i] = new double[x[i].length];
+                for (int j = 1; j < x[i].length; j++)
+                    z[i][j] = x[i][j] + alpha * y[i][j];
+            }
         }
         return z;
     }
@@ -245,9 +248,11 @@ public class NeighborNetBlockPivot {
         double xty = 0.0;
 
         for (int i=1;i<x.length;i++) {
-            assert x[i].length==y[i].length:"Trying to add block vectors with different row lengths";
-            for(int j=1;j<x[i].length;j++)
-                xty += x[i][j]*y[i][j];
+            if (x[i]!=null) {
+                assert x[i].length == y[i].length : "Trying to add block vectors with different row lengths";
+                for (int j = 1; j < x[i].length; j++)
+                    xty += x[i][j] * y[i][j];
+            }
         }
         return xty;
     }
@@ -259,8 +264,10 @@ public class NeighborNetBlockPivot {
      */
     private static double[][] blockclone(double[][] x) {
         double[][] y = new double[x.length][];
-        for(int i=0;i<x.length;i++)
-            y[i] = x[i].clone();
+        for(int i=0;i<x.length;i++) {
+            if (x[i] != null)
+                y[i] = x[i].clone();
+        }
         return y;
     }
 
@@ -293,5 +300,15 @@ public class NeighborNetBlockPivot {
             index++;
         }
         return v;
+    }
+    static public void test(int n) {
+        Random rand = new Random();
+
+        int npairs = n*(n-1)/2;
+        double[] d = new double[npairs+1];
+        for(int i=1;i<=npairs;i++)
+            d[i] = rand.nextDouble();
+
+        double[] y = circularBlockPivot(n,d);
     }
 }

@@ -66,7 +66,7 @@ public class NeighborNetSplitWeightOptimizer {
     static public ArrayList<ASplit> computeWeightedSplits(int[] cycle, DistancesBlock distances, double cutoff, LeastSquares leastSquares, Regularization regularization, double lambdaFrac) {
         int ntax = distances.getNtax();
         int npairs = (ntax * (ntax - 1)) / 2;
-        final boolean runPCG = true;
+        final boolean runPCG = false;
 
         //Handle n=1,2 separately.
         if (ntax == 1) {
@@ -82,6 +82,42 @@ public class NeighborNetSplitWeightOptimizer {
             }
             return splits;
         }
+
+        if (runPCG) {
+            //Set up the distance vector.
+
+
+            double[] d = new double[npairs+1];
+            int index = 1;
+            for (int i = 1; i <= ntax; i++)
+                for (int j = i + 1; j <= ntax; j++)
+                    d[index++] = distances.get(cycle[i], cycle[j]);
+
+
+            System.out.print("d=[");
+            for(int i=1;i<=npairs;i++) {
+                System.out.print(d[i]+" ");
+            }
+            System.out.println("];");
+
+
+
+            double[] x = NeighborNetBlockPivot.circularBlockPivot(ntax,d);
+            final ArrayList<ASplit> splits = new ArrayList<>();
+
+            index = 1;
+            for (int i = 1; i <= ntax; i++) {
+                final BitSet A = new BitSet();
+                for (int j = i + 1; j <= ntax; j++) {
+                    A.set(cycle[j - 1]);
+                    if (x[index] > cutoff)
+                        splits.add(new ASplit(A, ntax, (float) (x[index])));
+                    index++;
+                }
+            }
+            return splits;
+        }
+
 
         /* Re-order taxa so that the ordering is 0,1,2,...,n-1 */
         double[] d = setupD(distances, cycle);

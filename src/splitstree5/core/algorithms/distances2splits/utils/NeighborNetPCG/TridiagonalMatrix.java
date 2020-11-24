@@ -1,5 +1,7 @@
 package splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG;
 
+import Jama.Matrix;
+
 import java.util.Arrays;
 import java.util.Random;
 
@@ -51,7 +53,6 @@ public class TridiagonalMatrix {
     public double[] solveL(double[] y) {
         assert c==null : "Applying solveL to a matrix which is not bidiagonal";
         double[] x = new double[n+1];
-        Arrays.fill(x,0.0); //Is this necessary?
 
         x[1] = y[1]/a[1];
         for (int i=2;i<=n;i++)
@@ -291,6 +292,25 @@ public class TridiagonalMatrix {
            return 0.0;
    }
 
+    /**
+     * Convert Tridiagonal matrix to a Jama matrix (for debugging)
+     * @return Matrix
+     */
+    public Matrix toMatrix() {
+       Matrix M = new Matrix(n,n);
+       for(int i=1;i<n;i++) {
+           M.set(i-1,i-1,a[i]);
+           if (b!=null)
+               M.set(i,i-1,b[i]);
+           if (c!=null)
+               M.set(i-1,i,c[i]);
+       }
+       M.set(n-1,n-1,a[n]);
+       return M;
+    }
+
+
+
     public static void test(int n) {
        //Run a collection of tests on randomly generated tridiagonal matrices with n rows and columns
 
@@ -307,6 +327,11 @@ public class TridiagonalMatrix {
             M.b[i] = rand.nextDouble();
             M.c[i] = rand.nextDouble();
         }
+        //Print the matrix
+        Matrix MM = M.toMatrix();
+        System.err.println(MM.toString());
+
+
 
         //Generate a random vector
         double[] x = new double[n+1];
