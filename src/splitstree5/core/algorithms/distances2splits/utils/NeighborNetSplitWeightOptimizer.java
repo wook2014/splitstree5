@@ -63,10 +63,9 @@ public class NeighborNetSplitWeightOptimizer {
      * @param distances Input distance
      * @return Splits  splits with the estimated weights.
      */
-    static public ArrayList<ASplit> computeWeightedSplits(int[] cycle, DistancesBlock distances, double cutoff, LeastSquares leastSquares, Regularization regularization, double lambdaFrac) {
+    static public ArrayList<ASplit> computeWeightedSplits(boolean runPCG, int[] cycle, DistancesBlock distances, double cutoff, LeastSquares leastSquares, Regularization regularization, double lambdaFrac) {
         int ntax = distances.getNtax();
         int npairs = (ntax * (ntax - 1)) / 2;
-        final boolean runPCG = true;
 
         //Handle n=1,2 separately.
         if (ntax == 1) {

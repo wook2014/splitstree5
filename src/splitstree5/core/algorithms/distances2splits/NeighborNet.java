@@ -20,6 +20,8 @@
 
 package splitstree5.core.algorithms.distances2splits;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import jloda.util.ProgressSilent;
@@ -34,9 +36,7 @@ import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
 import splitstree5.utils.SplitsUtilities;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Neighbor net algorithm
@@ -45,6 +45,13 @@ import java.util.Stack;
  * @author David Bryant and Daniel Huson
  */
 public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implements IFromDistances, IToSplits {
+    public enum WeightsAlgorithm {NNet2004, NNet2021}
+
+    private final ObjectProperty<WeightsAlgorithm> optionWeights = new SimpleObjectProperty<>(WeightsAlgorithm.NNet2004);
+
+    public List<String> listOptions() {
+        return Collections.singletonList("optionWeights");
+    }
 
     @Override
     public String getCitation() {
@@ -71,7 +78,7 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
 
         progress.setTasks("NNet", "edge weights");
 
-        final ArrayList<ASplit> splits = NeighborNetSplitWeightOptimizer.computeWeightedSplits(cycle, distancesBlock, 0.000001, NeighborNetSplitWeightOptimizer.LeastSquares.ols, NeighborNetSplitWeightOptimizer.Regularization.nnls, 1);
+        final ArrayList<ASplit> splits = NeighborNetSplitWeightOptimizer.computeWeightedSplits(getOptionWeights().equals(WeightsAlgorithm.NNet2021), cycle, distancesBlock, 0.000001, NeighborNetSplitWeightOptimizer.LeastSquares.ols, NeighborNetSplitWeightOptimizer.Regularization.nnls, 1);
 
         if (Compatibility.isCompatible(splits))
             splitsBlock.setCompatibility(Compatibility.compatible);
@@ -154,8 +161,7 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
         double[][] D = new double[max_num_nodes][max_num_nodes];
         /* Copy the distance matrix into a larger, scratch distance matrix */
         for (int i = 1; i <= ntax; i++) {
-            for (int j = 1; j <= ntax; j++)
-                D[i][j] = dist[i - 1][j - 1];
+            System.arraycopy(dist[i - 1], 0, D[i], 1, ntax);
             Arrays.fill(D[i], ntax + 1, max_num_nodes, 0.0);
         }
         for (int i = ntax + 1; i < max_num_nodes; i++)
@@ -456,7 +462,7 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
      * @param amalgs    stack of amalagations
      * @param netNodes  the net nodes
      */
-    static private int[] expandNodes(ProgressListener progress, int num_nodes, int ntax, Stack amalgs, NetNode netNodes) throws CanceledException {
+    static private int[] expandNodes(ProgressListener progress, int num_nodes, int ntax, Stack<NetNode> amalgs, NetNode netNodes) throws CanceledException {
 
         int[] ordering = new int[ntax + 1];
         //System.err.println("expandNodes");
@@ -473,7 +479,7 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
         while (!amalgs.empty()) {
             /* Find the three elements replacing u and v. Swap u and v around if v comes before u in the
             circular ordering being built up */
-            u = (NetNode) (amalgs.pop());
+            u = (amalgs.pop());
             // System.err.println("POP: u="+u);
             v = u.nbr;
             x = u.ch1;
@@ -517,6 +523,17 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
         return ordering;
     }
 
+    public WeightsAlgorithm getOptionWeights() {
+        return optionWeights.get();
+    }
+
+    public ObjectProperty<WeightsAlgorithm> optionWeightsProperty() {
+        return optionWeights;
+    }
+
+    public void setOptionWeights(WeightsAlgorithm optionWeights) {
+        this.optionWeights.set(optionWeights);
+    }
 }
 
 /* A node in the net */

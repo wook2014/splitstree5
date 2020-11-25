@@ -87,12 +87,9 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
                     service.submit(() -> {
                         if (exception.get() == null) {
                             try {
+                                progress.checkForCancel();
                                 final var genome = genomesBlock.getGenome(g + 1);
-                                final MashSketch sketch = MashSketch.compute(genome.getName(), Basic.asList(genome.parts()), isNucleotideData, getOptionSketchSize(), getOptionKMerSize(), getOptionHashSeed(), isOptionIgnoreUniqueKMers(), progress);
-                                synchronized (sketches) {
-                                    progress.checkForCancel();
-                                    sketches[g] = sketch;
-                                }
+                                sketches[g] = MashSketch.compute(genome.getName(), Basic.asList(genome.parts()), isNucleotideData, getOptionSketchSize(), getOptionKMerSize(), getOptionHashSeed(), isOptionIgnoreUniqueKMers(), progress);
                             } catch (Exception ex) {
                                 exception.setIfCurrentValueIsNull(ex);
                             }
