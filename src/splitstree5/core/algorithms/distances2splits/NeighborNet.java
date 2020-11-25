@@ -78,7 +78,9 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
 
         progress.setTasks("NNet", "edge weights");
 
-        final ArrayList<ASplit> splits = NeighborNetSplitWeightOptimizer.computeWeightedSplits(getOptionWeights().equals(WeightsAlgorithm.NNet2021), cycle, distancesBlock, 0.000001, NeighborNetSplitWeightOptimizer.LeastSquares.ols, NeighborNetSplitWeightOptimizer.Regularization.nnls, 1);
+        final ArrayList<ASplit> splits = NeighborNetSplitWeightOptimizer.computeWeightedSplits(getOptionWeights().equals(WeightsAlgorithm.NNet2021),
+                cycle, distancesBlock, 0.000001, NeighborNetSplitWeightOptimizer.LeastSquares.ols, NeighborNetSplitWeightOptimizer.Regularization.nnls, 1,
+                progress);
 
         if (Compatibility.isCompatible(splits))
             splitsBlock.setCompatibility(Compatibility.compatible);

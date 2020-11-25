@@ -20,6 +20,8 @@
 
 package splitstree5.core.algorithms.distances2splits.utils;
 
+import jloda.util.CanceledException;
+import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.NeighborNetBlockPivot;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.misc.ASplit;
@@ -63,7 +65,7 @@ public class NeighborNetSplitWeightOptimizer {
      * @param distances Input distance
      * @return Splits  splits with the estimated weights.
      */
-    static public ArrayList<ASplit> computeWeightedSplits(boolean runPCG, int[] cycle, DistancesBlock distances, double cutoff, LeastSquares leastSquares, Regularization regularization, double lambdaFrac) {
+    static public ArrayList<ASplit> computeWeightedSplits(boolean runPCG, int[] cycle, DistancesBlock distances, double cutoff, LeastSquares leastSquares, Regularization regularization, double lambdaFrac, ProgressListener progress) throws CanceledException {
         int ntax = distances.getNtax();
         int npairs = (ntax * (ntax - 1)) / 2;
 
@@ -99,9 +101,7 @@ public class NeighborNetSplitWeightOptimizer {
 //            }
 //            System.out.println("];");
 
-
-
-            double[] x = NeighborNetBlockPivot.circularBlockPivot(ntax,d);
+            double[] x = NeighborNetBlockPivot.circularBlockPivot(ntax, d, progress);
             final ArrayList<ASplit> splits = new ArrayList<>();
 
             index = 1;
@@ -134,7 +134,7 @@ public class NeighborNetSplitWeightOptimizer {
         /* Find the constrained optimal values for x */
 
         if (runPCG)
-            x = NeighborNetBlockPivot.circularBlockPivot(ntax,d);
+            x = NeighborNetBlockPivot.circularBlockPivot(ntax, d, progress);
         else
             runActiveConjugate(ntax, d, W, x, regularization, lambdaFrac);
 
