@@ -1,5 +1,8 @@
 package splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG;
 
+import Jama.Matrix;
+import splitstree5.resources.css._Dummy;
+
 import static splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.TridiagonalMatrix.multiplyLU;
 import static splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.VectorUtilities.minus;
 
@@ -41,7 +44,7 @@ public class Preconditioner {
                     T.preprocessInverse();
 
                     TridiagonalMatrix T2 = tri_X_Tinv_Y(X.B[i-1],T,X.B[i-1]);
-                    TridiagonalMatrix[] LU = T2.trilu();
+                    TridiagonalMatrix[] LU = TridiagonalMatrix.minus(X.A[i],T2).trilu();
                     L[i] = LU[0];
                     U[i] = LU[1];
 
@@ -142,7 +145,7 @@ public class Preconditioner {
                 for(int k2=1;k2<=Y.N;k2++) {
                     int i2 = Y.ind[j][k2];
                     if (i2!=0) {
-                        double y = Y.ind[j][k2];
+                        double y = Y.val[j][k2];
                         if (useTinvTranspose)
                             z+= x*T.getTinv(i2,i1)*y;
                         else
@@ -202,6 +205,41 @@ public class Preconditioner {
         }
         return nu;
     }
+    public Matrix[] toMatrix() {
+        int[] m = X.m;
+        int n = X.n;
+        int msum = 0;
+        for (int i = 1; i <= n - 1; i++)
+            msum += m[i];
 
+        int[][] blocks = new int[n][];
+        int index = 1;
+        for (int i = 1; i <= n - 1; i++) {
+            if (m[i] > 0) {
+                blocks[i] = new int[m[i]];
+                for (int j = 0; j < m[i]; j++) {
+                    blocks[i][j] = index + j - 1;
+                }
+                index += m[i];
+            }
+        }
+
+        Matrix LL = new Matrix(msum, msum);
+        Matrix UU = new Matrix(msum, msum);
+        for (int i = 1; i <= n - 1; i++) {
+            LL.setMatrix(blocks[i], blocks[i], L[i].toMatrix());
+            UU.setMatrix(blocks[i], blocks[i], U[i].toMatrix());
+            if (i < n - 1 && i > 1 && m[i - 1] > 0) {
+                LL.setMatrix(blocks[i], blocks[i - 1], X.B[i - 1].toMatrix().times(U[i - 1].toMatrix().inverse()));
+                UU.setMatrix(blocks[i - 1], blocks[i], L[i - 1].toMatrix().inverse().times(X.B[i - 1].toMatrix().transpose()));
+            }
+            if (i < n - 1 && m[n - 1] > 0) {
+                LL.setMatrix(blocks[n - 1], blocks[i], Y[i].toMatrix().times(U[i].toMatrix().inverse()));
+                UU.setMatrix(blocks[i], blocks[n - 1], L[i].toMatrix().inverse().times(Z[i].toMatrix().transpose()));
+            }
+
+        }
+        return new Matrix[]{LL, UU};
+    }
 
 }

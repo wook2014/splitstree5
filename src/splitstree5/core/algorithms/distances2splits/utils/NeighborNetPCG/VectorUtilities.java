@@ -39,5 +39,11 @@ public class VectorUtilities {
         return Math.sqrt(ss);
     }
 
+    static public double norm(double[] x) {
+        double ss=0.0;
+        for(int i=0;i<x.length;i++)
+            ss += x[i]*x[i];
+        return Math.sqrt(ss);
+    }
 
 }

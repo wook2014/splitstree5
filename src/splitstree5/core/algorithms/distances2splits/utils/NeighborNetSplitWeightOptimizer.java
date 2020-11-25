@@ -66,7 +66,7 @@ public class NeighborNetSplitWeightOptimizer {
     static public ArrayList<ASplit> computeWeightedSplits(int[] cycle, DistancesBlock distances, double cutoff, LeastSquares leastSquares, Regularization regularization, double lambdaFrac) {
         int ntax = distances.getNtax();
         int npairs = (ntax * (ntax - 1)) / 2;
-        final boolean runPCG = false;
+        final boolean runPCG = true;
 
         //Handle n=1,2 separately.
         if (ntax == 1) {
@@ -94,11 +94,11 @@ public class NeighborNetSplitWeightOptimizer {
                     d[index++] = distances.get(cycle[i], cycle[j]);
 
 
-            System.out.print("d=[");
-            for(int i=1;i<=npairs;i++) {
-                System.out.print(d[i]+" ");
-            }
-            System.out.println("];");
+//            System.out.print("d=[");
+//            for(int i=1;i<=npairs;i++) {
+//                System.out.print(d[i]+" ");
+//            }
+//            System.out.println("];");
 
 
 

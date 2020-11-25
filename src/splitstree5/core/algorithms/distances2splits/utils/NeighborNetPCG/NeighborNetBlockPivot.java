@@ -35,7 +35,7 @@ public class NeighborNetBlockPivot {
                 if (infeasible[i])
                     ninf++;
             }
-
+            //System.err.println("ninf = "+ninf);
             if (ninf < N) {
                 N = ninf;
                 p = 3;
@@ -60,6 +60,8 @@ public class NeighborNetBlockPivot {
                 }
             }
             z = circularLeastSquares(n,G,d,100,tol);
+            //double znorm = VectorUtilities.norm(z);
+            //System.err.println(znorm);
 
             for(int i=1;i<=npairs;i++) {
                 if (Math.abs(z[i])<1e-10)
@@ -67,6 +69,11 @@ public class NeighborNetBlockPivot {
             }
             iter++;
         }
+        //Do one final refitting with these edges.
+        z = circularLeastSquares(n,G,d,100,1e-3*tol);
+        for(int i=1;i<=npairs;i++)
+            if (G[i])
+                z[i]=0.0;
 
         return z;
     }
@@ -302,13 +309,19 @@ public class NeighborNetBlockPivot {
         return v;
     }
     static public void test(int n) {
-        Random rand = new Random();
+//        Random rand = new Random();
+//
+//        int npairs = n*(n-1)/2;
+//        double[] d = new double[npairs+1];
+//        for(int i=1;i<=npairs;i++)
+//            d[i] = rand.nextDouble();
+//
+//        double[] y = circularBlockPivot(n,d);
 
-        int npairs = n*(n-1)/2;
-        double[] d = new double[npairs+1];
-        for(int i=1;i<=npairs;i++)
-            d[i] = rand.nextDouble();
-
+        double[] d = new double[] {0,20,56,66,63,36,32,32,16,17,18,18,19,12,12,13,13,16,17,1,61,69,61,41,34,33,24,24,28,28,31,25,30,30,30,31,32,21,41,57,60,63,66,62,62,61,62,64,59,58,61,59,59,60,57,61,61,65,69,66,66,65,66,67,67,68,66,67,67,68,65,59,58,72,59,61,62,61,65,62,66,64,64,64,64,62,16,41,30,29,30,31,33,29,31,28,31,32,33,35,16,26,26,30,28,40,26,25,24,23,26,25,24,26,27,27,27,38,27,26,27,26,25,26,29,3,4,4,8,8,14,12,13,15,16,15,3,3,7,10,14,12,13,15,16,16,2,8,11,13,14,14,16,17,17,8,11,15,14,13,15,16,17,11,14,13,13,15,16,18,7,6,6,10,11,11,7,7,12,11,13,4,8,10,12,4,5,12,1,15,16};
+        n=20;
         double[] y = circularBlockPivot(n,d);
+        int m=3;
+
     }
 }

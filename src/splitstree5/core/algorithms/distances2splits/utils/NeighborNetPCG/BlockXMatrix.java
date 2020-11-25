@@ -130,7 +130,7 @@ public class BlockXMatrix {
             if (i < n - 1)
                 C[i] = X.C[i].submatrix(gcell[n - 1], gcell[i]);
         }
-        hasCorners = gcell[n - 1][1] && gcell[n - 1][m[n - 1]];
+        hasCorners = gcell[n - 1][1] && gcell[n - 1][n-1];
     }
 
     public double[][] multiply(double[][] x) {
