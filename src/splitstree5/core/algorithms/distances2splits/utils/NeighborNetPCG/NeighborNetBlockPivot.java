@@ -5,9 +5,11 @@ import jloda.util.ProgressListener;
 import jloda.util.ProgressSilent;
 
 import java.util.Arrays;
+import java.util.Random;
 
 import static splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.CircularSplitAlgorithms.*;
 import static splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.VectorUtilities.minus;
+import static splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.VectorUtilities.norm;
 
 public class NeighborNetBlockPivot {
 
@@ -18,6 +20,7 @@ public class NeighborNetBlockPivot {
         //Arrays.fill(F,false);
         boolean[] G = new boolean[npairs + 1];
         Arrays.fill(G, true);
+        Random rand = new Random();
 
         double[] z = circularAtx(n, d);
         for (int i = 1; i <= npairs; i++)
@@ -27,10 +30,16 @@ public class NeighborNetBlockPivot {
         int p=3;
         int iter=1;
         boolean[] infeasible = new boolean[npairs+1];
+        Arrays.fill(infeasible,false);
         int ninf = 0;
         int N = npairs+1;
+        int maxiter = 100;
 
         while (iter<2 || ninf > 0) {
+            if (iter>=maxiter) {
+                System.err.println("WARNING: Max Iterations exceeded in Block Pivot Algorithm");
+                break;
+            }
             ninf = 0;
             for (int i = 1; i <= npairs; i++) {
                 infeasible[i] = z[i] < 0.0;
@@ -38,9 +47,16 @@ public class NeighborNetBlockPivot {
                     ninf++;
             }
             //System.err.println("ninf = "+ninf);
+
+            double pgnorm = projectedGradientNorm(n,d,z,G);
+            System.err.println("f(x) = "+functionVal(n,d,z,G));
+            
             if (ninf < N) {
                 N = ninf;
                 p = 3;
+                System.out.print("Swapping (1) "+pgnorm);
+                //printSet(infeasible);
+                System.out.println();
                 for (int i = 1; i <= npairs; i++) {
                     //F[i] = F[i] ^ infeasible[i]; //XOR
                     G[i] = G[i] ^ infeasible[i];
@@ -49,18 +65,25 @@ public class NeighborNetBlockPivot {
             } else {
                 if (p > 0) {
                     p--;
+                    System.out.print("Swapping (2) "+pgnorm);
+                    //printSet(infeasible);
+                    System.out.println();
+
                     for (int i = 1; i <= npairs; i++) {
                        // F[i] = F[i] ^ infeasible[i]; //XOR
                         G[i] = G[i] ^ infeasible[i];
                     }
                 } else {
-                    int i = 1;
-                    while (i < npairs && !infeasible[i])
+                    int i = randomElement(infeasible,rand);
+                    //int i = 1;
+                    //while (i < npairs && !infeasible[i])
                         i++;
                    // F[i] = F[i] ^ true;
+                    System.err.println("Single swapping "+i+" pgnorm="+pgnorm);
                     G[i] = !G[i];
                 }
             }
+
             z = circularLeastSquares(n, G, d, 100, tol);
             //double znorm = VectorUtilities.norm(z);
             //System.err.println(znorm);
@@ -313,6 +336,79 @@ public class NeighborNetBlockPivot {
         return v;
     }
 
+    static private void printSet(boolean[] S) {
+        for(int i=0;i<S.length;i++) {
+            if (S[i])
+                System.err.print(i+", ");
+        }
+    }
+
+    static private int randomElement(boolean[] S, Random rand) {
+        int n=0;
+        for(int i=0;i<S.length;i++) {
+            if (S[i])
+                n++;
+        }
+        int k = rand.nextInt(n);
+        int m=0;
+        for(int i=0;i<S.length;i++) {
+            if (S[i]) {
+                if (m==k)
+                    return i;
+                else
+                    m++;
+            }
+
+        }
+        return -1;
+    }
+
+    /**
+     * Compute the projected gradient at x=z (with z(G)=0) for 0.5 * \|Ax - d\|^2 with x>=0.
+     * @param n
+     * @param d
+     * @param z
+     * @param G
+     * @return
+     */
+    private static double projectedGradientNorm(int n,double d[],double[] z, boolean[] G) {
+        int npairs = n * (n - 1) / 2;
+        double[] x = z.clone();
+        for (int i = 1; i <= npairs; i++) {
+            if (G[i])
+                x[i] = 0.0;
+        }
+
+        double[] grad = CircularSplitAlgorithms.circularAtx(n, minus(CircularSplitAlgorithms.circularAx(n, x), d));
+        double gtg = 0.0;
+        for (int i = 1; i <= npairs; i++) {
+            if (G[i] && grad[i] < 0)
+                grad[i] = 0;
+            else
+                gtg = grad[i] * grad[i];
+        }
+        return Math.sqrt(gtg);
+    }
+
+    /**
+     * Compute the projected gradient at x=z (with z(G)=0) for 0.5 * \|Ax - d\|^2 with x>=0.
+     * @param n
+     * @param d
+     * @param z
+     * @param G
+     * @return
+     */
+    private static double functionVal(int n,double d[],double[] z, boolean[] G) {
+        int npairs = n * (n - 1) / 2;
+        double[] x = z.clone();
+        for (int i = 1; i <= npairs; i++) {
+            if (G[i])
+                x[i] = 0.0;
+        }
+
+        double[] r = minus(CircularSplitAlgorithms.circularAx(n, x), d);
+        return norm(r);
+    }
     static public void test(int n) throws CanceledException {
 //        Random rand = new Random();
 //

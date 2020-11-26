@@ -95,11 +95,11 @@ public class NeighborNetSplitWeightOptimizer {
                     d[index++] = distances.get(cycle[i], cycle[j]);
 
 
-//            System.out.print("d=[");
-//            for(int i=1;i<=npairs;i++) {
-//                System.out.print(d[i]+" ");
-//            }
-//            System.out.println("];");
+            System.out.print("d=[");
+            for(int i=1;i<=npairs;i++) {
+                System.out.print(d[i]+" ");
+            }
+            System.out.println("];");
 
             double[] x = NeighborNetBlockPivot.circularBlockPivot(ntax, d, progress);
             final ArrayList<ASplit> splits = new ArrayList<>();
