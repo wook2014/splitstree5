@@ -12,10 +12,13 @@ import static splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.
 import static splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.VectorUtilities.norm;
 
 public class NeighborNetBlockPivot {
+    private static boolean verbose = true;
 
 
     static public double[] circularBlockPivot(int n, double[] d, ProgressListener progress) throws CanceledException {
-        int npairs = n * (n - 1) / 2;
+        final int maxIterationsCircularLeastSquares = 1000;
+
+        final int npairs = n * (n - 1) / 2;
         //boolean[] F = new boolean[npairs+1];
         //Arrays.fill(F,false);
         final boolean[] G = new boolean[npairs + 1];
@@ -54,9 +57,11 @@ public class NeighborNetBlockPivot {
             if (ninf < N) {
                 N = ninf;
                 p = 3;
-                System.out.print("Swapping (1) "+pgnorm);
+                if (verbose)
+                    System.err.print("Swapping (1) " + pgnorm);
                 //printSet(infeasible);
-                System.out.println();
+                if (verbose)
+                    System.err.println();
                 for (int i = 1; i <= npairs; i++) {
                     //F[i] = F[i] ^ infeasible[i]; //XOR
                     G[i] = G[i] ^ infeasible[i];
@@ -65,12 +70,13 @@ public class NeighborNetBlockPivot {
             } else {
                 if (p > 0) {
                     p--;
-                    System.out.print("Swapping (2) "+pgnorm);
+                    if (verbose)
+                        System.err.print("Swapping (2) " + pgnorm);
                     //printSet(infeasible);
-                    System.out.println();
+                    if (verbose) System.err.println();
 
                     for (int i = 1; i <= npairs; i++) {
-                       // F[i] = F[i] ^ infeasible[i]; //XOR
+                        // F[i] = F[i] ^ infeasible[i]; //XOR
                         G[i] = G[i] ^ infeasible[i];
                     }
                 } else {
@@ -79,12 +85,12 @@ public class NeighborNetBlockPivot {
                     //while (i < npairs && !infeasible[i])
                     //    i++;
                     // F[i] = F[i] ^ true;
-                    System.err.println("Single swapping "+i+" pgnorm="+pgnorm);
+                    if (verbose) System.err.println("Single swapping " + i + " pgnorm=" + pgnorm);
                     G[i] = !G[i];
                 }
             }
 
-            z = circularLeastSquares(n, G, d, 100, tol);
+            z = circularLeastSquares(n, G, d, maxIterationsCircularLeastSquares, tol);
             //double znorm = VectorUtilities.norm(z);
             //System.err.println(znorm);
 
@@ -97,7 +103,7 @@ public class NeighborNetBlockPivot {
             progress.checkForCancel();
         }
         //Do one final refitting with these edges.
-        z = circularLeastSquares(n,G,d,100,1e-3*tol);
+        z = circularLeastSquares(n, G, d, maxIterationsCircularLeastSquares, 1e-3 * tol);
         for(int i=1;i<=npairs;i++)
             if (G[i])
                 z[i]=0.0;
@@ -392,13 +398,14 @@ public class NeighborNetBlockPivot {
 
     /**
      * Compute the projected gradient at x=z (with z(G)=0) for 0.5 * \|Ax - d\|^2 with x>=0.
+     *
      * @param n
      * @param d
      * @param z
      * @param G
      * @return
      */
-    private static double functionVal(int n,double d[],double[] z, boolean[] G) {
+    private static double functionVal(int n, double[] d, double[] z, boolean[] G) {
         int npairs = n * (n - 1) / 2;
         double[] x = z.clone();
         for (int i = 1; i <= npairs; i++) {
