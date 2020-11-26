@@ -18,8 +18,8 @@ public class NeighborNetBlockPivot {
         int npairs = n * (n - 1) / 2;
         //boolean[] F = new boolean[npairs+1];
         //Arrays.fill(F,false);
-        boolean[] G = new boolean[npairs + 1];
-        Arrays.fill(G, true);
+        final boolean[] G = new boolean[npairs + 1];
+        Arrays.fill(G, true); // todo: unnecessary: Java always sets values to false when creating a new boolean array
         Random rand = new Random();
 
         double[] z = circularAtx(n, d);
@@ -27,16 +27,16 @@ public class NeighborNetBlockPivot {
             z[i] = -z[i];
         double tol = 1e-10;
 
-        int p=3;
-        int iter=1;
-        boolean[] infeasible = new boolean[npairs+1];
-        Arrays.fill(infeasible,false);
+        int p = 3;
+        int iter = 1;
+        final boolean[] infeasible = new boolean[npairs + 1];
+        Arrays.fill(infeasible, false); // todo: unnecessary: Java always sets values to false when creating a new boolean array
         int ninf = 0;
-        int N = npairs+1;
+        int N = npairs + 1;
         int maxiter = 100;
 
-        while (iter<2 || ninf > 0) {
-            if (iter>=maxiter) {
+        while (iter < 2 || ninf > 0) {
+            if (iter >= maxiter) {
                 System.err.println("WARNING: Max Iterations exceeded in Block Pivot Algorithm");
                 break;
             }
@@ -77,8 +77,8 @@ public class NeighborNetBlockPivot {
                     int i = randomElement(infeasible,rand);
                     //int i = 1;
                     //while (i < npairs && !infeasible[i])
-                        i++;
-                   // F[i] = F[i] ^ true;
+                    //    i++;
+                    // F[i] = F[i] ^ true;
                     System.err.println("Single swapping "+i+" pgnorm="+pgnorm);
                     G[i] = !G[i];
                 }
