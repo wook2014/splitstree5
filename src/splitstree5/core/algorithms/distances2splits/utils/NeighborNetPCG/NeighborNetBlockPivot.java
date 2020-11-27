@@ -14,32 +14,39 @@ import static splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.
 public class NeighborNetBlockPivot {
     private static boolean verbose = true;
 
+    public static class BlockPivotParams {
+        public int maxBlockPivotIterations = 1000; //Maximum number of iterations for the block pivot algorithm
+        public int maxPCGIterations = 1000; //Maximum number of iterations for the conjugate gradient algorithm
+        public double pcgTol = 1e-8; //Tolerance for pcg: will stop when residual has norm less than this.
+        public double blockPivotCutoff = 1e-8; //Cutoff - values in block pivot with value smaller than this are set to zero.
+        public boolean usePreconditioner = true; //True if the conjugate gradient makes use of preconditioner.
+        public int preconditionerBands = 10; //Number of bands used when computing Y,Z submatrices in the preconditioner. 
+        // Note that alot of the calculations for preconditioning are done even if this is false, so use this flag only to assess #iterations.
 
-    static public double[] circularBlockPivot(int n, double[] d, ProgressListener progress) throws CanceledException {
-        final int maxIterationsCircularLeastSquares = 1000;
+    }
+
+    static public double[] circularBlockPivot(int n, double[] d, ProgressListener progress, BlockPivotParams params) throws CanceledException {
 
         final int npairs = n * (n - 1) / 2;
         //boolean[] F = new boolean[npairs+1];
         //Arrays.fill(F,false);
         final boolean[] G = new boolean[npairs + 1];
-        Arrays.fill(G, true); // todo: unnecessary: Java always sets values to false when creating a new boolean array
+        Arrays.fill(G, true); // Note: java initialised boolean array as false.
         Random rand = new Random();
 
         double[] z = circularAtx(n, d);
         for (int i = 1; i <= npairs; i++)
             z[i] = -z[i];
-        double tol = 1e-10;
 
         int p = 3;
         int iter = 1;
         final boolean[] infeasible = new boolean[npairs + 1];
-        Arrays.fill(infeasible, false); // todo: unnecessary: Java always sets values to false when creating a new boolean array
+        //Arrays.fill(infeasible, false); // todo: unnecessary: Java always sets values to false when creating a new boolean array
         int ninf = 0;
         int N = npairs + 1;
-        int maxiter = 100;
 
         while (iter < 2 || ninf > 0) {
-            if (iter >= maxiter) {
+            if (iter >= params.maxBlockPivotIterations) {
                 System.err.println("WARNING: Max Iterations exceeded in Block Pivot Algorithm");
                 break;
             }
@@ -52,7 +59,8 @@ public class NeighborNetBlockPivot {
             //System.err.println("ninf = "+ninf);
 
             double pgnorm = projectedGradientNorm(n,d,z,G);
-            System.err.println("f(x) = "+functionVal(n,d,z,G));
+            if (verbose)
+                System.err.println("f(x) = "+functionVal(n,d,z,G));
             
             if (ninf < N) {
                 N = ninf;
@@ -90,12 +98,12 @@ public class NeighborNetBlockPivot {
                 }
             }
 
-            z = circularLeastSquares(n, G, d, maxIterationsCircularLeastSquares, tol);
+            z = circularLeastSquares(n, G, d, params.pcgTol, params);
             //double znorm = VectorUtilities.norm(z);
             //System.err.println(znorm);
 
             for (int i = 1; i <= npairs; i++) {
-                if (Math.abs(z[i]) < 1e-10)
+                if (Math.abs(z[i]) < params.blockPivotCutoff)
                     z[i] = 0.0;
             }
             iter++;
@@ -103,7 +111,7 @@ public class NeighborNetBlockPivot {
             progress.checkForCancel();
         }
         //Do one final refitting with these edges.
-        z = circularLeastSquares(n, G, d, maxIterationsCircularLeastSquares, 1e-3 * tol);
+        z = circularLeastSquares(n, G, d, 1e-3 * params.pcgTol, params);
         for(int i=1;i<=npairs;i++)
             if (G[i])
                 z[i]=0.0;
@@ -120,13 +128,15 @@ public class NeighborNetBlockPivot {
      * @param n Number of taxa
      * @param G  Mask: indicating variables to c
      * @param d Vector of distances
-     * @param maxiter Maximum number of iterations for conjugate gradient.
      * @param tol  Target tolerance: algorithm halts when ||Ax-d|| <= tol.
+     * @param params   Tuning parameters for the algorithm
      * @return vector
      */
-    private static double[] circularLeastSquares(int n, boolean[] G, double[] d, int maxiter, double tol) {
+    private static double[] circularLeastSquares(int n, boolean[] G, double[] d, double tol, BlockPivotParams params) {
 
         int npairs = n * (n - 1) / 2; //Dimensions of G,d.
+        int maxiter = params.maxPCGIterations;
+        boolean usePreconditioner = params.usePreconditioner;
 
         int nG = 0;
         for (int i = 1; i <= npairs; i++) {
@@ -142,19 +152,25 @@ public class NeighborNetBlockPivot {
         BlockXMatrix X = new BlockXMatrix(n,gcell);
         double[] unconstrained = circularSolve(n,d);
         double[][] b = vector2blocks(n,unconstrained,G);
-        Preconditioner M = new Preconditioner(X,4);
+        Preconditioner M = new Preconditioner(X,params.preconditionerBands);
 
         double[] nuvec = new double[npairs+1];
         double[][] nu = vector2blocks(n,nuvec,G);
 
         double[][] r = blockvectorAdd(b,-1,X.multiply(nu));
-        double[][] z = M.solve(r);
+
+        double[][] z;
+        if (usePreconditioner)
+            z = M.solve(r);
+        else
+            z = r.clone();
 
         double[][] p = blockclone(z);
 
         double rnorm,alpha,beta,rtz;
+        int j;
 
-        for(int j=1;j<=maxiter;j++) {
+        for(j=1;j<=maxiter;j++) {
             rnorm = Math.sqrt(blockvectorDot(r,r));
             if (rnorm<tol)
                 break;
@@ -165,10 +181,16 @@ public class NeighborNetBlockPivot {
             nu = blockvectorAdd(nu,alpha,p);
             rtz = blockvectorDot(r,z);
             r = blockvectorAdd(r,-alpha,X.multiply(p));
-            z = M.solve(r);
+            if (usePreconditioner)
+                z = M.solve(r);
+            else
+                z = r.clone();
+
             beta = blockvectorDot(r,z)/rtz;
             p = blockvectorAdd(z,beta,p);
         }
+        if (j<maxiter)
+            System.err.println("WARNING: Preconditioned Conjugate Gradient reached maximum iterations");
 
         nuvec = blocks2vector(n,nu,G);
         double[] x = minus(unconstrained,circularSolve(n,circularAinvT(n,nuvec)));
@@ -428,7 +450,8 @@ public class NeighborNetBlockPivot {
 
         double[] d = new double[]{0, 20, 56, 66, 63, 36, 32, 32, 16, 17, 18, 18, 19, 12, 12, 13, 13, 16, 17, 1, 61, 69, 61, 41, 34, 33, 24, 24, 28, 28, 31, 25, 30, 30, 30, 31, 32, 21, 41, 57, 60, 63, 66, 62, 62, 61, 62, 64, 59, 58, 61, 59, 59, 60, 57, 61, 61, 65, 69, 66, 66, 65, 66, 67, 67, 68, 66, 67, 67, 68, 65, 59, 58, 72, 59, 61, 62, 61, 65, 62, 66, 64, 64, 64, 64, 62, 16, 41, 30, 29, 30, 31, 33, 29, 31, 28, 31, 32, 33, 35, 16, 26, 26, 30, 28, 40, 26, 25, 24, 23, 26, 25, 24, 26, 27, 27, 27, 38, 27, 26, 27, 26, 25, 26, 29, 3, 4, 4, 8, 8, 14, 12, 13, 15, 16, 15, 3, 3, 7, 10, 14, 12, 13, 15, 16, 16, 2, 8, 11, 13, 14, 14, 16, 17, 17, 8, 11, 15, 14, 13, 15, 16, 17, 11, 14, 13, 13, 15, 16, 18, 7, 6, 6, 10, 11, 11, 7, 7, 12, 11, 13, 4, 8, 10, 12, 4, 5, 12, 1, 15, 16};
         n=20;
-        double[] y = circularBlockPivot(n, d, new ProgressSilent());
+        NeighborNetBlockPivot.BlockPivotParams params = new NeighborNetBlockPivot.BlockPivotParams();
+        double[] y = circularBlockPivot(n, d, new ProgressSilent(),params);
         int m = 3;
 
     }
