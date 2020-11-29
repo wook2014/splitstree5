@@ -28,12 +28,14 @@ import splitstree5.io.exports.interfaces.IExportCharacters;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class PhylipCharactersExporter implements IFromChararacters, IExportCharacters {
 
-    private boolean optionInterleaved = true;
-    private boolean optionInterleavedMultiLabels = true;
+    private boolean optionInterleaved = false;
+    private boolean optionInterleavedMultiLabels = false;
     private int optionLineLength = 40;
 
     public void export(Writer w, TaxaBlock taxa, CharactersBlock characters) throws IOException {
@@ -41,6 +43,8 @@ public class PhylipCharactersExporter implements IFromChararacters, IExportChara
         int ntax = taxa.getNtax();
         int nchar = characters.getNchar();
         w.write("\t" + ntax + "\t" + nchar + "\n");
+
+        final String[] labels = computePhylipLabels(taxa);
 
         if (optionInterleaved) {
 
@@ -63,7 +67,7 @@ public class PhylipCharactersExporter implements IFromChararacters, IExportChara
                     }
 
                     if (i == 1 || optionInterleavedMultiLabels)
-                        w.write(get10charLabel(taxa.getLabel(t)) + "\t" + sequence.toString().toUpperCase() + "\n");
+                        w.write(get10charLabel(labels[t]) + sequence.toString().toUpperCase() + "\n");
                     else
                         w.write(sequence.toString().toUpperCase() + "\n");
                 }
@@ -76,9 +80,26 @@ public class PhylipCharactersExporter implements IFromChararacters, IExportChara
                     if ((j - 1) % 10 == 0 && (j - 1) != 0) sequence.append(" "); // set space after every 10 chars
                     sequence.append(characters.get(t, j));
                 }
-                w.write(get10charLabel(taxa.getLabel(t)) + "\t" + sequence.toString().toUpperCase() + "\n");
+                w.write(get10charLabel(labels[t]) + sequence.toString().toUpperCase() + "\n");
             }
         }
+    }
+
+    public static String[] computePhylipLabels(TaxaBlock taxa) {
+        final Set<String> set = new HashSet<>();
+        String[] labels = new String[taxa.getNtax() + 1];
+        for (int t = 1; t <= taxa.getNtax(); t++) {
+            String label = taxa.getLabel(t);
+            if (label.length() > 10)
+                label = label.charAt(0) + "_" + label.substring(label.length() - 8);
+            int count = 0;
+            while (set.contains(label)) {
+                label = String.format("%s:%02d", label.substring(0, 7), (++count));
+            }
+            set.add(label);
+            labels[t] = label;
+        }
+        return labels;
     }
 
 
@@ -86,11 +107,7 @@ public class PhylipCharactersExporter implements IFromChararacters, IExportChara
         if (label.length() >= 10)
             return label.substring(0, 10);
         else {
-            StringBuilder s = new StringBuilder(label);
-            for (int k = 0; k < 10 - label.length(); k++) {
-                s.append(" ");
-            }
-            return s.toString();
+            return label + " ".repeat(10 - label.length());
         }
     }
 

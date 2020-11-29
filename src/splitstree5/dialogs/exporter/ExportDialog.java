@@ -74,10 +74,18 @@ public class ExportDialog {
         controller.getDataTypeComboBox().setValue(Basic.getShortName(dataBlock.getClass()));
 
         controller.getFileFormatComboBox().getItems().addAll(ExportManager.getInstance().getExporterNames(dataBlock));
-        if (controller.getFileFormatComboBox().getItems().size() > 0)
-            controller.getFileFormatComboBox().setValue(controller.getFileFormatComboBox().getItems().get(0));
 
-        controller.getFileFormatComboBox().disableProperty().bind(controller.getProgressBar().visibleProperty());
+        {
+            final String propertyTag = "ExportFileFormat" + dataBlock.getBlockName();
+            final String defaultFileFormat = ProgramProperties.get(propertyTag, "");
+            if (!defaultFileFormat.isBlank() && controller.getFileFormatComboBox().getItems().contains(defaultFileFormat))
+                controller.getFileFormatComboBox().setValue(defaultFileFormat);
+            else if (controller.getFileFormatComboBox().getItems().size() > 0)
+                controller.getFileFormatComboBox().setValue(controller.getFileFormatComboBox().getItems().get(0));
+
+            controller.getFileFormatComboBox().disableProperty().bind(controller.getProgressBar().visibleProperty());
+            controller.getFileFormatComboBox().valueProperty().addListener((c, o, n) -> ProgramProperties.put(propertyTag, n));
+        }
 
         controller.getCancelButton().setOnAction((e) -> close());
 
@@ -88,6 +96,8 @@ public class ExportDialog {
                 final FileChooser fileChooser = new FileChooser();
                 if (previousDir.isDirectory())
                     fileChooser.setInitialDirectory(previousDir);
+                if (!workingTaxa.getDocument().getFileName().isBlank())
+                    fileChooser.setInitialFileName(Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(workingTaxa.getDocument().getFileName()), ""));
                 fileChooser.setTitle("Export File");
                 File selectedFile = fileChooser.showSaveDialog(stage);
                 if (selectedFile != null) {

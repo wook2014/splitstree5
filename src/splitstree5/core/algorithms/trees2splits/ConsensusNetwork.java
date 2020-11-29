@@ -53,7 +53,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
     public enum EdgeWeights {Mean, TreeSizeWeightedMean, Median, Count, Sum, None}
 
     private final SimpleObjectProperty<EdgeWeights> optionEdgeWeights = new SimpleObjectProperty<>(EdgeWeights.TreeSizeWeightedMean);
-    private DoubleProperty optionThresholdPercent = new SimpleDoubleProperty(30.0);
+    private final DoubleProperty optionThresholdPercent = new SimpleDoubleProperty(30.0);
 
     private final Object sync = new Object();
 
@@ -153,7 +153,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
                                 return;
                         }
                     } catch (CanceledException ex) {
-                        exception.set(ex);
+                        exception.setIfCurrentValueIsNull(ex);
                     } finally {
                         countDownLatch.countDown();
                     }
