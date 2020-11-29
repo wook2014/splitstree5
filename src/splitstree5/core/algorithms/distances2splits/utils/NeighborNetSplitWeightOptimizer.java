@@ -101,7 +101,8 @@ public class NeighborNetSplitWeightOptimizer {
             }
             System.out.println("];");
 
-            double[] x = NeighborNetBlockPivot.circularBlockPivot(ntax, d, progress);
+            NeighborNetBlockPivot.BlockPivotParams params = new NeighborNetBlockPivot.BlockPivotParams();
+            double[] x = NeighborNetBlockPivot.circularBlockPivot(ntax, d, progress,params);
             final ArrayList<ASplit> splits = new ArrayList<>();
 
             index = 1;
@@ -133,10 +134,7 @@ public class NeighborNetSplitWeightOptimizer {
         }
         /* Find the constrained optimal values for x */
 
-        if (runPCG)
-            x = NeighborNetBlockPivot.circularBlockPivot(ntax, d, progress);
-        else
-            runActiveConjugate(ntax, d, W, x, regularization, lambdaFrac);
+        runActiveConjugate(ntax, d, W, x, regularization, lambdaFrac);
 
         /* Construct the splits with the appropriate weights */
         final ArrayList<ASplit> splits = new ArrayList<>();
