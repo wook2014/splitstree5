@@ -32,9 +32,6 @@ public class NexusHighlighter implements Highlighter {
     private static boolean verbose = false;
 
     private boolean collapsingActive = false;
-    //private ArrayList<NexusBlockCollapseInfo> nexusBlockCollapseInfos;
-    private int nexusBlockStart = 0;
-    private int nexusBlockEnd = 0;
 
     private static final String[] KEYWORDS = new String[]{
             "begin", "end", "endblock",
@@ -76,8 +73,6 @@ public class NexusHighlighter implements Highlighter {
     @Override
     public StyleSpans<Collection<String>> computeHighlighting(String text) {
 
-        //nexusBlockCollapseInfos = new ArrayList<>();
-
         String collapsing = "";
         if (collapsingActive)
             collapsing = "-collapse-able";
@@ -95,14 +90,11 @@ public class NexusHighlighter implements Highlighter {
             if (matcher.group(0).toLowerCase().equals("begin")) {
                 if (verbose)
                     System.err.println(matcher.group(0) + matcher.start(0));
-                nexusBlockStart = matcher.start(0);
 
             }
             if (matcher.group(0).toLowerCase().equals("end;")) { //todo add endblock
                 if (verbose)
                     System.err.println(matcher.group(0) + matcher.end(0));
-                nexusBlockEnd = matcher.end(0);
-                //nexusBlockCollapseInfos.add(new NexusBlockCollapseInfo(nexusBlockStart, nexusBlockEnd));
             }
 
             String styleClass =
@@ -136,8 +128,4 @@ public class NexusHighlighter implements Highlighter {
     public void setCollapsingActive(boolean active) {
         this.collapsingActive = active;
     }
-
-    /*public ArrayList<NexusBlockCollapseInfo> getNexusBlockCollapseInfos(){
-        return this.nexusBlockCollapseInfos;
-    }*/
 }
