@@ -62,12 +62,11 @@ public class AccessReferenceDatabase implements Closeable {
     /**
      * open the database
      * Schema:
+     * CREATE TABLE mash_sketches (taxon_id INTEGER PRIMARY KEY, mash_sketch TEXT NOT NULL);
+     * CREATE TABLE bloom_filters (taxon_id INTEGER PRIMARY KEY, bloom_filter TEXT NOT NULL);
+     * CREATE TABLE taxa (taxon_id INTEGER PRIMARY KEY, taxon_name TEXT, taxon_display_name TEXT, parent_id INTEGER REFERENCES taxa(taxon_id));
      * CREATE TABLE info (key TEXT PRIMARY KEY, value TEXT NOT NULL);
-     * CREATE TABLE taxa (taxon_id INTEGER PRIMARY KEY, taxon_name TEXT NOT NULL, taxon_display_name TEXT) WITHOUT ROWID;
-     * CREATE TABLE genomes (taxon_id INTEGER PRIMARY KEY, genome_accession TEXT NOT NULL, genome_size INTEGER, fasta_url TEXT) WITHOUT ROWID;
-     * CREATE TABLE mash_sketches (taxon_id INTEGER PRIMARY KEY, mash_sketch TEXT NOT NULL) WITHOUT ROWID;
-     * CREATE TABLE bloom_filters (taxon_id INTEGER PRIMARY KEY, bloom_filter TEXT NOT NULL) WITHOUT ROWID;
-     * CREATE TABLE taxonomy (taxon_id INTEGER PRIMARY KEY, parent_id INTEGER NOT NULL) WITHOUT ROWID;
+     * CREATE TABLE genomes (taxon_id INTEGER PRIMARY KEY, genome_accession TEXT NOT NULL, genome_size INTEGER, fasta_url TEXT);
      */
     public AccessReferenceDatabase(String dbFile, int copies) throws IOException, SQLException {
         this.dbFile = new File(dbFile);
@@ -186,13 +185,13 @@ public class AccessReferenceDatabase implements Closeable {
         final String queryFormat = "\n" +
                 "WITH RECURSIVE\n" +
                 "parent_of(taxon_id, parent) AS\n" +
-                "(SELECT taxon_id, parent_id FROM taxonomy),\n" +
+                "(SELECT taxon_id, parent_id FROM taxa),\n" +
                 "ancestor(taxon_id) AS\n" +
                 "(SELECT parent FROM parent_of WHERE taxon_id=%d\n" +
                 "UNION ALL\n" +
                 "SELECT parent FROM parent_of JOIN ancestor USING(taxon_id))\n" +
-                "SELECT taxonomy.taxon_id FROM ancestor, taxonomy\n" +
-                "WHERE ancestor.taxon_id=taxonomy.taxon_id;\n";
+                "SELECT taxa.taxon_id FROM ancestor, taxa\n" +
+                "WHERE ancestor.taxon_id=taxa.taxon_id;\n";
 
         final Map<Integer, List<Integer>> map = new HashMap<>();
         for (var taxonId : taxonIds) {
@@ -257,11 +256,11 @@ public class AccessReferenceDatabase implements Closeable {
     }
 
     public int getTaxonomyRoot() throws SQLException {
-        return executeQueryInt("SELECT taxon_id FROM taxonomy WHERE parent_id=0;", 1).get(0);
+        return executeQueryInt("SELECT taxon_id FROM taxa WHERE parent_id=0;", 1).get(0);
     }
 
     public Collection<Integer> getTaxonomyChildren(int parent_id) throws SQLException {
-        return new ArrayList<>(executeQueryInt("SELECT taxon_id FROM taxonomy WHERE parent_id=" + parent_id + ";", 1));
+        return new ArrayList<>(executeQueryInt("SELECT taxon_id FROM taxa WHERE parent_id=" + parent_id + ";", 1));
     }
 
     public Map<String, String> getReferenceFile2Name(ObservableList<Integer> taxonIds, ProgressListener progress) throws SQLException, IOException {

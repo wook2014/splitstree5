@@ -26,7 +26,6 @@ import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import jloda.phylo.PhyloSplitsGraph;
-import jloda.util.Basic;
 import jloda.util.BitSetUtils;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
@@ -37,6 +36,7 @@ import splitstree5.utils.PhyloGraphUtils;
 import splitstree5.utils.SplitsUtilities;
 
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * runs the outline algorithm due to Bryant and Huson, 2020
@@ -77,14 +77,15 @@ public class NetworkOutlineAlgorithm {
                 for (int s = 1; s <= splits.getNsplits(); s++) {
                     final ASplit split = splits.get(s);
                     if (split.isTrivial() || SplitsUtilities.isCircular(taxaBlock, cycle, split)) {
-                        events.add(new Event(Event.Type.start, s, cycle, split));
-                        events.add(new Event(Event.Type.end, s, cycle, split));
+                        events.add(new Event(Event.Type.outbound, s, cycle, split));
+                        events.add(new Event(Event.Type.inbould, s, cycle, split));
                         if (s <= origNSplits)
                             usedSplits.set(s, true);
                     }
                 }
             }
-            events.sort(Event.comparator());
+
+            Event.radixSort(taxaBlock.getNtax(), events);
 
             final BitSet currentSplits = new BitSet();
             Point2D location = new Point2D(0, 0);
@@ -106,7 +107,7 @@ public class NetworkOutlineAlgorithm {
             for (Event event : events) {
                 // System.err.println(event);
 
-                if (event.getType() == Event.Type.start) {
+                if (event.isStart()) {
                     currentSplits.set(event.getS(), true);
                     location = GeometryUtilsFX.translateByAngle(location, split2angle[event.getS()], useWeights ? event.getSplit().getWeight() : 1);
                 } else {
@@ -237,13 +238,11 @@ public class NetworkOutlineAlgorithm {
     }
 
     static class Event {
-        enum Type {start, end}
+        enum Type {outbound, inbould}
 
         private final ASplit split;
-        private int minCyclePos;
-        private int maxCyclePos;
-        private final int size;
-        private final int firstInCycle;
+        private int iPos;
+        private int jPos;
         private final int s;
         private final Type type;
 
@@ -251,77 +250,110 @@ public class NetworkOutlineAlgorithm {
             this.type = type;
             this.s = s;
             this.split = split;
-            this.firstInCycle = cycle[1];
+            int firstInCycle = cycle[1];
 
-            minCyclePos = Integer.MAX_VALUE;
-            maxCyclePos = Integer.MIN_VALUE;
+            iPos = Integer.MAX_VALUE;
+            jPos = Integer.MIN_VALUE;
             final BitSet farSide = split.getPartNotContaining(firstInCycle);
             for (int i = 0; i < cycle.length; i++) {
                 final int t = cycle[i];
                 if (t > 0 && farSide.get(t)) {
-                    minCyclePos = Math.min(minCyclePos, i);
-                    maxCyclePos = Math.max(maxCyclePos, i);
+                    iPos = Math.min(iPos, i);
+                    jPos = Math.max(jPos, i);
                 }
             }
-            size = farSide.cardinality();
         }
 
         public int getS() {
             return s;
         }
 
-        public Type getType() {
-            return type;
-        }
-
         public ASplit getSplit() {
             return split;
         }
 
-        private int getMinCyclePos() {
-            return minCyclePos;
+        private int getIPos() {
+            return iPos;
         }
 
-        private int getMaxCyclePos() {
-            return maxCyclePos;
+        private int getJPos() {
+            return jPos;
         }
 
-        private int size() {
-            return size;
+        public boolean isStart() {
+            return type == Type.outbound;
         }
 
-        public static Comparator<Event> comparator() {
-            return (a, b) -> {
-                final int aPos;
-                if (a.getType() == Type.start)
-                    aPos = a.getMinCyclePos();
-                else {
-                    aPos = a.getMaxCyclePos();
-                }
-
-                final int bPos;
-                if (b.getType() == Type.start)
-                    bPos = b.getMinCyclePos();
-                else
-                    bPos = b.getMaxCyclePos();
-
-                final int result;
-                if (aPos < bPos)
-                    result = -1;
-                else if (aPos > bPos)
-                    result = 1;
-                else if (a.type == Type.start && b.type == Type.end)
-                    result = -1;
-                else if (a.type == Type.end && b.type == Type.start)
-                    result = 1;
-                else result = (a.type == Type.start ? -1 : 1) * Integer.compare(a.size, b.size);
-                //System.err.println(a+" vs "+b+": "+result);
-                return result;
-            };
+        public boolean isEnd() {
+            return type == Type.inbould;
         }
 
         public String toString() {
-            return type.name() + " S" + s + " (" + minCyclePos + "-" + maxCyclePos + "): " + Basic.toString(split.getPartNotContaining(firstInCycle), ",");
+            return type.name() + " S" + s + " (" + iPos + "-" + jPos + ")"; //: " + Basic.toString(split.getPartNotContaining(firstInCycle), ",");
+        }
+
+        public static void radixSort(int ntax, ArrayList<Event> events) {
+            final Event[] starts = events.stream().filter(Event::isStart).toArray(Event[]::new);
+            final Event[] ends = events.stream().filter(Event::isEnd).toArray(Event[]::new);
+
+            countingSort(starts, ntax, a -> ntax - a.getJPos());
+            countingSort(starts, ntax, Event::getIPos);
+            countingSort(ends, ntax, a -> ntax - a.getIPos());
+            countingSort(ends, ntax, Event::getJPos);
+
+            merge(starts, ends, events);
+        }
+
+        private static void countingSort(Event[] events, int maxKey, Function<Event, Integer> key) {
+            if (events.length > 1) {
+                final int[] key2pos = new int[maxKey + 1];
+                // count keys
+                for (Event event : events) {
+                    final int value = key.apply(event);
+                    key2pos[value]++;
+                }
+
+                // set positions
+                {
+                    int pos = 0;
+                    for (int i = 0; i < key2pos.length; i++) {
+                        final int add = key2pos[i];
+                        key2pos[i] = pos;
+                        pos += add;
+                    }
+                }
+
+                final Event[] other = new Event[events.length];
+
+                // insert at positions:
+                for (Event event : events) {
+                    final int k = key.apply(event);
+                    final int pos = key2pos[k]++;
+                    other[pos] = event;
+                }
+
+                // copy to result:
+                System.arraycopy(other, 0, events, 0, events.length);
+            }
+        }
+
+        private static void merge(Event[] starts, Event[] ends, List<Event> result) {
+            result.clear();
+
+            int s = 0;
+            int e = 0;
+            while (s < starts.length && e < ends.length) {
+                if (starts[s].getIPos() < ends[e].getJPos() + 1) {
+                    result.add(starts[s++]);
+                } else {
+                    result.add(ends[e++]);
+                }
+            }
+            while (s < starts.length)
+                result.add(starts[s++]);
+            while (e < ends.length)
+                result.add(ends[e++]);
+
         }
     }
 }

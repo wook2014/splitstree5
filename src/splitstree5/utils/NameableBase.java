@@ -20,6 +20,7 @@
 
 package splitstree5.utils;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import jloda.util.Basic;
@@ -131,7 +132,7 @@ public class NameableBase {
      */
     public void clear() {
         title = null;
-        setShortDescription(Basic.fromCamelCase(Basic.getShortName(this.getClass())));
+        Platform.runLater(() -> setShortDescription(Basic.fromCamelCase(Basic.getShortName(this.getClass()))));
     }
 
     /**
