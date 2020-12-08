@@ -68,10 +68,6 @@ public class EditInputTab extends EditTextViewTab {
 
     private File tmpFile;
 
-    // todo undo doesn't work: collapse-uncollapce-undo. solution:dont delete blocks from the tmpBlocksKeeper after uncollapsing
-    // todo zeilennummern, finding, performance?
-
-
     // todo check all properties!
 
     /**
@@ -114,9 +110,6 @@ public class EditInputTab extends EditTextViewTab {
         final Button applyButton = new Button("Parse and Load");
         applyButton.setTooltip(new Tooltip("Save this data to a temporary file, parse the file and then load the data"));
 
-        //final Button collapseButton = new Button("Activate Collapse NexusBlock"); //+++
-        final CheckBox collapseButton = new CheckBox("Activate Collapse NexusBlock");
-
 
         //++++++ SPECIAL CHARACTERS EDITOR
 
@@ -145,7 +138,7 @@ public class EditInputTab extends EditTextViewTab {
         toolBar.setVisible(true);
 
         if (ProgramProperties.get("enable-activiate-collapse", false)) {
-            toolBar.getItems().addAll(collapseButton, applyButton,
+            toolBar.getItems().addAll(applyButton,
                     labelMissingChar, missingChar,
                     labelGapChar, gapChar); //+++
         } else
@@ -186,46 +179,6 @@ public class EditInputTab extends EditTextViewTab {
                     FileOpener.open(true, mainWindow, mainWindow.getMainWindowController().getBottomPane(), tmpFile.getPath(), exceptionHandler);
             } catch (Exception ex) {
                 NotificationManager.showError("Enter data failed: " + ex.getMessage());
-            }
-        });
-
-
-        collapseButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (oldValue) {
-                    if (debug)
-                        System.err.println("Block collapsing is disabled");
-                    getCodeArea().setParagraphGraphicFactory(LineNumberFactory.get(getCodeArea()));
-                    codeAreaStyler.setCollapsingActive(false);
-                    ((NexusHighlighter) codeAreaStyler.getHighlighter()).setCollapsingActive(false);
-                }
-                if (newValue) {
-                    if (debug)
-                        System.err.println("Block collapsing is active");
-
-                    /*ArrayList<NexusBlockCollapseInfo> info =
-                            ((NexusHighlighter) codeAreaStyler.getHighlighter()).getNexusBlockCollapseInfos();
-                    if (debug)
-                        System.err.println("number ob blocks: " + info.size());
-                    NexusBlockCollapser nexusBlockCollapser = new NexusBlockCollapser(getCodeArea(), info);*/
-                    /*for (NexusBlockCollapseInfo i : info) {
-                        //int[] a = CodeAreaStyler.getLinesRangeByIndex(i.getStartPosition(), i.getEndPosition(), codeArea);
-                        //System.err.println("lines" + a[0]+ a[1]);
-                        if (debug)
-                            System.err.println("block: " + i.getStartPosition() + "-" + i.getEndPosition() + " lines: " +
-                                    i.getStartLine() + "-" + i.getEndLine());
-                    }*/
-                    /*if (debug)
-                        System.err.println("Indices!");
-                    if (debug)
-                        for (Integer i : nexusBlockCollapser.getLineIndices())
-                            System.err.print(i + "-");*/
-
-                    //getCodeArea().setParagraphGraphicFactory(LineNumberFactoryWithCollapsing.get(getCodeArea(), nexusBlockCollapser));
-                    codeAreaStyler.setCollapsingActive(true);
-                    ((NexusHighlighter) codeAreaStyler.getHighlighter()).setCollapsingActive(true);
-                }
             }
         });
     }
