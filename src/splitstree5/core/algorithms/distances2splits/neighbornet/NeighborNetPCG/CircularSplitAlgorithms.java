@@ -1,9 +1,8 @@
-package splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG;
+package splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG;
 
 import Jama.Matrix;
 
 import java.util.Random;
-import java.util.Vector;
 
 public class CircularSplitAlgorithms {
 

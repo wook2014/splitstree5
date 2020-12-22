@@ -1,4 +1,4 @@
-package splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG;
+package splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG;
 
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
@@ -7,9 +7,9 @@ import jloda.util.ProgressSilent;
 import java.util.Arrays;
 import java.util.Random;
 
-import static splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.CircularSplitAlgorithms.*;
-import static splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.VectorUtilities.minus;
-import static splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.VectorUtilities.norm;
+import static splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG.CircularSplitAlgorithms.*;
+import static splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG.VectorUtilities.minus;
+import static splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG.VectorUtilities.norm;
 
 public class NeighborNetBlockPivot {
     private static boolean verbose = true;

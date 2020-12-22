@@ -18,12 +18,11 @@
  *
  */
 
-package splitstree5.core.algorithms.distances2splits.utils;
+package splitstree5.core.algorithms.distances2splits.neighbornet;
 
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
-import splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.NeighborNetBlockPivot;
-import splitstree5.core.datablocks.DistancesBlock;
+import splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG.NeighborNetBlockPivot;
 import splitstree5.core.misc.ASplit;
 
 import java.text.DecimalFormat;
@@ -47,7 +46,7 @@ import java.util.BitSet;
  * <p>
  * David Bryant and Daniel Huson, 2005
  */
-public class NeighborNetSplitWeightOptimizer {
+public class NeighborNetSplits {
     public enum LeastSquares {ols, fm1, fm2, estimated}
 
     public enum Regularization {nnls, lasso, normlasso, internallasso}
@@ -56,26 +55,31 @@ public class NeighborNetSplitWeightOptimizer {
 
     /**
      * Compute optimal weight squares under least squares for Splits compatible with a circular ordering.
-     * <p>
-     * This version carries out adaptive L1 regularisation, controlled by the parameter lambdaFraction
-     * <p>
+     * This version carries out adaptive L1 regularisation, controlled by the parameter lambdaFraction.
      * That is, it minimizes  0.5*||Ax - d||^2_2  +  \lambda ||x||_1
      *
-     * @param cycle     Radial ordering
-     * @param distances Input distance
-     * @return Splits  splits with the estimated weights.
+     * @param runPCG
+     * @param nTax           number of taxa
+     * @param cycle          taxon cycle, 1-based
+     * @param distances      pairwise distances, 0-based
+     * @param cutoff         min split weight
+     * @param leastSquares   least square mode
+     * @param regularization use regularization
+     * @param lambdaFrac     the lambda fraction
+     * @param progress       progress listener
+     * @return weighted splits
+     * @throws CanceledException
      */
-    static public ArrayList<ASplit> computeWeightedSplits(boolean runPCG, int[] cycle, DistancesBlock distances, double cutoff, LeastSquares leastSquares, Regularization regularization, double lambdaFrac, ProgressListener progress) throws CanceledException {
-        int ntax = distances.getNtax();
-        int npairs = (ntax * (ntax - 1)) / 2;
+    static public ArrayList<ASplit> compute(boolean runPCG, int nTax, int[] cycle, double[][] distances, double[][] variances, double cutoff, LeastSquares leastSquares, Regularization regularization, double lambdaFrac, ProgressListener progress) throws CanceledException {
+        final int nPairs = (nTax * (nTax - 1)) / 2;
 
         //Handle n=1,2 separately.
-        if (ntax == 1) {
+        if (nTax == 1) {
             return new ArrayList<>();
         }
-        if (ntax == 2) {
+        if (nTax == 2) {
             final ArrayList<ASplit> splits = new ArrayList<>();
-            float d_ij = (float) distances.get(cycle[1], cycle[2]);
+            float d_ij = (float) distances[cycle[1] - 1][cycle[2] - 1];
             if (d_ij > 0.0) {
                 final BitSet A = new BitSet();
                 A.set(cycle[1]);
@@ -87,46 +91,47 @@ public class NeighborNetSplitWeightOptimizer {
         if (runPCG) {
             //Set up the distance vector.
 
-
-            double[] d = new double[npairs+1];
-            int index = 1;
-            for (int i = 1; i <= ntax; i++)
-                for (int j = i + 1; j <= ntax; j++)
-                    d[index++] = distances.get(cycle[i], cycle[j]);
-
-
-            System.out.print("d=[");
-            for(int i=1;i<=npairs;i++) {
-                System.out.print(d[i]+" ");
+            final double[] d = new double[nPairs + 1];
+            {
+                int index = 1;
+                for (int i = 1; i <= nTax; i++) {
+                    for (int j = i + 1; j <= nTax; j++) {
+                        d[index++] = distances[cycle[i] - 1][cycle[j] - 1];
+                    }
+                }
             }
-            System.out.println("];");
+
+            System.err.print("d=[");
+            for (int i = 1; i <= nPairs; i++) {
+                System.out.print(d[i] + " ");
+            }
+            System.err.println("];");
 
             NeighborNetBlockPivot.BlockPivotParams params = new NeighborNetBlockPivot.BlockPivotParams();
-            double[] x = NeighborNetBlockPivot.circularBlockPivot(ntax, d, progress,params);
+            double[] x = NeighborNetBlockPivot.circularBlockPivot(nTax, d, progress, params);
             final ArrayList<ASplit> splits = new ArrayList<>();
 
-            index = 1;
-            for (int i = 1; i <= ntax; i++) {
+            int index = 1;
+            for (int i = 1; i <= nTax; i++) {
                 final BitSet A = new BitSet();
-                for (int j = i + 1; j <= ntax; j++) {
+                for (int j = i + 1; j <= nTax; j++) {
                     A.set(cycle[j - 1]);
                     if (x[index] > cutoff)
-                        splits.add(new ASplit(A, ntax, (float) (x[index])));
+                        splits.add(new ASplit(A, nTax, (float) (x[index])));
                     index++;
                 }
             }
             return splits;
         }
 
-
         /* Re-order taxa so that the ordering is 0,1,2,...,n-1 */
-        double[] d = setupD(distances, cycle);
-        double[] v = setupV(distances, leastSquares, cycle);
-        double[] x = new double[npairs];
+        final double[] d = setupD(nTax, distances, cycle);
+        final double[] v = setupV(nTax, distances, variances, leastSquares, cycle);
+        final double[] x = new double[nPairs];
 
         /* Initialize the weight matrix */
-        double[] W = new double[npairs];
-        for (int k = 0; k < npairs; k++) {
+        final double[] W = new double[nPairs];
+        for (int k = 0; k < nPairs; k++) {
             if (v[k] == 0.0)
                 W[k] = 10E10;
             else
@@ -134,18 +139,18 @@ public class NeighborNetSplitWeightOptimizer {
         }
         /* Find the constrained optimal values for x */
 
-        runActiveConjugate(ntax, d, W, x, regularization, lambdaFrac);
+        runActiveConjugate(nTax, d, W, x, regularization, lambdaFrac);
 
         /* Construct the splits with the appropriate weights */
         final ArrayList<ASplit> splits = new ArrayList<>();
 
         int index = 0;
-        for (int i = 0; i < ntax; i++) {
+        for (int i = 1; i <= nTax; i++) {
             final BitSet A = new BitSet();
-            for (int j = i + 1; j < ntax; j++) {
-                A.set(cycle[j + 1]);
+            for (int j = i + 1; j <= nTax; j++) {
+                A.set(cycle[j]);
                 if (x[index] > cutoff)
-                    splits.add(new ASplit(A, ntax, (float) (x[index])));
+                    splits.add(new ASplit(A, nTax, (float) (x[index])));
                 index++;
             }
         }
@@ -154,33 +159,28 @@ public class NeighborNetSplitWeightOptimizer {
 
     /**
      * setup working distance so that ordering is trivial.
-     * Note the the code assumes that taxa are labeled 0..ntax-1 and
+     * Note the the code assumes that taxa are labeled 0..nTax-1 and
      * we do the transition here. It is undone when extracting the splits
-     *
-     * @param distances DistancesBlock block
-     * @param ordering  circular ordering
-     * @return double[] distances stored as a vector
      */
-    static private double[] setupD(DistancesBlock distances, int[] ordering) {
-        int ntax = distances.getNtax();
-        double[] d = new double[(ntax * (ntax - 1)) / 2];
+    static private double[] setupD(int nTax, double[][] distances, int[] cycle) {
+        final double[] d = new double[(nTax * (nTax - 1)) / 2];
         int index = 0;
-        for (int i = 0; i < ntax; i++)
-            for (int j = i + 1; j < ntax; j++)
-                d[index++] = distances.get(ordering[i + 1], ordering[j + 1]);
+        for (int i = 1; i <= nTax; i++)
+            for (int j = i + 1; j <= nTax; j++)
+                d[index++] = distances[cycle[i] - 1][cycle[j] - 1];
         return d;
     }
 
-    static private double[] setupV(DistancesBlock distances, LeastSquares leastSquares, int[] ordering) {
-        int ntax = distances.getNtax();
-        int npairs = ((ntax - 1) * ntax) / 2;
-        double[] v = new double[npairs];
+    static private double[] setupV(int nTax, double[][] distances, double[][] variances, LeastSquares leastSquares, int[] cycle) {
+        final int nPairs = ((nTax - 1) * nTax) / 2;
+        final double[] v = new double[nPairs];
 
         int index = 0;
-        for (int i = 0; i < ntax; i++)
-            for (int j = i + 1; j < ntax; j++) {
-                double dij = distances.get(ordering[i + 1], ordering[j + 1]);
+        for (int i = 1; i <= nTax; i++)
+            for (int j = i + 1; j <= nTax; j++) {
+                double dij = distances[cycle[i] - 1][cycle[j] - 1];
                 switch (leastSquares) {
+                    default:
                     case ols:
                         v[index] = 1.0;
                         break;
@@ -191,9 +191,8 @@ public class NeighborNetSplitWeightOptimizer {
                         v[index] = dij * dij;
                         break;
                     case estimated:
-                    default:
-                        final double value = distances.getVariance(ordering[i + 1], ordering[j + 1]);
-                        v[index] = (value != -1 ? value : 1);
+                        v[index] = (variances != null ? variances[cycle[i] - 1][cycle[j] - 1] : 1.0);
+                        break;
                 }
                 index++;
             }
@@ -204,34 +203,23 @@ public class NeighborNetSplitWeightOptimizer {
     /**
      * Compute the branch lengths for unconstrained least squares using
      * the formula of Chepoi and Fichet (this takes O(N^2) time only!).
-     *
-     * @param n the number of taxa
-     * @param d the distance matrix
-     * @param x the split weights
-     */
+      */
     static private void runUnconstrainedLS(int n, double[] d, double[] x) {
         int index = 0;
 
         for (int i = 0; i <= n - 3; i++) {
-            //index = (i,i+1)
-            //x[i,i+1] = (d[i][i+1] + d[i+1][i+2] - d[i,i+2])/2
             x[index] = (d[index] + d[index + (n - i - 2) + 1] - d[index + 1]) / 2.0;
             index++;
             for (int j = i + 2; j <= n - 2; j++) {
-                //x[i][j] = ( d[i,j] + d[i+1,j+1] - d[i,j+1] - d[i+1][j])
                 x[index] = (d[index] + d[index + (n - i - 2) + 1] - d[index + 1] - d[index + (n - i - 2)]) / 2.0;
                 index++;
             }
-            //index = (i,n-1)
-
-            if (i == 0) //(0,n-1)
-                x[index] = (d[0] + d[n - 2] - d[2 * n - 4]) / 2.0; //(d[0,1] + d[0,n-1] - d[1,n-1])/2
+            if (i == 0)
+                x[index] = (d[0] + d[n - 2] - d[2 * n - 4]) / 2.0;
             else
-                //x[i][n-1] == (d[i,n-1] + d[i+1,0] - d[i,0] - d[i+1,n-1])
                 x[index] = (d[index] + d[i] - d[i - 1] - d[index + (n - i - 2)]) / 2.0;
             index++;
         }
-        //index = (n-2,n-1)
         x[index] = (d[index] + d[n - 2] - d[n - 3]) / 2.0;
     }
 
@@ -239,18 +227,16 @@ public class NeighborNetSplitWeightOptimizer {
      * Returns the array indices for the smallest propKept proportion of negative values in x.
      * In the case of ties, priority is given to the earliest entries.
      * Size of resulting array will be propKept * (number of negative entries) rounded up.
-     *
-     * @param x        returns an array
-     * @param propKept the
-     * @return int[] array of indices
      */
     static private int[] worstIndices(double[] x, double propKept) {
 
+        propKept = 0.1; // todo: delete this line!
 
+        //System.err.println(Basic.toString(x, " "));
         if (propKept == 0)
             return null;
 
-        int n = x.length;
+        final int n = x.length;
 
         int numNeg = 0;
         for (double aX1 : x)
@@ -261,27 +247,28 @@ public class NeighborNetSplitWeightOptimizer {
             return null;
 
         //Make a copy of negative values in x.
-        double[] xcopy = new double[numNeg];
+        final double[] xCopy = new double[numNeg];
         int j = 0;
         for (double aX : x)
             if (aX < 0.0)
-                xcopy[j++] = aX;
+                xCopy[j++] = aX;
 
         //Sort the copy
-        Arrays.sort(xcopy);
+        Arrays.sort(xCopy);
 
         //Find the cut-off value. All values greater than this should
         //be returned, as well as some (or perhaps all) of the values
         //equals to this.
-        int nkept = (int) Math.ceil(propKept * numNeg);  //Ranges from 1 to n
-        double cutoff = xcopy[nkept - 1];
+        final int nkept = (int) Math.ceil(propKept * numNeg);  //Ranges from 1 to n
+        final double cutoff = xCopy[nkept - 1];
 
         //we now fill the result vector. Values < cutoff are filled
         //in from the front. Values == cutoff are filled in the back.
         //Values filled in from the back can be overwritten by values
         //filled in from the front, but not vice versa.
-        int[] result = new int[nkept];
-        int front = 0, back = nkept - 1;
+        final int[] result = new int[nkept];
+        int front = 0;
+        int back = nkept - 1;
 
         for (int i = 0; i < n; i++) {
             if (x[i] < cutoff)
@@ -294,9 +281,8 @@ public class NeighborNetSplitWeightOptimizer {
         return result;
     }
 
-
     @SuppressWarnings("unused")
-    static private void printvec(String msg, double[] x) {
+    static private void printVec(String msg, double[] x) {
         int n = x.length;
         DecimalFormat fmt = new DecimalFormat("#0.00000");
 
@@ -304,7 +290,6 @@ public class NeighborNetSplitWeightOptimizer {
         for (double aX : x) System.out.print(" " + fmt.format(aX));
         System.out.println();
     }
-
 
     /**
      * Uses an active set method with the conjugate gradient algorithm to find x that minimises
@@ -318,87 +303,87 @@ public class NeighborNetSplitWeightOptimizer {
      * lambda is the regularisation parameter, given by lambda = max_i (A'Wd)_i   * ( 1 - lambdaFraction)
      * <p>
      * Note that lambdaFraction = 1 => lambda = 0, and lambdaFraction = 0 => x = 0.
-     *
-     * @param ntax       The number of taxa
-     * @param d          the distance matrix
-     * @param W          the weight matrix
-     * @param x          the split weights
-     * @param lambdaFrac fraction parameter for lambda regularisation
      */
-    static private void runActiveConjugate(int ntax, double[] d, double[] W, double[] x, Regularization regularization, double lambdaFrac) {
-        final boolean collapse_many_negs = true;
+    static private void runActiveConjugate(int nTax, double[] d, double[] W, double[] x, Regularization regularization, double lambdaFrac) {
+        final int nPairs = d.length;
 
-        int npairs = d.length;
-        if (W.length != npairs || x.length != npairs)
+        if (W.length != nPairs || x.length != nPairs)
             throw new IllegalArgumentException("Vectors d,W,x have different dimensions");
 
         /* First evaluate the unconstrained optima. If this is feasible then we don't have to do anything more! */
-        NeighborNetSplitWeightOptimizer.runUnconstrainedLS(ntax, d, x);
-        boolean all_positive = true;
-        for (int k = 0; k < npairs && all_positive; k++)
-            if (x[k] < 0.0)
-                all_positive = false;
+        NeighborNetSplits.runUnconstrainedLS(nTax, d, x);
+        {
+            boolean all_positive = true;
+            for (int k = 0; k < nPairs; k++) {
+                if (x[k] < 0.0) {
+                    all_positive = false;
+                    break;
+                }
+            }
 
-        if (all_positive) /* If the unconstrained optimum is feasible then it is also the constrained optimum */
-            return;
+            if (all_positive) /* If the unconstrained optimum is feasible then it is also the constrained optimum */
+                return;
+        }
 
         /* Allocate memory for the "utility" vectors */
-        double[] r = new double[npairs];
-        double[] w = new double[npairs];
-        double[] p = new double[npairs];
-        double[] y = new double[npairs];
-        double[] old_x = new double[npairs];
+        final double[] r = new double[nPairs];
+        final double[] u = new double[nPairs];
+        final double[] p = new double[nPairs];
+        final double[] y = new double[nPairs];
+        final double[] old_x = new double[nPairs];
         Arrays.fill(old_x, 1.0);
 
         /* Initialise active - originally no variables are active (held to 0.0) */
-        boolean[] active = new boolean[npairs];
-        boolean[] fixedActive = new boolean[npairs];
-        Arrays.fill(active, false);
-        Arrays.fill(fixedActive, false);
+        final boolean[] active = new boolean[nPairs];
+        final boolean[] fixedActive = new boolean[nPairs];
+        // Arrays.fill(active, false); // not necessary
+        // Arrays.fill(fixedActive, false); // not necessary
 
         /* Allocate and compute AtWd */
-        double[] AtWd = new double[npairs];
-        for (int k = 0; k < npairs; k++)
+        final double[] AtWd = new double[nPairs];
+        for (int k = 0; k < nPairs; k++)
             y[k] = W[k] * d[k];
-        NeighborNetSplitWeightOptimizer.calculateAtx(ntax, y, AtWd);
+        NeighborNetSplits.calculateAtx(nTax, y, AtWd);
 
         /* Compute lambda parameter */
-        boolean computeRegularised = (regularization != Regularization.nnls);
-        double lambda = 0.0;
+        final boolean computeRegularised = (regularization != Regularization.nnls);
 
         if (computeRegularised) {
             double maxAtWd = 0.0;
             for (double val : AtWd)
                 if (val > maxAtWd)
                     maxAtWd = val;
-            lambda = maxAtWd * (1.0 - lambdaFrac);
+            final double lambda = maxAtWd * (1.0 - lambdaFrac);
 
             /* Replace AtWd with AtWd = lambda. This has same effect as regularisation term */
-            for (int k = 0; k < npairs; k++)
+            for (int k = 0; k < nPairs; k++)
                 AtWd[k] -= lambda;
         }
 
         boolean first_pass = true; //This is the first time through the loops.
         while (true) {
             while (true) /* Inner loop: find the next feasible optimum */ {
-                if (!first_pass)  /* The first time through we use the unconstrained branch lengths */
-                    NeighborNetSplitWeightOptimizer.circularConjugateGrads(ntax, npairs, r, w, p, y, W, AtWd, active, x);
-                first_pass = false;
+                if (first_pass)
+                    first_pass = false; /* The first time through we use the unconstrained branch lengths */
+                else
+                    NeighborNetSplits.circularConjugateGrads(nTax, nPairs, r, u, p, y, W, AtWd, active, x);
 
-                if (collapse_many_negs) { /* Typically, a large number of edges are negative, so on the first
+                {
+                    /* Typically, a large number of edges are negative, so on the first
                                                 pass of the algorithm we add the worst 60% to the active set */
-                    int[] entriesToContract = worstIndices(x, 0.6);
+                    final int[] entriesToContract = worstIndices(x, 0.6);
                     if (entriesToContract != null) {
                         for (int index : entriesToContract) {
                             x[index] = 0.0;
                             active[index] = true;
                         }
-                        NeighborNetSplitWeightOptimizer.circularConjugateGrads(ntax, npairs, r, w, p, y, W, AtWd, active, x); /* Re-optimise, so that the current x is always optimal */
+                        NeighborNetSplits.circularConjugateGrads(nTax, nPairs, r, u, p, y, W, AtWd, active, x); /* Re-optimise, so that the current x is always optimal */
                     }
                 }
+
                 int min_i = -1;
                 double min_xi = -1.0;
-                for (int i = 0; i < npairs; i++) {
+                for (int i = 0; i < nPairs; i++) {
                     if (x[i] < 0.0) {
                         double xi = (old_x[i]) / (old_x[i] - x[i]);
                         if ((min_i == -1) || (xi < min_xi)) {
@@ -413,26 +398,28 @@ public class NeighborNetSplitWeightOptimizer {
                 else {/* There are still negative edges. We move to the feasible point that is closest to
                                             x on the line from x to old_x */
 
-                    for (int i = 0; i < npairs; i++) /* Move to the last feasible solution on the path from old_x to x */
+                    for (int i = 0; i < nPairs; i++) /* Move to the last feasible solution on the path from old_x to x */ {
                         if (!active[i])
                             old_x[i] += min_xi * (x[i] - old_x[i]);
+                    }
                     active[min_i] = true; /* Add the first constraint met to the active set */
                     x[min_i] = 0.0; /* This fixes problems with round-off errors */
                 }
             }
 
             /* Find i,j that minimizes the gradient over all i,j in the active set. Note that grad = (AtWAb-AtWd)  */
-            calculateAb(ntax, x, y);
-            for (int i = 0; i < npairs; i++)
+            calculateAb(nTax, x, y);
+            for (int i = 0; i < nPairs; i++) {
                 y[i] *= W[i];
-            calculateAtx(ntax, y, r); /* r = AtWAx */
+            }
+            calculateAtx(nTax, y, r); /* r = AtWAx */
 
             /* We check to see that we are at a constrained minimum.... that is that the gradient is positive for
              * all i,j in the active set.
              */
             int min_i = -1;
             double min_grad = 1.0;
-            for (int i = 0; i < npairs; i++) {
+            for (int i = 0; i < nPairs; i++) {
                 r[i] -= AtWd[i];
                 //r[i] *= 2.0;
                 if (active[i] && !fixedActive[i]) {
@@ -448,10 +435,10 @@ public class NeighborNetSplitWeightOptimizer {
             if ((min_i == -1) || (min_grad > -0.0001)) {
 //            	if (computeRegularised) {
 //            		/* Return to the main loop, without the regularisation term, and fixing active all variables currently active */
-//            		for (int k = 0; k < npairs; k++)
+//            		for (int k = 0; k < nPairs; k++)
 //                        y[k] = W[k] * d[k];
-//            		CircularSplitWeights.calculateAtx(ntax, y, AtWd);
-//            		for(int k=0; k<npairs; k++)
+//            		CircularSplitWeights.calculateAtx(nTax, y, AtWd);
+//            		for(int k=0; k<nPairs; k++)
 //            			fixedActive[k] = active[k];
 //            		computeRegularised = false;         		
 //            	}
@@ -465,7 +452,7 @@ public class NeighborNetSplitWeightOptimizer {
 
     /* Compute the row sum in d. */
 
-    static private double rowsum(int n, double[] d, int k) {
+    static private double rowSum(int n, double[] d, int k) {
         double r = 0;
         int index = 0;
 
@@ -490,36 +477,34 @@ public class NeighborNetSplitWeightOptimizer {
 
     /**
      * Computes p = A^Td, where A is the topological matrix for the
-     * splits with circular ordering 0,1,2,....,ntax-1
-     * *
-     *
-     * @param n number of taxa
-     * @param d distance matrix
-     * @param p the result
+     * splits with circular ordering 0,1,2,....,nTax-1
      */
     static private void calculateAtx(int n, double[] d, double[] p) {
-
-//First the trivial splits
-        int index = 0;
-        for (int i = 0; i < n - 1; i++) {
-            p[index] = rowsum(n, d, i + 1);
-            index += (n - i - 1);
+        //First the trivial splits
+        {
+            int index = 0;
+            for (int i = 0; i < n - 1; i++) {
+                p[index] = rowSum(n, d, i + 1);
+                index += (n - i - 1);
+            }
         }
 
         //Now the splits separating out two.
-        index = 1;
-        for (int i = 0; i < n - 2; i++) {
-            //index = (i,i+2)
+        {
+            int index = 1;
+            for (int i = 0; i < n - 2; i++) {
+                //index = (i,i+2)
 
-            //p[i][i+2] = p[i][i+1] + p[i + 1][i + 2] - 2 * d[i + 1][i + 2];
-            p[index] = p[index - 1] + p[index + (n - i - 2)] - 2 * d[index + (n - i - 2)];
-            index += (n - i - 2) + 1;
+                //p[i][i+2] = p[i][i+1] + p[i + 1][i + 2] - 2 * d[i + 1][i + 2];
+                p[index] = p[index - 1] + p[index + (n - i - 2)] - 2 * d[index + (n - i - 2)];
+                index += (n - i - 2) + 1;
+            }
         }
 
         //Now the remaining splits
-        for (int k = 3; k <= n - 1; k++) {
-            index = k - 1;
-            for (int i = 0; i <= n - k - 1; i++) {
+        for (int k = 3; k < n; k++) {
+            int index = k - 1;
+            for (int i = 0; i < n - k; i++) {
                 //index = (i,i+k)
 
                 // p[i][j] = p[i][j - 1] + p[i+1][j] - p[i+1][j - 1] - 2.0 * d[i+1][j];
@@ -531,49 +516,44 @@ public class NeighborNetSplitWeightOptimizer {
 
     /**
      * Computes d = Ab, where A is the topological matrix for the
-     * splits with circular ordering 0,1,2,....,ntax-1
-     *
-     * @param n number of taxa
-     * @param b split weights
-     * @param d pairwise distances from split weights
+     * splits with circular ordering 0,1,2,....,nTax-1
      */
     static private void calculateAb(int n, double[] b, double[] d) {
-        double d_ij;
-
         //First the pairs distance one apart.
-        int index;
-        int dindex = 0;
+        {
+            int dIndex = 0;
+            for (int i = 0; i < n - 1; i++) {
+                double d_ij = 0.0;
+                //Sum over splits (k,i) 0<=k<i.
+                int index = i - 1;  //(0,i)
+                for (int k = 0; k < i; k++) {
+                    d_ij += b[index];  //(k,i)
+                    index += (n - k - 2);
+                }
+                index++;
+                //index = (i,i+1)
+                for (int k = i + 1; k < n; k++)  //sum over splits (i,k)  i+1<=k<=n-1
+                    d_ij += b[index++];
 
-        for (int i = 0; i <= n - 2; i++) {
-            d_ij = 0.0;
-            //Sum over splits (k,i) 0<=k<i.
-            index = i - 1;  //(0,i)
-            for (int k = 0; k <= i - 1; k++) {
-                d_ij += b[index];  //(k,i)
-                index += (n - k - 2);
+                d[dIndex] = d_ij;
+                dIndex += (n - i - 2) + 1;
             }
-            index++;
-            //index = (i,i+1)
-            for (int k = i + 1; k <= n - 1; k++)  //sum over splits (i,k)  i+1<=k<=n-1
-                d_ij += b[index++];
-
-            d[dindex] = d_ij;
-            dindex += (n - i - 2) + 1;
         }
 
-        //DistancesBlock two apart.
-        index = 1; //(0,2)
-        for (int i = 0; i <= n - 3; i++) {
+        //Distance two apart.
+        {
+            int index = 1; //(0,2)
+            for (int i = 0; i < n - 2; i++) {
 //            d[i ][i+2] = d[i ][i+1] + d[i + 1][i + 2] - 2 * b[i][i+1];
 
-            d[index] = d[index - 1] + d[index + (n - i - 2)] - 2 * b[index - 1];
-            index += 1 + (n - i - 2);
+                d[index] = d[index - 1] + d[index + (n - i - 2)] - 2 * b[index - 1];
+                index += 1 + (n - i - 2);
+            }
         }
 
-
-        for (int k = 3; k <= n - 1; k++) {
-            index = k - 1;
-            for (int i = 0; i <= n - k - 1; i++) {
+        for (int k = 3; k < n; k++) {
+            int index = k - 1;
+            for (int i = 0; i < n - k; i++) {
                 //int j = i + k;
                 //d[i][j] = d[i][j - 1] + d[i+1][j] - d[i+1][j - 1] - 2.0 * b[i][j - 1];
                 d[index] = d[index - 1] + d[index + (n - i - 2)] - d[index + (n - i - 2) - 1] - 2.0 * b[index - 1];
@@ -591,10 +571,8 @@ public class NeighborNetSplitWeightOptimizer {
      */
     static private double norm(double[] x) {
         double ss = 0.0;
-        double xk;
         for (double aX : x) {
-            xk = aX;
-            ss += xk * xk;
+            ss += aX* aX;
         }
         return ss;
     }
@@ -605,33 +583,34 @@ public class NeighborNetSplitWeightOptimizer {
      * We assume that x[i][j] is zero for all active i,j, and use the given
      * values for x as our starting vector.
      *
-     * @param ntax   the number of taxa
-     * @param npairs dimension of b and x
-     * @param r      stratch matrix
-     * @param w      stratch matrix
-     * @param p      stratch matrix
-     * @param y      stratch matrix
+     * @param nTax   the number of taxa
+     * @param nPairs dimension of b and x
+     * @param r      scratch matrix
+     * @param u      scratch matrix
+     * @param p      scratch matrix
+     * @param y      scratch matrix
      * @param W      the W matrix
      * @param b      the b matrix
      * @param active the active constraints
      * @param x      the x matrix
      */
-    static private void circularConjugateGrads(int ntax, int npairs, double[] r, double[] w, double[] p, double[] y,
-                                               double[] W, double[] b, boolean[] active, double[] x) {
-        int kmax = ntax * (ntax - 1) / 2;
+    static private void circularConjugateGrads(int nTax, int nPairs, double[] r, double[] u, double[] p, double[] y, double[] W, double[] b, boolean[] active, double[] x) {
+        final int kmax = nTax * (nTax - 1) / 2;
         /* Maximum number of iterations of the cg algorithm (probably too many) */
 
-        calculateAb(ntax, x, y);
+        calculateAb(nTax, x, y);
 
-        for (int k = 0; k < npairs; k++)
+        for (int k = 0; k < nPairs; k++) {
             y[k] = W[k] * y[k];
-        calculateAtx(ntax, y, r); /*r = AtWAx */
+        }
+        calculateAtx(nTax, y, r); /*r = AtWAx */
 
-        for (int k = 0; k < npairs; k++)
+        for (int k = 0; k < nPairs; k++) {
             if (!active[k])
                 r[k] = b[k] - r[k];
             else
                 r[k] = 0.0;
+        }
 
         double rho = norm(r);
         double rho_old = 0;
@@ -639,64 +618,41 @@ public class NeighborNetSplitWeightOptimizer {
         double e_0 = CG_EPSILON * Math.sqrt(norm(b));
         int k = 0;
 
-        while ((rho > e_0 * e_0) && (k < kmax)) {
-
+        while ((k < kmax) && (rho > e_0 * e_0)) {
             k = k + 1;
-            if (k == 1) {
-                System.arraycopy(r, 0, p, 0, npairs);
 
+            if (k == 1) {
+                System.arraycopy(r, 0, p, 0, nPairs);
             } else {
                 double beta = rho / rho_old;
                 //System.out.println("bbeta = " + beta);
-                for (int i = 0; i < npairs; i++)
+                for (int i = 0; i < nPairs; i++)
                     p[i] = r[i] + beta * p[i];
-
             }
 
-            calculateAb(ntax, p, y);
-            for (int i = 0; i < npairs; i++)
+            calculateAb(nTax, p, y);
+            for (int i = 0; i < nPairs; i++)
                 y[i] *= W[i];
 
-            calculateAtx(ntax, y, w); /*w = AtWAp */
-            for (int i = 0; i < npairs; i++)
+            calculateAtx(nTax, y, u); /*u = AtWAp */
+            for (int i = 0; i < nPairs; i++)
                 if (active[i])
-                    w[i] = 0.0;
+                    u[i] = 0.0;
 
             double alpha = 0.0;
-            for (int i = 0; i < npairs; i++)
-                alpha += p[i] * w[i];
+            for (int i = 0; i < nPairs; i++)
+                alpha += p[i] * u[i];
+
             alpha = rho / alpha;
 
             /* Update x and the residual, r */
-            for (int i = 0; i < npairs; i++) {
+            for (int i = 0; i < nPairs; i++) {
                 x[i] += alpha * p[i];
-                r[i] -= alpha * w[i];
+                r[i] -= alpha * u[i];
             }
             rho_old = rho;
             rho = norm(r);
         }
-    }
-
-    /**
-     * Create the set of all circular splits for a given ordering
-     *
-     * @param ntax     Number of taxa
-     * @param ordering circular ordering
-     * @param weight   weight to give each split
-     * @return set of ntax*(ntax-1)/2 circular splits
-     */
-    static public ArrayList<ASplit> getAllSplits(int ntax, int[] ordering, double weight) {
-
-        /* Construct the splits with the appropriate weights */
-        final ArrayList<ASplit> splits = new ArrayList<>(ntax * (ntax - 1) / 2);
-        for (int i = 0; i < ntax; i++) {
-            final BitSet A = new BitSet();
-            for (int j = i + 1; j < ntax; j++) {
-                A.set(ordering[j + 1]);
-                splits.add(new ASplit(A, ntax, (float) weight));
-            }
-        }
-        return splits;
     }
 }
 

@@ -1,10 +1,9 @@
-package splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG;
+package splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG;
 
 import Jama.Matrix;
-import splitstree5.resources.css._Dummy;
 
-import static splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.TridiagonalMatrix.multiplyLU;
-import static splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.VectorUtilities.minus;
+import static splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG.TridiagonalMatrix.multiplyLU;
+import static splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG.VectorUtilities.minus;
 
 public class Preconditioner {
 

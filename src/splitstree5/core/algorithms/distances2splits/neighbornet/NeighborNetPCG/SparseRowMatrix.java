@@ -1,4 +1,4 @@
-package splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG;
+package splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG;
 
 import Jama.Matrix;
 
