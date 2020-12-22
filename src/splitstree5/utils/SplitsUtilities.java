@@ -21,11 +21,14 @@
 package splitstree5.utils;
 
 import jloda.util.*;
-import splitstree5.core.algorithms.distances2splits.NeighborNet;
+import splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetCycle;
+import splitstree5.core.algorithms.distances2trees.NeighborJoining;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
+import splitstree5.core.misc.Compatibility;
 
 import java.io.PrintStream;
 import java.util.*;
@@ -86,7 +89,7 @@ public class SplitsUtilities {
             final PrintStream pso = jloda.util.Basic.hideSystemOut();
             final PrintStream pse = jloda.util.Basic.hideSystemErr();
             try {
-                return NeighborNet.computeNeighborNetOrdering(ntax, splitsToDistances(ntax, splits));
+                return NeighborNetCycle.computeNeighborNetCycle(ntax, splitsToDistances(ntax, splits));
             } finally {
                 jloda.util.Basic.restoreSystemErr(pse);
                 jloda.util.Basic.restoreSystemOut(pso);
@@ -408,7 +411,8 @@ public class SplitsUtilities {
             final double weight = (useWeights ? split.getWeight() : 1);
             final double delta = (sum + weight - 0.5 * maxDistance);
             if (delta > 0) {
-                return new Triplet<>(split2id.get(split), weight - delta, delta);
+                return new Triplet<>(split2id.get(split), delta, weight - delta);
+                //return new Triplet<>(split2id.get(split), weight - delta, delta);
             }
             sum += weight;
         }
@@ -454,5 +458,19 @@ public class SplitsUtilities {
             }
         }
         return set;
+    }
+
+    public static boolean computeSplitsForLessThan4Taxa(TaxaBlock taxaBlock, DistancesBlock distancesBlock, SplitsBlock splitsBlock) throws CanceledException {
+        if (taxaBlock.getNtax() < 4) {
+            final TreesBlock treesBlock = new TreesBlock();
+            new NeighborJoining().compute(new ProgressSilent(), taxaBlock, distancesBlock, treesBlock);
+            splitsBlock.clear();
+            TreesUtilities.computeSplits(taxaBlock.getTaxaSet(), treesBlock.getTree(1), splitsBlock.getSplits());
+            splitsBlock.setCompatibility(Compatibility.compatible);
+            splitsBlock.setCycle(SplitsUtilities.computeCycle(taxaBlock.getNtax(), splitsBlock.getSplits()));
+            splitsBlock.setFit(100);
+            return true;
+        }
+        return false;
     }
 }

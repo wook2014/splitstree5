@@ -20,9 +20,10 @@
 
 package splitstree5.core.datablocks;
 
+import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.*;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -46,8 +47,6 @@ public class TaxaBlock extends DataBlock {
     private final ObservableMap<Taxon, Integer> taxon2index;
     private final ObservableMap<String, Taxon> name2taxon;
 
-    private final BooleanProperty hasTaxa = new SimpleBooleanProperty();
-
     private final ObjectProperty<TraitsBlock> traitsBlock = new SimpleObjectProperty<>();
 
     /**
@@ -68,11 +67,10 @@ public class TaxaBlock extends DataBlock {
             }
         });
         taxa.addListener((InvalidationListener) observable -> {
-            setShortDescription(getInfo());
+            if (Platform.isFxApplicationThread())
+                setShortDescription(getInfo());
             ntax = size();
         });
-
-        hasTaxa.bind(Bindings.isNotEmpty(taxa));
     }
 
     public TaxaBlock(TaxaBlock that) {
@@ -115,10 +113,6 @@ public class TaxaBlock extends DataBlock {
     @Override
     public int size() {
         return taxa.size();
-    }
-
-    public ReadOnlyBooleanProperty hasTaxaProperty() {
-        return hasTaxa;
     }
 
     /**
@@ -199,7 +193,7 @@ public class TaxaBlock extends DataBlock {
      *
      * @return taxa
      */
-    public ObservableList<Taxon> getTaxa() {
+    public List<Taxon> getTaxa() {
         return taxa;
     }
 
@@ -302,12 +296,12 @@ public class TaxaBlock extends DataBlock {
     }
 
     @Override
-    public Class getFromInterface() {
+    public Class<IFromTaxa> getFromInterface() {
         return IFromTaxa.class;
     }
 
     @Override
-    public Class getToInterface() {
+    public Class<IToTaxa> getToInterface() {
         return IToTaxa.class;
     }
 

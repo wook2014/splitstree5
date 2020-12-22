@@ -264,7 +264,7 @@ public class AccessReferenceDatabase implements Closeable {
     }
 
     public Map<String, String> getReferenceFile2Name(ObservableList<Integer> taxonIds, ProgressListener progress) throws SQLException, IOException {
-        progress.setSubtask("Acquiring reference files");
+        progress.setSubtask("Downloading/caching reference files");
         progress.setMaximum(taxonIds.size());
         progress.setProgress(0);
 

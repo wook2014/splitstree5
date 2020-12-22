@@ -21,6 +21,8 @@
 package splitstree5.core.datablocks;
 
 import javafx.beans.property.*;
+import splitstree5.core.algorithms.interfaces.IFrom;
+import splitstree5.core.algorithms.interfaces.ITo;
 import splitstree5.main.Version;
 
 /**
@@ -100,12 +102,12 @@ public class SplitsTree5Block extends DataBlock implements IAdditionalBlock {
     }
 
     @Override
-    public Class getFromInterface() {
+    public Class<IFrom> getFromInterface() {
         return null;
     }
 
     @Override
-    public Class getToInterface() {
+    public Class<ITo> getToInterface() {
         return null;
     }
 

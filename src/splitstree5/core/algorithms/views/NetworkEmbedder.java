@@ -135,7 +135,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
             final String label = graph.getLabel(v);
             if (label != null) {
                 final StringBuilder buf = new StringBuilder();
-                if (label.startsWith("<")) // multi-labeled node //todo: differentiate between multi label and html?
+                if (label.startsWith("{") && label.endsWith("}")) // multi-labeled node //todo: differentiate between multi label and html?
                 {
                     final String[] tokens = Basic.split(label.substring(1, label.length() - 1), ',');
                     for (String token : tokens) {

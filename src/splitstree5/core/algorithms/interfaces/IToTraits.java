@@ -25,6 +25,6 @@ package splitstree5.core.algorithms.interfaces;
  * this is used to identify algorithms at runtime
  * Daniel Huson 2/2018
  */
-public interface IToTraits {
+public interface IToTraits extends ITo {
 
 }

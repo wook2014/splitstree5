@@ -50,12 +50,12 @@ public class AnalysisBlock extends DataBlock {
     }
 
     @Override
-    public Class getFromInterface() {
+    public Class<IFromAnalysis> getFromInterface() {
         return IFromAnalysis.class;
     }
 
     @Override
-    public Class getToInterface() {
+    public Class<IToAnalysis> getToInterface() {
         return IToAnalysis.class;
     }
 

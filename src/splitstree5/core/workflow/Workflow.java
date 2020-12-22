@@ -164,7 +164,8 @@ public class Workflow {
             }
             if (n != null) {
                 topNodes.add(n);
-                hasTopTaxa.bind(n.getDataBlock().hasTaxaProperty());
+                hasTopTaxa.set(n.getDataBlock().getNtax() > 0);
+                //hasTopTaxa.bind(n.getDataBlock().hasTaxaProperty());
             }
         });
         topTraitsNode.addListener((c, o, n) -> {

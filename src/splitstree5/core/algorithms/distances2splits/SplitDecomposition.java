@@ -51,6 +51,9 @@ public class SplitDecomposition extends Algorithm<DistancesBlock, SplitsBlock> i
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, DistancesBlock distancesBlock, SplitsBlock splitsBlock) throws InterruptedException, CanceledException {
+        if (SplitsUtilities.computeSplitsForLessThan4Taxa(taxaBlock, distancesBlock, splitsBlock))
+            return;
+
         ArrayList<ASplit> previousSplits = new ArrayList<>(); // list of previously computed splits
         ArrayList<ASplit> nextSplits; // current list of splits
 
@@ -210,6 +213,6 @@ public class SplitDecomposition extends Algorithm<DistancesBlock, SplitsBlock> i
 
     @Override
     public boolean isApplicable(TaxaBlock taxaBlock, DistancesBlock parent) {
-        return parent.getNtax() >= 4;
+        return parent.getNtax() > 0;
     }
 }

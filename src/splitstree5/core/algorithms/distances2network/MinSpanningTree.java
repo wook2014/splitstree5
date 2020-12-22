@@ -66,7 +66,7 @@ public class MinSpanningTree extends Algorithm<DistancesBlock, NetworkBlock> imp
             node[t] = v;
             component[t] = t;
             graph.addTaxon(v, t);
-            graph.setLabel(v, taxaBlock.getLabel(t));
+            graph.setLabel(v, taxaBlock.get(t).getDisplayLabelOrName());
         }
 
         progress.setMaximum(distancesAndTaxa.size());

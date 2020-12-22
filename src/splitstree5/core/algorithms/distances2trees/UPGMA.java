@@ -54,6 +54,8 @@ public class UPGMA extends Algorithm<DistancesBlock, TreesBlock> implements IFro
         progress.setTasks("UPGMA", "Creating nodes...");
         progress.setMaximum(taxaBlock.getNtax());
 
+        trees.setRooted(true);
+
         final PhyloTree tree = new PhyloTree();
         final int ntax = distances.getNtax();
 

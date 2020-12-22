@@ -25,5 +25,5 @@ package splitstree5.core.algorithms.interfaces;
  * This is used to identify algorithms at runtime
  * Daniel Huson, 3.2018
  */
-public interface IToViewer {
+public interface IToViewer extends ITo {
 }

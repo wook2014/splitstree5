@@ -67,6 +67,13 @@ public class TreeViewTab extends Graph2DTab<PhyloTree> {
     }
 
     /**
+     * create a node view
+     */
+    public NodeView2D createNodeView(final Node v, Iterable<Integer> workingTaxonIds, Point2D location, String label) {
+        return createNodeView(v, graph.getTaxa(v), location, NodeShape.Circle, label == null ? 1 : 2, label == null ? 1 : 2, label);
+    }
+
+    /**
      * creates a node view
      *
      * @param v

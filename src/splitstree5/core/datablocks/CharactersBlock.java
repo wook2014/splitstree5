@@ -303,12 +303,12 @@ public class CharactersBlock extends DataBlock {
     }
 
     @Override
-    public Class getFromInterface() {
+    public Class<IFromChararacters> getFromInterface() {
         return IFromChararacters.class;
     }
 
     @Override
-    public Class getToInterface() {
+    public Class<IToCharacters> getToInterface() {
         return IToCharacters.class;
     }
 

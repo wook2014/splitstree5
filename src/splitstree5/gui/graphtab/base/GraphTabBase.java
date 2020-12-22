@@ -450,7 +450,8 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
      * @param set
      */
     public void selectByLabel(Collection<String> set) {
-        System.err.println("Selecting by label...");
+        if (false)
+            System.err.println("Selecting by label...");
         for (Node node : getGraph().nodes()) {
             final String label = getGraph().getLabel(node);
             //System.err.println(label);

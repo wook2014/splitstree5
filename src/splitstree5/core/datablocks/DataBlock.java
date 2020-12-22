@@ -26,6 +26,8 @@ import jloda.util.Basic;
 import jloda.util.PluginClassLoader;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.Document;
+import splitstree5.core.algorithms.interfaces.IFrom;
+import splitstree5.core.algorithms.interfaces.ITo;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.io.exports.NexusExporter;
@@ -75,9 +77,9 @@ abstract public class DataBlock extends NameableBase {
 
     abstract public int size();
 
-    abstract public Class getFromInterface();
+    abstract public Class<? extends IFrom> getFromInterface();
 
-    abstract public Class getToInterface();
+    abstract public Class<? extends ITo> getToInterface();
 
     public String toString() {
         return getName();

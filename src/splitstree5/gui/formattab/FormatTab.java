@@ -72,9 +72,9 @@ public class FormatTab extends ViewerTab {
         updateControls(mainWindow.getMainWindowController().getMainTabPane().getSelectionModel().getSelectedItem());
 
         controller.getNodeShapeComboBox().getItems().addAll(NodeShape.values());
-        controller.getNodeWidthComboBox().getItems().addAll(1.0, 3.0, 5.0, 10.0, 20.0, 40.0, 80.0);
-        controller.getNodeHeightComboBox().getItems().addAll(1.0, 3.0, 5.0, 10.0, 20.0, 40.0, 80.0);
-        controller.getEdgeWidthComboBox().getItems().addAll(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 20.0);
+        controller.getNodeWidthComboBox().getItems().addAll(0.5, 1.0, 3.0, 5.0, 10.0, 20.0, 40.0, 80.0);
+        controller.getNodeHeightComboBox().getItems().addAll(0.5, 1.0, 3.0, 5.0, 10.0, 20.0, 40.0, 80.0);
+        controller.getEdgeWidthComboBox().getItems().addAll(0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 20.0);
 
         controller.getLabelColorPicker().setValue(Color.BLACK);
         controller.getNodeWidthComboBox().setValue(1.0);

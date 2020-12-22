@@ -68,7 +68,8 @@ public class TaxaFilter extends Algorithm<TaxaBlock, TaxaBlock> implements IFrom
 
         if (numberEnabledTaxa() == 0 && numberDisabledTaxa() == 0) // nothing has been explicitly set, copy everything
         {
-            child.getTaxa().setAll(parent.getTaxa());
+            child.getTaxa().clear();
+            child.getTaxa().addAll(parent.getTaxa());
         } else {
             final Set<String> disabled = new HashSet<>(Arrays.asList(getOptionDisabledTaxa()));
             for (String name : getOptionEnabledTaxa()) {

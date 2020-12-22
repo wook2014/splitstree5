@@ -25,5 +25,5 @@ package splitstree5.core.algorithms.interfaces;
  * This is used to identify algorithms at runtime
  * Daniel Huson, 11.2017
  */
-public interface IToNone {
+public interface IToNone extends ITo {
 }

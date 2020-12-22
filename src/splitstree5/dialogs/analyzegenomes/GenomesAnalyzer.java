@@ -280,9 +280,6 @@ public class GenomesAnalyzer {
 
             final TaxaBlock taxaBlock = new TaxaBlock();
 
-            if (genomesBlock.size() < 4)
-                throw new IOException("Too few genomes: " + genomesBlock.size());
-
             for (Genome genome : genomesBlock.getGenomes()) {
                 final String name = RichTextLabel.getRawText(genome.getName());
                 final String uniqueName = taxaBlock.addTaxonByName(name);

@@ -104,12 +104,12 @@ public class TreesBlock extends DataBlock {
     }
 
     @Override
-    public Class getFromInterface() {
+    public Class<IFromTrees> getFromInterface() {
         return IFromTrees.class;
     }
 
     @Override
-    public Class getToInterface() {
+    public Class<IToTrees> getToInterface() {
         return IToTrees.class;
     }
 

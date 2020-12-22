@@ -123,12 +123,12 @@ public class TraitsBlock extends DataBlock implements IAdditionalBlock {
     }
 
     @Override
-    public Class getFromInterface() {
+    public Class<IFromTraits> getFromInterface() {
         return IFromTraits.class;
     }
 
     @Override
-    public Class getToInterface() {
+    public Class<IToTraits> getToInterface() {
         return IToTraits.class;
     }
 

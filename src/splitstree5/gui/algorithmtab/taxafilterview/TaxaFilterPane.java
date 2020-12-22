@@ -77,8 +77,8 @@ public class TaxaFilterPane extends AlgorithmPane {
      */
     public TaxaFilterPane(TaxaFilter taxaFilter) {
         this.taxaFilter = taxaFilter;
-        final ExtendedFXMLLoader extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
-        controller = (TaxaFilterPaneController) extendedFXMLLoader.getController();
+        final ExtendedFXMLLoader<TaxaFilterPaneController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
+        controller = extendedFXMLLoader.getController();
         this.getChildren().add(extendedFXMLLoader.getRoot());
         undoManager = new UndoManager();
     }
