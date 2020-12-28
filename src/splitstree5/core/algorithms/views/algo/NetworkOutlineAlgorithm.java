@@ -72,20 +72,22 @@ public class NetworkOutlineAlgorithm {
             //final int[] cycle=SplitsUtilities.normalizeCycle(splits.getCycle());
             final double[] split2angle = EqualAngle.assignAnglesToSplits(taxaBlock.getNtax(), splits, splits.getCycle(), rooted ? 160 : 360);
 
-            final ArrayList<Event> events = new ArrayList<>();
+            final ArrayList<Event> events;
             {
+                final ArrayList<Event> outbound = new ArrayList<>();
+                final ArrayList<Event> inbound = new ArrayList<>();
+
                 for (int s = 1; s <= splits.getNsplits(); s++) {
                     final ASplit split = splits.get(s);
                     if (split.isTrivial() || SplitsUtilities.isCircular(taxaBlock, cycle, split)) {
-                        events.add(new Event(Event.Type.outbound, s, cycle, split));
-                        events.add(new Event(Event.Type.inbould, s, cycle, split));
+                        outbound.add(new Event(Event.Type.outbound, s, cycle, split));
+                        inbound.add(new Event(Event.Type.inbound, s, cycle, split));
                         if (s <= origNSplits)
                             usedSplits.set(s, true);
                     }
                 }
+                events = Event.radixSort(taxaBlock.getNtax(), outbound, inbound);
             }
-
-            Event.radixSort(taxaBlock.getNtax(), events);
 
             final BitSet currentSplits = new BitSet();
             Point2D location = new Point2D(0, 0);
@@ -109,10 +111,10 @@ public class NetworkOutlineAlgorithm {
 
                 if (event.isStart()) {
                     currentSplits.set(event.getS(), true);
-                    location = GeometryUtilsFX.translateByAngle(location, split2angle[event.getS()], useWeights ? event.getSplit().getWeight() : 1);
+                    location = GeometryUtilsFX.translateByAngle(location, split2angle[event.getS()], useWeights ? event.getWeight() : 1);
                 } else {
                     currentSplits.set(event.getS(), false);
-                    location = GeometryUtilsFX.translateByAngle(location, split2angle[event.getS()] + 180, useWeights ? event.getSplit().getWeight() : 1);
+                    location = GeometryUtilsFX.translateByAngle(location, split2angle[event.getS()] + 180, useWeights ? event.getWeight() : 1);
                 }
 
                 final boolean mustCreateNode = (splits2node.get(currentSplits) == null);
@@ -130,7 +132,7 @@ public class NetworkOutlineAlgorithm {
                 if (!v.isAdjacent(previousNode)) {
                     final Edge e = graph.newEdge(previousNode, v);
                     graph.setSplit(e, event.getS());
-                    graph.setWeight(e, useWeights ? event.getSplit().getWeight() : 1);
+                    graph.setWeight(e, useWeights ? event.getWeight() : 1);
                     graph.setAngle(e, split2angle[event.getS()]);
 
                     if (!mustCreateNode) // just closed loop
@@ -141,7 +143,7 @@ public class NetworkOutlineAlgorithm {
 
                 if (previousEvent != null) {
                     if (event.getS() == previousEvent.getS()) {
-                        for (int t : BitSetUtils.members(event.getSplit().getPartNotContaining(cycle[1]))) {
+                        for (int t : BitSetUtils.members(splits.get(event.getS()).getPartNotContaining(cycle[1]))) {
                             graph.addTaxon(previousNode, t);
                             taxaFound.set(t);
                         }
@@ -238,9 +240,9 @@ public class NetworkOutlineAlgorithm {
     }
 
     static class Event {
-        enum Type {outbound, inbould}
+        enum Type {outbound, inbound}
 
-        private final ASplit split;
+        private final double weight;
         private int iPos;
         private int jPos;
         private final int s;
@@ -249,7 +251,7 @@ public class NetworkOutlineAlgorithm {
         public Event(Type type, int s, int[] cycle, ASplit split) {
             this.type = type;
             this.s = s;
-            this.split = split;
+            this.weight = split.getWeight();
             int firstInCycle = cycle[1];
 
             iPos = Integer.MAX_VALUE;
@@ -268,10 +270,6 @@ public class NetworkOutlineAlgorithm {
             return s;
         }
 
-        public ASplit getSplit() {
-            return split;
-        }
-
         private int getIPos() {
             return iPos;
         }
@@ -280,32 +278,33 @@ public class NetworkOutlineAlgorithm {
             return jPos;
         }
 
+        public double getWeight() {
+            return weight;
+        }
+
         public boolean isStart() {
             return type == Type.outbound;
         }
 
         public boolean isEnd() {
-            return type == Type.inbould;
+            return type == Type.inbound;
         }
 
         public String toString() {
             return type.name() + " S" + s + " (" + iPos + "-" + jPos + ")"; //: " + Basic.toString(split.getPartNotContaining(firstInCycle), ",");
         }
 
-        public static void radixSort(int ntax, ArrayList<Event> events) {
-            final Event[] starts = events.stream().filter(Event::isStart).toArray(Event[]::new);
-            final Event[] ends = events.stream().filter(Event::isEnd).toArray(Event[]::new);
+        public static ArrayList<Event> radixSort(int ntax, ArrayList<Event> outbound, ArrayList<Event> inbound) {
+            countingSort(outbound, ntax, a -> ntax - a.getJPos());
+            countingSort(outbound, ntax, Event::getIPos);
+            countingSort(inbound, ntax, a -> ntax - a.getIPos());
+            countingSort(inbound, ntax, Event::getJPos);
 
-            countingSort(starts, ntax, a -> ntax - a.getJPos());
-            countingSort(starts, ntax, Event::getIPos);
-            countingSort(ends, ntax, a -> ntax - a.getIPos());
-            countingSort(ends, ntax, Event::getJPos);
-
-            merge(starts, ends, events);
+            return merge(outbound, inbound);
         }
 
-        private static void countingSort(Event[] events, int maxKey, Function<Event, Integer> key) {
-            if (events.length > 1) {
+        private static void countingSort(ArrayList<Event> events, int maxKey, Function<Event, Integer> key) {
+            if (events.size() > 1) {
                 final int[] key2pos = new int[maxKey + 1];
                 // count keys
                 for (Event event : events) {
@@ -323,7 +322,7 @@ public class NetworkOutlineAlgorithm {
                     }
                 }
 
-                final Event[] other = new Event[events.length];
+                final Event[] other = new Event[events.size()];
 
                 // insert at positions:
                 for (Event event : events) {
@@ -333,27 +332,29 @@ public class NetworkOutlineAlgorithm {
                 }
 
                 // copy to result:
-                System.arraycopy(other, 0, events, 0, events.length);
+                events.clear();
+                Collections.addAll(events, other);
             }
         }
 
-        private static void merge(Event[] starts, Event[] ends, List<Event> result) {
-            result.clear();
+        private static ArrayList<Event> merge(ArrayList<Event> outbound, ArrayList<Event> inbound) {
+            final ArrayList<Event> events = new ArrayList<>(outbound.size() + inbound.size());
 
-            int s = 0;
-            int e = 0;
-            while (s < starts.length && e < ends.length) {
-                if (starts[s].getIPos() < ends[e].getJPos() + 1) {
-                    result.add(starts[s++]);
+            int ob = 0;
+            int ib = 0;
+            while (ob < outbound.size() && ib < inbound.size()) {
+                if (outbound.get(ob).getIPos() < inbound.get(ib).getJPos() + 1) {
+                    events.add(outbound.get(ob++));
                 } else {
-                    result.add(ends[e++]);
+                    events.add(inbound.get(ib++));
                 }
             }
-            while (s < starts.length)
-                result.add(starts[s++]);
-            while (e < ends.length)
-                result.add(ends[e++]);
+            while (ob < outbound.size())
+                events.add(outbound.get(ob++));
+            while (ib < inbound.size())
+                events.add(inbound.get(ib++));
 
+            return events;
         }
     }
 }

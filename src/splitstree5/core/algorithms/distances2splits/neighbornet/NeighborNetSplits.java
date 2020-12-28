@@ -229,9 +229,6 @@ public class NeighborNetSplits {
      * Size of resulting array will be propKept * (number of negative entries) rounded up.
      */
     static private int[] worstIndices(double[] x, double propKept) {
-
-        propKept = 0.1; // todo: delete this line!
-
         //System.err.println(Basic.toString(x, " "));
         if (propKept == 0)
             return null;

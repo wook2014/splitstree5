@@ -288,25 +288,29 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
         int first = 0; // first taxon on other side of mid split
         if (!altLayout) {
             final BitSet part = splitsBlockSrc.get(mid).getPartNotContaining(1);
-            int j = 0;
+            int t = 1;
             for (int value : cycle0) {
-                if (first == 0 && part.get(value)) {
-                    first = value;
-                    cycle[j++] = rootTaxonId;
+                if (value > 0) {
+                    if (first == 0 && part.get(value)) {
+                        first = value;
+                        cycle[t++] = rootTaxonId;
+                    }
+                    cycle[t++] = value;
                 }
-                cycle[j++] = value;
             }
         } else { // altLayout
             final BitSet part = splitsBlockSrc.get(mid).getPartNotContaining(1);
             int seen = 0;
-            int j = 0;
+            int t = 1;
             for (int value : cycle0) {
-                cycle[j++] = value;
-                if (part.get(value)) {
-                    seen++;
-                    if (seen == part.cardinality()) {
-                        first = value;
-                        cycle[j++] = rootTaxonId;
+                if (value > 0) {
+                    cycle[t++] = value;
+                    if (part.get(value)) {
+                        seen++;
+                        if (seen == part.cardinality()) {
+                            first = value;
+                            cycle[t++] = rootTaxonId;
+                        }
                     }
                 }
             }
@@ -346,13 +350,13 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
             }
         }
         // add  new separator split
-        if (true) {
+        {
             totalWeight += mid2.getWeight();
             splitsBlockTarget.getSplits().add(mid2);
             //splitsBlockTarget.getSplitLabels().put(splitsBlockTarget.getNsplits(),"BOLD");
         }
         // add root split:
-        if (true) {
+        {
             final ASplit aSplit = new ASplit(BitSetUtils.asBitSet(rootTaxonId), taxaBlockTarget.getNtax(), totalWeight > 0 ? totalWeight / splitsBlockTarget.getNsplits() : 1);
             splitsBlockTarget.getSplits().add(aSplit);
 

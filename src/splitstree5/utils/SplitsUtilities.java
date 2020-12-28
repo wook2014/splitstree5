@@ -243,16 +243,11 @@ public class SplitsUtilities {
      * @param dist               the distances
      */
     static public void computeFits(boolean forceRecalculation, SplitsBlock splits, DistancesBlock dist, ProgressListener pl) {
-        float dsum = 0;
-        float ssum = 0;
-        float dsumSquare = 0;
-        float ssumSquare = 0;
-        float netsumSquare = 0;
-
-        int ntax = dist.getNtax();
-
         if (splits == null || dist == null)
             return;
+
+        final int ntax = dist.getNtax();
+
 
         if (!forceRecalculation && splits.getFit() >= 0)
             return; //No need to recalculate.
@@ -276,6 +271,13 @@ public class SplitsUtilities {
                 sdist[i][j] = sdist[j][i] = dij;
             }
         }
+
+        float dsum = 0;
+        float ssum = 0;
+        float dsumSquare = 0;
+        float ssumSquare = 0;
+        float netsumSquare = 0;
+
         for (int i = 1; i <= ntax; i++) {
             for (int j = i + 1; j <= ntax; j++) {
                 double sij = sdist[i][j];
@@ -350,15 +352,19 @@ public class SplitsUtilities {
     public static Triplet<Integer, Double, Double> computeRootLocation(boolean alt, int ntaxa, Set<Integer> outgroup, int[] cycle, SplitsBlock splitsBlock, boolean useWeights, ProgressListener progress) throws CanceledException {
         progress.setSubtask("Computing root location");
 
-        final double[][] distances = new double[ntaxa + 1][ntaxa + 1];
+        final double[][] splitDistances = new double[ntaxa + 1][ntaxa + 1];
         for (ASplit split : splitsBlock.getSplits()) {
             for (int a : BitSetUtils.members(split.getA())) {
-                for (int b : BitSetUtils.members(split.getB()))
-                    distances[a][b] += useWeights ? split.getWeight() : 1;
+                for (int b : BitSetUtils.members(split.getB())) {
+                    double diff = useWeights ? split.getWeight() : 1;
+                    splitDistances[a][b] += diff;
+                    splitDistances[b][a] += diff;
+                }
             }
         }
         final Set<Integer> setA = new TreeSet<>();
         final Set<Integer> setB = new TreeSet<>();
+
         if (outgroup.size() > 0) {
             setA.addAll(outgroup);
             setB.addAll(IntStream.rangeClosed(1, ntaxa).filter(i -> !outgroup.contains(i)).boxed().collect(Collectors.toList()));
@@ -372,8 +378,8 @@ public class SplitsUtilities {
 
         for (int a : setA) {
             for (int b : setB) {
-                if (b != a && distances[a][b] > maxDistance) {
-                    maxDistance = distances[a][b];
+                if (b != a && splitDistances[a][b] > maxDistance) {
+                    maxDistance = splitDistances[a][b];
                     furthestPair.set(a, b);
                 }
             }
@@ -390,7 +396,7 @@ public class SplitsUtilities {
             }
         }
 
-        final BitSet interval = computeInterval(ntaxa, furthestPair.getFirst(), furthestPair.getSecond(), cycle, alt);
+        final BitSet interval = computeInterval(furthestPair.getFirst(), furthestPair.getSecond(), cycle, alt);
 
         splits.sort((s1, s2) -> {
             final BitSet a1 = s1.getPartContaining(furthestPair.getFirst());
@@ -406,20 +412,19 @@ public class SplitsUtilities {
                 return Integer.compare(a1.cardinality(), a2.cardinality());
         });
 
-        double sum = 0;
+        double total = 0;
         for (ASplit split : splits) {
             final double weight = (useWeights ? split.getWeight() : 1);
-            final double delta = (sum + weight - 0.5 * maxDistance);
+            final double delta = total + weight - 0.5 * maxDistance;
             if (delta > 0) {
                 return new Triplet<>(split2id.get(split), delta, weight - delta);
-                //return new Triplet<>(split2id.get(split), weight - delta, delta);
             }
-            sum += weight;
+            total += weight;
         }
         return new Triplet<>(1, 0.0, useWeights ? splitsBlock.get(1).getWeight() : 1);
     }
 
-    private static BitSet computeInterval(int ntaxa, int a, int b, int[] cycle, boolean alt) {
+    private static BitSet computeInterval(int a, int b, int[] cycle, boolean alt) {
         final BitSet set = new BitSet();
 
         if (cycle.length > 0) {
