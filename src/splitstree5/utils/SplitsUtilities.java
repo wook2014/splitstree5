@@ -32,8 +32,6 @@ import splitstree5.core.misc.Compatibility;
 
 import java.io.PrintStream;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * utilities for splits
@@ -340,8 +338,8 @@ public class SplitsUtilities {
      * computes the midpoint root location
      *
      * @param alt         use alternative side
-     * @param ntaxa       number of taxa
-     * @param outgroup    outgroup taxa or empty, if performing simple midpoint rooting
+     * @param nTax        number of taxa
+     * @param outGroup    out group taxa or empty, if performing simple midpoint rooting
      * @param cycle
      * @param splitsBlock
      * @param useWeights  use split weights or otherwise give all splits weight 1
@@ -349,77 +347,96 @@ public class SplitsUtilities {
      * @return rooting split and both distances
      * @throws CanceledException
      */
-    public static Triplet<Integer, Double, Double> computeRootLocation(boolean alt, int ntaxa, Set<Integer> outgroup, int[] cycle, SplitsBlock splitsBlock, boolean useWeights, ProgressListener progress) throws CanceledException {
+    public static Triplet<Integer, Double, Double> computeRootLocation(boolean alt, int nTax, Set<Integer> outGroup,
+                                                                       int[] cycle, SplitsBlock splitsBlock, boolean useWeights, ProgressListener progress) {
         progress.setSubtask("Computing root location");
 
-        final double[][] splitDistances = new double[ntaxa + 1][ntaxa + 1];
-        for (ASplit split : splitsBlock.getSplits()) {
-            for (int a : BitSetUtils.members(split.getA())) {
-                for (int b : BitSetUtils.members(split.getB())) {
-                    double diff = useWeights ? split.getWeight() : 1;
-                    splitDistances[a][b] += diff;
-                    splitDistances[b][a] += diff;
+        if (outGroup.size() > 0) {
+            final BitSet outGroupSplits = new BitSet();
+            final BitSet outGroupBits = BitSetUtils.asBitSet(outGroup);
+            final int outGroupTaxon = outGroup.iterator().next();
+
+
+            for (int p = 1; p <= splitsBlock.getNsplits(); p++) {
+                final BitSet pa = splitsBlock.get(p).getPartContaining(outGroupTaxon);
+                if (BitSetUtils.contains(pa, outGroupBits)) {
+                    boolean ok = true;
+                    for (int q : BitSetUtils.members(outGroupSplits)) {
+                        final BitSet qa = splitsBlock.get(q).getPartContaining(outGroupTaxon);
+                        if (BitSetUtils.contains(pa, qa)) {
+                            ok = false;
+                            break;
+                        } else if (BitSetUtils.contains(qa, pa)) {
+                            outGroupSplits.clear(q);
+                        }
+                    }
+                    if (ok)
+                        outGroupSplits.set(p);
                 }
             }
-        }
-        final Set<Integer> setA = new TreeSet<>();
-        final Set<Integer> setB = new TreeSet<>();
-
-        if (outgroup.size() > 0) {
-            setA.addAll(outgroup);
-            setB.addAll(IntStream.rangeClosed(1, ntaxa).filter(i -> !outgroup.contains(i)).boxed().collect(Collectors.toList()));
+            if (outGroupSplits.cardinality() > 0) {
+                final int s = outGroupSplits.nextSetBit(0);
+                return new Triplet<>(s, 0.9 * splitsBlock.get(s).getWeight(), 0.1 * splitsBlock.get(s).getWeight());
+            }
         } else {
-            setA.addAll(IntStream.rangeClosed(1, ntaxa).boxed().collect(Collectors.toList()));
-            setB.addAll(setA);
-        }
-
-        double maxDistance = 0;
-        final Pair<Integer, Integer> furthestPair = new Pair<>(0, 0);
-
-        for (int a : setA) {
-            for (int b : setB) {
-                if (b != a && splitDistances[a][b] > maxDistance) {
-                    maxDistance = splitDistances[a][b];
-                    furthestPair.set(a, b);
+            final double[][] splitDistances = new double[nTax + 1][nTax + 1];
+            for (ASplit split : splitsBlock.getSplits()) {
+                for (int a : BitSetUtils.members(split.getA())) {
+                    for (int b : BitSetUtils.members(split.getB())) {
+                        double diff = useWeights ? split.getWeight() : 1;
+                        splitDistances[a][b] += diff;
+                        splitDistances[b][a] += diff;
+                    }
                 }
             }
-        }
+            double maxDistance = 0;
+            final Pair<Integer, Integer> furthestPair = new Pair<>(0, 0);
 
-        final Map<ASplit, Integer> split2id = new HashMap<>();
-
-        final ArrayList<ASplit> splits = new ArrayList<>();
-        for (int s = 1; s <= splitsBlock.getNsplits(); s++) {
-            final ASplit split = splitsBlock.get(s);
-            if (split.separates(furthestPair.getFirst(), furthestPair.getSecond())) {
-                splits.add(split);
-                split2id.put(split, s);
+            for (int a = 1; a <= nTax; a++) {
+                for (int b = a + 1; b <= nTax; b++) {
+                    if (splitDistances[a][b] > maxDistance) {
+                        maxDistance = splitDistances[a][b];
+                        furthestPair.set(a, b);
+                    }
+                }
             }
-        }
 
-        final BitSet interval = computeInterval(furthestPair.getFirst(), furthestPair.getSecond(), cycle, alt);
+            final Map<ASplit, Integer> split2id = new HashMap<>();
 
-        splits.sort((s1, s2) -> {
-            final BitSet a1 = s1.getPartContaining(furthestPair.getFirst());
-            final BitSet a2 = s2.getPartContaining(furthestPair.getFirst());
-            final int size1 = BitSetUtils.intersection(a1, interval).cardinality();
-            final int size2 = BitSetUtils.intersection(a2, interval).cardinality();
-
-            if (size1 < size2)
-                return -1;
-            else if (size1 > size2)
-                return 1;
-            else
-                return Integer.compare(a1.cardinality(), a2.cardinality());
-        });
-
-        double total = 0;
-        for (ASplit split : splits) {
-            final double weight = (useWeights ? split.getWeight() : 1);
-            final double delta = total + weight - 0.5 * maxDistance;
-            if (delta > 0) {
-                return new Triplet<>(split2id.get(split), delta, weight - delta);
+            final ArrayList<ASplit> splits = new ArrayList<>();
+            for (int s = 1; s <= splitsBlock.getNsplits(); s++) {
+                final ASplit split = splitsBlock.get(s);
+                if (split.separates(furthestPair.getFirst(), furthestPair.getSecond())) {
+                    splits.add(split);
+                    split2id.put(split, s);
+                }
             }
-            total += weight;
+
+            final BitSet interval = computeInterval(furthestPair.getFirst(), furthestPair.getSecond(), cycle, alt);
+
+            splits.sort((s1, s2) -> {
+                final BitSet a1 = s1.getPartContaining(furthestPair.getFirst());
+                final BitSet a2 = s2.getPartContaining(furthestPair.getFirst());
+                final int size1 = BitSetUtils.intersection(a1, interval).cardinality();
+                final int size2 = BitSetUtils.intersection(a2, interval).cardinality();
+
+                if (size1 < size2)
+                    return -1;
+                else if (size1 > size2)
+                    return 1;
+                else
+                    return Integer.compare(a1.cardinality(), a2.cardinality());
+            });
+
+            double total = 0;
+            for (ASplit split : splits) {
+                final double weight = (useWeights ? split.getWeight() : 1);
+                final double delta = total + weight - 0.5 * maxDistance;
+                if (delta > 0) {
+                    return new Triplet<>(split2id.get(split), delta, weight - delta);
+                }
+                total += weight;
+            }
         }
         return new Triplet<>(1, 0.0, useWeights ? splitsBlock.get(1).getWeight() : 1);
     }
