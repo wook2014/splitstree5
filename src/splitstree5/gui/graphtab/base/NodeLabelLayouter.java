@@ -20,11 +20,9 @@
 
 package splitstree5.gui.graphtab.base;
 
+import javafx.application.Platform;
 import javafx.geometry.BoundingBox;
-import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import jloda.fx.control.RichTextLabel;
 import jloda.fx.util.GeometryUtilsFX;
 import jloda.fx.util.ProgramExecutorService;
@@ -35,11 +33,11 @@ import jloda.graph.NodeArray;
 import jloda.phylo.PhyloGraph;
 import jloda.util.Basic;
 import jloda.util.Single;
+import jloda.util.Triplet;
+import jloda.util.interval.Interval;
+import jloda.util.interval.IntervalTree;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -57,160 +55,165 @@ public class NodeLabelLayouter {
      * @param edge2view
      */
     public static void radialLayout(boolean sparseLabels, PhyloGraph phyloGraph, NodeArray<NodeViewBase> node2view, EdgeArray<EdgeViewBase> edge2view) {
-        final ArrayList<BoundingBox> shapeBoundsList = new ArrayList<>();
+        final ArrayList<BoundingBox> nodeShapes = new ArrayList<>(phyloGraph.getNumberOfNodes());
+        final ArrayList<Triplet<BoundingBox, Node, Double>> labelShapes = new ArrayList<>(phyloGraph.getNumberOfNodes());
 
         for (Node v : phyloGraph.nodes()) {
             final NodeView2D nv = (NodeView2D) node2view.getValue(v);
-            if (phyloGraph.getLabel(v) != null) {
-                final javafx.scene.Node shape = nv.getShapeGroup();
-                if (shape != null)
-                    shapeBoundsList.add(new BoundingBox(shape.getTranslateX() - 0.5 * shape.getBoundsInLocal().getWidth(), shape.getTranslateY() - 0.5 * shape.getBoundsInLocal().getHeight(), shape.getLayoutBounds().getWidth(), shape.getLayoutBounds().getHeight()));
+            if (nv.getLabel() != null) {
+                final RichTextLabel label = nv.getLabel();
+                if (label != null) {
+                    final BoundingBox shapeBounds;
+                    final javafx.scene.Node shape = nv.getShapeGroup();
+                    if (shape != null)
+                        shapeBounds = new BoundingBox(shape.getTranslateX(), shape.getTranslateY(), shape.getBoundsInLocal().getWidth(), shape.getBoundsInLocal().getHeight());
+                    else
+                        shapeBounds = new BoundingBox(nv.getLocation().getX() - 1, nv.getLocation().getY() - 1, 2, 2);
+                    nodeShapes.add(shapeBounds);
+
+                    nv.getLabel().setVisible(true);
+                    final Point2D location = new Point2D(shapeBounds.getMinX() + 0.5 * (shapeBounds.getWidth() - label.getLayoutBounds().getWidth()),
+                            shapeBounds.getMinY() + 0.5 * (shapeBounds.getHeight() - label.getLayoutBounds().getHeight()));
+                    final BoundingBox bbox = new BoundingBox(location.getX(), location.getY(), label.getLayoutBounds().getWidth(), label.getLayoutBounds().getHeight());
+
+                    final double angle;
+
+                    if (v.getDegree() == 1) {
+                        Edge e = v.getFirstAdjacentEdge();
+                        EdgeView2D ev = (EdgeView2D) edge2view.getValue(e);
+                        angle = GeometryUtilsFX.computeAngle(nv.getLocation().subtract(ev.getReferencePoint()));
+                    } else {
+                        final ArrayList<Integer> array = new ArrayList<>(v.getDegree());
+                        for (Edge e : v.adjacentEdges()) {
+                            EdgeView2D ev = (EdgeView2D) edge2view.getValue(e);
+                            final double alpha = GeometryUtilsFX.modulo360(GeometryUtilsFX.computeAngle(ev.getReferencePoint().subtract(nv.getLocation())));
+                            array.add((int) Math.round(alpha));
+                        }
+                        array.sort(Comparator.naturalOrder());
+                        array.add(360 + array.get(0));
+                        int gap = 0;
+                        int best = 0;
+                        for (int next = 0; next < array.size() - 1; next++) {
+                            final int nextGap = (int) Math.round(GeometryUtilsFX.modulo360(array.get(next + 1) - array.get(next)));
+                            if (nextGap > gap) {
+                                best = next;
+                                gap = nextGap;
+                            }
+                        }
+                        angle = 0.5 * (array.get(best) + array.get(best + 1));
+                    }
+                    labelShapes.add(new Triplet<>(bbox, v, angle));
+                }
             }
         }
 
-        final Single<NodeArray<Point2D>> best_node2labelTranslate = new Single<>(null);
-        final Single<Double> best_strain = new Single<>(Double.POSITIVE_INFINITY);
+        if (sparseLabels) {
+            final IntervalTree<BoundingBox> xIntervals = new IntervalTree<>();
+            final IntervalTree<BoundingBox> yIntervals = new IntervalTree<>();
 
-        final int runs = (sparseLabels ? 1 : 100);
+            for (BoundingBox bbox : nodeShapes) {
+                xIntervals.add(scaledInt(bbox.getMinX()), scaledInt(bbox.getMaxX()), bbox);
+                yIntervals.add(scaledInt(bbox.getMinY()), scaledInt(bbox.getMaxY()), bbox);
+            }
 
-        ExecutorService executorService = Executors.newFixedThreadPool(ProgramExecutorService.getNumberOfCoresToUse());
+            final IntervalTree<BoundingBox> xIntervalsLabels = new IntervalTree<>();
+            final IntervalTree<BoundingBox> yIntervalsLabels = new IntervalTree<>();
 
-        for (int i = 0; i < runs; i++) {
-            final long seed = 666L * (i + 13);
-            executorService.submit(() -> {
-                final List<Node> nodes = Basic.randomize(phyloGraph.nodesList(), seed);
+            for (Triplet<BoundingBox, Node, Double> triplet : labelShapes) {
+                BoundingBox bbox = triplet.get1();
+                final Node v = triplet.get2();
+                final double angle = triplet.get3();
 
-                final ArrayList<BoundingBox> labelBoundsList = new ArrayList<>();
-                final NodeArray<Point2D> node2labelTranslate = new NodeArray<>(phyloGraph);
-                double strain = 0;
-                for (Node v : nodes) {
-                    if (v.getDegree() > 0) {
-                        final NodeView2D nv = (NodeView2D) node2view.getValue(v);
-                        final javafx.scene.Node shape = nv.getShapeGroup();
-                        final Bounds shapeBounds;
-                        if (shape != null)
-                            shapeBounds = new BoundingBox(shape.getTranslateX() - 0.5 * shape.getBoundsInLocal().getWidth(), shape.getTranslateY() - 0.5 * shape.getBoundsInLocal().getHeight(), shape.getBoundsInLocal().getWidth(), shape.getBoundsInLocal().getHeight());
-                        else
-                            shapeBounds = new BoundingBox(nv.getLocation().getX() - 1, nv.getLocation().getY() - 1, 2, 2);
-
-                        final double angle;
-                        if (v.getDegree() == 1) {
-                            Edge e = v.getFirstAdjacentEdge();
-                            EdgeView2D ev = (EdgeView2D) edge2view.getValue(e);
-                            angle = GeometryUtilsFX.computeAngle(nv.getLocation().subtract(ev.getReferencePoint()));
-                        } else {
-                            final ArrayList<Integer> array = new ArrayList<>(v.getDegree());
-                            for (Edge e : v.adjacentEdges()) {
-                                EdgeView2D ev = (EdgeView2D) edge2view.getValue(e);
-                                final double alpha = GeometryUtilsFX.modulo360(GeometryUtilsFX.computeAngle(ev.getReferencePoint().subtract(nv.getLocation())));
-                                array.add((int) Math.round(alpha));
-                            }
-                            array.sort(Comparator.naturalOrder());
-                            array.add(360 + array.get(0));
-                            int gap = 0;
-                            int best = 0;
-                            for (int next = 0; next < array.size() - 1; next++) {
-                                final int nextGap = (int) Math.round(GeometryUtilsFX.modulo360(array.get(next + 1) - array.get(next)));
-                                if (nextGap > gap) {
-                                    best = next;
-                                    gap = nextGap;
-                                }
-                            }
-                            angle = 0.5 * (array.get(best) + array.get(best + 1));
-                        }
-
-                        final RichTextLabel label = nv.getLabel();
-                        if (label != null) {
-                            nv.getLabel().setVisible(true);
-
-                            Point2D location = new Point2D(0.5 * (shapeBounds.getMaxX() + shapeBounds.getMinX() - label.getLayoutBounds().getWidth()),
-                                    0.5 * (shapeBounds.getMaxY() + shapeBounds.getMinY() - label.getLayoutBounds().getHeight()));
-                            BoundingBox bbox = new BoundingBox(location.getX(), location.getY(), label.getLayoutBounds().getWidth(), label.getLayoutBounds().getHeight());
-
-
-                            if (false) // debugging
-                            {
-                                ArrayList<javafx.scene.Node> rectangles = new ArrayList<>();
-                                for (javafx.scene.Node node : nv.getShapeGroup().getChildren()) {
-                                    if (node instanceof Rectangle)
-                                        rectangles.add(node);
-                                }
-                                nv.getShapeGroup().getChildren().removeAll(rectangles);
-                            }
-
-                            if (false)// debugging
-                            {
-                                Rectangle rect = new Rectangle(shapeBounds.getMinX(), shapeBounds.getMinY(), shapeBounds.getWidth(), shapeBounds.getHeight());
-                                rect.setFill(Color.TRANSPARENT);
-                                rect.setStroke(Color.PINK);
-                                nv.getShapeGroup().getChildren().add(rect);
-                            }
-
-
-                            boolean ok = false;
-                            while (!ok) {
-                                ok = true;
-                                int count = 0;
-                                for (BoundingBox other : iterator(shapeBoundsList.iterator(), labelBoundsList.iterator())) {
-                                    if (other.intersects(bbox)) {
-                                        if (count >= shapeBoundsList.size() && sparseLabels) {
-                                            nv.getLabel().setVisible(false);
-                                            ok = true; // done with this, it will be invisible
-                                            break;
-                                        }
-
-                                        location = GeometryUtilsFX.translateByAngle(location, angle, 0.2 * bbox.getHeight());
-                                        bbox = new BoundingBox(location.getX(), location.getY(), Math.max(1, label.getLayoutBounds().getWidth()), Math.max(1, label.getLayoutBounds().getHeight()));
-                                        ok = false;
-                                        if (false)// debugging
-                                        {
-                                            Rectangle rect = new Rectangle(bbox.getMinX(), bbox.getMinY(), label.getLayoutBounds().getWidth(), label.getLayoutBounds().getHeight());
-                                            rect.setFill(Color.TRANSPARENT);
-                                            rect.setStroke(Color.LIGHTGREEN);
-                                            nv.getShapeGroup().getChildren().add(rect);
-                                        }
-                                        break;
-                                    }
-                                    count++;
-                                }
-                            }
-                            if (nv.getLabel().isVisible())
-                                labelBoundsList.add(bbox);
-                            final Point2D offset = new Point2D(bbox.getMinX(), bbox.getMinY());
-                            node2labelTranslate.put(v, offset);
-                            strain += offset.magnitude() * offset.magnitude();
-                            // todo: this algorithm needs improving!
-                        }
-                    }
+                while (overlaps(bbox, xIntervals, yIntervals)) {
+                    final Point2D translated = GeometryUtilsFX.translateByAngle(new Point2D(bbox.getMinX(), bbox.getMinY()), angle, 5);
+                    bbox = new BoundingBox(translated.getX(), translated.getY(), bbox.getWidth(), bbox.getHeight());
                 }
-                synchronized (best_strain) {
-                    if (strain < best_strain.get()) {
-                        // System.err.println(best_strain + " -> " + strain);
-                        best_strain.set(strain);
-                        best_node2labelTranslate.set(node2labelTranslate);
+                final NodeView2D nv = (NodeView2D) node2view.getValue(v);
+                if (!overlaps(bbox, xIntervalsLabels, yIntervalsLabels)) {
+                    xIntervalsLabels.add(new Interval<>(scaledInt(bbox.getMinX()), scaledInt(bbox.getMaxX()), bbox));
+                    yIntervalsLabels.add(new Interval<>(scaledInt(bbox.getMinY()), scaledInt(bbox.getMaxY()), bbox));
+                } else
+                    nv.getLabel().setVisible(false);
+                nv.getLabel().setTranslateX(bbox.getMinX());
+                nv.getLabel().setTranslateY(bbox.getMinY());
+            }
+        } else {
+
+            final Single<ArrayList<Triplet<BoundingBox, Node, Double>>> bestLabelShapes = new Single<>(null);
+            final Single<Double> best_stress = new Single<>(Double.POSITIVE_INFINITY);
+
+            final int runs = 100;
+
+            ExecutorService executorService = Executors.newFixedThreadPool(ProgramExecutorService.getNumberOfCoresToUse());
+
+            for (int i = 0; i < runs; i++) {
+                final long seed = 666L * (i + 13);
+                executorService.submit(() -> {
+                    final IntervalTree<BoundingBox> xIntervals = new IntervalTree<>();
+                    final IntervalTree<BoundingBox> yIntervals = new IntervalTree<>();
+
+                    for (BoundingBox bbox : nodeShapes) {
+                        xIntervals.add(scaledInt(bbox.getMinX()), scaledInt(bbox.getMaxX()), bbox);
+                        yIntervals.add(scaledInt(bbox.getMinY()), scaledInt(bbox.getMaxY()), bbox);
                     }
+
+                    final ArrayList<Triplet<BoundingBox, Node, Double>> labels = new ArrayList<>();
+                    double stress = 0;
+
+                    for (Triplet<BoundingBox, Node, Double> triplet : Basic.randomize(labelShapes, seed)) {
+                        BoundingBox bbox = triplet.get1();
+                        final Node v = triplet.get2();
+                        final double angle = triplet.get3();
+                        while (overlaps(bbox, xIntervals, yIntervals)) {
+                            final Point2D translated = GeometryUtilsFX.translateByAngle(new Point2D(bbox.getMinX(), bbox.getMinY()), angle, 5);
+                            bbox = new BoundingBox(translated.getX(), translated.getY(), bbox.getWidth(), bbox.getHeight());
+                        }
+                        stress += (triplet.get1().getMinX() - bbox.getMinX()) * (triplet.get1().getMinX() - bbox.getMinX()) +
+                                (triplet.get1().getMinY() - bbox.getMinY()) * (triplet.get1().getMinY() - bbox.getMinY());
+
+                        xIntervals.add(new Interval<>(scaledInt(bbox.getMinX()), scaledInt(bbox.getMaxX()), bbox));
+                        yIntervals.add(new Interval<>(scaledInt(bbox.getMinY()), scaledInt(bbox.getMaxY()), bbox));
+                        labels.add(new Triplet<>(bbox, v, angle));
+                    }
+                    synchronized (best_stress) {
+                        if (stress < best_stress.get()) {
+                            best_stress.set(stress);
+                            bestLabelShapes.set(labels);
+                        }
+                    }
+                });
+            }
+
+            final ExecutorService single = Executors.newSingleThreadExecutor();
+            single.submit(() -> {
+                executorService.shutdown();
+                try {
+                    executorService.awaitTermination(1000, TimeUnit.DAYS);
+                } catch (InterruptedException ignored) {
+                }
+                if (bestLabelShapes.get() != null) {
+                    Platform.runLater(() -> {
+                        for (Triplet<BoundingBox, Node, Double> triplet : bestLabelShapes.get()) {
+                            if (triplet.get2().getOwner() != null) {
+                                final NodeView2D nv = (NodeView2D) node2view.getValue(triplet.get2());
+                                nv.getLabel().setTranslateX(triplet.get1().getMinX());
+                                nv.getLabel().setTranslateY(triplet.get1().getMinY());
+                            }
+                        }
+                    });
+                    single.shutdown();
                 }
             });
         }
+    }
 
-        executorService.shutdown();
-        try {
-            executorService.awaitTermination(1000, TimeUnit.DAYS);
-        } catch (InterruptedException ignored) {
-        }
+    private static boolean overlaps(BoundingBox bbox, IntervalTree<BoundingBox> xIntervals, IntervalTree<BoundingBox> yIntervals) {
+        final Set<BoundingBox> yBoxes = new HashSet<>(yIntervals.get(scaledInt(bbox.getMinY()), scaledInt(bbox.getMaxY())));
+        return xIntervals.get(scaledInt(bbox.getMinX()), scaledInt(bbox.getMaxX())).stream().anyMatch(yBoxes::contains);
+    }
 
-        if (best_node2labelTranslate.get() != null) {
-            for (var v : phyloGraph.nodes()) {
-                Point2D translate = best_node2labelTranslate.get().get(v);
-                if (translate != null) {
-                    final NodeView2D nv = (NodeView2D) node2view.getValue(v);
-                    if (nv.getLabel() != null) {
-                        nv.getLabel().setTranslateX(translate.getX());
-                        nv.getLabel().setTranslateY(translate.getY());
-                    }
-                }
-            }
-        }
+    public static int scaledInt(double value) {
+        return (int) Math.round(10.0 * value);
     }
 
     /**

@@ -36,7 +36,7 @@ import splitstree5.core.datablocks.DataBlock;
  */
 public class ConnectorService<P extends DataBlock, C extends DataBlock> extends Service<Boolean> {
     public static boolean verbose = false;
-    private Connector<P, C> connector;
+    private final Connector<P, C> connector;
 
     public ConnectorService(Connector<P, C> connector) {
         this.connector = connector;
@@ -59,6 +59,7 @@ public class ConnectorService<P extends DataBlock, C extends DataBlock> extends 
         @Override
         public Boolean call() throws Exception {
             synchronized (connector.getChild().getDataBlock()) { // make sure that we only ever have one task working on a given datablock
+                final long start = System.currentTimeMillis();
                 try {
                     if (verbose)
                         System.err.println("--- Compute " + getMethodName() + " called");
@@ -76,7 +77,9 @@ public class ConnectorService<P extends DataBlock, C extends DataBlock> extends 
                     throw ex;
                 } finally {
                     if (verbose)
-                        System.err.println("--- Compute " + getMethodName() + " done");
+                        System.err.println("--- Compute " + getMethodName() + " done ("
+                                + Basic.removeTrailingZerosAfterDot("" + ((System.currentTimeMillis() - start) / 1000.0))
+                                + "s)");
                 }
                 return true;
             }
