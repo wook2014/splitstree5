@@ -23,15 +23,15 @@ else
         options=$*
 fi
 
-bin_dir=`dirname "$0"`       # may be relative path
-bin_dir=`cd "$bin_dir" && pwd`    # ensure absolute path
+bin_dir=$(dirname "$0")       # may be relative path
+bin_dir=$(cd "$bin_dir" && pwd)    # ensure absolute path
 jars_dir="$bin_dir/../jars"
 jars2_dir="$bin_dir/../jars2"
 
 jre_dir=${installer:sys.preferredJre}
 
 java=$jre_dir/bin/java
-vmOptions=`grep "^-" $bin_dir/../SplitsTree5.vmoptions`
+vmOptions=$(grep "^-" $bin_dir/../SplitsTree5.vmoptions)
 jfx_dir="$bin_dir/../openjfx/${compiler:sys.platform}/lib"
 modulepath="$jars_dir:$jars2_dir:$jfx_dir"
 
