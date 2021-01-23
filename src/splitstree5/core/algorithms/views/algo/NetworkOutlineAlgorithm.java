@@ -53,7 +53,8 @@ public class NetworkOutlineAlgorithm {
      * @param graph
      * @param node2point
      */
-    public static void apply(ProgressListener progress, boolean useWeights, TaxaBlock taxaBlock, SplitsBlock splits, PhyloSplitsGraph graph, NodeArray<Point2D> node2point, BitSet forbiddenSplits, BitSet usedSplits,
+    public static void apply(ProgressListener progress, boolean useWeights, TaxaBlock taxaBlock, SplitsBlock splits,
+                             PhyloSplitsGraph graph, NodeArray<Point2D> node2point, BitSet forbiddenSplits, BitSet usedSplits,
                              ArrayList<ArrayList<Node>> loops, boolean rooted) throws CanceledException {
         progress.setTasks("Outline", null);
 
@@ -227,15 +228,17 @@ public class NetworkOutlineAlgorithm {
     }
 
     private static void addAllTrivial(int ntaxa, SplitsBlock splits) {
-        final BitSet taxaWithTrivialSplit = new BitSet();
+        if (ntaxa > 2) {
+            final BitSet taxaWithTrivialSplit = new BitSet();
 
-        for (int s = 1; s <= splits.getNsplits(); s++) {
-            final ASplit split = splits.get(s);
-            if (split.isTrivial())
-                taxaWithTrivialSplit.set(split.getSmallerPart().nextSetBit(0));
-        }
-        for (int t = taxaWithTrivialSplit.nextClearBit(1); t != -1 && t <= ntaxa; t = taxaWithTrivialSplit.nextClearBit(t + 1)) {
-            splits.getSplits().add(new ASplit(BitSetUtils.asBitSet(t), ntaxa, 0.0001));
+            for (int s = 1; s <= splits.getNsplits(); s++) {
+                final ASplit split = splits.get(s);
+                if (split.isTrivial())
+                    taxaWithTrivialSplit.set(split.getSmallerPart().nextSetBit(0));
+            }
+            for (int t = taxaWithTrivialSplit.nextClearBit(1); t != -1 && t <= ntaxa; t = taxaWithTrivialSplit.nextClearBit(t + 1)) {
+                splits.getSplits().add(new ASplit(BitSetUtils.asBitSet(t), ntaxa, 0.0001));
+            }
         }
     }
 

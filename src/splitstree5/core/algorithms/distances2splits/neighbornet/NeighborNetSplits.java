@@ -71,8 +71,6 @@ public class NeighborNetSplits {
      * @throws CanceledException
      */
     static public ArrayList<ASplit> compute(boolean runPCG, int nTax, int[] cycle, double[][] distances, double[][] variances, double cutoff, LeastSquares leastSquares, Regularization regularization, double lambdaFrac, ProgressListener progress) throws CanceledException {
-        final int nPairs = (nTax * (nTax - 1)) / 2;
-
         //Handle n=1,2 separately.
         if (nTax == 1) {
             return new ArrayList<>();
@@ -87,6 +85,7 @@ public class NeighborNetSplits {
             }
             return splits;
         }
+        final int nPairs = (nTax * (nTax - 1)) / 2;
 
         if (runPCG) {
             //Set up the distance vector.
@@ -125,8 +124,8 @@ public class NeighborNetSplits {
         }
 
         /* Re-order taxa so that the ordering is 0,1,2,...,n-1 */
-        final double[] d = setupD(nTax, distances, cycle);
-        final double[] v = setupV(nTax, distances, variances, leastSquares, cycle);
+        final double[] d = setupD(nTax, nPairs, distances, cycle);
+        final double[] v = setupV(nTax, nPairs, distances, variances, leastSquares, cycle);
         final double[] x = new double[nPairs];
 
         /* Initialize the weight matrix */
@@ -139,7 +138,7 @@ public class NeighborNetSplits {
         }
         /* Find the constrained optimal values for x */
 
-        runActiveConjugate(nTax, d, W, x, regularization, lambdaFrac);
+        runActiveConjugate(nTax, nPairs, d, W, x, regularization, lambdaFrac);
 
         /* Construct the splits with the appropriate weights */
         final ArrayList<ASplit> splits = new ArrayList<>();
@@ -162,8 +161,8 @@ public class NeighborNetSplits {
      * Note the the code assumes that taxa are labeled 0..nTax-1 and
      * we do the transition here. It is undone when extracting the splits
      */
-    static private double[] setupD(int nTax, double[][] distances, int[] cycle) {
-        final double[] d = new double[(nTax * (nTax - 1)) / 2];
+    static private double[] setupD(int nTax, int nPairs, double[][] distances, int[] cycle) {
+        final double[] d = new double[nPairs];
         int index = 0;
         for (int i = 1; i <= nTax; i++)
             for (int j = i + 1; j <= nTax; j++)
@@ -171,8 +170,7 @@ public class NeighborNetSplits {
         return d;
     }
 
-    static private double[] setupV(int nTax, double[][] distances, double[][] variances, LeastSquares leastSquares, int[] cycle) {
-        final int nPairs = ((nTax - 1) * nTax) / 2;
+    static private double[] setupV(int nTax, int nPairs, double[][] distances, double[][] variances, LeastSquares leastSquares, int[] cycle) {
         final double[] v = new double[nPairs];
 
         int index = 0;
@@ -198,7 +196,6 @@ public class NeighborNetSplits {
             }
         return v;
     }
-
 
     /**
      * Compute the branch lengths for unconstrained least squares using
@@ -301,8 +298,7 @@ public class NeighborNetSplits {
      * <p>
      * Note that lambdaFraction = 1 => lambda = 0, and lambdaFraction = 0 => x = 0.
      */
-    static private void runActiveConjugate(int nTax, double[] d, double[] W, double[] x, Regularization regularization, double lambdaFrac) {
-        final int nPairs = d.length;
+    static private void runActiveConjugate(int nTax, int nPairs, double[] d, double[] W, double[] x, Regularization regularization, double lambdaFrac) {
 
         if (W.length != nPairs || x.length != nPairs)
             throw new IllegalArgumentException("Vectors d,W,x have different dimensions");

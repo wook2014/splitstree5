@@ -166,6 +166,9 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
                     case Radial: {
                         final EdgeFloatArray edge2Angle = new EdgeFloatArray(tree); // angle of edge
                         setAnglesForCircularLayoutRec(root, null, 0, tree.getNumberOfLeaves(), edge2Angle, optionLeafGroupGapProperty.get(), optionParentPlacement.getValue());
+                        for (Edge e : tree.edges()) {
+                            edge2Angle.put(e, 360f - edge2Angle.get(e) + 90f);
+                        }
 
                         if (edgeShape == EdgeView2D.EdgeShape.Straight)
                             computeNodeLocationsForRadialRec(root, new Point2D(0, 0), edgeLengths, edge2Angle, node2point);

@@ -109,7 +109,7 @@ public class AnalyzeGenomesDialog {
             if (firstLine.length() > 0) {
                 final File inputFile = new File(firstLine);
                 if (inputFile.getParentFile().exists()) {
-                    controller.getOutputFileTextField().setText(createOutputName(inputFile.getParentFile()));
+                    controller.getOutputFileTextField().setText(createOutputName(inputFile));
                 }
             }
             clearReferences(controller);
@@ -282,6 +282,9 @@ public class AnalyzeGenomesDialog {
                 }
                 controller.getMashDistancesChart().getData().add(new XYChart.Series<>(data));
                 controller.getMashDistancesChart().getData().add(thresholdLine);
+                final double dist = controller.getMaxDistanceSlider().getValue();
+                controller.getMaxDistanceSlider().setValue(0);
+                Platform.runLater(() -> controller.getMaxDistanceSlider().setValue(dist));
             });
             service.start();
         });
@@ -369,14 +372,14 @@ public class AnalyzeGenomesDialog {
     /**
      * create a default output file name
      *
-     * @param parentFile
+     * @param inputFile
      * @return name
      */
-    private static String createOutputName(File parentFile) {
-        File file = new File(parentFile, "genomes.stree5");
+    private static String createOutputName(File inputFile) {
+        File file = Basic.replaceFileSuffix(inputFile, ".stree5");
         int count = 0;
         while (file.exists()) {
-            file = new File(parentFile, "genomes-" + (++count) + ".stree5");
+            file = Basic.replaceFileSuffix(inputFile, "-" + (++count) + ".stree5");
         }
         return file.getPath();
     }
