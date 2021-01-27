@@ -279,15 +279,29 @@ public class AccessReferenceDatabase implements Closeable {
 
         for (int taxonId : taxonIds) {
             final File cacheFile = new File(fileCacheDirectory, Basic.getFileNameWithoutPath(id2file.get(taxonId)));
+
             if (!Basic.fileExistsAndIsNonEmpty(cacheFile)) {
                 System.err.println("Caching file: " + id2file.get(taxonId));
 
-                try (InputStream ins = (new URL(id2file.get(taxonId)).openStream()); OutputStream outs = new FileOutputStream(cacheFile)) {
+                final File tmpFile = File.createTempFile("download", "tmp", cacheFile.getParentFile());
+
+                if (tmpFile.exists() && !tmpFile.delete())
+                    NotificationManager.showWarning("Failed to delete existing tmp file: " + tmpFile);
+
+                boolean ok = false;
+                try (InputStream ins = (new URL(id2file.get(taxonId)).openStream()); OutputStream outs = new FileOutputStream(tmpFile)) {
                     ins.transferTo(outs);
+                    ok = true;
                 } catch (IOException ex) {
                     NotificationManager.showError("Failed to cache file: " + id2file.get(taxonId));
-                    if (cacheFile.exists())
-                        cacheFile.delete();
+                    ok = false;
+                } finally {
+                    if (ok && !tmpFile.renameTo(cacheFile)) {
+                        NotificationManager.showError("Failed to create file: " + cacheFile);
+                        ok = false;
+                    }
+                    if (!ok && tmpFile.exists() && !tmpFile.delete())
+                        NotificationManager.showError("Failed to delete file: " + tmpFile);
                 }
             }
             result.put(cacheFile.getPath(), "<c GRAY>" + id2name.get(taxonId) + "</c>");
@@ -299,7 +313,7 @@ public class AccessReferenceDatabase implements Closeable {
     /**
      * find all genomes that have non-zero Jaccard index when compared with the query
      */
-    public Collection<Map.Entry<Integer, Double>> findSimilar(ProgressListener progress, int minSharedKMers, Collection<byte[]> query, boolean ignoreUnusableTaxa) throws SQLException, IOException {
+    public Collection<Map.Entry<Integer, Double>> findSimilar(ProgressListener progress, double maxDistance, Collection<byte[]> query, boolean ignoreUnusableTaxa) throws SQLException, IOException {
         final int mash_k = getMashK();
         final int mash_s = getMashS();
         final int mash_seed = getMashSeed();
@@ -337,7 +351,7 @@ public class AccessReferenceDatabase implements Closeable {
 
         final ExecutorService service = Executors.newFixedThreadPool(ProgramExecutorService.getNumberOfCoresToUse());
         try {
-            service.submit(createTasksRec(getTaxonomyRoot(), querySketches, kmers, minSharedKMers, id2distance, progress, exception, jobs, service));
+            service.submit(createTasksRec(getTaxonomyRoot(), querySketches, kmers, maxDistance, id2distance, progress, exception, jobs, service));
 
             if (exception.get() != null)
                 throw new IOException(exception.get());
@@ -360,12 +374,13 @@ public class AccessReferenceDatabase implements Closeable {
     /**
      * creates a task to submitted to the service. This task will recursively submit further tasks and will call shutdown() once all tasks have been completed
      */
-    private Runnable createTasksRec(int taxonId, Collection<MashSketch> querySketches, Set<String> kmers, int minSharedKMers, ConcurrentHashMap<Integer, Double> id2distance,
+    private Runnable createTasksRec(int taxonId, Collection<MashSketch> querySketches, Set<String> kmers, double maxDistance, ConcurrentHashMap<Integer, Double> id2distance,
                                     ProgressListener progress, Single<Exception> exception, AtomicInteger jobCount, ExecutorService service) {
         return () -> {
             if (exception.get() == null) {
                 try {
                     final AccessReferenceDatabase database = getCopy();
+                    final int minSharedKMers = MashDistance.computeMinIntersectionSizeForMaxDistance(maxDistance, database.getMashK(), database.getMashS());
                     final Collection<Integer> ids = database.getTaxonomyChildren(taxonId);
                     final ArrayList<Pair<Integer, BloomFilter>> bloomFilters = database.getBloomFilters(ids);
                     for (Pair<Integer, BloomFilter> pair : bloomFilters) {
@@ -373,7 +388,7 @@ public class AccessReferenceDatabase implements Closeable {
                         if (bloomFilter.countContainedProbably(kmers) >= minSharedKMers) {
                             final int id = pair.getFirst();
                             jobCount.incrementAndGet();
-                            service.submit(createTasksRec(id, querySketches, kmers, minSharedKMers, id2distance, progress, exception, jobCount, service));
+                            service.submit(createTasksRec(id, querySketches, kmers, maxDistance, id2distance, progress, exception, jobCount, service));
                             //System.err.println("Adding bloom filter for " + id);
                         }
                         progress.incrementProgress();

@@ -109,7 +109,6 @@ public class MainWindowMenuController {
         controller.getAnalyzeGenomesMenuItem().setOnAction(e -> {
             if (MainWindow.analyzeGenomesDialog.get() == null) {
                 MainWindow.analyzeGenomesDialog.set(new AnalyzeGenomesDialog(mainWindow.getStage()));
-                MainWindowManager.getInstance().addAuxiliaryWindow(mainWindow, MainWindow.analyzeGenomesDialog.get().getStage());
             }
             MainWindow.analyzeGenomesDialog.get().getStage().show();
             MainWindow.analyzeGenomesDialog.get().getStage().toFront();

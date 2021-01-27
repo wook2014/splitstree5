@@ -94,7 +94,7 @@ public class NewickTreeImporter implements IToTrees, IImportTrees {
                         throw new IOExceptionWithLineNumber(lineno, ex);
                     }
                     if (TreesUtilities.hasNumbersOnLeafNodes(tree)) {
-                        throw new IOExceptionWithLineNumber(lineno, "Leaf labels must begin with a letter");
+                        throw new IOExceptionWithLineNumber(lineno, "Leaf labels must not be numbers");
                     }
                     if (TreesUtilities.hasNumbersOnInternalNodes(tree)) {
                         TreesUtilities.changeNumbersOnInternalNodesToEdgeConfidencies(tree);

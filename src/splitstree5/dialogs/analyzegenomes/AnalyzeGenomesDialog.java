@@ -268,7 +268,7 @@ public class AnalyzeGenomesDialog {
                     for (GenomesAnalyzer.InputRecord record : genomesAnalyzer.iterable(getProgressListener())) {
                         queries.add(record.getSequence());
                     }
-                    return database.get().findSimilar(service.getProgressListener(), Basic.parseInt(controller.getMinSharedKMersTextField().getText()), queries, true);
+                    return database.get().findSimilar(service.getProgressListener(), Basic.parseDouble(controller.getMaxDistToSearchTextField().getText()), queries, true);
                 }
             });
             service.runningProperty().addListener((c, o, n) -> running.set(n));
@@ -335,11 +335,14 @@ public class AnalyzeGenomesDialog {
         controller.getAddReferencesButton().disableProperty().bind(Bindings.isEmpty(references).or(database.isNull()).or(running));
         controller.getMashDistancesChart().disableProperty().bind(controller.getAddReferencesButton().disabledProperty());
 
-        controller.getMinSharedKMersTextField().textProperty().addListener((c, o, n) -> {
-            if (!Basic.isInteger(n) || Basic.parseInt(n) <= 0)
-                Platform.runLater(() -> controller.getMinSharedKMersTextField().setText(o));
+        controller.getMaxDistToSearchTextField().textProperty().addListener((c, o, n) -> {
+            if (Basic.isDouble(n) && Basic.parseDouble(n) > 0.0 && Basic.parseDouble(n) < 1)
+                controller.getMaxDistanceSlider().setMax(Basic.parseDouble(n));
+            else
+                Platform.runLater(() -> controller.getMaxDistToSearchTextField().setText(o));
+
         });
-        controller.getMinSharedKMersTextField().disableProperty().bind(controller.getFindReferencesButton().disableProperty());
+        controller.getMaxDistToSearchTextField().disableProperty().bind(controller.getFindReferencesButton().disableProperty());
 
         controller.getCacheButton().setOnAction(e -> {
             final File dir = chooseCacheDirectory(stage, new File(ProgramProperties.get("fileCacheDirectory", database.get().getDbFile().getParent())));
@@ -353,7 +356,6 @@ public class AnalyzeGenomesDialog {
         references.clear();
         referenceIds.clear();
         controller.getMashDistancesChart().getData().clear();
-
     }
 
     private static XYChart.Series<Double, Integer> createThresholdLine(DoubleProperty threshold, ObservableList<Map.Entry<Integer, Double>> references) {

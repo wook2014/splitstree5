@@ -394,6 +394,11 @@ public class MainWindow implements IMainWindow {
         controller.enableAllUnboundActionMenuItems();
     }
 
+    public void updateMenus() {
+        updateMenus(getMainWindowController().getMainTabPane().getSelectionModel().getSelectedItem(), getMenuController());
+
+    }
+
     /**
      * show a data view node
      *

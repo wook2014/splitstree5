@@ -137,7 +137,7 @@ public class AnalyzeGenomesController {
     private Label foundReferencesLabel;
 
     @FXML
-    private TextField minSharedKMersTextField;
+    private TextField maxDistToSearchTextField;
 
     @FXML
     private Button cacheButton;
@@ -303,8 +303,8 @@ public class AnalyzeGenomesController {
         return foundReferencesLabel;
     }
 
-    public TextField getMinSharedKMersTextField() {
-        return minSharedKMersTextField;
+    public TextField getMaxDistToSearchTextField() {
+        return maxDistToSearchTextField;
     }
 
     public Button getCacheButton() {

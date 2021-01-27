@@ -22,6 +22,7 @@ package splitstree5.io.imports.NeXML.handlers;
 
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
+import jloda.util.Basic;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -109,12 +110,7 @@ public class NexmlTreesHandler extends DefaultHandler {
             String source = attributes.getValue("source");
             String target = attributes.getValue("target");
 
-            String sWeight = attributes.getValue("length");
-            Double weight;
-            if (sWeight == null)
-                weight = 1.0;
-            else
-                weight = Double.parseDouble(attributes.getValue("length"));
+            final double weight = (Basic.isDouble(attributes.getValue("length")) ? Basic.parseDouble(attributes.getValue("length")) : 1.0);
 
             Node sourceNode = null;
             Node targetNode = null;
