@@ -56,8 +56,7 @@ public class NexmlCharactersHandler extends DefaultHandler {
     private Map<Integer, String> charLabeler;
 
     @Override
-    public void startElement(String uri,
-                             String localName, String qName, Attributes attributes) throws SAXException {
+    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 
         // TAXA INFO
         if (qName.equalsIgnoreCase("otus")) {
@@ -137,8 +136,7 @@ public class NexmlCharactersHandler extends DefaultHandler {
     }
 
     @Override
-    public void endElement(String uri,
-                           String localName, String qName) throws SAXException {
+    public void endElement(String uri, String localName, String qName) throws SAXException {
         if (qName.equalsIgnoreCase("otus")) {
             //System.out.println("End Element :" + qName);
         } else if (qName.equalsIgnoreCase("states") && bCells) {

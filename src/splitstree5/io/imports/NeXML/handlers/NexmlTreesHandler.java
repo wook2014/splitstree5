@@ -29,6 +29,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 public class NexmlTreesHandler extends DefaultHandler {
 
@@ -38,14 +39,14 @@ public class NexmlTreesHandler extends DefaultHandler {
     private boolean rooted = false;
 
     private PhyloTree tree;
-    private ArrayList<String> treeLabels = new ArrayList<>();
-    private ArrayList<String> taxaLabels = new ArrayList<>();
-    private ArrayList<PhyloTree> trees = new ArrayList<>();
+    private final ArrayList<String> treeOTUs = new ArrayList<>();
+    private final Map<String, Integer> otu2taxonId = new HashMap<>();
+    private final ArrayList<PhyloTree> trees = new ArrayList<>();
     private HashMap<String, Node> id2node = new HashMap<>();
+    private final ArrayList<String> taxaLabels = new ArrayList<>();
 
     @Override
-    public void startElement(String uri,
-                             String localName, String qName, Attributes attributes) throws SAXException {
+    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 
         if (qName.equalsIgnoreCase("otus")) {
             String label = attributes.getValue("label");
@@ -54,20 +55,18 @@ public class NexmlTreesHandler extends DefaultHandler {
             //System.out.println("ID : " + id);
         } else if (qName.equalsIgnoreCase("otu")) {
             //otu = true;
-            String label = attributes.getValue("label");
-            String id = attributes.getValue("id");
-            if (label != null) {
-                //System.out.println("Label : " + label);
+            final String otu = attributes.getValue("id");
+            final String label = attributes.getValue("label");
+
+            if (!otu2taxonId.containsKey(otu)) {
                 taxaLabels.add(label);
-            } else {
-                //System.out.println("Label = ID : " + id);
-                taxaLabels.add(id);
+                otu2taxonId.put(otu, taxaLabels.size());
             }
         }
         // TREES INFO
         else if (qName.equalsIgnoreCase("tree")) {
             tree = new PhyloTree();
-            treeLabels = new ArrayList<>();
+            treeOTUs.clear();
             id2node = new HashMap<>();
             bReadingTree = true;
         } else if (qName.equalsIgnoreCase("node") && bReadingTree) {
@@ -76,17 +75,20 @@ public class NexmlTreesHandler extends DefaultHandler {
             String otu = attributes.getValue("otu");
             boolean root = Boolean.parseBoolean(attributes.getValue("root"));
 
-            Node node = tree.newNode();
+            final Node v = tree.newNode();
             if (root) {
-                tree.setRoot(node);
+                tree.setRoot(v);
                 rooted = true;
             }
-            id2node.put(id, node);
+            id2node.put(id, v);
 
-            if (otu != null) {
-                tree.setLabel(node, otu);
-                treeLabels.add(otu);
-                tree.addTaxon(node, taxaLabels.indexOf(otu));
+            {
+                if (label != null)
+                    tree.setLabel(v, label);
+                if (otu2taxonId.containsKey(otu)) {
+                    tree.addTaxon(v, otu2taxonId.get(otu));
+                    treeOTUs.add(otu);
+                }
             }
 
         } else if (qName.equalsIgnoreCase("rootedge") && bReadingTree) {
@@ -134,8 +136,7 @@ public class NexmlTreesHandler extends DefaultHandler {
     }
 
     @Override
-    public void endElement(String uri,
-                           String localName, String qName) throws SAXException {
+    public void endElement(String uri, String localName, String qName) throws SAXException {
         if (qName.equalsIgnoreCase("otus")) {
             //System.out.println("End Element :" + qName);
         } else if (qName.equalsIgnoreCase("tree")) {
@@ -143,7 +144,7 @@ public class NexmlTreesHandler extends DefaultHandler {
             trees.add(tree);
 
             // if a tree already set as partial, no further check
-            if (partial || taxaLabels.size() != treeLabels.size())
+            if (partial || otu2taxonId.size() != treeOTUs.size())
                 partial = true;
 
             treeContainsAllTaxa(tree);

@@ -72,7 +72,8 @@ public class RootByMidpointAlgorithm extends Algorithm<TreesBlock, TreesBlock> i
                     tree.setRoot(tree.getFirstNode());
                     tree.redirectEdgesAwayFromRoot();
                 }
-                RerootingUtils.rerootByMidpoint(tree);
+                // todo: ask about internal node labels
+                RerootingUtils.rerootByMidpoint(false, tree);
                 child.getTrees().add(tree);
             }
         }
