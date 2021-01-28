@@ -24,7 +24,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IFromCharacters;
 import splitstree5.core.algorithms.interfaces.IToSplits;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.SplitsBlock;
@@ -41,7 +41,7 @@ import java.util.BitSet;
  * p-splits method
  * Daniel Huson, 2003
  */
-public class ParsimonySplits extends Algorithm<CharactersBlock, SplitsBlock> implements IFromChararacters, IToSplits {
+public class ParsimonySplits extends Algorithm<CharactersBlock, SplitsBlock> implements IFromCharacters, IToSplits {
 
     private final BooleanProperty optionGapsAsMissing = new SimpleBooleanProperty(false);
 

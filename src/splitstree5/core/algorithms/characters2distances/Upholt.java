@@ -26,7 +26,7 @@ import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.characters2distances.utils.FixUndefinedDistances;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;
-import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IFromCharacters;
 import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
@@ -39,7 +39,7 @@ import splitstree5.core.datablocks.characters.CharactersType;
  * @author bryant
  */
 
-public class Upholt extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
+public class Upholt extends Algorithm<CharactersBlock, DistancesBlock> implements IFromCharacters, IToDistances {
     private final DoubleProperty optionRestrictionSiteLength = new SimpleDoubleProperty(6.0);
 
     @Override

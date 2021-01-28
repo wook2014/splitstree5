@@ -21,7 +21,7 @@
 package splitstree5.core.algorithms.characters2distances.nucleotide;
 
 import jloda.util.ProgressListener;
-import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IFromCharacters;
 import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
@@ -36,7 +36,7 @@ import java.util.List;
  * Dave Bryant, 2004
  */
 
-public class F81 extends Nucleotides2DistancesBase implements IFromChararacters, IToDistances {
+public class F81 extends Nucleotides2DistancesBase implements IFromCharacters, IToDistances {
     @Override
     public String getCitation() {
         return "Felsenstein 1981; Felsenstein J (1981). Evolutionary trees from DNA sequences: a maximum likelihood approach. Journal of Molecular Evolution. 17 (6): 368–376.";

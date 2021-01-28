@@ -32,6 +32,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * nexml tree handler
+ * Daria Evseeva, 2019, Daniel Huson, 2020
+ */
 public class NexmlTreesHandler extends DefaultHandler {
 
     // tree 't1'=[&R] (((3:0.234,2:0.3243):0.324,(5:0.32443,4:0.2342):0.3247):0.34534,1:0.4353);
@@ -93,41 +97,40 @@ public class NexmlTreesHandler extends DefaultHandler {
             }
 
         } else if (qName.equalsIgnoreCase("rootedge") && bReadingTree) {
-            String sWeight = attributes.getValue("length");
-            Double weight;
-            if (sWeight == null)
-                weight = 1.0;
-            else
-                weight = Double.parseDouble(attributes.getValue("length"));
-
-            Node sourceNode = tree.newNode();
-            Node targetNode = tree.getRoot();
+            final double weight = (Basic.isDouble(attributes.getValue("length")) ? Basic.parseDouble(attributes.getValue("length")) : 1.0);
+            final Node sourceNode = tree.newNode();
+            final Node targetNode = tree.getRoot();
             tree.setRoot(sourceNode);
             tree.setWeight(tree.newEdge(sourceNode, targetNode), weight);
-
         } else if (qName.equalsIgnoreCase("edge") && bReadingTree) {
-            String id = attributes.getValue("id");
-            String source = attributes.getValue("source");
-            String target = attributes.getValue("target");
-
             final double weight = (Basic.isDouble(attributes.getValue("length")) ? Basic.parseDouble(attributes.getValue("length")) : 1.0);
+            final String id = attributes.getValue("id");
+            final String source = attributes.getValue("source");
+            final String target = attributes.getValue("target");
 
             Node sourceNode = null;
             Node targetNode = null;
 
             for (String key : id2node.keySet()) {
-                if (key.equals(source))
+                if (key.equals(source)) {
                     sourceNode = id2node.get(key);
-                if (key.equals(target))
+                    if (targetNode != null)
+                        break;
+                }
+                if (key.equals(target)) {
                     targetNode = id2node.get(key);
+                    if (sourceNode != null)
+                        break;
+                }
             }
 
             if (sourceNode == null)
                 throw new SAXException("Edge " + id + " contains not defined source node id=" + source);
             else if (targetNode == null)
                 throw new SAXException("Edge " + id + " contains not defined target node id=" + target);
-            else
+            else {
                 tree.setWeight(tree.newEdge(sourceNode, targetNode), weight);
+            }
         }
     }
 

@@ -22,7 +22,7 @@ package splitstree5.core.algorithms.characters2network;
 
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IFromCharacters;
 import splitstree5.core.algorithms.interfaces.IToNetwork;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.NetworkBlock;
@@ -32,7 +32,7 @@ import splitstree5.core.datablocks.TaxaBlock;
  * run the median joining algorithm
  * Daniel Huson, 2.2018
  */
-public class MedianJoining extends Algorithm<CharactersBlock, NetworkBlock> implements IFromChararacters, IToNetwork {
+public class MedianJoining extends Algorithm<CharactersBlock, NetworkBlock> implements IFromCharacters, IToNetwork {
     /**
      * Determine whether given method can be applied to given data.
      *

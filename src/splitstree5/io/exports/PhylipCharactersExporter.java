@@ -20,7 +20,7 @@
 
 package splitstree5.io.exports;
 
-import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IFromCharacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.exports.interfaces.IExportCharacters;
@@ -32,7 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class PhylipCharactersExporter implements IFromChararacters, IExportCharacters {
+public class PhylipCharactersExporter implements IFromCharacters, IExportCharacters {
 
     private boolean optionInterleaved = false;
     private boolean optionInterleavedMultiLabels = false;

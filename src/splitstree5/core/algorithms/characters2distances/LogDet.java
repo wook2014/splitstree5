@@ -29,7 +29,7 @@ import jloda.fx.window.NotificationManager;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;
-import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IFromCharacters;
 import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
@@ -91,7 +91,7 @@ import java.util.List;
  * where \Pi is the diagonal matrix with \pi_i values down the diagonal. We then replace F by V in the formula above.
  */
 
-public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
+public class LogDet extends Algorithm<CharactersBlock, DistancesBlock> implements IFromCharacters, IToDistances {
     private final BooleanProperty optionFudgeFactor = new SimpleBooleanProperty(false);
     private final BooleanProperty optionFillZeros = new SimpleBooleanProperty(false);
     private final DoubleProperty optionPropInvariableSites = new SimpleDoubleProperty(0.0);

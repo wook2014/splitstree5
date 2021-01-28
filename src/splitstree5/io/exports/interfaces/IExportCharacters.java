@@ -20,7 +20,7 @@
 
 package splitstree5.io.exports.interfaces;
 
-import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IFromCharacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
@@ -31,7 +31,7 @@ import java.io.Writer;
  * save characters
  * Daniel Huson, 1.2018
  */
-public interface IExportCharacters extends IExporter, IFromChararacters {
+public interface IExportCharacters extends IExporter, IFromCharacters {
     /**
      * save characters
      *

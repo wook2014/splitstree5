@@ -23,13 +23,11 @@ package splitstree5.io.imports.NeXML;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
-import splitstree5.core.algorithms.interfaces.IToCharacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.characters.CharactersType;
 import splitstree5.io.imports.CharactersFormat;
 import splitstree5.io.imports.NeXML.handlers.NexmlCharactersHandler;
-import splitstree5.io.imports.interfaces.IImportCharacters;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -40,11 +38,15 @@ import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.List;
 
-public class NexmlCharactersImporter extends CharactersFormat implements IToCharacters, IImportCharacters {
+/**
+ * NexML characters importer
+ * Daria Evseeva, 2019
+ * todo: needs debugging and activation
+ */
+public class NexmlCharactersImporter extends CharactersFormat { // implements IToCharacters, IImportCharacters {
 
     // todo applicable : iterate through the file ; use setSymbols
 
-    @Override
     public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxaBlock, CharactersBlock characters) throws CanceledException, IOException {
         try {
             progressListener.setProgress(-1);
@@ -87,12 +89,10 @@ public class NexmlCharactersImporter extends CharactersFormat implements IToChar
         }
     }
 
-    @Override
     public List<String> getExtensions() {
         return Collections.singletonList("xml");
     }
 
-    @Override
     public boolean isApplicable(String fileName) throws IOException {
 
         String firstLine = Basic.getFirstLineFromFile(new File(fileName));

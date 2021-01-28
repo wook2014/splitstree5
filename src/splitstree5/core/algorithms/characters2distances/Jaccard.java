@@ -24,7 +24,7 @@ import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.characters2distances.utils.FixUndefinedDistances;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;
-import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IFromCharacters;
 import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
@@ -36,7 +36,7 @@ import splitstree5.core.datablocks.characters.CharactersType;
  *
  * @author Dave Bryant, 2009
  */
-public class Jaccard extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
+public class Jaccard extends Algorithm<CharactersBlock, DistancesBlock> implements IFromCharacters, IToDistances {
     @Override
     public String getCitation() {
         return "Jaccard 1901; Jaccard, Paul (1901). Étude comparative de la distribution florale dans une portion des Alpes et des Jura, Bulletin de la Société Vaudoise des Sciences Naturelles, 37: 547–579.";

@@ -24,7 +24,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
-import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IFromCharacters;
 import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
@@ -38,7 +38,7 @@ import java.util.List;
 /**
  * @deprecated
  */
-public class K3ST_old extends DNAdistance implements IFromChararacters, IToDistances {
+public class K3ST_old extends DNAdistance implements IFromCharacters, IToDistances {
 
     //private double[][] QMatrix; //Q Matrix provided by user for ML estimation. //todo not used?
 
