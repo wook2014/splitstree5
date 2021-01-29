@@ -140,6 +140,9 @@ public class AnalyzeGenomesController {
     private TextField maxDistToSearchTextField;
 
     @FXML
+    private CheckBox includeStrainsCB;
+
+    @FXML
     private Button cacheButton;
 
     @FXML
@@ -305,6 +308,10 @@ public class AnalyzeGenomesController {
 
     public TextField getMaxDistToSearchTextField() {
         return maxDistToSearchTextField;
+    }
+
+    public CheckBox getIncludeStrainsCB() {
+        return includeStrainsCB;
     }
 
     public Button getCacheButton() {
