@@ -254,6 +254,12 @@ public class GenomesAnalyzer {
                 try {
                     final Genome genome = new Genome();
                     genome.setName(inputRecord.getName());
+//                    String[] inputRecordSplit = inputRecord.getFile().split("\\/");
+//                    String genomeAcc = "";
+//                    if(inputRecordSplit[inputRecordSplit.length - 1].length() > 15)
+//                        genomeAcc = inputRecordSplit[inputRecordSplit.length - 1].substring(0, 15);
+//                    genome.setName(genome.getName() + "<br><c GRAY>" + genomeAcc + "</c>");
+
                     final Genome.GenomePart genomePart = new Genome.GenomePart();
                     genomePart.setName("part");
                     if (storeFileLocations) {

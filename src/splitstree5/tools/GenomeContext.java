@@ -103,6 +103,7 @@ public class GenomeContext {
         final boolean reportFile = options.getOption("-rf", "reportFiles", "Report reference files", false);
         final boolean reportDistance = options.getOption("-rd", "reportMashDistances", "Report mash distances", true);
         final boolean reportLCA = options.getOption("-rlca", "reportLCA", "Report LCA of references", true);
+        final boolean includeStrains = options.getOption("-is", "includeStrains", "Include the genomes of strains for the detected species", false);
 
         options.comment(ArgsOptions.OTHER);
         ProgramExecutorService.setNumberOfCoresToUse(options.getOption("-t", "threads", "Number of threads to use", Runtime.getRuntime().availableProcessors()));
@@ -155,7 +156,7 @@ public class GenomeContext {
                         minSketchIntersection = Math.max(minSketchIntersection, computeMinSketchIntersection(maxDistance, mashK, mashS));
 
                     for (var pair : pairs) {
-                        final Collection<Map.Entry<Integer, Double>> list = database.findSimilar(new ProgressSilent(), minSketchIntersection, Collections.singleton(pair.getSecond().getBytes()), false);
+                        final Collection<Map.Entry<Integer, Double>> list = database.findSimilar(new ProgressSilent(), minSketchIntersection, includeStrains, Collections.singleton(pair.getSecond().getBytes()), false);
 
                         final Map<Integer, String> id2name = new HashMap<>();
                         if (reportName) {

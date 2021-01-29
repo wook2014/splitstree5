@@ -21,94 +21,67 @@
   -->
 
 <?import javafx.geometry.*?>
-<?import javafx.scene.chart.LineChart?>
-<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
-<AnchorPane fx:id="rootPane" prefHeight="440.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/15.0.1"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="splitstree5.dialogs.analyzegenomes.AnalyzeGenomesController">
+<?import javafx.scene.text.*?>
+
+<AnchorPane fx:id="rootPane" prefHeight="440.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="splitstree5.dialogs.analyzegenomes.AnalyzeGenomesController">
     <children>
-        <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <top>
                 <HBox alignment="CENTER" prefHeight="30.0" BorderPane.alignment="CENTER">
                     <children>
-                        <Label text="Analyze contigs, genomes and other unaligned sequences"/>
+                        <Label text="Analyze contigs, genomes and other unaligned sequences" />
                     </children>
                 </HBox>
             </top>
             <center>
-                <TabPane fx:id="mainTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE"
-                         BorderPane.alignment="CENTER">
+                <TabPane fx:id="mainTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
                     <tabs>
                         <Tab fx:id="filesTab" text="Files">
                             <content>
                                 <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                                     <children>
-                                        <GridPane hgap="10.0" layoutX="10.0" layoutY="30.0"
-                                                  maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-                                                  vgap="10.0" AnchorPane.bottomAnchor="20.0"
-                                                  AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
-                                                  AnchorPane.topAnchor="20.0">
+                                        <GridPane hgap="10.0" layoutX="10.0" layoutY="30.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" vgap="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="20.0">
                                             <columnConstraints>
-                                                <ColumnConstraints hgrow="NEVER"/>
-                                                <ColumnConstraints hgrow="ALWAYS" minWidth="100.0"/>
+                                                <ColumnConstraints hgrow="NEVER" />
+                                                <ColumnConstraints hgrow="ALWAYS" minWidth="100.0" />
                                             </columnConstraints>
                                             <rowConstraints>
-                                                <RowConstraints fillHeight="false" maxHeight="5.0" minHeight="5.0"
-                                                                prefHeight="5.0" vgrow="SOMETIMES"/>
-                                                <RowConstraints minHeight="10.0" valignment="TOP" vgrow="ALWAYS"/>
-                                                <RowConstraints fillHeight="false" maxHeight="47.0" minHeight="29.0"
-                                                                prefHeight="30.0" vgrow="SOMETIMES"/>
-                                                <RowConstraints fillHeight="false" maxHeight="47.0" minHeight="29.0"
-                                                                prefHeight="30.0" vgrow="SOMETIMES"/>
-                                                <RowConstraints fillHeight="false" maxHeight="5.0" minHeight="5.0"
-                                                                prefHeight="5.0" vgrow="SOMETIMES"/>
-                                                <RowConstraints fillHeight="false" maxHeight="44.0" minHeight="30.0"
-                                                                prefHeight="30.0" vgrow="SOMETIMES"/>
+                                                <RowConstraints fillHeight="false" maxHeight="5.0" minHeight="5.0" prefHeight="5.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" valignment="TOP" vgrow="ALWAYS" />
+                                                <RowConstraints fillHeight="false" maxHeight="47.0" minHeight="29.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints fillHeight="false" maxHeight="47.0" minHeight="29.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints fillHeight="false" maxHeight="5.0" minHeight="5.0" prefHeight="5.0" vgrow="SOMETIMES" />
+                                                <RowConstraints fillHeight="false" maxHeight="44.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                             </rowConstraints>
                                             <children>
-                                                <Label text="Output:" GridPane.rowIndex="5"/>
-                                                <HBox maxHeight="1.7976931348623157E308"
-                                                      maxWidth="1.7976931348623157E308" spacing="10.0"
-                                                      GridPane.columnIndex="1" GridPane.hgrow="ALWAYS"
-                                                      GridPane.rowIndex="1" GridPane.valignment="TOP"
-                                                      GridPane.vgrow="ALWAYS">
+                                                <Label text="Output:" GridPane.rowIndex="5" />
+                                                <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="10.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="TOP" GridPane.vgrow="ALWAYS">
                                                     <children>
-                                                        <TextArea fx:id="inputTextArea"
-                                                                  promptText="Input files, comma separated, gzipped ok"
-                                                                  HBox.hgrow="ALWAYS">
+                                                        <TextArea fx:id="inputTextArea" promptText="Input files, comma separated, gzipped ok" HBox.hgrow="ALWAYS">
                                                             <tooltip>
-                                                                <Tooltip text="Input files in FastA format"/>
+                                                                <Tooltip text="Input files in FastA format" />
                                                             </tooltip>
                                                         </TextArea>
                                                         <VBox spacing="10.0">
                                                             <children>
-                                                                <Button fx:id="inputBrowseButton"
-                                                                        contentDisplay="GRAPHIC_ONLY"
-                                                                        mnemonicParsing="false" text="Browse...">
+                                                                <Button fx:id="inputBrowseButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Browse...">
                                                                     <graphic>
-                                                                        <ImageView fitHeight="16.0" fitWidth="16.0"
-                                                                                   pickOnBounds="true"
-                                                                                   preserveRatio="true">
+                                                                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                                                                             <image>
-                                                                                <Image url="@/jloda/resources/icons/sun/Open16.gif"/>
+                                                                                <Image url="@/jloda/resources/icons/sun/Open16.gif" />
                                                                             </image>
                                                                         </ImageView>
                                                                     </graphic>
                                                                 </Button>
-                                                                <Button fx:id="clearInputButton"
-                                                                        contentDisplay="GRAPHIC_ONLY"
-                                                                        mnemonicParsing="false" text="Clear">
+                                                                <Button fx:id="clearInputButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Clear">
                                                                     <graphic>
-                                                                        <ImageView fitHeight="16.0" fitWidth="16.0"
-                                                                                   pickOnBounds="true"
-                                                                                   preserveRatio="true">
+                                                                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                                                                             <image>
-                                                                                <Image url="@/jloda/resources/icons/sun/Delete16.gif"/>
+                                                                                <Image url="@/jloda/resources/icons/sun/Delete16.gif" />
                                                                             </image>
                                                                         </ImageView>
                                                                     </graphic>
@@ -117,43 +90,36 @@
                                                         </VBox>
                                                     </children>
                                                 </HBox>
-                                                <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0"
-                                                      spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                                <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                                     <children>
-                                                        <Label layoutX="10.0" layoutY="16.0" minWidth="-Infinity"
-                                                               text="Sequence type">
+                                                        <Label layoutX="10.0" layoutY="16.0" minWidth="-Infinity" text="Sequence type">
                                                             <HBox.margin>
-                                                                <Insets/>
+                                                                <Insets />
                                                             </HBox.margin>
                                                         </Label>
-                                                        <ChoiceBox fx:id="sequenceTypeChoiceBox" prefWidth="100.0"/>
+                                                        <ChoiceBox fx:id="sequenceTypeChoiceBox" prefWidth="100.0" />
                                                         <Label text="Min length:">
                                                             <HBox.margin>
-                                                                <Insets left="5.0"/>
+                                                                <Insets left="5.0" />
                                                             </HBox.margin>
                                                         </Label>
-                                                        <TextField fx:id="minLengthTextField" alignment="CENTER_RIGHT"
-                                                                   prefWidth="60.0" text="10000"/>
+                                                        <TextField fx:id="minLengthTextField" alignment="CENTER_RIGHT" prefWidth="60.0" text="10000" />
                                                         <Label minWidth="-Infinity" text="Taxa:">
                                                             <HBox.margin>
-                                                                <Insets left="5.0"/>
+                                                                <Insets left="5.0" />
                                                             </HBox.margin>
                                                         </Label>
-                                                        <ChoiceBox fx:id="taxaChoiceBox" prefWidth="150.0"/>
+                                                        <ChoiceBox fx:id="taxaChoiceBox" prefWidth="150.0" />
                                                     </children>
                                                 </HBox>
-                                                <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0"
-                                                      GridPane.columnIndex="1" GridPane.rowIndex="5">
+                                                <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
                                                     <children>
-                                                        <TextField fx:id="outputFileTextField" promptText="Output file"
-                                                                   HBox.hgrow="ALWAYS"/>
-                                                        <Button fx:id="outputBrowseButton" contentDisplay="GRAPHIC_ONLY"
-                                                                mnemonicParsing="false" text="Browse...">
+                                                        <TextField fx:id="outputFileTextField" promptText="Output file" HBox.hgrow="ALWAYS" />
+                                                        <Button fx:id="outputBrowseButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Browse...">
                                                             <graphic>
-                                                                <ImageView fitHeight="16.0" fitWidth="16.0"
-                                                                           pickOnBounds="true" preserveRatio="true">
+                                                                <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                                                                     <image>
-                                                                        <Image url="@/jloda/resources/icons/sun/Open16.gif"/>
+                                                                        <Image url="@/jloda/resources/icons/sun/Open16.gif" />
                                                                     </image>
                                                                 </ImageView>
                                                             </graphic>
@@ -162,19 +128,16 @@
                                                 </HBox>
                                                 <VBox spacing="2.0" GridPane.rowIndex="1">
                                                     <children>
-                                                        <Label minWidth="-Infinity" text="Input"/>
-                                                        <Label layoutX="10.0" layoutY="10.0" minWidth="-Infinity"
-                                                               text=" files:"/>
+                                                        <Label minWidth="-Infinity" text="Input" />
+                                                        <Label layoutX="10.0" layoutY="10.0" minWidth="-Infinity" text=" files:" />
                                                     </children>
                                                 </VBox>
                                                 <HBox spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                                     <children>
-                                                        <Label text="Store only references to sequences:"/>
-                                                        <CheckBox fx:id="storeOnlyReferencesCheckBox"
-                                                                  mnemonicParsing="false">
+                                                        <Label text="Store only references to sequences:" />
+                                                        <CheckBox fx:id="storeOnlyReferencesCheckBox" mnemonicParsing="false">
                                                             <tooltip>
-                                                                <Tooltip
-                                                                        text="Select this to prevent genomes being stored in Splitstree5 file"/>
+                                                                <Tooltip text="Select this to prevent genomes being stored in Splitstree5 file" />
                                                             </tooltip>
                                                         </CheckBox>
                                                     </children>
@@ -189,16 +152,14 @@
                             <content>
                                 <AnchorPane>
                                     <children>
-                                        <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                                                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                        <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                             <center>
-                                                <ListView fx:id="displayLabelsListView" editable="true"
-                                                          BorderPane.alignment="CENTER">
+                                                <ListView fx:id="displayLabelsListView" editable="true" BorderPane.alignment="CENTER">
                                                     <BorderPane.margin>
-                                                        <Insets bottom="5.0" left="10.0" right="10.0" top="5.0"/>
+                                                        <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                                                     </BorderPane.margin>
                                                     <tooltip>
-                                                        <Tooltip text="Taxon labels as displayed in program"/>
+                                                        <Tooltip text="Taxon labels as displayed in program" />
                                                     </tooltip>
                                                 </ListView>
                                             </center>
@@ -209,76 +170,55 @@
                                                             <children>
                                                                 <HBox>
                                                                     <VBox.margin>
-                                                                        <Insets bottom="5.0" left="5.0" right="5.0"
-                                                                                top="5.0"/>
+                                                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                                                     </VBox.margin>
                                                                     <children>
-                                                                        <Label text="Set display labels (using HTML tags to style, if desired "/>
-                                                                        <ToggleButton fx:id="htmlInfoButton"
-                                                                                      alignment="CENTER"
-                                                                                      contentDisplay="TEXT_ONLY"
-                                                                                      focusTraversable="false"
-                                                                                      mnemonicParsing="false"
-                                                                                      style="-fx-background-radius: 5em; -fx-max-width: 16; -fx-min-width: 16; -fx-max-height: 16; -fx-min-height: 16;"
-                                                                                      text="?">
+                                                                        <Label text="Set display labels (using HTML tags to style, if desired " />
+                                                                        <ToggleButton fx:id="htmlInfoButton" alignment="CENTER" contentDisplay="TEXT_ONLY" focusTraversable="false" mnemonicParsing="false" style="-fx-background-radius: 5em; -fx-max-width: 16; -fx-min-width: 16; -fx-max-height: 16; -fx-min-height: 16;" text="?">
                                                                             <font>
-                                                                                <Font size="8.0"/>
+                                                                                <Font size="8.0" />
                                                                             </font>
                                                                         </ToggleButton>
-                                                                        <Label layoutX="10.0" layoutY="10.0" text=")"/>
+                                                                        <Label layoutX="10.0" layoutY="10.0" text=")" />
                                                                     </children>
                                                                 </HBox>
                                                             </children>
                                                             <padding>
-                                                                <Insets bottom="2.0" left="5.0" right="5.0" top="2.0"/>
+                                                                <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
                                                             </padding>
                                                         </VBox>
-                                                        <HBox fx:id="additionalButtonsHBox" prefHeight="30.0"/>
-                                                        <TextArea fx:id="supportedHTMLTextArea" disable="true"
-                                                                  editable="false" focusTraversable="false"
-                                                                  minHeight="0.0" prefHeight="0.0" prefRowCount="0"
-                                                                  style="-fx-background-color: lightgray; -fx-border-color: transparent; -fx-border-width: 0;"
-                                                                  wrapText="true" VBox.vgrow="SOMETIMES"/>
+                                                        <HBox fx:id="additionalButtonsHBox" prefHeight="30.0" />
+                                                        <TextArea fx:id="supportedHTMLTextArea" disable="true" editable="false" focusTraversable="false" minHeight="0.0" prefHeight="0.0" prefRowCount="0" style="-fx-background-color: lightgray; -fx-border-color: transparent; -fx-border-width: 0;" wrapText="true" VBox.vgrow="SOMETIMES" />
                                                     </children>
                                                 </VBox>
                                             </top>
                                         </BorderPane>
-                                        <HBox alignment="CENTER_LEFT" AnchorPane.rightAnchor="30.0"
-                                              AnchorPane.topAnchor="2.0">
+                                        <HBox alignment="CENTER_LEFT" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="2.0">
                                             <children>
-                                                <Button fx:id="replaceButton" contentDisplay="GRAPHIC_ONLY"
-                                                        layoutX="10.0" layoutY="10.0" mnemonicParsing="false"
-                                                        style="-fx-background-color: transparent;" text="Replace...">
+                                                <Button fx:id="replaceButton" contentDisplay="GRAPHIC_ONLY" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" style="-fx-background-color: transparent;" text="Replace...">
                                                     <graphic>
-                                                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true"
-                                                                   preserveRatio="true">
+                                                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                                                             <image>
-                                                                <Image url="@/jloda/resources/icons/sun/Replace16.gif"/>
+                                                                <Image url="@/jloda/resources/icons/sun/Replace16.gif" />
                                                             </image>
                                                         </ImageView>
                                                     </graphic>
                                                 </Button>
-                                                <Separator orientation="VERTICAL" prefHeight="16.0"/>
-                                                <Button fx:id="labelsUndoButton" contentDisplay="GRAPHIC_ONLY"
-                                                        mnemonicParsing="false"
-                                                        style="-fx-background-color: transparent;" text="Undo">
+                                                <Separator orientation="VERTICAL" prefHeight="16.0" />
+                                                <Button fx:id="labelsUndoButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" style="-fx-background-color: transparent;" text="Undo">
                                                     <graphic>
-                                                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true"
-                                                                   preserveRatio="true">
+                                                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                                                             <image>
-                                                                <Image url="@/jloda/resources/icons/sun/Undo16.gif"/>
+                                                                <Image url="@/jloda/resources/icons/sun/Undo16.gif" />
                                                             </image>
                                                         </ImageView>
                                                     </graphic>
                                                 </Button>
-                                                <Button fx:id="labelsRedoButton" contentDisplay="GRAPHIC_ONLY"
-                                                        layoutX="10.0" layoutY="10.0" mnemonicParsing="false"
-                                                        style="-fx-background-color: transparent;" text="Redo">
+                                                <Button fx:id="labelsRedoButton" contentDisplay="GRAPHIC_ONLY" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" style="-fx-background-color: transparent;" text="Redo">
                                                     <graphic>
-                                                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true"
-                                                                   preserveRatio="true">
+                                                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                                                             <image>
-                                                                <Image url="@/jloda/resources/icons/sun/Redo16.gif"/>
+                                                                <Image url="@/jloda/resources/icons/sun/Redo16.gif" />
                                                             </image>
                                                         </ImageView>
                                                     </graphic>
@@ -293,186 +233,156 @@
                             <content>
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                     <children>
-                                        <VBox spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                                              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                        <VBox spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                             <children>
                                                 <HBox alignment="CENTER_LEFT" spacing="10.0">
                                                     <children>
-                                                        <Label text="Reference database:"/>
-                                                        <TextField fx:id="referencesDatabaseTextField"
-                                                                   promptText="SplitsTree5 reference database file (.st5db)"
-                                                                   HBox.hgrow="ALWAYS">
+                                                        <Label text="Reference database:" />
+                                                        <TextField fx:id="referencesDatabaseTextField" promptText="SplitsTree5 reference database file (.st5db)" HBox.hgrow="ALWAYS">
                                                             <tooltip>
-                                                                <Tooltip
-                                                                        text="SplitsTree5 reference database (.st5db file)"/>
+                                                                <Tooltip text="SplitsTree5 reference database (.st5db file)" />
                                                             </tooltip>
                                                         </TextField>
-                                                        <Button fx:id="referencesDatabaseButton"
-                                                                contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false"
-                                                                text="Browse">
+                                                        <Button fx:id="referencesDatabaseButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Browse">
                                                             <tooltip>
-                                                                <Tooltip
-                                                                        text="Browse for SplitsTree5  reference database"/>
+                                                                <Tooltip text="Browse for SplitsTree5  reference database" />
                                                             </tooltip>
                                                             <graphic>
-                                                                <ImageView fitHeight="16.0" fitWidth="16.0"
-                                                                           pickOnBounds="true" preserveRatio="true">
+                                                                <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                                                                     <image>
-                                                                        <Image url="@/jloda/resources/icons/sun/Open16.gif"/>
+                                                                        <Image url="@/jloda/resources/icons/sun/Open16.gif" />
                                                                     </image>
                                                                 </ImageView>
                                                             </graphic>
                                                         </Button>
                                                     </children>
                                                 </HBox>
-                                                <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0"
-                                                      spacing="10.0">
+                                                <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                                                     <children>
-                                                        <Button fx:id="findReferencesButton" mnemonicParsing="false"
-                                                                text="Find all similar">
+                                                        <Button fx:id="findReferencesButton" mnemonicParsing="false" text="Find all similar">
                                                             <tooltip>
-                                                                <Tooltip text="Search for similar reference sequences"/>
+                                                                <Tooltip text="Search for similar reference sequences" />
                                                             </tooltip>
                                                             <HBox.margin>
-                                                                <Insets right="10.0"/>
+                                                                <Insets right="10.0" />
                                                             </HBox.margin>
                                                         </Button>
-                                                        <Label layoutX="124.0" layoutY="20.0"
-                                                               text="Max distance to search:" textFill="#0d0d0d">
+                                                        <Label layoutX="124.0" layoutY="20.0" text="Max distance to search:" textFill="#0d0d0d">
                                                             <tooltip>
-                                                                <Tooltip text="Max distance to search"/>
+                                                                <Tooltip text="Max distance to search" />
                                                             </tooltip>
                                                             <HBox.margin>
-                                                                <Insets left="15.0"/>
+                                                                <Insets left="15.0" />
                                                             </HBox.margin>
                                                         </Label>
-                                                        <TextField fx:id="maxDistToSearchTextField" prefColumnCount="6"
-                                                                   text="0.3">
+                                                        <TextField fx:id="maxDistToSearchTextField" prefColumnCount="6" text="0.30">
                                                             <tooltip>
-                                                                <Tooltip text="Max distance to search"/>
+                                                                <Tooltip text="Max distance to search" />
                                                             </tooltip>
                                                         </TextField>
-                                                        <Label fx:id="foundReferencesLabel" layoutX="339.0"
-                                                               layoutY="20.0" text="Found" textFill="GREY">
+                                          <CheckBox fx:id="includeStrainsCB" mnemonicParsing="false" text="Include Strains" />
+                                                        <Label fx:id="foundReferencesLabel" layoutX="339.0" layoutY="20.0" text="Found" textFill="GREY">
                                                             <tooltip>
-                                                                <Tooltip text="Number of similar sequences found"/>
+                                                                <Tooltip text="Number of similar sequences found" />
                                                             </tooltip>
                                                         </Label>
                                                     </children>
                                                     <VBox.margin>
-                                                        <Insets bottom="5.0" top="5.0"/>
+                                                        <Insets bottom="5.0" top="5.0" />
                                                     </VBox.margin>
                                                 </HBox>
-                                                <Separator prefWidth="200.0"/>
+                                                <Separator prefWidth="200.0" />
                                                 <HBox alignment="CENTER" layoutX="20.0" layoutY="20.0" spacing="20.0">
                                                     <children>
-                                                        <Label text="Max dist:"/>
-                                                        <Slider fx:id="maxDistanceSlider" blockIncrement="0.1"
-                                                                majorTickUnit="0.05" max="0.3" minorTickCount="4"
-                                                                showTickLabels="true" showTickMarks="true"
-                                                                HBox.hgrow="ALWAYS">
+                                                        <Label text="Max dist:" />
+                                                        <Slider fx:id="maxDistanceSlider" blockIncrement="0.1" majorTickUnit="0.05" max="0.3" minorTickCount="4" showTickLabels="true" showTickMarks="true" HBox.hgrow="ALWAYS">
                                                             <HBox.margin>
-                                                                <Insets/>
+                                                                <Insets />
                                                             </HBox.margin>
                                                             <padding>
-                                                                <Insets top="4.0"/>
+                                                                <Insets top="4.0" />
                                                             </padding>
                                                             <tooltip>
-                                                                <Tooltip text="Mash distance threshold"/>
+                                                                <Tooltip text="Mash distance threshold" />
                                                             </tooltip>
                                                         </Slider>
-                                                        <TextField fx:id="maxToAddTextField" prefColumnCount="6"
-                                                                   promptText="Max to add">
+                                                        <TextField fx:id="maxToAddTextField" prefColumnCount="6" promptText="Max to add">
                                                             <HBox.margin>
-                                                                <Insets right="10.0"/>
+                                                                <Insets right="10.0" />
                                                             </HBox.margin>
                                                             <tooltip>
-                                                                <Tooltip text="Number of reference genomes to add"/>
+                                                                <Tooltip text="Number of reference genomes to add" />
                                                             </tooltip>
                                                         </TextField>
                                                     </children>
                                                 </HBox>
-                                                <HBox layoutX="20.0" layoutY="180.0" nodeOrientation="LEFT_TO_RIGHT"
-                                                      VBox.vgrow="ALWAYS">
+                                                <HBox layoutX="20.0" layoutY="180.0" nodeOrientation="LEFT_TO_RIGHT" VBox.vgrow="ALWAYS">
                                                     <children>
                                                         <LineChart fx:id="mashDistancesChart" HBox.hgrow="ALWAYS">
                                                             <xAxis>
-                                                                <NumberAxis fx:id="mashDistancesXAxis" side="BOTTOM"/>
+                                                                <NumberAxis fx:id="mashDistancesXAxis" side="BOTTOM" />
                                                             </xAxis>
                                                             <yAxis>
-                                                                <NumberAxis fx:id="mashDistancesYAxis" side="LEFT"/>
+                                                                <NumberAxis fx:id="mashDistancesYAxis" side="LEFT" />
                                                             </yAxis>
                                                             <HBox.margin>
-                                                                <Insets/>
+                                                                <Insets />
                                                             </HBox.margin>
                                                         </LineChart>
                                                         <VBox alignment="TOP_CENTER" spacing="10.0">
                                                             <HBox.margin>
-                                                                <Insets/>
+                                                                <Insets />
                                                             </HBox.margin>
                                                             <children>
-                                                                <HBox alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT"
-                                                                      spacing="10.0">
+                                                                <HBox alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" spacing="10.0">
                                                                     <children>
-                                                                        <Button fx:id="addReferencesButton"
-                                                                                mnemonicParsing="false" text="Add">
+                                                                        <Button fx:id="addReferencesButton" mnemonicParsing="false" text="Add">
                                                                             <tooltip>
-                                                                                <Tooltip
-                                                                                        text="Add found reference sequences to dataset"/>
+                                                                                <Tooltip text="Add found reference sequences to dataset" />
                                                                             </tooltip>
                                                                         </Button>
                                                                     </children>
                                                                 </HBox>
                                                                 <HBox alignment="CENTER">
                                                                     <children>
-                                                                        <Label fx:id="addedReferencesLabel" text="Added"
-                                                                               textFill="GREY">
+                                                                        <Label fx:id="addedReferencesLabel" text="Added" textFill="GREY">
                                                                             <tooltip>
-                                                                                <Tooltip
-                                                                                        text="Number of rference sequences that will be added to analysis"/>
+                                                                                <Tooltip text="Number of rference sequences that will be added to analysis" />
                                                                             </tooltip>
                                                                         </Label>
                                                                     </children>
                                                                 </HBox>
-                                                                <HBox alignment="CENTER" layoutX="10.0" layoutY="10.0"
-                                                                      nodeOrientation="LEFT_TO_RIGHT">
+                                                                <HBox alignment="CENTER" layoutX="10.0" layoutY="10.0" nodeOrientation="LEFT_TO_RIGHT">
                                                                     <children>
-                                                                        <Button fx:id="removeAllReferencesButton"
-                                                                                minWidth="-Infinity"
-                                                                                mnemonicParsing="false"
-                                                                                text="Remove all">
+                                                                        <Button fx:id="removeAllReferencesButton" minWidth="-Infinity" mnemonicParsing="false" text="Remove all">
                                                                             <tooltip>
-                                                                                <Tooltip
-                                                                                        text="Remove all added reference sequences"/>
+                                                                                <Tooltip text="Remove all added reference sequences" />
                                                                             </tooltip>
                                                                         </Button>
                                                                     </children>
                                                                 </HBox>
-                                                                <HBox alignment="CENTER" layoutX="10.0" layoutY="74.0"
-                                                                      nodeOrientation="LEFT_TO_RIGHT">
+                                                                <HBox alignment="CENTER" layoutX="10.0" layoutY="74.0" nodeOrientation="LEFT_TO_RIGHT">
                                                                     <children>
-                                                                        <Button fx:id="cacheButton" minWidth="-Infinity"
-                                                                                mnemonicParsing="false" text="Cache...">
+                                                                        <Button fx:id="cacheButton" minWidth="-Infinity" mnemonicParsing="false" text="Cache...">
                                                                             <tooltip>
-                                                                                <Tooltip
-                                                                                        text="Select the genome cache directory"/>
+                                                                                <Tooltip text="Select the genome cache directory" />
                                                                             </tooltip>
                                                                         </Button>
                                                                     </children>
                                                                     <VBox.margin>
-                                                                        <Insets top="15.0"/>
+                                                                        <Insets top="15.0" />
                                                                     </VBox.margin>
                                                                 </HBox>
                                                             </children>
                                                         </VBox>
                                                     </children>
                                                     <VBox.margin>
-                                                        <Insets right="12.0"/>
+                                                        <Insets right="12.0" />
                                                     </VBox.margin>
                                                 </HBox>
                                             </children>
                                             <padding>
-                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                             </padding>
                                         </VBox>
                                     </children>
@@ -483,20 +393,17 @@
                 </TabPane>
             </center>
             <bottom>
-                <HBox alignment="TOP_CENTER" maxWidth="1.7976931348623157E308" spacing="10.0"
-                      style="-fx-border-color: lightgray;">
+                <HBox alignment="TOP_CENTER" maxWidth="1.7976931348623157E308" spacing="10.0" style="-fx-border-color: lightgray;">
                     <children>
-                        <FlowPane fx:id="statusFlowPane" hgap="10.0" prefHeight="30.0" vgap="5.0" HBox.hgrow="ALWAYS"/>
-                        <Button fx:id="cancelButton" cancelButton="true" minWidth="-Infinity" mnemonicParsing="false"
-                                prefWidth="54.0" text="Close"/>
-                        <Button fx:id="applyButton" layoutX="410.0" layoutY="10.0" minWidth="-Infinity"
-                                mnemonicParsing="false" text="Analyze"/>
+                        <FlowPane fx:id="statusFlowPane" hgap="10.0" prefHeight="30.0" vgap="5.0" HBox.hgrow="ALWAYS" />
+                        <Button fx:id="cancelButton" cancelButton="true" minWidth="-Infinity" mnemonicParsing="false" prefWidth="54.0" text="Close" />
+                        <Button fx:id="applyButton" layoutX="410.0" layoutY="10.0" minWidth="-Infinity" mnemonicParsing="false" text="Analyze" />
                     </children>
                     <BorderPane.margin>
-                        <Insets/>
+                        <Insets />
                     </BorderPane.margin>
                     <padding>
-                        <Insets bottom="5.0" left="10.0" right="20.0" top="5.0"/>
+                        <Insets bottom="5.0" left="10.0" right="20.0" top="5.0" />
                     </padding>
                 </HBox>
             </bottom>

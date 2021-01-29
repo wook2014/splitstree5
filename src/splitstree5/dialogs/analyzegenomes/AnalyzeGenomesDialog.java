@@ -268,7 +268,7 @@ public class AnalyzeGenomesDialog {
                     for (GenomesAnalyzer.InputRecord record : genomesAnalyzer.iterable(getProgressListener())) {
                         queries.add(record.getSequence());
                     }
-                    return database.get().findSimilar(service.getProgressListener(), Basic.parseDouble(controller.getMaxDistToSearchTextField().getText()), queries, true);
+                    return database.get().findSimilar(service.getProgressListener(), Basic.parseDouble(controller.getMaxDistToSearchTextField().getText()), controller.getIncludeStrainsCB().isSelected(), queries, true);
                 }
             });
             service.runningProperty().addListener((c, o, n) -> running.set(n));
