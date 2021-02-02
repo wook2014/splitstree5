@@ -118,7 +118,7 @@ public class GenomesAnalyzer {
      */
     private Iterator<InputRecord> iterator(ProgressListener progressListener) {
         return new Iterator<>() {
-            private IFastAIterator fastaIterator;
+            private FastAFileIterator fastaIterator;
 
             private int whichFile = 0;
             private int countInFile = 0;
@@ -143,43 +143,61 @@ public class GenomesAnalyzer {
             @Override
             public InputRecord next() {
                 final InputRecord result = next;
-                try {
-                    next = null;
 
-                    if (whichFile < fileNames.size()) {
-                        final String fileName = fileNames.get(whichFile);
-                        if (referenceFile2Names.containsKey(fileName)) {
-                            next = getDataFromAFile(fileName, true);
+                next = null;
+                if (whichFile < fileNames.size()) {
+                    try {
+                        if (referenceFile2Names.containsKey(fileNames.get(whichFile))) {
+                            next = getDataFromAFile(fileNames.get(whichFile), true);
                             if (next != null)
-                                next.setName(referenceFile2Names.get(fileName));
+                                next.setName(referenceFile2Names.get(fileNames.get(whichFile)));
                             whichFile++;
-                        } else if (perFile) {
-                            next = getDataFromAFile(fileNames.get(whichFile++), useFileName);
-                        } else { // perFastA
-                            if (fastaIterator == null)
-                                fastaIterator = new FastAFileIterator(fileNames.get(whichFile));
-
-                            while (fastaIterator != null && !fastaIterator.hasNext()) {
-                                fastaIterator.close();
-                                whichFile++;
-                                countInFile = 0;
-                                if (whichFile < fileNames.size()) {
+                        } else { // query file
+                            if (perFile) { // per file
+                                next = getDataFromAFile(fileNames.get(whichFile++), useFileName);
+                            } else { // per FastA
+                                if (fastaIterator == null)
                                     fastaIterator = new FastAFileIterator(fileNames.get(whichFile));
-                                } else {
-                                    fastaIterator = null;
+
+                                boolean queryFilesFinished = false;
+
+                                while (!queryFilesFinished && fastaIterator != null && !fastaIterator.hasNext()) {
+                                    fastaIterator.close();
+                                    whichFile++;
+                                    {
+                                        countInFile = 0;
+                                        if (whichFile < fileNames.size()) {
+                                            if (referenceFile2Names.containsKey(fileNames.get(whichFile))) {
+                                                next = getDataFromAFile(fileNames.get(whichFile), true);
+                                                if (next != null)
+                                                    next.setName(referenceFile2Names.get(fileNames.get(whichFile)));
+                                                whichFile++;
+                                                queryFilesFinished = true;
+                                            } else
+                                                fastaIterator = new FastAFileIterator(fileNames.get(whichFile));
+                                        } else {
+                                            fastaIterator = null;
+                                        }
+                                    }
+                                }
+                                if (!queryFilesFinished && fastaIterator != null) {
+                                    final Pair<String, String> pair = fastaIterator.next();
+                                    countInFile++;
+                                    next = new InputRecord(Basic.swallowLeadingGreaterSign(pair.getFirst()), pair.getSecond().toUpperCase().getBytes(), fastaIterator.getFileName(), fastaIterator.getPosition());
+                                    if (useFileName)
+                                        next.setName(Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(fastaIterator.getFileName()), "") + ":" + countInFile);
+
+                                    System.err.println(next.getName() + ": " + next.getSequence().length);
+
+                                    if (next.getName().contains("08") && next.getSequence().length > 770679)
+                                        System.err.println("WTF");
+
                                 }
                             }
-                            if (fastaIterator != null) {
-                                final Pair<String, String> pair = fastaIterator.next();
-                                countInFile++;
-                                next = new InputRecord(Basic.swallowLeadingGreaterSign(pair.getFirst()), pair.getSecond().toUpperCase().getBytes(), fileNames.get(whichFile), fastaIterator.getPosition());
-                                if (useFileName)
-                                    next.setName(Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(fileName), "") + ":" + countInFile);
-                            }
                         }
+                    } catch (IOException ex) {
+                        next = null;
                     }
-                } catch (IOException ex) {
-                    next = null;
                 }
                 if (result != null)
                     result.setName(line2label.getOrDefault(result.getName(), result.getName().replaceAll("'", "_")));

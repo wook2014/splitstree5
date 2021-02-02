@@ -335,12 +335,10 @@ public class AnalyzeGenomesDialog {
         controller.getAddReferencesButton().disableProperty().bind(Bindings.isEmpty(references).or(database.isNull()).or(running));
         controller.getMashDistancesChart().disableProperty().bind(controller.getAddReferencesButton().disabledProperty());
 
+        BasicFX.ensureAcceptsDoubleOnly(controller.getMaxDistToSearchTextField());
         controller.getMaxDistToSearchTextField().textProperty().addListener((c, o, n) -> {
             if (Basic.isDouble(n) && Basic.parseDouble(n) > 0.0 && Basic.parseDouble(n) < 1)
-                controller.getMaxDistanceSlider().setMax(Basic.parseDouble(n));
-            else
-                Platform.runLater(() -> controller.getMaxDistToSearchTextField().setText(o));
-
+                controller.getMaxDistanceSlider().setMax(Basic.parseDouble(n) + 0.01);
         });
         controller.getMaxDistToSearchTextField().disableProperty().bind(controller.getFindReferencesButton().disableProperty());
 
