@@ -47,32 +47,31 @@ public class SplitsUtilities {
      * @return squares fit
      */
     public static float computeLeastSquaresFit(DistancesBlock distancesBlock, List<ASplit> splits) {
-        final int ntax = distancesBlock.getNtax();
-        final double[][] sdist = new double[ntax + 1][ntax + 1];
+        final int nTax = distancesBlock.getNtax();
+        final double[][] splitDist = new double[nTax + 1][nTax + 1];
 
-        double dsumSquare = 0;
-        double ssumSquare = 0;
-        for (int i = 1; i <= ntax; i++) {
-            for (int j = i + 1; j <= ntax; j++) {
-                double dij = 0.0;
-                for (ASplit split : splits) {
-                    if (split.isContainedInA(i) != split.isContainedInA(j))
-                        dij += split.getWeight();
+        double sumDSquared = 0.0;
+        double sumDiffSquared = 0.0;
+
+        for (ASplit split : splits) {
+            for (int i : BitSetUtils.members(split.getA())) {
+                for (int j : BitSetUtils.members(split.getB())) {
+                    splitDist[i][j] += split.getWeight();
+                    splitDist[j][i] = splitDist[i][j];
                 }
-                sdist[i][j] = sdist[j][i] = dij;
-            }
-        }
-        for (int i = 1; i <= ntax; i++) {
-            for (int j = i + 1; j <= ntax; j++) {
-                double sij = sdist[i][j];
-                double dij = distancesBlock.get(i, j);
-                double x = Math.abs(sij - dij);
-                ssumSquare += x * x;
-                dsumSquare += dij * dij;
             }
         }
 
-        return (float) (dsumSquare > 0 ? (100.0 * (1.0 - ssumSquare / dsumSquare)) : 0);
+        for (int i = 1; i <= nTax; i++) {
+            for (int j = i + 1; j <= nTax; j++) {
+                double sij = splitDist[i][j];
+                double dij = distancesBlock.get(i, j);
+                sumDiffSquared += (sij - dij) * (sij - dij);
+                sumDSquared += dij * dij;
+            }
+        }
+
+        return (float) (sumDSquared > 0 ? (100.0 * (1.0 - sumDiffSquared / sumDSquared)) : 0);
     }
 
 
@@ -273,34 +272,30 @@ public class SplitsUtilities {
         float dsum = 0;
         float ssum = 0;
         float dsumSquare = 0;
-        float ssumSquare = 0;
+        float diffSumSquare = 0;
         float netsumSquare = 0;
 
         for (int i = 1; i <= ntax; i++) {
             for (int j = i + 1; j <= ntax; j++) {
                 double sij = sdist[i][j];
                 double dij = dist.get(i, j);
-                double x = Math.abs(sij - dij);
-                ssum += x;
-                ssumSquare += x * x;
+                ssum += Math.abs(sij - dij);
+                diffSumSquare += (sij - dij) * (sij - dij);
                 dsum += dij;
                 dsumSquare += dij * dij;
                 netsumSquare += sij * sij;
             }
         }
-        float fit = 100 * (1 - ssum / dsum);
-        fit = Math.max(fit, 0);
-        splits.setFit(fit);
+        final double fit = Math.max(0, 100.0 * (1.0 - ssum / dsum));
+        splits.setFit((float) fit);
 
-        double lsfit = 100.0 * (1.0 - ssumSquare / dsumSquare);
+        final double lsFit = Math.max(0.0, 100.0 * (1.0 - diffSumSquare / dsumSquare));
 
+        splits.setFit((float) lsFit);
 
-        lsfit = Math.max(lsfit, 0.0);
-        //splits.getProperties().setLSFit(lsfit);
+        double stress = Math.sqrt(diffSumSquare / netsumSquare);
 
-        double stress = Math.sqrt(ssumSquare / netsumSquare);
-
-        System.err.println("\nRecomputed fit:\n\tfit = " + fit + "\n\tLS fit =" + lsfit + "\n\tstress =" + stress + "\n");
+        System.err.println("\nRecomputed fit:\n\tfit = " + fit + "\n\tLS fit =" + lsFit + "\n\tstress =" + stress + "\n");
     }
 
     public static void rotateCycle(int[] cycle, int first) {

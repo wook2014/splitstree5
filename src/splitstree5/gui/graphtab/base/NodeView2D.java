@@ -149,7 +149,7 @@ public class NodeView2D extends NodeViewBase {
                 label.setOnMouseEntered(mouseEnteredEventHandler);
                 label.setOnMouseExited(mouseExitedEventHandler);
             }
-            if (shapeGroup != null && label != null)
+            if (shapeGroup != null && label != null && label.getText() != null)
                 Tooltip.install(shapeGroup, new Tooltip(label.getText()));
         }
     }

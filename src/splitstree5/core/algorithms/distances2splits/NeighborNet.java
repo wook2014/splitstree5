@@ -27,6 +27,7 @@ import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetCycle;
 import splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetSplits;
+import splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetSplitsLP;
 import splitstree5.core.algorithms.interfaces.IFromDistances;
 import splitstree5.core.algorithms.interfaces.IToSplits;
 import splitstree5.core.datablocks.DistancesBlock;
@@ -47,7 +48,7 @@ import java.util.List;
  * @author David Bryant and Daniel Huson
  */
 public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implements IFromDistances, IToSplits {
-    public enum WeightsAlgorithm {NNet2004, NNet2021}
+    public enum WeightsAlgorithm {NNet2004, NNet2021, LP}
 
     private final ObjectProperty<WeightsAlgorithm> optionWeights = new SimpleObjectProperty<>(WeightsAlgorithm.NNet2004);
 
@@ -77,9 +78,14 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
 
         progress.setTasks("NNet", "edge weights");
 
-        final ArrayList<ASplit> splits = NeighborNetSplits.compute(getOptionWeights().equals(WeightsAlgorithm.NNet2021),
-                taxaBlock.getNtax(), cycle, distancesBlock.getDistances(), distancesBlock.getVariances(), 0.000001, NeighborNetSplits.LeastSquares.ols, NeighborNetSplits.Regularization.nnls, 1,
-                progress);
+        final ArrayList<ASplit> splits;
+
+        if (getOptionWeights().equals(WeightsAlgorithm.LP))
+            splits = NeighborNetSplitsLP.compute(taxaBlock.getNtax(), cycle, distancesBlock.getDistances(), 0.000001, progress);
+        else
+            splits = NeighborNetSplits.compute(getOptionWeights().equals(WeightsAlgorithm.NNet2021),
+                    taxaBlock.getNtax(), cycle, distancesBlock.getDistances(), distancesBlock.getVariances(), 0.000001, NeighborNetSplits.LeastSquares.ols, NeighborNetSplits.Regularization.nnls, 1,
+                    progress);
 
         if (Compatibility.isCompatible(splits))
             splitsBlock.setCompatibility(Compatibility.compatible);

@@ -154,7 +154,7 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
         }
 
         if (splitsBlock.getFit() > 0)
-            ((Graph2DTab) viewTab).getFitLabel().setText(String.format("Fit: %.1f", splitsBlock.getFit()));
+            ((Graph2DTab) viewTab).getFitLabel().setText(String.format("Fit: %.2f", splitsBlock.getFit()));
         else
             ((Graph2DTab) viewTab).getFitLabel().setText("");
 

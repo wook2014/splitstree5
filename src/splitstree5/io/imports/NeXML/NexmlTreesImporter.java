@@ -44,6 +44,7 @@ import java.util.List;
  * Daria Evseeva, 2019, Daniel Huson, 2020
  */
 public class NexmlTreesImporter implements IToTrees, IImportTrees {
+    private long lastWarning = 0;
 
     // todo : check partial trees
     // network :nodedata add (id, ..), (label, ...), (taxalabel, ...)
@@ -78,8 +79,10 @@ public class NexmlTreesImporter implements IToTrees, IImportTrees {
                     }
 
                     trees.getTrees().add(t); // todo: problem with multiple trees import?
-                } else
+                } else if (System.currentTimeMillis() > lastWarning + 5000) {
                     NotificationManager.showWarning("Skipping rooted network...");
+                    lastWarning = System.currentTimeMillis();
+                }
             }
             if (trees.size() == 0)
                 throw new IOException("No trees found");
