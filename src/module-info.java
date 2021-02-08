@@ -13,6 +13,7 @@ module splitstreefive {
     requires Jama;
     requires fx.platform.utils;
     requires com.install4j.runtime;
+    requires google.or.tools;
 
     exports splitstree5.resources.css;
     exports splitstree5.resources.icons;

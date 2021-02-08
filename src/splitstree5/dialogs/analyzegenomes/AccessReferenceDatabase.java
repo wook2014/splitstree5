@@ -77,6 +77,9 @@ public class AccessReferenceDatabase implements Closeable {
         if (!Basic.fileExistsAndIsNonEmpty(dbFile))
             throw new IOException("File not found or unreadable: " + dbFile);
 
+        if (!Basic.fileExistsAndIsNonEmpty(dbFile))
+            throw new IOException("File not found or empty: " + dbFile);
+
         final SQLiteConfig config = new SQLiteConfig();
         config.setCacheSize(10000);
         config.setReadOnly(true);
@@ -313,7 +316,7 @@ public class AccessReferenceDatabase implements Closeable {
             if (!Basic.fileExistsAndIsNonEmpty(cacheFile)) {
                 System.err.println("Caching file: " + id2file.get(taxonId));
 
-                final File tmpFile = File.createTempFile("download", "tmp", cacheFile.getParentFile());
+                final File tmpFile = File.createTempFile("download", ".tmp", cacheFile.getParentFile());
 
                 if (tmpFile.exists() && !tmpFile.delete())
                     NotificationManager.showWarning("Failed to delete existing tmp file: " + tmpFile);
