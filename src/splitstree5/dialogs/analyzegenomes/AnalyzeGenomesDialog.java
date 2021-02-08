@@ -289,7 +289,7 @@ public class AnalyzeGenomesDialog {
             service.start();
         });
 
-        controller.getFindReferencesButton().disableProperty().bind(controller.getInputTextArea().textProperty().isEmpty().or(running).or(labelListsManager.applicableProperty().not()));
+        controller.getFindReferencesButton().disableProperty().bind(controller.getInputTextArea().textProperty().isEmpty().or(running).or(labelListsManager.applicableProperty().not()).or(Bindings.isNull(referencesDatabaseProperty())));
 
         controller.getMaxDistanceSlider().disableProperty().bind(controller.getFindReferencesButton().disabledProperty().or(running));
         threshold.bindBidirectional(controller.getMaxDistanceSlider().valueProperty());
