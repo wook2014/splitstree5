@@ -305,10 +305,11 @@ public class AccessReferenceDatabase implements Closeable {
         final Map<String, String> result = new HashMap<>();
 
         for (int taxonId : taxonIds) {
-            if(!id2file.containsKey(taxonId)){
+            if (!id2file.containsKey(taxonId)) {
                 continue;
             }
-            final File cacheFile = new File(fileCacheDirectory, Basic.getFileNameWithoutPath(id2file.get(taxonId)));
+            final String fName = (File.separatorChar != '/' ? id2file.get(taxonId).replace("/", "\\") : id2file.get(taxonId));
+            final File cacheFile = new File(fileCacheDirectory, Basic.getFileNameWithoutPath(fName));
 
             if (!Basic.fileExistsAndIsNonEmpty(cacheFile)) {
                 System.err.println("Caching file: " + id2file.get(taxonId));
