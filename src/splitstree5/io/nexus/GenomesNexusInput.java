@@ -143,7 +143,7 @@ public class GenomesNexusInput extends NexusIOBase implements INexusInput<Genome
 
                             final int partLength = np.getInt();
 
-                            final String word = np.getWordRespectCase();
+                            final String word = np.getWordFileNamePunctuation();
 
                             if (word.startsWith("file://")) {
                                 part.setFile(word.replaceFirst("file://", ""), np.getLong(), partLength);
@@ -156,7 +156,7 @@ public class GenomesNexusInput extends NexusIOBase implements INexusInput<Genome
                     } else {
                         genome.setLength(np.getInt());
                         final Genome.GenomePart part = new Genome.GenomePart();
-                        final String word = np.getWordRespectCase();
+                        final String word = np.getWordFileNamePunctuation();
 
                         if (word.startsWith("file://")) {
                             part.setFile(word.replaceFirst("file://", ""), np.getLong(), genome.getLength());

@@ -96,7 +96,7 @@ public class GenomesNexusOutput extends NexusIOBase implements INexusOutput<Geno
                     for (Genome.GenomePart part : parts) {
                         w.write(" " + part.getLength() + " ");
                         if (part.getFile() != null) {
-                            w.write(String.format("'file://%s' %d", part.getFile(), part.getOffset()));
+                            w.write(String.format("'file://%s' %d", Basic.protectBackSlashes(part.getFile()), part.getOffset()));
                         } else
                             w.write(Basic.toString(part.getSequence())); // todo: pretty print sequence...
                     }
@@ -105,7 +105,7 @@ public class GenomesNexusOutput extends NexusIOBase implements INexusOutput<Geno
                     w.write(" " + part.getLength() + " ");
 
                     if (part.getFile() != null) {
-                        w.write(String.format("'file://%s' %d", part.getFile(), part.getOffset()));
+                        w.write(String.format("'file://%s' %d", Basic.protectBackSlashes(part.getFile()), part.getOffset()));
                     } else
                         w.write(Basic.toString(part.getSequence())); // todo: pretty print sequence...
                 }
