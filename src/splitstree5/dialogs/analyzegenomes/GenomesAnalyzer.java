@@ -34,10 +34,7 @@ import splitstree5.io.nexus.GenomesNexusOutput;
 import splitstree5.io.nexus.TaxaNexusOutput;
 import splitstree5.main.MainWindow;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.function.Consumer;
@@ -316,6 +313,13 @@ public class GenomesAnalyzer {
                 w.write("#nexus\n");
                 (new TaxaNexusOutput()).write(w, taxaBlock);
                 (new GenomesNexusOutput()).write(w, taxaBlock, genomesBlock);
+
+                {
+                    try (Writer sw = new StringWriter()) {
+                        (new GenomesNexusOutput()).write(sw, taxaBlock, genomesBlock);
+                        System.err.println(sw.toString());
+                    }
+                }
             }
             return genomesBlock.size();
         });
