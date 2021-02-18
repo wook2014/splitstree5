@@ -230,12 +230,12 @@ public class SplitsBlock extends DataBlock {
     }
 
     @Override
-    public Class getFromInterface() {
+    public Class<IFromSplits> getFromInterface() {
         return IFromSplits.class;
     }
 
     @Override
-    public Class getToInterface() {
+    public Class<IToSplits> getToInterface() {
         return IToSplits.class;
     }
 

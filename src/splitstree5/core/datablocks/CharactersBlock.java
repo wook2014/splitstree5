@@ -20,7 +20,7 @@
 
 package splitstree5.core.datablocks;
 
-import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IFromCharacters;
 import splitstree5.core.algorithms.interfaces.IToCharacters;
 import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import splitstree5.core.datablocks.characters.CharactersType;
@@ -303,12 +303,12 @@ public class CharactersBlock extends DataBlock {
     }
 
     @Override
-    public Class getFromInterface() {
-        return IFromChararacters.class;
+    public Class<IFromCharacters> getFromInterface() {
+        return IFromCharacters.class;
     }
 
     @Override
-    public Class getToInterface() {
+    public Class<IToCharacters> getToInterface() {
         return IToCharacters.class;
     }
 

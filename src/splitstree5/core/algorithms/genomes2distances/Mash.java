@@ -57,6 +57,8 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
 
     private final IntegerProperty optionHashSeed = new SimpleIntegerProperty(42);
 
+    private final boolean verbose = false;
+
     @Override
     public List<String> listOptions() {
         return Arrays.asList("optionKMerSize", "optionSketchSize", "optionDistances", "optionHashSeed", "optionIgnoreUniqueKMers");
@@ -143,6 +145,9 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
             final int t1 = name2rank.get(triplet.get1().getName());
             final int t2 = name2rank.get(triplet.get2().getName());
             final double dist = triplet.getThird();
+            if(verbose) {
+                System.out.println(triplet.get1().getName() + "\t" + triplet.get2().getName() + "\t" + triplet.getThird());
+            }
             distancesBlock.set(t1, t2, dist);
             distancesBlock.set(t2, t1, dist);
             if (dist == 0.75)
@@ -220,8 +225,8 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
     }
 
     public static void main(String[] args) throws IOException {
-        final String file1 = "/Users/huson/data/mash/all/EF065509.fasta";
-        final String file2 = "/Users/huson/data/mash/all/AY278489.fasta";
+        final String file1 = "/Users/canerbagci/work/outline-paper/bins/B13.fasta";
+        final String file2 = "/Users/canerbagci/work/splitstree/cache/GCF_900169565.1_NSJP_Ch1_genomic.fna.gz";
 
         final String name1 = Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(file1), "");
         final String seq1;
@@ -241,8 +246,8 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
             seq2 = buf.toString();
         }
 
-        final MashSketch sketch1 = MashSketch.compute(name1, Collections.singleton(seq1.getBytes()), true, 1000, 21, 666, false, false, new ProgressSilent());
-        final MashSketch sketch2 = MashSketch.compute(name2, Collections.singleton(seq2.getBytes()), true, 1000, 21, 666, false, false, new ProgressSilent());
+        final MashSketch sketch1 = MashSketch.compute(name1, Collections.singleton(seq1.getBytes()), true, 1000, 21, 42, false, false, new ProgressSilent());
+        final MashSketch sketch2 = MashSketch.compute(name2, Collections.singleton(seq2.getBytes()), true, 1000, 21, 42, false, false, new ProgressSilent());
 
         System.err.println(String.format("Jaccard: %.5f", MashDistance.compute(sketch1, sketch2, GenomeDistanceType.JaccardIndex)));
         System.err.println(String.format("Mash:    %.5f", MashDistance.compute(sketch1, sketch2, GenomeDistanceType.Mash)));

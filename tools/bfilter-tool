@@ -15,25 +15,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-if [ $# == 0 ]
-then
-	options="-h"
+if [ $# == 0 ]; then
+  options="-h"
 else
-	options=$*
+  options=$*
 fi
 
-bin_dir=`dirname "$0"`       # may be relative path
-bin_dir=`cd "$bin_dir" && pwd`    # ensure absolute path
+bin_dir=$(dirname "$0")         # may be relative path
+bin_dir=$(cd "$bin_dir" && pwd) # ensure absolute path
 jars_dir="$bin_dir/../jars"
 jars2_dir="$bin_dir/../jars2"
 
 jre_dir=${installer:sys.preferredJre}
 
-java=$jre_dir/bin/java
-vmOptions=`grep "^-" $bin_dir/../SplitsTree5.vmoptions`
+java=$jre_dir/bin/javaBloomFilterTool
+vmOptions=$(grep "^-" "$bin_dir/../SplitsTree5.vmoptions")
 jfx_dir="$bin_dir/../openjfx/${compiler:sys.platform}/lib"
 modulepath="$jars_dir:$jars2_dir:$jfx_dir"
 
 java_flags="-server -Duser.language=en -Duser.region=US $vmOptions"
 
-$java $java_flags --module-path=$modulepath --add-modules=splitstreefive splitstree5.tools.BloomFilterTool  $options
+$java $java_flags --module-path=$modulepath --add-modules=splitstreefive splitstree5.tools.BloomFilterTool $options

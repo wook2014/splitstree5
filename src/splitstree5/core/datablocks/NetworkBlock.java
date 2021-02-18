@@ -88,12 +88,12 @@ public class NetworkBlock extends DataBlock {
     }
 
     @Override
-    public Class getFromInterface() {
+    public Class<IFromNetwork> getFromInterface() {
         return IFromNetwork.class;
     }
 
     @Override
-    public Class getToInterface() {
+    public Class<IToNetwork> getToInterface() {
         return IToNetwork.class;
     }
 

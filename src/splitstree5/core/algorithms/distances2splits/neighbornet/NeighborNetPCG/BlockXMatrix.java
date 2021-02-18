@@ -1,13 +1,12 @@
-package splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG;
+package splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG;
 
 import Jama.Matrix;
-import splitstree5.gui.datatab.GenericDatablockFormatToolBar;
 
 import java.util.Arrays;
 import java.util.Random;
 
-import static splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.CircularSplitAlgorithms.makeA;
-import static splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.VectorUtilities.add;
+import static splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG.CircularSplitAlgorithms.makeA;
+import static splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG.VectorUtilities.add;
 
 public class BlockXMatrix {
     public int n;  //Number of taxa = one more than the number of blocks

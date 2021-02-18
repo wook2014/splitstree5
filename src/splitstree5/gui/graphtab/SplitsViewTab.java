@@ -142,7 +142,7 @@ public class SplitsViewTab extends Graph2DTab<PhyloSplitsGraph> implements ISpli
      */
     @Override
     public NodeView2D createNodeView(final Node v, Iterable<Integer> workingTaxonIds, Point2D location, String label) {
-        return createNodeView(v, graph.getTaxa(v), location, null, 0, 0, label);
+        return createNodeView(v, graph.getTaxa(v), location, NodeShape.Circle, label == null ? 0.5 : 1, label == null ? 0.5 : 1, label);
     }
 
     @Override

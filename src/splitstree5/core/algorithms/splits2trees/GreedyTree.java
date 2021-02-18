@@ -121,7 +121,8 @@ public class GreedyTree extends Algorithm<SplitsBlock, TreesBlock> implements IF
         }
         PhyloGraphUtils.addLabels(taxaBlock, tree);
 
-        RerootingUtils.rerootByMidpoint(tree);
+        // todo: ask about internal node labels
+        RerootingUtils.rerootByMidpoint(false, tree);
 
         trees.getTrees().add(tree);
         progress.close();

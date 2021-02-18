@@ -90,7 +90,15 @@ public class LabelListsManager {
                 final ArrayList<String> original = new ArrayList<>(displayLabels);
                 replaceAllAction.handle(null);
                 final ArrayList<String> replaced = new ArrayList<>(displayLabels);
-                undoManager.add(UndoableRedoableCommand.create("replace all", () -> displayLabels.setAll(original), () -> displayLabels.setAll(replaced)));
+                undoManager.add(UndoableRedoableCommand.create("replace all",
+                        () -> {
+                            displayLabels.setAll(original);
+                            updateFrequentWordButtons();
+                        },
+                        () -> {
+                            displayLabels.setAll(replaced);
+                            updateFrequentWordButtons();
+                        }));
             });
         }
         {
@@ -99,7 +107,15 @@ public class LabelListsManager {
                 final ArrayList<String> original = new ArrayList<>(displayLabels);
                 replaceAction.handle(null);
                 final ArrayList<String> replaced = new ArrayList<>(displayLabels);
-                undoManager.add(UndoableRedoableCommand.create("replace", () -> displayLabels.setAll(original), () -> displayLabels.setAll(replaced)));
+                undoManager.add(UndoableRedoableCommand.create("replace",
+                        () -> {
+                            displayLabels.setAll(original);
+                            updateFrequentWordButtons();
+                        },
+                        () -> {
+                            displayLabels.setAll(replaced);
+                            updateFrequentWordButtons();
+                        }));
             });
         }
 
@@ -176,7 +192,7 @@ public class LabelListsManager {
 
         final List<String> labels = getLabels(Arrays.asList(Basic.split(controller.getInputTextArea().getText(), ',')), controller.getTaxaChoiceBox().getValue());
         if (labels != null) {
-            if (true) { // this clobbers all changes....
+            if (false) { // this clobbers all changes....
                 displayLabels.setAll(labels);
             } else {
                 for (String label : labels) {

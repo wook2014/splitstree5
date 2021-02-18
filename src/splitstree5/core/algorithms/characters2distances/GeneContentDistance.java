@@ -24,7 +24,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IFromCharacters;
 import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
@@ -40,7 +40,7 @@ import java.util.List;
  * Daniel Huson, 2004
  */
 
-public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
+public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlock> implements IFromCharacters, IToDistances {
     public final static String DESCRIPTION = "Compute distances based on shared genes (Snel Bork et al 1999, Huson and Steel 2003)";
 
     private BooleanProperty optionUseML_DistancesDistance = new SimpleBooleanProperty(false);

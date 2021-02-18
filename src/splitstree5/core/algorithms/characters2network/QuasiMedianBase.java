@@ -113,12 +113,17 @@ public abstract class QuasiMedianBase {
 
                 if (graph.hasTaxa(v)) {
                     final StringBuilder buf = new StringBuilder();
+                    int count = 0;
                     for (Integer t : graph.getTaxa(v)) {
                         if (buf.length() > 0)
                             buf.append(", ");
                         buf.append(taxa.getLabel(t));
+                        count++;
                     }
-                    graph.setLabel(v, buf.toString());
+                    if (count == 1)
+                        graph.setLabel(v, taxa.get(graph.getTaxa(v).iterator().next()).getDisplayLabelOrName());
+                    else if (count > 1)
+                        graph.setLabel(v, "{" + buf.toString() + "}");
                 }
             }
             String full = expandCondensed(condensed, orig2CondensedPos, translator);

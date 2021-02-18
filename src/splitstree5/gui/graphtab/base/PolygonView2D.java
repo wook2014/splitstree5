@@ -39,7 +39,7 @@ public class PolygonView2D {
     public PolygonView2D(ArrayList<Node> nodes, NodeArray<NodeViewBase> node2view) {
         this.nodes = nodes;
         this.node2view = node2view;
-        polygon.setFill(Color.SILVER);
+        polygon.setFill(Color.WHITESMOKE);
         update();
     }
 
@@ -47,7 +47,7 @@ public class PolygonView2D {
         polygon.getPoints().clear();
         for (Node v : nodes) {
             final NodeViewBase nodeViewBase = node2view.get(v);
-            nodeViewBase.setFill(Color.SILVER);
+            nodeViewBase.setFill(Color.WHITESMOKE);
             polygon.getPoints().addAll(nodeViewBase.getShapeGroup().getTranslateX(), nodeViewBase.getShapeGroup().getTranslateY());
         }
     }

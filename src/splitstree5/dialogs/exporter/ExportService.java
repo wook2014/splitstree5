@@ -24,6 +24,7 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import jloda.fx.util.ProgramExecutorService;
 import jloda.fx.util.TaskWithProgressListener;
+import jloda.fx.window.NotificationManager;
 import jloda.util.CanceledException;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -71,6 +72,7 @@ public class ExportService extends Service<Boolean> {
                 try {
                     ExportManager.getInstance().exportFile(fileName, taxaBlock, dataBlock, exportFormatName);
                 } catch (IOException ex) {
+                    NotificationManager.showError(ex.getMessage());
                     return false;
                 }
                 return true;

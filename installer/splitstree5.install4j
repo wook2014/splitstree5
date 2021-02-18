@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="8.0.4" transformSequenceNumber="8">
   <directoryPresets config="../../javafx-jmods" />
-  <application name="SplitsTree5" applicationId="4099-4251-9127-4263" mediaDir="../../../builds" shortName="splitstree5" publisher="Daniel Huson and David Bryant" publisherWeb="http://splitstree.husonlab.org" version="5.0.0" allPathsRelative="true" macVolumeId="b8c0a1154e563a9a" javaMinVersion="11">
-    <codeSigning macEnabled="true" macPkcs12File="../../../../etc/application.p12">
+  <application name="SplitsTree5" applicationId="4099-4251-9127-4263" mediaDir="../../../builds" shortName="SplitsTree5" publisher="Daniel Huson and David Bryant" publisherWeb="http://www.husonlab.org/splitstree5" version="0.0.1_alpha" allPathsRelative="true" macVolumeId="b8c0a1154e563a9a" javaMinVersion="11">
+    <codeSigning macEnabled="true" macPkcs12File="../../../../etc/application.p12" windowsEnabled="true" windowsPkcs12File="../../../../etc/windows.pfx" macNotarize="true" appleId="daniel@huson.de">
       <macSearchedJars>
         <entry>jna-*</entry>
         <entry>swt-*</entry>
         <entry>sqlite-*</entry>
       </macSearchedJars>
     </codeSigning>
-    <jreBundles jdkProviderId="Liberica" release="OpenJDK 13.0.2+9">
+    <jreBundles jdkProviderId="AdoptOpenJDK" release="openjdk14/jdk-14.0.1+7">
       <modules />
     </jreBundles>
   </application>
@@ -17,9 +17,9 @@
     <mountPoints>
       <mountPoint id="1691242167" location="jars" />
       <mountPoint id="1691243203" location="jars2" />
-      <mountPoint id="1691242495" location="tools" />
-      <mountPoint id="1691242153" location="Examples" />
       <mountPoint id="675425072" />
+      <mountPoint id="1691243367" location="tools" />
+      <mountPoint id="1691242153" location="Examples" />
     </mountPoints>
     <entries>
       <dirEntry mountPoint="1691242167" file="../jars" subDirectory="jars" excludeSuffixes=".DS_Store">
@@ -35,11 +35,12 @@
         </exclude>
       </dirEntry>
       <fileEntry mountPoint="1691243203" file="../jars/i4jruntime.jar" />
-      <fileEntry mountPoint="1691242495" file="../tools/workflow-run" fileMode="755" overrideFileMode="true" />
-      <fileEntry mountPoint="1691242495" file="../tools/mash-sketches" fileMode="755" overrideFileMode="true" />
-      <fileEntry mountPoint="1691242495" file="../tools/workflow-export" fileMode="755" overrideFileMode="true" />
-      <fileEntry mountPoint="1691242495" file="../tools/bfilter-tool" fileMode="755" overrideFileMode="true" />
-      <fileEntry mountPoint="1691242495" file="../tools/genome-context" fileMode="755" overrideFileMode="true" />
+      <fileEntry mountPoint="675425072" file="./License.txt" overrideFileMode="true" overrideOverwriteMode="true" overrideUninstallMode="true" />
+      <fileEntry mountPoint="1691243367" file="../tools/workflow-run" fileMode="755" overrideFileMode="true" />
+      <fileEntry mountPoint="1691243367" file="../tools/mash-sketches" fileMode="755" overrideFileMode="true" />
+      <fileEntry mountPoint="1691243367" file="../tools/workflow-export" fileMode="755" overrideFileMode="true" />
+      <fileEntry mountPoint="1691243367" file="../tools/bfilter-tool" fileMode="755" overrideFileMode="true" />
+      <fileEntry mountPoint="1691243367" file="../tools/genome-context" fileMode="755" overrideFileMode="true" />
       <fileEntry mountPoint="1691242153" file="../examples/fitch-margoliash-1967.nex" />
       <fileEntry mountPoint="1691242153" file="../test/nexus/trees49-taxa.nex" />
       <fileEntry mountPoint="1691242153" file="../test/nexus/dolphins_binary.nex" />
@@ -49,16 +50,15 @@
       <fileEntry mountPoint="1691242153" file="../test/characters/rubber_dna_interleave.nex" />
       <fileEntry mountPoint="1691242153" file="../test/characters/dolphins_weighted.nex" />
       <fileEntry mountPoint="1691242153" file="../test/trees/PHYT.nex" />
-      <fileEntry mountPoint="675425072" file="./License.txt" overrideFileMode="true" overrideOverwriteMode="true" overrideUninstallMode="true" />
     </entries>
     <components>
-      <component name="SplitsTree" id="1691242194" changeable="false">
-        <description>SplitsTree program.</description>
+      <component name="SplitsTree5" id="1691242194" changeable="false">
+        <description>SplitsTree5 program.</description>
         <include>
           <entry location="jars" />
           <entry location="jars2" />
-          <entry location="tools" />
           <entry location="License.txt" />
+          <entry location="tools" />
           <entry location="SplitsTree5" fileType="launcher" />
         </include>
       </component>
@@ -71,18 +71,14 @@
     </components>
   </files>
   <launchers>
-    <launcher name="SplitsTree" id="1691242142" menuName="SplitsTree5">
-      <executable name="SplitsTree5" iconSet="true" executableMode="gui" changeWorkingDirectory="false" singleInstance="true">
-        <versionInfo include="true" fileDescription="SplitsTree5 phylogeny program" legalCopyright="Copyright (C)  2020 ${compiler:sys.publisher}" internalName="SplitsTree5" />
+    <launcher name="SplitsTree5" id="1691242142" menuName="SplitsTree5">
+      <executable name="SplitsTree5" iconSet="true" executableMode="gui" changeWorkingDirectory="false" singleInstance="true" dpiAware="false">
+        <versionInfo include="true" fileDescription="SplitsTree5 phylogenetic tree and network sketch program" legalCopyright="Copyright (C)  2020 ${compiler:sys.publisher}" internalName="SplitsTree5" />
       </executable>
-      <splashScreen width="450" height="300" bitmapFile="./pics/jsplits.png">
-        <text>
-          <statusLine x="383" y="15" />
-          <versionLine x="17" y="10" text="SplitsTree ${compiler:sys.version}" fontSize="12" />
-        </text>
-      </splashScreen>
       <java mainClass="splitstreefive/splitstree5.main.SplitsTree5" mainMode="module" vmParameters="-server -Dapple.laf.useScreenMenuBar=true -Duser.language=en -Duser.region=US --add-modules=splitstreefive">
         <modulePath>
+          <directory location="jars" failOnError="false" />
+          <directory location="openjfx/${compiler:sys.platform}/lib" failOnError="false" />
           <directory location="jars" failOnError="false" />
         </modulePath>
       </java>
@@ -90,13 +86,13 @@
       <iconImageFiles>
         <file path="../src/splitstree5/resources/icons/SplitsTree5-16.png" />
         <file path="../src/splitstree5/resources/icons/SplitsTree5-32.png" />
+        <file path="../src/splitstree5/resources/icons/SplitsTree5-48.png" />
         <file path="../src/splitstree5/resources/icons/SplitsTree5-64.png" />
         <file path="../src/splitstree5/resources/icons/SplitsTree5-128.png" />
       </iconImageFiles>
     </launcher>
   </launchers>
   <installerGui autoUpdateDescriptorUrl="http://software-ab.informatik.uni-tuebingen.de/download/splitstree5/updates.xml">
-    <autoUpdate useMinUpdatableVersion="true" minUpdatableVersion="4" />
     <applications>
       <application id="installer" beanClass="com.install4j.runtime.beans.applications.InstallerApplication" launchInNewProcess="false">
         <serializedBean>
@@ -264,37 +260,6 @@ return console.askOkCancel(message, true);
                   <property name="itemName" type="string">${compiler:sys.fullName} ${compiler:sys.version}</property>
                 </serializedBean>
               </action>
-              <action id="1691242497" beanClass="com.install4j.runtime.beans.actions.text.ReplaceInstallerVariablesAction" actionElevationType="elevated">
-                <serializedBean>
-                  <property name="files" type="array" class="java.io.File" length="5">
-                    <element index="0">
-                      <object class="java.io.File">
-                        <string>tools/workflow-run</string>
-                      </object>
-                    </element>
-                    <element index="1">
-                      <object class="java.io.File">
-                        <string>tools/workflow-export</string>
-                      </object>
-                    </element>
-                    <element index="2">
-                      <object class="java.io.File">
-                        <string>tools/mash-sketches</string>
-                      </object>
-                    </element>
-                    <element index="3">
-                      <object class="java.io.File">
-                        <string>tools/bfilter-tool</string>
-                      </object>
-                    </element>
-                    <element index="4">
-                      <object class="java.io.File">
-                        <string>tools/genome-context</string>
-                      </object>
-                    </element>
-                  </property>
-                </serializedBean>
-              </action>
             </actions>
             <formComponents>
               <formComponent id="1691242537" beanClass="com.install4j.runtime.beans.formcomponents.ProgressComponent">
@@ -307,7 +272,7 @@ return console.askOkCancel(message, true);
           <screen id="1691242246" beanClass="com.install4j.runtime.beans.screens.FormScreen">
             <serializedBean>
               <property name="subTitle" type="string">Check for updates how often?</property>
-              <property name="title" type="string">SplitsTree Updater</property>
+              <property name="title" type="string">SplitsTree5 Updater</property>
             </serializedBean>
             <formComponents>
               <formComponent id="1691242248" beanClass="com.install4j.runtime.beans.formcomponents.UpdateScheduleSelectorComponent" />
@@ -315,8 +280,8 @@ return console.askOkCancel(message, true);
           </screen>
           <screen id="1691242249" beanClass="com.install4j.runtime.beans.screens.FormScreen">
             <serializedBean>
-              <property name="subTitle" type="string">Set maximum allowed memory usage for SplitsTree</property>
-              <property name="title" type="string">Set SplitsTree memory</property>
+              <property name="subTitle" type="string">Set maximum allowed memory usage for PhyloNet</property>
+              <property name="title" type="string">Set SplitsTree5 memory</property>
             </serializedBean>
             <condition>	!context.getMediaName().toLowerCase().contains("windows") || context.getMediaName().toLowerCase().contains("x64") || context.getMediaName().toLowerCase().contains("64bits") </condition>
             <actions>
@@ -325,7 +290,7 @@ return console.askOkCancel(message, true);
                   <property name="launcherId" type="string">1691242142</property>
                   <property name="macosVmOptionsType" type="enum" class="com.install4j.runtime.beans.actions.misc.MacosVmOptionsType" value="OUTER" />
                   <property name="vmOptions" type="array" elementType="string" length="1">
-                    <element index="0">-Xmx${installer:myXmx}M</element>
+                    <element index="0">-Xmx${installer:myXmx}G</element>
                   </property>
                 </serializedBean>
               </action>
@@ -333,12 +298,12 @@ return console.askOkCancel(message, true);
             <formComponents>
               <formComponent id="1691242250" beanClass="com.install4j.runtime.beans.formcomponents.NumberSpinnerComponent">
                 <serializedBean>
-                  <property name="helpText" type="string">Set maximum amount of memory that SplitsTree may use.</property>
-                  <property name="initialValue" type="int" value="600" />
-                  <property name="labelText" type="string">Set max memory usage (in megabytes)</property>
-                  <property name="maxValue" type="int" value="512000" />
-                  <property name="minValue" type="int" value="200" />
-                  <property name="stepSize" type="int" value="200" />
+                  <property name="helpText" type="string">Set maximum amount of memory that SplitsTree5 may use.</property>
+                  <property name="initialValue" type="int" value="2" />
+                  <property name="labelText" type="string">Set max memory usage (in gigabytes)</property>
+                  <property name="maxValue" type="int" value="512" />
+                  <property name="minValue" type="int" value="1" />
+                  <property name="stepSize" type="int" value="1" />
                   <property name="variableName" type="string">myXmx</property>
                 </serializedBean>
               </formComponent>
@@ -1178,7 +1143,7 @@ return true;</property>
     </windows>
   </mediaSets>
   <buildIds>
-    <mediaSet refId="1691242146" />
+    <mediaSet refId="1691242288" />
   </buildIds>
   <buildOptions disableSigning="true" disableNotarization="true" />
 </install4j>

@@ -64,7 +64,6 @@ module splitstreefive {
     opens splitstree5.gui.algorithmtab.treeselector;
     opens splitstree5.gui.formattab;
     opens splitstree5.gui.formattab.fontselector;
-    opens splitstree5.gui.graphlabels;
 
     opens splitstree5.gui.workflowtab;
     exports splitstree5.gui.workflowtab;
@@ -86,5 +85,4 @@ module splitstreefive {
     exports splitstree5.io.imports.NeXML;
     exports splitstree5.io.imports.NeXML.handlers;
     exports splitstree5.treebased;
-    exports splitstree5.gui.graphlabels;
 }

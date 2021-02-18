@@ -84,12 +84,12 @@ public class GenomesBlock extends DataBlock {
 
 
     @Override
-    public Class getFromInterface() {
+    public Class<IFromGenomes> getFromInterface() {
         return IFromGenomes.class;
     }
 
     @Override
-    public Class getToInterface() {
+    public Class<IToGenomes> getToInterface() {
         return IToGenomes.class;
     }
 

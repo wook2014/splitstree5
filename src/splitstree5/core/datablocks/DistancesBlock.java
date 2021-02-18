@@ -190,12 +190,12 @@ public class DistancesBlock extends DataBlock {
     }
 
     @Override
-    public Class getFromInterface() {
+    public Class<IFromDistances> getFromInterface() {
         return IFromDistances.class;
     }
 
     @Override
-    public Class getToInterface() {
+    public Class<IToDistances> getToInterface() {
         return IToDistances.class;
     }
 

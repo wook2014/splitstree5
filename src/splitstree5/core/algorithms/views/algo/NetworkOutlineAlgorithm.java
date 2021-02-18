@@ -26,7 +26,6 @@ import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import jloda.phylo.PhyloSplitsGraph;
-import jloda.util.Basic;
 import jloda.util.BitSetUtils;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
@@ -37,6 +36,7 @@ import splitstree5.utils.PhyloGraphUtils;
 import splitstree5.utils.SplitsUtilities;
 
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * runs the outline algorithm due to Bryant and Huson, 2020
@@ -53,7 +53,8 @@ public class NetworkOutlineAlgorithm {
      * @param graph
      * @param node2point
      */
-    public static void apply(ProgressListener progress, boolean useWeights, TaxaBlock taxaBlock, SplitsBlock splits, PhyloSplitsGraph graph, NodeArray<Point2D> node2point, BitSet forbiddenSplits, BitSet usedSplits,
+    public static void apply(ProgressListener progress, boolean useWeights, TaxaBlock taxaBlock, SplitsBlock splits,
+                             PhyloSplitsGraph graph, NodeArray<Point2D> node2point, BitSet forbiddenSplits, BitSet usedSplits,
                              ArrayList<ArrayList<Node>> loops, boolean rooted) throws CanceledException {
         progress.setTasks("Outline", null);
 
@@ -72,19 +73,22 @@ public class NetworkOutlineAlgorithm {
             //final int[] cycle=SplitsUtilities.normalizeCycle(splits.getCycle());
             final double[] split2angle = EqualAngle.assignAnglesToSplits(taxaBlock.getNtax(), splits, splits.getCycle(), rooted ? 160 : 360);
 
-            final ArrayList<Event> events = new ArrayList<>();
+            final ArrayList<Event> events;
             {
+                final ArrayList<Event> outbound = new ArrayList<>();
+                final ArrayList<Event> inbound = new ArrayList<>();
+
                 for (int s = 1; s <= splits.getNsplits(); s++) {
                     final ASplit split = splits.get(s);
                     if (split.isTrivial() || SplitsUtilities.isCircular(taxaBlock, cycle, split)) {
-                        events.add(new Event(Event.Type.start, s, cycle, split));
-                        events.add(new Event(Event.Type.end, s, cycle, split));
+                        outbound.add(new Event(Event.Type.outbound, s, cycle, split));
+                        inbound.add(new Event(Event.Type.inbound, s, cycle, split));
                         if (s <= origNSplits)
                             usedSplits.set(s, true);
                     }
                 }
+                events = Event.radixSort(taxaBlock.getNtax(), outbound, inbound);
             }
-            events.sort(Event.comparator());
 
             final BitSet currentSplits = new BitSet();
             Point2D location = new Point2D(0, 0);
@@ -106,12 +110,12 @@ public class NetworkOutlineAlgorithm {
             for (Event event : events) {
                 // System.err.println(event);
 
-                if (event.getType() == Event.Type.start) {
+                if (event.isStart()) {
                     currentSplits.set(event.getS(), true);
-                    location = GeometryUtilsFX.translateByAngle(location, split2angle[event.getS()], useWeights ? event.getSplit().getWeight() : 1);
+                    location = GeometryUtilsFX.translateByAngle(location, split2angle[event.getS()], useWeights ? event.getWeight() : 1);
                 } else {
                     currentSplits.set(event.getS(), false);
-                    location = GeometryUtilsFX.translateByAngle(location, split2angle[event.getS()] + 180, useWeights ? event.getSplit().getWeight() : 1);
+                    location = GeometryUtilsFX.translateByAngle(location, split2angle[event.getS()] + 180, useWeights ? event.getWeight() : 1);
                 }
 
                 final boolean mustCreateNode = (splits2node.get(currentSplits) == null);
@@ -129,7 +133,7 @@ public class NetworkOutlineAlgorithm {
                 if (!v.isAdjacent(previousNode)) {
                     final Edge e = graph.newEdge(previousNode, v);
                     graph.setSplit(e, event.getS());
-                    graph.setWeight(e, useWeights ? event.getSplit().getWeight() : 1);
+                    graph.setWeight(e, useWeights ? event.getWeight() : 1);
                     graph.setAngle(e, split2angle[event.getS()]);
 
                     if (!mustCreateNode) // just closed loop
@@ -140,7 +144,7 @@ public class NetworkOutlineAlgorithm {
 
                 if (previousEvent != null) {
                     if (event.getS() == previousEvent.getS()) {
-                        for (int t : BitSetUtils.members(event.getSplit().getPartNotContaining(cycle[1]))) {
+                        for (int t : BitSetUtils.members(splits.get(event.getS()).getPartNotContaining(cycle[1]))) {
                             graph.addTaxon(previousNode, t);
                             taxaFound.set(t);
                         }
@@ -224,104 +228,136 @@ public class NetworkOutlineAlgorithm {
     }
 
     private static void addAllTrivial(int ntaxa, SplitsBlock splits) {
-        final BitSet taxaWithTrivialSplit = new BitSet();
+        if (ntaxa > 2) {
+            final BitSet taxaWithTrivialSplit = new BitSet();
 
-        for (int s = 1; s <= splits.getNsplits(); s++) {
-            final ASplit split = splits.get(s);
-            if (split.isTrivial())
-                taxaWithTrivialSplit.set(split.getSmallerPart().nextSetBit(0));
-        }
-        for (int t = taxaWithTrivialSplit.nextClearBit(1); t != -1 && t <= ntaxa; t = taxaWithTrivialSplit.nextClearBit(t + 1)) {
-            splits.getSplits().add(new ASplit(BitSetUtils.asBitSet(t), ntaxa, 0.0001));
+            for (int s = 1; s <= splits.getNsplits(); s++) {
+                final ASplit split = splits.get(s);
+                if (split.isTrivial())
+                    taxaWithTrivialSplit.set(split.getSmallerPart().nextSetBit(0));
+            }
+            for (int t = taxaWithTrivialSplit.nextClearBit(1); t != -1 && t <= ntaxa; t = taxaWithTrivialSplit.nextClearBit(t + 1)) {
+                splits.getSplits().add(new ASplit(BitSetUtils.asBitSet(t), ntaxa, 0.0001));
+            }
         }
     }
 
     static class Event {
-        enum Type {start, end}
+        enum Type {outbound, inbound}
 
-        private final ASplit split;
-        private int minCyclePos;
-        private int maxCyclePos;
-        private final int size;
-        private final int firstInCycle;
+        private final double weight;
+        private int iPos;
+        private int jPos;
         private final int s;
         private final Type type;
 
         public Event(Type type, int s, int[] cycle, ASplit split) {
             this.type = type;
             this.s = s;
-            this.split = split;
-            this.firstInCycle = cycle[1];
+            this.weight = split.getWeight();
+            int firstInCycle = cycle[1];
 
-            minCyclePos = Integer.MAX_VALUE;
-            maxCyclePos = Integer.MIN_VALUE;
+            iPos = Integer.MAX_VALUE;
+            jPos = Integer.MIN_VALUE;
             final BitSet farSide = split.getPartNotContaining(firstInCycle);
             for (int i = 0; i < cycle.length; i++) {
                 final int t = cycle[i];
                 if (t > 0 && farSide.get(t)) {
-                    minCyclePos = Math.min(minCyclePos, i);
-                    maxCyclePos = Math.max(maxCyclePos, i);
+                    iPos = Math.min(iPos, i);
+                    jPos = Math.max(jPos, i);
                 }
             }
-            size = farSide.cardinality();
         }
 
         public int getS() {
             return s;
         }
 
-        public Type getType() {
-            return type;
+        private int getIPos() {
+            return iPos;
         }
 
-        public ASplit getSplit() {
-            return split;
+        private int getJPos() {
+            return jPos;
         }
 
-        private int getMinCyclePos() {
-            return minCyclePos;
+        public double getWeight() {
+            return weight;
         }
 
-        private int getMaxCyclePos() {
-            return maxCyclePos;
+        public boolean isStart() {
+            return type == Type.outbound;
         }
 
-        private int size() {
-            return size;
-        }
-
-        public static Comparator<Event> comparator() {
-            return (a, b) -> {
-                final int aPos;
-                if (a.getType() == Type.start)
-                    aPos = a.getMinCyclePos();
-                else {
-                    aPos = a.getMaxCyclePos();
-                }
-
-                final int bPos;
-                if (b.getType() == Type.start)
-                    bPos = b.getMinCyclePos();
-                else
-                    bPos = b.getMaxCyclePos();
-
-                final int result;
-                if (aPos < bPos)
-                    result = -1;
-                else if (aPos > bPos)
-                    result = 1;
-                else if (a.type == Type.start && b.type == Type.end)
-                    result = -1;
-                else if (a.type == Type.end && b.type == Type.start)
-                    result = 1;
-                else result = (a.type == Type.start ? -1 : 1) * Integer.compare(a.size, b.size);
-                //System.err.println(a+" vs "+b+": "+result);
-                return result;
-            };
+        public boolean isEnd() {
+            return type == Type.inbound;
         }
 
         public String toString() {
-            return type.name() + " S" + s + " (" + minCyclePos + "-" + maxCyclePos + "): " + Basic.toString(split.getPartNotContaining(firstInCycle), ",");
+            return type.name() + " S" + s + " (" + iPos + "-" + jPos + ")"; //: " + Basic.toString(split.getPartNotContaining(firstInCycle), ",");
+        }
+
+        public static ArrayList<Event> radixSort(int ntax, ArrayList<Event> outbound, ArrayList<Event> inbound) {
+            countingSort(outbound, ntax, a -> ntax - a.getJPos());
+            countingSort(outbound, ntax, Event::getIPos);
+            countingSort(inbound, ntax, a -> ntax - a.getIPos());
+            countingSort(inbound, ntax, Event::getJPos);
+
+            return merge(outbound, inbound);
+        }
+
+        private static void countingSort(ArrayList<Event> events, int maxKey, Function<Event, Integer> key) {
+            if (events.size() > 1) {
+                final int[] key2pos = new int[maxKey + 1];
+                // count keys
+                for (Event event : events) {
+                    final int value = key.apply(event);
+                    key2pos[value]++;
+                }
+
+                // set positions
+                {
+                    int pos = 0;
+                    for (int i = 0; i < key2pos.length; i++) {
+                        final int add = key2pos[i];
+                        key2pos[i] = pos;
+                        pos += add;
+                    }
+                }
+
+                final Event[] other = new Event[events.size()];
+
+                // insert at positions:
+                for (Event event : events) {
+                    final int k = key.apply(event);
+                    final int pos = key2pos[k]++;
+                    other[pos] = event;
+                }
+
+                // copy to result:
+                events.clear();
+                Collections.addAll(events, other);
+            }
+        }
+
+        private static ArrayList<Event> merge(ArrayList<Event> outbound, ArrayList<Event> inbound) {
+            final ArrayList<Event> events = new ArrayList<>(outbound.size() + inbound.size());
+
+            int ob = 0;
+            int ib = 0;
+            while (ob < outbound.size() && ib < inbound.size()) {
+                if (outbound.get(ob).getIPos() < inbound.get(ib).getJPos() + 1) {
+                    events.add(outbound.get(ob++));
+                } else {
+                    events.add(inbound.get(ib++));
+                }
+            }
+            while (ob < outbound.size())
+                events.add(outbound.get(ob++));
+            while (ib < inbound.size())
+                events.add(inbound.get(ib++));
+
+            return events;
         }
     }
 }

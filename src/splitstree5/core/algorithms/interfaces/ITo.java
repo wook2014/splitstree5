@@ -1,7 +1,7 @@
 /*
- * IFromChararacters.java Copyright (C) 2020. Daniel H. Huson
+ *  ITo.java Copyright (C) 2020 Daniel H. Huson
  *
- * (Some code written by other authors, as named in code.)
+ *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,15 +15,12 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 package splitstree5.core.algorithms.interfaces;
 
 /**
- * from characters interface.
- * This is used to identify algorithms at runtime
- * Daniel Huson 1/31/17.
+ * to marker interface
  */
-public interface IFromChararacters extends IFrom {
+public interface ITo {
 }

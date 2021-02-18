@@ -109,7 +109,7 @@ public class AnalyzeGenomesDialog {
             if (firstLine.length() > 0) {
                 final File inputFile = new File(firstLine);
                 if (inputFile.getParentFile().exists()) {
-                    controller.getOutputFileTextField().setText(createOutputName(inputFile.getParentFile()));
+                    controller.getOutputFileTextField().setText(createOutputName(inputFile));
                 }
             }
             clearReferences(controller);
@@ -268,7 +268,7 @@ public class AnalyzeGenomesDialog {
                     for (GenomesAnalyzer.InputRecord record : genomesAnalyzer.iterable(getProgressListener())) {
                         queries.add(record.getSequence());
                     }
-                    return database.get().findSimilar(service.getProgressListener(), Basic.parseInt(controller.getMinSharedKMersTextField().getText()), queries, true);
+                    return database.get().findSimilar(service.getProgressListener(), Basic.parseDouble(controller.getMaxDistToSearchTextField().getText()), controller.getIncludeStrainsCB().isSelected(), queries, true);
                 }
             });
             service.runningProperty().addListener((c, o, n) -> running.set(n));
@@ -282,6 +282,9 @@ public class AnalyzeGenomesDialog {
                 }
                 controller.getMashDistancesChart().getData().add(new XYChart.Series<>(data));
                 controller.getMashDistancesChart().getData().add(thresholdLine);
+                final double dist = controller.getMaxDistanceSlider().getValue();
+                controller.getMaxDistanceSlider().setValue(0);
+                Platform.runLater(() -> controller.getMaxDistanceSlider().setValue(dist));
             });
             service.start();
         });
@@ -332,11 +335,12 @@ public class AnalyzeGenomesDialog {
         controller.getAddReferencesButton().disableProperty().bind(Bindings.isEmpty(references).or(database.isNull()).or(running));
         controller.getMashDistancesChart().disableProperty().bind(controller.getAddReferencesButton().disabledProperty());
 
-        controller.getMinSharedKMersTextField().textProperty().addListener((c, o, n) -> {
-            if (!Basic.isInteger(n) || Basic.parseInt(n) <= 0)
-                Platform.runLater(() -> controller.getMinSharedKMersTextField().setText(o));
+        BasicFX.ensureAcceptsDoubleOnly(controller.getMaxDistToSearchTextField());
+        controller.getMaxDistToSearchTextField().textProperty().addListener((c, o, n) -> {
+            if (Basic.isDouble(n) && Basic.parseDouble(n) > 0.0 && Basic.parseDouble(n) < 1)
+                controller.getMaxDistanceSlider().setMax(Basic.parseDouble(n) + 0.01);
         });
-        controller.getMinSharedKMersTextField().disableProperty().bind(controller.getFindReferencesButton().disableProperty());
+        controller.getMaxDistToSearchTextField().disableProperty().bind(controller.getFindReferencesButton().disableProperty());
 
         controller.getCacheButton().setOnAction(e -> {
             final File dir = chooseCacheDirectory(stage, new File(ProgramProperties.get("fileCacheDirectory", database.get().getDbFile().getParent())));
@@ -350,7 +354,6 @@ public class AnalyzeGenomesDialog {
         references.clear();
         referenceIds.clear();
         controller.getMashDistancesChart().getData().clear();
-
     }
 
     private static XYChart.Series<Double, Integer> createThresholdLine(DoubleProperty threshold, ObservableList<Map.Entry<Integer, Double>> references) {
@@ -369,14 +372,14 @@ public class AnalyzeGenomesDialog {
     /**
      * create a default output file name
      *
-     * @param parentFile
+     * @param inputFile
      * @return name
      */
-    private static String createOutputName(File parentFile) {
-        File file = new File(parentFile, "genomes.stree5");
+    private static String createOutputName(File inputFile) {
+        File file = Basic.replaceFileSuffix(inputFile, ".stree5");
         int count = 0;
         while (file.exists()) {
-            file = new File(parentFile, "genomes-" + (++count) + ".stree5");
+            file = Basic.replaceFileSuffix(inputFile, "-" + (++count) + ".stree5");
         }
         return file.getPath();
     }

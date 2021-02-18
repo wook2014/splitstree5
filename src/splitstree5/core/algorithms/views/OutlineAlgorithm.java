@@ -39,6 +39,7 @@ import jloda.util.*;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromSplits;
 import splitstree5.core.algorithms.interfaces.IToViewer;
+import splitstree5.core.algorithms.views.algo.NetworkOutlineAlgorithm;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.ViewerBlock;
@@ -74,7 +75,7 @@ public class OutlineAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implem
 
     @Override
     public String getCitation() {
-        return "Bryant, Huson and Lockhart 2020; D. Bryant, D.H. Huson and P.J. Lockhart. Phylogenetic outlines. In preparation.";
+        return "Huson et al, 2021; D.H. Huson, C. Bagci, B. Centikaya and D.J. Bryant (2021). Phylogenetic outlines. In preparation.";
     }
 
     @Override
@@ -90,6 +91,12 @@ public class OutlineAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implem
             splitsBlock = splitsBlock0;
         } else if (getOptionLayout() == Layout.RootBySelectedOutgroup || getOptionLayout() == Layout.RootBySelectedOutgroupAlt) {
             final BitSet selectedTaxa = ((SplitsViewTab) viewerBlock.getTab()).getSelectedTaxa();
+            while (true) {
+                if (selectedTaxa.nextSetBit(taxaBlock0.getNtax() + 1) == -1)
+                    break;
+                else
+                    selectedTaxa.clear(selectedTaxa.nextSetBit(taxaBlock0.getNtax() + 1));
+            }
             if (selectedTaxa.cardinality() > 0 && selectedTaxa.nextSetBit(1) <= taxaBlock0.getNtax()) {
                 taxaBlock = new TaxaBlock();
                 splitsBlock = new SplitsBlock();
@@ -104,6 +111,9 @@ public class OutlineAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implem
             taxaBlock = new TaxaBlock();
             splitsBlock = new SplitsBlock();
             final Triplet<Integer, Double, Double> rootingSplit = SplitsUtilities.computeRootLocation(getOptionLayout() == Layout.MidPointRootedAlt, taxaBlock0.getNtax(), new HashSet<>(), splitsBlock0.getCycle(), splitsBlock0, isOptionUseWeights(), progress);
+
+            System.err.println(splitsBlock0.get(rootingSplit.get1()) + ", " + rootingSplit.get2() + ", " + rootingSplit.get3());
+
             setupForRootedNetwork(getOptionLayout() == Layout.MidPointRootedAlt, rootingSplit, taxaBlock0, splitsBlock0, taxaBlock, splitsBlock, progress);
         }
         final ISplitsViewTab viewTab = (ISplitsViewTab) viewerBlock.getTab();
@@ -123,7 +133,7 @@ public class OutlineAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implem
 
         final ArrayList<ArrayList<Node>> loops = new ArrayList<>();
 
-        splitstree5.core.algorithms.views.algo.NetworkOutlineAlgorithm.apply(progress, isOptionUseWeights(), taxaBlock, splitsBlock, graph, node2point, forbiddenSplits, usedSplits, loops, getOptionLayout() != Layout.Circular);
+        NetworkOutlineAlgorithm.apply(progress, isOptionUseWeights(), taxaBlock, splitsBlock, graph, node2point, forbiddenSplits, usedSplits, loops, getOptionLayout() != Layout.Circular);
         if (splitsBlock.getNsplits() - usedSplits.cardinality() > 0)
             NotificationManager.showWarning(String.format("Outline algorithm: skipped %d non-circular splits", splitsBlock.getNsplits() - usedSplits.cardinality()));
 

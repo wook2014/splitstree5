@@ -20,7 +20,7 @@
 
 package splitstree5.io.exports;
 
-import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IFromCharacters;
 import splitstree5.core.algorithms.interfaces.IFromDistances;
 import splitstree5.core.algorithms.interfaces.IFromSplits;
 import splitstree5.core.algorithms.interfaces.IFromTaxa;
@@ -40,7 +40,7 @@ import java.util.BitSet;
 import java.util.List;
 
 public class TabbedTextExporter implements
-        IFromTaxa, IFromChararacters, IFromDistances, IFromSplits,
+        IFromTaxa, IFromCharacters, IFromDistances, IFromSplits,
         IExportTaxa, IExportCharacters, IExportDistances, IExportSplits {
 
     public void export(Writer w, TaxaBlock taxa) throws IOException {

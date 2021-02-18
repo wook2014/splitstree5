@@ -20,9 +20,9 @@
 
 package splitstree5.core.algorithms.distances2trees;
 
-import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
+import jloda.util.BitSetUtils;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
@@ -32,14 +32,12 @@ import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 
-import java.util.HashMap;
+import java.util.BitSet;
 
 /**
  * Neighbor joining algorithm
- * <p>
- * Created on 12/11/16. Original version : 2010-05-09.
  *
- * @author Christian Rausch, Daniel Huson and Daria Evseeva
+ * @author Daniel Huson, 12.2020
  */
 public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> implements IFromDistances, IToTrees {
 
@@ -53,8 +51,7 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> imple
     /**
      * compute the neighbor joining tree
      */
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees)
-            throws InterruptedException, CanceledException {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, DistancesBlock distances, TreesBlock trees) throws CanceledException {
         progress.setTasks("Neighbor Joining", "Init.");
         progress.setMaximum(distances.getNtax());
 
@@ -65,156 +62,131 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> imple
     }
 
     private PhyloTree computeNJTree(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances) throws CanceledException {
-        final int nTax = distances.getNtax();
+        final int ntax = distances.getNtax();
         final PhyloTree tree = new PhyloTree();
-        final HashMap<String, Node> taxa2Nodes = new HashMap<>();
-        final StringBuilder[] taxaLabels = new StringBuilder[nTax + 1];
 
-        initialize(nTax, taxaBlock, tree, taxa2Nodes, taxaLabels);
+        final BitSet alive = new BitSet(); // o-based
 
-        int i_min = 0, j_min = 0;
-        double temp, dist2i, dist2j;  //new edge weights
-        StringBuilder mergedTaxa_i; //labels of taxa that are being merged
-        StringBuilder mergedTaxa_j;
-        Node newParentNode;
-        Edge edge2i, edge2j; //from tax_old to new=merged edge
+        final Node[] nodes = new Node[ntax]; // 0-based
+        for (int t = 1; t <= ntax; t++) {
+            final Node v = tree.newNode();
+            tree.addTaxon(v, t);
+            tree.setLabel(v, taxaBlock.getLabel(t));
+            nodes[t - 1] = v;
+            alive.set(t - 1);
+        }
 
-        double[][] distanceMatrix = fillDistanceMatrix(nTax, distances);
+        if (ntax <= 1)
+            return tree;
 
-        double[] divergences = new double[nTax + 1];
-        // calculate divergences:
-        for (int i = 1; i <= nTax; i++) {
-            for (int j = 1; j <= nTax; j++) {
-                divergences[i] += distanceMatrix[i][j];
+        progressListener.setMaximum(ntax);
+        progressListener.setProgress(0);
+
+        final float[][] matrix = new float[ntax][ntax]; // 0-based
+
+        final float[] rowSum = new float[ntax]; // 0-based
+
+        for (int i : BitSetUtils.members(alive)) {
+            for (int j : BitSetUtils.members(alive, i + 1)) {
+                matrix[i][j] = matrix[j][i] = (float) distances.get(i + 1, j + 1);
             }
         }
 
-        // actual for (finding all nearest Neighbors)
-        for (int actual = nTax; actual > 2; actual--) {
-            // find: min D (h, b, b)
-            double minDist = Double.POSITIVE_INFINITY;
-            for (int i = 1; i < nTax; i++) {
-                if (distanceMatrix[0][i] == 0.0) continue;
-                for (int j = i + 1; j <= nTax; j++) {
-                    if (distanceMatrix[0][j] == 0.0)
-                        continue;
-                    if (distanceMatrix[i][j] - ((divergences[i] + divergences[j]) / (actual - 2)) < minDist) {
-                        minDist = distanceMatrix[i][j] - ((divergences[i] + divergences[j]) / (actual - 2));
-                        i_min = i;
-                        j_min = j;
+        for (int i : BitSetUtils.members(alive)) {
+            rowSum[i] = computeRowSum(alive, i, matrix);
+        }
+
+        boolean verbose = false;
+
+        while (alive.cardinality() > 2) {
+            int minI = -1;
+            int minJ = -1;
+            float minQ = Float.MAX_VALUE;
+
+            if (verbose) {
+                System.err.println("\nTaxa: " + alive.cardinality());
+                System.err.println("Distances:");
+                for (int i : BitSetUtils.members(alive)) {
+                    System.err.print(i + 1 + ":");
+                    for (int j : BitSetUtils.members(alive, i + 1)) {
+                        System.err.printf(" %d", (int) matrix[i][j]);
+                    }
+                    System.err.println();
+                }
+            }
+
+            if (verbose)
+                System.err.println("Q:");
+
+            for (int i : BitSetUtils.members(alive)) {
+                if (verbose) System.err.print(i + 1 + ":");
+                for (int j : BitSetUtils.members(alive, i + 1)) {
+                    final float q = (alive.cardinality() - 2) * matrix[i][j] - rowSum[i] - rowSum[j];
+
+                    if (verbose) System.err.printf(" %d", (int) q);
+
+                    if (q < minQ) {
+                        minQ = q;
+                        minI = i;
+                        minJ = j;
                     }
                 }
+                if (verbose) System.err.println();
             }
-            dist2i = 0.5 * (distanceMatrix[i_min][j_min] + divergences[i_min] / (actual - 2)
-                    - divergences[j_min] / (actual - 2));
-            dist2j = 0.5 * (distanceMatrix[i_min][j_min] + divergences[j_min] / (actual - 2)
-                    - divergences[i_min] / (actual - 2));
+            if (verbose) System.err.println("minI=" + (minI + 1) + " minJ=" + (minJ + 1) + " minQ=" + (int) minQ);
 
-            distanceMatrix[j_min][0] = 0.0;// marking
-            distanceMatrix[0][j_min] = 0.0;
 
-            // tax taxa update:
-            mergedTaxa_i = new StringBuilder(taxaLabels[i_min].toString());
-            mergedTaxa_j = new StringBuilder(taxaLabels[j_min].toString());
-            taxaLabels[i_min].insert(0, "(");
-            taxaLabels[i_min].append(",");
-            taxaLabels[i_min].append(taxaLabels[j_min]);
-            taxaLabels[i_min].append(")");
-            taxaLabels[j_min].delete(0, taxaLabels[j_min].length());
+            final Node u = tree.newNode();
+            final float weightIU = 0.5f * matrix[minI][minJ] + 0.5f * (rowSum[minI] - rowSum[minJ]) / (alive.cardinality() - 2);
+            tree.setWeight(tree.newEdge(u, nodes[minI]), weightIU);
+            final float weightJU = matrix[minI][minJ] - weightIU;
+            tree.setWeight(tree.newEdge(u, nodes[minJ]), weightJU);
 
-            // divergences update:
+            nodes[minI] = u;
 
-            divergences[i_min] = 0.0;
-            divergences[j_min] = 0.0;
+            alive.clear(minI);
+            alive.clear(minJ);
 
-            // fusion of distance
-            // double distance_min = distance[i_min][j_min];
-
-            for (int i = 1; i <= nTax; i++) {
-                if (distanceMatrix[0][i] == 0.0)
-                    continue;
-                temp = (distanceMatrix[i][i_min] + distanceMatrix[i][j_min] - dist2i - dist2j) / 2; // correct NJ
-                if (i != i_min) {
-                    divergences[i] = divergences[i] - distanceMatrix[i][i_min] - distanceMatrix[i][j_min] + temp;
-                }
-                divergences[i_min] += temp;
-                distanceMatrix[i][i_min] = temp;
-                divergences[j_min] = 0.0;
+            for (int k : BitSetUtils.members(alive)) {
+                rowSum[k] -= matrix[k][minI];
+                rowSum[k] -= matrix[k][minJ];
             }
 
-            for (int i = 0; i <= nTax; i++) {
-                distanceMatrix[i_min][i] = distanceMatrix[i][i_min];
-                distanceMatrix[i][j_min] = 0.0;
-                distanceMatrix[j_min][i] = 0.0;
+            for (int k : BitSetUtils.members(alive)) {
+                matrix[minI][k] = matrix[k][minI] = (float) (0.5 * (matrix[minI][k] + matrix[minJ][k] - matrix[minI][minJ]));
             }
 
-            // generate new Node for merged Taxa:
-            newParentNode = tree.newNode();
-            taxa2Nodes.put(taxaLabels[i_min].toString(), newParentNode);
+            for (int k : BitSetUtils.members(alive)) {
+                rowSum[k] += matrix[k][minI];
+            }
 
-            // generate Edges from two Taxa that are merged to one:
-            edge2i = tree.newEdge(taxa2Nodes.get(mergedTaxa_i.toString()), newParentNode);
-            tree.setWeight(edge2i, Math.max(dist2i, 0.0));
-            edge2j = tree.newEdge(taxa2Nodes.get(mergedTaxa_j.toString()), newParentNode);
-            tree.setWeight(edge2j, Math.max(dist2j, 0.0));
+            rowSum[minI] = computeRowSum(alive, minI, matrix);
+
+            alive.set(minI); // replaces both old taxa
 
             progressListener.incrementProgress();
         }
 
-        // evaluating last two nodes:
-        for (int i = 1; i <= nTax; i++) {
-            if (distanceMatrix[0][i] == 1.0) {
-                i_min = i;
-                i++;
+        if (alive.cardinality() == 2) {
+            final int i = BitSetUtils.min(alive);
+            final int j = BitSetUtils.max(alive);
 
-                for (; i <= nTax; i++) {
-                    if (distanceMatrix[0][i] == 1.0) {
-                        j_min = i;
-                    }
-                }
-            }
+            tree.setWeight(tree.newEdge(nodes[i], nodes[j]), matrix[i][j]);
+            tree.setRoot(nodes[i]);
         }
-        mergedTaxa_i = new StringBuilder(taxaLabels[i_min].toString());
-        mergedTaxa_j = new StringBuilder(taxaLabels[j_min].toString());
+        progressListener.setProgress(ntax);
 
-        taxaLabels[i_min].insert(0, "(");
-        taxaLabels[i_min].append(",");
-        taxaLabels[i_min].append(taxaLabels[j_min]);
-        taxaLabels[i_min].append(")");
-        taxaLabels[j_min].delete(0, taxaLabels[j_min].length()); //not neces. but sets content to NULL
+        // System.err.println(tree.toBracketString());
 
-        // generate new Node for merged Taxa:
-        // generate Edges from two Taxa that are merged to one:
-        edge2i = tree.newEdge(taxa2Nodes.get(mergedTaxa_i.toString()), taxa2Nodes.get(mergedTaxa_j.toString()));
-        tree.setWeight(edge2i, Math.max(distanceMatrix[i_min][j_min], 0.0));
         return tree;
     }
 
-    private static void initialize(int nTax, TaxaBlock taxa, PhyloTree tree, HashMap<String, Node> taxa2nodes, StringBuilder[] labels) {
-        for (int t = 1; t <= nTax; t++) {
-            labels[t] = new StringBuilder();
-            labels[t].append(taxa.getLabel(t));
-            final Node v = tree.newNode(); // create newNode for each Taxon
-            tree.setLabel(v, labels[t].toString());
-            tree.addTaxon(v, t);
-            taxa2nodes.put(labels[t].toString(), v);
+    private float computeRowSum(BitSet alive, int i, float[][] matrix) {
+        float r = 0;
+        for (int j : BitSetUtils.members(alive)) {
+            r += matrix[i][j];
         }
-    }
-
-    private static double[][] fillDistanceMatrix(int nTax, DistancesBlock distances) {
-        double[][] distanceMatrix = new double[nTax + 1][nTax + 1];
-        for (int i = 1; i <= nTax; i++) {
-            distanceMatrix[0][i] = 1.0; // with 1.0 marked columns indicate columns/rows
-            distanceMatrix[i][0] = 1.0;// that haven't been deleted after merging
-            for (int j = 1; j <= nTax; j++) {
-                if (i < j)
-                    distanceMatrix[i][j] = distances.get(i, j);
-                else
-                    distanceMatrix[i][j] = distances.get(j, i);
-            }
-        }
-        distanceMatrix[0][0] = 1.0;
-        return distanceMatrix;
+        return r;
     }
 
     @Override

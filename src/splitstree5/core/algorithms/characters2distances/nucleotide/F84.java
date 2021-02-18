@@ -21,7 +21,7 @@
 package splitstree5.core.algorithms.characters2distances.nucleotide;
 
 import jloda.util.ProgressListener;
-import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IFromCharacters;
 import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
@@ -36,7 +36,7 @@ import java.util.List;
  * David Bryant and Daniel Huson, 2004
  */
 
-public class F84 extends Nucleotides2DistancesBase implements IFromChararacters, IToDistances {
+public class F84 extends Nucleotides2DistancesBase implements IFromCharacters, IToDistances {
     @Override
     public String getCitation() {
         return "Felsenstein & Churchill 1996; Felsenstein J, Churchill GA (1996). A Hidden Markov Model approach to variation among sites in rate of evolution, and the branching order in hominoidea. Molecular Biology and Evolution. 13 (1): 93–104.";

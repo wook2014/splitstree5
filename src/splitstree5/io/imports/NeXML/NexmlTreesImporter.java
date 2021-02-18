@@ -20,9 +20,9 @@
 
 package splitstree5.io.imports.NeXML;
 
+import jloda.fx.window.NotificationManager;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
-import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IToTrees;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -39,7 +39,12 @@ import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * nexml tree importer
+ * Daria Evseeva, 2019, Daniel Huson, 2020
+ */
 public class NexmlTreesImporter implements IToTrees, IImportTrees {
+    private long lastWarning = 0;
 
     // todo : check partial trees
     // network :nodedata add (id, ..), (label, ...), (taxalabel, ...)
@@ -47,26 +52,46 @@ public class NexmlTreesImporter implements IToTrees, IImportTrees {
 
 
     @Override
-    public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxa, TreesBlock trees)
-            throws CanceledException, IOException {
+    public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxa, TreesBlock trees) throws IOException {
         try {
             progressListener.setProgress(-1);
-
-            File file = new File(fileName);
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser saxParser = factory.newSAXParser();
-            NexmlTreesHandler handler = new NexmlTreesHandler();
+            final File file = new File(fileName);
+            final SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
+            final NexmlTreesHandler handler = new NexmlTreesHandler();
             saxParser.parse(file, handler);
             taxa.addTaxaByNames(handler.getTaxaLabels());
-            for (PhyloTree t : handler.getTrees()) {
-                trees.getTrees().add(t); // todo: problem with multiple trees import?
-            }
-            trees.setPartial(handler.isPartial());
-            trees.setRooted(handler.isRooted());
 
-            progressListener.close();
+            boolean hasRootWithOutdegree2 = false;
+
+            for (PhyloTree t : handler.getTrees()) {
+                if (t.isTree()) {
+                    if (t.getRoot() == null) {
+                        t.setRoot(t.getFirstNode());
+                        for (var v : t.nodes()) {
+                            if (v.getInDegree() == 0) {
+                                t.setRoot(v);
+                                break;
+                            }
+                        }
+                        t.redirectEdgesAwayFromRoot();
+                        if (!hasRootWithOutdegree2 && t.getRoot().getOutDegree() == 2)
+                            hasRootWithOutdegree2 = true;
+                    }
+
+                    trees.getTrees().add(t); // todo: problem with multiple trees import?
+                } else if (System.currentTimeMillis() > lastWarning + 5000) {
+                    NotificationManager.showWarning("Skipping rooted network...");
+                    lastWarning = System.currentTimeMillis();
+                }
+            }
+            if (trees.size() == 0)
+                throw new IOException("No trees found");
+
+            trees.setPartial(handler.isPartial());
+            trees.setRooted(hasRootWithOutdegree2 || handler.isRooted());
+            progressListener.reportTaskCompleted();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new IOException(e);
         }
     }
 

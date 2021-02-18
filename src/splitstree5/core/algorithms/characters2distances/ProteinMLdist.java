@@ -26,7 +26,7 @@ import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
-import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IFromCharacters;
 import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
@@ -45,7 +45,7 @@ import java.util.List;
  * @author bryant
  */
 
-public class ProteinMLdist extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
+public class ProteinMLdist extends Algorithm<CharactersBlock, DistancesBlock> implements IFromCharacters, IToDistances {
     public enum Model {cpREV45, Dayhoff, JTT, mtMAM, mtREV24, pmb, Rhodopsin, WAG}
 
     private final Property<Model> optionModel = new SimpleObjectProperty<>(Model.JTT);

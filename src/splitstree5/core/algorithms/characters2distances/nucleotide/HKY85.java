@@ -21,7 +21,7 @@
 package splitstree5.core.algorithms.characters2distances.nucleotide;
 
 import jloda.util.ProgressListener;
-import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IFromCharacters;
 import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
@@ -39,7 +39,7 @@ import java.util.List;
  * @author Mig
  */
 
-public class HKY85 extends Nucleotides2DistancesBase implements IFromChararacters, IToDistances {
+public class HKY85 extends Nucleotides2DistancesBase implements IFromCharacters, IToDistances {
     @Override
     public String getCitation() {
         return "Hasegawa, Kishino, Yano 1985;" +

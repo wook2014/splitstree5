@@ -25,7 +25,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IFromCharacters;
 import splitstree5.core.algorithms.interfaces.IToCharacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -37,7 +37,7 @@ import java.util.*;
  * removes columns from a character alignment
  * Daniel Huson, 1.2018
  */
-public class CharactersFilter extends Algorithm<CharactersBlock, CharactersBlock> implements IFromChararacters, IToCharacters, IFilter {
+public class CharactersFilter extends Algorithm<CharactersBlock, CharactersBlock> implements IFromCharacters, IToCharacters, IFilter {
     private final BitSet columnMask = new BitSet(); // positions set here are ignored
 
     private final BooleanProperty optionExcludeGapSites = new SimpleBooleanProperty(false);

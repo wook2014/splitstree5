@@ -95,7 +95,8 @@ public class RootByOutGroupAlgorithm extends Algorithm<TreesBlock, TreesBlock> i
                         tree.redirectEdgesAwayFromRoot();
                     }
                     if (outGroupTaxonSet.cardinality() > 0)
-                        RerootingUtils.rerootByOutGroup(tree, outGroupTaxonSet);
+                        // todo: ask about internal node labels
+                        RerootingUtils.rerootByOutGroup(false, tree, outGroupTaxonSet);
                     child.getTrees().add(tree);
                 }
             }

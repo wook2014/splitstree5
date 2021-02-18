@@ -28,7 +28,7 @@ import jloda.fx.window.NotificationManager;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;
-import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IFromCharacters;
 import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
@@ -38,7 +38,7 @@ import splitstree5.core.datablocks.characters.AmbiguityCodes;
 import java.util.Arrays;
 import java.util.List;
 
-public class HammingDistancesAmbigStates extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
+public class HammingDistancesAmbigStates extends Algorithm<CharactersBlock, DistancesBlock> implements IFromCharacters, IToDistances {
 
     public enum AmbiguousOptions {Ignore, AverageStates, MatchStates}
 

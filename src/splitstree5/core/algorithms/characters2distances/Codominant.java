@@ -24,7 +24,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IFromCharacters;
 import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
@@ -36,7 +36,7 @@ import splitstree5.core.datablocks.TaxaBlock;
  * @author David Bryant, 2009
  */
 
-public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
+public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> implements IFromCharacters, IToDistances {
     /**
      * In Smouse and Peakall, the final distance is the square root of the contribution of the
      * individual loci. This flag sets whether to use this square root, or just the averages

@@ -20,7 +20,7 @@
 
 package splitstree5.io.exports;
 
-import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IFromCharacters;
 import splitstree5.core.algorithms.interfaces.IFromSplits;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.SplitsBlock;
@@ -33,7 +33,7 @@ import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
 
-public class FastaExporter implements IFromChararacters, IExportCharacters, IFromSplits, IExportSplits {
+public class FastaExporter implements IFromCharacters, IExportCharacters, IFromSplits, IExportSplits {
 
     @Override
     public void export(Writer w, TaxaBlock taxa, CharactersBlock characters) throws IOException {

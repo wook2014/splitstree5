@@ -160,12 +160,11 @@ public class PCoA2D extends Algorithm<DistancesBlock, NetworkBlock> implements I
         progress.incrementProgress();
 
         final PhyloGraph graph = networkBlock.getGraph();
-        System.err.println(String.format("Stress: %.6f", getStress(getOptionFirstCoordinate() - 1, getOptionSecondCoordinate() - 1)));
+        System.err.printf("Stress: %.6f%n", getStress(getOptionFirstCoordinate() - 1, getOptionSecondCoordinate() - 1));
         for (int t = 1; t <= taxaBlock.getNtax(); t++) {
-            String name = taxaBlock.getLabel(t);
-            double[] coordinates = getProjection(getOptionFirstCoordinate() - 1, getOptionSecondCoordinate() - 1, name);
-            Node v = graph.newNode();
-            graph.setLabel(v, name);
+            final double[] coordinates = getProjection(getOptionFirstCoordinate() - 1, getOptionSecondCoordinate() - 1, taxaBlock.get(t).getName());
+            final Node v = graph.newNode();
+            graph.setLabel(v, taxaBlock.get(t).getDisplayLabelOrName());
             NetworkBlock.NodeData nodeData = networkBlock.getNodeData(v);
             nodeData.put("x", 100 * coordinates[0] + "");
             nodeData.put("y", 100 * coordinates[1] + "");

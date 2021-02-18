@@ -84,20 +84,16 @@ public class ImportService extends Service<Boolean> {
 
     @Override
     protected Task<Boolean> createTask() {
-        return new TaskWithProgressListener<Boolean>() {
+        return new TaskWithProgressListener<>() {
             @Override
             public Boolean call() throws Exception {
-                try {
-                    updateTitle(title);
-                    getProgressListener().setMaximum(0);
-                    getProgressListener().setProgress(0);
+                updateTitle(title);
+                getProgressListener().setMaximum(0);
+                getProgressListener().setProgress(0);
 
-                    final Pair<TaxaBlock, DataBlock> pair = apply(getProgressListener(), importer, fileName);
-                    DataLoader.load(reload, fileName, pair.getFirst(), pair.getSecond(), parentMainWindow);
-                    return true;
-                } catch (Exception ex) {
-                    throw ex;
-                }
+                final Pair<TaxaBlock, DataBlock> pair = apply(getProgressListener(), importer, fileName);
+                DataLoader.load(reload, fileName, pair.getFirst(), pair.getSecond(), parentMainWindow);
+                return true;
             }
         };
     }

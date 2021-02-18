@@ -19,6 +19,7 @@
 
 package splitstree5.core.data;
 
+import jloda.fx.window.NotificationManager;
 import jloda.util.Basic;
 
 import java.io.BufferedReader;
@@ -29,7 +30,7 @@ import java.util.Iterator;
 import java.util.Optional;
 
 /**
- * represents data associated with a importgenomes
+ * represents data associated with a genome
  * Daniel Huson, 2.2020
  */
 public class Genome {
@@ -216,7 +217,11 @@ public class Genome {
                             return Basic.concatenate(lines);
                         }
                     } catch (IOException e) {
-                        System.err.println("Read file failed: " + e);
+                        NotificationManager.showError("Read file failed: " + e);
+                        if (e.getMessage().contains("Unexpected end")) {
+                            System.err.println("Appears to be a corrupted file, deleting: " + file);
+                            Basic.deleteFileIfExists(file);
+                        }
                         return null;
                     }
                 }

@@ -64,7 +64,7 @@ public class NeXMLExporterTest {
         neXMLExporter.writeStart(writer2);
         neXMLExporter.export(writer2, taxa);
         neXMLExporter.export(writer2, taxa, characters);
-        neXMLExporter.writeEnd();
+        neXMLExporter.writeEnd(writer2);
         writer.close();
         writer2.close();
     }
@@ -82,7 +82,7 @@ public class NeXMLExporterTest {
 
         neXMLExporter.writeStart(writer_trees);
         neXMLExporter.export(writer_trees, taxaBlock, treesBlock);
-        neXMLExporter.writeEnd();
+        neXMLExporter.writeEnd(writer_trees);
         writer_trees.close();
     }
 
@@ -107,7 +107,7 @@ public class NeXMLExporterTest {
 
         neXMLExporter.writeStart(writer);
         neXMLExporter.export(writer, taxa, networkBlock);
-        neXMLExporter.writeEnd();
+        neXMLExporter.writeEnd(writer);
         writer.close();
     }
 

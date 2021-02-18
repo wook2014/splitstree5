@@ -137,7 +137,10 @@ public class AnalyzeGenomesController {
     private Label foundReferencesLabel;
 
     @FXML
-    private TextField minSharedKMersTextField;
+    private TextField maxDistToSearchTextField;
+
+    @FXML
+    private CheckBox includeStrainsCB;
 
     @FXML
     private Button cacheButton;
@@ -303,8 +306,12 @@ public class AnalyzeGenomesController {
         return foundReferencesLabel;
     }
 
-    public TextField getMinSharedKMersTextField() {
-        return minSharedKMersTextField;
+    public TextField getMaxDistToSearchTextField() {
+        return maxDistToSearchTextField;
+    }
+
+    public CheckBox getIncludeStrainsCB() {
+        return includeStrainsCB;
     }
 
     public Button getCacheButton() {

@@ -34,10 +34,7 @@ import splitstree5.io.nexus.GenomesNexusOutput;
 import splitstree5.io.nexus.TaxaNexusOutput;
 import splitstree5.main.MainWindow;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.function.Consumer;
@@ -118,7 +115,7 @@ public class GenomesAnalyzer {
      */
     private Iterator<InputRecord> iterator(ProgressListener progressListener) {
         return new Iterator<>() {
-            private IFastAIterator fastaIterator;
+            private FastAFileIterator fastaIterator;
 
             private int whichFile = 0;
             private int countInFile = 0;
@@ -143,43 +140,61 @@ public class GenomesAnalyzer {
             @Override
             public InputRecord next() {
                 final InputRecord result = next;
-                try {
-                    next = null;
 
-                    if (whichFile < fileNames.size()) {
-                        final String fileName = fileNames.get(whichFile);
-                        if (referenceFile2Names.containsKey(fileName)) {
-                            next = getDataFromAFile(fileName, true);
+                next = null;
+                if (whichFile < fileNames.size()) {
+                    try {
+                        if (referenceFile2Names.containsKey(fileNames.get(whichFile))) {
+                            next = getDataFromAFile(fileNames.get(whichFile), true);
                             if (next != null)
-                                next.setName(referenceFile2Names.get(fileName));
+                                next.setName(referenceFile2Names.get(fileNames.get(whichFile)));
                             whichFile++;
-                        } else if (perFile) {
-                            next = getDataFromAFile(fileNames.get(whichFile++), useFileName);
-                        } else { // perFastA
-                            if (fastaIterator == null)
-                                fastaIterator = new FastAFileIterator(fileNames.get(whichFile));
-
-                            while (fastaIterator != null && !fastaIterator.hasNext()) {
-                                fastaIterator.close();
-                                whichFile++;
-                                countInFile = 0;
-                                if (whichFile < fileNames.size()) {
+                        } else { // query file
+                            if (perFile) { // per file
+                                next = getDataFromAFile(fileNames.get(whichFile++), useFileName);
+                            } else { // per FastA
+                                if (fastaIterator == null)
                                     fastaIterator = new FastAFileIterator(fileNames.get(whichFile));
-                                } else {
-                                    fastaIterator = null;
+
+                                boolean queryFilesFinished = false;
+
+                                while (!queryFilesFinished && fastaIterator != null && !fastaIterator.hasNext()) {
+                                    fastaIterator.close();
+                                    whichFile++;
+                                    {
+                                        countInFile = 0;
+                                        if (whichFile < fileNames.size()) {
+                                            if (referenceFile2Names.containsKey(fileNames.get(whichFile))) {
+                                                next = getDataFromAFile(fileNames.get(whichFile), true);
+                                                if (next != null)
+                                                    next.setName(referenceFile2Names.get(fileNames.get(whichFile)));
+                                                whichFile++;
+                                                queryFilesFinished = true;
+                                            } else
+                                                fastaIterator = new FastAFileIterator(fileNames.get(whichFile));
+                                        } else {
+                                            fastaIterator = null;
+                                        }
+                                    }
+                                }
+                                if (!queryFilesFinished && fastaIterator != null) {
+                                    final Pair<String, String> pair = fastaIterator.next();
+                                    countInFile++;
+                                    next = new InputRecord(Basic.swallowLeadingGreaterSign(pair.getFirst()), pair.getSecond().toUpperCase().getBytes(), fastaIterator.getFileName(), fastaIterator.getPosition());
+                                    if (useFileName)
+                                        next.setName(Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(fastaIterator.getFileName()), "") + ":" + countInFile);
+
+                                    System.err.println(next.getName() + ": " + next.getSequence().length);
+
+                                    if (next.getName().contains("08") && next.getSequence().length > 770679)
+                                        System.err.println("WTF");
+
                                 }
                             }
-                            if (fastaIterator != null) {
-                                final Pair<String, String> pair = fastaIterator.next();
-                                countInFile++;
-                                next = new InputRecord(Basic.swallowLeadingGreaterSign(pair.getFirst()), pair.getSecond().toUpperCase().getBytes(), fileNames.get(whichFile), fastaIterator.getPosition());
-                                if (useFileName)
-                                    next.setName(Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(fileName), "") + ":" + countInFile);
-                            }
                         }
+                    } catch (IOException ex) {
+                        next = null;
                     }
-                } catch (IOException ex) {
-                    next = null;
                 }
                 if (result != null)
                     result.setName(line2label.getOrDefault(result.getName(), result.getName().replaceAll("'", "_")));
@@ -254,6 +269,12 @@ public class GenomesAnalyzer {
                 try {
                     final Genome genome = new Genome();
                     genome.setName(inputRecord.getName());
+//                    String[] inputRecordSplit = inputRecord.getFile().split("\\/");
+//                    String genomeAcc = "";
+//                    if(inputRecordSplit[inputRecordSplit.length - 1].length() > 15)
+//                        genomeAcc = inputRecordSplit[inputRecordSplit.length - 1].substring(0, 15);
+//                    genome.setName(genome.getName() + "<br><c GRAY>" + genomeAcc + "</c>");
+
                     final Genome.GenomePart genomePart = new Genome.GenomePart();
                     genomePart.setName("part");
                     if (storeFileLocations) {
@@ -280,9 +301,6 @@ public class GenomesAnalyzer {
 
             final TaxaBlock taxaBlock = new TaxaBlock();
 
-            if (genomesBlock.size() < 4)
-                throw new IOException("Too few genomes: " + genomesBlock.size());
-
             for (Genome genome : genomesBlock.getGenomes()) {
                 final String name = RichTextLabel.getRawText(genome.getName());
                 final String uniqueName = taxaBlock.addTaxonByName(name);
@@ -295,6 +313,13 @@ public class GenomesAnalyzer {
                 w.write("#nexus\n");
                 (new TaxaNexusOutput()).write(w, taxaBlock);
                 (new GenomesNexusOutput()).write(w, taxaBlock, genomesBlock);
+
+                {
+                    try (Writer sw = new StringWriter()) {
+                        (new GenomesNexusOutput()).write(sw, taxaBlock, genomesBlock);
+                        System.err.println(sw.toString());
+                    }
+                }
             }
             return genomesBlock.size();
         });

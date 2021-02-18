@@ -44,6 +44,7 @@ import java.util.*;
 
 /**
  * implements the Dashing algorithm
+ * todo: this appears to be broken...
  * Daniel Huson, 3.2020
  */
 public class DashingUntested extends Algorithm<GenomesBlock, DistancesBlock> implements IFromGenomes, IToDistances {

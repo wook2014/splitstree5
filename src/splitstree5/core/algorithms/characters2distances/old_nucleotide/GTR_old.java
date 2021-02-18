@@ -24,7 +24,7 @@ import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
-import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IFromCharacters;
 import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
@@ -43,7 +43,7 @@ import java.util.List;
  * @deprecated
  */
 
-public class GTR_old extends DNAdistance implements IFromChararacters, IToDistances {
+public class GTR_old extends DNAdistance implements IFromCharacters, IToDistances {
 
     private double[][] QMatrix; //Q Matrix provided by user for ML estimation. //todo option!
 

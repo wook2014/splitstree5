@@ -45,7 +45,7 @@ import java.util.*;
 public class MinSpanningNetwork extends Algorithm<DistancesBlock, NetworkBlock> implements IFromDistances, IToNetwork {
     @Override
     public String getCitation() {
-        return "Excoffier & Smouse 1994; Excoffier L, Smouse PE. Using allele frequencies and geographic subdivision to reconstruct gene trees within a species: molecular variance parsimony. Genetics. 1994;136(1):343-59.";
+        return "Excoffier & Smouse 1994; Excoffier L, Smouse PE. Using allele frequencies and geographic subdivision to reconstruct gene trees within a species: molecular variance parsimony (1994) Genetics.136(1):343-59.";
     }
 
     private DoubleProperty optionEpsilon = new SimpleDoubleProperty(0);
@@ -98,7 +98,7 @@ public class MinSpanningNetwork extends Algorithm<DistancesBlock, NetworkBlock> 
             final Node v = graph.newNode(t);
             node[t] = v;
             graph.addTaxon(v, t);
-            graph.setLabel(v, taxaBlock.getLabel(t));
+            graph.setLabel(v, taxaBlock.get(t).getDisplayLabelOrName());
             component[t] = t;
         }
 

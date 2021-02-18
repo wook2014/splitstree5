@@ -41,12 +41,12 @@ public class RerootingUtils {
      *
      * @return true, if rerooted
      */
-    public static void rerootByEdge(PhyloTree tree, Edge e) {
+    public static void rerootByEdge(boolean internalNodeLabelsAreEdgeLabels, PhyloTree tree, Edge e) {
         if ((e.getSource() == tree.getRoot() || e.getTarget() == tree.getRoot()) && tree.getRoot().getDegree() == 2)
             return; // no need to reroot
 
         final EdgeArray<String> edgeLabels;
-        if (tree.isInternalNodeLabelsAreEdgeLabels())
+        if (internalNodeLabelsAreEdgeLabels)
             edgeLabels = SupportValueUtils.setEdgeLabelsFromInternalNodeLabels(tree);
         else
             edgeLabels = null;
@@ -56,7 +56,7 @@ public class RerootingUtils {
 
         tree.redirectEdgesAwayFromRoot();
 
-        if (tree.isInternalNodeLabelsAreEdgeLabels())
+        if (internalNodeLabelsAreEdgeLabels)
             SupportValueUtils.setInternalNodeLabelsFromEdgeLabels(tree, edgeLabels);
 
         Node root = tree.getRoot();
@@ -83,7 +83,7 @@ public class RerootingUtils {
      *
      * @return true, if rerooted
      */
-    public static void rerootByNode(PhyloTree tree, Node v) {
+    public static void rerootByNode(boolean internalNodeLabelsAreEdgeLabels, PhyloTree tree, Node v) {
         if (v == tree.getRoot())
             return;
 
@@ -93,7 +93,7 @@ public class RerootingUtils {
         }
 
         final EdgeArray<String> edgeLabels;
-        if (tree.isInternalNodeLabelsAreEdgeLabels())
+        if (internalNodeLabelsAreEdgeLabels)
             edgeLabels = SupportValueUtils.setEdgeLabelsFromInternalNodeLabels(tree);
         else
             edgeLabels = null;
@@ -102,7 +102,7 @@ public class RerootingUtils {
         tree.setRoot(v);
         tree.redirectEdgesAwayFromRoot();
 
-        if (tree.isInternalNodeLabelsAreEdgeLabels())
+        if (internalNodeLabelsAreEdgeLabels)
             SupportValueUtils.setInternalNodeLabelsFromEdgeLabels(tree, edgeLabels);
     }
 
@@ -114,7 +114,7 @@ public class RerootingUtils {
      * @param tree
      * @param outgroupTaxa
      */
-    public static void rerootByOutGroup(PhyloTree tree, BitSet outgroupTaxa) {
+    public static void rerootByOutGroup(boolean internalNodeLabelsAreEdgeLabels, PhyloTree tree, BitSet outgroupTaxa) {
         if (tree.getRoot() == null)
             return;
 
@@ -190,9 +190,9 @@ public class RerootingUtils {
             }
         }
         if (bestNode != null && bestNode != tree.getRoot()) {
-            rerootByNode(tree, bestNode);
+            rerootByNode(internalNodeLabelsAreEdgeLabels, tree, bestNode);
         } else if (bestEdge != null) {
-            rerootByEdge(tree, bestEdge);
+            rerootByEdge(internalNodeLabelsAreEdgeLabels, tree, bestEdge);
         }
     }
 
@@ -266,7 +266,7 @@ public class RerootingUtils {
      * @param tree
      * @return true, if tree rerooted
      */
-    public static void rerootByMidpoint(PhyloTree tree) {
+    public static void rerootByMidpoint(boolean internalNodeLabelsAreEdgeLabels, PhyloTree tree) {
         final SortedSet<Triplet<Edge, Float, Float>> rankedMidpointRootings = getRankedMidpointRootings(tree);
 
         final Triplet<Edge, Float, Float> best = rankedMidpointRootings.first();
@@ -281,13 +281,13 @@ public class RerootingUtils {
         if (halfOfTotal <= a) {
             if (tree.getRoot() == v)
                 return;
-            rerootByNode(tree, v);
+            rerootByNode(internalNodeLabelsAreEdgeLabels, tree, v);
         } else if (halfOfTotal >= a + weight) {
             if (tree.getRoot() == w)
                 return;
-            rerootByNode(tree, w);
+            rerootByNode(internalNodeLabelsAreEdgeLabels, tree, w);
         } else {
-            rerootByEdge(tree, e);
+            rerootByEdge(internalNodeLabelsAreEdgeLabels, tree, e);
         }
     }
 

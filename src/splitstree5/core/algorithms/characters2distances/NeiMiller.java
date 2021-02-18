@@ -22,7 +22,7 @@ package splitstree5.core.algorithms.characters2distances;
 
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
-import splitstree5.core.algorithms.interfaces.IFromChararacters;
+import splitstree5.core.algorithms.interfaces.IFromCharacters;
 import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.DistancesBlock;
@@ -34,7 +34,7 @@ import splitstree5.core.datablocks.characters.CharactersType;
  *
  * @author David Bryant, 2008
  */
-public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implements IFromChararacters, IToDistances {
+public class NeiMiller extends Algorithm<CharactersBlock, DistancesBlock> implements IFromCharacters, IToDistances {
     @Override
     public String getCitation() {
         return "Nei and Miller 1990; M. Nei and J.C. Miller. " +

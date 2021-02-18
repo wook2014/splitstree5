@@ -60,7 +60,7 @@ public class NodeView2D extends NodeViewBase {
         super(v, workingTaxonIds);
         setLocation(location);
         if (nodeShape == null)
-            shape = NodeShape.create(NodeShape.Circle, 2);
+            shape = NodeShape.create(NodeShape.Circle, 2.0, 2.0);
         else {
             shape = NodeShape.create(nodeShape, shapeWidth, shapeHeight);
             shapeWidth = 1;
@@ -149,7 +149,7 @@ public class NodeView2D extends NodeViewBase {
                 label.setOnMouseEntered(mouseEnteredEventHandler);
                 label.setOnMouseExited(mouseExitedEventHandler);
             }
-            if (shapeGroup != null && label != null)
+            if (shapeGroup != null && label != null && label.getText() != null)
                 Tooltip.install(shapeGroup, new Tooltip(label.getText()));
         }
     }

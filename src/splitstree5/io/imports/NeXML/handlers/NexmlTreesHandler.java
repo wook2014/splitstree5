@@ -22,6 +22,7 @@ package splitstree5.io.imports.NeXML.handlers;
 
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
+import jloda.util.Basic;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -29,7 +30,12 @@ import org.xml.sax.helpers.DefaultHandler;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
+/**
+ * nexml tree handler
+ * Daria Evseeva, 2019, Daniel Huson, 2020
+ */
 public class NexmlTreesHandler extends DefaultHandler {
 
     // tree 't1'=[&R] (((3:0.234,2:0.3243):0.324,(5:0.32443,4:0.2342):0.3247):0.34534,1:0.4353);
@@ -38,14 +44,14 @@ public class NexmlTreesHandler extends DefaultHandler {
     private boolean rooted = false;
 
     private PhyloTree tree;
-    private ArrayList<String> treeLabels = new ArrayList<>();
-    private ArrayList<String> taxaLabels = new ArrayList<>();
-    private ArrayList<PhyloTree> trees = new ArrayList<>();
+    private final ArrayList<String> treeOTUs = new ArrayList<>();
+    private final Map<String, Integer> otu2taxonId = new HashMap<>();
+    private final ArrayList<PhyloTree> trees = new ArrayList<>();
     private HashMap<String, Node> id2node = new HashMap<>();
+    private final ArrayList<String> taxaLabels = new ArrayList<>();
 
     @Override
-    public void startElement(String uri,
-                             String localName, String qName, Attributes attributes) throws SAXException {
+    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 
         if (qName.equalsIgnoreCase("otus")) {
             String label = attributes.getValue("label");
@@ -54,20 +60,18 @@ public class NexmlTreesHandler extends DefaultHandler {
             //System.out.println("ID : " + id);
         } else if (qName.equalsIgnoreCase("otu")) {
             //otu = true;
-            String label = attributes.getValue("label");
-            String id = attributes.getValue("id");
-            if (label != null) {
-                //System.out.println("Label : " + label);
+            final String otu = attributes.getValue("id");
+            final String label = attributes.getValue("label");
+
+            if (!otu2taxonId.containsKey(otu)) {
                 taxaLabels.add(label);
-            } else {
-                //System.out.println("Label = ID : " + id);
-                taxaLabels.add(id);
+                otu2taxonId.put(otu, taxaLabels.size());
             }
         }
         // TREES INFO
         else if (qName.equalsIgnoreCase("tree")) {
             tree = new PhyloTree();
-            treeLabels = new ArrayList<>();
+            treeOTUs.clear();
             id2node = new HashMap<>();
             bReadingTree = true;
         } else if (qName.equalsIgnoreCase("node") && bReadingTree) {
@@ -76,66 +80,62 @@ public class NexmlTreesHandler extends DefaultHandler {
             String otu = attributes.getValue("otu");
             boolean root = Boolean.parseBoolean(attributes.getValue("root"));
 
-            Node node = tree.newNode();
+            final Node v = tree.newNode();
             if (root) {
-                tree.setRoot(node);
+                tree.setRoot(v);
                 rooted = true;
             }
-            id2node.put(id, node);
+            id2node.put(id, v);
 
-            if (otu != null) {
-                tree.setLabel(node, otu);
-                treeLabels.add(otu);
-                tree.addTaxon(node, taxaLabels.indexOf(otu));
+            {
+                if (label != null)
+                    tree.setLabel(v, label);
+                if (otu2taxonId.containsKey(otu)) {
+                    tree.addTaxon(v, otu2taxonId.get(otu));
+                    treeOTUs.add(otu);
+                }
             }
 
         } else if (qName.equalsIgnoreCase("rootedge") && bReadingTree) {
-            String sWeight = attributes.getValue("length");
-            Double weight;
-            if (sWeight == null)
-                weight = 1.0;
-            else
-                weight = Double.parseDouble(attributes.getValue("length"));
-
-            Node sourceNode = tree.newNode();
-            Node targetNode = tree.getRoot();
+            final double weight = (Basic.isDouble(attributes.getValue("length")) ? Basic.parseDouble(attributes.getValue("length")) : 1.0);
+            final Node sourceNode = tree.newNode();
+            final Node targetNode = tree.getRoot();
             tree.setRoot(sourceNode);
             tree.setWeight(tree.newEdge(sourceNode, targetNode), weight);
-
         } else if (qName.equalsIgnoreCase("edge") && bReadingTree) {
-            String id = attributes.getValue("id");
-            String source = attributes.getValue("source");
-            String target = attributes.getValue("target");
-
-            String sWeight = attributes.getValue("length");
-            Double weight;
-            if (sWeight == null)
-                weight = 1.0;
-            else
-                weight = Double.parseDouble(attributes.getValue("length"));
+            final double weight = (Basic.isDouble(attributes.getValue("length")) ? Basic.parseDouble(attributes.getValue("length")) : 1.0);
+            final String id = attributes.getValue("id");
+            final String source = attributes.getValue("source");
+            final String target = attributes.getValue("target");
 
             Node sourceNode = null;
             Node targetNode = null;
 
             for (String key : id2node.keySet()) {
-                if (key.equals(source))
+                if (key.equals(source)) {
                     sourceNode = id2node.get(key);
-                if (key.equals(target))
+                    if (targetNode != null)
+                        break;
+                }
+                if (key.equals(target)) {
                     targetNode = id2node.get(key);
+                    if (sourceNode != null)
+                        break;
+                }
             }
 
             if (sourceNode == null)
                 throw new SAXException("Edge " + id + " contains not defined source node id=" + source);
             else if (targetNode == null)
                 throw new SAXException("Edge " + id + " contains not defined target node id=" + target);
-            else
+            else {
                 tree.setWeight(tree.newEdge(sourceNode, targetNode), weight);
+            }
         }
     }
 
     @Override
-    public void endElement(String uri,
-                           String localName, String qName) throws SAXException {
+    public void endElement(String uri, String localName, String qName) throws SAXException {
         if (qName.equalsIgnoreCase("otus")) {
             //System.out.println("End Element :" + qName);
         } else if (qName.equalsIgnoreCase("tree")) {
@@ -143,7 +143,7 @@ public class NexmlTreesHandler extends DefaultHandler {
             trees.add(tree);
 
             // if a tree already set as partial, no further check
-            if (partial || taxaLabels.size() != treeLabels.size())
+            if (partial || otu2taxonId.size() != treeOTUs.size())
                 partial = true;
 
             treeContainsAllTaxa(tree);

@@ -1,5 +1,5 @@
 /*
- * IExportCharacters.java Copyright (C) 2020. Daniel H. Huson
+ * IFromChararacters.java Copyright (C) 2020. Daniel H. Huson
  *
  * (Some code written by other authors, as named in code.)
  *
@@ -18,26 +18,12 @@
  *
  */
 
-package splitstree5.io.exports.interfaces;
-
-import splitstree5.core.algorithms.interfaces.IFromCharacters;
-import splitstree5.core.datablocks.CharactersBlock;
-import splitstree5.core.datablocks.TaxaBlock;
-
-import java.io.IOException;
-import java.io.Writer;
+package splitstree5.core.algorithms.interfaces;
 
 /**
- * save characters
- * Daniel Huson, 1.2018
+ * from characters interface.
+ * This is used to identify algorithms at runtime
+ * Daniel Huson 1/31/17.
  */
-public interface IExportCharacters extends IExporter, IFromCharacters {
-    /**
-     * save characters
-     *
-     * @param w
-     * @param taxa
-     * @param characters
-     */
-    void export(Writer w, TaxaBlock taxa, CharactersBlock characters) throws IOException;
+public interface IFromCharacters extends IFrom {
 }

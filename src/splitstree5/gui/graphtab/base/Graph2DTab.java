@@ -56,10 +56,10 @@ import java.util.Set;
  */
 public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
 
-    private DoubleProperty scaleChangeX = new SimpleDoubleProperty(1); // keep track of scale changes, used for reset
-    private DoubleProperty scaleChangeY = new SimpleDoubleProperty(1);
-    private DoubleProperty angleChange = new SimpleDoubleProperty(0);
-    private ObjectProperty<GraphLayout> layout = new SimpleObjectProperty<>(GraphLayout.LeftToRight);
+    private final DoubleProperty scaleChangeX = new SimpleDoubleProperty(1); // keep track of scale changes, used for reset
+    private final DoubleProperty scaleChangeY = new SimpleDoubleProperty(1);
+    private final DoubleProperty angleChange = new SimpleDoubleProperty(0);
+    private final ObjectProperty<GraphLayout> layout = new SimpleObjectProperty<>(GraphLayout.LeftToRight);
 
     private final ScaleBar scaleBar = new ScaleBar();
     private final DraggableLabel fitLabel = new DraggableLabel();
@@ -76,6 +76,8 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
     public Graph2DTab(boolean withScrollPane) {
         super();
         this.withScrollPane = withScrollPane;
+        fitLabel.setVisible(true);
+        fitLabel.visibleProperty().bind(scaleBar.visibleProperty());
     }
 
     /**

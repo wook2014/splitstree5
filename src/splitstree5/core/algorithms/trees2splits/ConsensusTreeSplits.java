@@ -22,6 +22,7 @@ package splitstree5.core.algorithms.trees2splits;
 
 import javafx.beans.property.SimpleObjectProperty;
 import jloda.util.BitSetUtils;
+import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
@@ -31,6 +32,7 @@ import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
+import splitstree5.utils.SplitsException;
 import splitstree5.utils.SplitsUtilities;
 
 import java.util.ArrayList;
@@ -73,7 +75,7 @@ public class ConsensusTreeSplits extends Algorithm<TreesBlock, SplitsBlock> impl
      * @param parent
      * @param child
      */
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock parent, SplitsBlock child) throws Exception {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock parent, SplitsBlock child) throws CanceledException, SplitsException {
         final ConsensusNetwork consensusNetwork = new ConsensusNetwork();
         switch (getOptionConsensus()) {
             default:

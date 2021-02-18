@@ -37,21 +37,25 @@ public class NodeLabelDialog {
 
     public static void apply(MainWindow mainWindow, int workingTaxonId, NodeViewBase nv) {
         final String oldLabel = nv.getLabel() != null ? nv.getLabel().getText() : "";
+        mainWindow.getMenuController().unbindAndDisableAllMenuItems();
         final EditLabelDialog editLabelDialog = new EditLabelDialog(mainWindow.getStage(), nv.getLabel());
         final Optional<String> result = editLabelDialog.showAndWait();
         if (result.isPresent()) {
             final String newLabel = result.get();
-            final TaxaBlock workingTaxaBlock = mainWindow.getWorkflow().getWorkingTaxaBlock();
-            mainWindow.getUndoRedoManager().doAndAdd(new ChangeValueCommand<>("Change Label", oldLabel, newLabel,
-                    (label) -> {
-                        label = (label.trim().length() > 0 ? label.trim() : null);
-                        nv.setLabel(label);
-                        if (workingTaxaBlock.getTaxaSet().get(workingTaxonId)) {
-                            final Taxon workingTaxon = workingTaxaBlock.get(workingTaxonId);
-                            workingTaxon.setDisplayLabel(label);
-                            mainWindow.updateDataView(mainWindow.getWorkflow().getWorkingTaxaNode());
-                        }
-                    }));
+            if (!newLabel.equals(oldLabel)) {
+                final TaxaBlock workingTaxaBlock = mainWindow.getWorkflow().getWorkingTaxaBlock();
+                mainWindow.getUndoRedoManager().doAndAdd(new ChangeValueCommand<>("Change Label", oldLabel, newLabel,
+                        (label) -> {
+                            label = (label.trim().length() > 0 ? label.trim() : null);
+                            nv.setLabel(label);
+                            if (workingTaxaBlock.getTaxaSet().get(workingTaxonId)) {
+                                final Taxon workingTaxon = workingTaxaBlock.get(workingTaxonId);
+                                workingTaxon.setDisplayLabel(label);
+                                mainWindow.updateDataView(mainWindow.getWorkflow().getWorkingTaxaNode());
+                            }
+                        }));
+            }
         }
+        mainWindow.updateMenus();
     }
 }

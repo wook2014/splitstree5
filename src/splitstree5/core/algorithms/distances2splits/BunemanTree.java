@@ -51,6 +51,9 @@ public class BunemanTree extends Algorithm<DistancesBlock, SplitsBlock> implemen
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, DistancesBlock distancesBlock, SplitsBlock splitsBlock) throws Exception {
+        if (SplitsUtilities.computeSplitsForLessThan4Taxa(taxaBlock, distancesBlock, splitsBlock))
+            return;
+
         ArrayList<ASplit> previousSplits = new ArrayList<>(); // list of previously computed splits
         ArrayList<ASplit> nextSplits; // current list of splits
 
@@ -174,6 +177,6 @@ public class BunemanTree extends Algorithm<DistancesBlock, SplitsBlock> implemen
 
     @Override
     public boolean isApplicable(TaxaBlock taxaBlock, DistancesBlock parent) {
-        return parent.getNtax() >= 4;
+        return parent.getNtax() > 0;
     }
 }

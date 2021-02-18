@@ -21,16 +21,17 @@
 package splitstree5.utils;
 
 import jloda.util.*;
-import splitstree5.core.algorithms.distances2splits.NeighborNet;
+import splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetCycle;
+import splitstree5.core.algorithms.distances2trees.NeighborJoining;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
+import splitstree5.core.misc.Compatibility;
 
 import java.io.PrintStream;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * utilities for splits
@@ -46,32 +47,31 @@ public class SplitsUtilities {
      * @return squares fit
      */
     public static float computeLeastSquaresFit(DistancesBlock distancesBlock, List<ASplit> splits) {
-        final int ntax = distancesBlock.getNtax();
-        final double[][] sdist = new double[ntax + 1][ntax + 1];
+        final int nTax = distancesBlock.getNtax();
+        final double[][] splitDist = new double[nTax + 1][nTax + 1];
 
-        double dsumSquare = 0;
-        double ssumSquare = 0;
-        for (int i = 1; i <= ntax; i++) {
-            for (int j = i + 1; j <= ntax; j++) {
-                double dij = 0.0;
-                for (ASplit split : splits) {
-                    if (split.isContainedInA(i) != split.isContainedInA(j))
-                        dij += split.getWeight();
+        double sumDSquared = 0.0;
+        double sumDiffSquared = 0.0;
+
+        for (ASplit split : splits) {
+            for (int i : BitSetUtils.members(split.getA())) {
+                for (int j : BitSetUtils.members(split.getB())) {
+                    splitDist[i][j] += split.getWeight();
+                    splitDist[j][i] = splitDist[i][j];
                 }
-                sdist[i][j] = sdist[j][i] = dij;
-            }
-        }
-        for (int i = 1; i <= ntax; i++) {
-            for (int j = i + 1; j <= ntax; j++) {
-                double sij = sdist[i][j];
-                double dij = distancesBlock.get(i, j);
-                double x = Math.abs(sij - dij);
-                ssumSquare += x * x;
-                dsumSquare += dij * dij;
             }
         }
 
-        return (float) (dsumSquare > 0 ? (100.0 * (1.0 - ssumSquare / dsumSquare)) : 0);
+        for (int i = 1; i <= nTax; i++) {
+            for (int j = i + 1; j <= nTax; j++) {
+                double sij = splitDist[i][j];
+                double dij = distancesBlock.get(i, j);
+                sumDiffSquared += (sij - dij) * (sij - dij);
+                sumDSquared += dij * dij;
+            }
+        }
+
+        return (float) (sumDSquared > 0 ? (100.0 * (1.0 - sumDiffSquared / sumDSquared)) : 0);
     }
 
 
@@ -86,7 +86,7 @@ public class SplitsUtilities {
             final PrintStream pso = jloda.util.Basic.hideSystemOut();
             final PrintStream pse = jloda.util.Basic.hideSystemErr();
             try {
-                return NeighborNet.computeNeighborNetOrdering(ntax, splitsToDistances(ntax, splits));
+                return NeighborNetCycle.computeNeighborNetCycle(ntax, splitsToDistances(ntax, splits));
             } finally {
                 jloda.util.Basic.restoreSystemErr(pse);
                 jloda.util.Basic.restoreSystemOut(pso);
@@ -240,16 +240,11 @@ public class SplitsUtilities {
      * @param dist               the distances
      */
     static public void computeFits(boolean forceRecalculation, SplitsBlock splits, DistancesBlock dist, ProgressListener pl) {
-        float dsum = 0;
-        float ssum = 0;
-        float dsumSquare = 0;
-        float ssumSquare = 0;
-        float netsumSquare = 0;
-
-        int ntax = dist.getNtax();
-
         if (splits == null || dist == null)
             return;
+
+        final int ntax = dist.getNtax();
+
 
         if (!forceRecalculation && splits.getFit() >= 0)
             return; //No need to recalculate.
@@ -273,31 +268,34 @@ public class SplitsUtilities {
                 sdist[i][j] = sdist[j][i] = dij;
             }
         }
+
+        float dsum = 0;
+        float ssum = 0;
+        float dsumSquare = 0;
+        float diffSumSquare = 0;
+        float netsumSquare = 0;
+
         for (int i = 1; i <= ntax; i++) {
             for (int j = i + 1; j <= ntax; j++) {
                 double sij = sdist[i][j];
                 double dij = dist.get(i, j);
-                double x = Math.abs(sij - dij);
-                ssum += x;
-                ssumSquare += x * x;
+                ssum += Math.abs(sij - dij);
+                diffSumSquare += (sij - dij) * (sij - dij);
                 dsum += dij;
                 dsumSquare += dij * dij;
                 netsumSquare += sij * sij;
             }
         }
-        float fit = 100 * (1 - ssum / dsum);
-        fit = Math.max(fit, 0);
-        splits.setFit(fit);
+        final double fit = Math.max(0, 100.0 * (1.0 - ssum / dsum));
+        splits.setFit((float) fit);
 
-        double lsfit = 100.0 * (1.0 - ssumSquare / dsumSquare);
+        final double lsFit = Math.max(0.0, 100.0 * (1.0 - diffSumSquare / dsumSquare));
 
+        splits.setFit((float) lsFit);
 
-        lsfit = Math.max(lsfit, 0.0);
-        //splits.getProperties().setLSFit(lsfit);
+        double stress = Math.sqrt(diffSumSquare / netsumSquare);
 
-        double stress = Math.sqrt(ssumSquare / netsumSquare);
-
-        System.err.println("\nRecomputed fit:\n\tfit = " + fit + "\n\tLS fit =" + lsfit + "\n\tstress =" + stress + "\n");
+        System.err.println("\nRecomputed fit:\n\tfit = " + fit + "\n\tLS fit =" + lsFit + "\n\tstress =" + stress + "\n");
     }
 
     public static void rotateCycle(int[] cycle, int first) {
@@ -335,8 +333,8 @@ public class SplitsUtilities {
      * computes the midpoint root location
      *
      * @param alt         use alternative side
-     * @param ntaxa       number of taxa
-     * @param outgroup    outgroup taxa or empty, if performing simple midpoint rooting
+     * @param nTax        number of taxa
+     * @param outGroup    out group taxa or empty, if performing simple midpoint rooting
      * @param cycle
      * @param splitsBlock
      * @param useWeights  use split weights or otherwise give all splits weight 1
@@ -344,78 +342,101 @@ public class SplitsUtilities {
      * @return rooting split and both distances
      * @throws CanceledException
      */
-    public static Triplet<Integer, Double, Double> computeRootLocation(boolean alt, int ntaxa, Set<Integer> outgroup, int[] cycle, SplitsBlock splitsBlock, boolean useWeights, ProgressListener progress) throws CanceledException {
+    public static Triplet<Integer, Double, Double> computeRootLocation(boolean alt, int nTax, Set<Integer> outGroup,
+                                                                       int[] cycle, SplitsBlock splitsBlock, boolean useWeights, ProgressListener progress) {
         progress.setSubtask("Computing root location");
 
-        final double[][] distances = new double[ntaxa + 1][ntaxa + 1];
-        for (ASplit split : splitsBlock.getSplits()) {
-            for (int a : BitSetUtils.members(split.getA())) {
-                for (int b : BitSetUtils.members(split.getB()))
-                    distances[a][b] += useWeights ? split.getWeight() : 1;
-            }
-        }
-        final Set<Integer> setA = new TreeSet<>();
-        final Set<Integer> setB = new TreeSet<>();
-        if (outgroup.size() > 0) {
-            setA.addAll(outgroup);
-            setB.addAll(IntStream.rangeClosed(1, ntaxa).filter(i -> !outgroup.contains(i)).boxed().collect(Collectors.toList()));
-        } else {
-            setA.addAll(IntStream.rangeClosed(1, ntaxa).boxed().collect(Collectors.toList()));
-            setB.addAll(setA);
-        }
+        if (outGroup.size() > 0) {
+            final BitSet outGroupSplits = new BitSet();
+            final BitSet outGroupBits = BitSetUtils.asBitSet(outGroup);
+            final int outGroupTaxon = outGroup.iterator().next();
 
-        double maxDistance = 0;
-        final Pair<Integer, Integer> furthestPair = new Pair<>(0, 0);
 
-        for (int a : setA) {
-            for (int b : setB) {
-                if (b != a && distances[a][b] > maxDistance) {
-                    maxDistance = distances[a][b];
-                    furthestPair.set(a, b);
+            for (int p = 1; p <= splitsBlock.getNsplits(); p++) {
+                final BitSet pa = splitsBlock.get(p).getPartContaining(outGroupTaxon);
+                if (BitSetUtils.contains(pa, outGroupBits)) {
+                    boolean ok = true;
+                    for (int q : BitSetUtils.members(outGroupSplits)) {
+                        final BitSet qa = splitsBlock.get(q).getPartContaining(outGroupTaxon);
+                        if (BitSetUtils.contains(pa, qa)) {
+                            ok = false;
+                            break;
+                        } else if (BitSetUtils.contains(qa, pa)) {
+                            outGroupSplits.clear(q);
+                        }
+                    }
+                    if (ok)
+                        outGroupSplits.set(p);
                 }
             }
-        }
-
-        final Map<ASplit, Integer> split2id = new HashMap<>();
-
-        final ArrayList<ASplit> splits = new ArrayList<>();
-        for (int s = 1; s <= splitsBlock.getNsplits(); s++) {
-            final ASplit split = splitsBlock.get(s);
-            if (split.separates(furthestPair.getFirst(), furthestPair.getSecond())) {
-                splits.add(split);
-                split2id.put(split, s);
+            if (outGroupSplits.cardinality() > 0) {
+                final int s = outGroupSplits.nextSetBit(0);
+                return new Triplet<>(s, 0.9 * splitsBlock.get(s).getWeight(), 0.1 * splitsBlock.get(s).getWeight());
             }
-        }
-
-        final BitSet interval = computeInterval(ntaxa, furthestPair.getFirst(), furthestPair.getSecond(), cycle, alt);
-
-        splits.sort((s1, s2) -> {
-            final BitSet a1 = s1.getPartContaining(furthestPair.getFirst());
-            final BitSet a2 = s2.getPartContaining(furthestPair.getFirst());
-            final int size1 = BitSetUtils.intersection(a1, interval).cardinality();
-            final int size2 = BitSetUtils.intersection(a2, interval).cardinality();
-
-            if (size1 < size2)
-                return -1;
-            else if (size1 > size2)
-                return 1;
-            else
-                return Integer.compare(a1.cardinality(), a2.cardinality());
-        });
-
-        double sum = 0;
-        for (ASplit split : splits) {
-            final double weight = (useWeights ? split.getWeight() : 1);
-            final double delta = (sum + weight - 0.5 * maxDistance);
-            if (delta > 0) {
-                return new Triplet<>(split2id.get(split), weight - delta, delta);
+        } else {
+            final double[][] splitDistances = new double[nTax + 1][nTax + 1];
+            for (ASplit split : splitsBlock.getSplits()) {
+                for (int a : BitSetUtils.members(split.getA())) {
+                    for (int b : BitSetUtils.members(split.getB())) {
+                        double diff = useWeights ? split.getWeight() : 1;
+                        splitDistances[a][b] += diff;
+                        splitDistances[b][a] += diff;
+                    }
+                }
             }
-            sum += weight;
+            double maxDistance = 0;
+            final Pair<Integer, Integer> furthestPair = new Pair<>(0, 0);
+
+            for (int a = 1; a <= nTax; a++) {
+                for (int b = a + 1; b <= nTax; b++) {
+                    if (splitDistances[a][b] > maxDistance) {
+                        maxDistance = splitDistances[a][b];
+                        furthestPair.set(a, b);
+                    }
+                }
+            }
+
+            final Map<ASplit, Integer> split2id = new HashMap<>();
+
+            final ArrayList<ASplit> splits = new ArrayList<>();
+            for (int s = 1; s <= splitsBlock.getNsplits(); s++) {
+                final ASplit split = splitsBlock.get(s);
+                if (split.separates(furthestPair.getFirst(), furthestPair.getSecond())) {
+                    splits.add(split);
+                    split2id.put(split, s);
+                }
+            }
+
+            final BitSet interval = computeInterval(furthestPair.getFirst(), furthestPair.getSecond(), cycle, alt);
+
+            splits.sort((s1, s2) -> {
+                final BitSet a1 = s1.getPartContaining(furthestPair.getFirst());
+                final BitSet a2 = s2.getPartContaining(furthestPair.getFirst());
+                final int size1 = BitSetUtils.intersection(a1, interval).cardinality();
+                final int size2 = BitSetUtils.intersection(a2, interval).cardinality();
+
+                if (size1 < size2)
+                    return -1;
+                else if (size1 > size2)
+                    return 1;
+                else
+                    return Integer.compare(a1.cardinality(), a2.cardinality());
+            });
+
+            double total = 0;
+            for (ASplit split : splits) {
+                final double weight = (useWeights ? split.getWeight() : 1);
+                final double delta = total + weight - 0.5 * maxDistance;
+                if (delta > 0) {
+                    return new Triplet<>(split2id.get(split), delta, weight - delta);
+                }
+                total += weight;
+            }
         }
         return new Triplet<>(1, 0.0, useWeights ? splitsBlock.get(1).getWeight() : 1);
     }
 
-    private static BitSet computeInterval(int ntaxa, int a, int b, int[] cycle, boolean alt) {
+    private static BitSet computeInterval(int a, int b, int[] cycle, boolean alt) {
         final BitSet set = new BitSet();
 
         if (cycle.length > 0) {
@@ -454,5 +475,19 @@ public class SplitsUtilities {
             }
         }
         return set;
+    }
+
+    public static boolean computeSplitsForLessThan4Taxa(TaxaBlock taxaBlock, DistancesBlock distancesBlock, SplitsBlock splitsBlock) throws CanceledException {
+        if (taxaBlock.getNtax() < 4) {
+            final TreesBlock treesBlock = new TreesBlock();
+            new NeighborJoining().compute(new ProgressSilent(), taxaBlock, distancesBlock, treesBlock);
+            splitsBlock.clear();
+            TreesUtilities.computeSplits(taxaBlock.getTaxaSet(), treesBlock.getTree(1), splitsBlock.getSplits());
+            splitsBlock.setCompatibility(Compatibility.compatible);
+            splitsBlock.setCycle(SplitsUtilities.computeCycle(taxaBlock.getNtax(), splitsBlock.getSplits()));
+            splitsBlock.setFit(100);
+            return true;
+        }
+        return false;
     }
 }
