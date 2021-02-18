@@ -11,6 +11,12 @@ import static splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.
 import static splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.VectorUtilities.minus;
 import static splitstree5.core.algorithms.distances2splits.utils.NeighborNetPCG.VectorUtilities.norm;
 
+//Things to do next
+//(1) Implement warm starts
+//(2) More thorough tests
+//(3) Explore algorithm for more bands with A_{n-1}.
+
+
 public class NeighborNetBlockPivot {
     private static boolean verbose = true;
 
@@ -20,7 +26,7 @@ public class NeighborNetBlockPivot {
         public double pcgTol = 1e-8; //Tolerance for pcg: will stop when residual has norm less than this.
         public double blockPivotCutoff = 1e-8; //Cutoff - values in block pivot with value smaller than this are set to zero.
         public boolean usePreconditioner = true; //True if the conjugate gradient makes use of preconditioner.
-        public int preconditionerBands = 10; //Number of bands used when computing Y,Z submatrices in the preconditioner. 
+        public int preconditionerBands = 10; //Number of bands used when computing Y,Z submatrices in the preconditioner.
         // Note that alot of the calculations for preconditioning are done even if this is false, so use this flag only to assess #iterations.
 
     }
@@ -59,14 +65,14 @@ public class NeighborNetBlockPivot {
             //System.err.println("ninf = "+ninf);
 
             double pgnorm = projectedGradientNorm(n,d,z,G);
-            if (verbose)
-                System.err.println("f(x) = "+functionVal(n,d,z,G));
+          //  if (verbose)
+          //      System.err.println("f(x) = "+functionVal(n,d,z,G));
             
             if (ninf < N) {
                 N = ninf;
                 p = 3;
-                if (verbose)
-                    System.err.print("Swapping (1) " + pgnorm);
+               // if (verbose)
+                //    System.err.print("Swapping (1) " + pgnorm);
                 //printSet(infeasible);
                 if (verbose)
                     System.err.println();
@@ -99,8 +105,8 @@ public class NeighborNetBlockPivot {
             }
 
             z = circularLeastSquares(n, G, d, params.pcgTol, params);
-            //double znorm = VectorUtilities.norm(z);
-            //System.err.println(znorm);
+            double znorm = VectorUtilities.norm(z);
+            System.err.println("**NORM = "+znorm);
 
             for (int i = 1; i <= npairs; i++) {
                 if (Math.abs(z[i]) < params.blockPivotCutoff)
@@ -135,7 +141,8 @@ public class NeighborNetBlockPivot {
     private static double[] circularLeastSquares(int n, boolean[] G, double[] d, double tol, BlockPivotParams params) {
 
         int npairs = n * (n - 1) / 2; //Dimensions of G,d.
-        int maxiter = params.maxPCGIterations;
+        //int maxiter = params.maxPCGIterations;
+        int maxiter = npairs + 10;
         boolean usePreconditioner = params.usePreconditioner;
 
         int nG = 0;
@@ -189,9 +196,10 @@ public class NeighborNetBlockPivot {
             beta = blockvectorDot(r,z)/rtz;
             p = blockvectorAdd(z,beta,p);
         }
-        if (j<maxiter)
+        if (j>maxiter)
             System.err.println("WARNING: Preconditioned Conjugate Gradient reached maximum iterations");
 
+        System.err.println("Number of iterations in PCG = "+j);
         nuvec = blocks2vector(n,nu,G);
         double[] x = minus(unconstrained,circularSolve(n,circularAinvT(n,nuvec)));
         double[] y = circularAtx(n,minus(circularAx(n,x),d));

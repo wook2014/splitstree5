@@ -8,7 +8,9 @@ public class NnetTest {
         //TridiagonalMatrix.test(100);
         //CircularSplitAlgorithms.test(10);
         //BlockXMatrix.test(12);
-
-        NeighborNetBlockPivot.test(10);
+        long startTime = System.currentTimeMillis();
+        NeighborNetBlockPivot.test(50);
+        long finishTime = System.currentTimeMillis();
+        System.err.println("Block Pivot took "+ (finishTime-startTime)+ " milliseconds");
     }
 }
