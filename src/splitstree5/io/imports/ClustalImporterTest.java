@@ -48,56 +48,84 @@ public class ClustalImporterTest {
     @Test
     public void parse() throws Exception {
 
-        TaxaBlock taxaBlock = new TaxaBlock();
-        CharactersBlock charactersBlock = new CharactersBlock();
-        CharactersNexusFormat format = new CharactersNexusFormat();
-        ProgressListener pl = new ProgressPercentage();
-
-        clustalImporter.parse(pl, "test/notNexusFiles/prot1.aln", taxaBlock, charactersBlock);
-        // printing
-        final StringWriter w1 = new StringWriter();
-        w1.write("#nexus\n");
-        new TaxaNexusOutput().write(w1, taxaBlock);
-        new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock);
-        System.err.println(w1.toString());
-        System.err.println(format.isOptionInterleave());
+        {
+            TaxaBlock taxaBlock = new TaxaBlock();
+            CharactersBlock charactersBlock = new CharactersBlock();
+            CharactersNexusFormat format = new CharactersNexusFormat();
+            try (ProgressListener progress = new ProgressPercentage()) {
+                clustalImporter.parse(progress, "test/notNexusFiles/prot1.aln", taxaBlock, charactersBlock);
+            }
+            // printing
+            final StringWriter w1 = new StringWriter();
+            w1.write("#nexus\n");
+            new TaxaNexusOutput().write(w1, taxaBlock);
+            new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock);
+            System.err.println(w1.toString());
+            System.err.println(format.isOptionInterleave());
+        }
         //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
 
-        clustalImporter.parse(pl, "test/notNexusFiles/protein.aln", taxaBlock, charactersBlock);
-        // printing
-        final StringWriter w2 = new StringWriter();
-        w2.write("#nexus\n");
-        new TaxaNexusOutput().write(w2, taxaBlock);
-        new CharactersNexusOutput().write(w2, taxaBlock, charactersBlock);
-        System.err.println(w2.toString());
-        //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
+        {
+            TaxaBlock taxaBlock = new TaxaBlock();
+            CharactersBlock charactersBlock = new CharactersBlock();
+            CharactersNexusFormat format = new CharactersNexusFormat();
+            try (ProgressListener progress = new ProgressPercentage()) {
+                clustalImporter.parse(progress, "test/notNexusFiles/protein.aln", taxaBlock, charactersBlock);
+            }
+            // printing
+            final StringWriter w2 = new StringWriter();
+            w2.write("#nexus\n");
+            new TaxaNexusOutput().write(w2, taxaBlock);
+            new CharactersNexusOutput().write(w2, taxaBlock, charactersBlock);
+            System.err.println(w2.toString());
+            //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
+        }
 
-        clustalImporter.parse(pl, "test/notNexusFiles/conservation.aln", taxaBlock, charactersBlock);
-        // printing
-        final StringWriter w3 = new StringWriter();
-        w3.write("#nexus\n");
-        new TaxaNexusOutput().write(w3, taxaBlock);
-        new CharactersNexusOutput().write(w3, taxaBlock, charactersBlock);
-        System.err.println(w3.toString());
-        //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
+        {
+            TaxaBlock taxaBlock = new TaxaBlock();
+            CharactersBlock charactersBlock = new CharactersBlock();
+            CharactersNexusFormat format = new CharactersNexusFormat();
+            try (ProgressListener progress = new ProgressPercentage()) {
+                clustalImporter.parse(progress, "test/notNexusFiles/conservation.aln", taxaBlock, charactersBlock);
+            }
+            // printing
+            final StringWriter w3 = new StringWriter();
+            w3.write("#nexus\n");
+            new TaxaNexusOutput().write(w3, taxaBlock);
+            new CharactersNexusOutput().write(w3, taxaBlock, charactersBlock);
+            System.err.println(w3.toString());
+            //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
+        }
 
-        clustalImporter.parse(pl, "test/notNexusFiles/dna-ncbi.aln", taxaBlock, charactersBlock);
-        // printing
-        final StringWriter w4 = new StringWriter();
-        w4.write("#nexus\n");
-        new TaxaNexusOutput().write(w4, taxaBlock);
-        new CharactersNexusOutput().write(w4, taxaBlock, charactersBlock);
-        System.err.println(w4.toString());
-        //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
+        {
+            TaxaBlock taxaBlock = new TaxaBlock();
+            CharactersBlock charactersBlock = new CharactersBlock();
+            try (ProgressListener progress = new ProgressPercentage()) {
+                clustalImporter.parse(progress, "test/notNexusFiles/dna-ncbi.aln", taxaBlock, charactersBlock);
+            }// printing
+            final StringWriter w4 = new StringWriter();
+            w4.write("#nexus\n");
+            new TaxaNexusOutput().write(w4, taxaBlock);
+            new CharactersNexusOutput().write(w4, taxaBlock, charactersBlock);
+            System.err.println(w4.toString());
+            //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
+        }
 
-        clustalImporter.parse(pl, "test/notNexusFiles/dna-ncbi-num.aln", taxaBlock, charactersBlock);
-        // printing
-        final StringWriter w5 = new StringWriter();
-        w5.write("#nexus\n");
-        new TaxaNexusOutput().write(w5, taxaBlock);
-        new CharactersNexusOutput().write(w5, taxaBlock, charactersBlock);
-        System.err.println(w5.toString());
-        //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
+        {
+            TaxaBlock taxaBlock = new TaxaBlock();
+            CharactersBlock charactersBlock = new CharactersBlock();
+            CharactersNexusFormat format = new CharactersNexusFormat();
+            try (ProgressListener progress = new ProgressPercentage()) {
+                clustalImporter.parse(progress, "test/notNexusFiles/dna-ncbi-num.aln", taxaBlock, charactersBlock);
+            }
+            // printing
+            final StringWriter w5 = new StringWriter();
+            w5.write("#nexus\n");
+            new TaxaNexusOutput().write(w5, taxaBlock);
+            new CharactersNexusOutput().write(w5, taxaBlock, charactersBlock);
+            System.err.println(w5.toString());
+            //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
+        }
     }
 
     @Test

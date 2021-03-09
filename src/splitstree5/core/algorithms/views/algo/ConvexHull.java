@@ -295,7 +295,7 @@ public class ConvexHull {
                     //if(hulls.getValue(m)==side) continue;
                     visited.set(f, 1);
 
-                    if (hulls.get(w) == null) {
+                    if (hulls.getValue(w) == null) {
                         hulls.put(w, side);
                         todo.push(w);
                     } else if (hulls.getValue(w) == Math.abs(side - 1)) {

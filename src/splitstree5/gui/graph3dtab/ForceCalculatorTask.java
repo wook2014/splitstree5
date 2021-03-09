@@ -75,7 +75,7 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
 
         nodeLocations = new NodeArray<>(graph);
         for (Node v : graph.nodes()) {
-            nodeLocations.put(v, ((NodeView3D) node2view.get(v)).getLocation());
+            nodeLocations.put(v, ((NodeView3D) node2view.getValue(v)).getLocation());
         }
     }
 
@@ -117,8 +117,8 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
         final Random random = new Random(666);
         while (count-- > 0) {
             final Edge edge = split2edges.get(keys[random.nextInt(keys.length)]).get(0);
-            final Point3D v1 = nodeLocations.get(edge.getSource());
-            final Point3D v2 = nodeLocations.get(edge.getTarget());
+            final Point3D v1 = nodeLocations.getValue(edge.getSource());
+            final Point3D v2 = nodeLocations.getValue(edge.getTarget());
 
             double edgeLength = v1.subtract(v2).magnitude();
             double zOffset = edgeLength * (0.02 * (0.5 - random.nextDouble()));
@@ -131,9 +131,9 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
             final NodeSet splitNodes = new NodeSet(graph);
             getSplitAssociatedNodes(graph.getSplit(edge), edge.getSource(), splitNodes);
             splitNodes.forEach(v -> {
-                nodeLocations.put(v, new Point3D(nodeLocations.get(v).getX() + moveVec.getX(),
-                        nodeLocations.get(v).getY() + moveVec.getY(),
-                        nodeLocations.get(v).getZ() + moveVec.getZ()));
+                nodeLocations.put(v, new Point3D(nodeLocations.getValue(v).getX() + moveVec.getX(),
+                        nodeLocations.getValue(v).getY() + moveVec.getY(),
+                        nodeLocations.getValue(v).getZ() + moveVec.getZ()));
             });
         }
     }
@@ -173,14 +173,14 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
 
                 for (Node aNode : leftSplit) {
                     for (Node otherNode : rightSplit) {
-                        Point3D dist = nodeLocations.get(aNode).subtract(nodeLocations.get(otherNode));
+                        Point3D dist = nodeLocations.getValue(aNode).subtract(nodeLocations.getValue(otherNode));
                         double length = new Point3D(dist.getX(), dist.getY(), dist.getZ()).magnitude();
                         Point3D newVec;
                         if (length < maxDist) {
                             if (linear) {
-                                newVec = calculateLinearForceVector(nodeLocations.get(otherNode), nodeLocations.get(aNode));
+                                newVec = calculateLinearForceVector(nodeLocations.getValue(otherNode), nodeLocations.getValue(aNode));
                             } else {
-                                newVec = calculateLogForceVector(nodeLocations.get(otherNode), nodeLocations.get(aNode));
+                                newVec = calculateLogForceVector(nodeLocations.getValue(otherNode), nodeLocations.getValue(aNode));
                             }
                             vec.add(newVec);
                         }
@@ -191,16 +191,16 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
 
                 final Node nodeId = leftNodes.iterator().next();
                 Node correspondingNodeId = getCorrespondingNodeFromSplit(nodeId, graph.getSplit(edges.get(0)));
-                Point3D bondDist = nodeLocations.get(nodeId).subtract(nodeLocations.get(correspondingNodeId));
+                Point3D bondDist = nodeLocations.getValue(nodeId).subtract(nodeLocations.getValue(correspondingNodeId));
                 double bondLength = bondDist.magnitude();
                 Point3D newForceVec = bondDist.add(vec.getX(), vec.getY(), vec.getZ());
                 Point3D move0 = newForceVec.multiply(bondLength / new Point3D(newForceVec.getX(), newForceVec.getY(), newForceVec.getZ()).magnitude());
-                final Point3D move = nodeLocations.get(correspondingNodeId).add(move0).subtract(nodeLocations.get(nodeId));
+                final Point3D move = nodeLocations.getValue(correspondingNodeId).add(move0).subtract(nodeLocations.getValue(nodeId));
 
                 if (!Double.isNaN(move.getX()) || !Double.isNaN(move.getY()) || !Double.isNaN(move.getZ())) {
                     // move all nodes in split
                     leftSplit.forEach(id -> {
-                        nodeLocations.put(id, nodeLocations.get(id).add(move));
+                        nodeLocations.put(id, nodeLocations.getValue(id).add(move));
                     });
                 }
             }
@@ -314,7 +314,7 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
         if (count > 0) {
             final Point3D center = new Point3D(averageX / count, averageY / count, averageZ / count);
             for (Node v : points.keys()) {
-                points.put(v, points.get(v).subtract(center));
+                points.put(v, points.getValue(v).subtract(center));
             }
         }
     }

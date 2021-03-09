@@ -57,7 +57,6 @@ public class SplitsBlock extends DataBlock {
     public SplitsBlock() {
         splits = new ArrayList<>();
         format = new SplitsNexusFormat();
-
         splitLabels = FXCollections.observableMap(new TreeMap<>());
     }
 

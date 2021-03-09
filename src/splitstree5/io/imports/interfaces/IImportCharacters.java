@@ -24,6 +24,7 @@ import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.datablocks.characters.CharactersType;
 
 import java.io.IOException;
 
@@ -42,4 +43,6 @@ public interface IImportCharacters extends IImporter {
     void setGap(char g);
 
     void setMissing(char m);
+
+    void setCharactersType(CharactersType charactersType);
 }

@@ -247,9 +247,9 @@ public class SplitsViewTab extends Graph2DTab<PhyloSplitsGraph> implements ISpli
                 if (edge.getOwner() == getGraph()) {
                     final NodeView2D nodeView;
                     if (selectedNodes.contains(edge.getSource()))
-                        nodeView = node2view.get(edge.getTarget());
+                        nodeView = node2view.getValue(edge.getTarget());
                     else
-                        nodeView = node2view.get(edge.getSource());
+                        nodeView = node2view.getValue(edge.getSource());
                     x += nodeView.getLocation().getX();
                     y += nodeView.getLocation().getY();
 
@@ -277,8 +277,8 @@ public class SplitsViewTab extends Graph2DTab<PhyloSplitsGraph> implements ISpli
                 anchorNode = e.getSource();
                 selectedNode = e.getTarget();
             }
-            final Point2D anchorPoint = node2view.get(anchorNode).getLocation();
-            final Point2D selectedPoint = node2view.get(selectedNode).getLocation();
+            final Point2D anchorPoint = node2view.getValue(anchorNode).getLocation();
+            final Point2D selectedPoint = node2view.getValue(selectedNode).getLocation();
             Point2D newSelectedPoint = GeometryUtilsFX.rotateAbout(selectedPoint, angle, anchorPoint);
             Point2D translate = newSelectedPoint.subtract(selectedPoint);
 
@@ -344,7 +344,7 @@ public class SplitsViewTab extends Graph2DTab<PhyloSplitsGraph> implements ISpli
         if ((sourceSize > targetSize) == useLargerSide) {
             nodeSelectionModel.selectItems(visited);
         } else {
-            final NodeSet others = graph.getNodesAsSet();
+            var others = graph.getNodesAsSet();
             others.removeAll(visited);
             nodeSelectionModel.selectItems(others);
         }

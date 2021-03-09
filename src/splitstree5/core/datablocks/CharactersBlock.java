@@ -188,6 +188,13 @@ public class CharactersBlock extends DataBlock {
     public void setDataType(CharactersType dataType) {
         this.dataType = dataType;
         resetSymbols();
+        if (dataType == CharactersType.DNA || dataType == CharactersType.RNA)
+            setMissingCharacter('n');
+        else if (dataType == CharactersType.Protein)
+            setMissingCharacter('x');
+        else
+            setMissingCharacter('?');
+
         setShortDescription(getInfo());
     }
 
@@ -204,7 +211,8 @@ public class CharactersBlock extends DataBlock {
     }
 
     public void setGapCharacter(char gapCharacter) {
-        this.gapCharacter = gapCharacter;
+        if (gapCharacter != 0)
+            this.gapCharacter = gapCharacter;
     }
 
     public char getMissingCharacter() {
@@ -212,7 +220,8 @@ public class CharactersBlock extends DataBlock {
     }
 
     public void setMissingCharacter(char missingCharacter) {
-        this.missingCharacter = missingCharacter;
+        if (missingCharacter != 0)
+            this.missingCharacter = missingCharacter;
     }
 
     public String getSymbolsForColor() {

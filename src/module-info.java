@@ -14,6 +14,8 @@ module splitstreefive {
     requires fx.platform.utils;
     requires com.install4j.runtime;
 
+    requires lpsolve;
+
     exports splitstree5.resources.css;
     exports splitstree5.resources.icons;
     exports splitstree5.resources.images;
@@ -24,10 +26,13 @@ module splitstreefive {
 
     exports splitstree5.main;
     exports splitstree5.core;
+    exports splitstree5.core.datablocks.characters;
     exports splitstree5.tools;
     exports splitstree5.utils;
     exports splitstree5.xtra;
     exports splitstree5.xtra.align;
+
+    exports splitstree5.core.algorithms.distances2splits.neighbornet;
 
     opens splitstree5.core.algorithms;
     opens splitstree5.core.algorithms.genomes2distances;

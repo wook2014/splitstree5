@@ -178,8 +178,8 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
         }
         for (Node w : v.children()) {
             computeTaxaAndValuesBelowRec(tree, w, tax2value, taxaBelow, traitValuesBelow);
-            taxa.or(taxaBelow.get(w));
-            values.or(traitValuesBelow.get(w));
+            taxa.or(taxaBelow.getValue(w));
+            values.or(traitValuesBelow.getValue(w));
         }
         taxaBelow.put(v, taxa);
         traitValuesBelow.put(v, values);
@@ -272,15 +272,15 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
      * @param looseSpecies
      */
     private void computeLooseSpeciesRec(Node v, NodeArray<BitSet> taxaBelow, NodeArray<BitSet> traitValuesBelow, Set<BitSet> looseSpecies) {
-        final int sizeV = traitValuesBelow.get(v).cardinality();
+        final int sizeV = traitValuesBelow.getValue(v).cardinality();
 
         int sumSizeChildren = 0;
         for (Node w : v.children()) {
-            sumSizeChildren += traitValuesBelow.get(w).cardinality();
+            sumSizeChildren += traitValuesBelow.getValue(w).cardinality();
         }
 
         if (sumSizeChildren == 0 || sizeV < sumSizeChildren)
-            looseSpecies.add(taxaBelow.get(v));
+            looseSpecies.add(taxaBelow.getValue(v));
         else for (Node w : v.children())
             computeLooseSpeciesRec(w, taxaBelow, traitValuesBelow, looseSpecies);
     }
@@ -294,9 +294,9 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
      * @param lacySpecies
      */
     private void computeLacySpeciesRec(Node v, NodeArray<BitSet> taxaBelow, NodeArray<BitSet> traitValuesBelow, Set<BitSet> lacySpecies) {
-        final int sizeV = traitValuesBelow.get(v).cardinality();
+        final int sizeV = traitValuesBelow.getValue(v).cardinality();
         if (sizeV == 1)
-            lacySpecies.add(taxaBelow.get(v));
+            lacySpecies.add(taxaBelow.getValue(v));
         else
             for (Node w : v.children())
                 computeLacySpeciesRec(w, taxaBelow, traitValuesBelow, lacySpecies);

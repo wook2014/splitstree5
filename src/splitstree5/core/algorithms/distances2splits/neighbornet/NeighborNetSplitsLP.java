@@ -20,11 +20,12 @@
 
 package splitstree5.core.algorithms.distances2splits.neighbornet;
 
-import jloda.thirdparty.LinearProgramming;
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
+import lpsolve.LPSolver;
 import splitstree5.core.misc.ASplit;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.BitSet;
 
@@ -45,7 +46,7 @@ public class NeighborNetSplitsLP {
      * @return weighted splits
      * @throws CanceledException
      */
-    static public ArrayList<ASplit> compute(int nTax, int[] cycle, double[][] distances, double cutoff, ProgressListener progress) throws CanceledException {
+    static public ArrayList<ASplit> compute(int nTax, int[] cycle, double[][] distances, double cutoff, ProgressListener progress) throws IOException {
         //Handle n=1,2 separately.
         if (nTax == 1) {
             return new ArrayList<>();
@@ -65,33 +66,38 @@ public class NeighborNetSplitsLP {
         final var nSplits = all.size();
         final int nPairs = (nTax * (nTax - 1)) / 2;
 
+        final LPSolver lpSolver = new LPSolver(nPairs, nSplits);
+        System.err.println("LP: " + nPairs + " rows, " + nSplits + " cols");
+
         final var c = new double[nSplits]; // 0-based
-
-        final var A = new double[nPairs][nSplits];
-        final var b = new double[nPairs];
-
+        progress.setSubtask("Setting up LP");
+        progress.setMaximum(nPairs);
+        progress.setProgress(0);
         {
-            int pair = 0;
             for (int i = 0; i < nTax; i++) {
                 for (int j = i + 1; j < nTax; j++) {
-                    final var row = A[pair];
-                    b[pair] = distances[i][j];
+                    final var row = new double[nSplits];
+                    final double b = distances[i][j];
 
                     for (int s = 0; s < nSplits; s++) {
                         var split = all.get(s);
                         if (split.separates(i + 1, j + 1)) {
-                            c[s]++;
+                            c[s]--;
                             row[s] = 1;
                         } else
                             row[s] = 0;
                     }
-                    pair++;
+                    lpSolver.addConstraint(row, b);
+                    progress.incrementProgress();
                 }
             }
         }
-        final LinearProgramming lp = new LinearProgramming(A, b, c);
-        //System.err.println("Value: "+lp.value());
-        final double[] weights = lp.primal();
+        lpSolver.setObjectiveFunction(c);
+
+        progress.setSubtask("Running LP");
+        progress.setMaximum(-1);
+
+        final double[] weights = lpSolver.solve();
 
         final ArrayList<ASplit> splits = new ArrayList<>();
 

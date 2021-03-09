@@ -21,6 +21,7 @@
 package splitstree5.io.imports.NeXML;
 
 import jloda.fx.window.NotificationManager;
+import jloda.graphs.algorithms.IsTree;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
 import jloda.util.ProgressListener;
@@ -64,7 +65,7 @@ public class NexmlTreesImporter implements IToTrees, IImportTrees {
             boolean hasRootWithOutdegree2 = false;
 
             for (PhyloTree t : handler.getTrees()) {
-                if (t.isTree()) {
+                if (IsTree.apply(t)) {
                     if (t.getRoot() == null) {
                         t.setRoot(t.getFirstNode());
                         for (var v : t.nodes()) {

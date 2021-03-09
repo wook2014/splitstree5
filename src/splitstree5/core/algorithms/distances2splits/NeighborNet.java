@@ -22,12 +22,10 @@ package splitstree5.core.algorithms.distances2splits;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetCycle;
 import splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetSplits;
-import splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetSplitsLP;
 import splitstree5.core.algorithms.interfaces.IFromDistances;
 import splitstree5.core.algorithms.interfaces.IToSplits;
 import splitstree5.core.datablocks.DistancesBlock;
@@ -37,6 +35,7 @@ import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
 import splitstree5.utils.SplitsUtilities;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -48,7 +47,8 @@ import java.util.List;
  * @author David Bryant and Daniel Huson
  */
 public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implements IFromDistances, IToSplits {
-    public enum WeightsAlgorithm {NNet2004, NNet2021, LP}
+    // public enum WeightsAlgorithm {NNet2004, NNet2021, LP}
+    public enum WeightsAlgorithm {NNet2004, NNet2021}
 
     private final ObjectProperty<WeightsAlgorithm> optionWeights = new SimpleObjectProperty<>(WeightsAlgorithm.NNet2004);
 
@@ -67,7 +67,7 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
      * run the neighbor net algorithm
      */
     @Override
-    public void compute(ProgressListener progress, TaxaBlock taxaBlock, DistancesBlock distancesBlock, SplitsBlock splitsBlock) throws InterruptedException, CanceledException {
+    public void compute(ProgressListener progress, TaxaBlock taxaBlock, DistancesBlock distancesBlock, SplitsBlock splitsBlock) throws InterruptedException, IOException {
 
         if (SplitsUtilities.computeSplitsForLessThan4Taxa(taxaBlock, distancesBlock, splitsBlock))
             return;
@@ -80,12 +80,15 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
 
         final ArrayList<ASplit> splits;
 
-        if (getOptionWeights().equals(WeightsAlgorithm.LP))
-            splits = NeighborNetSplitsLP.compute(taxaBlock.getNtax(), cycle, distancesBlock.getDistances(), 0.000001, progress);
-        else
-            splits = NeighborNetSplits.compute(getOptionWeights().equals(WeightsAlgorithm.NNet2021),
-                    taxaBlock.getNtax(), cycle, distancesBlock.getDistances(), distancesBlock.getVariances(), 0.000001, NeighborNetSplits.LeastSquares.ols, NeighborNetSplits.Regularization.nnls, 1,
-                    progress);
+        final long start = System.currentTimeMillis();
+
+
+        //  if (getOptionWeights().equals(WeightsAlgorithm.LP))
+        //      splits = NeighborNetSplitsLP.compute(taxaBlock.getNtax(), cycle, distancesBlock.getDistances(), 0.000001, progress);
+        //  else
+        splits = NeighborNetSplits.compute(getOptionWeights().equals(WeightsAlgorithm.NNet2021),
+                taxaBlock.getNtax(), cycle, distancesBlock.getDistances(), distancesBlock.getVariances(), 0.000001, NeighborNetSplits.LeastSquares.ols, NeighborNetSplits.Regularization.nnls, 1,
+                progress);
 
         if (Compatibility.isCompatible(splits))
             splitsBlock.setCompatibility(Compatibility.compatible);
@@ -95,6 +98,10 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
         splitsBlock.setFit(SplitsUtilities.computeLeastSquaresFit(distancesBlock, splits));
 
         splitsBlock.getSplits().addAll(splits);
+
+        System.err.println("weights: " + Math.round((System.currentTimeMillis() - start)) + "ms");
+
+
     }
 
     @Override

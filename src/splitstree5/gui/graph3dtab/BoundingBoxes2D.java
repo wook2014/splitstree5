@@ -61,7 +61,7 @@ public class BoundingBoxes2D {
                     node2rectangle.remove(node);
                 }
                 for (jloda.graph.Node node : c.getAddedSubList()) {
-                    final NodeView3D nodeView = (NodeView3D) node2view.get(node);
+                    final NodeView3D nodeView = (NodeView3D) node2view.getValue(node);
                     final Rectangle rect = createBoundingBoxWithBinding(bottomPane, nodeView.getShape(), properties);
                     node2rectangle.put(node, rect);
                     rectangles.getChildren().add(rect);

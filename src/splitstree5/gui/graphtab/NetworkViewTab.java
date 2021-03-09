@@ -36,7 +36,7 @@ import splitstree5.core.algorithms.views.NetworkEmbedder;
 import splitstree5.gui.graphtab.base.*;
 import splitstree5.gui.graphtab.commands.MoveNodesCommand;
 import splitstree5.menu.MenuController;
-import splitstree5.xtra.Legend;
+import splitstree5.utils.Legend;
 
 import java.util.HashSet;
 import java.util.Set;

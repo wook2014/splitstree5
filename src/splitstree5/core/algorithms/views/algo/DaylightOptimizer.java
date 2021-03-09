@@ -121,8 +121,8 @@ public class DaylightOptimizer {
                 // as observed from v
                 final double angle;
                 {
-                    Point2D vp = node2point.get(v);
-                    Point2D wp = node2point.get(w);
+                    Point2D vp = node2point.getValue(v);
+                    Point2D wp = node2point.getValue(w);
                     angle = GeometryUtilsFX.computeAngle(wp.subtract(vp));
                 }
                 Pair<Double, Double> minMaxAngle = new Pair<>(angle, angle); // will contain min and max angles of component
@@ -183,7 +183,7 @@ public class DaylightOptimizer {
                 if (f != e && edge2comp.getValue(f) == 0) {
                     edge2comp.set(f, numComp);
                     Node w = graph.getOpposite(v, f);
-                    double newAngle = angle + GeometryUtilsFX.computeObservedAngle(node2point.get(root), node2point.get(v), node2point.get(w));
+                    double newAngle = angle + GeometryUtilsFX.computeObservedAngle(node2point.getValue(root), node2point.getValue(v), node2point.getValue(w));
                     if (newAngle < minMaxAngle.getFirst())
                         minMaxAngle.setFirst(newAngle);
                     if (newAngle > minMaxAngle.getSecond())

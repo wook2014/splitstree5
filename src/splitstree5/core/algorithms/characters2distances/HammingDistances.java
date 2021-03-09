@@ -22,8 +22,11 @@ package splitstree5.core.algorithms.characters2distances;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import jloda.fx.util.ProgramExecutorService;
 import jloda.fx.window.NotificationManager;
+import jloda.util.Counter;
 import jloda.util.ProgressListener;
+import jloda.util.Single;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;
 import splitstree5.core.algorithms.interfaces.IFromCharacters;
@@ -34,6 +37,8 @@ import splitstree5.core.datablocks.TaxaBlock;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * hamming distances
@@ -63,35 +68,59 @@ public class HammingDistances extends Algorithm<CharactersBlock, DistancesBlock>
 
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxa, CharactersBlock characters, DistancesBlock distances) throws Exception {
-        progress.setMaximum(taxa.getNtax());
+        progress.setMaximum(((long) taxa.getNtax() * taxa.getNtax()) / 2 - taxa.getNtax());
 
         distances.setNtax(characters.getNtax());
 
-        int numMissing = 0;
-        final int ntax = taxa.getNtax();
-        for (int s = 1; s <= ntax; s++) {
-            for (int t = s + 1; t <= ntax; t++) {
-                final PairwiseCompare seqPair = new PairwiseCompare(characters, s, t);
-                double p = 1.0;
+        var service = Executors.newFixedThreadPool(ProgramExecutorService.getNumberOfCoresToUse());
 
-                final double[][] F = seqPair.getF();
+        var numMissing = new Counter();
+        var exception = new Single<Exception>(null);
 
-                if (F == null) {
-                    numMissing++;
-                } else {
-                    for (int x = 0; x < seqPair.getNumStates(); x++) {
-                        p = p - F[x][x];
-                    }
+        try {
+            final int ntax = taxa.getNtax();
+            for (int s0 = 1; s0 <= ntax; s0++) {
+                for (int t0 = s0 + 1; t0 <= ntax; t0++) {
+                    final var s = s0;
+                    final var t = t0;
+                    service.submit(() -> {
+                        if (exception.isNull()) {
+                            try {
+                                final PairwiseCompare seqPair = new PairwiseCompare(characters, s, t);
+                                double p = 1.0;
 
-                    if (!isOptionNormalize())
-                        p = Math.round(p * seqPair.getNumNotMissing());
+                                final double[][] F = seqPair.getF();
+
+                                if (F == null) {
+                                    numMissing.increment();
+                                } else {
+                                    for (int x = 0; x < seqPair.getNumStates(); x++) {
+                                        p = p - F[x][x];
+                                    }
+
+                                    if (!isOptionNormalize())
+                                        p = Math.round(p * seqPair.getNumNotMissing());
+                                }
+                                distances.set(s, t, p);
+                                distances.set(t, s, p);
+                                progress.incrementProgress();
+                            } catch (Exception ex) {
+                                exception.setIfCurrentValueIsNull(ex);
+                            }
+                        }
+                    });
                 }
-                distances.set(s, t, p);
-                distances.set(t, s, p);
             }
-            progress.incrementProgress();
+        } finally {
+            service.shutdown();
+            //noinspection ResultOfMethodCallIgnored
+            service.awaitTermination(1000, TimeUnit.DAYS);
         }
-        if (numMissing > 0)
+
+        if (exception.isNotNull())
+            throw exception.get();
+
+        if (numMissing.get() > 0)
             NotificationManager.showWarning("Proceed with caution: " + numMissing + " saturated or missing entries in the distance matrix");
     }
 

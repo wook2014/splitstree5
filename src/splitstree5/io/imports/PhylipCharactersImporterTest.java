@@ -33,8 +33,8 @@ import splitstree5.io.nexus.TaxaNexusOutput;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
 
@@ -98,7 +98,7 @@ public class PhylipCharactersImporterTest {
 
     @Test
     public void isApplicable() throws IOException {
-        ArrayList<String> applicableFiles = new ArrayList<>();
+        var applicableFiles = new HashSet<>();
 
         File directory = new File("test/notNexusFiles");
         File[] directoryListing = directory.listFiles();
@@ -109,7 +109,7 @@ public class PhylipCharactersImporterTest {
             }
         }
         System.err.println(applicableFiles);
-        assertEquals(applicableFiles, Arrays.asList("interleaved-multi.phy", "interleaved.phy", "standard.phy", "standardEOL.phy"));
+        assertEquals(applicableFiles, new HashSet<>(Arrays.asList("interleaved-multi.phy", "interleaved.phy", "standard.phy", "standardEOL.phy")));
     }
 
 }

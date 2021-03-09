@@ -58,9 +58,6 @@ public class NewickTreeImporter implements IToTrees, IImportTrees {
      * @throws CanceledException
      */
     public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, TreesBlock trees) throws IOException, CanceledException {
-        taxa.clear();
-        trees.clear();
-
         int lineno = 0;
         try (FileLineIterator it = new FileLineIterator(inputFile)) {
             progressListener.setMaximum(it.getMaximumProgress());

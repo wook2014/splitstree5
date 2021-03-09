@@ -82,7 +82,7 @@ public class FontSizeIncrementCommand extends UndoableRedoableCommand {
 
         if (nodes != null && node2view != null) {
             for (Node v : nodes) {
-                RichTextLabel label = node2view.get(v).getLabel();
+                RichTextLabel label = node2view.getValue(v).getLabel();
                 if (label != null) {
                     final double size = (label.getFont().getSize() - increment);
                     if (size >= 0) {
@@ -98,7 +98,7 @@ public class FontSizeIncrementCommand extends UndoableRedoableCommand {
         }
         if (edges != null && edge2view != null) {
             for (Edge v : edges) {
-                Labeled label = edge2view.get(v).getLabel();
+                Labeled label = edge2view.getValue(v).getLabel();
                 if (label != null) {
                     final double size = (label.getFont().getSize() - increment);
                     if (size >= 0) {
@@ -122,7 +122,7 @@ public class FontSizeIncrementCommand extends UndoableRedoableCommand {
 
         if (nodes != null && node2view != null) {
             for (Node v : nodes) {
-                RichTextLabel label = node2view.get(v).getLabel();
+                RichTextLabel label = node2view.getValue(v).getLabel();
                 if (label != null) {
                     final double size = (label.getFont().getSize() + increment);
                     if (font == null || !label.getFont().equals(font)) {
@@ -136,7 +136,7 @@ public class FontSizeIncrementCommand extends UndoableRedoableCommand {
         }
         if (edges != null && edge2view != null) {
             for (Edge v : edges) {
-                Labeled label = edge2view.get(v).getLabel();
+                Labeled label = edge2view.getValue(v).getLabel();
                 if (label != null) {
                     final double size = (label.getFont().getSize() + increment);
                     if (font == null || !label.getFont().equals(font)) {

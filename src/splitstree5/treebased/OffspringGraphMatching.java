@@ -46,7 +46,7 @@ public class OffspringGraphMatching {
         }
 
         for (Edge e : tree.edges()) {
-            graph.newEdge(tree2a.get(e.getSource()), tree2b.get(e.getTarget()));
+            graph.newEdge(tree2a.getValue(e.getSource()), tree2b.getValue(e.getTarget()));
         }
 
         final NodeSet oneSide = new NodeSet(graph);

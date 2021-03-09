@@ -73,16 +73,16 @@ public class MoveNodesCommand extends UndoableRedoableCommand {
         final Set<Edge> edges2Update = new HashSet<>();
         for (Node v : nodes) {
             if (v.getOwner() != null) {
-                ((NodeView2D) node2view.get(v)).translateCoordinates(-deltaX, -deltaY);
+                ((NodeView2D) node2view.getValue(v)).translateCoordinates(-deltaX, -deltaY);
                 for (Edge e : v.adjacentEdges()) {
                     edges2Update.add(e);
                 }
             }
         }
         for (Edge e : edges2Update) {
-            final Point2D src = ((NodeView2D) node2view.get(e.getSource())).getLocation();
-            final Point2D tar = ((NodeView2D) node2view.get(e.getTarget())).getLocation();
-            ((EdgeView2D) edge2view.get(e)).setCoordinates(src, tar);
+            final Point2D src = ((NodeView2D) node2view.getValue(e.getSource())).getLocation();
+            final Point2D tar = ((NodeView2D) node2view.getValue(e.getTarget())).getLocation();
+            ((EdgeView2D) edge2view.getValue(e)).setCoordinates(src, tar);
         }
         if (polygons != null) {
             polygons.forEach(PolygonView2D::update);
@@ -94,7 +94,7 @@ public class MoveNodesCommand extends UndoableRedoableCommand {
         final Set<Edge> edges2Update = new HashSet<>();
         for (Node v : nodes) {
             if (v.getOwner() != null) {
-                ((NodeView2D) node2view.get(v)).translateCoordinates(deltaX, deltaY);
+                ((NodeView2D) node2view.getValue(v)).translateCoordinates(deltaX, deltaY);
                 for (Edge e : v.adjacentEdges()) {
                     edges2Update.add(e);
                 }
@@ -102,9 +102,9 @@ public class MoveNodesCommand extends UndoableRedoableCommand {
         }
         for (Edge e : edges2Update) {
             if (e.getOwner() != null) {
-                final Point2D src = ((NodeView2D) node2view.get(e.getSource())).getLocation();
-                final Point2D tar = ((NodeView2D) node2view.get(e.getTarget())).getLocation();
-                ((EdgeView2D) edge2view.get(e)).setCoordinates(src, tar);
+                final Point2D src = ((NodeView2D) node2view.getValue(e.getSource())).getLocation();
+                final Point2D tar = ((NodeView2D) node2view.getValue(e.getTarget())).getLocation();
+                ((EdgeView2D) edge2view.getValue(e)).setCoordinates(src, tar);
             }
         }
         if (polygons != null) {

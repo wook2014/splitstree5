@@ -310,7 +310,7 @@ public class BoxOptimizer {
                     currentClock = angleAB;
                 }
             }
-            onlyOneEdge = GeometryUtilsFX.squaredDistance(node2point.get(NodeA), node2point.get(firstNodeA)) < 0.0000000000001;
+            onlyOneEdge = GeometryUtilsFX.squaredDistance(node2point.getValue(NodeA), node2point.getValue(firstNodeA)) < 0.0000000000001;
         }
         if (onlyOneEdge) {
             return new Pair<>(2 * Math.PI, -2 * Math.PI);
@@ -369,18 +369,18 @@ public class BoxOptimizer {
 
                     Iterator AdjNodes = (CurrentEdge.getSource()).adjacentNodes().iterator();
 
-                    while ((a2Edge.get(CurrentEdge) == null) && (AdjNodes.hasNext())) {
+                    while ((a2Edge.getValue(CurrentEdge) == null) && (AdjNodes.hasNext())) {
                         Node AdjNode = (Node) AdjNodes.next();
                         if (AdjNode != CurrentEdge.getTarget()) {
 
                             for (Edge ParallEdge : AdjNode.adjacentEdges()) {
                                 if (graph.getSplit(ParallEdge) == graph.getSplit(CurrentEdge)) {
-                                    if (a1Edge.get(CurrentEdge) == null) {
+                                    if (a1Edge.getValue(CurrentEdge) == null) {
                                         a1Edge.put(CurrentEdge, ParallEdge);
                                         adjNb.put(CurrentEdge, 1);
                                         //System.out.println("First parallel neighbour of "+CurrentEdge+" : "+ParallEdge);
                                     } else {
-                                        if (a2Edge.get(CurrentEdge) == null) {
+                                        if (a2Edge.getValue(CurrentEdge) == null) {
                                             a2Edge.put(CurrentEdge, ParallEdge);
                                             adjNb.put(CurrentEdge, 2);
                                             //System.out.println("Second parallel neighbour of "+CurrentEdge+" : "+ParallEdge);
@@ -397,28 +397,28 @@ public class BoxOptimizer {
                 //Not necessary CurrentEdges=(List) EdgeSplits.get(CurrentSplit);
                 CurrentEdgesIt = currentEdges.iterator();
                 CurrentEdge = (Edge) CurrentEdgesIt.next();
-                while ((CurrentEdgesIt.hasNext()) && (adjNb.get(CurrentEdge) != 1)) {
+                while ((CurrentEdgesIt.hasNext()) && (adjNb.getValue(CurrentEdge) != 1)) {
                     CurrentEdge = (Edge) CurrentEdgesIt.next();
                     //System.out.println("Current edge "+CurrentEdge+" : "+((Integer) AdjNb.get(CurrentEdge)).intValue());
                 }
 
                 //We check if everything is all right:
-                if ((adjNb.get(CurrentEdge)) != 1) {
-                    System.out.println("(the graph is not planar! Big Problem here!!! " + adjNb.get(CurrentEdge));
+                if ((adjNb.getValue(CurrentEdge)) != 1) {
+                    System.out.println("(the graph is not planar! Big Problem here!!! " + adjNb.getValue(CurrentEdge));
                 }
 
                 //Then we go through all the edges of the split to identify the 4 extreme nodes,
                 //so our stop condition is to reach the other extreme edge
-                Edge TheNextEdge = a1Edge.get(CurrentEdge);
+                Edge TheNextEdge = a1Edge.getValue(CurrentEdge);
                 currentEdges = new ArrayList<>();
-                while ((adjNb.get(TheNextEdge)) > 1) {
+                while ((adjNb.getValue(TheNextEdge)) > 1) {
                     currentEdges.add(CurrentEdge);
-                    if (a1Edge.get(TheNextEdge) == CurrentEdge) {
+                    if (a1Edge.getValue(TheNextEdge) == CurrentEdge) {
                         CurrentEdge = TheNextEdge;
-                        TheNextEdge = a2Edge.get(TheNextEdge);
+                        TheNextEdge = a2Edge.getValue(TheNextEdge);
                     } else {
                         CurrentEdge = TheNextEdge;
-                        TheNextEdge = a1Edge.get(TheNextEdge);
+                        TheNextEdge = a1Edge.getValue(TheNextEdge);
                     }
                 }
 
@@ -486,7 +486,7 @@ public class BoxOptimizer {
             previousNode2 = currentNode2;
         }
         assignCoordinatesToNodes(start, getOptionUseWeights(), graph, node2point); // we need this to detect collisions
-        double firstBoxAngle = GeometryUtilsFX.deg2rad(GeometryUtilsFX.basicComputeAngle(node2point.get(zeNode1), node2point.get(zeNode2), node2point.get((previousNode1))));
+        double firstBoxAngle = GeometryUtilsFX.deg2rad(GeometryUtilsFX.basicComputeAngle(node2point.getValue(zeNode1), node2point.getValue(zeNode2), node2point.getValue((previousNode1))));
 
         //We go through the 2 parts of the graph to find "defender" and "striker" nodes
         if (firstBoxAngle < Math.PI) {
@@ -602,9 +602,9 @@ public class BoxOptimizer {
             if (!dontCompute) {
                 if (v != angle1in) {
                     if ((specialNode == 1) || (specialNode == 3)) {
-                        newAngle1 = GeometryUtilsFX.deg2rad(GeometryUtilsFX.basicComputeAngle(node2point.get(angle1in), node2point.get(v), node2point.get(angle1out)));
+                        newAngle1 = GeometryUtilsFX.deg2rad(GeometryUtilsFX.basicComputeAngle(node2point.getValue(angle1in), node2point.getValue(v), node2point.getValue(angle1out)));
                     } else {
-                        newAngle1 = previousAngle1 + GeometryUtilsFX.deg2rad(GeometryUtilsFX.signedDiffAngle(GeometryUtilsFX.basicComputeAngle(node2point.get(angle1in), node2point.get(v), node2point.get(angle1out)), previousAngle1));
+                        newAngle1 = previousAngle1 + GeometryUtilsFX.deg2rad(GeometryUtilsFX.signedDiffAngle(GeometryUtilsFX.basicComputeAngle(node2point.getValue(angle1in), node2point.getValue(v), node2point.getValue(angle1out)), previousAngle1));
                     }
                     if (newAngle1 < foundParameters[0]) {
                         foundParameters[0] = newAngle1;
@@ -613,9 +613,9 @@ public class BoxOptimizer {
 
                 if (v != angle2in) {
                     if ((specialNode == 2) || (specialNode == 3)) {
-                        newAngle2 = GeometryUtilsFX.deg2rad(GeometryUtilsFX.basicComputeAngle(node2point.get(angle2in), node2point.get(angle2out), node2point.get(v)));
+                        newAngle2 = GeometryUtilsFX.deg2rad(GeometryUtilsFX.basicComputeAngle(node2point.getValue(angle2in), node2point.getValue(angle2out), node2point.getValue(v)));
                     } else {
-                        newAngle2 = previousAngle2 + GeometryUtilsFX.deg2rad(GeometryUtilsFX.signedDiffAngle(GeometryUtilsFX.basicComputeAngle(node2point.get(angle2in), node2point.get(angle2out), node2point.get(v)), previousAngle2));
+                        newAngle2 = previousAngle2 + GeometryUtilsFX.deg2rad(GeometryUtilsFX.signedDiffAngle(GeometryUtilsFX.basicComputeAngle(node2point.getValue(angle2in), node2point.getValue(angle2out), node2point.getValue(v)), previousAngle2));
                     }
                     if (newAngle2 < foundParameters[1]) {
                         foundParameters[1] = newAngle2;
@@ -626,13 +626,13 @@ public class BoxOptimizer {
             for (Edge f : v.adjacentEdges()) {
                 if (f != e) {
                     Node w = graph.getOpposite(v, f);
-                    localDontCompute = GeometryUtilsFX.squaredDistance(node2point.get(w), node2point.get(v)) <= 0.0000000000001;
+                    localDontCompute = GeometryUtilsFX.squaredDistance(node2point.getValue(w), node2point.getValue(v)) <= 0.0000000000001;
                     if (v == angle1in) {
                         if (dontCompute) {
                             visitComponentRec2(w, f, specialNode, previousAngle1, previousAngle2, angle1in, angle1out, angle2in, angle2out, graph, node2point, visited, foundParameters, localDontCompute);
                         } else {
                             //If the two extreme nodes are together, notice it:
-                            if (GeometryUtilsFX.squaredDistance(node2point.get(angle1in), node2point.get(angle2in)) > 0.0000000000001) {
+                            if (GeometryUtilsFX.squaredDistance(node2point.getValue(angle1in), node2point.getValue(angle2in)) > 0.0000000000001) {
                                 visitComponentRec2(w, f, 1, newAngle1, newAngle2, angle1in, angle1out, angle2in, angle2out, graph, node2point, visited, foundParameters, localDontCompute);
                             } else {
                                 visitComponentRec2(w, f, 3, newAngle1, newAngle2, angle1in, angle1out, angle2in, angle2out, graph, node2point, visited, foundParameters, localDontCompute);
@@ -644,7 +644,7 @@ public class BoxOptimizer {
                                 visitComponentRec2(w, f, specialNode, previousAngle1, previousAngle2, angle1in, angle1out, angle2in, angle2out, graph, node2point, visited, foundParameters, localDontCompute);
                             } else {
                                 //If the two extreme nodes are together, notice it
-                                if (GeometryUtilsFX.squaredDistance(node2point.get(angle1in), node2point.get(angle2in)) > 0.0000000000001) {
+                                if (GeometryUtilsFX.squaredDistance(node2point.getValue(angle1in), node2point.getValue(angle2in)) > 0.0000000000001) {
                                     visitComponentRec2(w, f, 2, newAngle1, newAngle2, angle1in, angle1out, angle2in, angle2out, graph, node2point, visited, foundParameters, localDontCompute);
                                 } else {
                                     visitComponentRec2(w, f, 3, newAngle1, newAngle2, angle1in, angle1out, angle2in, angle2out, graph, node2point, visited, foundParameters, localDontCompute);
@@ -681,12 +681,12 @@ public class BoxOptimizer {
         if (!visited.contains(v)) {
             visited.add(v);
 
-            double newAngle1 = previousAngle1 + GeometryUtilsFX.deg2rad(GeometryUtilsFX.signedDiffAngle(GeometryUtilsFX.basicComputeAngle(node2point.get(angle1in), node2point.get(v), node2point.get(angle1out)), previousAngle1 + Math.PI));
+            double newAngle1 = previousAngle1 + GeometryUtilsFX.deg2rad(GeometryUtilsFX.signedDiffAngle(GeometryUtilsFX.basicComputeAngle(node2point.getValue(angle1in), node2point.getValue(v), node2point.getValue(angle1out)), previousAngle1 + Math.PI));
             if (newAngle1 > foundParameters[0]) {
                 foundParameters[0] = newAngle1;
             }
 
-            double newAngle2 = previousAngle2 + GeometryUtilsFX.deg2rad(GeometryUtilsFX.signedDiffAngle(GeometryUtilsFX.basicComputeAngle(node2point.get(angle2in), node2point.get(angle2out), node2point.get(v)), previousAngle2 + Math.PI));
+            double newAngle2 = previousAngle2 + GeometryUtilsFX.deg2rad(GeometryUtilsFX.signedDiffAngle(GeometryUtilsFX.basicComputeAngle(node2point.getValue(angle2in), node2point.getValue(angle2out), node2point.getValue(v)), previousAngle2 + Math.PI));
             if (newAngle2 > foundParameters[1]) {
                 foundParameters[1] = newAngle2;
             }
@@ -731,7 +731,7 @@ public class BoxOptimizer {
                 int s = graph.getSplit(e);
                 if (!splitsInPath.get(s)) {
                     Node w = graph.getOpposite(v, e);
-                    Point2D p = GeometryUtilsFX.translateByAngle(node2point.get(v), GeometryUtilsFX.rad2deg(graph.getAngle(e)), useWeights ? graph.getWeight(e) : 1);
+                    Point2D p = GeometryUtilsFX.translateByAngle(node2point.getValue(v), GeometryUtilsFX.rad2deg(graph.getAngle(e)), useWeights ? graph.getWeight(e) : 1);
                     node2point.put(w, p);
                     splitsInPath.set(s, true);
                     assignCoordinatesToNodesRec(w, splitsInPath, nodesVisited, useWeights, graph, node2point);

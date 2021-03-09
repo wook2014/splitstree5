@@ -74,12 +74,12 @@ public class ViewerNexusOutput extends NexusIOBase implements INexusOutput<Viewe
         {
             boolean first = true;
             for (Node node : graph.nodes()) {
-                if (graphTab.getNode2view().get(node) instanceof NodeView2D) {
+                if (graphTab.getNode2view().getValue(node) instanceof NodeView2D) {
                     if (first)
                         first = false;
                     else
                         w.write(",\n");
-                    NodeView2D nodeView2D = (NodeView2D) graphTab.getNode2view().get(node);
+                    NodeView2D nodeView2D = (NodeView2D) graphTab.getNode2view().getValue(node);
                     w.write("\t" + NodeViewIO.toOutputString(nodeView2D));
                 } else {
                     System.err.println("Not implemented");
@@ -93,12 +93,12 @@ public class ViewerNexusOutput extends NexusIOBase implements INexusOutput<Viewe
         {
             boolean first = true;
             for (Edge edge : graph.edges()) {
-                if (graphTab.getEdge2view().get(edge) instanceof EdgeView2D) {
+                if (graphTab.getEdge2view().getValue(edge) instanceof EdgeView2D) {
                     if (first)
                         first = false;
                     else
                         w.write(",\n");
-                    EdgeView2D ev = (EdgeView2D) graphTab.getEdge2view().get(edge);
+                    EdgeView2D ev = (EdgeView2D) graphTab.getEdge2view().getValue(edge);
                     w.write("\t" + EdgeViewIO.toString(ev));
                     if (graph instanceof PhyloSplitsGraph) {
                         final int s = ((PhyloSplitsGraph) graph).getSplit(edge);

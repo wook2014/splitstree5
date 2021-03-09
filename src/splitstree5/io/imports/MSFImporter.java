@@ -38,9 +38,6 @@ public class MSFImporter extends CharactersFormat implements IToCharacters, IImp
 
     @Override
     public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxaBlock, CharactersBlock dataBlock) throws CanceledException, IOException {
-
-        taxaBlock.clear();
-
         Map<String, String> taxa2seq = new LinkedHashMap<>();
         boolean charStarted = false;
 
@@ -102,10 +99,7 @@ public class MSFImporter extends CharactersFormat implements IToCharacters, IImp
 
     }
 
-    private void setCharacters(Map<String, String> taxa2seq, int ntax, int nchar, CharactersBlock characters)
-            throws IOException {
-
-        characters.clear();
+    private void setCharacters(Map<String, String> taxa2seq, int ntax, int nchar, CharactersBlock characters) throws IOException {
         characters.setDimension(ntax, nchar);
         characters.setDataType(this.dataType);
         // todo check valid characters

@@ -44,7 +44,7 @@ import splitstree5.gui.graphtab.NetworkViewTab;
 import splitstree5.gui.graphtab.base.EdgeViewBase;
 import splitstree5.gui.graphtab.base.GraphLayout;
 import splitstree5.gui.graphtab.base.NodeView2D;
-import splitstree5.xtra.Legend;
+import splitstree5.utils.Legend;
 
 import java.util.Arrays;
 import java.util.List;
@@ -99,8 +99,8 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
             if not - use standard function
          */
         for (Node v : graph.nodes()) {
-            if (node2data.get(v).get("x") != null & node2data.get(v).get("y") != null)
-                node2point.setValue(v, new Point2D(Double.parseDouble(node2data.get(v).get("x")), Double.parseDouble(node2data.get(v).get("y"))));
+            if (node2data.getValue(v).get("x") != null & node2data.getValue(v).get("y") != null)
+                node2point.setValue(v, new Point2D(Double.parseDouble(node2data.getValue(v).get("x")), Double.parseDouble(node2data.getValue(v).get("y"))));
         }
 
         TreeEmbedder.scaleAndCenterToFitTarget(GraphLayout.Radial, viewTab.getTargetDimensions(), node2point, true);
@@ -224,11 +224,11 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
         for (Edge e : graph.edges()) {
             final EdgeViewBase edgeView;
 
-            if (Basic.isArrayOfIntegers(edge2data.get(e).get("sites"))) {
-                final int[] mutations = Basic.parseArrayOfIntegers(edge2data.get(e).get("sites"));
-                edgeView = viewTab.createEdgeView(e, node2point.get(e.getSource()), node2point.get(e.getTarget()), mutations, getOptionShowMutations());
+            if (Basic.isArrayOfIntegers(edge2data.getValue(e).get("sites"))) {
+                final int[] mutations = Basic.parseArrayOfIntegers(edge2data.getValue(e).get("sites"));
+                edgeView = viewTab.createEdgeView(e, node2point.getValue(e.getSource()), node2point.getValue(e.getTarget()), mutations, getOptionShowMutations());
             } else
-                edgeView = viewTab.createEdgeView(e, node2point.get(e.getSource()), node2point.get(e.getTarget()), null);
+                edgeView = viewTab.createEdgeView(e, node2point.getValue(e.getSource()), node2point.getValue(e.getTarget()), null);
 
             viewTab.getEdge2view().put(e, edgeView);
             viewTab.getEdgesGroup().getChildren().add(edgeView.getShapeGroup());
@@ -270,7 +270,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
         }
 
         for (Edge src : srcGraph.edges()) {
-            final Edge tar = tarGraph.newEdge(src2tar.get(src.getSource()), src2tar.get(src.getTarget()));
+            final Edge tar = tarGraph.newEdge(src2tar.getValue(src.getSource()), src2tar.getValue(src.getTarget()));
             tarGraph.setWeight(tar, srcGraph.getWeight(src));
             tarGraph.setLabel(tar, srcGraph.getLabel(src));
             tarEdge2Data.put(tar, networkBlock.getEdgeData(src));
@@ -318,12 +318,12 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
         int i = 0;
         for (Node v : graph.nodes()) {
             if (startFromCurrent) {
-                Point2D p = node2view.get(v);
-                xPos.set(v, p.getX());
-                yPos.set(v, p.getY());
+                Point2D p = node2view.getValue(v);
+                xPos.put(v, p.getX());
+                yPos.put(v, p.getY());
             } else {
-                xPos.set(v, 1000 * Math.sin(6.24 * i / graph.getNumberOfNodes()));
-                yPos.set(v, 1000 * Math.cos(6.24 * i / graph.getNumberOfNodes()));
+                xPos.put(v, 1000 * Math.sin(6.24 * i / graph.getNumberOfNodes()));
+                yPos.put(v, 1000 * Math.cos(6.24 * i / graph.getNumberOfNodes()));
                 i++;
             }
         }
@@ -355,11 +355,11 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
                         dist = 1e-3;
                     double repulse = k * k / dist;
                     try {
-                        xDispl.set(v, xDispl.getValue(v) + repulse * xDist);
-                        yDispl.set(v, yDispl.getValue(v) + repulse * yDist);
+                        xDispl.put(v, xDispl.getValue(v) + repulse * xDist);
+                        yDispl.put(v, yDispl.getValue(v) + repulse * yDist);
                     } catch (NullPointerException ex) {
-                        xDispl.set(v, repulse * xDist);
-                        yDispl.set(v, repulse * yDist);
+                        xDispl.put(v, repulse * xDist);
+                        yDispl.put(v, repulse * yDist);
                     }
                 }
 
@@ -374,8 +374,8 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
                     if (dist < 1e-3)
                         dist = 1e-3;
                     double repulse = k * k / dist;
-                    xDispl.set(v, xDispl.getValue(v) + repulse * xDist);
-                    yDispl.set(v, yDispl.getValue(v) + repulse * yDist);
+                    xDispl.put(v, xDispl.getValue(v) + repulse * xDist);
+                    yDispl.put(v, yDispl.getValue(v) + repulse * yDist);
                 }
             }
 
@@ -392,10 +392,10 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
 
                 dist /= ((u.getDegree() + v.getDegree()) / 16.0);
 
-                xDispl.set(v, xDispl.getValue(v) - xDist * dist / k);
-                yDispl.set(v, yDispl.getValue(v) - yDist * dist / k);
-                xDispl.set(u, xDispl.getValue(u) + xDist * dist / k);
-                yDispl.set(u, yDispl.getValue(u) + yDist * dist / k);
+                xDispl.put(v, xDispl.getValue(v) - xDist * dist / k);
+                yDispl.put(v, yDispl.getValue(v) - yDist * dist / k);
+                xDispl.put(u, xDispl.getValue(u) + xDist * dist / k);
+                yDispl.put(u, yDispl.getValue(u) + yDist * dist / k);
             }
 
             // preventions
@@ -409,8 +409,8 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
                 xd = tx * xd / dist;
                 yd = ty * yd / dist;
 
-                xPos.set(v, xPos.getValue(v) + xd);
-                yPos.set(v, yPos.getValue(v) + yd);
+                xPos.put(v, xPos.getValue(v) + xd);
+                yPos.put(v, yPos.getValue(v) + yd);
             }
         }
 

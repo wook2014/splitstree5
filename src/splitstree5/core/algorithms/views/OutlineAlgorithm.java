@@ -178,7 +178,7 @@ public class OutlineAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implem
         }
 
         for (Edge e : graph.edges()) {
-            final EdgeViewBase edgeView = viewTab.createEdgeView(e, node2point.get(e.getSource()), node2point.get(e.getTarget()), null);
+            final EdgeViewBase edgeView = viewTab.createEdgeView(e, node2point.getValue(e.getSource()), node2point.getValue(e.getTarget()), null);
             viewTab.getEdge2view().put(e, edgeView);
             viewTab.getEdgesGroup().getChildren().addAll(edgeView.getShapeGroup().getChildren());
             if (edgeView.getLabel() != null) {

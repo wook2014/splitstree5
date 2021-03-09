@@ -224,7 +224,7 @@ public class SpringEmbedder {
                 double angle;
                 if (!splitsInPath.get(splitId)) {
                     splitsInPath.set(splitId);
-                    angle = GeometryUtilsFX.computeAngle(node2point.get(w).subtract(node2point.get(v)));
+                    angle = GeometryUtilsFX.computeAngle(node2point.getValue(w).subtract(node2point.getValue(v)));
                     final ArrayList<Double> array = split2angles.computeIfAbsent(splitId, k -> new ArrayList<>());
                     array.add(angle);
                     visitAnglesRec(graph, w, f, node2point, split2angles, splitsInPath);

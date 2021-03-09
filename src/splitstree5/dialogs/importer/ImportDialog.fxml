@@ -23,27 +23,38 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="300.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="splitstree5.dialogs.importer.ImportDialogController">
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="300.0" prefWidth="500.0"
+            xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="splitstree5.dialogs.importer.ImportDialogController">
     <bottom>
         <HBox minHeight="35.0" style="-fx-border-color: lightgray;" BorderPane.alignment="CENTER">
             <children>
-                <FlowPane fx:id="progressBarPane" HBox.hgrow="ALWAYS" />
-                <Button fx:id="closeButton" cancelButton="true" minWidth="65.0" mnemonicParsing="false" text="Close" HBox.hgrow="NEVER">
+                <FlowPane fx:id="progressBarPane" HBox.hgrow="ALWAYS"/>
+                <Button fx:id="closeButton" cancelButton="true" minWidth="65.0" mnemonicParsing="false" text="Close"
+                        HBox.hgrow="NEVER">
                     <HBox.margin>
-                        <Insets left="3.0" right="3.0" />
+                        <Insets left="3.0" right="3.0"/>
                     </HBox.margin>
                 </Button>
-                <Button fx:id="importButton" defaultButton="true" minWidth="65.0" mnemonicParsing="false" text="Import" HBox.hgrow="NEVER">
+                <Button fx:id="importButton" defaultButton="true" minWidth="65.0" mnemonicParsing="false" text="Import"
+                        HBox.hgrow="NEVER">
                     <HBox.margin>
-                        <Insets left="3.0" right="3.0" />
+                        <Insets left="3.0" right="3.0"/>
                     </HBox.margin>
                 </Button>
             </children>
             <padding>
-                <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                <Insets bottom="5.0" left="10.0" right="10.0" top="5.0"/>
             </padding>
         </HBox>
     </bottom>
+    <top>
+        <Label text="Import data into SplitsTree5" BorderPane.alignment="CENTER">
+            <BorderPane.margin>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+            </BorderPane.margin>
+        </Label>
+    </top>
     <center>
         <VBox fx:id="mainVBox" BorderPane.alignment="CENTER">
             <children>
@@ -51,7 +62,7 @@
                     <children>
                         <Label text="File:">
                             <HBox.margin>
-                                <Insets bottom="5.0" left="5.0" right="5.0" top="10.0" />
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="10.0"/>
                             </HBox.margin>
                         </Label>
                         <TextField fx:id="fileTextField" minWidth="100.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
@@ -74,52 +85,112 @@
                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                             </HBox.margin>
                         </ComboBox>
-                        <Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="SOMETIMES" />
-                        <ComboBox fx:id="fileFormatComboBox" minWidth="-Infinity" promptText="File format" HBox.hgrow="ALWAYS">
+                        <Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="SOMETIMES"/>
+                        <ComboBox fx:id="fileFormatComboBox" minWidth="-Infinity" promptText="File format"
+                                  HBox.hgrow="ALWAYS">
                             <HBox.margin>
-                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                             </HBox.margin>
                         </ComboBox>
-                        <Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="SOMETIMES" />
+                        <Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="SOMETIMES"/>
                     </children>
                 </HBox>
-            <StackPane prefHeight="38.0" prefWidth="500.0">
-               <children>
-                  <Label fx:id="charactersLabel" text="Characters import settings:" StackPane.alignment="TOP_CENTER" />
-                  <Label fx:id="distanceLabel" text="Distances import settings:" StackPane.alignment="TOP_CENTER" />
-                  <Label fx:id="treesLabel" text="Trees import settings:" StackPane.alignment="TOP_CENTER" />
-               </children>
-            </StackPane>
-            <StackPane prefHeight="91.0" prefWidth="500.0">
-               <children>
-                  <TextField fx:id="matchInput" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="42.0" promptText="." StackPane.alignment="BOTTOM_CENTER" />
-                  <TextField fx:id="missingInput" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="42.0" promptText="?" StackPane.alignment="CENTER" />
-                  <Label fx:id="missingChar" text="Missing charachter" StackPane.alignment="CENTER_LEFT">
-                     <StackPane.margin>
-                        <Insets left="5.0" />
-                     </StackPane.margin></Label>
-                  <TextField fx:id="gapInput" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="42.0" promptText="-" StackPane.alignment="TOP_CENTER" />
-                  <Label fx:id="matchChar" text="Match character" StackPane.alignment="BOTTOM_LEFT">
-                     <StackPane.margin>
-                        <Insets left="5.0" />
-                     </StackPane.margin></Label>
-                  <Label fx:id="gapChar" text="Gap character" StackPane.alignment="TOP_LEFT">
-                     <StackPane.margin>
-                        <Insets left="5.0" />
-                     </StackPane.margin></Label>
-                  <CheckBox fx:id="similarityValues" alignment="CENTER" mnemonicParsing="false" text="Use similarity values" StackPane.alignment="TOP_CENTER" />
-                  <CheckBox fx:id="innerNodesLabeling" mnemonicParsing="false" text="Keep inner nodes labeling" />
-                  <ComboBox fx:id="similarityCalculation" prefWidth="150.0" promptText="D = -ln(S)" StackPane.alignment="CENTER" />
-               </children>
-            </StackPane>
+                <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+                    <tabs>
+                        <Tab fx:id="otherTab">
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
+                            </content>
+                        </Tab>
+                        <Tab fx:id="charactersTab" text="Characters">
+                            <content>
+                                <BorderPane>
+                                    <center>
+                                        <GridPane hgap="10.0" maxWidth="-Infinity" minWidth="-Infinity"
+                                                  prefHeight="107.0" prefWidth="241.0">
+                                            <columnConstraints>
+                                                <ColumnConstraints hgrow="NEVER" maxWidth="117.0" minWidth="10.0"
+                                                                   prefWidth="106.0"/>
+                                                <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" maxWidth="135.0"
+                                                                   minWidth="10.0" prefWidth="135.0"/>
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                            </rowConstraints>
+                                            <children>
+                                                <Label text="Gap character" GridPane.rowIndex="1"/>
+                                                <TextField fx:id="gapInput" alignment="CENTER" maxHeight="-Infinity"
+                                                           maxWidth="-Infinity" minHeight="-Infinity"
+                                                           minWidth="-Infinity" prefHeight="25.0" prefWidth="42.0"
+                                                           promptText="-" GridPane.columnIndex="1"
+                                                           GridPane.rowIndex="1"/>
+                                                <Label text="Missing character" GridPane.rowIndex="2"/>
+                                                <TextField fx:id="missingInput" alignment="CENTER" maxHeight="-Infinity"
+                                                           maxWidth="-Infinity" minHeight="-Infinity"
+                                                           minWidth="-Infinity" prefHeight="25.0" prefWidth="42.0"
+                                                           promptText="?" GridPane.columnIndex="1"
+                                                           GridPane.rowIndex="2"/>
+                                                <Label text="Match character" GridPane.rowIndex="3"/>
+                                                <TextField fx:id="matchInput" alignment="CENTER" maxHeight="-Infinity"
+                                                           maxWidth="-Infinity" minHeight="-Infinity"
+                                                           minWidth="-Infinity" prefHeight="25.0" prefWidth="42.0"
+                                                           promptText="." GridPane.columnIndex="1"
+                                                           GridPane.rowIndex="3"/>
+                                                <Label layoutX="10.0" layoutY="41.0" text="Characters type"/>
+                                                <ComboBox fx:id="charactersTypeCBox" prefHeight="29.0" prefWidth="124.0"
+                                                          GridPane.columnIndex="1"/>
+                                            </children>
+                                            <BorderPane.margin>
+                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                                            </BorderPane.margin>
+                                        </GridPane>
+                                    </center>
+                                </BorderPane>
+                            </content>
+                        </Tab>
+                        <Tab fx:id="distancesTab" text="Distances">
+                            <content>
+                                <BorderPane>
+                                    <center>
+                                        <VBox alignment="CENTER" spacing="10.0">
+                                            <children>
+                                                <CheckBox fx:id="similarityValues" alignment="CENTER"
+                                                          mnemonicParsing="false" text="Use similarity values"/>
+                                                <ComboBox fx:id="similarityCalculation" prefWidth="150.0"
+                                                          promptText="D = -ln(S)"/>
+                                            </children>
+                                            <padding>
+                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                                            </padding>
+                                        </VBox>
+                                    </center>
+                                </BorderPane>
+                            </content>
+                        </Tab>
+                        <Tab fx:id="treesTab" text="Trees">
+                            <content>
+                                <BorderPane>
+                                    <center>
+                                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0"
+                                              BorderPane.alignment="CENTER">
+                                            <children>
+                                                <CheckBox fx:id="innerNodesLabeling" alignment="CENTER"
+                                                          mnemonicParsing="false" text="Keep inner nodes labeling"/>
+                                            </children>
+                                            <padding>
+                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                                            </padding>
+                                        </VBox>
+                                    </center>
+                                </BorderPane>
+                            </content>
+                        </Tab>
+                    </tabs>
+                </TabPane>
             </children>
         </VBox>
     </center>
-    <top>
-        <Label text="Import data into SplitsTree5" BorderPane.alignment="CENTER">
-            <BorderPane.margin>
-                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-            </BorderPane.margin>
-        </Label>
-    </top>
 </BorderPane>

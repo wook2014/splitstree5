@@ -40,7 +40,7 @@
  *  Legend.java Copyright (C) 2019 This is third party code.
  */
 
-package splitstree5.xtra;
+package splitstree5.utils;
 
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
