@@ -139,7 +139,7 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> imple
             final Node u = tree.newNode();
             final float weightIU = 0.5f * matrix[minI][minJ] + 0.5f * (rowSum[minI] - rowSum[minJ]) / (alive.cardinality() - 2);
             tree.setWeight(tree.newEdge(u, nodes[minI]), weightIU);
-            final float weightJU = matrix[minI][minJ] - weightIU;
+            final double weightJU = matrix[minI][minJ] - weightIU;
             tree.setWeight(tree.newEdge(u, nodes[minJ]), weightJU);
 
             nodes[minI] = u;

@@ -165,7 +165,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
                 switch (layout) {
                     case Radial: {
                         final EdgeFloatArray edge2Angle = new EdgeFloatArray(tree); // angle of edge
-                        setAnglesForCircularLayoutRec(root, null, 0, tree.getNumberOfLeaves(), edge2Angle, optionLeafGroupGapProperty.get(), optionParentPlacement.getValue());
+                        setAnglesForCircularLayoutRec(root, null, 0, tree.countLeaves(), edge2Angle, optionLeafGroupGapProperty.get(), optionParentPlacement.getValue());
                         for (Edge e : tree.edges()) {
                             edge2Angle.put(e, 360f - edge2Angle.get(e) + 90f);
                         }

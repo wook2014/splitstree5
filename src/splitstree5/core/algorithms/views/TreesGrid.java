@@ -125,7 +125,7 @@ public class TreesGrid extends Algorithm<TreesBlock, ViewerBlock> implements IFr
                     switch (getOptionLayout()) {
                         case Radial: {
                             final EdgeFloatArray edge2Angle = new EdgeFloatArray(tree); // angle of edge
-                            TreeEmbedder.setAnglesForCircularLayoutRec(root, null, 0, tree.getNumberOfLeaves(), edge2Angle, LEAF_GROUP_GAP_DEFAULT, PARENT_PLACEMENT_DEFAULT);
+                            TreeEmbedder.setAnglesForCircularLayoutRec(root, null, 0, tree.countLeaves(), edge2Angle, LEAF_GROUP_GAP_DEFAULT, PARENT_PLACEMENT_DEFAULT);
 
                             if (getOptionEdgeShape() == EdgeView2D.EdgeShape.Straight)
                                 TreeEmbedder.computeNodeLocationsForRadialRec(root, new Point2D(0, 0), edgeLengths, edge2Angle, node2point);

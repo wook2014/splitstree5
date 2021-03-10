@@ -22,7 +22,6 @@ package splitstree5.treebased;
 
 import jloda.graph.EdgeSet;
 import jloda.graph.Node;
-import jloda.graph.NodeEdge;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
 import jloda.util.FileLineIterator;
@@ -70,7 +69,7 @@ public class TreeBasedTest {
                                 + Basic.toString(tree.edgeStream().filter(tree::isSpecial).map(e -> "(" + e.getSource().getId() + "," + e.getTarget().getId() + ")").collect(Collectors.toList()), ","));
                         for (Node v : tree.nodes()) {
                             System.err.println("node: " + v.getId() + " children: "
-                                    + Basic.toString(StreamSupport.stream(v.children().spliterator(), false).map(NodeEdge::getId).collect(Collectors.toList()), ",")
+                                    + Basic.toString(StreamSupport.stream(v.children().spliterator(), false).map(Node::getId).collect(Collectors.toList()), ",")
                                     + (tree.getLabel(v) != null ? " label: " + tree.getLabel(v) : ""));
                         }
                         System.err.println(tree.toBracketString(false));
@@ -78,7 +77,7 @@ public class TreeBasedTest {
 
                     System.out.println("------- Network " + (++count + " ---------"));
                     //System.out.println("Number of taxa:   " + tree.getNumberOfWorkingTaxonIds());
-                    System.out.println("Number of leaves: " + tree.getNumberOfLeaves());
+                    System.out.println("Number of leaves: " + tree.countLeaves());
                     System.out.println("Number of nodes:  " + tree.getNumberOfNodes());
                     System.out.println("Number of edges:  " + tree.getNumberOfEdges());
 

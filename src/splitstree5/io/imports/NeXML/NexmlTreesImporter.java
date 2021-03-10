@@ -21,7 +21,7 @@
 package splitstree5.io.imports.NeXML;
 
 import jloda.fx.window.NotificationManager;
-import jloda.graphs.algorithms.IsTree;
+import jloda.graph.algorithms.IsTree;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
 import jloda.util.ProgressListener;

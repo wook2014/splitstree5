@@ -60,6 +60,6 @@ public class OffspringGraphMatching {
     }
 
     public static int discrepancy(PhyloTree tree, EdgeSet matching) {
-        return (tree.getNumberOfNodes() - tree.getNumberOfLeaves()) - matching.size();
+        return (tree.getNumberOfNodes() - tree.countLeaves()) - matching.size();
     }
 }
