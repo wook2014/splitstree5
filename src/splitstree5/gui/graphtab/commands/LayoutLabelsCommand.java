@@ -62,14 +62,14 @@ public class LayoutLabelsCommand extends UndoableRedoableCommand {
         this.edge2view = edge2view;
 
         for (Node v : phyloGraph.nodes()) {
-            final NodeViewBase nv = node2view.getValue(v);
+            final NodeViewBase nv = node2view.get(v);
             if (nv.getLabel() != null) {
                 oldNodeLabels.add(new Triplet<>(v, new Point2D(nv.getLabel().getLayoutX(), nv.getLabel().getLayoutY()), nv.getLabel().isVisible()));
             }
         }
 
         for (Edge e : phyloGraph.edges()) {
-            final EdgeViewBase ev = edge2view.getValue(e);
+            final EdgeViewBase ev = edge2view.get(e);
             if (ev.getLabel() != null) {
                 oldEdgeLabels.add(new Triplet<>(e, new Point2D(ev.getLabel().getLayoutX(), ev.getLabel().getLayoutY()), ev.getLabel().isVisible()));
             }
@@ -79,7 +79,7 @@ public class LayoutLabelsCommand extends UndoableRedoableCommand {
     @Override
     public void undo() {
         for (Triplet<Node, Point2D, Boolean> tre : oldNodeLabels) {
-            final RichTextLabel label = node2view.getValue(tre.getFirst()).getLabel();
+            final RichTextLabel label = node2view.get(tre.getFirst()).getLabel();
             final Point2D location = tre.getSecond();
             label.setLayoutX(location.getX());
             label.setLayoutY(location.getY());
@@ -87,7 +87,7 @@ public class LayoutLabelsCommand extends UndoableRedoableCommand {
 
         }
         for (Triplet<Edge, Point2D, Boolean> tre : oldEdgeLabels) {
-            final Labeled label = edge2view.getValue(tre.getFirst()).getLabel();
+            final Labeled label = edge2view.get(tre.getFirst()).getLabel();
             final Point2D location = tre.getSecond();
             label.setLayoutX(location.getX());
             label.setLayoutY(location.getY());

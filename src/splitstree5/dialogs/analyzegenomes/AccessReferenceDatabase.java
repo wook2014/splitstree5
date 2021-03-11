@@ -24,7 +24,7 @@ import javafx.collections.ObservableList;
 import jloda.fx.util.ProgramExecutorService;
 import jloda.fx.window.NotificationManager;
 import jloda.graph.Node;
-import jloda.graph.NodeIntegerArray;
+import jloda.graph.NodeIntArray;
 import jloda.kmers.bloomfilter.BloomFilter;
 import jloda.kmers.mash.MashDistance;
 import jloda.kmers.mash.MashSketch;
@@ -276,7 +276,7 @@ public class AccessReferenceDatabase implements Closeable {
         final ResultSet rs = connection.createStatement().executeQuery(query);
 
         var tree = new PhyloTree();
-        var node2parentId = new NodeIntegerArray(tree);
+        var node2parentId = new NodeIntArray(tree);
         var id2node = new HashMap<Integer, Node>();
         Node root = null;
         while (rs.next()) {
@@ -292,7 +292,7 @@ public class AccessReferenceDatabase implements Closeable {
             tree.setLabel(v, taxonName);
         }
         for (var v : tree.nodes()) {
-            int parentId = node2parentId.get(v);
+            int parentId = node2parentId.getInt(v);
             if (parentId != 0) {
                 tree.newEdge(id2node.get(parentId), v);
             }

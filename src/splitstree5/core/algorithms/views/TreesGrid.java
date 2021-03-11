@@ -181,7 +181,7 @@ public class TreesGrid extends Algorithm<TreesBlock, ViewerBlock> implements IFr
                         } else
                             text = null;
 
-                        final NodeView2D nodeView = viewTab.createNodeView(v, tree.getTaxa(v), node2point.getValue(v), null, 0, 0, text);
+                        final NodeView2D nodeView = viewTab.createNodeView(v, tree.getTaxa(v), node2point.get(v), null, 0, 0, text);
                         if (text != null && text.length() > 0 && viewTab.getNodeLabel2Style().containsKey(text)) {
                             nodeView.setStyling(viewTab.getNodeLabel2Style().get(text));
                         }
@@ -193,10 +193,10 @@ public class TreesGrid extends Algorithm<TreesBlock, ViewerBlock> implements IFr
                         viewTab.getNodeLabelsGroup().getChildren().addAll(nodeView.getLabelGroup());
                     }
                     for (Edge e : tree.edges()) {
-                        final EdgeControlPoints controlPoints = edge2controlPoints.getValue(e);
+                        final EdgeControlPoints controlPoints = edge2controlPoints.get(e);
                         final EdgeView2D edgeView = viewTab.createEdgeView(e, getOptionLayout(), getOptionEdgeShape(),
-                                node2point.getValue(e.getSource()), controlPoints.getControl1(), controlPoints.getMid(),
-                                controlPoints.getControl2(), controlPoints.getSupport(), node2point.getValue(e.getTarget()), null);
+                                node2point.get(e.getSource()), controlPoints.getControl1(), controlPoints.getMid(),
+                                controlPoints.getControl2(), controlPoints.getSupport(), node2point.get(e.getTarget()), null);
                         viewTab.getEdge2view().put(e, edgeView);
 
                         if (edgeView.getShape() != null)

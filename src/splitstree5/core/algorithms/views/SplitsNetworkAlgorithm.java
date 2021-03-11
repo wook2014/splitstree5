@@ -174,7 +174,7 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
                 text = Basic.toString(taxaBlock.getLabels(graph.getTaxa(v)), ",");
             else text = null;
 
-            final NodeViewBase nodeView = viewTab.createNodeView(v, graph.getTaxa(v), node2point.getValue(v), text);
+            final NodeViewBase nodeView = viewTab.createNodeView(v, graph.getTaxa(v), node2point.get(v), text);
             if (graph.getNumberOfTaxa(v) > 0)
                 BitSetUtils.addAll(nodeView.getWorkingTaxa(), graph.getTaxa(v));
             viewTab.setupNodeView(nodeView);
@@ -194,7 +194,7 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
         }
 
         for (Edge e : graph.edges()) {
-            final EdgeViewBase edgeView = viewTab.createEdgeView(e, node2point.getValue(e.getSource()), node2point.getValue(e.getTarget()), null);
+            final EdgeViewBase edgeView = viewTab.createEdgeView(e, node2point.get(e.getSource()), node2point.get(e.getTarget()), null);
             viewTab.getEdge2view().put(e, edgeView);
             viewTab.getEdgesGroup().getChildren().addAll(edgeView.getShapeGroup().getChildren());
             if (edgeView.getLabel() != null) {
@@ -269,9 +269,9 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
 
     public static void setupForRootedNetwork(boolean altLayout, Triplet<Integer, Double, Double> triplet, TaxaBlock taxaBlockSrc, SplitsBlock splitsBlockSrc, TaxaBlock taxaBlockTarget, SplitsBlock splitsBlockTarget, ProgressListener progress) throws IOException {
         //final Triplet<Integer,Double,Double> triplet= SplitsUtilities.getMidpointSplit(taxaBlockSrc.getNtax(), splitsBlockSrc);
-        final int mid = triplet.get1();
-        final double weightWith1 = triplet.get2();
-        final double weightOpposite1 = triplet.get3();
+        final int mid = triplet.getFirst();
+        final double weightWith1 = triplet.getSecond();
+        final double weightOpposite1 = triplet.getThird();
 
         // modify taxa:
         taxaBlockTarget.clear();

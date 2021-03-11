@@ -174,7 +174,7 @@ public class Distortion {
     /*
     static void printScores(PhyloTree tree, NodeIntegerArray scoreA, NodeIntegerArray scoreB) {
         for (Node v = tree.getFirstNode(); v != null; v = v.getNext()) {
-            System.out.println("v=" + v + " scoreA=" + scoreA.getValue(v) + " scoreB=" + scoreB.getValue(v));
+            System.out.println("v=" + v + " scoreA=" + scoreA.get(v) + " scoreB=" + scoreB.get(v));
         }
     }
     */

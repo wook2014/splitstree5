@@ -126,7 +126,7 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
         }
 
         progress.setSubtask("distances");
-        ExecuteInParallel.apply(triplets, t -> t.setThird(MashDistance.compute(t.get1(), t.get2(), getOptionDistances())), ProgramExecutorService.getNumberOfCoresToUse(), progress);
+        ExecuteInParallel.apply(triplets, t -> t.setThird(MashDistance.compute(t.getFirst(), t.getSecond(), getOptionDistances())), ProgramExecutorService.getNumberOfCoresToUse(), progress);
         progress.reportTaskCompleted();
 
         final Map<String, Integer> name2rank = new HashMap<>();
@@ -142,11 +142,11 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
 
         distancesBlock.setNtax(taxaBlock.getNtax());
         for (Triplet<MashSketch, MashSketch, Double> triplet : triplets) {
-            final int t1 = name2rank.get(triplet.get1().getName());
-            final int t2 = name2rank.get(triplet.get2().getName());
+            final int t1 = name2rank.get(triplet.getFirst().getName());
+            final int t2 = name2rank.get(triplet.getSecond().getName());
             final double dist = triplet.getThird();
-            if(verbose) {
-                System.out.println(triplet.get1().getName() + "\t" + triplet.get2().getName() + "\t" + triplet.getThird());
+            if (verbose) {
+                System.out.println(triplet.getFirst().getName() + "\t" + triplet.getSecond().getName() + "\t" + triplet.getThird());
             }
             distancesBlock.set(t1, t2, dist);
             distancesBlock.set(t2, t1, dist);

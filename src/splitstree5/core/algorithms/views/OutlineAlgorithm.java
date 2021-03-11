@@ -112,7 +112,7 @@ public class OutlineAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implem
             splitsBlock = new SplitsBlock();
             final Triplet<Integer, Double, Double> rootingSplit = SplitsUtilities.computeRootLocation(getOptionLayout() == Layout.MidPointRootedAlt, taxaBlock0.getNtax(), new HashSet<>(), splitsBlock0.getCycle(), splitsBlock0, isOptionUseWeights(), progress);
 
-            System.err.println(splitsBlock0.get(rootingSplit.get1()) + ", " + rootingSplit.get2() + ", " + rootingSplit.get3());
+            System.err.println(splitsBlock0.get(rootingSplit.getFirst()) + ", " + rootingSplit.getSecond() + ", " + rootingSplit.getThird());
 
             setupForRootedNetwork(getOptionLayout() == Layout.MidPointRootedAlt, rootingSplit, taxaBlock0, splitsBlock0, taxaBlock, splitsBlock, progress);
         }
@@ -160,7 +160,7 @@ public class OutlineAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implem
                 text = Basic.toString(taxaBlock.getLabels(graph.getTaxa(v)), ",");
             else text = null;
 
-            final NodeViewBase nodeView = viewTab.createNodeView(v, graph.getTaxa(v), node2point.getValue(v), text);
+            final NodeViewBase nodeView = viewTab.createNodeView(v, graph.getTaxa(v), node2point.get(v), text);
             viewTab.setupNodeView(nodeView);
 
             viewTab.getNode2view().put(v, nodeView);
@@ -178,7 +178,7 @@ public class OutlineAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> implem
         }
 
         for (Edge e : graph.edges()) {
-            final EdgeViewBase edgeView = viewTab.createEdgeView(e, node2point.getValue(e.getSource()), node2point.getValue(e.getTarget()), null);
+            final EdgeViewBase edgeView = viewTab.createEdgeView(e, node2point.get(e.getSource()), node2point.get(e.getTarget()), null);
             viewTab.getEdge2view().put(e, edgeView);
             viewTab.getEdgesGroup().getChildren().addAll(edgeView.getShapeGroup().getChildren());
             if (edgeView.getLabel() != null) {

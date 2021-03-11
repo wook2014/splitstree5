@@ -145,20 +145,20 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
             //nodeLabelSearcher.addLabelChangedListener(v -> Platform.runLater(() -> getUndoManager().doAndAdd(new ChangeNodeLabelCommand(v, node2view.get(v), graph))));
 
             edgeLabelSearcher = new EdgeLabelSearcher("Edges", graph, edgeSelectionModel);
-            edgeLabelSearcher.addLabelChangedListener(e -> Platform.runLater(() -> getUndoManager().doAndAdd(new ChangeEdgeLabelCommand(e, edge2view.getValue(e), graph))));
+            edgeLabelSearcher.addLabelChangedListener(e -> Platform.runLater(() -> getUndoManager().doAndAdd(new ChangeEdgeLabelCommand(e, edge2view.get(e), graph))));
 
             findToolBar = new FindToolBar(null, nodeLabelSearcher, edgeLabelSearcher);
 
             nodeLabelSearcher.foundProperty().addListener((c, o, n) -> {
                 if (n != null && scrollPane != null) {
-                    final NodeViewBase nv = getNode2view().getValue(n);
+                    final NodeViewBase nv = getNode2view().get(n);
                     if (nv.getLabel() != null)
                         scrollPane.ensureVisible(nv.getLabel());
                 }
             });
             edgeLabelSearcher.foundProperty().addListener((c, o, n) -> {
                 if (n != null && scrollPane != null) {
-                    final EdgeViewBase ev = getEdge2view().getValue(n);
+                    final EdgeViewBase ev = getEdge2view().get(n);
                     if (ev.getLabel() != null)
                         scrollPane.ensureVisible(ev.getLabel());
                 }
@@ -184,7 +184,7 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
                 }
                 for (Node v : c.getAddedSubList()) {
                     if (v.getOwner() == getGraph()) {
-                        final NodeViewBase nv = getNode2view().getValue(v);
+                        final NodeViewBase nv = getNode2view().get(v);
                         if (nv != null) {
                             nv.showAsSelected(true);
                         }
@@ -192,7 +192,7 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
                 }
                 for (Node v : c.getRemoved()) {
                     if (v.getOwner() == getGraph()) {
-                        final NodeViewBase nv = getNode2view().getValue(v);
+                        final NodeViewBase nv = getNode2view().get(v);
                         if (nv != null) {
                             nv.showAsSelected(false);
                         }
@@ -202,7 +202,7 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
             if (verbose) {
                 System.err.println("Selected:");
                 for (Node v : graph.nodes()) {
-                    System.err.println("node " + v + " id: " + v.getId() + " selected: " + nodeSelectionModel.getSelectedItems().contains(v) + " shown: " + getNode2view().getValue(v).isShownAsSelected());
+                    System.err.println("node " + v + " id: " + v.getId() + " selected: " + nodeSelectionModel.getSelectedItems().contains(v) + " shown: " + getNode2view().get(v).isShownAsSelected());
                 }
             }
         });
@@ -210,7 +210,7 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
             while (c.next()) {
                 for (Edge e : c.getAddedSubList()) {
                     if (e.getOwner() == getGraph()) {
-                        final EdgeViewBase ev = getEdge2view().getValue(e);
+                        final EdgeViewBase ev = getEdge2view().get(e);
                         if (ev != null) {
                             ev.showAsSelected(true);
                         }
@@ -218,7 +218,7 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
                 }
                 for (Edge e : c.getRemoved()) {
                     if (e.getOwner() == getGraph()) {
-                        final EdgeViewBase ev = getEdge2view().getValue(e);
+                        final EdgeViewBase ev = getEdge2view().get(e);
                         if (ev != null) {
                             ev.showAsSelected(false);
                         }
@@ -287,9 +287,9 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
             labelChangedListener = v -> {
                 final MainWindow mainWindow = document.getMainWindow();
                 final TaxaBlock workingTaxaBlock = mainWindow.getWorkflow().getWorkingTaxaBlock();
-                final NodeViewBase nv = node2view.getValue(v);
+                final NodeViewBase nv = node2view.get(v);
                 if (nv.getNumberOfWorkingTaxonIds() > 0) {
-                    final int workingTaxonId = node2view.getValue(v).getWorkingTaxa().nextSetBit(1);
+                    final int workingTaxonId = node2view.get(v).getWorkingTaxa().nextSetBit(1);
                     Platform.runLater(() ->
                             mainWindow.getUndoRedoManager().doAndAdd(new ChangeValueCommand<>("Change Label", nodeLabelSearchId.get(),
                                     workingTaxaBlock.get(workingTaxonId).getDisplayLabel(), graph.getLabel(v),
@@ -301,7 +301,7 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
                                         graph.setLabel(v, workingTaxon.getDisplayLabelOrName());
                                     })));
                 } else {
-                    Platform.runLater(() -> getUndoManager().doAndAdd(new ChangeNodeLabelCommand(v, node2view.getValue(v), graph)));
+                    Platform.runLater(() -> getUndoManager().doAndAdd(new ChangeNodeLabelCommand(v, node2view.get(v), graph)));
                 }
             };
             nodeLabelSearcher.addLabelChangedListener(labelChangedListener);
@@ -614,12 +614,12 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
         controller.getCopyMenuItem().setOnAction(x -> {
             final Set<String> set = new TreeSet<>();
             for (Node v : nodeSelectionModel.getSelectedItems()) {
-                final NodeViewBase nv = node2view.getValue(v);
+                final NodeViewBase nv = node2view.get(v);
                 if (nv.getLabel() != null && nv.getLabel().getText().length() > 0)
                     set.add(nv.getLabel().getRawText());
             }
             for (Edge e : edgeSelectionModel.getSelectedItems()) {
-                final EdgeViewBase ev = edge2view.getValue(e);
+                final EdgeViewBase ev = edge2view.get(e);
                 if (ev.getLabel() != null && ev.getLabel().getText().length() > 0)
                     set.add(ev.getLabel().getText());
             }

@@ -207,7 +207,7 @@ public class TreeViewTab extends Graph2DTab<PhyloTree> {
                 Map<String, String> translate = new HashMap<>();
                 for (Node v : graph.nodes()) {
                     if (v.isLeaf() && graph.getLabel(v) != null) {
-                        translate.put(graph.getLabel(v), node2view.getValue(v).getLabel().getRawText());
+                        translate.put(graph.getLabel(v), node2view.get(v).getLabel().getRawText());
                     }
                 }
                 final Clipboard clipboard = Clipboard.getSystemClipboard();

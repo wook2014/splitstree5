@@ -172,10 +172,10 @@ public class SplitsView3DTab extends Graph3DTab<PhyloSplitsGraph> implements ISp
 
                 // move stuff:
                 for (Node w : nodeSelectionModel.getSelectedItems()) {
-                    ((NodeView3D) node2view.getValue(w)).translate(translateVector);
+                    ((NodeView3D) node2view.get(w)).translate(translateVector);
                 }
                 for (Edge f : graph.edges()) {
-                    ((EdgeView3D) edge2view.getValue(f)).updateCoordinates(((NodeView3D) node2view.getValue(f.getSource())).getLocation(), ((NodeView3D) node2view.getValue(f.getTarget())).getLocation());
+                    ((EdgeView3D) edge2view.get(f)).updateCoordinates(((NodeView3D) node2view.get(f.getSource())).getLocation(), ((NodeView3D) node2view.get(f.getTarget())).getLocation());
                 }
             }
             mouseX = e.getScreenX();
@@ -228,9 +228,9 @@ public class SplitsView3DTab extends Graph3DTab<PhyloSplitsGraph> implements ISp
     private Pair<Point3D, Point3D> getAnchorAndMover(ItemSelectionModel<Node> nodeSelectionModel, ItemSelectionModel<Edge> edgeSelectionModel, NodeArray<NodeViewBase> node2view) {
         Edge e = edgeSelectionModel.getSelectedItems().get(0);
         if (!nodeSelectionModel.isSelected(e.getSource()))
-            return new Pair<>(((NodeView3D) node2view.getValue(e.getSource())).getLocation(), ((NodeView3D) node2view.getValue(e.getTarget())).getLocation());
+            return new Pair<>(((NodeView3D) node2view.get(e.getSource())).getLocation(), ((NodeView3D) node2view.get(e.getTarget())).getLocation());
         else
-            return new Pair<>(((NodeView3D) node2view.getValue(e.getTarget())).getLocation(), ((NodeView3D) node2view.getValue(e.getSource())).getLocation());
+            return new Pair<>(((NodeView3D) node2view.get(e.getTarget())).getLocation(), ((NodeView3D) node2view.get(e.getSource())).getLocation());
     }
 
     public void addNodeLabelMovementSupport(NodeView3D nodeView) {
@@ -295,10 +295,10 @@ public class SplitsView3DTab extends Graph3DTab<PhyloSplitsGraph> implements ISp
                 service.setOnSucceeded((x) -> {
                     NodeArray<Point3D> newLocations = service.getValue();
                     for (Node v : graph.nodes()) {
-                        ((NodeView3D) node2view.getValue(v)).setLocation(newLocations.getValue(v));
+                        ((NodeView3D) node2view.get(v)).setLocation(newLocations.get(v));
                     }
                     for (Edge e : graph.edges()) {
-                        ((EdgeView3D) edge2view.getValue(e)).updateCoordinates(((NodeView3D) node2view.getValue(e.getSource())).getLocation(), ((NodeView3D) node2view.getValue(e.getTarget())).getLocation());
+                        ((EdgeView3D) edge2view.get(e)).updateCoordinates(((NodeView3D) node2view.get(e.getSource())).getLocation(), ((NodeView3D) node2view.get(e.getTarget())).getLocation());
                     }
                 });
             }

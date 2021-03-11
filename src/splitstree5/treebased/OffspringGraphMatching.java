@@ -41,12 +41,12 @@ public class OffspringGraphMatching {
         NodeArray<Node> tree2b = new NodeArray<>(tree);
 
         for (Node v : tree.nodes()) {
-            tree2a.setValue(v, graph.newNode());
-            tree2b.setValue(v, graph.newNode());
+            tree2a.put(v, graph.newNode());
+            tree2b.put(v, graph.newNode());
         }
 
         for (Edge e : tree.edges()) {
-            graph.newEdge(tree2a.getValue(e.getSource()), tree2b.getValue(e.getTarget()));
+            graph.newEdge(tree2a.get(e.getSource()), tree2b.get(e.getTarget()));
         }
 
         final NodeSet oneSide = new NodeSet(graph);

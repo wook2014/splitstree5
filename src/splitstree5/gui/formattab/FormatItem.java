@@ -250,7 +250,7 @@ public class FormatItem implements Cloneable {
         if (nodes != null && node2view != null) {
             for (Node v : nodes) {
                 if (v.getOwner() != null) {
-                    final NodeViewBase nv = node2view.getValue(v);
+                    final NodeViewBase nv = node2view.get(v);
                     if (nv.getLabel() != null) {
                         formatItem.addFont(nv.getLabel().getFont());
                         formatItem.addLabelColor((Color) nv.getLabel().getTextFill());
@@ -266,7 +266,7 @@ public class FormatItem implements Cloneable {
         if (edges != null && edge2view != null) {
             for (Edge e : edges) {
                 if (e.getOwner() != null) {
-                    final EdgeViewBase ev = edge2view.getValue(e);
+                    final EdgeViewBase ev = edge2view.get(e);
                     if (ev.getLabel() != null) {
                         formatItem.addFont(ev.getLabel().getFont());
                         formatItem.addLabelColor((Color) ev.getLabel().getTextFill());
@@ -296,7 +296,7 @@ public class FormatItem implements Cloneable {
                 && nodes != null && node2view != null) {
             for (Node v : nodes) {
                 if (v.getOwner() != null) {
-                    final NodeViewBase nv = node2view.getValue(v);
+                    final NodeViewBase nv = node2view.get(v);
                     if (nv.getLabel() != null) {
                         if (isLabelFontSet())
                             nv.getLabel().setFont(font);
@@ -339,7 +339,7 @@ public class FormatItem implements Cloneable {
                 && edges != null && edge2view != null) {
             for (Edge e : edges) {
                 if (e.getOwner() != null) {
-                    final EdgeViewBase ev = edge2view.getValue(e);
+                    final EdgeViewBase ev = edge2view.get(e);
                     if (ev.getLabel() != null) {
                         if (isLabelFontSet())
                             ev.getLabel().setFont(font);

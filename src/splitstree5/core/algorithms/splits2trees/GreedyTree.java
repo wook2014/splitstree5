@@ -81,11 +81,11 @@ public class GreedyTree extends Algorithm<SplitsBlock, TreesBlock> implements IF
         // create tree:
         for (final BitSet cluster : clusters) {
             Node v = tree.getRoot();
-            while (BitSetUtils.contains(node2taxa.getValue(v), cluster)) {
+            while (BitSetUtils.contains(node2taxa.get(v), cluster)) {
                 boolean isBelow = false;
                 for (Edge e : v.outEdges()) {
                     final Node w = e.getTarget();
-                    if (BitSetUtils.contains(node2taxa.getValue(w), cluster)) {
+                    if (BitSetUtils.contains(node2taxa.get(w), cluster)) {
                         v = w;
                         isBelow = true;
                         break;
@@ -104,11 +104,11 @@ public class GreedyTree extends Algorithm<SplitsBlock, TreesBlock> implements IF
 
         for (int t : BitSetUtils.members(allTaxa)) {
             Node v = tree.getRoot();
-            while (node2taxa.getValue(v).get(t)) {
+            while (node2taxa.get(v).get(t)) {
                 boolean isBelow = false;
                 for (Edge e : v.outEdges()) {
                     final Node w = e.getTarget();
-                    if (node2taxa.getValue(w).get(t)) {
+                    if (node2taxa.get(w).get(t)) {
                         v = w;
                         isBelow = true;
                         break;

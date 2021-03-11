@@ -104,7 +104,7 @@ public class NetworkBlock extends DataBlock {
     }
 
     public NodeData getNodeData(Node v) {
-        NodeData nodeData = node2data.getValue(v);
+        NodeData nodeData = node2data.get(v);
         if (nodeData == null) {
             nodeData = new NodeData();
             node2data.put(v, nodeData);
@@ -113,7 +113,7 @@ public class NetworkBlock extends DataBlock {
     }
 
     public EdgeData getEdgeData(Edge e) {
-        EdgeData edgeData = edge2data.getValue(e);
+        EdgeData edgeData = edge2data.get(e);
         if (edgeData == null) {
             edgeData = new EdgeData();
             edge2data.put(e, edgeData);

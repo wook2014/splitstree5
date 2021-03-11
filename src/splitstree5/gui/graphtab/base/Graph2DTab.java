@@ -320,7 +320,7 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
                     final NodeSet toSelect = new NodeSet(graph);
 
                     for (Node node : graph.nodes()) {
-                        final NodeView2D nodeView = (NodeView2D) node2view.getValue(node);
+                        final NodeView2D nodeView = (NodeView2D) node2view.get(node);
                         {
                             final Bounds bounds = nodeView.getShapeGroup().localToScene(nodeView.getShapeGroup().getBoundsInLocal());
 
@@ -353,7 +353,7 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
                     final EdgeSet toSelect = new EdgeSet(graph);
 
                     for (Edge edge : graph.edges()) {
-                        final EdgeView2D edgeView = (EdgeView2D) edge2view.getValue(edge);
+                        final EdgeView2D edgeView = (EdgeView2D) edge2view.get(edge);
                         if (edgeView.getShape() != null) {
                             final Bounds bounds = edgeView.getShape().localToScene(edgeView.getShape().getBoundsInLocal());
                             if (rectangle.contains(bounds.getMinX(), bounds.getMinY()) && rectangle.contains(bounds.getMaxX(), bounds.getMaxY())) {

@@ -106,7 +106,7 @@ public class DaylightOptimizer {
      */
     private boolean optimizeDaylightNode(int ntax, PhyloSplitsGraph graph, Node v, NodeArray<javafx.geometry.Point2D> node2point) throws NotOwnerException, CanceledException {
         int numComp = 0;
-        EdgeIntegerArray edge2comp = new EdgeIntegerArray(graph);
+        EdgeIntArray edge2comp = new EdgeIntArray(graph);
         double[] comp2MinAngle = new double[ntax + 1];
         double[] comp2MaxAngle = new double[ntax + 1];
 
@@ -114,15 +114,15 @@ public class DaylightOptimizer {
         for (Edge e : v.adjacentEdges()) {
             progress.checkForCancel();
 
-            if (edge2comp.getValue(e) == 0) {
+            if (edge2comp.get(e) == 0) {
                 edge2comp.set(e, ++numComp);
                 Node w = graph.getOpposite(v, e);
 
                 // as observed from v
                 final double angle;
                 {
-                    Point2D vp = node2point.getValue(v);
-                    Point2D wp = node2point.getValue(w);
+                    Point2D vp = node2point.get(v);
+                    Point2D wp = node2point.get(w);
                     angle = GeometryUtilsFX.computeAngle(wp.subtract(vp));
                 }
                 Pair<Double, Double> minMaxAngle = new Pair<>(angle, angle); // will contain min and max angles of component
@@ -152,7 +152,7 @@ public class DaylightOptimizer {
                     comp2epsilon[c] = alpha - comp2MinAngle[c];
                 }
                 for (Edge e : graph.edges()) {
-                    int c = edge2comp.getValue(e);
+                    int c = edge2comp.get(e);
                     graph.setAngle(e, GeometryUtilsFX.modulo360(graph.getAngle(e) + comp2epsilon[c]));
                 }
             }
@@ -172,7 +172,7 @@ public class DaylightOptimizer {
      * @param visited
      * @param minMaxAngle
      */
-    private void visitComponentRec(Node root, Node v, Edge e, EdgeIntegerArray edge2comp, int numComp, PhyloSplitsGraph graph, NodeArray<javafx.geometry.Point2D> node2point, NodeSet visited,
+    private void visitComponentRec(Node root, Node v, Edge e, EdgeIntArray edge2comp, int numComp, PhyloSplitsGraph graph, NodeArray<javafx.geometry.Point2D> node2point, NodeSet visited,
                                    double angle, Pair<Double, Double> minMaxAngle) throws CanceledException {
 
         if (v != root && !visited.contains(v)) {
@@ -180,10 +180,10 @@ public class DaylightOptimizer {
 
             visited.add(v);
             for (Edge f : v.adjacentEdges()) {
-                if (f != e && edge2comp.getValue(f) == 0) {
+                if (f != e && edge2comp.get(f) == 0) {
                     edge2comp.set(f, numComp);
                     Node w = graph.getOpposite(v, f);
-                    double newAngle = angle + GeometryUtilsFX.computeObservedAngle(node2point.getValue(root), node2point.getValue(v), node2point.getValue(w));
+                    double newAngle = angle + GeometryUtilsFX.computeObservedAngle(node2point.get(root), node2point.get(v), node2point.get(w));
                     if (newAngle < minMaxAngle.getFirst())
                         minMaxAngle.setFirst(newAngle);
                     if (newAngle > minMaxAngle.getSecond())

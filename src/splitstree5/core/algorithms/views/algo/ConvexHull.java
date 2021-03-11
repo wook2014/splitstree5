@@ -21,7 +21,7 @@
 package splitstree5.core.algorithms.views.algo;
 
 import jloda.graph.Edge;
-import jloda.graph.EdgeIntegerArray;
+import jloda.graph.EdgeIntArray;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import jloda.phylo.PhyloSplitsGraph;
@@ -157,13 +157,13 @@ public class ConvexHull {
 
                 //construct the remainder of convex hull for split-side "0" by traversing all allowed (and reachable) edges (i.e. all edges in splits0)
 
-                EdgeIntegerArray visited = new EdgeIntegerArray(graph, 0);
+                EdgeIntArray visited = new EdgeIntArray(graph, 0);
 
                 convexHullPath(graph, start0, visited, hulls, splits0, intersectionNodes, 0);
 
                 //construct the remainder of convex hull for split-side "1" by traversing all allowed (and reachable) edges (i.e. all edges in splits0)
 
-                visited = new EdgeIntegerArray(graph, 0);
+                visited = new EdgeIntArray(graph, 0);
 
                 convexHullPath(graph, start1, visited, hulls, splits1, intersectionNodes, 1);
 
@@ -216,15 +216,15 @@ public class ConvexHull {
 
                         Node w = graph.getOpposite(v, consider);
 
-                        if (hulls.getValue(w) == -1) {
-                        } else if (hulls.getValue(w) == 1) {        //node belongs to other side
+                        if (hulls.get(w) == -1) {
+                        } else if (hulls.get(w) == 1) {        //node belongs to other side
                             Edge considerDup = graph.newEdge(v1, w);
                             graph.setLabel(considerDup, "" + graph.getSplit(consider));
                             graph.setSplit(considerDup, graph.getSplit(consider));
                             graph.setWeight(considerDup, graph.getWeight(consider));
                             graph.setAngle(considerDup, graph.getAngle(consider));
                             graph.deleteEdge(consider);
-                        } else if (hulls.getValue(w) == 2) {  //node is in intersection
+                        } else if (hulls.get(w) == 2) {  //node is in intersection
                             Node w1 = null;
 
                             for (Edge toW1 : w.adjacentEdges()) {
@@ -281,7 +281,7 @@ public class ConvexHull {
      * @param intersectionNodes
      * @param side
      */
-    private static void convexHullPath(PhyloSplitsGraph g, Node start, EdgeIntegerArray visited, NodeArray<Integer> hulls, BitSet allowedSplits, ArrayList<Node> intersectionNodes, int side) {
+    private static void convexHullPath(PhyloSplitsGraph g, Node start, EdgeIntArray visited, NodeArray<Integer> hulls, BitSet allowedSplits, ArrayList<Node> intersectionNodes, int side) {
         final Stack<Node> todo = new Stack<>();
         todo.push(start);
 
@@ -291,14 +291,14 @@ public class ConvexHull {
             for (Edge f : v.adjacentEdges()) {
                 final Node w = g.getOpposite(v, f);
 
-                if (visited.getValue(f) == 0 && allowedSplits.get(g.getSplit(f))) {
-                    //if(hulls.getValue(m)==side) continue;
+                if (visited.get(f) == 0 && allowedSplits.get(g.getSplit(f))) {
+                    //if(hulls.get(m)==side) continue;
                     visited.set(f, 1);
 
-                    if (hulls.getValue(w) == null) {
+                    if (hulls.get(w) == null) {
                         hulls.put(w, side);
                         todo.push(w);
-                    } else if (hulls.getValue(w) == Math.abs(side - 1)) {
+                    } else if (hulls.get(w) == Math.abs(side - 1)) {
                         hulls.put(w, 2);
                         intersectionNodes.add(w);
                         todo.push(w);

@@ -440,8 +440,8 @@ public class EqualAngle {
                 int s = graph.getSplit(e);
                 if (!splitsInPath.get(s)) {
                     Node w = graph.getOpposite(v, e);
-                    Point2D p = GeometryUtilsFX.translateByAngle(node2point.getValue(v), graph.getAngle(e), useWeights ? graph.getWeight(e) : 1);
-                    node2point.setValue(w, p);
+                    Point2D p = GeometryUtilsFX.translateByAngle(node2point.get(v), graph.getAngle(e), useWeights ? graph.getWeight(e) : 1);
+                    node2point.put(w, p);
                     splitsInPath.set(s, true);
                     assignCoordinatesToNodesRec(useWeights, w, splitsInPath, nodesVisited, graph, node2point);
                     splitsInPath.set(s, false);

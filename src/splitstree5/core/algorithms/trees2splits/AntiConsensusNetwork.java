@@ -309,8 +309,8 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
                                             final ArrayList<Pair<SIN, Node>> toDelete = new ArrayList<>();
                                             boolean ok = true;
                                             for (Pair<SIN, Node> pair : consideredSins) {
-                                                final SIN other = pair.get1();
-                                                final Node otherNode = pair.get2();
+                                                final SIN other = pair.getFirst();
+                                                final Node otherNode = pair.getSecond();
                                                 if (isBetter(sin, u, other, otherNode))
                                                     toDelete.add(pair);
                                                 else if (isBetter(other, otherNode, sin, u))
@@ -325,7 +325,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
                             }
                             synchronized (listOfSins) {
                                 for (Pair<SIN, Node> pair : consideredSins) {
-                                    listOfSins.add(pair.get1());
+                                    listOfSins.add(pair.getFirst());
                                 }
                             }
                         } else throw new IllegalArgumentException("max distortion must be at least 1");

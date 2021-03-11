@@ -74,8 +74,8 @@ public class MinSpanningTree extends Algorithm<DistancesBlock, NetworkBlock> imp
         for (Triplet<Double, Integer, Integer> triplet : distancesAndTaxa) {
             progress.incrementProgress();
 
-            final int a = triplet.get2();
-            final int b = triplet.get3();
+            final int a = triplet.getSecond();
+            final int b = triplet.getThird();
             if (component[a] != component[b]) {
                 final Edge e = graph.newEdge(node[a], node[b]);
                 graph.setWeight(e, parent.get(a, b));

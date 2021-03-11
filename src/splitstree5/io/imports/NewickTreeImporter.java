@@ -96,7 +96,7 @@ public class NewickTreeImporter implements IToTrees, IImportTrees {
                     if (TreesUtilities.hasNumbersOnInternalNodes(tree)) {
                         TreesUtilities.changeNumbersOnInternalNodesToEdgeConfidencies(tree);
                     }
-                    final List<String> leafLabelList = IterationUtils.asList(newickParser.leafLabels());
+                    final List<String> leafLabelList = IteratorUtils.asList(newickParser.leafLabels());
                     final Set<String> leafLabelSet = new HashSet<>(leafLabelList);
                     final boolean multiLabeled = (leafLabelSet.size() < leafLabelList.size());
 
@@ -130,7 +130,7 @@ public class NewickTreeImporter implements IToTrees, IImportTrees {
                             taxName2Id.put(name, orderedTaxonNames.size());
                         }
                     } else {
-                        if (!taxonNamesFound.equals(IterationUtils.asSet(newickParser.leafLabels()))) {
+                        if (!taxonNamesFound.equals(IteratorUtils.asSet(newickParser.leafLabels()))) {
                             partial = true;
                             for (String name : newickParser.leafLabels()) {
                                 if (!taxonNamesFound.contains(name)) {
