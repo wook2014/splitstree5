@@ -21,7 +21,7 @@
 package splitstree5.core.algorithms.views.algo;
 
 import jloda.graph.Edge;
-import jloda.graph.EdgeIntArray;
+import jloda.graph.EdgeSet;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import jloda.phylo.PhyloSplitsGraph;
@@ -157,15 +157,12 @@ public class ConvexHull {
 
                 //construct the remainder of convex hull for split-side "0" by traversing all allowed (and reachable) edges (i.e. all edges in splits0)
 
-                EdgeIntArray visited = new EdgeIntArray(graph, 0);
 
-                convexHullPath(graph, start0, visited, hulls, splits0, intersectionNodes, 0);
+                convexHullPath(graph, start0, graph.newEdgeSet(), hulls, splits0, intersectionNodes, 0);
 
                 //construct the remainder of convex hull for split-side "1" by traversing all allowed (and reachable) edges (i.e. all edges in splits0)
 
-                visited = new EdgeIntArray(graph, 0);
-
-                convexHullPath(graph, start1, visited, hulls, splits1, intersectionNodes, 1);
+                convexHullPath(graph, start1, graph.newEdgeSet(), hulls, splits1, intersectionNodes, 1);
 
                 //first duplicate the intersection nodes, set an edge between each node and its duplicate and label new edges and nodes
                 for (Node v : intersectionNodes) {
@@ -272,16 +269,8 @@ public class ConvexHull {
 
     /**
      * convex hull path
-     *
-     * @param g
-     * @param start
-     * @param visited
-     * @param hulls
-     * @param allowedSplits
-     * @param intersectionNodes
-     * @param side
      */
-    private static void convexHullPath(PhyloSplitsGraph g, Node start, EdgeIntArray visited, NodeArray<Integer> hulls, BitSet allowedSplits, ArrayList<Node> intersectionNodes, int side) {
+    private static void convexHullPath(PhyloSplitsGraph g, Node start, EdgeSet visited, NodeArray<Integer> hulls, BitSet allowedSplits, ArrayList<Node> intersectionNodes, int side) {
         final Stack<Node> todo = new Stack<>();
         todo.push(start);
 
@@ -291,9 +280,9 @@ public class ConvexHull {
             for (Edge f : v.adjacentEdges()) {
                 final Node w = g.getOpposite(v, f);
 
-                if (visited.get(f) == 0 && allowedSplits.get(g.getSplit(f))) {
+                if (!visited.contains(f) && allowedSplits.get(g.getSplit(f))) {
                     //if(hulls.get(m)==side) continue;
-                    visited.set(f, 1);
+                    visited.add(f);
 
                     if (hulls.get(w) == null) {
                         hulls.put(w, side);
@@ -303,8 +292,7 @@ public class ConvexHull {
                         intersectionNodes.add(w);
                         todo.push(w);
                     }
-                } else
-                    visited.set(f, 1);
+                }
             }
         }
     }
