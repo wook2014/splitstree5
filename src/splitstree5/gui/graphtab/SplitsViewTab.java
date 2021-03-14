@@ -344,7 +344,7 @@ public class SplitsViewTab extends Graph2DTab<PhyloSplitsGraph> implements ISpli
         if ((sourceSize > targetSize) == useLargerSide) {
             nodeSelectionModel.selectItems(visited);
         } else {
-            var others = graph.getNodesAsSet();
+            var others = new HashSet<>(graph.getNodesAsList());
             others.removeAll(visited);
             nodeSelectionModel.selectItems(others);
         }

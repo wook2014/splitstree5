@@ -42,8 +42,7 @@ public class NexmlNetworkHandler extends DefaultHandler {
 
 
     @Override
-    public void startElement(String uri,
-                             String localName, String qName, Attributes attributes) throws SAXException {
+    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 
         // todo delete "sp5" in metadata before parsing
         // todo reachTextFX (StyleClassesTextArea), WebView von javaFX
@@ -98,17 +97,17 @@ public class NexmlNetworkHandler extends DefaultHandler {
             String target = attributes.getValue("target");
             String weightString = attributes.getValue("length");
 
-            Double weight = 1.0;
+            var weight = 1.0;
             if (weightString != null)
                 weight = Double.parseDouble(weightString);
 
             Node sourceNode = networkBlock.getGraph().getLastNode();
             Node targetNode = networkBlock.getGraph().getFirstNode();
-            for (Node n : networkBlock.getGraph().getNodesAsSet()) {
-                if (networkBlock.getNodeData(n).get("nex:id").equals(source))
-                    sourceNode = n;
-                if (networkBlock.getNodeData(n).get("nex:id").equals(target))
-                    targetNode = n;
+            for (var v : networkBlock.getGraph().nodes()) {
+                if (networkBlock.getNodeData(v).get("nex:id").equals(source))
+                    sourceNode = v;
+                if (networkBlock.getNodeData(v).get("nex:id").equals(target))
+                    targetNode = v;
             }
 
             Edge edge = networkBlock.getGraph().newEdge(sourceNode, targetNode);
@@ -151,8 +150,7 @@ public class NexmlNetworkHandler extends DefaultHandler {
     }
 
     @Override
-    public void endElement(String uri,
-                           String localName, String qName) throws SAXException {
+    public void endElement(String uri, String localName, String qName) throws SAXException {
         if (qName.equalsIgnoreCase("otus")) {
             //System.out.println("End Element :" + qName);
         } else if (qName.equalsIgnoreCase("network")) {
@@ -165,7 +163,6 @@ public class NexmlNetworkHandler extends DefaultHandler {
             bReadingEdge = false;
         }
     }
-
 
     public ArrayList<String> getTaxaLabels() {
         return taxaLabels;
