@@ -24,6 +24,7 @@ import jloda.util.*;
 import splitstree5.core.algorithms.interfaces.IToCharacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.datablocks.characters.CharactersType;
 import splitstree5.io.imports.interfaces.IImportCharacters;
 import splitstree5.io.imports.interfaces.IImportNoAutoDetect;
 
@@ -32,9 +33,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public class SingleLineSequencesImporter extends CharactersFormat implements IToCharacters, IImportCharacters, IImportNoAutoDetect {
 
@@ -73,7 +72,6 @@ public class SingleLineSequencesImporter extends CharactersFormat implements ITo
         }
 
         taxa.addTaxaByNames(taxonNames);
-        characters.clear();
         characters.setDimension(ntax, nchar);
         characters.setGapCharacter(getGap());
         characters.setMissingCharacter(getMissing());
@@ -82,22 +80,17 @@ public class SingleLineSequencesImporter extends CharactersFormat implements ITo
     }
 
     private void readMatrix(ArrayList<String> matrix, CharactersBlock characters) throws IOException {
-
-        Map<Character, Integer> frequency = new LinkedHashMap<>();
         StringBuilder foundSymbols = new StringBuilder("");
         for (int i = 1; i <= characters.getNtax(); i++) {
             for (int j = 1; j <= characters.getNchar(); j++) {
                 char symbol = Character.toLowerCase(matrix.get(i - 1).charAt(j - 1));
                 if (foundSymbols.toString().indexOf(symbol) == -1) {
                     foundSymbols.append(symbol);
-                    frequency.put(symbol, 1);
-                } else
-                    frequency.put(symbol, frequency.get(symbol) + 1);
+                }
                 characters.set(i, j, matrix.get(i - 1).charAt(j - 1));
             }
         }
-
-        estimateDataType(foundSymbols.toString(), characters, frequency);
+        characters.setDataType(CharactersType.guessType(CharactersType.union(foundSymbols.toString())));
     }
 
     @Override

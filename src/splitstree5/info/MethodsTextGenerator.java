@@ -142,7 +142,7 @@ public class MethodsTextGenerator {
             buf.append("References:\n");
 
             for (Pair<String, String> pair : allKeysAndPapers) {
-                buf.append(String.format("%s: %s\n", pair.get1(), pair.get2()));
+                buf.append(String.format("%s: %s\n", pair.getFirst(), pair.getSecond()));
             }
         }
 

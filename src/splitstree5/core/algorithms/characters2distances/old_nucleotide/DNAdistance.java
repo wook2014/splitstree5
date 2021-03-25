@@ -68,7 +68,7 @@ public abstract class DNAdistance extends Algorithm<CharactersBlock, DistancesBl
         baseFreq = new double[]{0.25, 0.25, 0.25, 0.25};    //default is equals frequencies
         /*this.baseFreq = new DoubleProperty[4];
         for(DoubleProperty dp : baseFreq)
-            dp = new SimpleDoubleProperty(0.25); //.setValue(0.25);*/
+            dp = new SimpleDoubleProperty(0.25); //.put(0.25);*/
 
         //todo: connector = null, need next to charatersBlock for updateSetting function!
 
@@ -288,7 +288,7 @@ public abstract class DNAdistance extends Algorithm<CharactersBlock, DistancesBl
     }
     public void setOptionBaseFreq(double[] baseFreq) {
         for (int i = 0; i < baseFreq.length; i++)
-            this.baseFreq[i].setValue(baseFreq[i]);
+            this.baseFreq[i].put(baseFreq[i]);
     }*/
 
     public Property<SetParameters> optionSetParametersProperty() {

@@ -32,8 +32,8 @@ import splitstree5.io.nexus.TreesNexusOutput;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
 
@@ -67,12 +67,12 @@ public class NewickTreeImporterTest {
         tnf.setOptionTranslate(false);
         new TreesNexusOutput().write(w, taxaBlock, treesBlock);
         System.err.println(w.toString());
-        assertEquals(test1, treesBlock.getTrees().get(0).toString());
+        assertEquals(test1, treesBlock.getTrees().get(0).toBracketString());
     }
 
     @Test
     public void isApplicable() throws IOException {
-        ArrayList<String> applicableFiles = new ArrayList<>();
+        var applicableFiles = new HashSet<String>();
 
         File directory = new File("test/notNexusFiles");
         File[] directoryListing = directory.listFiles();
@@ -83,7 +83,7 @@ public class NewickTreeImporterTest {
             }
         }
         System.err.println(applicableFiles);
-        assertEquals(applicableFiles, Arrays.asList("colors-nj.tre", "trees3.tre", "trees49.tre"));
+        assertEquals(applicableFiles, new HashSet<>(Arrays.asList("colors-nj.tre", "trees3.tre", "trees49.tre")));
     }
 
 }

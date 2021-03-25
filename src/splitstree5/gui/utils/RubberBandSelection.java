@@ -92,10 +92,6 @@ public class RubberBandSelection {
                 group.getChildren().remove(rectangle);
         });
 
-        inDrag.addListener((c, o, n) -> {
-            pane.setCursor(n ? Cursor.OPEN_HAND : Cursor.DEFAULT);
-        });
-
         pane.addEventHandler(MouseEvent.MOUSE_PRESSED, (e) -> {
             stillDownWithoutMoving = true;
             inRubberBand.set(false);
@@ -117,7 +113,7 @@ public class RubberBandSelection {
                             synchronized (this) {
                                 Thread.sleep(500);
                             }
-                        } catch (InterruptedException ex) {
+                        } catch (InterruptedException ignored) {
                         }
                         if (stillDownWithoutMoving) {
                             Platform.runLater(() -> inRubberBand.set(true));
@@ -125,8 +121,9 @@ public class RubberBandSelection {
                         inWait = false;
                     });
                 }
+                if (pane.getCursor() == Cursor.CROSSHAIR)
+                    e.consume();
             }
-            e.consume();
         });
 
         pane.addEventHandler(MouseEvent.MOUSE_DRAGGED, (e) -> {
@@ -138,7 +135,8 @@ public class RubberBandSelection {
                     rectangle.setY(Math.min(start.getY(), end.getY()));
                     rectangle.setWidth(Math.abs(end.getX() - start.getX()));
                     rectangle.setHeight(Math.abs(end.getY() - start.getY()));
-                    e.consume();
+                    if (pane.getCursor() == Cursor.CROSSHAIR)
+                        e.consume();
                 }
             } else if (scrollPane != null && start != null) {
                 inDrag.set(true);
@@ -163,7 +161,8 @@ public class RubberBandSelection {
             if (inRubberBand.get()) {
                 if (start != null) {
                     start = null;
-                    e.consume();
+                    if (pane.getCursor() == Cursor.CROSSHAIR)
+                        e.consume();
                     if (this.handler != null && rectangle.getWidth() > 0 && rectangle.getHeight() > 0) {
                         Point2D min = group.localToScene(rectangle.getX(), rectangle.getY());
                         Point2D max = group.localToScene(rectangle.getX() + rectangle.getWidth(), rectangle.getY() + rectangle.getHeight());

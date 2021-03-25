@@ -24,6 +24,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
+import splitstree5.core.datablocks.characters.CharactersType;
 
 /**
  * import dialog controller
@@ -53,29 +54,26 @@ public class ImportDialogController {
     private ComboBox<ImporterManager.DataType> dataTypeComboBox;
 
     @FXML
+    private ComboBox<CharactersType> charactersTypeCBox;
+
+    @FXML
     private ComboBox<String> fileFormatComboBox;
+
+    @FXML
+    private Tab otherTab;
+
+    @FXML
+    private Tab charactersTab;
+
+    @FXML
+    private Tab distancesTab;
+
+    @FXML
+    private Tab treesTab;
 
     /*
     IMPORT SETTINGS
      */
-
-    @FXML
-    private Label charactersLabel;
-
-    @FXML
-    private Label distanceLabel;
-
-    @FXML
-    private Label treesLabel;
-
-    @FXML
-    private Label gapChar;
-
-    @FXML
-    private Label missingChar;
-
-    @FXML
-    private Label matchChar;
 
     @FXML
     private TextField gapInput;
@@ -131,28 +129,28 @@ public class ImportDialogController {
     IMPORT SETTINGS
      */
 
-    public Label getCharactersLabel() {
-        return charactersLabel;
+    public Button getCloseButton() {
+        return closeButton;
     }
 
-    public Label getDistanceLabel() {
-        return distanceLabel;
+    public ComboBox<CharactersType> getCharactersTypeCBox() {
+        return charactersTypeCBox;
     }
 
-    public Label getTreesLabel() {
-        return treesLabel;
+    public Tab getOtherTab() {
+        return otherTab;
     }
 
-    public Label getGapChar() {
-        return gapChar;
+    public Tab getCharactersTab() {
+        return charactersTab;
     }
 
-    public Label getMatchChar() {
-        return matchChar;
+    public Tab getDistancesTab() {
+        return distancesTab;
     }
 
-    public Label getMissingChar() {
-        return missingChar;
+    public Tab getTreesTab() {
+        return treesTab;
     }
 
     public TextField getGapInput() {

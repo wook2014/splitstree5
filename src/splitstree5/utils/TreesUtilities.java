@@ -74,8 +74,10 @@ public class TreesUtilities {
                     //---
                     new BitSet();
             PhyloTree tree = trees.getTrees().get(which);
-            for (String v : tree.nodeLabels()) {
-                support.set(taxa.indexOf(v)); //todo test???
+            for (var v : tree.nodes()) {
+                var label = v.getLabel();
+                if (label != null)
+                    support.set(taxa.indexOf(label)); //todo test???
             }
             //---
             for (int i = support.nextSetBit(1); i > 0; i = support.nextSetBit(i + 1)) {

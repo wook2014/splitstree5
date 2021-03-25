@@ -44,7 +44,7 @@ import splitstree5.gui.graphtab.NetworkViewTab;
 import splitstree5.gui.graphtab.base.EdgeViewBase;
 import splitstree5.gui.graphtab.base.GraphLayout;
 import splitstree5.gui.graphtab.base.NodeView2D;
-import splitstree5.xtra.Legend;
+import splitstree5.utils.Legend;
 
 import java.util.Arrays;
 import java.util.List;
@@ -100,7 +100,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
          */
         for (Node v : graph.nodes()) {
             if (node2data.get(v).get("x") != null & node2data.get(v).get("y") != null)
-                node2point.setValue(v, new Point2D(Double.parseDouble(node2data.get(v).get("x")), Double.parseDouble(node2data.get(v).get("y"))));
+                node2point.put(v, new Point2D(Double.parseDouble(node2data.get(v).get("x")), Double.parseDouble(node2data.get(v).get("y"))));
         }
 
         TreeEmbedder.scaleAndCenterToFitTarget(GraphLayout.Radial, viewTab.getTargetDimensions(), node2point, true);
@@ -155,7 +155,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
                 text = null;
 
             //String text = (graph.getLabel(v) != null ? graph.getLabel(v) : "Node " + v.getId());
-            final NodeView2D nodeView = viewTab.createNodeView(v, graph.getTaxa(v), node2point.getValue(v), null, 0, 0, text);
+            final NodeView2D nodeView = viewTab.createNodeView(v, graph.getTaxa(v), node2point.get(v), null, 0, 0, text);
 
             viewTab.getNode2view().put(v, nodeView);
             viewTab.getNodesGroup().getChildren().addAll(nodeView.getShapeGroup());
@@ -319,11 +319,11 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
         for (Node v : graph.nodes()) {
             if (startFromCurrent) {
                 Point2D p = node2view.get(v);
-                xPos.set(v, p.getX());
-                yPos.set(v, p.getY());
+                xPos.put(v, p.getX());
+                yPos.put(v, p.getY());
             } else {
-                xPos.set(v, 1000 * Math.sin(6.24 * i / graph.getNumberOfNodes()));
-                yPos.set(v, 1000 * Math.cos(6.24 * i / graph.getNumberOfNodes()));
+                xPos.put(v, 1000 * Math.sin(6.24 * i / graph.getNumberOfNodes()));
+                yPos.put(v, 1000 * Math.cos(6.24 * i / graph.getNumberOfNodes()));
                 i++;
             }
         }
@@ -342,24 +342,24 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
             // repulsive forces
 
             for (Node v : graph.nodes()) {
-                double xv = xPos.getValue(v);
-                double yv = yPos.getValue(v);
+                double xv = xPos.get(v);
+                double yv = yPos.get(v);
 
                 for (Node u : graph.nodes()) {
                     if (u == v)
                         continue;
-                    double xDist = xv - xPos.getValue(u);
-                    double yDist = yv - yPos.getValue(u);
+                    double xDist = xv - xPos.get(u);
+                    double yDist = yv - yPos.get(u);
                     double dist = xDist * xDist + yDist * yDist;
                     if (dist < 1e-3)
                         dist = 1e-3;
                     double repulse = k * k / dist;
                     try {
-                        xDispl.set(v, xDispl.getValue(v) + repulse * xDist);
-                        yDispl.set(v, yDispl.getValue(v) + repulse * yDist);
+                        xDispl.put(v, xDispl.get(v) + repulse * xDist);
+                        yDispl.put(v, yDispl.get(v) + repulse * yDist);
                     } catch (NullPointerException ex) {
-                        xDispl.set(v, repulse * xDist);
-                        yDispl.set(v, repulse * yDist);
+                        xDispl.put(v, repulse * xDist);
+                        yDispl.put(v, repulse * yDist);
                     }
                 }
 
@@ -368,14 +368,14 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
                     final Node b = e.getTarget();
                     if (a == v || b == v)
                         continue;
-                    double xDist = xv - (xPos.getValue(a) + xPos.getValue(b)) / 2;
-                    double yDist = yv - (yPos.getValue(a) + yPos.getValue(b)) / 2;
+                    double xDist = xv - (xPos.get(a) + xPos.get(b)) / 2;
+                    double yDist = yv - (yPos.get(a) + yPos.get(b)) / 2;
                     double dist = xDist * xDist + yDist * yDist;
                     if (dist < 1e-3)
                         dist = 1e-3;
                     double repulse = k * k / dist;
-                    xDispl.set(v, xDispl.getValue(v) + repulse * xDist);
-                    yDispl.set(v, yDispl.getValue(v) + repulse * yDist);
+                    xDispl.put(v, xDispl.get(v) + repulse * xDist);
+                    yDispl.put(v, yDispl.get(v) + repulse * yDist);
                 }
             }
 
@@ -385,38 +385,38 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
                 final Node u = e.getSource();
                 final Node v = e.getTarget();
 
-                double xDist = xPos.getValue(v) - xPos.getValue(u);
-                double yDist = yPos.getValue(v) - yPos.getValue(u);
+                double xDist = xPos.get(v) - xPos.get(u);
+                double yDist = yPos.get(v) - yPos.get(u);
 
                 double dist = Math.sqrt(xDist * xDist + yDist * yDist);
 
                 dist /= ((u.getDegree() + v.getDegree()) / 16.0);
 
-                xDispl.set(v, xDispl.getValue(v) - xDist * dist / k);
-                yDispl.set(v, yDispl.getValue(v) - yDist * dist / k);
-                xDispl.set(u, xDispl.getValue(u) + xDist * dist / k);
-                yDispl.set(u, yDispl.getValue(u) + yDist * dist / k);
+                xDispl.put(v, xDispl.get(v) - xDist * dist / k);
+                yDispl.put(v, yDispl.get(v) - yDist * dist / k);
+                xDispl.put(u, xDispl.get(u) + xDist * dist / k);
+                yDispl.put(u, yDispl.get(u) + yDist * dist / k);
             }
 
             // preventions
 
             for (Node v : graph.nodes()) {
-                double xd = xDispl.getValue(v);
-                double yd = yDispl.getValue(v);
+                double xd = xDispl.get(v);
+                double yd = yDispl.get(v);
 
                 final double dist = Math.sqrt(xd * xd + yd * yd);
 
                 xd = tx * xd / dist;
                 yd = ty * yd / dist;
 
-                xPos.set(v, xPos.getValue(v) + xd);
-                yPos.set(v, yPos.getValue(v) + yd);
+                xPos.put(v, xPos.get(v) + xd);
+                yPos.put(v, yPos.get(v) + yd);
             }
         }
 
         // set node positions
         for (Node v : graph.nodes()) {
-            node2view.put(v, new Point2D(xPos.getValue(v), yPos.getValue(v)));
+            node2view.put(v, new Point2D(xPos.get(v), yPos.get(v)));
         }
     }
 

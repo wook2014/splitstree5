@@ -17,9 +17,9 @@
     <mountPoints>
       <mountPoint id="1691242167" location="jars" />
       <mountPoint id="1691243203" location="jars2" />
-      <mountPoint id="675425072" />
       <mountPoint id="1691243367" location="tools" />
       <mountPoint id="1691242153" location="Examples" />
+      <mountPoint id="675425072" />
     </mountPoints>
     <entries>
       <dirEntry mountPoint="1691242167" file="../jars" subDirectory="jars" excludeSuffixes=".DS_Store">
@@ -35,7 +35,6 @@
         </exclude>
       </dirEntry>
       <fileEntry mountPoint="1691243203" file="../jars/i4jruntime.jar" />
-      <fileEntry mountPoint="675425072" file="./License.txt" overrideFileMode="true" overrideOverwriteMode="true" overrideUninstallMode="true" />
       <fileEntry mountPoint="1691243367" file="../tools/workflow-run" fileMode="755" overrideFileMode="true" />
       <fileEntry mountPoint="1691243367" file="../tools/mash-sketches" fileMode="755" overrideFileMode="true" />
       <fileEntry mountPoint="1691243367" file="../tools/workflow-export" fileMode="755" overrideFileMode="true" />
@@ -50,6 +49,7 @@
       <fileEntry mountPoint="1691242153" file="../test/characters/rubber_dna_interleave.nex" />
       <fileEntry mountPoint="1691242153" file="../test/characters/dolphins_weighted.nex" />
       <fileEntry mountPoint="1691242153" file="../test/trees/PHYT.nex" />
+      <fileEntry mountPoint="675425072" file="./License.txt" overrideFileMode="true" overrideOverwriteMode="true" overrideUninstallMode="true" />
     </entries>
     <components>
       <component name="SplitsTree5" id="1691242194" changeable="false">
@@ -1142,7 +1142,7 @@ return true;</property>
       </jreBundle>
     </windows>
   </mediaSets>
-  <buildIds>
+  <buildIds buildAll="false">
     <mediaSet refId="1691242288" />
   </buildIds>
   <buildOptions disableSigning="true" disableNotarization="true" />

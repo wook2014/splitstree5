@@ -59,7 +59,7 @@ public class NodeLabelLayouter {
         final ArrayList<Triplet<BoundingBox, Node, Double>> labelShapes = new ArrayList<>(phyloGraph.getNumberOfNodes());
 
         for (Node v : phyloGraph.nodes()) {
-            final NodeView2D nv = (NodeView2D) node2view.getValue(v);
+            final NodeView2D nv = (NodeView2D) node2view.get(v);
             if (nv.getLabel() != null) {
                 final RichTextLabel label = nv.getLabel();
                 if (label != null) {
@@ -80,12 +80,12 @@ public class NodeLabelLayouter {
 
                     if (v.getDegree() == 1) {
                         Edge e = v.getFirstAdjacentEdge();
-                        EdgeView2D ev = (EdgeView2D) edge2view.getValue(e);
+                        EdgeView2D ev = (EdgeView2D) edge2view.get(e);
                         angle = GeometryUtilsFX.computeAngle(nv.getLocation().subtract(ev.getReferencePoint()));
                     } else {
                         final ArrayList<Integer> array = new ArrayList<>(v.getDegree());
                         for (Edge e : v.adjacentEdges()) {
-                            EdgeView2D ev = (EdgeView2D) edge2view.getValue(e);
+                            EdgeView2D ev = (EdgeView2D) edge2view.get(e);
                             final double alpha = GeometryUtilsFX.modulo360(GeometryUtilsFX.computeAngle(ev.getReferencePoint().subtract(nv.getLocation())));
                             array.add((int) Math.round(alpha));
                         }
@@ -120,15 +120,15 @@ public class NodeLabelLayouter {
             final IntervalTree<BoundingBox> yIntervalsLabels = new IntervalTree<>();
 
             for (Triplet<BoundingBox, Node, Double> triplet : labelShapes) {
-                BoundingBox bbox = triplet.get1();
-                final Node v = triplet.get2();
-                final double angle = triplet.get3();
+                BoundingBox bbox = triplet.getFirst();
+                final Node v = triplet.getSecond();
+                final double angle = triplet.getThird();
 
                 while (overlaps(bbox, xIntervals, yIntervals)) {
                     final Point2D translated = GeometryUtilsFX.translateByAngle(new Point2D(bbox.getMinX(), bbox.getMinY()), angle, 5);
                     bbox = new BoundingBox(translated.getX(), translated.getY(), bbox.getWidth(), bbox.getHeight());
                 }
-                final NodeView2D nv = (NodeView2D) node2view.getValue(v);
+                final NodeView2D nv = (NodeView2D) node2view.get(v);
                 if (!overlaps(bbox, xIntervalsLabels, yIntervalsLabels)) {
                     xIntervalsLabels.add(new Interval<>(scaledInt(bbox.getMinX()), scaledInt(bbox.getMaxX()), bbox));
                     yIntervalsLabels.add(new Interval<>(scaledInt(bbox.getMinY()), scaledInt(bbox.getMaxY()), bbox));
@@ -161,15 +161,15 @@ public class NodeLabelLayouter {
                     double stress = 0;
 
                     for (Triplet<BoundingBox, Node, Double> triplet : Basic.randomize(labelShapes, seed)) {
-                        BoundingBox bbox = triplet.get1();
-                        final Node v = triplet.get2();
-                        final double angle = triplet.get3();
+                        BoundingBox bbox = triplet.getFirst();
+                        final Node v = triplet.getSecond();
+                        final double angle = triplet.getThird();
                         while (overlaps(bbox, xIntervals, yIntervals)) {
                             final Point2D translated = GeometryUtilsFX.translateByAngle(new Point2D(bbox.getMinX(), bbox.getMinY()), angle, 5);
                             bbox = new BoundingBox(translated.getX(), translated.getY(), bbox.getWidth(), bbox.getHeight());
                         }
-                        stress += (triplet.get1().getMinX() - bbox.getMinX()) * (triplet.get1().getMinX() - bbox.getMinX()) +
-                                (triplet.get1().getMinY() - bbox.getMinY()) * (triplet.get1().getMinY() - bbox.getMinY());
+                        stress += (triplet.getFirst().getMinX() - bbox.getMinX()) * (triplet.getFirst().getMinX() - bbox.getMinX()) +
+                                (triplet.getFirst().getMinY() - bbox.getMinY()) * (triplet.getFirst().getMinY() - bbox.getMinY());
 
                         xIntervals.add(new Interval<>(scaledInt(bbox.getMinX()), scaledInt(bbox.getMaxX()), bbox));
                         yIntervals.add(new Interval<>(scaledInt(bbox.getMinY()), scaledInt(bbox.getMaxY()), bbox));
@@ -194,10 +194,10 @@ public class NodeLabelLayouter {
                 if (bestLabelShapes.get() != null) {
                     Platform.runLater(() -> {
                         for (Triplet<BoundingBox, Node, Double> triplet : bestLabelShapes.get()) {
-                            if (triplet.get2().getOwner() != null) {
-                                final NodeView2D nv = (NodeView2D) node2view.getValue(triplet.get2());
-                                nv.getLabel().setTranslateX(triplet.get1().getMinX());
-                                nv.getLabel().setTranslateY(triplet.get1().getMinY());
+                            if (triplet.getSecond().getOwner() != null) {
+                                final NodeView2D nv = (NodeView2D) node2view.get(triplet.getSecond());
+                                nv.getLabel().setTranslateX(triplet.getFirst().getMinX());
+                                nv.getLabel().setTranslateY(triplet.getFirst().getMinY());
                             }
                         }
                     });
@@ -227,7 +227,7 @@ public class NodeLabelLayouter {
         final ArrayList<BoundingBox> labelBoundsList = new ArrayList<>();
 
         for (Node v : tree.nodes()) {
-            final NodeView2D nv = (NodeView2D) node2view.getValue(v);
+            final NodeView2D nv = (NodeView2D) node2view.get(v);
             if (nv.getLabel() != null) {
                 nv.getLabel().setVisible(true);
                 final RichTextLabel label = nv.getLabel();
@@ -244,7 +244,7 @@ public class NodeLabelLayouter {
                     label.setTranslateY(reference.getY() - 0.5 * label.getHeight());
                 } else // internal node
                 {
-                    if (((NodeView2D) node2view.getValue(v.getFirstInEdge().getSource())).getLocation().getY() > nv.getLocation().getY()) {
+                    if (((NodeView2D) node2view.get(v.getFirstInEdge().getSource())).getLocation().getY() > nv.getLocation().getY()) {
                         // parent lies above
                         label.setTranslateX(reference.getX() - label.getWidth() - 5);
                         label.setTranslateY(reference.getY() - 0.5 * label.getHeight() - 4);

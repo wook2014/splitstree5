@@ -91,9 +91,9 @@ public class GenomeContext {
         final String outputFile = options.getOption("-o", "output", "Output file (stdout, .gz ok)", "stdout");
 
         options.comment("Filtering");
-        final double maxDistance = options.getOption("-md", "maxDistance", "Max mash distance to consider", 1d);
-        final boolean best = options.getOption("-ub", "useBest", "Use best distance only", false);
         int minSketchIntersection = options.getOption("-ms", "minSketchIntersect", "Minimum sketch intersection size", 1);
+        final double maxDistance = options.getOption("-md", "maxDistance", "Max mash distance (if set, overrides --minSketchIntersect)", 1d);
+        final boolean best = options.getOption("-ub", "useBest", "Use best distance only", false);
         final int maxCount = options.getOption("-m", "max", "Max number of genomes to return", 25);
 
         options.comment("Reporting:");
@@ -124,8 +124,10 @@ public class GenomeContext {
 
         try (Writer w = new OutputStreamWriter(Basic.getOutputStreamPossiblyZIPorGZIP(outputFile))) {
             final AccessReferenceDatabase database = new AccessReferenceDatabase(databaseFile, 2 * ProgramExecutorService.getNumberOfCoresToUse());
-            final int mashK = database.getMashK();
-            final int mashS = database.getMashS();
+            // todo: update minSketchIntersection from maxDistance
+            if (maxDistance < 1)
+                minSketchIntersection = Math.max(minSketchIntersection, computeMinSketchIntersection(maxDistance, database.getMashK(), database.getMashS()));
+
 
             try (final ProgressPercentage progress = new ProgressPercentage("Processing input files (" + inputFiles.size() + "):", inputFiles.size())) {
                 for (var fileName : inputFiles) {
@@ -150,10 +152,6 @@ public class GenomeContext {
                         pairs.clear();
                         pairs.add(new Pair<>(name, Basic.toString(sequences, "").replaceAll("\\s", "")));
                     }
-
-                    // todo: update minSketchIntersection from maxDistance
-                    if (maxDistance < 1)
-                        minSketchIntersection = Math.max(minSketchIntersection, computeMinSketchIntersection(maxDistance, mashK, mashS));
 
                     for (var pair : pairs) {
                         final Collection<Map.Entry<Integer, Double>> list = database.findSimilar(new ProgressSilent(), minSketchIntersection, includeStrains, Collections.singleton(pair.getSecond().getBytes()), false);

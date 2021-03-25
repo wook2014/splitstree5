@@ -180,12 +180,12 @@ public class WorkflowEditing {
     public static Pair<Connector, DataNode> findOrInsertTreeRootAlgorithm(Workflow workflow, DataNode dataNode, Algorithm<TreesBlock, TreesBlock> algorithm) {
         final Pair<DataNode<TreesBlock>, Connector<TreesBlock, ? extends DataBlock>> pair = workflow.getAncestorAndDescendantForClass(dataNode, TreesBlock.class);
 
-        final DataNode<TreesBlock> treesNode = pair.get1();
+        final DataNode<TreesBlock> treesNode = pair.getFirst();
 
 
         if (treesNode != null) {
-            if (pair.get2() != null) {
-                final Connector<TreesBlock, ? extends DataBlock> child = pair.get2();
+            if (pair.getSecond() != null) {
+                final Connector<TreesBlock, ? extends DataBlock> child = pair.getSecond();
                 final DataNode<TreesBlock> treeNode = workflow.createDataNode(new TreesBlock());
                 final Connector<TreesBlock, TreesBlock> rootConnector = workflow.createConnector(treesNode, treeNode, algorithm);
                 child.changeParent(treeNode);

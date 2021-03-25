@@ -18,7 +18,7 @@
  *
  */
 
-package splitstree5.tools;
+package splitstree5.xtra;
 
 import jloda.fx.util.ArgsOptions;
 import jloda.graph.Node;

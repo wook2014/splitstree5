@@ -210,7 +210,7 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
             while (c.next()) {
                 for (Edge e : c.getAddedSubList()) {
                     if (e.getOwner() == getGraph()) {
-                        final EdgeViewBase ev = getEdge2view().getValue(e);
+                        final EdgeViewBase ev = getEdge2view().get(e);
                         if (ev != null) {
                             ev.showAsSelected(true);
                         }
@@ -218,7 +218,7 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
                 }
                 for (Edge e : c.getRemoved()) {
                     if (e.getOwner() == getGraph()) {
-                        final EdgeViewBase ev = getEdge2view().getValue(e);
+                        final EdgeViewBase ev = getEdge2view().get(e);
                         if (ev != null) {
                             ev.showAsSelected(false);
                         }
@@ -592,8 +592,8 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
         }
 
         controller.getSelectAllMenuItem().setOnAction((e) -> {
-            nodeSelectionModel.selectItems(graph.getNodesAsSet());
-            edgeSelectionModel.selectItems(graph.getEdgesAsSet());
+            nodeSelectionModel.selectItems(graph.getNodesAsList());
+            edgeSelectionModel.selectItems(graph.getEdgesAsList());
         });
         // controller.getSelectAllMenuItem().disableProperty().bind(Bindings.size(nodeSelectionModel.getSelectedItems()).isEqualTo(graph.getNumberOfNodes())
         // .and(Bindings.size(edgeSelectionModel.getSelectedItems()).isEqualTo(graph.getNumberOfEdges()))); // todo: breaks if number of nodes or edges changes...
@@ -604,10 +604,10 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
         });
 
         if (graph != null) {
-            controller.getSelectAllNodesMenuItem().setOnAction((e) -> nodeSelectionModel.selectItems(graph.getNodesAsSet()));
+            controller.getSelectAllNodesMenuItem().setOnAction((e) -> nodeSelectionModel.selectItems(graph.getNodesAsList()));
             controller.getSelectAllNodesMenuItem().disableProperty().bind(Bindings.size(nodeSelectionModel.getSelectedItems()).isEqualTo(graph.getNumberOfNodes()));
 
-            controller.getSelectAllEdgesMenuItem().setOnAction((e) -> edgeSelectionModel.selectItems(graph.getEdgesAsSet()));
+            controller.getSelectAllEdgesMenuItem().setOnAction((e) -> edgeSelectionModel.selectItems(graph.getEdgesAsList()));
             controller.getSelectAllEdgesMenuItem().disableProperty().bind(Bindings.size(edgeSelectionModel.getSelectedItems()).isEqualTo(graph.getNumberOfEdges()));
         }
 
@@ -655,8 +655,8 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
             }
         });
 
-        controller.getInvertNodeSelectionMenuItem().setOnAction((e) -> nodeSelectionModel.invertSelection(graph.getNodesAsSet()));
-        controller.getInvertEdgeSelectionMenuItem().setOnAction((e) -> edgeSelectionModel.invertSelection(graph.getEdgesAsSet()));
+        controller.getInvertNodeSelectionMenuItem().setOnAction((e) -> nodeSelectionModel.invertSelection(graph.getNodesAsList()));
+        controller.getInvertEdgeSelectionMenuItem().setOnAction((e) -> edgeSelectionModel.invertSelection(graph.getEdgesAsList()));
 
         controller.getDeselectAllNodesMenuItem().setOnAction((e) -> nodeSelectionModel.clearSelection());
         controller.getDeselectAllNodesMenuItem().disableProperty().bind(nodeSelectionModel.emptyProperty());
@@ -678,8 +678,7 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
                 getUndoManager().doAndAdd(new FontSizeIncrementCommand(2, nodeSelectionModel.getSelectedItems(),
                         node2view, edgeSelectionModel.getSelectedItems(), edge2view));
             } else {
-                getUndoManager().doAndAdd(new FontSizeIncrementCommand(2, graph.getNodesAsSet(),
-                        node2view, graph.getEdgesAsSet(), edge2view));
+                getUndoManager().doAndAdd(new FontSizeIncrementCommand(2, graph.getNodesAsList(), node2view, graph.getEdgesAsList(), edge2view));
             }
         });
 
@@ -688,8 +687,7 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
                 getUndoManager().doAndAdd(new FontSizeIncrementCommand(-2, nodeSelectionModel.getSelectedItems(),
                         node2view, edgeSelectionModel.getSelectedItems(), edge2view));
             } else {
-                getUndoManager().doAndAdd(new FontSizeIncrementCommand(-2, graph.getNodesAsSet(),
-                        node2view, graph.getEdgesAsSet(), edge2view));
+                getUndoManager().doAndAdd(new FontSizeIncrementCommand(-2, graph.getNodesAsList(), node2view, graph.getEdgesAsList(), edge2view));
             }
         });
 

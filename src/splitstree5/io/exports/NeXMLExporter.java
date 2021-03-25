@@ -21,9 +21,7 @@
 package splitstree5.io.exports;
 
 import jloda.graph.Edge;
-import jloda.graph.EdgeSet;
 import jloda.graph.Node;
-import jloda.graph.NodeSet;
 import jloda.phylo.PhyloGraph;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
@@ -123,14 +121,9 @@ public class NeXMLExporter implements IFromTaxa, IExportTaxa, IFromTrees, IExpor
             xmlWriter.writeAttribute("id", "network1");
             xmlWriter.writeAttribute("xsi:type", "nex:FloatNetwork");
 
-            // Nodes and edges
-            NodeSet nodes = graph.getNodesAsSet();
-            EdgeSet edges = graph.getEdgesAsSet();
-
             HashMap<Integer, String> id2nexId = new HashMap<>();
 
-            for (Node node : nodes) {
-
+            for (Node node : graph.nodes()) {
                 writeNewLineWithTabs(xmlWriter, 3);
                 xmlWriter.writeEmptyElement("node");
 
@@ -170,7 +163,7 @@ public class NeXMLExporter implements IFromTaxa, IExportTaxa, IFromTrees, IExpor
 
             xmlWriter.writeCharacters("\n");
 
-            for (Edge edge : edges) {
+            for (Edge edge : graph.edges()) {
                 writeNewLineWithTabs(xmlWriter, 3);
                 xmlWriter.writeEmptyElement("edge");
 

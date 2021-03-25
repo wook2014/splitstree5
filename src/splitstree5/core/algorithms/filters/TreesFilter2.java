@@ -21,6 +21,7 @@
 package splitstree5.core.algorithms.filters;
 
 import javafx.beans.property.*;
+import jloda.graph.Edge;
 import jloda.phylo.PhyloTree;
 import jloda.phylo.PhyloTreeUtils;
 import jloda.util.CanceledException;
@@ -99,7 +100,7 @@ public class TreesFilter2 extends Algorithm<TreesBlock, TreesBlock> implements I
                     if (!isCopy)
                         tree = new PhyloTree(tree);
 
-                    if (!tree.makeEdgesUnitWeight())
+                    if (!makeEdgesUnitWeight(tree))
                         tree = parent.getTree(t); // nothing changed, use original
                 }
                 child.getTrees().add(tree);
@@ -186,4 +187,20 @@ public class TreesFilter2 extends Algorithm<TreesBlock, TreesBlock> implements I
     public void setOptionUniformEdgeLengths(boolean optionUniformEdgeLengths) {
         this.optionUniformEdgeLengths.set(optionUniformEdgeLengths);
     }
+
+    /**
+     * give all adjacentEdges unit weight
+     */
+    public static boolean makeEdgesUnitWeight(PhyloTree tree) {
+        boolean changed = false;
+        for (Edge e : tree.edges()) {
+            if (tree.getWeight(e) != 1) {
+                tree.setWeight(e, 1.0);
+                changed = true;
+            }
+        }
+        return changed;
+    }
+
+
 }

@@ -92,11 +92,17 @@ public class BloomFilterTool {
             fpProbability = options.getOption("-fp", "fpProb", "Probability of false positive error in Bloom filter", 0.0001);
         else
             fpProbability = 0;
+        final int maxBytes;
+        if (options.isDoHelp() || command.equals("make"))
+            maxBytes = (int) Basic.parseKiloMegaGiga(options.getOption("-mb", "maxBytes", "Maximum number of bytes for a Bloom filter", "1M"));
+        else
+            maxBytes = (int) Basic.parseKiloMegaGiga("1M");
+
 
         options.comment("CONTAINS options");
         final String[] bloomFilterInput;
         if (options.isDoHelp() || command.equals("contains"))
-            bloomFilterInput = options.getOptionMandatory("-ib", "bloomFilterInput", "Input files bloom filtres (directory ok, use suffix .bfilters)", new String[0]);
+            bloomFilterInput = options.getOptionMandatory("-ib", "bloomFilterInput", "Input files bloom filters (directory ok, use suffix .bfilters)", new String[0]);
         else
             bloomFilterInput = null;
 
@@ -109,6 +115,8 @@ public class BloomFilterTool {
         final ArrayList<String> inputFiles = getInputFiles(kmerInput, ".kmers", ".kmers.gz");
 
         if (command.equals("make")) {
+            System.err.printf("Input files: %,d%n", inputFiles.size());
+
             final Counter numberOfLines = new Counter(0);
 
             try (ProgressPercentage progress = new ProgressPercentage("Counting input lines", inputFiles.size())) {
@@ -138,13 +146,15 @@ public class BloomFilterTool {
                     });
                 } finally {
                     service.shutdown();
+                    //noinspection ResultOfMethodCallIgnored
                     service.awaitTermination(1000, TimeUnit.DAYS);
                 }
                 if (exception.get() != null)
                     throw exception.get();
             }
+            System.err.printf("Input lines: %,d%n", numberOfLines.get());
 
-            final BloomFilter allKMersBloomFilter = new BloomFilter((int) numberOfLines.get(), fpProbability);
+            final BloomFilter allKMersBloomFilter = new BloomFilter((int) numberOfLines.get(), fpProbability, maxBytes);
             try (ProgressPercentage progress = new ProgressPercentage("Processing input lines", inputFiles.size())) {
                 final ExecutorService service = Executors.newFixedThreadPool(threads);
                 final Single<IOException> exception = new Single<>(null);
@@ -177,6 +187,7 @@ public class BloomFilterTool {
                     });
                 } finally {
                     service.shutdown();
+                    //noinspection ResultOfMethodCallIgnored
                     service.awaitTermination(1000, TimeUnit.DAYS);
                 }
                 if (exception.get() != null)
@@ -193,7 +204,7 @@ public class BloomFilterTool {
                     outs.write(allKMersBloomFilter.getBytes());
                 }
             }
-            System.err.println("Size: " + Basic.getMemorySizeString((new File(output)).length()));
+            System.err.println("Total file size: " + Basic.getMemorySizeString((new File(output)).length()));
         } else if (command.equals("contains")) {
             final ArrayList<String> bloomFilterFiles = getInputFiles(bloomFilterInput, ".bfilter", ".bfilter.gz");
             final Map<String, BloomFilter> bloomFilters = new HashMap<>();

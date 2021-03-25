@@ -110,7 +110,6 @@ public class FastaSplitsImporter extends CharactersFormat implements IToSplits, 
         }
 
         taxa.addTaxaByNames(taxonNamesFound);
-        splits.clear();
         readSplits(ntax, nsplits, binarySplits, splits);
         splits.setCycle(SplitsUtilities.computeCycle(ntax, splits.getSplits()));
     }

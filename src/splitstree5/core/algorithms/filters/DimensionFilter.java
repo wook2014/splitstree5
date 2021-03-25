@@ -337,7 +337,7 @@ public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> impleme
             Node a = graph.getOpposite(v, e);
             for (Edge f = v.getNextAdjacentEdge(e); f != null; f = v.getNextAdjacentEdge(f)) {
                 Node b = graph.getOpposite(v, f);
-                if (!graph.areAdjacent(a, b))
+                if (!a.isAdjacent(b))
                     return true;
             }
         }

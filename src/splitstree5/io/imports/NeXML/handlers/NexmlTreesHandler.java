@@ -167,38 +167,15 @@ public class NexmlTreesHandler extends DefaultHandler {
     }
 
     private boolean treeContainsAllTaxa(PhyloTree tree) {
-
         int numOfLabelsInTree = 0;
 
-        for (String s : tree.nodeLabels()) {
-            numOfLabelsInTree++;
+        for (var v : tree.nodes()) {
+            if (v.getLabel() != null)
+                numOfLabelsInTree++;
         }
-        //System.err.println(tree.nodeLabels().iterator().next());
 
-        //Iterable<String> iterator = tree.nodeLabels();
-        //iterator.forEach(System.err.println("ffff"));
-
-        /*while (iterator.spliterator().hasNext()) {
-            //iterator.next();
-            System.err.println(iterator.next());
-            numOfLabelsInTree++;
-        }*/
-        /*System.err.println("üüüüüüüüü" + numOfLabelsInTree);
-        //return numOfLabelsInTree == taxaLabels.size();
-
-        Iterator<String> source = tree.nodeLabels().iterator();
-        ArrayList<String> target = (ArrayList<String>) makeCollection(tree.nodeLabels());
-        //tree.nodeLabels().forEach(target::add);
-
-        for (String s : target)
-            System.err.println("Label "+s);*/
-
-
-        //tree.nodeLabels().forEach(y -> System.out.println(y));
-
-
-        return true;
-        // todo : how to use iterator?
+        return numOfLabelsInTree == taxaLabels.size();
+        // todo : fix this
     }
 
     public static Collection<String> makeCollection(Iterable<String> iter) {

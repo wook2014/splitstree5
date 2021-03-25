@@ -135,7 +135,7 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
             Set<String> taxaLabels = new HashSet<>();
             for (int i = 0; i < treesBlock.getNTrees(); i++) {
                 PhyloTree tree = treesBlock.getTrees().get(i);
-                Set<String> nodeLabels = tree.getNodeLabels();
+                Set<String> nodeLabels = tree.nodeLabels();
 
                 for (String nodeLabel : nodeLabels) {
                     //taxaLabels.add(translate.get(nodeLabel));

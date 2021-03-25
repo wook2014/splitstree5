@@ -62,7 +62,7 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
     private final ObjectProperty<GraphLayout> layout = new SimpleObjectProperty<>(GraphLayout.LeftToRight);
 
     private final ScaleBar scaleBar = new ScaleBar();
-    private final DraggableLabel fitLabel = new DraggableLabel();
+    private final DraggableLabel fitLabel = new DraggableLabel(scaleBar);
 
     private final boolean withScrollPane;
 
@@ -110,7 +110,6 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
             try {
                 if (centerPane.getChildren().size() == 0) {
                     centerPane.getChildren().add(scaleBar);
-                    centerPane.getChildren().add(fitLabel);
 
                     scaleBar.setFactorX(scaleChangeX.get());
 
@@ -145,7 +144,7 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
                     ProgramExecutorService.getInstance().submit(() -> {
                         try {
                             Thread.sleep(100);
-                        } catch (InterruptedException e) {
+                        } catch (InterruptedException ignored) {
                         }
                         Platform.runLater(() -> layoutLabels(sparseLabels.get()));
                     });
@@ -185,7 +184,7 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
                 scrollPane.setHvalue(0.5);
                 */
                 }
-            } else { // no scrollpane
+            } else { // no scroll pane
                 centerPane.setPadding(new Insets(10, 10, 2, 10));
                 centerPane.setPrefWidth(120);
                 centerPane.setPrefHeight(120);

@@ -56,39 +56,40 @@ public class FastaSplitsImporterTest {
         new SplitsNexusOutput().write(w, taxaBlock, splitsBlock);
         System.err.println(w.toString());
 
-        String splits = "\n" +
+        String expectedOutput = "#nexus\n" +
+                "\n" +
                 "BEGIN SPLITS;\n" +
                 "DIMENSIONS ntax=8 nsplits=22;\n" +
-                "FORMAT labels=no weights=yes confidences=no intervals=no;\n" +
-                "PROPERTIES fit=-1.0 cyclic;\n" +
-                "CYCLE 1 3 5 4 6 8 7 2;\n" +
+                "FORMAT labels=no weights=yes confidences=no;\n" +
+                "PROPERTIES fit=-1.00;\n" +
+                "CYCLE 1 2 7 8 6 4 5 3;\n" +
                 "MATRIX\n" +
-                "\t[1, size=1] \t 1.0 \t 1 3 4 5 6 7 8,\n" +
-                "\t[2, size=3] \t 1.0 \t 1 3 4 5 6,\n" +
-                "\t[3, size=3] \t 1.0 \t 1 3 5,\n" +
-                "\t[4, size=2] \t 1.0 \t 1 3,\n" +
-                "\t[5, size=1] \t 1.0 \t 1,\n" +
-                "\t[6, size=1] \t 1.0 \t 1 2 3 4 5 6 8,\n" +
-                "\t[7, size=2] \t 1.0 \t 1 2 3 4 5 6,\n" +
-                "\t[8, size=3] \t 1.0 \t 1 2 3 4 5,\n" +
-                "\t[9, size=4] \t 1.0 \t 1 2 3 5,\n" +
-                "\t[10, size=3] \t 1.0 \t 1 2 3,\n" +
-                "\t[11, size=2] \t 1.0 \t 1 2,\n" +
-                "\t[12, size=1] \t 1.0 \t 1 2 3 4 5 6 7,\n" +
-                "\t[13, size=2] \t 1.0 \t 1 2 3 4 5 7,\n" +
-                "\t[14, size=4] \t 1.0 \t 1 2 3 7,\n" +
-                "\t[15, size=3] \t 1.0 \t 1 2 7,\n" +
-                "\t[16, size=1] \t 1.0 \t 1 2 3 4 5 7 8,\n" +
-                "\t[17, size=2] \t 1.0 \t 1 2 3 5 7 8,\n" +
-                "\t[18, size=4] \t 1.0 \t 1 2 7 8,\n" +
-                "\t[19, size=1] \t 1.0 \t 1 2 3 5 6 7 8,\n" +
-                "\t[20, size=1] \t 1.0 \t 1 2 3 4 6 7 8,\n" +
-                "\t[21, size=2] \t 1.0 \t 1 2 4 6 7 8,\n" +
-                "\t[22, size=1] \t 1.0 \t 1 2 4 5 6 7 8,\n" +
+                "[1, size=1] \t 1.0 \t 1 3 4 5 6 7 8,\n" +
+                "[2, size=3] \t 1.0 \t 1 3 4 5 6,\n" +
+                "[3, size=3] \t 1.0 \t 1 3 5,\n" +
+                "[4, size=2] \t 1.0 \t 1 3,\n" +
+                "[5, size=1] \t 1.0 \t 1,\n" +
+                "[6, size=1] \t 1.0 \t 1 2 3 4 5 6 8,\n" +
+                "[7, size=2] \t 1.0 \t 1 2 3 4 5 6,\n" +
+                "[8, size=3] \t 1.0 \t 1 2 3 4 5,\n" +
+                "[9, size=4] \t 1.0 \t 1 2 3 5,\n" +
+                "[10, size=3] \t 1.0 \t 1 2 3,\n" +
+                "[11, size=2] \t 1.0 \t 1 2,\n" +
+                "[12, size=1] \t 1.0 \t 1 2 3 4 5 6 7,\n" +
+                "[13, size=2] \t 1.0 \t 1 2 3 4 5 7,\n" +
+                "[14, size=4] \t 1.0 \t 1 2 3 7,\n" +
+                "[15, size=3] \t 1.0 \t 1 2 7,\n" +
+                "[16, size=1] \t 1.0 \t 1 2 3 4 5 7 8,\n" +
+                "[17, size=2] \t 1.0 \t 1 2 3 5 7 8,\n" +
+                "[18, size=4] \t 1.0 \t 1 2 7 8,\n" +
+                "[19, size=1] \t 1.0 \t 1 2 3 5 6 7 8,\n" +
+                "[20, size=1] \t 1.0 \t 1 2 3 4 6 7 8,\n" +
+                "[21, size=2] \t 1.0 \t 1 2 4 6 7 8,\n" +
+                "[22, size=1] \t 1.0 \t 1 2 4 5 6 7 8,\n" +
                 ";\n" +
                 "END; [SPLITS]\n";
 
-        assertEquals(w.toString(), splits);
+        assertEquals(w.toString(), expectedOutput);
 
     }
 

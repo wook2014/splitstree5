@@ -23,6 +23,7 @@ package splitstree5.io.imports.nexus;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
+import splitstree5.core.datablocks.characters.CharactersType;
 import splitstree5.io.imports.interfaces.IImportCharacters;
 import splitstree5.io.nexus.CharactersNexusInput;
 
@@ -53,5 +54,10 @@ public class CharactersNexusImporter extends NexusImporterBase<CharactersBlock> 
 
     @Override
     public void setMissing(char m) {
+    }
+
+    @Override
+    public void setCharactersType(CharactersType charactersType) {
+
     }
 }

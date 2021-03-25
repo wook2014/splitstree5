@@ -65,9 +65,9 @@ public class SpringEmbedder {
 
 
             for (Node v : graph.nodes()) {
-                Point2D p = node2location.getValue(v);
-                xPos.setValue(v, p.getX());
-                yPos.setValue(v, p.getY());
+                Point2D p = node2location.get(v);
+                xPos.put(v, p.getX());
+                yPos.put(v, p.getY());
             }
 
             // run iterations of spring embedding:
@@ -86,20 +86,20 @@ public class SpringEmbedder {
                 // repulsive forces
 
                 for (Node v : graph.nodes()) {
-                    double xv = xPos.getValue(v);
-                    double yv = yPos.getValue(v);
+                    double xv = xPos.get(v);
+                    double yv = yPos.get(v);
 
                     for (Node u : graph.nodes()) {
                         if (u == v)
                             continue;
-                        double xdist = xv - xPos.getValue(u);
-                        double ydist = yv - yPos.getValue(u);
+                        double xdist = xv - xPos.get(u);
+                        double ydist = yv - yPos.get(u);
                         double dist = xdist * xdist + ydist * ydist;
                         if (dist < 1e-3)
                             dist = 1e-3;
                         double frepulse = k * k / dist;
-                        xDispl.setValue(v, xDispl.getValue(v) + frepulse * xdist);
-                        yDispl.setValue(v, yDispl.getValue(v) + frepulse * ydist);
+                        xDispl.put(v, xDispl.get(v) + frepulse * xdist);
+                        yDispl.put(v, yDispl.get(v) + frepulse * ydist);
                     }
 
                     for (Edge e : graph.edges()) {
@@ -108,14 +108,14 @@ public class SpringEmbedder {
                         if (a == v || b == v)
                             continue;
                         double xdist = xv -
-                                (xPos.getValue(a) + xPos.getValue(b)) / 2;
+                                (xPos.get(a) + xPos.get(b)) / 2;
                         double ydist = yv -
-                                (yPos.getValue(a) + yPos.getValue(b)) / 2;
+                                (yPos.get(a) + yPos.get(b)) / 2;
                         double dist = xdist * xdist + ydist * ydist;
                         if (dist < 1e-3) dist = 1e-3;
                         double frepulse = k * k / dist;
-                        xDispl.setValue(v, xDispl.getValue(v) + frepulse * xdist);
-                        yDispl.setValue(v, yDispl.getValue(v) + frepulse * ydist);
+                        xDispl.put(v, xDispl.get(v) + frepulse * xdist);
+                        yDispl.put(v, yDispl.get(v) + frepulse * ydist);
                     }
                 }
 
@@ -125,8 +125,8 @@ public class SpringEmbedder {
                     Node u = e.getSource();
                     Node v = e.getTarget();
 
-                    double xdist = xPos.getValue(v) - xPos.getValue(u);
-                    double ydist = yPos.getValue(v) - yPos.getValue(u);
+                    double xdist = xPos.get(v) - xPos.get(u);
+                    double ydist = yPos.get(v) - yPos.get(u);
 
                     double dist = Math.sqrt(xdist * xdist + ydist * ydist);
 
@@ -134,28 +134,28 @@ public class SpringEmbedder {
 
                     dist /= f;
 
-                    xDispl.setValue(v, xDispl.getValue(v) - xdist * dist / k);
-                    yDispl.setValue(v, yDispl.getValue(v) - ydist * dist / k);
-                    xDispl.setValue(u, xDispl.getValue(u) + xdist * dist / k);
-                    yDispl.setValue(u, yDispl.getValue(u) + ydist * dist / k);
+                    xDispl.put(v, xDispl.get(v) - xdist * dist / k);
+                    yDispl.put(v, yDispl.get(v) - ydist * dist / k);
+                    xDispl.put(u, xDispl.get(u) + xdist * dist / k);
+                    yDispl.put(u, yDispl.get(u) + ydist * dist / k);
                 }
 
                 // preventions
 
                 for (Node v : graph.nodes()) {
-                    double xd = xDispl.getValue(v);
-                    double yd = yDispl.getValue(v);
+                    double xd = xDispl.get(v);
+                    double yd = yDispl.get(v);
 
                     double dist = Math.sqrt(xd * xd + yd * yd);
 
                     xd = tx * xd / dist;
                     yd = ty * yd / dist;
 
-                    double xp = xPos.getValue(v) + xd;
-                    double yp = yPos.getValue(v) + yd;
+                    double xp = xPos.get(v) + xd;
+                    double yp = yPos.get(v) + yd;
 
-                    xPos.setValue(v, xp);
-                    yPos.setValue(v, yp);
+                    xPos.put(v, xp);
+                    yPos.put(v, yp);
                 }
                 progress.setProgress(count);
             }
@@ -164,7 +164,7 @@ public class SpringEmbedder {
         } finally {
             // set node positions
             for (Node v : graph.nodes()) {
-                node2location.put(v, new Point2D(xPos.getValue(v), yPos.getValue(v)));
+                node2location.put(v, new Point2D(xPos.get(v), yPos.get(v)));
             }
         }
     }

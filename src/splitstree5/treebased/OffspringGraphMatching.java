@@ -41,8 +41,8 @@ public class OffspringGraphMatching {
         NodeArray<Node> tree2b = new NodeArray<>(tree);
 
         for (Node v : tree.nodes()) {
-            tree2a.setValue(v, graph.newNode());
-            tree2b.setValue(v, graph.newNode());
+            tree2a.put(v, graph.newNode());
+            tree2b.put(v, graph.newNode());
         }
 
         for (Edge e : tree.edges()) {
@@ -60,6 +60,6 @@ public class OffspringGraphMatching {
     }
 
     public static int discrepancy(PhyloTree tree, EdgeSet matching) {
-        return (tree.getNumberOfNodes() - tree.getNumberOfLeaves()) - matching.size();
+        return (tree.getNumberOfNodes() - tree.countLeaves()) - matching.size();
     }
 }

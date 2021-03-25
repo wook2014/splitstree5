@@ -125,7 +125,7 @@ public class TreesGrid extends Algorithm<TreesBlock, ViewerBlock> implements IFr
                     switch (getOptionLayout()) {
                         case Radial: {
                             final EdgeFloatArray edge2Angle = new EdgeFloatArray(tree); // angle of edge
-                            TreeEmbedder.setAnglesForCircularLayoutRec(root, null, 0, tree.getNumberOfLeaves(), edge2Angle, LEAF_GROUP_GAP_DEFAULT, PARENT_PLACEMENT_DEFAULT);
+                            TreeEmbedder.setAnglesForCircularLayoutRec(root, null, 0, tree.countLeaves(), edge2Angle, LEAF_GROUP_GAP_DEFAULT, PARENT_PLACEMENT_DEFAULT);
 
                             if (getOptionEdgeShape() == EdgeView2D.EdgeShape.Straight)
                                 TreeEmbedder.computeNodeLocationsForRadialRec(root, new Point2D(0, 0), edgeLengths, edge2Angle, node2point);
@@ -181,7 +181,7 @@ public class TreesGrid extends Algorithm<TreesBlock, ViewerBlock> implements IFr
                         } else
                             text = null;
 
-                        final NodeView2D nodeView = viewTab.createNodeView(v, tree.getTaxa(v), node2point.getValue(v), null, 0, 0, text);
+                        final NodeView2D nodeView = viewTab.createNodeView(v, tree.getTaxa(v), node2point.get(v), null, 0, 0, text);
                         if (text != null && text.length() > 0 && viewTab.getNodeLabel2Style().containsKey(text)) {
                             nodeView.setStyling(viewTab.getNodeLabel2Style().get(text));
                         }
@@ -193,10 +193,10 @@ public class TreesGrid extends Algorithm<TreesBlock, ViewerBlock> implements IFr
                         viewTab.getNodeLabelsGroup().getChildren().addAll(nodeView.getLabelGroup());
                     }
                     for (Edge e : tree.edges()) {
-                        final EdgeControlPoints controlPoints = edge2controlPoints.getValue(e);
+                        final EdgeControlPoints controlPoints = edge2controlPoints.get(e);
                         final EdgeView2D edgeView = viewTab.createEdgeView(e, getOptionLayout(), getOptionEdgeShape(),
-                                node2point.getValue(e.getSource()), controlPoints.getControl1(), controlPoints.getMid(),
-                                controlPoints.getControl2(), controlPoints.getSupport(), node2point.getValue(e.getTarget()), null);
+                                node2point.get(e.getSource()), controlPoints.getControl1(), controlPoints.getMid(),
+                                controlPoints.getControl2(), controlPoints.getSupport(), node2point.get(e.getTarget()), null);
                         viewTab.getEdge2view().put(e, edgeView);
 
                         if (edgeView.getShape() != null)

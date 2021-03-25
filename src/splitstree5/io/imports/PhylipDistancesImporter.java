@@ -46,11 +46,7 @@ public class PhylipDistancesImporter implements IToDistances, IImportDistances {
 
     @Override
     public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, DistancesBlock distances) throws CanceledException, IOException {
-        taxa.clear();
-        distances.clear();
-
-
-        Triangle triangle = null;
+         Triangle triangle = null;
         int row = 0;
         int numberOfTaxa = 0;
 

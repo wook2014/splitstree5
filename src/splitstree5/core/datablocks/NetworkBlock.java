@@ -57,7 +57,8 @@ public class NetworkBlock extends DataBlock {
         this.graph = graph;
         node2data = new NodeArray<>(graph);
         edge2data = new EdgeArray<>(graph);
-        setName(name);
+        if (name != null)
+            setName(name);
 
         //getNetworkNodes().addListener((InvalidationListener) observable -> setShortDescription(getInfo()));
     }

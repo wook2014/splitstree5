@@ -93,7 +93,7 @@ public class NetworkOutlineAlgorithm {
             final BitSet currentSplits = new BitSet();
             Point2D location = new Point2D(0, 0);
             final Node start = graph.newNode();
-            node2point.setValue(start, new Point2D(location.getX(), location.getY()));
+            node2point.put(start, new Point2D(location.getX(), location.getY()));
 
             splits2node.put(new BitSet(), start);
 
@@ -123,7 +123,7 @@ public class NetworkOutlineAlgorithm {
                 if (mustCreateNode) {
                     v = graph.newNode();
                     splits2node.put(BitSetUtils.copy(currentSplits), v);
-                    node2point.setValue(v, new Point2D(location.getX(), location.getY()));
+                    node2point.put(v, new Point2D(location.getX(), location.getY()));
                 } else {
                     v = splits2node.get(currentSplits);
                     location = node2point.get(v);
