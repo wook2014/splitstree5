@@ -1,5 +1,5 @@
 /*
- *  NeighborNetCycle.java Copyright (C) 2020 Daniel H. Huson
+ *  NeighborNetCycle.java Copyright (C) 2021 Daniel H. Huson
  *
  *  (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -442,7 +442,7 @@ public class NeighborNetCycle {
             x = x.next;
         }
 
-        /* extract the ordering */
+        /* extractSubGraph the ordering */
         final int[] cycle = new int[nTax + 1];
         {
             NetNode a = x;

@@ -1,5 +1,5 @@
 /*
- * EditInputTab.java Copyright (C) 2020. Daniel H. Huson
+ * EditInputTab.java Copyright (C) 2021. Daniel H. Huson
  *
  * (Some code written by other authors, as named in code.)
  *
@@ -24,8 +24,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
@@ -43,10 +41,8 @@ import jloda.util.Basic;
 import jloda.util.IOExceptionWithLineNumber;
 import jloda.util.ProgramProperties;
 import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.LineNumberFactory;
 import splitstree5.dialogs.importer.FileOpener;
 import splitstree5.dialogs.importer.ImporterManager;
-import splitstree5.gui.editinputtab.highlighters.NexusHighlighter;
 import splitstree5.io.nexus.workflow.WorkflowNexusInput;
 import splitstree5.main.MainWindow;
 import splitstree5.menu.MenuController;

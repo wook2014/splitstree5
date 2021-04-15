@@ -1,7 +1,7 @@
 #!/bin/bash
 # bloom filter tool
 #
-# Copyright (C) 2020 Daniel H. Huson
+# Copyright (C) 2021 Daniel H. Huson
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -28,7 +28,7 @@ jars2_dir="$bin_dir/../jars2"
 
 jre_dir=${installer:sys.preferredJre}
 
-java=$jre_dir/bin/javaBloomFilterTool
+java=$jre_dir/bin/java
 vmOptions=$(grep "^-" "$bin_dir/../SplitsTree5.vmoptions")
 jfx_dir="$bin_dir/../openjfx/${compiler:sys.platform}/lib"
 modulepath="$jars_dir:$jars2_dir:$jfx_dir"

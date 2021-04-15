@@ -1,5 +1,5 @@
 /*
- * ExportWorkflow.java Copyright (C) 2020. Daniel H. Huson
+ * ExportWorkflow.java Copyright (C) 2021. Daniel H. Huson
  *
  * (Some code written by other authors, as named in code.)
  *
@@ -90,7 +90,7 @@ public class ExportWorkflow extends Application {
 
         final ArgsOptions options = new ArgsOptions(args, ExportWorkflow.class, "Runs a SplitsTree5 workflow on input data");
         options.setVersion(ProgramProperties.getProgramVersion());
-        options.setLicense("Copyright (C) 2020 Daniel H. Huson. This program comes with ABSOLUTELY NO WARRANTY.");
+        options.setLicense("Copyright (C) 2021 Daniel H. Huson. This program comes with ABSOLUTELY NO WARRANTY.");
         options.setAuthors("Daniel H. Huson");
 
         options.comment("Input Output:");

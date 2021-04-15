@@ -1,5 +1,5 @@
 /*
- * Version.java Copyright (C) 2020. Daniel H. Huson
+ * Version.java Copyright (C) 2021. Daniel H. Huson
  *
  * (Some code written by other authors, as named in code.)
  *
@@ -26,7 +26,7 @@ package splitstree5.main;
  */
 public class Version {
     static public final String NAME = "SplitsTree5";
-    static public final String SHORT_DESCRIPTION = "SplitsTree5 Community Edition (version 5.2.25-beta, built 4 Mar 2021)";
+    static public final String SHORT_DESCRIPTION = "SplitsTree5 Community Edition (version 5.2.26-beta, built 8 Apr 2021)";
     static public final String VERSION = "5.0.0_alpha";
 
 }

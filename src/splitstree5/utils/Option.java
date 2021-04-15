@@ -1,5 +1,5 @@
 /*
- * Option.java Copyright (C) 2020. Daniel H. Huson
+ * Option.java Copyright (C) 2021. Daniel H. Huson
  *
  * (Some code written by other authors, as named in code.)
  *
@@ -25,7 +25,7 @@ import jloda.util.Basic;
 import java.lang.reflect.Type;
 
 /**
- * extract all properties in an Optionable class by reflection
+ * extractSubGraph all properties in an Optionable class by reflection
  * Daniel Huson, 12/31/16.
  */
 public class Option {

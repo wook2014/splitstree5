@@ -1,5 +1,5 @@
 /*
- * TreesUtilities.java Copyright (C) 2020. Daniel H. Huson
+ * TreesUtilities.java Copyright (C) 2021. Daniel H. Huson
  *
  * (Some code written by other authors, as named in code.)
  *
@@ -204,7 +204,7 @@ public class TreesUtilities {
     }
 
     /**
-     * recursively extract all splits
+     * recursively extractSubGraph all splits
      *
      * @param v
      * @param e

@@ -1,5 +1,5 @@
 /*
- * OffspringGraphMatching.java Copyright (C) 2020. Daniel H. Huson
+ * OffspringGraphMatching.java Copyright (C) 2021. Daniel H. Huson
  *
  * (Some code written by other authors, as named in code.)
  *
@@ -20,8 +20,13 @@
 
 package splitstree5.treebased;
 
-import jloda.graph.*;
+import jloda.graph.EdgeSet;
+import jloda.graph.Graph;
+import jloda.graph.Node;
+import jloda.graph.NodeArray;
 import jloda.phylo.PhyloTree;
+import jloda.util.CanceledException;
+import jloda.util.ProgressListener;
 
 /**
  * computes the offspring graph matching
@@ -34,25 +39,36 @@ public class OffspringGraphMatching {
      * @param tree
      * @return
      */
-    public static EdgeSet compute(PhyloTree tree) {
-        final Graph graph = new Graph();
+    public static EdgeSet compute(PhyloTree tree, ProgressListener progress) throws CanceledException {
+        var graph = new Graph();
 
-        NodeArray<Node> tree2a = new NodeArray<>(tree);
-        NodeArray<Node> tree2b = new NodeArray<>(tree);
+        progress.setSubtask("Offspring graph matching");
 
-        for (Node v : tree.nodes()) {
+        NodeArray<Node> tree2a = tree.newNodeArray();
+        NodeArray<Node> tree2b = tree.newNodeArray();
+
+        progress.setMaximum(tree.getNumberOfNodes() + tree.getNumberOfEdges() + 1);
+        progress.setProgress(0);
+        for (var v : tree.nodes()) {
             tree2a.put(v, graph.newNode());
             tree2b.put(v, graph.newNode());
+            progress.incrementProgress();
         }
 
-        for (Edge e : tree.edges()) {
+        progress.setProgress(0);
+        for (var e : tree.edges()) {
             graph.newEdge(tree2a.get(e.getSource()), tree2b.get(e.getTarget()));
+            progress.incrementProgress();
         }
 
-        final NodeSet oneSide = new NodeSet(graph);
+        var oneSide = graph.newNodeSet();
         oneSide.addAll(tree2a.values());
 
-        return BipartiteMatching.computeBipartiteMatching(graph, oneSide);
+        try {
+            return BipartiteMatching.computeBipartiteMatching(graph, oneSide);
+        } finally {
+            progress.reportTaskCompleted();
+        }
     }
 
     public static boolean isTreeBased(PhyloTree tree, EdgeSet matching) {

@@ -73,7 +73,7 @@
   <launchers>
     <launcher name="SplitsTree5" id="1691242142" menuName="SplitsTree5">
       <executable name="SplitsTree5" iconSet="true" executableMode="gui" changeWorkingDirectory="false" singleInstance="true" dpiAware="false">
-        <versionInfo include="true" fileDescription="SplitsTree5 phylogenetic tree and network sketch program" legalCopyright="Copyright (C)  2020 ${compiler:sys.publisher}" internalName="SplitsTree5" />
+        <versionInfo include="true" fileDescription="SplitsTree5 phylogenetic tree and network program" legalCopyright="Copyright (C)  2021 ${compiler:sys.publisher}" internalName="SplitsTree5" />
       </executable>
       <java mainClass="splitstreefive/splitstree5.main.SplitsTree5" mainMode="module" vmParameters="-server -Dapple.laf.useScreenMenuBar=true -Duser.language=en -Duser.region=US --add-modules=splitstreefive">
         <modulePath>
@@ -258,6 +258,37 @@ return console.askOkCancel(message, true);
               <action id="1691242180" beanClass="com.install4j.runtime.beans.actions.desktop.RegisterAddRemoveAction" actionElevationType="elevated">
                 <serializedBean>
                   <property name="itemName" type="string">${compiler:sys.fullName} ${compiler:sys.version}</property>
+                </serializedBean>
+              </action>
+              <action id="1691243532" beanClass="com.install4j.runtime.beans.actions.text.ReplaceInstallerVariablesAction" actionElevationType="elevated" rollbackBarrierExitCode="0">
+                <serializedBean>
+                  <property name="files" type="array" class="java.io.File" length="5">
+                    <element index="0">
+                      <object class="java.io.File">
+                        <string>tools/workflow-run</string>
+                      </object>
+                    </element>
+                    <element index="1">
+                      <object class="java.io.File">
+                        <string>tools/mash-sketches</string>
+                      </object>
+                    </element>
+                    <element index="2">
+                      <object class="java.io.File">
+                        <string>tools/workflow-export</string>
+                      </object>
+                    </element>
+                    <element index="3">
+                      <object class="java.io.File">
+                        <string>tools/bfilter-tool</string>
+                      </object>
+                    </element>
+                    <element index="4">
+                      <object class="java.io.File">
+                        <string>tools/genome-context</string>
+                      </object>
+                    </element>
+                  </property>
                 </serializedBean>
               </action>
             </actions>
@@ -1143,7 +1174,7 @@ return true;</property>
     </windows>
   </mediaSets>
   <buildIds buildAll="false">
-    <mediaSet refId="1691242288" />
+    <mediaSet refId="1691242146" />
   </buildIds>
   <buildOptions disableSigning="true" disableNotarization="true" />
 </install4j>

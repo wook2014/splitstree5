@@ -1,5 +1,5 @@
 /*
- * TreeBasedTest.java Copyright (C) 2020. Daniel H. Huson
+ * TreeBasedTest.java Copyright (C) 2021. Daniel H. Huson
  *
  * (Some code written by other authors, as named in code.)
  *
@@ -25,6 +25,7 @@ import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
 import jloda.util.FileLineIterator;
+import jloda.util.ProgressPercentage;
 import jloda.util.UsageException;
 
 import java.io.File;
@@ -81,7 +82,7 @@ public class TreeBasedTest {
                     System.out.println("Number of nodes:  " + tree.getNumberOfNodes());
                     System.out.println("Number of edges:  " + tree.getNumberOfEdges());
 
-                    final EdgeSet matching = OffspringGraphMatching.compute(tree);
+                    final EdgeSet matching = OffspringGraphMatching.compute(tree, new ProgressPercentage());
 
                     System.out.println("Size of matching: " + matching.size());
                     if (OffspringGraphMatching.isTreeBased(tree, matching)) {

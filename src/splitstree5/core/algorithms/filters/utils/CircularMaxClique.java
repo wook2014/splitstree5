@@ -1,5 +1,5 @@
 /*
- * CircularMaxClique.java Copyright (C) 2020. Daniel H. Huson
+ * CircularMaxClique.java Copyright (C) 2021. Daniel H. Huson
  *
  * (Some code written by other authors, as named in code.)
  *
@@ -88,7 +88,7 @@ public class CircularMaxClique {
             }
         }
 
-        //we now extract a max weight clique
+        //we now extractSubGraph a max weight clique
 
         boolean[][] clique = new boolean[ntax][ntax];
         for (int i = 0; i < ntax; i++)

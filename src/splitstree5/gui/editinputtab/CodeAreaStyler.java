@@ -1,5 +1,5 @@
 /*
- * CodeAreaStyler.java Copyright (C) 2020. Daniel H. Huson
+ * CodeAreaStyler.java Copyright (C) 2021. Daniel H. Huson
  *
  * (Some code written by other authors, as named in code.)
  *
@@ -25,11 +25,6 @@ import splitstree5.gui.editinputtab.highlighters.Highlighter;
 import splitstree5.gui.editinputtab.highlighters.NexusHighlighter;
 import splitstree5.gui.editinputtab.highlighters.UniversalHighlighter;
 import splitstree5.gui.editinputtab.highlighters.XMLHighlighter;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Keeper for highlighting listeners
