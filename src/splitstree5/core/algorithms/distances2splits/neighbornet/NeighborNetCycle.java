@@ -442,7 +442,7 @@ public class NeighborNetCycle {
             x = x.next;
         }
 
-        /* extractSubGraph the ordering */
+        /* extract the ordering */
         final int[] cycle = new int[nTax + 1];
         {
             NetNode a = x;

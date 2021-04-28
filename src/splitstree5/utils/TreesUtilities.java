@@ -204,7 +204,7 @@ public class TreesUtilities {
     }
 
     /**
-     * recursively extractSubGraph all splits
+     * recursively extract all splits
      *
      * @param v
      * @param e

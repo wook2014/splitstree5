@@ -25,7 +25,7 @@ import jloda.util.Basic;
 import java.lang.reflect.Type;
 
 /**
- * extractSubGraph all properties in an Optionable class by reflection
+ * extract all properties in an Optionable class by reflection
  * Daniel Huson, 12/31/16.
  */
 public class Option {

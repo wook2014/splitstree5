@@ -88,7 +88,7 @@ public class CircularMaxClique {
             }
         }
 
-        //we now extractSubGraph a max weight clique
+        //we now extract a max weight clique
 
         boolean[][] clique = new boolean[ntax][ntax];
         for (int i = 0; i < ntax; i++)
