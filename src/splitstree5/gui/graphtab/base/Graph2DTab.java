@@ -21,6 +21,7 @@
 package splitstree5.gui.graphtab.base;
 
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.geometry.Bounds;
@@ -28,6 +29,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.shape.PathElement;
 import jloda.fx.control.ZoomableScrollPane;
 import jloda.fx.shapes.NodeShape;
@@ -91,6 +93,21 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
         edge2view = new EdgeArray<>(this.graph);
         nodeLabelSearcher.setGraph(this.graph);
         edgeLabelSearcher.setGraph(this.graph);
+
+        var listener = (InvalidationListener) v -> {
+            var text = "";
+            if (nodeSelectionModel.getSelectedItems().size() > 0)
+                text += " Selected nodes: " + nodeSelectionModel.getSelectedItems().size();
+            if (edgeSelectionModel.getSelectedItems().size() > 0)
+                text += " Selected edges: " + edgeSelectionModel.getSelectedItems().size();
+            if (text.isBlank())
+                Tooltip.install(centerPane, null);
+            else
+                Tooltip.install(centerPane, new Tooltip(text));
+        };
+
+        nodeSelectionModel.getSelectedItems().addListener(listener);
+        edgeSelectionModel.getSelectedItems().addListener(listener);
 
         Platform.runLater(() -> {
             group.setScaleX(1);

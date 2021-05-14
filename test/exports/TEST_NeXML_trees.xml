@@ -1,0 +1,77 @@
+<?xml version="1.0" ?>
+
+<!--
+  ~ TEST_NeXML_trees.xml Copyright (C) 2020. Algorithms in Bioinformatics, University of Tuebingen
+  ~
+  ~  This program is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<nex:nexml
+        generator="SplitsTree5"
+        version="0.9"
+        xmlns:nex="http://www.nexml.org/2009"
+        xmlns="http://www.nexml.org/2009"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+>
+
+    <otus id="otus1" label="TaxaBlock">
+        <otu id="otu1" label="t1"/>
+        <otu id="otu2" label="t2"/>
+        <otu id="otu3" label="t3"/>
+        <otu id="otu4" label="t4"/>
+        <otu id="otu5" label="t5"/>
+    </otus>
+
+    <trees otus="otus1" id="trees1" label="TreesBlock">
+        <tree id="tree1" label="tree1" xsi:type="nex:FloatTree">
+            <node id="n1" label="n1" root="true"/>
+            <node id="n2" label="n2" otu="t1"/>
+            <node id="n3" label="n3"/>
+            <node id="n4" label="n4"/>
+            <node id="n5" label="n5" otu="t3"/>
+            <node id="n6" label="n6" otu="t2"/>
+            <node id="n7" label="n7"/>
+            <node id="n8" label="n8" otu="t5"/>
+            <node id="n9" label="n9" otu="t4"/>
+            <edge source="n1" target="n3" id="e1" length="0.34534"/>
+            <edge source="n1" target="n2" id="e2" length="0.4353"/>
+            <edge source="n3" target="n4" id="e3" length="0.324"/>
+            <edge source="n3" target="n7" id="e4" length="0.3247"/>
+            <edge source="n4" target="n5" id="e5" length="0.234"/>
+            <edge source="n4" target="n6" id="e6" length="0.3243"/>
+            <edge source="n7" target="n8" id="e7" length="0.32443"/>
+            <edge source="n7" target="n9" id="e8" length="0.2342"/>
+        </tree>
+        <tree id="tree2" label="tree2" xsi:type="nex:FloatTree">
+            <node id="n1" label="n1"/>
+            <node id="n2" label="n2" otu="t1"/>
+            <node id="n3" label="n3"/>
+            <node id="n4" label="n4"/>
+            <node id="n5" label="n5" otu="t3"/>
+            <node id="n6" label="n6" otu="t2"/>
+            <node id="n7" label="n7"/>
+            <node id="n8" label="n8" otu="t5"/>
+            <node id="n9" label="n9" otu="t4"/>
+            <edge source="n1" target="n3" id="e1" length="1.0"/>
+            <edge source="n1" target="n2" id="e2" length="2.0"/>
+            <edge source="n3" target="n4" id="e3" length="3.0"/>
+            <edge source="n3" target="n7" id="e4" length="1.0"/>
+            <edge source="n4" target="n5" id="e5" length="2.0"/>
+            <edge source="n4" target="n6" id="e6" length="1.0"/>
+            <edge source="n7" target="n8" id="e7" length="1.0"/>
+            <edge source="n7" target="n9" id="e8" length="1.0"/>
+        </tree>
+    </trees>
+</nex:nexml>

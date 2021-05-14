@@ -654,7 +654,7 @@ public class NeighborNetSplits {
             rho_old = rho;
             rho = norm(r);
         }
-        System.err.println("Number of CG iterations = "+k);
+        // System.err.println("Number of CG iterations = "+k);
     }
 
     /**
