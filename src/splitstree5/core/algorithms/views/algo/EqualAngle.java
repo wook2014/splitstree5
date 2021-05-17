@@ -59,7 +59,6 @@ public class EqualAngle {
         progress.setMaximum(100);    //initialize maximum progress
         progress.setProgress(-1);    //set progress to 0
 
-
         final int[] cycle = normalizeCycle(splits.getCycle());
 
         progress.setProgress(2);
@@ -112,6 +111,10 @@ public class EqualAngle {
                 System.err.println("Edge " + e.getSource().getId() + " - " + e.getTarget().getId() + " split: " + graph.getSplit(e));
             }
         }
+
+        progress.setSubtask("");
+        progress.setMaximum(-1);
+        progress.setProgress(-1);
     }
 
 

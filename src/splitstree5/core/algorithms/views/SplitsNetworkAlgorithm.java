@@ -158,7 +158,9 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
         else
             ((Graph2DTab) viewTab).getFitLabel().setText("");
 
-        progress.setProgress(100);   //set progress to 100%
+        progress.setTasks("Visualization", "Creating nodes");
+        progress.setMaximum(graph.getNumberOfNodes());
+        progress.setProgress(0);
 
         // compute all views and put their parts into the appropriate groups
         final Font labelFont = Font.font(ProgramProperties.getDefaultFontFX().getFamily(), taxaBlock.getNtax() <= 64 ? 16 : Math.max(4, 12 - Math.log(taxaBlock.getNtax() - 64) / Math.log(2)));
@@ -184,7 +186,9 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
             viewTab.getNodeLabelsGroup().getChildren().addAll(nodeView.getLabelGroup());
             if (nodeView.getLabel() != null)
                 nodeView.getLabel().setFont(labelFont);
+            progress.incrementProgress();
         }
+
 
         ((Graph2DTab) viewTab).getPolygons().clear();
         for (ArrayList<Node> loop : loops) {
@@ -192,6 +196,10 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
             ((Graph2DTab) viewTab).getPolygons().add(polygon);
             viewTab.getEdgesGroup().getChildren().add(polygon.getShape());
         }
+
+        progress.setSubtask("Creating edges");
+        progress.setMaximum(graph.getNumberOfEdges());
+        progress.setProgress(0);
 
         for (Edge e : graph.edges()) {
             final EdgeViewBase edgeView = viewTab.createEdgeView(e, node2point.get(e.getSource()), node2point.get(e.getTarget()), null);
@@ -209,15 +217,21 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
                     edgeView.setStrokeWidth(3);
                 }
             }
-            final Tooltip tooltip = new Tooltip("Split " + split);
-            if (edgeView.getEdgeShape() != null)
-                Tooltip.install(edgeView.getEdgeShape(), tooltip);
+            if (false)
+                try {
+                    if (edgeView.getEdgeShape() != null) {
+                        final Tooltip tooltip = new Tooltip("Split " + split);
+                        Tooltip.install(edgeView.getEdgeShape(), tooltip);
+                    }
+                } catch (Exception ignore) {
+                }
+            progress.incrementProgress();
         }
 
         Platform.runLater(() -> viewTab.updateSelectionModels(graph, taxaBlock, viewerBlock.getDocument()));
         viewerBlock.show();
 
-        progress.close();
+        progress.reportTaskCompleted();
 
         if (changeListener != null)
             getConnector().stateProperty().removeListener(changeListener);

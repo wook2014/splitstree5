@@ -89,8 +89,8 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
                 // determine min connection cost:
                 double minConnectionCost = Double.POSITIVE_INFINITY;
 
-                for (Node u = graph.getFirstNode(); u != null; u = u.getNext()) {
-                    String seqU = (String) u.getInfo();
+                for (var u : graph.nodes()) {
+                    var seqU = (String) u.getInfo();
                     for (Edge e = u.getFirstAdjacentEdge(); e != null; e = u.getNextAdjacentEdge(e)) {
                         Node v = e.getOpposite(u);
                         String seqV = (String) v.getInfo();
@@ -109,12 +109,12 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
                         progress.checkForCancel();
                     }
                 }
-                for (Edge e : feasibleLinks) {
-                    final Node u = e.getSource();
-                    final Node v = e.getTarget();
-                    final String seqU = (String) u.getInfo();
-                    final String seqV = (String) v.getInfo();
-                    for (Edge f : feasibleLinks.successors(e)) {
+                for (var e : feasibleLinks) {
+                    final var u = e.getSource();
+                    final var v = e.getTarget();
+                    final var seqU = (String) u.getInfo();
+                    final var seqV = (String) v.getInfo();
+                    for (var f : feasibleLinks.successors(e)) {
                         Node w;
                         if (f.getSource() == u || f.getSource() == v)
                             w = f.getTarget();
@@ -122,9 +122,9 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
                             w = f.getSource();
                         else
                             continue;
-                        String seqW = (String) w.getInfo();
+                        var seqW = (String) w.getInfo();
                         String[] qm = computeQuasiMedian(seqU, seqV, seqW);
-                        for (String aQm : qm) {
+                        for (var aQm : qm) {
                             if (!outputSequences.contains(aQm)) {
                                 double cost = computeConnectionCost(seqU, seqV, seqW, aQm, weights);
                                 if (cost <= minConnectionCost + epsilon) {
@@ -150,9 +150,9 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
      * @param feasibleLinks
      */
     private void computeMinimumSpanningNetwork(Set<String> sequences, double[] weights, int epsilon, PhyloGraph graph, EdgeSet feasibleLinks) {
-        String[] array = (String[]) sequences.toArray(new String[sequences.size()]);
+        var array = sequences.toArray(new String[0]);
         // compute a distance matrix between all sequences:
-        double[][] matrix = new double[array.length][array.length];
+        var matrix = new double[array.length][array.length];
 
         SortedMap<Double, List<Pair<Integer, Integer>>> value2pairs = new TreeMap<>();
 
@@ -165,9 +165,9 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
             }
         }
 
-        Node[] nodes = new Node[array.length];
-        int[] componentsOfMSN = new int[array.length];
-        int[] componentsOfThresholdGraph = new int[array.length];
+        var nodes = new Node[array.length];
+        var componentsOfMSN = new int[array.length];
+        var componentsOfThresholdGraph = new int[array.length];
 
         for (int i = 0; i < array.length; i++) {
             nodes[i] = graph.newNode(array[i]);
@@ -182,8 +182,7 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
 
         double maxValue = Double.POSITIVE_INFINITY;
         // all sets of edges in ascending order of lengths
-        for (Object o : value2pairs.keySet()) {
-            Double value = (Double) o;
+        for (var value : value2pairs.keySet()) {
             double threshold = value;
             if (threshold > maxValue)
                 break;
@@ -204,8 +203,8 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
             }
 
             // determine new edges for minimum spanning network and determine feasible links
-            List<Pair<Integer, Integer>> newPairs = new LinkedList<>();
-            for (Pair<Integer, Integer> ijPair : ijPairs) {
+            var newPairs = new ArrayList<Pair<Integer, Integer>>();
+            for (var ijPair : ijPairs) {
                 int i = ijPair.getFirst();
                 int j = ijPair.getSecond();
 
@@ -255,9 +254,9 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
         if (!visited.contains(v)) {
             visited.add(v);
 
-            for (Edge e = v.getFirstAdjacentEdge(); e != null; e = v.getNextAdjacentEdge(e)) {
+            for (Edge e : v.adjacentEdges()) {
                 if (graph.getWeight(e) < threshold) {
-                    Node w = e.getOpposite(v);
+                    var w = e.getOpposite(v);
                     if (areConnected(graph, w, target, visited, threshold))
                         return true;
                 }
@@ -274,15 +273,15 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
      * @param sequences
      * @return true, if anything was removed
      */
-    private boolean removeObsoleteNodes(PhyloGraph graph, Set input, Set sequences, EdgeSet feasibleLinks) {
+    private boolean removeObsoleteNodes(PhyloGraph graph, Set<String> input, Set<String> sequences, EdgeSet feasibleLinks) {
         int removed = 0;
         boolean changed = true;
         while (changed) {
             changed = false;
-            List toDelete = new LinkedList();
+            var toDelete = new ArrayList<Node>();
 
-            for (Node v = graph.getFirstNode(); v != null; v = v.getNext()) {
-                String seqV = (String) v.getInfo();
+            for (var v : graph.nodes()) {
+                var seqV = (String) v.getInfo();
                 if (!input.contains(seqV)) {
                     int count = 0;
                     for (Edge e = v.getFirstAdjacentEdge(); count <= 2 && e != null; e = v.getNextAdjacentEdge(e)) {
@@ -296,9 +295,8 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
             if (toDelete.size() > 0) {
                 changed = true;
                 removed += toDelete.size();
-                for (Object aToDelete : toDelete) {
-                    Node v = (Node) aToDelete;
-                    sequences.remove(v.getInfo());
+                for (var v : toDelete) {
+                    sequences.remove((String) v.getInfo());
                     graph.deleteNode(v);
                 }
             }
@@ -364,16 +362,16 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
         if (!hasStar)
             return new String[]{buf.toString()};
 
-        Set median = new HashSet();
-        Stack stack = new Stack();
+        var median = new HashSet<String>();
+        var stack = new Stack<String>();
         stack.add(buf.toString());
         while (!stack.empty()) {
-            String seq = (String) stack.pop();
+            var seq = stack.pop();
             int pos = seq.indexOf('*');
             int pos2 = seq.indexOf('*', pos + 1);
-            String first = seq.substring(0, pos) + seqA.charAt(pos) + seq.substring(pos + 1);
-            String second = seq.substring(0, pos) + seqB.charAt(pos) + seq.substring(pos + 1);
-            String third = seq.substring(0, pos) + seqC.charAt(pos) + seq.substring(pos + 1);
+            var first = seq.substring(0, pos) + seqA.charAt(pos) + seq.substring(pos + 1);
+            var second = seq.substring(0, pos) + seqB.charAt(pos) + seq.substring(pos + 1);
+            var third = seq.substring(0, pos) + seqC.charAt(pos) + seq.substring(pos + 1);
             if (pos2 == -1) {
                 median.add(first);
                 median.add(second);
@@ -384,7 +382,7 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
                 stack.add(third);
             }
         }
-        return (String[]) median.toArray(new String[median.size()]);
+        return median.toArray(new String[0]);
     }
 
     public int getOptionEpsilon() {

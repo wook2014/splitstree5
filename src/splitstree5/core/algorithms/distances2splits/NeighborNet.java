@@ -99,9 +99,7 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
 
         splitsBlock.getSplits().addAll(splits);
 
-        System.err.println("weights: " + Math.round((System.currentTimeMillis() - start)) + "ms");
-
-
+        System.err.println("Time: " + Math.round((System.currentTimeMillis() - start)) + "ms");
     }
 
     @Override

@@ -28,7 +28,11 @@ import javafx.geometry.Point2D;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Tooltip;
 import javafx.scene.transform.Scale;
-import jloda.graph.*;
+import jloda.graph.Edge;
+import jloda.graph.EdgeArray;
+import jloda.graph.Node;
+import jloda.graph.NodeArray;
+import jloda.graph.fmm.FastMultiLayerMethodLayout;
 import jloda.phylo.PhyloGraph;
 import jloda.util.Basic;
 import jloda.util.ProgressListener;
@@ -48,6 +52,7 @@ import splitstree5.utils.Legend;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Embeds a network
@@ -56,9 +61,6 @@ import java.util.List;
 public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implements IFromNetwork, IToViewer {
     public enum MutationView {Hatches, Labels, Count, None}
 
-    public enum Algorithm {SpringEmbedder}
-
-    private final ObjectProperty<Algorithm> optionAlgorithm = new SimpleObjectProperty<>(Algorithm.SpringEmbedder);
 
     private final IntegerProperty optionIterations = new SimpleIntegerProperty(1000);
 
@@ -68,8 +70,10 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
 
     private final ObjectProperty<MutationView> optionShowMutations = new SimpleObjectProperty<>(MutationView.None);
 
+    private final BooleanProperty optionEdgesToScale = new SimpleBooleanProperty(false);
+
     public List<String> listOptions() {
-        return Arrays.asList("optionAlgorithm", "optionIterations", "optionShowPieCharts", "optionScaleNodes", "optionShowMutations");
+        return Arrays.asList("optionShowPieCharts", "optionScaleNodes", "optionShowMutations", "optionEdgesToScale");
     }
 
     private final PhyloGraph graph = new PhyloGraph();
@@ -92,7 +96,8 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
         viewTab.init(graph);
 
         final NodeArray<Point2D> node2point = new NodeArray<>(graph);
-        computeSpringEmbedding(graph, node2point, getOptionIterations(), viewTab.getTargetDimensions().getWidth(), viewTab.getTargetDimensions().getHeight(), false);
+        computeSpringEmbedding(graph, node2point, isOptionEdgesToScale() ? graph::getWeight : e -> 1d, viewTab.getTargetDimensions().getWidth(),
+                viewTab.getTargetDimensions().getHeight());
 
         /* Check if the node data contains the x, y coordinates
             if present - use the x, y coordinates in view
@@ -277,18 +282,6 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
         }
     }
 
-    public Algorithm getOptionAlgorithm() {
-        return optionAlgorithm.get();
-    }
-
-    public ObjectProperty<Algorithm> optionAlgorithmProperty() {
-        return optionAlgorithm;
-    }
-
-    public void setOptionAlgorithm(Algorithm optionAlgorithm) {
-        this.optionAlgorithm.set(optionAlgorithm);
-    }
-
     public int getOptionIterations() {
         return optionIterations.get();
     }
@@ -303,121 +296,9 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
 
     /**
      * Computes a spring embedding of the graph
-     *
-     * @param iterations       the number of optionIterations used
-     * @param startFromCurrent use current node positions
      */
-    public void computeSpringEmbedding(PhyloGraph graph, NodeArray<Point2D> node2view, int iterations, double width, double height, boolean startFromCurrent) {
-        if (graph.getNumberOfNodes() < 2)
-            return;
-
-        // Initial positions are on a circle:
-        final NodeDoubleArray xPos = new NodeDoubleArray(graph);
-        final NodeDoubleArray yPos = new NodeDoubleArray(graph);
-
-        int i = 0;
-        for (Node v : graph.nodes()) {
-            if (startFromCurrent) {
-                Point2D p = node2view.get(v);
-                xPos.put(v, p.getX());
-                yPos.put(v, p.getY());
-            } else {
-                xPos.put(v, 1000 * Math.sin(6.24 * i / graph.getNumberOfNodes()));
-                yPos.put(v, 1000 * Math.cos(6.24 * i / graph.getNumberOfNodes()));
-                i++;
-            }
-        }
-
-        // run optionIterations of spring embedding:
-        double log2 = Math.log(2);
-        for (int count = 1; count < iterations; count++) {
-            final double k = Math.sqrt(width * height / graph.getNumberOfNodes()) / 2;
-            final double l2 = 25 * log2 * Math.log(1 + count);
-            final double tx = width / l2;
-            final double ty = height / l2;
-
-            final NodeDoubleArray xDispl = new NodeDoubleArray(graph);
-            final NodeDoubleArray yDispl = new NodeDoubleArray(graph);
-
-            // repulsive forces
-
-            for (Node v : graph.nodes()) {
-                double xv = xPos.get(v);
-                double yv = yPos.get(v);
-
-                for (Node u : graph.nodes()) {
-                    if (u == v)
-                        continue;
-                    double xDist = xv - xPos.get(u);
-                    double yDist = yv - yPos.get(u);
-                    double dist = xDist * xDist + yDist * yDist;
-                    if (dist < 1e-3)
-                        dist = 1e-3;
-                    double repulse = k * k / dist;
-                    try {
-                        xDispl.put(v, xDispl.get(v) + repulse * xDist);
-                        yDispl.put(v, yDispl.get(v) + repulse * yDist);
-                    } catch (NullPointerException ex) {
-                        xDispl.put(v, repulse * xDist);
-                        yDispl.put(v, repulse * yDist);
-                    }
-                }
-
-                for (Edge e : graph.edges()) {
-                    final Node a = e.getSource();
-                    final Node b = e.getTarget();
-                    if (a == v || b == v)
-                        continue;
-                    double xDist = xv - (xPos.get(a) + xPos.get(b)) / 2;
-                    double yDist = yv - (yPos.get(a) + yPos.get(b)) / 2;
-                    double dist = xDist * xDist + yDist * yDist;
-                    if (dist < 1e-3)
-                        dist = 1e-3;
-                    double repulse = k * k / dist;
-                    xDispl.put(v, xDispl.get(v) + repulse * xDist);
-                    yDispl.put(v, yDispl.get(v) + repulse * yDist);
-                }
-            }
-
-            // attractive forces
-
-            for (Edge e : graph.edges()) {
-                final Node u = e.getSource();
-                final Node v = e.getTarget();
-
-                double xDist = xPos.get(v) - xPos.get(u);
-                double yDist = yPos.get(v) - yPos.get(u);
-
-                double dist = Math.sqrt(xDist * xDist + yDist * yDist);
-
-                dist /= ((u.getDegree() + v.getDegree()) / 16.0);
-
-                xDispl.put(v, xDispl.get(v) - xDist * dist / k);
-                yDispl.put(v, yDispl.get(v) - yDist * dist / k);
-                xDispl.put(u, xDispl.get(u) + xDist * dist / k);
-                yDispl.put(u, yDispl.get(u) + yDist * dist / k);
-            }
-
-            // preventions
-
-            for (Node v : graph.nodes()) {
-                double xd = xDispl.get(v);
-                double yd = yDispl.get(v);
-
-                final double dist = Math.sqrt(xd * xd + yd * yd);
-
-                xd = tx * xd / dist;
-                yd = ty * yd / dist;
-
-                xPos.put(v, xPos.get(v) + xd);
-                yPos.put(v, yPos.get(v) + yd);
-            }
-        }
-
-        // set node positions
-        for (Node v : graph.nodes()) {
-            node2view.put(v, new Point2D(xPos.get(v), yPos.get(v)));
-        }
+    public static void computeSpringEmbedding(PhyloGraph graph, NodeArray<Point2D> node2view, Function<Edge, Double> edge2weight, double width, double height) throws Exception {
+        FastMultiLayerMethodLayout.apply(null, graph, edge2weight, (v, p) -> node2view.put(v, new Point2D(p.getX(), p.getY())));
     }
 
     public boolean getOptionShowPieCharts() {
@@ -460,5 +341,17 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
 
     public void setOptionShowMutations(MutationView optionShowMutations) {
         this.optionShowMutations.set(optionShowMutations);
+    }
+
+    public boolean isOptionEdgesToScale() {
+        return optionEdgesToScale.get();
+    }
+
+    public BooleanProperty optionEdgesToScaleProperty() {
+        return optionEdgesToScale;
+    }
+
+    public void setOptionEdgesToScale(boolean optionEdgesToScale) {
+        this.optionEdgesToScale.set(optionEdgesToScale);
     }
 }
