@@ -20,7 +20,6 @@
 
 package splitstree5.main;
 
-import com.briksoftware.javafx.platform.osx.OSXIntegration;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import jloda.fx.util.ArgsOptions;
@@ -129,12 +128,6 @@ public class SplitsTree5 extends Application {
             if (inputFilesAtStartup != null && inputFilesAtStartup.length > 0) {
                 System.err.println("NOT IMPLEMENTED: load files from command line");
                 // todo: implement
-            }
-
-            if (false) {
-                // setup about and preferences menu for apple:
-                OSXIntegration.init();
-                OSXIntegration.populateAppleMenu(() -> SplashScreen.showSplash(Duration.ofMinutes(1)), () -> System.err.println("Preferences"));
             }
         } catch (Exception ex) {
             Basic.caught(ex);

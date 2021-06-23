@@ -11,7 +11,6 @@ module splitstreefive {
     requires richtextfx.fat;
     requires junit;
     requires Jama;
-    requires fx.platform.utils;
     requires com.install4j.runtime;
 
     requires lpsolve;

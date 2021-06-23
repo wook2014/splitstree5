@@ -9,7 +9,7 @@
         <entry>sqlite-*</entry>
       </macSearchedJars>
     </codeSigning>
-    <jreBundles jdkProviderId="AdoptOpenJDK" release="openjdk14/jdk-14.0.1+7">
+    <jreBundles jdkProviderId="AdoptOpenJDK" release="openjdk16/jdk-16+36">
       <modules />
     </jreBundles>
   </application>
@@ -77,8 +77,6 @@
       </executable>
       <java mainClass="splitstreefive/splitstree5.main.SplitsTree5" mainMode="module" vmParameters="-server -Dapple.laf.useScreenMenuBar=true -Duser.language=en -Duser.region=US --add-modules=splitstreefive">
         <modulePath>
-          <directory location="jars" failOnError="false" />
-          <directory location="openjfx/${compiler:sys.platform}/lib" failOnError="false" />
           <directory location="jars" failOnError="false" />
         </modulePath>
       </java>
@@ -1174,7 +1172,7 @@ return true;</property>
     </windows>
   </mediaSets>
   <buildIds buildAll="false">
-    <mediaSet refId="1691242146" />
+    <mediaSet refId="1691242165" />
   </buildIds>
   <buildOptions disableSigning="true" disableNotarization="true" />
 </install4j>
