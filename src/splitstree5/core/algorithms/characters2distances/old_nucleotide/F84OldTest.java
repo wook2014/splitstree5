@@ -38,6 +38,7 @@ import static org.junit.Assert.assertArrayEquals;
 /**
  * @deprecated
  */
+@Deprecated
 public class F84OldTest {
 
     final F84_old f84 = new F84_old();
