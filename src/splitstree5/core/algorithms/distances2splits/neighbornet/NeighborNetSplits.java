@@ -72,7 +72,7 @@ public class NeighborNetSplits {
      */
     static public ArrayList<ASplit> compute(boolean runPCG, int nTax, int[] cycle, double[][] distances, double[][] variances, double cutoff, LeastSquares leastSquares, Regularization regularization, double lambdaFrac, ProgressListener progress) throws CanceledException {
         //Handle n=1,2 separately.
-        if (false)
+        if (true)
             return computeRevised(runPCG,nTax,cycle,distances,variances,cutoff,leastSquares,regularization,lambdaFrac,progress);
 
         if (nTax == 1) {
@@ -362,23 +362,26 @@ public class NeighborNetSplits {
         boolean first_pass = true; //This is the first time through the loops.
         while (true) {
             while (true) /* Inner loop: find the next feasible optimum */ {
-                if (first_pass)
-                    first_pass = false; /* The first time through we use the unconstrained branch lengths */
-                else
-                    NeighborNetSplits.circularConjugateGrads(nTax, nPairs, r, u, p, y, W, AtWd, active, x);
-
-                {
-                    /* Typically, a large number of edges are negative, so on the first
-                                                pass of the algorithm we add the worst 60% to the active set */
+                if (first_pass) {
+                    /* First time through - weights will be those given bu unconstrainedLS */
+                    first_pass = false;
                     final int[] entriesToContract = worstIndices(x, 0.6);
+                    /* Typically, a large number of edges are negative, so on the first
+                             pass of the algorithm we add the worst 60% to the active set */
                     if (entriesToContract != null) {
                         for (int index : entriesToContract) {
                             x[index] = 0.0;
                             active[index] = true;
                         }
                         NeighborNetSplits.circularConjugateGrads(nTax, nPairs, r, u, p, y, W, AtWd, active, x); /* Re-optimise, so that the current x is always optimal */
+                        for(int i=0;i<nPairs;i++)
+                            System.out.println("\t"+i+"\t"+x[i]);
                     }
                 }
+                else
+                    NeighborNetSplits.circularConjugateGrads(nTax, nPairs, r, u, p, y, W, AtWd, active, x);
+
+
 
                 int min_i = -1;
                 double min_xi = -1.0;
@@ -568,7 +571,7 @@ public class NeighborNetSplits {
      * @param x the matrix
      * @return sum of squares of the lower triangle
      */
-    static private double norm(double[] x) {
+    static private double normSquared(double[] x) {
         double ss = 0.0;
         for (double aX : x) {
             ss += aX* aX;
@@ -613,10 +616,10 @@ public class NeighborNetSplits {
                 r[k] = 0.0;
         }
 
-        double rho = norm(r);
+        double rho = normSquared(r);
         double rho_old = 0;
 
-        double e_0 = CG_EPSILON * Math.sqrt(norm(b));
+        double e_0 = CG_EPSILON * Math.sqrt(normSquared(b));
         int k = 0;
 
         while ((k < kmax) && (rho > e_0 * e_0)) {
@@ -652,7 +655,7 @@ public class NeighborNetSplits {
                 r[i] -= alpha * u[i];
             }
             rho_old = rho;
-            rho = norm(r);
+            rho = normSquared(r);
         }
         // System.err.println("Number of CG iterations = "+k);
     }
@@ -679,6 +682,7 @@ public class NeighborNetSplits {
      */
     static public ArrayList<ASplit> computeRevised(boolean runPCG, int nTax, int[] cycle, double[][] distances, double[][] variances, double cutoff, LeastSquares leastSquares, Regularization regularization, double lambdaFrac, ProgressListener progress) throws CanceledException {
         //Handle n=1,2 separately.
+        System.out.println("REVISED ALGORITHM\n======================\n");
         if (nTax == 1) {
             return new ArrayList<>();
         }
@@ -694,10 +698,10 @@ public class NeighborNetSplits {
         }
         final int nPairs = (nTax * (nTax - 1)) / 2;
 
-        if (false&&runPCG) {
+        /****************** PCG ALGORITHM ***********************/
             //Set up the distance vector.
 
-            final double[] d = new double[nPairs + 1];
+            double[] d = new double[nPairs + 1];
             {
                 int index = 1;
                 for (int i = 1; i <= nTax; i++) {
@@ -714,29 +718,32 @@ public class NeighborNetSplits {
             System.err.println("];");
 
             NeighborNetBlockPivot.BlockPivotParams params = new NeighborNetBlockPivot.BlockPivotParams();
-            double[] x = NeighborNetBlockPivot.circularBlockPivot(nTax, d, progress, params);
-            final ArrayList<ASplit> splits = new ArrayList<>();
+            double[] xPCG = NeighborNetBlockPivot.circularBlockPivot(nTax, d, progress, params);
+            final ArrayList<ASplit> splitsPCG = new ArrayList<>();
 
             int index = 1;
             for (int i = 1; i <= nTax; i++) {
                 final BitSet A = new BitSet();
                 for (int j = i + 1; j <= nTax; j++) {
                     A.set(cycle[j - 1]);
-                    if (x[index] > cutoff)
-                        splits.add(new ASplit(A, nTax, (float) (x[index])));
+                    if (xPCG[index] > cutoff)
+                        splitsPCG.add(new ASplit(A, nTax, (float) (xPCG[index])));
                     index++;
                 }
             }
-            return splits;
-        }
+            //return splitsPCG;
+        /*******************************************/
 
         /* Re-order taxa so that the ordering is 0,1,2,...,n-1 */
-        final double[] d = setupDRevised(nTax, nPairs, distances, cycle);
+        /*final double[] d = setupDRevised(nTax, nPairs, distances, cycle);
+        final double[] v = setupVRevised(nTax, nPairs, distances, variances, leastSquares, cycle);
+        final double[] x = new double[nPairs+1];*/
+        d = setupDRevised(nTax, nPairs, distances, cycle);
         final double[] v = setupVRevised(nTax, nPairs, distances, variances, leastSquares, cycle);
         final double[] x = new double[nPairs+1];
 
         /* Initialize the weight matrix */
-        final double[] W = new double[nPairs];
+        final double[] W = new double[nPairs+1];
         for (int k = 1; k <= nPairs; k++) {
             if (v[k] == 0.0)
                 W[k] = 10E10;
@@ -750,7 +757,7 @@ public class NeighborNetSplits {
         /* Construct the splits with the appropriate weights */
         final ArrayList<ASplit> splits = new ArrayList<>();
 
-        int index = 1;
+        index = 1;
         final BitSet A = new BitSet();
         for (int i = 1; i <= nTax; i++) {
             A.clear();
@@ -761,6 +768,11 @@ public class NeighborNetSplits {
                 index++;
             }
         }
+
+        for (int i=1;i<x.length;i++)
+            System.out.println("\t"+xPCG[i]+"\t" + x[i]);
+
+
         return splits;
     }
 
@@ -798,7 +810,7 @@ public class NeighborNetSplits {
     static private double[] setupVRevised(int nTax, int nPairs, double[][] distances, double[][] variances, LeastSquares leastSquares, int[] cycle) {
         final double[] v = new double[nPairs+1];
 
-        int index = 0;
+        int index = 1;
         for (int i = 1; i <= nTax; i++)
             for (int j = i + 1; j <= nTax; j++) {
                 double dij = distances[cycle[i] - 1][cycle[j] - 1];
@@ -822,6 +834,44 @@ public class NeighborNetSplits {
         return v;
     }
 
+
+    /** Get oldIndex
+     *
+     * Trying to debug the new code, the biggest problem being that the new code used a different indexing scheme for
+     * splits than the old.
+     * Under the old scheme (i,j) -> {i+1,i+2,...,j}| --- and the splits were indexed 0,1,2,3...
+     * Under the new scheme (i,j) -> {i,i+1,i+2,....,j-1} | ---   and splits index 1,2,3,....
+     *
+     * This function computes the old index for a split specified using the new pair.
+     */
+    static private int getOldIndex(int i, int j, int n) {
+        int oldIndex;
+        if (i==1)  // (1,j) -> (j-1,n)
+            oldIndex = n*(j-1) - (j*j - j + 2)/2;
+        else  //(i,j) -> (i-1,j-1)
+            oldIndex = n*(i-2) - (i*i - i + 4)/2 + j;
+        return oldIndex;
+    }
+
+    /** sortArrayOld
+     * Takes an array with n(n-1)/2 + 1 entries and sorts the entries to match the old index scheme
+     * @param x
+     * @param n
+     * @return
+     */
+    static private double[] sortArrayAsOld(double[] x, int n) {
+        double[] sortedArray = new double[x.length-1];
+        int index = 1;
+        for (int i=1;i<=n;i++) {
+            for(int j=i+1;j<=n;j++) {
+                sortedArray[getOldIndex(i,j,n)] = x[index];
+                index++;
+            }
+        }
+        return sortedArray;
+    }
+
+
     /**
      * Uses an active set method with the conjugate gradient algorithm to find x that minimises
      * <p>
@@ -840,7 +890,7 @@ public class NeighborNetSplits {
     static public void runActiveConjugateRevised(int nTax, int nPairs, double[] d, double[] W, double[] x, Regularization regularization, double lambdaFrac) {
 
 
-        if (W.length != nPairs || x.length != nPairs+1)
+        if (W.length != nPairs+1 || x.length != nPairs+1)
             throw new IllegalArgumentException("Vectors d,W,x have different dimensions");
 
         /* First evaluate the unconstrained optima. If this is feasible then we don't have to do anything more! */
@@ -900,23 +950,29 @@ public class NeighborNetSplits {
         boolean first_pass = true; //This is the first time through the loops.
         while (true) {
             while (true) /* Inner loop: find the next feasible optimum */ {
-                if (first_pass)
+                if (first_pass) {
                     first_pass = false; /* The first time through we use the unconstrained branch lengths */
-                else
-                    NeighborNetSplits.circularConjugateGrads(nTax, nPairs, r, u, p, y, W, AtWd, active, x);
-
-                {
-                    /* Typically, a large number of edges are negative, so on the first
-                                                pass of the algorithm we add the worst 60% to the active set */
                     final int[] entriesToContract = worstIndicesRevised(x, 0.6);
-                    if (entriesToContract != null) {
+                    //if (entriesToContract != null) {
                         for (int index : entriesToContract) {
                             x[index] = 0.0;
                             active[index] = true;
                         }
-                        NeighborNetSplits.circularConjugateGrads(nTax, nPairs, r, u, p, y, W, AtWd, active, x); /* Re-optimise, so that the current x is always optimal */
-                    }
+                        NeighborNetSplits.circularConjugateGradsRevised(nTax, nPairs, r, u, p, y, W, AtWd, active, x); /* Re-optimise, so that the current x is always optimal */
+                    //}
+                    double[] oldx = sortArrayAsOld(x,nTax);
+                    for(int i=0;i<nPairs;i++)
+                        System.out.println("\t"+i+"\t"+oldx[i]);
+
+
+
                 }
+            else
+                    NeighborNetSplits.circularConjugateGradsRevised(nTax, nPairs, r, u, p, y, W, AtWd, active, x);
+
+                /* Typically, a large number of edges are negative, so on the first
+                                            pass of the algorithm we add the worst 60% to the active set */
+
 
                 int min_i = -1;
                 double min_xi = -1.0;
@@ -1020,31 +1076,32 @@ public class NeighborNetSplits {
 
     /**
      * Computes A^Tx in O(n^2) time.
-     * @param n
-     * @param x
+     * @param n  Number of taxa
+     * @param x   Input vector, using entries 1...n(n-1)/2
+     * @param p  Output vector. Must be initialised in advance.
      * @return
      */
     static public void circularAtxRevised(int n, double[] x, double[] p) {
         int npairs = n*(n-1)/2;
-        p = new double[npairs+1];
+        //p = new double[npairs+1];
 
         //First compute trivial splits
         int sIndex = 1;
         for(int i=1;i<=n-1;i++) {
             //sIndex is pair (i,i+1)
-            int index = i-1;
-            double p_sIndex = 0.0;
+            int xindex = i-1;  //Index (1,i)
+            double total = 0.0;
             for(int j=1;j<=i-1;j++) {
-                p_sIndex+=x[index]; //pair (j,i)
-                index = index+n-j-1;
+                total+=x[xindex]; //pair (j,i)
+                xindex = xindex+n-j-1;
             }
-            index++;
+            xindex++;
             for(int j=i+1;j<=n;j++) {
-                p_sIndex += x[index]; //pair(i,j)
-                index++;
+                total += x[xindex]; //pair(i,j)
+                xindex++;
             }
-            p[sIndex] = p_sIndex;
-            sIndex = index;
+            p[sIndex] = total;
+            sIndex = xindex;
         }
 
         sIndex = 2;
@@ -1075,7 +1132,6 @@ public class NeighborNetSplits {
      */
     static public void circularAxRevised(int n,double[] x, double[] d ) {
         int npairs = n*(n-1)/2;
-        d = new double[npairs+1];
 
         //First compute d[i][i+1] for all i.
         int dindex = 1; //index of (i,i+1)
@@ -1162,7 +1218,7 @@ public class NeighborNetSplits {
         int front = 1;
         int back = nkept;
 
-        for (int i = 1; i <= n; i++) {
+        for (int i = 1; i < n; i++) {
             if (x[i] < cutoff)
                 result[front++] = i; //Definitely in the top entries.
             else if (x[i] == cutoff) {
@@ -1217,7 +1273,7 @@ public class NeighborNetSplits {
         //double rho = norm(r);
         double rho_old = 0;
 
-        double e_0 = CG_EPSILON * Math.sqrt(norm(b));
+        double e_0 = CG_EPSILON * Math.sqrt(normSquared(b));
         int k = 0;
 
         while ((k < kmax) && (rho > e_0 * e_0)) {
@@ -1232,11 +1288,11 @@ public class NeighborNetSplits {
                     p[i] = r[i] + beta * p[i];
             }
 
-            calculateAb(nTax, p, y);
+            circularAxRevised(nTax, p, y);
             for (int i = 1; i <= nPairs; i++)
                 y[i] *= W[i];
 
-            calculateAtx(nTax, y, u); /*u = AtWAp */
+            circularAtxRevised(nTax, y, u); /*u = AtWAp */
             for (int i = 1; i <= nPairs; i++)
                 if (active[i])
                     u[i] = 0.0;

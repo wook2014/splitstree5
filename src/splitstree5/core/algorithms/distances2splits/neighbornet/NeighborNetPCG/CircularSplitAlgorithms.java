@@ -77,19 +77,19 @@ public class CircularSplitAlgorithms {
         int sIndex = 1;
         for(int i=1;i<=n-1;i++) {
             //sIndex is pair (i,i+1)
-            int index = i-1;
-            double p_sIndex = 0.0;
+            int xindex = i-1;  //Index (1,i)
+            double total = 0.0;
             for(int j=1;j<=i-1;j++) {
-                p_sIndex+=x[index]; //pair (j,i)
-                index = index+n-j-1;
+                total+=x[xindex]; //pair (j,i)
+                xindex = xindex+n-j-1;
             }
-            index++;
+            xindex++;
             for(int j=i+1;j<=n;j++) {
-                p_sIndex += x[index]; //pair(i,j)
-                index++;
+                total += x[xindex]; //pair(i,j)
+                xindex++;
             }
-            p[sIndex] = p_sIndex;
-            sIndex = index;
+            p[sIndex] = total;
+            sIndex = xindex;
         }
 
         sIndex = 2;

@@ -56,7 +56,7 @@ public class NeighborNetBlockPivot {
 
         //We use x_F = z[~G] and y_G = z[G].
         //Since G is initally all indices, y = A'(0 - d), so z = -A'd.
-        double[] z = circularAtx(n, d);
+        double[] z = CircularSplitAlgorithms.circularAtx(n, d);
         for (int i = 1; i <= npairs; i++) {
             z[i] = -z[i];
             if (Math.abs(z[i]) < params.blockPivotCutoff)
@@ -142,9 +142,12 @@ public class NeighborNetBlockPivot {
 
         //Do one final refitting with these edges.
         z = circularLeastSquares(n, G, d, 1e-3 * params.pcgTol, z,params);
-        for(int i=1;i<=npairs;i++)
+        for(int i=1;i<=npairs;i++) {
             if (G[i])
-                z[i]=0.0;
+                z[i] = 0.0;
+        }
+        double pgn = projectedGradientNorm(n,d,z,G);
+        System.err.println("Block pivot pgnorm: "+ pgn);
 
         return z;
     }
@@ -522,10 +525,10 @@ public class NeighborNetBlockPivot {
         double[] grad = CircularSplitAlgorithms.circularAtx(n, minus(CircularSplitAlgorithms.circularAx(n, x), d));
         double gtg = 0.0;
         for (int i = 1; i <= npairs; i++) {
-            if (G[i] && grad[i] < 0)
+            if (G[i] && grad[i] > 0)
                 grad[i] = 0;
             else
-                gtg = grad[i] * grad[i];
+                gtg += grad[i] * grad[i];
         }
         return Math.sqrt(gtg);
     }
