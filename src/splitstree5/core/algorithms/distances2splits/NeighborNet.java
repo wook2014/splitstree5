@@ -20,7 +20,9 @@
 
 package splitstree5.core.algorithms.distances2splits;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import jloda.util.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
@@ -37,7 +39,7 @@ import splitstree5.utils.SplitsUtilities;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -52,8 +54,14 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
 
     private final ObjectProperty<WeightsAlgorithm> optionWeights = new SimpleObjectProperty<>(WeightsAlgorithm.NNet2004);
 
+    public enum InferenceAlgorithm {ActiveSet, BlockPivot}
+
+    private final ObjectProperty<InferenceAlgorithm> optionInferenceAlgorithm = new SimpleObjectProperty<>(InferenceAlgorithm.BlockPivot);
+
+    private final BooleanProperty optionUsePreconditioner = new SimpleBooleanProperty(true);
+
     public List<String> listOptions() {
-        return Collections.singletonList("optionWeights");
+        return Arrays.asList("optionInferenceAlgorithm", "optionUsePreconditioner", "optionWeights");
     }
 
     @Override
@@ -117,5 +125,29 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
 
     public void setOptionWeights(WeightsAlgorithm optionWeights) {
         this.optionWeights.set(optionWeights);
+    }
+
+    public InferenceAlgorithm getOptionInferenceAlgorithm() {
+        return optionInferenceAlgorithm.get();
+    }
+
+    public ObjectProperty<InferenceAlgorithm> optionInferenceAlgorithmProperty() {
+        return optionInferenceAlgorithm;
+    }
+
+    public void setOptionInferenceAlgorithm(InferenceAlgorithm optionInferenceAlgorithm) {
+        this.optionInferenceAlgorithm.set(optionInferenceAlgorithm);
+    }
+
+    public boolean isOptionUsePreconditioner() {
+        return optionUsePreconditioner.get();
+    }
+
+    public BooleanProperty optionUsePreconditionerProperty() {
+        return optionUsePreconditioner;
+    }
+
+    public void setOptionUsePreconditioner(boolean optionUsePreconditioner) {
+        this.optionUsePreconditioner.set(optionUsePreconditioner);
     }
 }
