@@ -22,6 +22,7 @@ package splitstree5.core.algorithms.distances2splits.neighbornet;
 
 import jloda.util.CanceledException;
 import jloda.util.ProgressListener;
+import splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG.CircularSplitAlgorithms;
 import splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG.NeighborNetBlockPivot;
 import splitstree5.core.misc.ASplit;
 
@@ -909,10 +910,10 @@ public class NeighborNetSplits {
         }
 
         /* Allocate memory for the "utility" vectors */
-        final double[] r = new double[nPairs+1];
-        final double[] u = new double[nPairs+1];
-        final double[] p = new double[nPairs+1];
-        final double[] y = new double[nPairs+1];
+         double[] r = new double[nPairs+1];
+         double[] u = new double[nPairs+1];
+         double[] p = new double[nPairs+1];
+         double[] y = new double[nPairs+1];
 
         final double[] old_x = new double[nPairs+1];
         Arrays.fill(old_x, 1.0);
@@ -925,11 +926,14 @@ public class NeighborNetSplits {
         // Arrays.fill(fixedActive, false); // not necessary
 
         /* Allocate and compute AtWd */
-        final double[] AtWd = new double[nPairs+1];
+        //final double[] AtWd = new double[nPairs+1];
         for (int k = 1; k <= nPairs; k++)
             y[k] = W[k] * d[k];
 
-        circularAtxRevised(nTax,y,AtWd);
+        //circularAtxRevised(nTax,y,AtWd);
+        //double[] AtWd = CircularSplitAlgorithms.circularAtx(nTax,y);
+        double[] AtWd = new double[nPairs+1];
+        CircularSplitAlgorithms.circularAtx(nTax,y,AtWd);
         //NeighborNetSplits.calculateAtx(nTax, y, AtWd);
 
         /* Compute lambda parameter */
@@ -1001,11 +1005,16 @@ public class NeighborNetSplits {
             }
 
             /* Find i,j that minimizes the gradient over all i,j in the active set. Note that grad = (AtWAb-AtWd)  */
-            circularAxRevised(nTax, x, y);
+            //circularAxRevised(nTax, x, y);
+
+            CircularSplitAlgorithms.circularAx(nTax,x,y);
             for (int i = 0; i < nPairs; i++) {
                 y[i] *= W[i];
             }
-            circularAtxRevised(nTax, y, r); /* r = AtWAx */
+
+
+            CircularSplitAlgorithms.circularAtx(nTax,y,r);
+//            circularAtxRevised(nTax, y, r); /* r = AtWAx */
 
             /* We check to see that we are at a constrained minimum.... that is that the gradient is positive for
              * all i,j in the active set.

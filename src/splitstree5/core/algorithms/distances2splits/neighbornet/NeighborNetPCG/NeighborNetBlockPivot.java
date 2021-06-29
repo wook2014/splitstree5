@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.Random;
 
 import static splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG.CircularSplitAlgorithms.*;
-import static splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG.VectorUtilities.minus;
 import static splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG.VectorUtilities.norm;
 import static splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetSplits.Regularization.nnls;
 
@@ -52,11 +51,13 @@ public class NeighborNetBlockPivot {
 
         final int npairs = n * (n - 1) / 2;
         final boolean[] G = new boolean[npairs + 1];  //Active set - indices constrained to zero.
-        Arrays.fill(G, true);
+        Arrays.fill(G, true);    //F = \emptyset. G = {1,2,...,npairs}
 
         //We use x_F = z[~G] and y_G = z[G].
         //Since G is initally all indices, y = A'(0 - d), so z = -A'd.
-        double[] z = CircularSplitAlgorithms.circularAtx(n, d);
+
+        double[] z = new double[npairs+1];
+        CircularSplitAlgorithms.circularAtx(n, d,z);
         for (int i = 1; i <= npairs; i++) {
             z[i] = -z[i];
             if (Math.abs(z[i]) < params.blockPivotCutoff)
@@ -66,12 +67,14 @@ public class NeighborNetBlockPivot {
         int p = 3;
         int iter = 1;
 
-        final boolean[] infeasible = new boolean[npairs + 1];
+        final boolean[] infeasible = new boolean[npairs + 1]; //negative entries are 'infeasible'
+        Arrays.fill(infeasible,false);
         int ninf = 0; //Number of infeasible indices
         for(int i=1;i<=npairs;i++) {
-            infeasible[i] = (z[i]<0.0);
-            if (infeasible[i])
+            if (z[i] < 0.0) {
+                infeasible[i] = true;
                 ninf++;
+            }
         }
         int N = npairs + 1;
 
@@ -86,30 +89,15 @@ public class NeighborNetBlockPivot {
                 if (infeasible[i])
                     ninf++;
             }
-
-            double pgnorm = projectedGradientNorm(n,d,z,G);
-
-            
             if (ninf < N) {
                 N = ninf;
                 p = 3;
-               // if (verbose)
-                //    System.err.print("Swapping (1) " + pgnorm);
-                //printSet(infeasible);
-                if (verbose)
-                    System.err.println();
                 for (int i = 1; i <= npairs; i++) {
                     G[i] = G[i] ^ infeasible[i];   //G <- G XOR Infeasible
                 }
-
             } else {
                 if (p > 0) {
                     p--;
-                    if (verbose)
-                        System.err.print("Swapping (2) " + pgnorm);
-                    //printSet(infeasible);
-                    if (verbose) System.err.println();
-
                     for (int i = 1; i <= npairs; i++) {
                         // F[i] = F[i] ^ infeasible[i]; //XOR
                         G[i] = G[i] ^ infeasible[i];
@@ -118,7 +106,6 @@ public class NeighborNetBlockPivot {
                     for (int i=npairs;i>=1;i--)
                         if (infeasible[i]) {
                             G[i] = !G[i];
-                            if (verbose) System.err.println("Single swapping " + i + " pgnorm=" + pgnorm);
                             break;
                         }
                 }
@@ -152,28 +139,7 @@ public class NeighborNetBlockPivot {
         return z;
     }
 
-    /**
-     * Compute the l-infinity norm of the projected gradient evaluated at x, for the problem
-     * minimize ||Ax - d|| such that x_i = 0 for all i \in G.
-     * @param n
-     * @param G
-     * @param d
-     * @param x
-     */
-    private static double pgnorm(int n, boolean[] G, double[] d, double[] x) {
-        int npairs = n*(n-1)/2;
-        double[]  atd = circularAtx(n,d);
-        double[] grad = circularAtx(n,circularAx(n,x));
-        double norm=0.0;
 
-        for(int i=1;i<=npairs;i++) {
-            grad[i] = grad[i] - atd[i];
-            if (G[i])
-                grad[i] = 0.0;
-            norm = Math.max(norm, Math.abs(grad[i]));
-        }
-        return norm;
-    }
 
 
 
@@ -212,7 +178,8 @@ public class NeighborNetBlockPivot {
             double[] oldd = new double[npairs];
             for(int i=0;i<npairs;i++)
                 oldd[i] = d[i+1];   //Need to translate the distance vector into the old form
-            double[] Atd = circularAtx(n,d);
+            double[] Atd = new double[npairs+1];
+            circularAtx(n,d,Atd);
             double[] b = new double[npairs];
             for(int i=0;i<npairs;i++)
                 b[i] = Atd[i+1];
@@ -225,7 +192,7 @@ public class NeighborNetBlockPivot {
             for(int i=1;i<=npairs;i++)
                 x[i] = xOld[i-1];
 
-            System.err.println("Norm after circular ls is " + pgnorm(n,G,d,x));
+            //System.err.println("Norm after circular ls is " + pgnorm(n,G,d,x));
 
             return x;
         }
@@ -244,13 +211,16 @@ public class NeighborNetBlockPivot {
         }
 
         if (nG == 0) { //No equality constraints - use straight solve.
-            return circularSolve(n,d);
+            double[] x = new double[npairs+1];
+            circularSolve(n,d,x);
+            return x;
         }
 
         //We use a 2dim array structure for the vector indices
         boolean[][] gcell = mask2blockmask(n,G);
         BlockXMatrix X = new BlockXMatrix(n,gcell);
-        double[] unconstrained = circularSolve(n,d); //unconstrained = A^{-1} d
+        double[] unconstrained = new double[npairs+1];
+        circularSolve(n,d,unconstrained); //unconstrained = A^{-1} d
         double[][] b = vector2blocks(n,unconstrained,G);
 
         Preconditioner M = new Preconditioner(X,params.preconditionerBands);
@@ -295,8 +265,17 @@ public class NeighborNetBlockPivot {
 
         System.err.println("Number of iterations in PCG = "+j);
         nuvec = blocks2vector(n,nu,G);
-        double[] x = minus(unconstrained,circularSolve(n,circularAinvT(n,nuvec)));
-        double[] y = circularAtx(n,minus(circularAx(n,x),d));
+        double[] x = new double[npairs+1];
+        double[] y = new double[npairs+1];
+        circularAinvT(n,nuvec,y);
+        circularSolve(n,y,x);
+        for(int i=1;i<=npairs;i++)
+            x[i] = unconstrained[i] - x[i];
+        double[] Ax = new double[npairs+1];
+        circularAx(n,x,Ax);
+        for(int i=1;i<=npairs;i++)
+            Ax[i] -= d[i];
+        circularAtx(n,Ax,y);
         
         //Check KKT conditions. 
         double xerr = 0.0, graderr = 0.0;
@@ -522,7 +501,12 @@ public class NeighborNetBlockPivot {
                 x[i] = 0.0;
         }
 
-        double[] grad = CircularSplitAlgorithms.circularAtx(n, minus(CircularSplitAlgorithms.circularAx(n, x), d));
+        double[] Ax = new double[npairs+1];
+        CircularSplitAlgorithms.circularAx(n,x,Ax);
+        for(int i=1;i<=npairs;i++)
+            Ax[i]-=d[i];
+        double[] grad = new double[npairs+1];
+        CircularSplitAlgorithms.circularAtx(n, Ax,grad);
         double gtg = 0.0;
         for (int i = 1; i <= npairs; i++) {
             if (G[i] && grad[i] > 0)
@@ -550,8 +534,11 @@ public class NeighborNetBlockPivot {
                 x[i] = 0.0;
         }
 
-        double[] r = minus(CircularSplitAlgorithms.circularAx(n, x), d);
-        return norm(r);
+        double[] r = new double[npairs+1];
+        CircularSplitAlgorithms.circularAx(n, x,r);
+        for(int i=1;i<=npairs;i++)
+            r[i] -= d[i];
+        return norm(r); //TODO Check if norm or norm squared wanted here.
     }
     static public void test(int n) throws CanceledException {
 //        Random rand = new Random();

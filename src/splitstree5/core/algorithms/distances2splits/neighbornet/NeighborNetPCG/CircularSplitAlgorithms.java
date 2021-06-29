@@ -13,11 +13,11 @@ public class CircularSplitAlgorithms {
      * This algorithm runs in O(n^2) time, which is the number of entries of x.
      * @param n Number of taxa.
      * @param x vector with dimension n(n-1)/2
-     * @return vector A*x with dimension n(n-1)/2.
+     * @return vector d is overwritten by vector A*x with dimension n(n-1)/2.
      */
-    static public double[] circularAx(int n,double[] x ) {
+    static public void circularAx(int n,double[] x , double[] d) {
         int npairs = n*(n-1)/2;
-        double[] d = new double[npairs+1];
+        //double[] d = new double[npairs+1];
 
         //First compute d[i][i+1] for all i.
         int dindex = 1; //index of (i,i+1)
@@ -56,7 +56,6 @@ public class CircularSplitAlgorithms {
                 index = index + n-i;
             }
         }
-        return d;
 
     }
 
@@ -66,12 +65,12 @@ public class CircularSplitAlgorithms {
      * In A we have A{(i,j)(k,l)} = 1 if i and j are on opposite sides of the split {k,k+1,...,l-1}|...
      * This algorithm runs in O(n^2) time, which is the number of entries of x.
      * @param n Number of taxa.
-     * @param x vector with dimension n(n-1)/2
-     * @return vector A'*x with dimension n(n-1)/2.
+     * @param x vector with dimension n(n-1)/2 +1
+     * @param p, vector assumed to be of size n(n-1)/2. Overwritten by A'x.
      */
-    static public double[] circularAtx(int n, double[] x) {
+    static public void  circularAtx(int n, double[] x, double[] p) {
         int npairs = n*(n-1)/2;
-        double[] p = new double[npairs+1];
+        //double[] p = new double[npairs+1];
 
         //First compute trivial splits
         int sIndex = 1;
@@ -108,7 +107,6 @@ public class CircularSplitAlgorithms {
                 sIndex += (n-i);
             }
         }
-        return p;
     }
 
     /**
@@ -118,11 +116,10 @@ public class CircularSplitAlgorithms {
      * This algorithm runs in O(n^2) time, which is the number of entries of x.
      * @param n Number of taxa.
      * @param y vector with dimension n(n-1)/2
-     * @return vector x=A\y which solves Ax = y. x has dimension n(n-1)/2
+     * @return overwrite vector x=A\y which solves Ax = y. x has dimension n(n-1)/2
      */
-    static public double[] circularSolve(int n, double[] y) {
+    static public void circularSolve(int n, double[] y, double[] x) {
         int npairs = n*(n-1)/2;
-        double[] x = new double[npairs+1];
 
         int index = 1;
         //x[1,2]= (y[1,2]+y[1,n] - y[2,n])/2
@@ -147,7 +144,6 @@ public class CircularSplitAlgorithms {
                 index++;
             }
         }
-        return x;
     }
 
     /**
@@ -157,11 +153,10 @@ public class CircularSplitAlgorithms {
      * This algorithm runs in O(n^2) time, which is the number of entries of x.
      * @param n Number of taxa.
      * @param x vector with dimension n(n-1)/2
-     * @return vector inv(A)'*x which has dimension n(n-1)/2
+     * @return overwrites vector y =  inv(A)'*x which has dimension n(n-1)/2
      */
-    static public double[] circularAinvT(int n, double[] x) {
+    static public void circularAinvT(int n, double[] x, double[] y) {
         int npairs = n*(n-1)/2;
-        double[] y = new double[npairs+1];
 
         //Suppose B = inv(A). Evaluates B*x column by column:
         // B*x = \sum_{ij} B(:,ij) * x(ij)
@@ -201,7 +196,6 @@ public class CircularSplitAlgorithms {
                 ij++;
             }
         }
-        return y;
     }
 
     /**
@@ -240,7 +234,8 @@ public class CircularSplitAlgorithms {
         Random rand = new Random();
         for(int i=1;i<=npairs;i++)
             x[i] = rand.nextDouble();
-        double[] y = circularAx(n,x);
+        double[] y = new double[npairs+1];
+        circularAx(n,x,y);
 
         Matrix xJ = new Matrix(npairs,1);
         for(int i=1;i<=npairs;i++)
@@ -255,7 +250,7 @@ public class CircularSplitAlgorithms {
         double err = VectorUtilities.diff(y,y2);
         System.err.println("Compare CircularAx, err = "+ err);
 
-        y = circularAinvT(n,x);
+        circularAinvT(n,x,y);
         yJ = (A.transpose()).inverse().times(xJ);
         for(int i=1;i<=npairs;i++)
             y2[i] = yJ.get(i-1,0);
@@ -263,14 +258,14 @@ public class CircularSplitAlgorithms {
         System.err.println("Compare CircularAinvTx, err = "+ err);
 
 
-        y = circularAtx(n,x);
+        circularAtx(n,x,y);
         yJ = (A.transpose()).times(xJ);
         for(int i=1;i<=npairs;i++)
             y2[i] = yJ.get(i-1,0);
          err = VectorUtilities.diff(y,y2);
         System.err.println("Compare CircularATx, err = "+ err);
 
-        y = circularSolve(n,x);
+        circularSolve(n,x,y);
         yJ = (A.inverse()).times(xJ);
         for(int i=1;i<=npairs;i++)
             y2[i] = yJ.get(i-1,0);
