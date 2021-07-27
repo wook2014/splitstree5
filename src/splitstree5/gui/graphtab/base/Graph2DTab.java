@@ -22,7 +22,6 @@ package splitstree5.gui.graphtab.base;
 
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
@@ -182,11 +181,19 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
                     });
                     new RubberBandSelection(centerPane, scrollPane, group, createRubberBandSelectionHandler());
 
+
                     scrollPane.lockAspectRatioProperty().bind(layout.isEqualTo(GraphLayout.Radial));
-                    centerPane.minWidthProperty().bind(Bindings.createDoubleBinding(() ->
-                            scrollPane.getViewportBounds().getWidth(), scrollPane.viewportBoundsProperty()).subtract(20));
-                    centerPane.minHeightProperty().bind(Bindings.createDoubleBinding(() ->
-                            scrollPane.getViewportBounds().getHeight(), scrollPane.viewportBoundsProperty()).subtract(20));
+
+                    scrollPane.viewportBoundsProperty().addListener(e -> {
+                        var newWidth = scrollPane.getViewportBounds().getWidth();
+                        var oldWidth = centerPane.getMinWidth();
+                        if (Math.abs(oldWidth - newWidth) > 20)
+                            centerPane.setMinWidth(newWidth);
+                        var newHeight = scrollPane.getViewportBounds().getHeight();
+                        var oldHeight = centerPane.getMinHeight();
+                        if (Math.abs(oldHeight - newHeight) > 20)
+                            centerPane.setMinHeight(newHeight);
+                    });
 
                     borderPane.setCenter(scrollPane);
                     // need to put this here after putting the center pane in:

@@ -87,11 +87,17 @@ public class WorkflowViewTab extends ViewerTab {
         scrollPane.setPadding(new Insets(2, 2, 2, 2));
         setContent(scrollPane);
 
-        centerPane.minWidthProperty().bind(Bindings.createDoubleBinding(() ->
-                scrollPane.getViewportBounds().getWidth(), scrollPane.viewportBoundsProperty()));
+        scrollPane.viewportBoundsProperty().addListener(e -> {
+            var newWidth = scrollPane.getViewportBounds().getWidth();
+            var oldWidth = centerPane.getMinWidth();
+            if (Math.abs(oldWidth - newWidth) > 20)
+                centerPane.setMinWidth(newWidth);
+            var newHeight = scrollPane.getViewportBounds().getHeight();
+            var oldHeight = centerPane.getMinHeight();
+            if (Math.abs(oldHeight - newHeight) > 20)
+                centerPane.setMinHeight(newHeight);
+        });
 
-        centerPane.minHeightProperty().bind(Bindings.createDoubleBinding(() ->
-                scrollPane.getViewportBounds().getHeight(), scrollPane.viewportBoundsProperty()));
 
         getScrollPane().setOnMouseClicked((e) -> {
             if (!e.isShiftDown())

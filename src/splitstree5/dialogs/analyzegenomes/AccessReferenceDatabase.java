@@ -144,12 +144,12 @@ public class AccessReferenceDatabase implements Closeable {
      * @throws SQLException if something went wrong with the database
      */
     public ArrayList<Integer> executeQueryInt(String query, int index) throws SQLException {
-        final ResultSet rs = connection.createStatement().executeQuery(query);
-        final ArrayList<Integer> resultlist = new ArrayList<>();
+        final var rs = connection.createStatement().executeQuery(query);
+        final var list = new ArrayList<Integer>();
         while (rs.next()) {
-            resultlist.add(rs.getInt(index));
+            list.add(rs.getInt(index));
         }
-        return resultlist;
+        return list;
     }
 
     /**
@@ -161,8 +161,8 @@ public class AccessReferenceDatabase implements Closeable {
      * @throws SQLException if something went wrong with the database
      */
     public ArrayList<String> executeQueryString(String query, int index) throws SQLException {
-        final ResultSet rs = connection.createStatement().executeQuery(query);
-        final ArrayList<String> result = new ArrayList<>();
+        final var rs = connection.createStatement().executeQuery(query);
+        final var result = new ArrayList<String>();
         while (rs.next()) {
             result.add(rs.getString(index));
         }
