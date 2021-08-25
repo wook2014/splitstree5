@@ -96,7 +96,7 @@ public class NexmlTreesHandler extends DefaultHandler {
                 }
             }
 
-        } else if (qName.equalsIgnoreCase("rootedge") && bReadingTree) {
+        } else if (qName.equalsIgnoreCase("rootEdge") && bReadingTree) {
             final double weight = (Basic.isDouble(attributes.getValue("length")) ? Basic.parseDouble(attributes.getValue("length")) : 1.0);
             final Node sourceNode = tree.newNode();
             final Node targetNode = tree.getRoot();

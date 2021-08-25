@@ -126,7 +126,6 @@ public class AccessReferenceDatabase implements Closeable {
         return "CREATE TABLE bloom_filters (taxon_id INTEGER PRIMARY KEY, bloom_filter TEXT NOT NULL) WITHOUT ROWID;\n" +
                 "CREATE TABLE tree (key TEXT PRIMARY KEY, value TEXT NOT NULL) WITHOUT ROWID;\n" +
                 "CREATE TABLE taxa (taxon_id INTEGER PRIMARY KEY, taxon_name TEXT, taxon_display_name TEXT, parent_id INTEGER REFERENCES taxa(taxon_id)) WITHOUT ROWID;\n" +
-                "CREATE TABLE taxonomy (taxon_id INTEGER PRIMARY KEY, parent_id INTEGER NOT NULL) WITHOUT ROWID;\n" +
                 "CREATE TABLE info (key TEXT PRIMARY KEY, value TEXT NOT NULL) WITHOUT ROWID;\n" +
                 "CREATE TABLE genomes (taxon_id INTEGER PRIMARY KEY, genome_accession TEXT NOT NULL, genome_size INTEGER, fasta_url TEXT) WITHOUT ROWID;\n" +
                 "CREATE TABLE mash_sketches (taxon_id INTEGER PRIMARY KEY, mash_sketch TEXT NOT NULL) WITHOUT ROWID;\n";
@@ -271,7 +270,7 @@ public class AccessReferenceDatabase implements Closeable {
     }
 
     public PhyloTree getTaxonomy() throws SQLException {
-        final String query = "SELECT taxon_id, parent_id, taxon_name FROM taxonomy;";
+        final String query = "SELECT taxon_id, parent_id, taxon_name FROM taxa;";
 
         final ResultSet rs = connection.createStatement().executeQuery(query);
 
@@ -358,7 +357,7 @@ public class AccessReferenceDatabase implements Closeable {
     }
 
     public Collection<Integer> getTaxonomyChildren(int parent_id) throws SQLException {
-        return new ArrayList<>(executeQueryInt("SELECT taxon_id FROM taxonomy WHERE parent_id=" + parent_id + ";", 1));
+        return new ArrayList<>(executeQueryInt("SELECT taxon_id FROM taxa WHERE parent_id=" + parent_id + ";", 1));
     }
 
     public int getTaxonomyParent(int taxid) throws SQLException {

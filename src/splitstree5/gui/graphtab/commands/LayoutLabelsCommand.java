@@ -44,6 +44,7 @@ import java.util.ArrayList;
 public class LayoutLabelsCommand extends UndoableRedoableCommand {
     private final GraphLayout graphLayout;
     private final boolean sparseLabels;
+    private final boolean alignLeafLabels;
     private final PhyloGraph phyloGraph;
     private final Node root;
     private final NodeArray<NodeViewBase> node2view;
@@ -52,10 +53,12 @@ public class LayoutLabelsCommand extends UndoableRedoableCommand {
     private final ArrayList<Triplet<Node, Point2D, Boolean>> oldNodeLabels = new ArrayList<>();
     private final ArrayList<Triplet<Edge, Point2D, Boolean>> oldEdgeLabels = new ArrayList<>();
 
-    public LayoutLabelsCommand(GraphLayout graphLayout, boolean sparseLabels, PhyloGraph phyloGraph, Node root, NodeArray<NodeViewBase> node2view, EdgeArray<EdgeViewBase> edge2view) {
+
+    public LayoutLabelsCommand(GraphLayout graphLayout, boolean sparseLabels, boolean alignLeafLabels, PhyloGraph phyloGraph, Node root, NodeArray<NodeViewBase> node2view, EdgeArray<EdgeViewBase> edge2view) {
         super("Label Layout");
         this.graphLayout = graphLayout;
         this.sparseLabels = sparseLabels;
+        this.alignLeafLabels = alignLeafLabels;
         this.phyloGraph = phyloGraph;
         this.root = root;
         this.node2view = node2view;
@@ -100,7 +103,7 @@ public class LayoutLabelsCommand extends UndoableRedoableCommand {
         if (graphLayout == GraphLayout.Radial)
             NodeLabelLayouter.radialLayout(sparseLabels, phyloGraph, node2view, edge2view);
         else
-            NodeLabelLayouter.leftToRightLayout(sparseLabels, phyloGraph, root, node2view, edge2view);
+            NodeLabelLayouter.leftToRightLayout(sparseLabels, alignLeafLabels, phyloGraph, root, node2view, edge2view);
 
     }
 }

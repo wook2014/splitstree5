@@ -61,6 +61,7 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
     private final DoubleProperty scaleChangeY = new SimpleDoubleProperty(1);
     private final DoubleProperty angleChange = new SimpleDoubleProperty(0);
     private final ObjectProperty<GraphLayout> layout = new SimpleObjectProperty<>(GraphLayout.LeftToRight);
+    private final BooleanProperty alignLeafLabels = new SimpleBooleanProperty(false);
 
     private final ScaleBar scaleBar = new ScaleBar();
     private final DraggableLabel fitLabel = new DraggableLabel(scaleBar);
@@ -268,7 +269,7 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
                 NodeLabelLayouter.radialLayout(sparseLabels, getGraph(), getNode2view(), getEdge2view());
             else {
                 if (getGraph() instanceof PhyloTree) {
-                    NodeLabelLayouter.leftToRightLayout(sparseLabels, getGraph(), ((PhyloTree) getGraph()).getRoot(), getNode2view(), getEdge2view());
+                    NodeLabelLayouter.leftToRightLayout(sparseLabels, alignLeafLabels.get(), getGraph(), ((PhyloTree) getGraph()).getRoot(), getNode2view(), getEdge2view());
                 }
             }
         }
@@ -420,13 +421,13 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
             getUndoManager().doAndAdd(new CompositeCommand("Reset",
                     new ZoomCommand(1 / scaleChangeX.get(), 1 / scaleChangeY.get(), Graph2DTab.this),
                     new RotateCommand(-angleChange.get(), Graph2DTab.this),
-                    new LayoutLabelsCommand(layout.get(), sparseLabels.get(), graph, (graph instanceof PhyloTree ? ((PhyloTree) graph).getRoot() : null), node2view, edge2view)));
+                    new LayoutLabelsCommand(layout.get(), sparseLabels.get(), alignLeafLabels.get(), graph, (graph instanceof PhyloTree ? ((PhyloTree) graph).getRoot() : null), node2view, edge2view)));
             //scrollPane.resetZoom();
         });
 
         controller.getLayoutLabelsMenuItem().setOnAction((e) -> {
             Node root = (graph instanceof PhyloTree ? ((PhyloTree) graph).getRoot() : null);
-            getUndoManager().doAndAdd(new LayoutLabelsCommand(layout.get(), sparseLabels.get(), graph, root, node2view, edge2view));
+            getUndoManager().doAndAdd(new LayoutLabelsCommand(layout.get(), sparseLabels.get(), alignLeafLabels.get(), graph, root, node2view, edge2view));
         });
         controller.getSparseLabelsCheckMenuItem().selectedProperty().bindBidirectional(sparseLabels);
         controller.getSparseLabelsCheckMenuItem().setOnAction(controller.getLayoutLabelsMenuItem().getOnAction());
@@ -445,4 +446,7 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
         return fitLabel;
     }
 
+    public BooleanProperty alignLeafLabelsProperty() {
+        return alignLeafLabels;
+    }
 }

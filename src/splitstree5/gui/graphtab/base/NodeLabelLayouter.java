@@ -223,7 +223,7 @@ public class NodeLabelLayouter {
      * @param node2view
      * @param edge2view
      */
-    public static void leftToRightLayout(boolean sparseLabels, PhyloGraph tree, Node root, NodeArray<NodeViewBase> node2view, EdgeArray<EdgeViewBase> edge2view) {
+    public static void leftToRightLayout(boolean sparseLabels, boolean alignLeafLabels, PhyloGraph tree, Node root, NodeArray<NodeViewBase> node2view, EdgeArray<EdgeViewBase> edge2view) {
         final ArrayList<BoundingBox> labelBoundsList = new ArrayList<>();
 
         for (Node v : tree.nodes()) {
@@ -266,6 +266,14 @@ public class NodeLabelLayouter {
                     if (label.isVisible())
                         labelBoundsList.add(bbox);
                 }
+            }
+        }
+        if (alignLeafLabels) {
+            var labelMaxX = tree.nodeStream().filter(v -> v.getOutDegree() == 0).map(v -> node2view.get(v).getLabel())
+                    .mapToDouble(javafx.scene.Node::getTranslateX).max().orElse(0.0);
+            if (labelMaxX > 0.0) {
+                tree.nodeStream().filter(v -> v.getOutDegree() == 0).map(v -> node2view.get(v).getLabel())
+                        .forEach(label -> label.setTranslateX(labelMaxX));
             }
         }
     }

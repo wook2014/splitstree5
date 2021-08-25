@@ -21,6 +21,7 @@
 package splitstree5.io.imports.NeXML;
 
 import jloda.fx.window.NotificationManager;
+import jloda.graph.Node;
 import jloda.graph.algorithms.IsTree;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
@@ -38,7 +39,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * nexml tree importer
@@ -78,7 +81,6 @@ public class NexmlTreesImporter implements IToTrees, IImportTrees {
                         if (!hasRootWithOutdegree2 && t.getRoot().getOutDegree() == 2)
                             hasRootWithOutdegree2 = true;
                     }
-
                     trees.getTrees().add(t); // todo: problem with multiple trees import?
                 } else if (System.currentTimeMillis() > lastWarning + 5000) {
                     NotificationManager.showWarning("Skipping rooted network...");
@@ -87,9 +89,24 @@ public class NexmlTreesImporter implements IToTrees, IImportTrees {
             }
             if (trees.size() == 0)
                 throw new IOException("No trees found");
-
             trees.setPartial(handler.isPartial());
             trees.setRooted(hasRootWithOutdegree2 || handler.isRooted());
+
+            if (taxa.size() == 0) { // try and setup all the taxa
+                var labels = new HashSet<String>();
+                for (var tree : trees.getTrees()) {
+                    labels.addAll(tree.nodeStream()
+                            .filter(v -> v.getLabel() != null && (v.getOutDegree() == 0 || !Basic.isDouble(v.getLabel())))
+                            .map(Node::getLabel).collect(Collectors.toList()));
+                }
+                taxa.addTaxaByNames(labels);
+                for (var tree : trees.getTrees()) {
+                    tree.nodeStream().filter(v -> v.getLabel() != null && (v.getOutDegree() == 0 || !Basic.isDouble(v.getLabel()))).forEach(v -> {
+                        tree.clearTaxa(v);
+                        tree.addTaxon(v, taxa.indexOf(v.getLabel()));
+                    });
+                }
+            }
             progressListener.reportTaskCompleted();
         } catch (Exception e) {
             throw new IOException(e);
@@ -108,8 +125,7 @@ public class NexmlTreesImporter implements IToTrees, IImportTrees {
         if (firstLine == null || !firstLine.equals("<nex:nexml") && !firstLine.startsWith("<?xml version="))
             return false;
 
-        try (BufferedReader ins =
-                     new BufferedReader(new InputStreamReader(Basic.getInputStreamPossiblyZIPorGZIP(fileName)))) {
+        try (BufferedReader ins = new BufferedReader(new InputStreamReader(Basic.getInputStreamPossiblyZIPorGZIP(fileName)))) {
             String aLine;
             while ((aLine = ins.readLine()) != null) {
                 if (aLine.contains("<tree"))

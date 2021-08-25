@@ -73,10 +73,13 @@ public class NodeView2D extends NodeViewBase {
             shape.setStroke(Color.BLACK);
             shape.setFill(Color.WHITE);
             label = new RichTextLabel(text);
+            label.translateXProperty().addListener((a, o, n) -> System.err.println("Change: " + o + " -> " + n));
+
             label.setStyle("");
             label.setFont(ProgramProperties.getDefaultFontFX());
             label.setTranslateX(location.getX() + shapeWidth + 2);
             label.setTranslateY(location.getY());
+
             labelGroup.getChildren().add(label);
             (v.getOwner()).setLabel(v, text);
         } else {
@@ -180,7 +183,10 @@ public class NodeView2D extends NodeViewBase {
             label.setTextFill(color);
         }
         (getNode().getOwner()).setLabel(getNode(), label != null ? label.getText() : null);
+    }
 
+    public void translateLabelX(double x) {
+        label.setTranslateX(label.getTranslateX() - location.getX() + x);
     }
 
     public Point2D getLocation() {
@@ -207,6 +213,7 @@ public class NodeView2D extends NodeViewBase {
             label.setTranslateY(label.getTranslateY() + diff.getY());
         }
     }
+
 
     /**
      * rotate by given angle
@@ -237,7 +244,7 @@ public class NodeView2D extends NodeViewBase {
      * @param factorY
      */
     public void scaleCoordinates(double factorX, double factorY) {
-        final Point2D oldLocation = location;
+        var oldLocation = location;
         location = new Point2D(location.getX() * factorX, location.getY() * factorY);
 
         if (shapeGroup != null) {
@@ -246,10 +253,11 @@ public class NodeView2D extends NodeViewBase {
         }
 
         if (label != null) {
-            Point2D diff = location.subtract(oldLocation);
-            label.setTranslateX(label.getTranslateX() + diff.getX());
+            var diff = location.subtract(oldLocation);
+            label.setTranslateX(label.getTranslateX() * factorX); // this is so that align leaf label works
             label.setTranslateY(label.getTranslateY() + diff.getY());
         }
+
     }
 
     public void setLocation(Point2D location) {

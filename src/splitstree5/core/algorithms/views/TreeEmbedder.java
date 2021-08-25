@@ -30,6 +30,8 @@ import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.ContextMenuEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import jloda.fx.util.GeometryUtilsFX;
 import jloda.graph.*;
@@ -79,7 +81,9 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
     public static final int LEAF_GROUP_GAP_DEFAULT = 20;
     private final IntegerProperty optionLeafGroupGapProperty = new SimpleIntegerProperty(LEAF_GROUP_GAP_DEFAULT);
 
-    private final BooleanProperty optionShowInternalNodeLabels = new SimpleBooleanProperty();
+    private final BooleanProperty optionShowInternalNodeLabels = new SimpleBooleanProperty(true);
+
+    private final BooleanProperty optionAlignLeafLabels = new SimpleBooleanProperty(false);
 
     private final Map<String, FormatItem> nodeLabel2Style = new HashMap<>();
 
@@ -94,13 +98,17 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
 
     public List<String> listOptions() {
         return Arrays.asList("optionLayout", "optionEdgeLengths", "optionEdgeShape", "optionParentPlacement",
-                "optionLeafGroupGapProperty", "optionCublicCurveChildControl", "optionCubicCurveParentControl");
+                "optionLeafGroupGapProperty", "optionCublicCurveChildControl", "optionCubicCurveParentControl", "optionAlignLeafLabels");
     }
 
     public TreeEmbedder() {
         optionLayout.addListener((c, o, n) -> {
             if (n == GraphLayout.Radial)
                 setOptionParentPlacement(ParentPlacement.LeafAverage);
+            if (n == GraphLayout.LeftToRight)
+                setOptionEdgeLengths(EdgeLengths.Cladogram);
+            else
+                setOptionAlignLeafLabels(false);
         });
     }
 
@@ -181,7 +189,6 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
                     default:
                     case LeftToRight: {
                         if (edgeShape == EdgeView2D.EdgeShape.Straight) {
-                            setOptionEdgeLengths(EdgeLengths.Cladogram);
                             computeEmbeddingForTriangularLayoutRec(root, null, 0, 0, edgeLengths, node2point);
                             factorX = scaleAndCenterToFitTarget(layout, viewTab.getTargetDimensions(), node2point, false);
                             computeEdgePointsForRectilinearRec(root, node2point, edge2controlPoints, optionCubicCurveParentControl.get(), getOptionCubicCurveChildControl());
@@ -197,6 +204,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
                     }
                 }
                 ((Graph2DTab) child.getTab()).getScaleBar().setUnitLengthX(factorX);
+                ((Graph2DTab) child.getTab()).alignLeafLabelsProperty().set(isOptionAlignLeafLabels());
 
                 final Font labelFont = Font.font(ProgramProperties.getDefaultFontFX().getFamily(), taxaBlock.getNtax() <= 64 ? 16 : Math.max(4, 12 - Math.log(taxaBlock.getNtax() - 64) / Math.log(2)));
 
@@ -237,6 +245,17 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
                         };
                         nodeView.getShapeGroup().setOnContextMenuRequested(contextMenuHandler);
                         nodeView.getLabelGroup().setOnContextMenuRequested(contextMenuHandler);
+
+                        if (isOptionAlignLeafLabels() && v.getOutDegree() == 0) {
+                            var line = new Line();
+                            line.startXProperty().bind(nodeView.getShapeGroup().translateXProperty().add(2));
+                            line.startYProperty().bind(nodeView.getShapeGroup().translateYProperty());
+                            line.endXProperty().bind(nodeView.getLabel().translateXProperty().subtract(2));
+                            line.endYProperty().bind(nodeView.getShapeGroup().translateYProperty());
+                            line.getStrokeDashArray().addAll(2d, 4d);
+                            line.setStroke(Color.GRAY);
+                            nodeView.getLabelGroup().getChildren().add(line);
+                        }
                     }
                 }
                 for (Edge e : tree.edges()) {
@@ -673,6 +692,18 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
 
     public void setOptionShowInternalNodeLabels(boolean optionShowInternalNodeLabels) {
         this.optionShowInternalNodeLabels.set(optionShowInternalNodeLabels);
+    }
+
+    public boolean isOptionAlignLeafLabels() {
+        return optionAlignLeafLabels.get();
+    }
+
+    public BooleanProperty optionAlignLeafLabelsProperty() {
+        return optionAlignLeafLabels;
+    }
+
+    public void setOptionAlignLeafLabels(boolean optionAlignLeafLabels) {
+        this.optionAlignLeafLabels.set(optionAlignLeafLabels);
     }
 }
 
