@@ -141,10 +141,22 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
                 public void updateView() {
                     nodeLabelSearchId.set(nodeLabelSearchId.get() + 1);
                 }
+
+                @Override
+                public void setCurrentLabel(String newLabel) {
+                    if (!RichTextLabel.getRawText(newLabel).isBlank())
+                        super.setCurrentLabel(newLabel);
+                }
             };
             //nodeLabelSearcher.addLabelChangedListener(v -> Platform.runLater(() -> getUndoManager().doAndAdd(new ChangeNodeLabelCommand(v, node2view.get(v), graph))));
 
-            edgeLabelSearcher = new EdgeLabelSearcher("Edges", graph, edgeSelectionModel);
+            edgeLabelSearcher = new EdgeLabelSearcher("Edges", graph, edgeSelectionModel) {
+                @Override
+                public void setCurrentLabel(String newLabel) {
+                    if (!RichTextLabel.getRawText(newLabel).isBlank())
+                        super.setCurrentLabel(newLabel);
+                }
+            };
             edgeLabelSearcher.addLabelChangedListener(e -> Platform.runLater(() -> getUndoManager().doAndAdd(new ChangeEdgeLabelCommand(e, edge2view.get(e), graph))));
 
             findToolBar = new FindToolBar(null, nodeLabelSearcher, edgeLabelSearcher);

@@ -26,10 +26,7 @@ import jloda.phylo.PhyloGraph;
 import jloda.phylo.PhyloSplitsGraph;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.ViewerBlock;
-import splitstree5.gui.graphtab.base.EdgeView2D;
-import splitstree5.gui.graphtab.base.GraphTabBase;
-import splitstree5.gui.graphtab.base.NodeView2D;
-import splitstree5.gui.graphtab.base.PolygonView2D;
+import splitstree5.gui.graphtab.base.*;
 import splitstree5.io.nexus.graph.EdgeViewIO;
 import splitstree5.io.nexus.graph.NodeViewIO;
 
@@ -58,26 +55,29 @@ public class ViewerNexusOutput extends NexusIOBase implements INexusOutput<Viewe
         final GraphTabBase graphTab = viewerBlock.getTab();
         final PhyloGraph graph = (graphTab.getGraph() != null ? graphTab.getGraph() : new PhyloGraph());
 
-        int nLabels = 0; // if we ever implement floating labels, then this must be set to their number
+		int nLabels = 0; // if we ever implement floating labels, then this must be set to their number
 
-        w.write(String.format("DIMENSIONS nNodes=%d nEdges=%d", graph.getNumberOfNodes(), graph.getNumberOfEdges()));
-        if (nLabels > 0)
-            w.write(" nLabels=" + nLabels);
-        if (graphTab.getPolygons().size() > 0)
-            w.write(" nLoops=" + graphTab.getPolygons().size());
-        w.write(";\n");
+		w.write(String.format("DIMENSIONS nNodes=%d nEdges=%d", graph.getNumberOfNodes(), graph.getNumberOfEdges()));
+		if (nLabels > 0)
+			w.write(" nLabels=" + nLabels);
+		if (graphTab.getPolygons().size() > 0)
+			w.write(" nLoops=" + graphTab.getPolygons().size());
+		w.write(";\n");
 
-        w.write(String.format("FORMAT type=%s;\n", viewerBlock.getType().toString()));
+		w.write(String.format("FORMAT type=%s", viewerBlock.getType().toString()));
+		if (graphTab instanceof Graph2DTab && ((Graph2DTab) graphTab).alignLeafLabelsProperty().get())
+			w.write(" alignLeafLabels");
+		w.write(";\n");
 
-        // nodes:
-        w.write("NODES\n");
-        {
-            boolean first = true;
-            for (Node node : graph.nodes()) {
-                if (graphTab.getNode2view().get(node) instanceof NodeView2D) {
-                    if (first)
-                        first = false;
-                    else
+		// nodes:
+		w.write("NODES\n");
+		{
+			boolean first = true;
+			for (Node node : graph.nodes()) {
+				if (graphTab.getNode2view().get(node) instanceof NodeView2D) {
+					if (first)
+						first = false;
+					else
                         w.write(",\n");
                     NodeView2D nodeView2D = (NodeView2D) graphTab.getNode2view().get(node);
                     w.write("\t" + NodeViewIO.toOutputString(nodeView2D));

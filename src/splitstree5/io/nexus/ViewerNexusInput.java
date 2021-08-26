@@ -20,6 +20,8 @@
 
 package splitstree5.io.nexus;
 
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import jloda.graph.Node;
 import jloda.phylo.PhyloGraph;
 import jloda.phylo.PhyloSplitsGraph;
@@ -53,7 +55,7 @@ public class ViewerNexusInput extends NexusIOBase {
             "\t[TITLE {title};]\n" +
             "\t[LINK {type} = {title};]\n" +
             "\t[DIMENSIONS NNODES=number-of-nodes NEDGES=number-of-edges [NLABELS=number-of-labels] [NLOOPS=number-of-polygons];]\n" +
-            "\tFORMAT type={" + Basic.toString(ViewerBlock.Type.values(), "|") + "}\n" +
+            "\tFORMAT type={" + Basic.toString(ViewerBlock.Type.values(), "|") + " [alignLeafLabels]\n" +
             "\tNODES\n" +
             "\t\tN: id x y [S: shape-name x y w h color] [L: label x y color font],\n" +
             "\t\t...\n" +
@@ -85,7 +87,6 @@ public class ViewerNexusInput extends NexusIOBase {
      * @throws IOException
      */
     public ViewerBlock parse(NexusStreamParser np, TaxaBlock taxaBlock) throws IOException {
-
         np.matchBeginBlock(ViewerBlock.BLOCK_NAME);
         parseTitleAndLink(np);
 
@@ -120,7 +121,14 @@ public class ViewerNexusInput extends NexusIOBase {
 
         np.matchIgnoreCase("FORMAT type=");
         final ViewerBlock.Type type = Basic.valueOfIgnoreCase(ViewerBlock.Type.class, np.getWordMatchesIgnoringCase(Basic.toString(ViewerBlock.Type.values(), " ")));
+        boolean alignLeafLabels;
+        if (np.peekMatchIgnoreCase("alignLeafLabels")) {
+            np.matchIgnoreCase("alignLeafLabels");
+            alignLeafLabels = true;
+        } else
+            alignLeafLabels = false;
         np.matchIgnoreCase(";");
+
         if (type == null)
             throw new IOExceptionWithLineNumber("Unknown type", np.lineno());
 
@@ -164,18 +172,18 @@ public class ViewerNexusInput extends NexusIOBase {
                     break;
                 }
                 case TreeViewer: {
-                    final TreeViewTab graphTab = (TreeViewTab) viewerBlock.getTab();
+                    final var graphTab = (TreeViewTab) viewerBlock.getTab();
                     graphTab.init(new PhyloTree());
-                    final PhyloTree graph = graphTab.getGraph();
+                    final var tree = graphTab.getGraph();
 
                     if (!np.peekMatchIgnoreCase(";")) {
                         while (true) {
-                            final NodeView2D nv = NodeViewIO.valueOf(np, graph, graphTab, inputId2Node);
+                            final var nv = NodeViewIO.valueOf(np, tree, graphTab, inputId2Node);
 
                             // older files don't explicitly contain taxon ids, so need try to infer them here:
-                            final Node v = graph.getLastNode();
+                            final var v = tree.getLastNode();
 
-                            if (!graph.getTaxa(v).iterator().hasNext() && nv.getLabel() != null && taxaBlock.indexOf(nv.getLabel().getRawText()) != -1) {
+                            if (!tree.getTaxa(v).iterator().hasNext() && nv.getLabel() != null && taxaBlock.indexOf(nv.getLabel().getRawText()) != -1) {
                                 nv.getWorkingTaxa().set(taxaBlock.indexOf(nv.getLabel().getRawText()));
                             }
 
@@ -192,16 +200,16 @@ public class ViewerNexusInput extends NexusIOBase {
                     break;
                 }
                 case NetworkViewer: {
-                    final NetworkViewTab graphTab = (NetworkViewTab) viewerBlock.getTab();
+                    final var graphTab = (NetworkViewTab) viewerBlock.getTab();
                     graphTab.init(new PhyloGraph());
-                    final PhyloGraph graph = graphTab.getGraph();
+                    final var graph = graphTab.getGraph();
 
                     if (!np.peekMatchIgnoreCase(";")) {
                         while (true) {
-                            final NodeView2D nv = NodeViewIO.valueOf(np, graph, graphTab, inputId2Node);
+                            final var nv = NodeViewIO.valueOf(np, graph, graphTab, inputId2Node);
 
                             // older files don't explicitly contain taxon ids, so need try to infer them here:
-                            final Node v = graph.getLastNode();
+                            final var v = graph.getLastNode();
                             if (!graph.getTaxa(v).iterator().hasNext() && nv.getLabel() != null && taxaBlock.indexOf(nv.getLabel().getRawText()) != -1) {
                                 nv.getWorkingTaxa().set(taxaBlock.indexOf(nv.getLabel().getRawText()));
                             }
@@ -261,6 +269,29 @@ public class ViewerNexusInput extends NexusIOBase {
         }
         if (nEdges != -1 && nEdges != countEdges)
             throw new IOExceptionWithLineNumber(String.format("Expected %d edges, got %d", nEdges, countEdges), np.lineno());
+
+        if (alignLeafLabels) {
+            if (type == ViewerBlock.Type.TreeViewer) {
+                final var graphTab = (TreeViewTab) viewerBlock.getTab();
+                graphTab.alignLeafLabelsProperty().set(alignLeafLabels);
+                final var tree = graphTab.getGraph();
+
+                tree.nodeStream().filter(v -> v.getOutDegree() == 0).forEach(v -> {
+                    try {
+                        var nv = graphTab.getNode2view().get(v);
+                        var line = new Line();
+                        line.startXProperty().bind(nv.getShapeGroup().translateXProperty().add(2));
+                        line.startYProperty().bind(nv.getShapeGroup().translateYProperty());
+                        line.endXProperty().bind(nv.getLabel().translateXProperty().subtract(2));
+                        line.endYProperty().bind(nv.getShapeGroup().translateYProperty());
+                        line.getStrokeDashArray().addAll(2d, 4d);
+                        line.setStroke(Color.GRAY);
+                        nv.getLabelGroup().getChildren().add(line);
+                    } catch (Exception ignored) {
+                    }
+                });
+            }
+        }
 
         if (type == ViewerBlock.Type.SplitsNetworkViewer && np.peekMatchIgnoreCase("LOOPS")) {
             np.matchIgnoreCase("LOOPS");

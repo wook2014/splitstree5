@@ -89,8 +89,6 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
 
     private ChangeListener<UpdateState> changeListener;
 
-    private Boolean previousTreeRooted = null; // need this to switch between rooted and unrooted view when input changes
-
     @Override
     public String getCitation() {
         return "Huson et al 2012;D.H. Huson, R. Rupp and C. Scornavacca, Phylogenetic Networks, Cambridge, 2012.";
@@ -120,27 +118,6 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
         viewTab.setNodeLabel2Style(nodeLabel2Style);
         viewTab.setDataNode(child.getDataNode());
 
-        final GraphLayout layout;
-        final EdgeView2D.EdgeShape edgeShape;
-
-        if ((previousTreeRooted == null || !previousTreeRooted) && parent.isRooted()) {
-            layout = GraphLayout.LeftToRight;
-            edgeShape = EdgeView2D.EdgeShape.Angular;
-        } else if ((previousTreeRooted == null || previousTreeRooted) && !parent.isRooted()) {
-            layout = GraphLayout.Radial;
-            edgeShape = EdgeView2D.EdgeShape.Straight;
-        } else {
-            layout = getOptionLayout();
-            edgeShape = getOptionEdgeShape();
-        }
-        previousTreeRooted = parent.isRooted();
-
-        Platform.runLater(() -> {
-            setOptionLayout(layout);
-            setOptionEdgeShape(edgeShape);
-            child.getTab().setText(child.getName());
-            viewTab.setLayout(layout);
-        });
 
         if (parent.getNTrees() > 0) {
             final PhyloTree tree = parent.getTrees().get(0);
@@ -170,7 +147,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
                 final EdgeArray<EdgeControlPoints> edge2controlPoints = new EdgeArray<>(tree);
                 final double factorX;
 
-                switch (layout) {
+                switch (getOptionLayout()) {
                     case Radial: {
                         final EdgeFloatArray edge2Angle = new EdgeFloatArray(tree); // angle of edge
                         setAnglesForCircularLayoutRec(root, null, 0, tree.countLeaves(), edge2Angle, optionLeafGroupGapProperty.get(), optionParentPlacement.getValue());
@@ -178,26 +155,26 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
                             edge2Angle.put(e, 360f - edge2Angle.getFloat(e) + 90f);
                         }
 
-                        if (edgeShape == EdgeView2D.EdgeShape.Straight)
+                        if (getOptionEdgeShape() == EdgeView2D.EdgeShape.Straight)
                             computeNodeLocationsForRadialRec(root, new Point2D(0, 0), edgeLengths, edge2Angle, node2point);
                         else
                             computeNodeLocationsForCircular(root, edgeLengths, edge2Angle, node2point);
-                        factorX = scaleAndCenterToFitTarget(layout, viewTab.getTargetDimensions(), node2point, false);
+                        factorX = scaleAndCenterToFitTarget(getOptionLayout(), viewTab.getTargetDimensions(), node2point, false);
                         computeEdgePointsForCircularRec(root, 0, edge2Angle, node2point, edge2controlPoints, getOptionCubicCurveParentControl(), getOptionCubicCurveChildControl());
                         break;
                     }
                     default:
                     case LeftToRight: {
-                        if (edgeShape == EdgeView2D.EdgeShape.Straight) {
+                        if (getOptionEdgeShape() == EdgeView2D.EdgeShape.Straight) {
                             computeEmbeddingForTriangularLayoutRec(root, null, 0, 0, edgeLengths, node2point);
-                            factorX = scaleAndCenterToFitTarget(layout, viewTab.getTargetDimensions(), node2point, false);
+                            factorX = scaleAndCenterToFitTarget(getOptionLayout(), viewTab.getTargetDimensions(), node2point, false);
                             computeEdgePointsForRectilinearRec(root, node2point, edge2controlPoints, optionCubicCurveParentControl.get(), getOptionCubicCurveChildControl());
                         } else {
                             final NodeFloatArray nodeHeights = new NodeFloatArray(tree); // height of edge
                             setNodeHeightsRec(root, 0, nodeHeights, optionLeafGroupGapProperty.get(), optionParentPlacementProperty().getValue());
 
                             computeNodeLocationsForRectilinearRec(root, 0, edgeLengths, nodeHeights, node2point);
-                            factorX = scaleAndCenterToFitTarget(layout, viewTab.getTargetDimensions(), node2point, false);
+                            factorX = scaleAndCenterToFitTarget(getOptionLayout(), viewTab.getTargetDimensions(), node2point, false);
                             computeEdgePointsForRectilinearRec(root, node2point, edge2controlPoints, optionCubicCurveParentControl.get(), getOptionCubicCurveChildControl());
                         }
                         break;
@@ -260,7 +237,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
                 }
                 for (Edge e : tree.edges()) {
                     final EdgeControlPoints controlPoints = edge2controlPoints.get(e);
-                    final EdgeView2D edgeView = viewTab.createEdgeView(e, layout, edgeShape,
+                    final EdgeView2D edgeView = viewTab.createEdgeView(e, getOptionLayout(), getOptionEdgeShape(),
                             node2point.get(e.getSource()), controlPoints.getControl1(), controlPoints.getMid(),
                             controlPoints.getControl2(), controlPoints.getSupport(), node2point.get(e.getTarget()), null);
                     viewTab.getEdge2view().put(e, edgeView);

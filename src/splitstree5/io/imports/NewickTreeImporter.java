@@ -20,7 +20,6 @@
 
 package splitstree5.io.imports;
 
-import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
 import jloda.util.*;
 import splitstree5.core.algorithms.interfaces.IToTrees;
@@ -58,24 +57,24 @@ public class NewickTreeImporter implements IToTrees, IImportTrees {
      * @throws CanceledException
      */
     public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, TreesBlock trees) throws IOException, CanceledException {
-        int lineno = 0;
-        try (FileLineIterator it = new FileLineIterator(inputFile)) {
+        var lineno = 0;
+        try (var it = new FileLineIterator(inputFile)) {
             progressListener.setMaximum(it.getMaximumProgress());
             progressListener.setProgress(0);
 
-            final Map<String, Integer> taxName2Id = new HashMap<>(); // starts at 1
-            final Set<String> taxonNamesFound = new HashSet<>();
+            final var taxName2Id = new HashMap<String, Integer>(); // starts at 1
+            final var taxonNamesFound = new HashSet<String>();
             final ArrayList<String> orderedTaxonNames = new ArrayList<>();
 
-            final SimpleNewickParser newickParser = new SimpleNewickParser();
+            var newickParser = new SimpleNewickParser();
             newickParser.setEnforceLabelDoesNotStartWithADigit(true);
-            boolean partial = false;
-            final ArrayList<String> parts = new ArrayList<>();
+            var partial = false;
+            final var parts = new ArrayList<String>();
 
             // read in the trees
             while (it.hasNext()) {
                 lineno++;
-                final String line = Basic.removeComments(it.next(), '[', ']');
+                final var line = Basic.removeComments(it.next(), '[', ']');
                 if (line.endsWith(";")) {
                     final String treeLine;
                     if (parts.size() > 0) {
@@ -96,17 +95,17 @@ public class NewickTreeImporter implements IToTrees, IImportTrees {
                     if (TreesUtilities.hasNumbersOnInternalNodes(tree)) {
                         TreesUtilities.changeNumbersOnInternalNodesToEdgeConfidencies(tree);
                     }
-                    final List<String> leafLabelList = IteratorUtils.asList(newickParser.leafLabels());
-                    final Set<String> leafLabelSet = new HashSet<>(leafLabelList);
-                    final boolean multiLabeled = (leafLabelSet.size() < leafLabelList.size());
+                    final var leafLabelList = IteratorUtils.asList(newickParser.labels());
+                    final var leafLabelSet = new HashSet<String>(leafLabelList);
+                    final var multiLabeled = (leafLabelSet.size() < leafLabelList.size());
 
                     if (multiLabeled) {
                         if (isOptionConvertMultiLabeledTree()) {
-                            final Set<String> seen = new HashSet<>();
-                            for (Node v : tree.nodes()) {
-                                String label = tree.getLabel(v);
+                            final var seen = new HashSet<String>();
+                            for (var v : tree.nodes()) {
+                                var label = tree.getLabel(v);
                                 if (label != null) {
-                                    int count = 1;
+                                    var count = 1;
                                     while (seen.contains(label)) {
                                         label = tree.getLabel(v) + "-" + (++count);
                                     }
@@ -116,7 +115,7 @@ public class NewickTreeImporter implements IToTrees, IImportTrees {
                                 }
                             }
                         } else {
-                            for (String z : leafLabelSet) {
+                            for (var z : leafLabelSet) {
                                 leafLabelList.remove(z);
                             }
                             throw new IOExceptionWithLineNumber(lineno, "Name appears multiple times in tree:" + leafLabelList.get(0));
@@ -124,15 +123,15 @@ public class NewickTreeImporter implements IToTrees, IImportTrees {
                     }
 
                     if (taxonNamesFound.size() == 0) {
-                        for (String name : newickParser.leafLabels()) {
+                        for (var name : newickParser.labels()) {
                             taxonNamesFound.add(name);
                             orderedTaxonNames.add(name);
                             taxName2Id.put(name, orderedTaxonNames.size());
                         }
                     } else {
-                        if (!taxonNamesFound.equals(IteratorUtils.asSet(newickParser.leafLabels()))) {
+                        if (!taxonNamesFound.equals(IteratorUtils.asSet(newickParser.labels()))) {
                             partial = true;
-                            for (String name : newickParser.leafLabels()) {
+                            for (var name : newickParser.labels()) {
                                 if (!taxonNamesFound.contains(name)) {
                                     System.err.println("Additional taxon name: " + name);
                                     taxonNamesFound.add(name);
@@ -142,8 +141,8 @@ public class NewickTreeImporter implements IToTrees, IImportTrees {
                             }
                         }
                     }
-                    for (Node v : tree.nodes()) {
-                        final String label = tree.getLabel(v);
+                    for (var v : tree.nodes()) {
+                        final var label = tree.getLabel(v);
                         if (label != null && label.length() > 0) {
                             if (taxonNamesFound.contains(label)) { // need to check that this is a taxon name, could also be a number placed on the root...
                                 tree.addTaxon(v, taxName2Id.get(label));

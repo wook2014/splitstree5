@@ -195,13 +195,14 @@ public class TreesNexusInput extends NexusIOBase implements INexusInput<TreesBlo
                 if (label != null && label.length() > 0) {
                     if (!knownTaxonNames.contains(label)) {
                         if (haveSetKnownTaxonNames) {
-                            throw new IOException("Tree '" + name + "' contains unknown taxon: " + label);
+                            System.err.println("Tree '" + name + "' contains unknown taxon: " + label);
                         } else {
                             knownTaxonNames.add(label);
                             taxonNamesFound.add(label);
                             taxName2Id.put(label, taxonNamesFound.size());
+                            tree.addTaxon(v, taxName2Id.get(label));
                         }
-                    }
+                    } else
                     tree.addTaxon(v, taxName2Id.get(label));
                     //System.err.println(v+" -> "+label+" -> "+Basic.toString(tree.getTaxa(v)," "));
                 }

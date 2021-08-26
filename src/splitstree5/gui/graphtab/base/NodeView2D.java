@@ -73,7 +73,6 @@ public class NodeView2D extends NodeViewBase {
             shape.setStroke(Color.BLACK);
             shape.setFill(Color.WHITE);
             label = new RichTextLabel(text);
-            label.translateXProperty().addListener((a, o, n) -> System.err.println("Change: " + o + " -> " + n));
 
             label.setStyle("");
             label.setFont(ProgramProperties.getDefaultFontFX());
