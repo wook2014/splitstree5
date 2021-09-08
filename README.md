@@ -1,4 +1,6 @@
-# splitstree5
+# ![Icon](https://github.com/husonlab/splitstree5/blob/master/src/splitstree5/resources/icons/SplitsTree5-32.png?raw=true) SplitsTree5
+
+
 A complete rewrite of the SplitsTree program
 
 This was my first JavaFX project and there are so may early design decisions that I have come to regret... 
