@@ -90,7 +90,7 @@ public class LabelListsManager {
                 final ArrayList<String> original = new ArrayList<>(displayLabels);
                 replaceAllAction.handle(null);
                 final ArrayList<String> replaced = new ArrayList<>(displayLabels);
-                undoManager.add(UndoableRedoableCommand.create("replace all",
+                undoManager.add("replace all",
                         () -> {
                             displayLabels.setAll(original);
                             updateFrequentWordButtons();
@@ -98,7 +98,7 @@ public class LabelListsManager {
                         () -> {
                             displayLabels.setAll(replaced);
                             updateFrequentWordButtons();
-                        }));
+                        });
             });
         }
         {
@@ -107,7 +107,7 @@ public class LabelListsManager {
                 final ArrayList<String> original = new ArrayList<>(displayLabels);
                 replaceAction.handle(null);
                 final ArrayList<String> replaced = new ArrayList<>(displayLabels);
-                undoManager.add(UndoableRedoableCommand.create("replace",
+                undoManager.add("replace",
                         () -> {
                             displayLabels.setAll(original);
                             updateFrequentWordButtons();
@@ -115,7 +115,7 @@ public class LabelListsManager {
                         () -> {
                             displayLabels.setAll(replaced);
                             updateFrequentWordButtons();
-                        }));
+                        });
             });
         }
 

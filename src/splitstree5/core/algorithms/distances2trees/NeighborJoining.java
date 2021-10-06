@@ -123,7 +123,7 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> imple
                 for (int j : BitSetUtils.members(alive, i + 1)) {
                     final float q = (alive.cardinality() - 2) * matrix[i][j] - rowSum[i] - rowSum[j];
 
-                    if (verbose) System.err.printf(" %d", (int) q);
+                    if (verbose) System.err.printf(" %d", q);
 
                     if (q < minQ) {
                         minQ = q;
@@ -137,7 +137,7 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> imple
 
 
             final Node u = tree.newNode();
-            final float weightIU = 0.5f * matrix[minI][minJ] + 0.5f * (rowSum[minI] - rowSum[minJ]) / (alive.cardinality() - 2);
+            final double weightIU = 0.5f * matrix[minI][minJ] + 0.5f * (rowSum[minI] - rowSum[minJ]) / (alive.cardinality() - 2);
             tree.setWeight(tree.newEdge(u, nodes[minI]), weightIU);
             final double weightJU = matrix[minI][minJ] - weightIU;
             tree.setWeight(tree.newEdge(u, nodes[minJ]), weightJU);
@@ -171,7 +171,7 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> imple
             final int i = BitSetUtils.min(alive);
             final int j = BitSetUtils.max(alive);
 
-            tree.setWeight(tree.newEdge(nodes[i], nodes[j]), matrix[i][j]);
+            tree.setWeight(tree.newEdge(nodes[i], nodes[j]), (double) matrix[i][j]);
             tree.setRoot(nodes[i]);
         }
         progressListener.setProgress(ntax);
