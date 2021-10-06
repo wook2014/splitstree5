@@ -320,18 +320,18 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
             Edge e = tree.newEdge(root, v);
 
             if (set.cardinality() == 1) {
-                tree.setWeight(e, 2);
+                tree.setWeight(e, 2.0);
                 int taxon = set.nextSetBit(0);
                 tree.setLabel(v, taxaBlock.get(taxon).getName());
                 tree.addTaxon(v, taxon);
             } else {
-                tree.setWeight(e, 1);
-                for (Integer t = set.nextSetBit(1); t != -1; t = set.nextSetBit(t + 1)) {
+                tree.setWeight(e, 1.0);
+                for (var t = set.nextSetBit(1); t != -1; t = set.nextSetBit(t + 1)) {
                     Node w = tree.newNode();
                     tree.addTaxon(w, t);
                     tree.setLabel(w, taxaBlock.getLabel(t));
                     Edge f = tree.newEdge(v, w);
-                    tree.setWeight(f, 1);
+                    tree.setWeight(f, 1.0);
                 }
             }
         }

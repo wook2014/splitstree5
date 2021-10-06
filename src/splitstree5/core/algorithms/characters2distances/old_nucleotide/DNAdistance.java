@@ -42,6 +42,7 @@ import java.util.List;
 /**
  * @deprecated
  */
+@Deprecated
 public abstract class DNAdistance extends Algorithm<CharactersBlock, DistancesBlock> {
 
     public enum SetParameters {fromChars, defaultParameters}

@@ -61,7 +61,7 @@ public class SimpleNewickParser {
                 if (e.getSource().getInDegree() == 0 && e.getSource().getOutDegree() == 2 && !tree.getTaxa(e.getSource()).iterator().hasNext()) {
                     tree.setWeight(e, 0.5);
                 } else
-                    tree.setWeight(e, 1);
+                    tree.setWeight(e, 1.0);
             }
         }
 

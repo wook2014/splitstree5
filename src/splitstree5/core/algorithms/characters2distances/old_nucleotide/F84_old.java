@@ -32,6 +32,7 @@ import splitstree5.core.models.nucleotideModels.F84Model;
 /**
  * @deprecated
  */
+@Deprecated
 public class F84_old extends DNAdistance implements IFromCharacters, IToDistances {
     private double A, B, C;
 
