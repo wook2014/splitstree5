@@ -22,8 +22,8 @@ package splitstree5.io.nexus;
 
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
-import jloda.util.Basic;
 import jloda.util.IOExceptionWithLineNumber;
+import jloda.util.NumberUtils;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
@@ -229,10 +229,10 @@ public class TreesNexusInput extends NexusIOBase implements INexusInput<TreesBlo
             if (v.getOutDegree() != 0 && v.getInDegree() != 0) {
                 String label = tree.getLabel(v);
                 if (label != null) {
-                    if (Basic.isDouble(label))
-                        hasNumbersOnInternalNodes = true;
-                    else
-                        return false;
+					if (NumberUtils.isDouble(label))
+						hasNumbersOnInternalNodes = true;
+					else
+						return false;
                 }
             }
         }
@@ -249,11 +249,11 @@ public class TreesNexusInput extends NexusIOBase implements INexusInput<TreesBlo
             if (v.getOutDegree() != 0 && v.getInDegree() == 1) {
                 String label = tree.getLabel(v);
                 if (label != null) {
-                    if (Basic.isDouble(label)) {
-                        tree.setConfidence(v.getFirstInEdge(), Basic.parseDouble(label));
-                        tree.setLabel(v, null);
-                    }
-                }
+					if (NumberUtils.isDouble(label)) {
+						tree.setConfidence(v.getFirstInEdge(), NumberUtils.parseDouble(label));
+						tree.setLabel(v, null);
+					}
+				}
             }
         }
     }

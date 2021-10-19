@@ -28,8 +28,8 @@ import javafx.geometry.Point2D;
 import jloda.fx.util.GeometryUtilsFX;
 import jloda.graph.*;
 import jloda.phylo.PhyloSplitsGraph;
-import jloda.util.Basic;
 import jloda.util.CanceledException;
+import jloda.util.CollectionUtils;
 import jloda.util.Pair;
 import jloda.util.progress.ProgressListener;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -87,15 +87,15 @@ public class DaylightOptimizer {
 
         // use different randomized orders
         for (int i = 1; i <= getOptionIterations(); i++) {
-            for (Node v : Basic.randomize(nodes, 77 * i)) {
-                if (v.getDegree() > 1 && !ignore.contains(v)) {
-                    if (!optimizeDaylightNode(taxa.getNtax(), graph, v, node2point))
-                        ignore.add(v);
-                    else
-                        EqualAngle.assignCoordinatesToNodes(isOptionUseWeights(), graph, node2point, 1);
-                }
-                progress.incrementProgress();
-            }
+			for (Node v : CollectionUtils.randomize(nodes, 77 * i)) {
+				if (v.getDegree() > 1 && !ignore.contains(v)) {
+					if (!optimizeDaylightNode(taxa.getNtax(), graph, v, node2point))
+						ignore.add(v);
+					else
+						EqualAngle.assignCoordinatesToNodes(isOptionUseWeights(), graph, node2point, 1);
+				}
+				progress.incrementProgress();
+			}
         }
     }
 

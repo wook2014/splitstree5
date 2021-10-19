@@ -38,8 +38,8 @@ import javafx.stage.Stage;
 import jloda.fx.control.RichTextLabel;
 import jloda.fx.util.*;
 import jloda.fx.window.NotificationManager;
-import jloda.util.Basic;
 import jloda.util.FileUtils;
+import jloda.util.NumberUtils;
 import jloda.util.ProgramProperties;
 import jloda.util.StringUtils;
 import splitstree5.main.Version;
@@ -181,8 +181,8 @@ public class AnalyzeGenomesDialog {
 
         controller.getApplyButton().setOnAction(c -> {
 			final GenomesAnalyzer genomesAnalyzer = new GenomesAnalyzer(Arrays.asList(StringUtils.split(controller.getInputTextArea().getText(), ',')),
-					controller.getTaxaChoiceBox().getValue(), labelListsManager.computeLine2Label(), Basic.parseInt(controller.getMinLengthTextField().getText()),
-					controller.getStoreOnlyReferencesCheckBox().isSelected());
+                    controller.getTaxaChoiceBox().getValue(), labelListsManager.computeLine2Label(), NumberUtils.parseInt(controller.getMinLengthTextField().getText()),
+                    controller.getStoreOnlyReferencesCheckBox().isSelected());
 
             if (referencesDatabase.get() != null && referenceIds.size() > 0) {
                 String fileCacheDirectory = ProgramProperties.get("fileCacheDirectory", "");
@@ -263,14 +263,14 @@ public class AnalyzeGenomesDialog {
                 @Override
                 public Collection<Map.Entry<Integer, Double>> call() throws Exception {
 					final GenomesAnalyzer genomesAnalyzer = new GenomesAnalyzer(Arrays.asList(StringUtils.split(controller.getInputTextArea().getText(), ',')),
-							controller.getTaxaChoiceBox().getValue(), labelListsManager.computeLine2Label(), Basic.parseInt(controller.getMinLengthTextField().getText()),
-							controller.getStoreOnlyReferencesCheckBox().isSelected());
+                            controller.getTaxaChoiceBox().getValue(), labelListsManager.computeLine2Label(), NumberUtils.parseInt(controller.getMinLengthTextField().getText()),
+                            controller.getStoreOnlyReferencesCheckBox().isSelected());
 
                     final ArrayList<byte[]> queries = new ArrayList<>();
                     for (GenomesAnalyzer.InputRecord record : genomesAnalyzer.iterable(getProgressListener())) {
                         queries.add(record.getSequence());
                     }
-                    return database.get().findSimilar(service.getProgressListener(), Basic.parseDouble(controller.getMaxDistToSearchTextField().getText()), controller.getIncludeStrainsCB().isSelected(), queries, true);
+                    return database.get().findSimilar(service.getProgressListener(), NumberUtils.parseDouble(controller.getMaxDistToSearchTextField().getText()), controller.getIncludeStrainsCB().isSelected(), queries, true);
                 }
             });
             service.runningProperty().addListener((c, o, n) -> running.set(n));
@@ -309,7 +309,7 @@ public class AnalyzeGenomesDialog {
         });
 
         controller.getMaxToAddTextField().textProperty().addListener((c, o, n) -> {
-            final int max = Math.min(references.size(), Math.max(0, Basic.parseInt(n)));
+            final int max = Math.min(references.size(), Math.max(0, NumberUtils.parseInt(n)));
             maxCount.set(max);
         });
 
@@ -339,8 +339,8 @@ public class AnalyzeGenomesDialog {
 
         BasicFX.ensureAcceptsDoubleOnly(controller.getMaxDistToSearchTextField());
         controller.getMaxDistToSearchTextField().textProperty().addListener((c, o, n) -> {
-            if (Basic.isDouble(n) && Basic.parseDouble(n) > 0.0 && Basic.parseDouble(n) < 1)
-                controller.getMaxDistanceSlider().setMax(Basic.parseDouble(n) + 0.01);
+            if (NumberUtils.isDouble(n) && NumberUtils.parseDouble(n) > 0.0 && NumberUtils.parseDouble(n) < 1)
+                controller.getMaxDistanceSlider().setMax(NumberUtils.parseDouble(n) + 0.01);
         });
         controller.getMaxDistToSearchTextField().disableProperty().bind(controller.getFindReferencesButton().disableProperty());
 

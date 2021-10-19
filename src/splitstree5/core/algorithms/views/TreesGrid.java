@@ -28,10 +28,10 @@ import javafx.geometry.Point2D;
 import javafx.scene.text.Font;
 import jloda.graph.*;
 import jloda.phylo.PhyloTree;
-import jloda.util.Basic;
+import jloda.util.NumberUtils;
 import jloda.util.ProgramProperties;
-import jloda.util.progress.ProgressListener;
 import jloda.util.StringUtils;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToViewer;
@@ -165,17 +165,17 @@ public class TreesGrid extends Algorithm<TreesBlock, ViewerBlock> implements IFr
                         if (label != null && (v.getOutDegree() == 0 || optionShowInternalNodeLabels.get())) {
                             if (label.startsWith("<")) // multi-labeled node
                             {
-								final String[] tokens = StringUtils.split(label.substring(1, label.length() - 1), ',');
+                                final String[] tokens = StringUtils.split(label.substring(1, label.length() - 1), ',');
                                 for (String token : tokens) {
-                                    if (Basic.isInteger(token)) {
+                                    if (NumberUtils.isInteger(token)) {
                                         if (buf.length() > 0)
                                             buf.append(", ");
-                                        buf.append(taxaBlock.get(Basic.parseInt(token)));
+                                        buf.append(taxaBlock.get(NumberUtils.parseInt(token)));
                                     }
 
                                 }
-                            } else if (Basic.isInteger(label))
-                                buf.append(taxaBlock.get(Basic.parseInt(label)));
+                            } else if (NumberUtils.isInteger(label))
+                                buf.append(taxaBlock.get(NumberUtils.parseInt(label)));
                             else
                                 buf.append(label);
                             text = buf.toString();

@@ -23,8 +23,8 @@ package splitstree5.utils;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
-import jloda.util.Basic;
 import jloda.util.BitSetUtils;
+import jloda.util.NumberUtils;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 import splitstree5.core.misc.ASplit;
@@ -104,10 +104,10 @@ public class TreesUtilities {
             if (v.getOutDegree() != 0 && v.getInDegree() != 0) {
                 String label = tree.getLabel(v);
                 if (label != null) {
-                    if (Basic.isDouble(label))
-                        hasNumbers = true;
-                    else
-                        return false;
+					if (NumberUtils.isDouble(label))
+						hasNumbers = true;
+					else
+						return false;
                 }
             }
         }
@@ -125,11 +125,11 @@ public class TreesUtilities {
             if (v.getOutDegree() != 0 && v.getInDegree() == 1) {
                 String label = tree.getLabel(v);
                 if (label != null) {
-                    if (Basic.isDouble(label)) {
-                        tree.setConfidence(v.getFirstInEdge(), Basic.parseDouble(label));
-                        tree.setLabel(v, null);
-                    }
-                }
+					if (NumberUtils.isDouble(label)) {
+						tree.setConfidence(v.getFirstInEdge(), NumberUtils.parseDouble(label));
+						tree.setLabel(v, null);
+					}
+				}
             }
         }
     }
@@ -146,10 +146,10 @@ public class TreesUtilities {
             if (v.getOutDegree() == 0) {
                 final String label = tree.getLabel(v);
                 if (label != null) {
-                    if (Basic.isDouble(label))
-                        hasNumbers = true;
-                    else
-                        return false;
+					if (NumberUtils.isDouble(label))
+						hasNumbers = true;
+					else
+						return false;
                 }
             }
         }
@@ -166,10 +166,10 @@ public class TreesUtilities {
             if (v.getOutDegree() == 0) {
                 final String label = tree.getLabel(v);
                 if (label != null) {
-                    if (Basic.isInteger(label)) {
-                        tree.setLabel(v, taxaBlock.getLabel(Basic.parseInt(label)));
-                    }
-                }
+					if (NumberUtils.isInteger(label)) {
+						tree.setLabel(v, taxaBlock.getLabel(NumberUtils.parseInt(label)));
+					}
+				}
             }
         }
     }

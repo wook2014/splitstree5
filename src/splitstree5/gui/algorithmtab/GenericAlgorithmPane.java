@@ -32,6 +32,7 @@ import javafx.util.converter.FloatStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import jloda.fx.undo.UndoManager;
 import jloda.util.Basic;
+import jloda.util.NumberUtils;
 import jloda.util.StringUtils;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.DataBlock;
@@ -128,12 +129,12 @@ public class GenericAlgorithmPane<P extends DataBlock, C extends DataBlock> exte
                         control.setTextFormatter(new TextFormatter<>(new IntegerStringConverter()));
                         control.setText(option.getValue().toString());
                         control.textProperty().addListener((observable, oldValue, newValue) -> {
-                            if (newValue.length() == 0)
-                                newValue = "0";
-                            if (Basic.isInteger(newValue)) {
-                                undoManager.add(text, control.textProperty(), oldValue, newValue);
-                                option.holdValue(Basic.parseInt(newValue));
-                            }
+							if (newValue.length() == 0)
+								newValue = "0";
+							if (NumberUtils.isInteger(newValue)) {
+								undoManager.add(text, control.textProperty(), oldValue, newValue);
+								option.holdValue(NumberUtils.parseInt(newValue));
+							}
                         });
                         if (option.getInfo() != null)
                             control.setTooltip(new Tooltip(option.getInfo()));
@@ -153,12 +154,12 @@ public class GenericAlgorithmPane<P extends DataBlock, C extends DataBlock> exte
                         control.setTextFormatter(new TextFormatter<>(new DoubleStringConverter()));
                         control.setText(option.getValue().toString());
                         control.textProperty().addListener((observable, oldValue, newValue) -> {
-                            if (newValue.length() == 0)
-                                newValue = "0";
-                            if (Basic.isDouble(newValue)) {
-                                undoManager.add(text, control.textProperty(), oldValue, newValue);
-                                option.holdValue(Basic.parseDouble(newValue));
-                            }
+							if (newValue.length() == 0)
+								newValue = "0";
+							if (NumberUtils.isDouble(newValue)) {
+								undoManager.add(text, control.textProperty(), oldValue, newValue);
+								option.holdValue(NumberUtils.parseDouble(newValue));
+							}
                         });
                         if (option.getInfo() != null)
                             control.setTooltip(new Tooltip(option.getInfo()));
@@ -178,12 +179,12 @@ public class GenericAlgorithmPane<P extends DataBlock, C extends DataBlock> exte
                         control.setTextFormatter(new TextFormatter<>(new FloatStringConverter()));
                         control.setText(option.getValue().toString());
                         control.textProperty().addListener((observable, oldValue, newValue) -> {
-                            if (newValue.length() == 0)
-                                newValue = "0";
-                            if (Basic.isFloat(newValue)) {
-                                undoManager.add(text, control.textProperty(), oldValue, newValue);
-                                option.holdValue(Basic.parseFloat(newValue));
-                            }
+							if (newValue.length() == 0)
+								newValue = "0";
+							if (NumberUtils.isFloat(newValue)) {
+								undoManager.add(text, control.textProperty(), oldValue, newValue);
+								option.holdValue(NumberUtils.parseFloat(newValue));
+							}
                         });
                         if (option.getInfo() != null)
                             control.setTooltip(new Tooltip(option.getInfo()));

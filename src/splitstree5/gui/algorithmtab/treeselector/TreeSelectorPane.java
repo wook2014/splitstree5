@@ -30,7 +30,7 @@ import jloda.fx.undo.UndoManager;
 import jloda.fx.undo.UndoableRedoableCommand;
 import jloda.fx.util.ExtendedFXMLLoader;
 import jloda.phylo.PhyloTree;
-import jloda.util.Basic;
+import jloda.util.NumberUtils;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.filters.TreeSelector;
 import splitstree5.core.datablocks.TreesBlock;
@@ -102,7 +102,7 @@ public class TreeSelectorPane extends AlgorithmPane {
                 try {
                     inUpdatingText = true;
                     if (n.length() > 0) {
-                        final int value = Math.max(1, Math.min(Basic.parseInt(n), numberOfTrees.get()));
+						final int value = Math.max(1, Math.min(NumberUtils.parseInt(n), numberOfTrees.get()));
                         currentTree.set(value);
                     }
                 } finally {
@@ -134,19 +134,19 @@ public class TreeSelectorPane extends AlgorithmPane {
 
 
         controller.getTreeIdTextField().setOnAction((e) -> {
-            final String text = controller.getTreeIdTextField().getText();
-            if (Basic.isInteger(text)) {
-                int value = Basic.parseInt(text);
-                if (value >= 1 && value <= numberOfTrees.get()) {
-                    currentTree.set(value);
-                    syncController2Model();
-                }
-            } else {
-                for (int i = 1; i <= numberOfTrees.get(); i++) {
-                    final PhyloTree tree = treeSelector.getConnector().getParent().getDataBlock().getTree(i);
-                    if (tree.getName() != null && tree.getName().contains(text)) {
-                        currentTree.set(i);
-                        syncController2Model();
+			final String text = controller.getTreeIdTextField().getText();
+			if (NumberUtils.isInteger(text)) {
+				int value = NumberUtils.parseInt(text);
+				if (value >= 1 && value <= numberOfTrees.get()) {
+					currentTree.set(value);
+					syncController2Model();
+				}
+			} else {
+				for (int i = 1; i <= numberOfTrees.get(); i++) {
+					final PhyloTree tree = treeSelector.getConnector().getParent().getDataBlock().getTree(i);
+					if (tree.getName() != null && tree.getName().contains(text)) {
+						currentTree.set(i);
+						syncController2Model();
                         break;
                     }
                 }

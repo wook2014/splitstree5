@@ -20,7 +20,10 @@
 
 package splitstree5.io.imports;
 
-import jloda.util.*;
+import jloda.util.FileLineIterator;
+import jloda.util.FileUtils;
+import jloda.util.NumberUtils;
+import jloda.util.StringUtils;
 import jloda.util.progress.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IToCharacters;
 import splitstree5.core.datablocks.CharactersBlock;
@@ -223,7 +226,7 @@ public class PhylipCharactersImporter extends CharactersFormat implements IToCha
         if (line == null)
             return false;
         var tokens = line.trim().split("\\s+");
-        return tokens.length == 2 && Basic.isInteger(tokens[0]) && Basic.isInteger(tokens[1]);
+        return tokens.length == 2 && NumberUtils.isInteger(tokens[0]) && NumberUtils.isInteger(tokens[1]);
     }
 }
 

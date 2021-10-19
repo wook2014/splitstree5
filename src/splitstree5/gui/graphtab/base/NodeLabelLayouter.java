@@ -31,7 +31,7 @@ import jloda.graph.EdgeArray;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import jloda.phylo.PhyloGraph;
-import jloda.util.Basic;
+import jloda.util.CollectionUtils;
 import jloda.util.Single;
 import jloda.util.Triplet;
 import jloda.util.interval.Interval;
@@ -160,16 +160,16 @@ public class NodeLabelLayouter {
                     final ArrayList<Triplet<BoundingBox, Node, Double>> labels = new ArrayList<>();
                     double stress = 0;
 
-                    for (Triplet<BoundingBox, Node, Double> triplet : Basic.randomize(labelShapes, seed)) {
-                        BoundingBox bbox = triplet.getFirst();
-                        final Node v = triplet.getSecond();
-                        final double angle = triplet.getThird();
-                        while (overlaps(bbox, xIntervals, yIntervals)) {
-                            final Point2D translated = GeometryUtilsFX.translateByAngle(new Point2D(bbox.getMinX(), bbox.getMinY()), angle, 5);
-                            bbox = new BoundingBox(translated.getX(), translated.getY(), bbox.getWidth(), bbox.getHeight());
-                        }
-                        stress += (triplet.getFirst().getMinX() - bbox.getMinX()) * (triplet.getFirst().getMinX() - bbox.getMinX()) +
-                                (triplet.getFirst().getMinY() - bbox.getMinY()) * (triplet.getFirst().getMinY() - bbox.getMinY());
+					for (Triplet<BoundingBox, Node, Double> triplet : CollectionUtils.randomize(labelShapes, seed)) {
+						BoundingBox bbox = triplet.getFirst();
+						final Node v = triplet.getSecond();
+						final double angle = triplet.getThird();
+						while (overlaps(bbox, xIntervals, yIntervals)) {
+							final Point2D translated = GeometryUtilsFX.translateByAngle(new Point2D(bbox.getMinX(), bbox.getMinY()), angle, 5);
+							bbox = new BoundingBox(translated.getX(), translated.getY(), bbox.getWidth(), bbox.getHeight());
+						}
+						stress += (triplet.getFirst().getMinX() - bbox.getMinX()) * (triplet.getFirst().getMinX() - bbox.getMinX()) +
+								  (triplet.getFirst().getMinY() - bbox.getMinY()) * (triplet.getFirst().getMinY() - bbox.getMinY());
 
                         xIntervals.add(new Interval<>(scaledInt(bbox.getMinX()), scaledInt(bbox.getMaxX()), bbox));
                         yIntervals.add(new Interval<>(scaledInt(bbox.getMinY()), scaledInt(bbox.getMaxY()), bbox));

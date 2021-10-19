@@ -81,7 +81,7 @@ public class PhylipDistancesImporter implements IToDistances, IImportDistances {
                             throw new IOExceptionWithLineNumber(it.getLineNumber(), "Matrix has wrong shape");
                         taxa.addTaxaByNames(Collections.singleton(tokens[0]));
                         for (int col = 1; col < tokens.length; col++) {
-                            final double value = Basic.parseDouble(tokens[col]);
+                            final double value = NumberUtils.parseDouble(tokens[col]);
                             distances.set(row, col, value);
                         }
                     } else if (triangle == Triangle.Upper) {
@@ -89,8 +89,8 @@ public class PhylipDistancesImporter implements IToDistances, IImportDistances {
                             throw new IOExceptionWithLineNumber(it.getLineNumber(), "Matrix has wrong shape");
                         taxa.addTaxaByNames(Collections.singleton(tokens[0]));
                         for (int i = 1; i < tokens.length; i++) {
-                            final int col = row + i;
-                            final double value = Basic.parseDouble(tokens[i]);
+							final int col = row + i;
+							final double value = NumberUtils.parseDouble(tokens[i]);
                             distances.set(row, col, value);
                             distances.set(col, row, value);
                         }
@@ -99,7 +99,7 @@ public class PhylipDistancesImporter implements IToDistances, IImportDistances {
                             throw new IOExceptionWithLineNumber(it.getLineNumber(), "Matrix has wrong shape");
                         taxa.addTaxaByNames(Collections.singleton(tokens[0]));
                         for (int col = 1; col < tokens.length; col++) {
-                            final double value = Basic.parseDouble(tokens[col]);
+							final double value = NumberUtils.parseDouble(tokens[col]);
                             distances.set(row, col, value);
                             distances.set(col, row, value);
                         }
@@ -125,7 +125,7 @@ public class PhylipDistancesImporter implements IToDistances, IImportDistances {
         if (line == null) return false;
 
         final StringTokenizer tokens = new StringTokenizer(line);
-        return tokens.countTokens() == 1 && Basic.isInteger(tokens.nextToken());
+		return tokens.countTokens() == 1 && NumberUtils.isInteger(tokens.nextToken());
     }
 
     private void invertDistMatrixValues(DistancesBlock distances) {

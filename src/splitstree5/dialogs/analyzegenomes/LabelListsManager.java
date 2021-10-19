@@ -36,9 +36,12 @@ import jloda.fx.find.ListViewSearcher;
 import jloda.fx.undo.UndoManager;
 import jloda.fx.undo.UndoableRedoableCommand;
 import jloda.fx.window.NotificationManager;
-import jloda.util.*;
 import jloda.seq.FastAFileIterator;
 import jloda.seq.IFastAIterator;
+import jloda.util.CollectionUtils;
+import jloda.util.FileUtils;
+import jloda.util.Pair;
+import jloda.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -233,7 +236,7 @@ public class LabelListsManager {
             }
         });
 
-        final List<Pair<String, Integer>> list = Basic.reverse(word2count.keySet().stream().map(a -> new Pair<>(a, word2count.get(a))).sorted(Comparator.comparingInt(Pair::getSecond)).collect(Collectors.toList()));
+        final List<Pair<String, Integer>> list = CollectionUtils.reverse(word2count.keySet().stream().map(a -> new Pair<>(a, word2count.get(a))).sorted(Comparator.comparingInt(Pair::getSecond)).collect(Collectors.toList()));
 
         for (int i = 0; i < Math.min(7, list.size()); i++) {
             if (list.get(i).getSecond() < 5)

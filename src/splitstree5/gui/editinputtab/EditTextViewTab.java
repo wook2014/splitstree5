@@ -34,7 +34,7 @@ import javafx.stage.StageStyle;
 import jloda.fx.find.FindToolBar;
 import jloda.fx.util.Print;
 import jloda.fx.window.MainWindowManager;
-import jloda.util.Basic;
+import jloda.util.NumberUtils;
 import jloda.util.ProgramProperties;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
@@ -253,10 +253,10 @@ public class EditTextViewTab extends ViewerTab {
             dialog.setContentText("[line] [:column]:");
             Optional<String> result = dialog.showAndWait();
             if (result.isPresent()) {
-                final String[] tokens = result.get().split(":");
-                if (tokens.length > 0 && Basic.isInteger(tokens[0]))
-                    gotoLine(Basic.parseInt(tokens[0]), tokens.length == 2 && Basic.isInteger(tokens[1]) ? Basic.parseInt(tokens[1]) : 0);
-            }
+				final String[] tokens = result.get().split(":");
+				if (tokens.length > 0 && NumberUtils.isInteger(tokens[0]))
+					gotoLine(NumberUtils.parseInt(tokens[0]), tokens.length == 2 && NumberUtils.isInteger(tokens[1]) ? NumberUtils.parseInt(tokens[1]) : 0);
+			}
         });
 
         /*controller.getIncreaseFontSizeMenuItem().setOnAction((x) -> codeArea.setStyle(String.format("-fx-font-size: %.0f;", (codeArea.getFont().getSize() + 2))));

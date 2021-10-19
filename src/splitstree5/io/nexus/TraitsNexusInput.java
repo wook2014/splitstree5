@@ -20,8 +20,8 @@
 
 package splitstree5.io.nexus;
 
-import jloda.util.Basic;
 import jloda.util.IOExceptionWithLineNumber;
+import jloda.util.NumberUtils;
 import jloda.util.StringUtils;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -153,20 +153,20 @@ public class TraitsNexusInput extends NexusIOBase implements INexusInput<TraitsB
                     np.matchIgnoreCase("" + format.getOptionMissingCharacter());
                     traitsBlock.setTraitValue(taxonId, traitId, Integer.MAX_VALUE);
                 } else {
-                    final String word = np.getWordRespectCase();
+					final String word = np.getWordRespectCase();
 
-                    if (Basic.isInteger(word))
-                        traitsBlock.setTraitValue(taxonId, traitId, Basic.parseInt(word));
-                    else {
-                        Map<String, Integer> map = trait2map[traitId];
-                        if (map == null) {
-                            map = new HashMap<>();
-                            trait2map[traitId] = map;
-                        }
-                        Integer value = map.get(word);
-                        if (value == null) {
-                            value = (++trait2count[traitId]);
-                            map.put(word, value);
+					if (NumberUtils.isInteger(word))
+						traitsBlock.setTraitValue(taxonId, traitId, NumberUtils.parseInt(word));
+					else {
+						Map<String, Integer> map = trait2map[traitId];
+						if (map == null) {
+							map = new HashMap<>();
+							trait2map[traitId] = map;
+						}
+						Integer value = map.get(word);
+						if (value == null) {
+							value = (++trait2count[traitId]);
+							map.put(word, value);
                         }
                         traitsBlock.setTraitValue(taxonId, traitId, value);
                         traitsBlock.setTraitValueLabel(taxonId, traitId, word);

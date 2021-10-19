@@ -42,10 +42,7 @@ import jloda.fx.util.RecentFilesManager;
 import jloda.fx.util.ResourceManagerFX;
 import jloda.fx.window.IMainWindow;
 import jloda.fx.window.MainWindowManager;
-import jloda.util.Basic;
-import jloda.util.Pair;
-import jloda.util.ProgramProperties;
-import jloda.util.Single;
+import jloda.util.*;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.ViewerBlock;
 import splitstree5.core.workflow.Connector;
@@ -582,7 +579,7 @@ public class MainWindow implements IMainWindow {
             getMainWindowController().getMainTabPane().getSelectionModel().select(inputTab);
 
         } else {
-            EditInputTab editTab = (EditInputTab) Basic.findByClass(getMainWindowController().getMainTabPane().getTabs(), EditInputTab.class);
+			EditInputTab editTab = (EditInputTab) CollectionUtils.findByClass(getMainWindowController().getMainTabPane().getTabs(), EditInputTab.class);
             if (editTab == null) {
                 editTab = new EditInputTab(this);
                 getDocument().dirtyProperty().addListener((observable, oldValue, newValue) -> {

@@ -206,9 +206,9 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         final ArrayList<SIN> listOfSins = new ArrayList<>();
 
         final ExecutorService executor = ProgramExecutorService.getInstance();
-        final int numberOfThreads = Math.max(1, Basic.min(lastTreeToUse - firstTreeToUse + 1,
-                ProgramExecutorService.getNumberOfCoresToUse(), Runtime.getRuntime().availableProcessors()));
-        final CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
+		final int numberOfThreads = Math.max(1, NumberUtils.min(lastTreeToUse - firstTreeToUse + 1,
+				ProgramExecutorService.getNumberOfCoresToUse(), Runtime.getRuntime().availableProcessors()));
+		final CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
         final Single<Exception> exception = new Single<>();
 
         for (int thread = 0; thread < numberOfThreads; thread++) {

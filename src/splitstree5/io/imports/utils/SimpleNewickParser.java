@@ -24,7 +24,7 @@ import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.graph.NotOwnerException;
 import jloda.phylo.PhyloTree;
-import jloda.util.Basic;
+import jloda.util.NumberUtils;
 import jloda.util.StringUtils;
 
 import java.io.IOException;
@@ -201,8 +201,8 @@ public class SimpleNewickParser {
             private Node v = tree.getFirstNode();
 
             {
-                while (v != null && v.getOutDegree() > 0 && (tree.getLabel(v) == null || Basic.isDouble(tree.getLabel(v))))
-                    v = v.getNext();
+				while (v != null && v.getOutDegree() > 0 && (tree.getLabel(v) == null || NumberUtils.isDouble(tree.getLabel(v))))
+					v = v.getNext();
             }
 
             @Override
@@ -215,8 +215,8 @@ public class SimpleNewickParser {
                 final String result = (v != null ? tree.getLabel(v) : null);
                 if (v != null)
                     v = v.getNext();
-                while (v != null && v.getOutDegree() > 0 && (tree.getLabel(v) == null || Basic.isDouble(tree.getLabel(v))))
-                    v = v.getNext();
+				while (v != null && v.getOutDegree() > 0 && (tree.getLabel(v) == null || NumberUtils.isDouble(tree.getLabel(v))))
+					v = v.getNext();
                 return result;
             }
         };

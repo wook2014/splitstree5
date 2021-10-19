@@ -67,23 +67,23 @@ public class TextDistancesImporter implements IToDistances, IImportDistances, II
 
                 if (first) {
                     first = false;
-                    if (tokens.length == 1 && Basic.isInteger(tokens[0])) {
-                        // single number that indicates dataset size
-                        ntax = Basic.parseInt((tokens[0]));
-                        distances.setNtax(ntax);
-                        continue;
-                    } else {
-                        if (!Basic.isDouble(tokens[1])) {
-                            // first line are labels
-                            labels = tokens;
-                            ntax = tokens.length - 1;
-                            distances.setNtax(ntax);
-                            continue;
-                        } else {
-                            // first line contains distances
-                            ntax = tokens.length - 1;
-                            distances.setNtax(ntax);
-                        }
+                    if (tokens.length == 1 && NumberUtils.isInteger(tokens[0])) {
+						// single number that indicates dataset size
+						ntax = NumberUtils.parseInt((tokens[0]));
+						distances.setNtax(ntax);
+						continue;
+					} else {
+						if (!NumberUtils.isDouble(tokens[1])) {
+							// first line are labels
+							labels = tokens;
+							ntax = tokens.length - 1;
+							distances.setNtax(ntax);
+							continue;
+						} else {
+							// first line contains distances
+							ntax = tokens.length - 1;
+							distances.setNtax(ntax);
+						}
                     }
                 }
                 final String name = tokens[0];
@@ -91,9 +91,9 @@ public class TextDistancesImporter implements IToDistances, IImportDistances, II
                     throw new IOExceptionWithLineNumber("Expected label '" + labels[t1] + "'", (int) it.getLineNumber());
                 taxonNames.add(name);
                 for (int t2 = 1; t2 <= ntax; t2++) {
-                    if (!Basic.isDouble(tokens[t2]))
-                        throw new IOExceptionWithLineNumber("Number expected", (int) it.getLineNumber());
-                    double value = Basic.parseDouble(tokens[t2]);
+					if (!NumberUtils.isDouble(tokens[t2]))
+						throw new IOExceptionWithLineNumber("Number expected", (int) it.getLineNumber());
+					double value = NumberUtils.parseDouble(tokens[t2]);
                     if (t1 == 1 && t2 == 1 && value == 1) {
                         NotificationManager.showInformation("First dialog value is 1, assuming input values are similarities, using -log(value)");
                         similarities = true;

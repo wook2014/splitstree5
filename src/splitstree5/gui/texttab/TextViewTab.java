@@ -35,7 +35,7 @@ import jloda.fx.util.BasicFX;
 import jloda.fx.util.Print;
 import jloda.fx.util.ResourceManagerFX;
 import jloda.fx.window.MainWindowManager;
-import jloda.util.Basic;
+import jloda.util.NumberUtils;
 import jloda.util.ProgramProperties;
 import splitstree5.gui.ViewerTab;
 import splitstree5.menu.MenuController;
@@ -181,10 +181,10 @@ public class TextViewTab extends ViewerTab {
             dialog.setContentText("[line] [:column]:");
             Optional<String> result = dialog.showAndWait();
             if (result.isPresent()) {
-                final String[] tokens = result.get().split(":");
-                if (tokens.length > 0 && Basic.isInteger(tokens[0]))
-                    BasicFX.gotoAndSelectLine(textArea, Basic.parseInt(tokens[0]), tokens.length == 2 && Basic.isInteger(tokens[1]) ? Basic.parseInt(tokens[1]) : 0);
-            }
+				final String[] tokens = result.get().split(":");
+				if (tokens.length > 0 && NumberUtils.isInteger(tokens[0]))
+					BasicFX.gotoAndSelectLine(textArea, NumberUtils.parseInt(tokens[0]), tokens.length == 2 && NumberUtils.isInteger(tokens[1]) ? NumberUtils.parseInt(tokens[1]) : 0);
+			}
         });
 
         controller.getIncreaseFontSizeMenuItem().setOnAction((x) -> textArea.setStyle(String.format("-fx-font-size: %.0f;", (textArea.getFont().getSize() + 2))));

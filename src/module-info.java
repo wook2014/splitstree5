@@ -15,10 +15,6 @@ module splitstreefive {
 
     requires lpsolve;
 
-    exports splitstree5.resources.css;
-    exports splitstree5.resources.icons;
-    exports splitstree5.resources.images;
-
     opens splitstree5.resources.css;
     opens splitstree5.resources.icons;
     opens splitstree5.resources.images;

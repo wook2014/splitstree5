@@ -22,7 +22,7 @@ package splitstree5.io.imports.NeXML.handlers;
 
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
-import jloda.util.Basic;
+import jloda.util.NumberUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -97,14 +97,14 @@ public class NexmlTreesHandler extends DefaultHandler {
             }
 
         } else if (qName.equalsIgnoreCase("rootEdge") && bReadingTree) {
-            final double weight = (Basic.isDouble(attributes.getValue("length")) ? Basic.parseDouble(attributes.getValue("length")) : 1.0);
-            final Node sourceNode = tree.newNode();
+			final double weight = (NumberUtils.isDouble(attributes.getValue("length")) ? NumberUtils.parseDouble(attributes.getValue("length")) : 1.0);
+			final Node sourceNode = tree.newNode();
             final Node targetNode = tree.getRoot();
             tree.setRoot(sourceNode);
             tree.setWeight(tree.newEdge(sourceNode, targetNode), weight);
         } else if (qName.equalsIgnoreCase("edge") && bReadingTree) {
-            final double weight = (Basic.isDouble(attributes.getValue("length")) ? Basic.parseDouble(attributes.getValue("length")) : 1.0);
-            final String id = attributes.getValue("id");
+			final double weight = (NumberUtils.isDouble(attributes.getValue("length")) ? NumberUtils.parseDouble(attributes.getValue("length")) : 1.0);
+			final String id = attributes.getValue("id");
             final String source = attributes.getValue("source");
             final String target = attributes.getValue("target");
 

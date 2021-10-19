@@ -34,9 +34,9 @@ import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import jloda.graph.fmm.FastMultiLayerMethodLayout;
 import jloda.phylo.PhyloGraph;
-import jloda.util.Basic;
-import jloda.util.progress.ProgressListener;
+import jloda.util.NumberUtils;
 import jloda.util.StringUtils;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromNetwork;
 import splitstree5.core.algorithms.interfaces.IToViewer;
@@ -143,17 +143,17 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
                 final StringBuilder buf = new StringBuilder();
                 if (label.startsWith("{") && label.endsWith("}")) // multi-labeled node //todo: differentiate between multi label and html?
                 {
-					final String[] tokens = StringUtils.split(label.substring(1, label.length() - 1), ',');
+                    final String[] tokens = StringUtils.split(label.substring(1, label.length() - 1), ',');
                     for (String token : tokens) {
-                        if (Basic.isInteger(token)) {
+                        if (NumberUtils.isInteger(token)) {
                             if (buf.length() > 0)
                                 buf.append(", ");
-                            buf.append(taxaBlock.get(Basic.parseInt(token)));
+                            buf.append(taxaBlock.get(NumberUtils.parseInt(token)));
                         }
 
                     }
-                } else if (Basic.isInteger(label))
-                    buf.append(taxaBlock.get(Basic.parseInt(label)));
+                } else if (NumberUtils.isInteger(label))
+                    buf.append(taxaBlock.get(NumberUtils.parseInt(label)));
                 else
                     buf.append(label);
                 text = buf.toString();

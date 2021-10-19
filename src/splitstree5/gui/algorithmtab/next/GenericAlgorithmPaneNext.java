@@ -32,6 +32,7 @@ import javafx.scene.layout.GridPane;
 import javafx.util.converter.DoubleStringConverter;
 import jloda.fx.undo.UndoManager;
 import jloda.util.Basic;
+import jloda.util.NumberUtils;
 import jloda.util.Single;
 import jloda.util.StringUtils;
 import splitstree5.core.algorithms.Algorithm;
@@ -182,7 +183,7 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
                                     if (!inUpdate.get()) {
                                         inUpdate.set(true);
                                         for (int j = 0; j < length; j++) {
-                                            array[j] = Basic.parseDouble(controls[j].getText());
+											array[j] = NumberUtils.parseDouble(controls[j].getText());
                                         }
                                         option.getProperty().setValue(array);
                                         inUpdate.set(false);
@@ -236,7 +237,7 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
                                             inUpdate.set(true);
                                             for (int i1 = 0; i1 < length; i1++) {
                                                 for (int j1 = 0; j1 < length; j1++) {
-                                                    matrix[i1][j1] = Basic.parseDouble(controls[i1][j1].getText());
+													matrix[i1][j1] = NumberUtils.parseDouble(controls[i1][j1].getText());
                                                 }
                                             }
                                             option.getProperty().setValue(matrix);
