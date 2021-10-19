@@ -30,7 +30,8 @@ import jloda.graph.*;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
-import jloda.util.ProgressListener;
+import jloda.util.progress.ProgressListener;
+import jloda.util.StringUtils;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToViewer;
@@ -164,7 +165,7 @@ public class TreesGrid extends Algorithm<TreesBlock, ViewerBlock> implements IFr
                         if (label != null && (v.getOutDegree() == 0 || optionShowInternalNodeLabels.get())) {
                             if (label.startsWith("<")) // multi-labeled node
                             {
-                                final String[] tokens = Basic.split(label.substring(1, label.length() - 1), ',');
+								final String[] tokens = StringUtils.split(label.substring(1, label.length() - 1), ',');
                                 for (String token : tokens) {
                                     if (Basic.isInteger(token)) {
                                         if (buf.length() > 0)

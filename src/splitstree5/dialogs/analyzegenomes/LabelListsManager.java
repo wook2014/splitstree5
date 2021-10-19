@@ -36,10 +36,9 @@ import jloda.fx.find.ListViewSearcher;
 import jloda.fx.undo.UndoManager;
 import jloda.fx.undo.UndoableRedoableCommand;
 import jloda.fx.window.NotificationManager;
-import jloda.util.Basic;
-import jloda.util.FastAFileIterator;
-import jloda.util.IFastAIterator;
-import jloda.util.Pair;
+import jloda.util.*;
+import jloda.seq.FastAFileIterator;
+import jloda.seq.IFastAIterator;
 
 import java.io.File;
 import java.io.IOException;
@@ -190,7 +189,7 @@ public class LabelListsManager {
         final ArrayList<String> oldDisplayLabels = new ArrayList<>(displayLabels);
         displayLabels.clear();
 
-        final List<String> labels = getLabels(Arrays.asList(Basic.split(controller.getInputTextArea().getText(), ',')), controller.getTaxaChoiceBox().getValue());
+		final List<String> labels = getLabels(Arrays.asList(StringUtils.split(controller.getInputTextArea().getText(), ',')), controller.getTaxaChoiceBox().getValue());
         if (labels != null) {
             if (false) { // this clobbers all changes....
                 displayLabels.setAll(labels);
@@ -273,12 +272,12 @@ public class LabelListsManager {
     private static List<String> getLabels(List<String> inputFiles, AnalyzeGenomesDialog.TaxonIdentification taxonIdentification) {
         final List<String> labels;
         if (taxonIdentification == AnalyzeGenomesDialog.TaxonIdentification.PerFileUsingFileName) {
-            labels = inputFiles.stream().map(s -> Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(s), "")).collect(Collectors.toList());
+			labels = inputFiles.stream().map(s -> FileUtils.replaceFileSuffix(FileUtils.getFileNameWithoutPath(s), "")).collect(Collectors.toList());
         } else if (taxonIdentification == AnalyzeGenomesDialog.TaxonIdentification.PerFile) {
             labels = new ArrayList<>();
 
             for (String fileName : inputFiles) {
-                final String line = Basic.getFirstLineFromFile(new File(fileName));
+				final String line = FileUtils.getFirstLineFromFile(new File(fileName));
                 if (line != null) {
                     labels.add(line.startsWith(">") || line.startsWith("@") ? line.substring(1).trim() : line);
                 } else
@@ -289,7 +288,7 @@ public class LabelListsManager {
             labels = new ArrayList<>();
 
             for (String fileName : inputFiles) {
-                final String shortName = Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(fileName), "");
+				final String shortName = FileUtils.replaceFileSuffix(FileUtils.getFileNameWithoutPath(fileName), "");
                 try (IFastAIterator it = FastAFileIterator.getFastAOrFastQAsFastAIterator(fileName)) {
                     int count = 0;
                     while (it.hasNext()) {

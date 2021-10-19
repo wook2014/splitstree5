@@ -21,7 +21,7 @@
 package splitstree5.io.nexus;
 
 import javafx.collections.ObservableList;
-import jloda.util.Basic;
+import jloda.util.StringUtils;
 import splitstree5.core.data.Genome;
 import splitstree5.core.datablocks.GenomesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -96,18 +96,18 @@ public class GenomesNexusOutput extends NexusIOBase implements INexusOutput<Geno
                     for (Genome.GenomePart part : parts) {
                         w.write(" " + part.getLength() + " ");
                         if (part.getFile() != null) {
-                            w.write(String.format("'file://%s' %d", Basic.protectBackSlashes(part.getFile()), part.getOffset()));
+							w.write(String.format("'file://%s' %d", StringUtils.protectBackSlashes(part.getFile()), part.getOffset()));
                         } else
-                            w.write(Basic.toString(part.getSequence())); // todo: pretty print sequence...
+							w.write(StringUtils.toString(part.getSequence())); // todo: pretty print sequence...
                     }
                 } else {
                     final Genome.GenomePart part = genome.getParts().get(0);
                     w.write(" " + part.getLength() + " ");
 
                     if (part.getFile() != null) {
-                        w.write(String.format("'file://%s' %d", Basic.protectBackSlashes(part.getFile()), part.getOffset()));
+						w.write(String.format("'file://%s' %d", StringUtils.protectBackSlashes(part.getFile()), part.getOffset()));
                     } else
-                        w.write(Basic.toString(part.getSequence())); // todo: pretty print sequence...
+						w.write(StringUtils.toString(part.getSequence())); // todo: pretty print sequence...
                 }
                 if (g < genomes.size() - 1)
                     w.write(",");

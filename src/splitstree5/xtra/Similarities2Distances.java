@@ -82,7 +82,7 @@ public class Similarities2Distances {
             while (it.hasNext()) {
                 final String[] tokens = it.next().split("\t");
                 if (tokens.length != 3)
-                    throw new IOExceptionWithLineNumber(it.getLineNumber(), "Expected 3 tokens, got: " + Basic.toString(tokens, ","));
+                    throw new IOExceptionWithLineNumber(it.getLineNumber(), "Expected 3 tokens, got: " + StringUtils.toString(tokens, ","));
                 final String a = tokens[0];
                 final String b = tokens[1];
                 final double value;

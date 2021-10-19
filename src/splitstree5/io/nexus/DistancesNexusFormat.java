@@ -20,7 +20,7 @@
 
 package splitstree5.io.nexus;
 
-import jloda.util.Basic;
+import jloda.util.StringUtils;
 
 import java.util.List;
 
@@ -62,7 +62,7 @@ public class DistancesNexusFormat implements INexusFormat {
      * @param triangleLabel the label of triangle
      */
     public void setOptionTriangleByLabel(String triangleLabel) {
-        this.optionTriangle = Basic.valueOfIgnoreCase(Triangle.class, triangleLabel);
+		this.optionTriangle = StringUtils.valueOfIgnoreCase(Triangle.class, triangleLabel);
     }
 
     public void setOptionTriangle(Triangle triangle) {
@@ -136,10 +136,8 @@ public class DistancesNexusFormat implements INexusFormat {
         this.optionVariancesIO = optionVariancesIO;
     }
 
-
     @Override
     public List<String> listOptions() {
         return null;
     }
-
 }

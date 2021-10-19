@@ -35,7 +35,7 @@ import jloda.fx.util.RecentFilesManager;
 import jloda.fx.util.ResourceManagerFX;
 import jloda.fx.window.MainWindowManager;
 import jloda.fx.window.NotificationManager;
-import jloda.util.Basic;
+import jloda.util.FileUtils;
 import jloda.util.IOExceptionWithLineNumber;
 import jloda.util.ProgramProperties;
 import splitstree5.dialogs.importer.FileOpener;
@@ -100,8 +100,8 @@ public class InputTab extends TextViewTab {
         applyButton.setOnAction((e) -> {
             try {
                 if (tmpFile == null) {
-                    tmpFile = Basic.getUniqueFileName(System.getProperty("user.dir"), "Untitled", "tmp");
-                    tmpFile.deleteOnExit();
+					tmpFile = FileUtils.getUniqueFileName(System.getProperty("user.dir"), "Untitled", "tmp");
+					tmpFile.deleteOnExit();
                 }
 
                 try (BufferedWriter w = new BufferedWriter(new FileWriter(tmpFile))) {
@@ -250,14 +250,14 @@ public class InputTab extends TextViewTab {
 
     public void loadFile(String fileName) {
         final StringBuilder buf = new StringBuilder();
-        try (BufferedReader r = new BufferedReader(new InputStreamReader(Basic.getInputStreamPossiblyZIPorGZIP(fileName)))) {
-            String aLine;
-            while ((aLine = r.readLine()) != null)
-                buf.append(aLine).append("\n");
-            getTextArea().setText(buf.toString());
-        } catch (IOException ex) {
-            NotificationManager.showError("Input file failed: " + ex.getMessage());
-        }
+		try (BufferedReader r = new BufferedReader(new InputStreamReader(FileUtils.getInputStreamPossiblyZIPorGZIP(fileName)))) {
+			String aLine;
+			while ((aLine = r.readLine()) != null)
+				buf.append(aLine).append("\n");
+			getTextArea().setText(buf.toString());
+		} catch (IOException ex) {
+			NotificationManager.showError("Input file failed: " + ex.getMessage());
+		}
 
     }
 }

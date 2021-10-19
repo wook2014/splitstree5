@@ -33,6 +33,7 @@ import javafx.util.converter.DoubleStringConverter;
 import jloda.fx.undo.UndoManager;
 import jloda.util.Basic;
 import jloda.util.Single;
+import jloda.util.StringUtils;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -84,8 +85,8 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
         int row = 1;
         try {
             for (final OptionNext option : options) {
-                final String text = Basic.fromCamelCase(option.getName());
-                final Label label = new Label(text);
+				final String text = StringUtils.fromCamelCase(option.getName());
+				final Label label = new Label(text);
                 label.setTooltip(new Tooltip(option.getToolTipText()));
                 grid.add(label, 0, row);
 
@@ -194,7 +195,7 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
                                     inUpdate.set(true);
                                     final double[] values = ((double[]) option.getProperty().getValue());
                                     for (int j = 0; j < length; j++) {
-                                        controls[j].setText(Basic.removeTrailingZerosAfterDot(String.format("%.4f", values[j])));
+										controls[j].setText(StringUtils.removeTrailingZerosAfterDot(String.format("%.4f", values[j])));
                                     }
                                     inUpdate.set(false);
                                 }
@@ -222,8 +223,8 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
                                 controls[i][j] = control;
                                 control.setPrefColumnCount(6);
                                 control.setPrefWidth(60);
-                                control.setTextFormatter(new TextFormatter<>(new DoubleStringConverter()));
-                                control.setText(Basic.removeTrailingZerosAfterDot(String.format("%.4f", matrix[i][j])));
+								control.setTextFormatter(new TextFormatter<>(new DoubleStringConverter()));
+								control.setText(StringUtils.removeTrailingZerosAfterDot(String.format("%.4f", matrix[i][j])));
                                 if (option.getToolTipText() != null)
                                     control.setTooltip(new Tooltip(option.getToolTipText()));
 
@@ -250,7 +251,7 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
                                         final double[][] values = ((double[][]) option.getProperty().getValue());
                                         for (int i1 = 0; i1 < length; i1++) {
                                             for (int j1 = 0; j1 < length; j1++) {
-                                                controls[i1][j1].setText(Basic.removeTrailingZerosAfterDot(String.format("%.4f", values[i1][j1])));
+												controls[i1][j1].setText(StringUtils.removeTrailingZerosAfterDot(String.format("%.4f", values[i1][j1])));
                                             }
                                         }
                                         inUpdate.set(false);

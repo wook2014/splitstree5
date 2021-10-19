@@ -30,7 +30,7 @@ import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
 import jloda.fx.window.NotificationManager;
 import jloda.util.CanceledException;
-import jloda.util.ProgressListener;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
 import splitstree5.core.datablocks.CharactersBlock;

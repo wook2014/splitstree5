@@ -21,7 +21,7 @@
 package splitstree5.core.algorithms.filters.utils;
 
 import jloda.util.CanceledException;
-import jloda.util.ProgressListener;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.misc.ASplit;
 import splitstree5.core.misc.Compatibility;
 import splitstree5.utils.SplitsUtilities;

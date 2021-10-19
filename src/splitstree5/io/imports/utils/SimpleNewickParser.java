@@ -25,6 +25,7 @@ import jloda.graph.Node;
 import jloda.graph.NotOwnerException;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
+import jloda.util.StringUtils;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -88,17 +89,17 @@ public class SimpleNewickParser {
      */
     private int parseBracketNotationRecursively(int depth, Node v, int i, String str) throws IOException {
         try {
-            for (i = Basic.skipSpaces(str, i); i < str.length(); i = Basic.skipSpaces(str, i + 1)) {
-                final Node w = tree.newNode();
+			for (i = StringUtils.skipSpaces(str, i); i < str.length(); i = StringUtils.skipSpaces(str, i + 1)) {
+				final Node w = tree.newNode();
 
-                if (str.charAt(i) == '(') {
-                    i = parseBracketNotationRecursively(depth + 1, w, i + 1, str);
-                    if (str.charAt(i) != ')')
-                        throw new IOException("Expected ')' at position " + i);
-                    i = Basic.skipSpaces(str, i + 1);
-                    while (i < str.length() && punctuationCharacters.indexOf(str.charAt(i)) == -1) {
-                        int i0 = i;
-                        StringBuilder buf = new StringBuilder();
+				if (str.charAt(i) == '(') {
+					i = parseBracketNotationRecursively(depth + 1, w, i + 1, str);
+					if (str.charAt(i) != ')')
+						throw new IOException("Expected ')' at position " + i);
+					i = StringUtils.skipSpaces(str, i + 1);
+					while (i < str.length() && punctuationCharacters.indexOf(str.charAt(i)) == -1) {
+						int i0 = i;
+						StringBuilder buf = new StringBuilder();
                         boolean inQuotes = false;
                         while (i < str.length() && (inQuotes || punctuationCharacters.indexOf(str.charAt(i)) == -1)) {
                             if (str.charAt(i) == '\'')
@@ -152,13 +153,13 @@ public class SimpleNewickParser {
                 }
 
                 // detect and read embedded bootstrap values:
-                i = Basic.skipSpaces(str, i);
+				i = StringUtils.skipSpaces(str, i);
 
                 // read edge weights
 
                 if (i < str.length() && str.charAt(i) == ':') // edge weight is following
                 {
-                    i = Basic.skipSpaces(str, i + 1);
+					i = StringUtils.skipSpaces(str, i + 1);
                     int i0 = i;
                     final StringBuilder buf = new StringBuilder();
                     while (i < str.length() && (punctuationCharacters.indexOf(str.charAt(i)) == -1 && str.charAt(i) != '['))

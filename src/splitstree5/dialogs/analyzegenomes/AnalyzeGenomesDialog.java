@@ -39,7 +39,9 @@ import jloda.fx.control.RichTextLabel;
 import jloda.fx.util.*;
 import jloda.fx.window.NotificationManager;
 import jloda.util.Basic;
+import jloda.util.FileUtils;
 import jloda.util.ProgramProperties;
+import jloda.util.StringUtils;
 import splitstree5.main.Version;
 
 import java.io.File;
@@ -99,13 +101,13 @@ public class AnalyzeGenomesDialog {
             final List<File> files = getFiles(stage);
             if (files != null) {
                 if (controller.getInputTextArea().getText().trim().length() > 0 && !controller.getInputTextArea().getText().trim().endsWith("'")) {
-                    controller.getInputTextArea().setText(controller.getInputTextArea().getText().trim() + ",\n" + Basic.toString(files, ",\n"));
+					controller.getInputTextArea().setText(controller.getInputTextArea().getText().trim() + ",\n" + StringUtils.toString(files, ",\n"));
                 } else
-                    controller.getInputTextArea().setText(Basic.toString(files, ",\n"));
+					controller.getInputTextArea().setText(StringUtils.toString(files, ",\n"));
             }
         });
         controller.getInputTextArea().textProperty().addListener((c, o, n) -> {
-            final String firstLine = Basic.getFirstLine(n);
+			final String firstLine = StringUtils.getFirstLine(n);
             if (firstLine.length() > 0) {
                 final File inputFile = new File(firstLine);
                 if (inputFile.getParentFile().exists()) {
@@ -119,10 +121,10 @@ public class AnalyzeGenomesDialog {
             final File outputFile = getOutputFile(stage, controller.getOutputFileTextField().getText());
             if (outputFile != null) {
                 final String outputFileName;
-                if (Basic.getFileSuffix(outputFile.getName()).length() == 0)
-                    outputFileName = outputFile.getPath() + ".stree5";
-                else
-                    outputFileName = outputFile.getPath();
+				if (FileUtils.getFileSuffix(outputFile.getName()).length() == 0)
+					outputFileName = outputFile.getPath() + ".stree5";
+				else
+					outputFileName = outputFile.getPath();
 
                 controller.getOutputFileTextField().setText(outputFileName);
             }
@@ -178,24 +180,24 @@ public class AnalyzeGenomesDialog {
         });
 
         controller.getApplyButton().setOnAction(c -> {
-            final GenomesAnalyzer genomesAnalyzer = new GenomesAnalyzer(Arrays.asList(Basic.split(controller.getInputTextArea().getText(), ',')),
-                    controller.getTaxaChoiceBox().getValue(), labelListsManager.computeLine2Label(), Basic.parseInt(controller.getMinLengthTextField().getText()),
-                    controller.getStoreOnlyReferencesCheckBox().isSelected());
+			final GenomesAnalyzer genomesAnalyzer = new GenomesAnalyzer(Arrays.asList(StringUtils.split(controller.getInputTextArea().getText(), ',')),
+					controller.getTaxaChoiceBox().getValue(), labelListsManager.computeLine2Label(), Basic.parseInt(controller.getMinLengthTextField().getText()),
+					controller.getStoreOnlyReferencesCheckBox().isSelected());
 
             if (referencesDatabase.get() != null && referenceIds.size() > 0) {
                 String fileCacheDirectory = ProgramProperties.get("fileCacheDirectory", "");
 
-                if (fileCacheDirectory.equals("") || !Basic.isDirectory(fileCacheDirectory)) {
-                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                    alert.setTitle("Confirmation Dialog - " + ProgramProperties.getProgramName());
-                    alert.setHeaderText("SplitsTree5 will download and cache reference genomes");
-                    alert.setContentText("Do you want to proceed and choose a cache directory?");
+				if (fileCacheDirectory.equals("") || !FileUtils.isDirectory(fileCacheDirectory)) {
+					Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+					alert.setTitle("Confirmation Dialog - " + ProgramProperties.getProgramName());
+					alert.setHeaderText("SplitsTree5 will download and cache reference genomes");
+					alert.setContentText("Do you want to proceed and choose a cache directory?");
 
-                    final Optional<ButtonType> result = alert.showAndWait();
-                    if (result.isPresent() && result.get() != ButtonType.OK) {
-                        NotificationManager.showWarning("User canceled");
-                        return;
-                    }
+					final Optional<ButtonType> result = alert.showAndWait();
+					if (result.isPresent() && result.get() != ButtonType.OK) {
+						NotificationManager.showWarning("User canceled");
+						return;
+					}
 
                     final File dir = chooseCacheDirectory(stage, referencesDatabase.get().getDbFile().getParentFile());
                     if (dir == null || !dir.canWrite())
@@ -260,9 +262,9 @@ public class AnalyzeGenomesDialog {
             service.setCallable(new TaskWithProgressListener<>() {
                 @Override
                 public Collection<Map.Entry<Integer, Double>> call() throws Exception {
-                    final GenomesAnalyzer genomesAnalyzer = new GenomesAnalyzer(Arrays.asList(Basic.split(controller.getInputTextArea().getText(), ',')),
-                            controller.getTaxaChoiceBox().getValue(), labelListsManager.computeLine2Label(), Basic.parseInt(controller.getMinLengthTextField().getText()),
-                            controller.getStoreOnlyReferencesCheckBox().isSelected());
+					final GenomesAnalyzer genomesAnalyzer = new GenomesAnalyzer(Arrays.asList(StringUtils.split(controller.getInputTextArea().getText(), ',')),
+							controller.getTaxaChoiceBox().getValue(), labelListsManager.computeLine2Label(), Basic.parseInt(controller.getMinLengthTextField().getText()),
+							controller.getStoreOnlyReferencesCheckBox().isSelected());
 
                     final ArrayList<byte[]> queries = new ArrayList<>();
                     for (GenomesAnalyzer.InputRecord record : genomesAnalyzer.iterable(getProgressListener())) {
@@ -376,10 +378,10 @@ public class AnalyzeGenomesDialog {
      * @return name
      */
     private static String createOutputName(File inputFile) {
-        File file = Basic.replaceFileSuffix(inputFile, ".stree5");
-        int count = 0;
+		File file = FileUtils.replaceFileSuffix(inputFile, ".stree5");
+		int count = 0;
         while (file.exists()) {
-            file = Basic.replaceFileSuffix(inputFile, "-" + (++count) + ".stree5");
+			file = FileUtils.replaceFileSuffix(inputFile, "-" + (++count) + ".stree5");
         }
         return file.getPath();
     }
@@ -403,7 +405,7 @@ public class AnalyzeGenomesDialog {
             final File previousDir = new File(defaultName);
             if (previousDir.isDirectory())
                 fileChooser.setInitialDirectory(previousDir);
-            fileChooser.setInitialFileName(Basic.getFileNameWithoutPath(defaultName));
+			fileChooser.setInitialFileName(FileUtils.getFileNameWithoutPath(defaultName));
         }
         fileChooser.setTitle("Output File");
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("SplitsTree5 Files", "*.stree5", "*.nxs", "*.nex"));
@@ -415,8 +417,8 @@ public class AnalyzeGenomesDialog {
         final String previous = ProgramProperties.get("ReferencesDatabase", "");
         final FileChooser fileChooser = new FileChooser();
         if (previous.length() > 0) {
-            fileChooser.setInitialDirectory((new File(previous)).getParentFile());
-            fileChooser.setInitialFileName(Basic.getFileNameWithoutPath(previous));
+			fileChooser.setInitialDirectory((new File(previous)).getParentFile());
+			fileChooser.setInitialFileName(FileUtils.getFileNameWithoutPath(previous));
         }
         fileChooser.setTitle("SplitsTree5 References Database");
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("SplitsTree5 References Database", "*.db", "*.st5db"));

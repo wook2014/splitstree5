@@ -26,8 +26,8 @@ import jloda.graph.Node;
 import jloda.phylo.PhyloGraph;
 import jloda.phylo.PhyloSplitsGraph;
 import jloda.phylo.PhyloTree;
-import jloda.util.Basic;
 import jloda.util.IOExceptionWithLineNumber;
+import jloda.util.StringUtils;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.ViewerBlock;
@@ -51,28 +51,28 @@ import java.util.Map;
  * Daniel Huson, 3.2018
  */
 public class ViewerNexusInput extends NexusIOBase {
-    public static final String SYNTAX = "BEGIN " + ViewerBlock.BLOCK_NAME + ";\n" +
-            "\t[TITLE {title};]\n" +
-            "\t[LINK {type} = {title};]\n" +
-            "\t[DIMENSIONS NNODES=number-of-nodes NEDGES=number-of-edges [NLABELS=number-of-labels] [NLOOPS=number-of-polygons];]\n" +
-            "\tFORMAT type={" + Basic.toString(ViewerBlock.Type.values(), "|") + " [alignLeafLabels]\n" +
-            "\tNODES\n" +
-            "\t\tN: id x y [S: shape-name x y w h color] [L: label x y color font],\n" +
-            "\t\t...\n" +
-            "\t\tN: id x y [S: shape-name x y w h color] [L: label x y color font];\n" +
-            "\tEDGES\n" +
-            "\t\tE: sid tid S: svg-path w color [L: label x y color font] [I: split-id],\n" +
-            "\t\t...\n" +
-            "\t\tE: sid tid S: svg-path w color [L: label x y color font]  [I: split-id];\n" +
-            "\t[LABELS\n" +
-            "\t\tL: label x y color font,\n" +
-            "\t\t...\n" +
-            "\t\tL: label x y color font;]\n" +
-            "\t{LOOPS\n" +
-            "\t\tnode-id node-id...,\n" +
-            "\t\t...\n" +
-            "\t\tnode-id node-id;]\n" +
-            "END;\n";
+	public static final String SYNTAX = "BEGIN " + ViewerBlock.BLOCK_NAME + ";\n" +
+										"\t[TITLE {title};]\n" +
+										"\t[LINK {type} = {title};]\n" +
+										"\t[DIMENSIONS NNODES=number-of-nodes NEDGES=number-of-edges [NLABELS=number-of-labels] [NLOOPS=number-of-polygons];]\n" +
+										"\tFORMAT type={" + StringUtils.toString(ViewerBlock.Type.values(), "|") + " [alignLeafLabels]\n" +
+										"\tNODES\n" +
+										"\t\tN: id x y [S: shape-name x y w h color] [L: label x y color font],\n" +
+										"\t\t...\n" +
+										"\t\tN: id x y [S: shape-name x y w h color] [L: label x y color font];\n" +
+										"\tEDGES\n" +
+										"\t\tE: sid tid S: svg-path w color [L: label x y color font] [I: split-id],\n" +
+										"\t\t...\n" +
+										"\t\tE: sid tid S: svg-path w color [L: label x y color font]  [I: split-id];\n" +
+										"\t[LABELS\n" +
+										"\t\tL: label x y color font,\n" +
+										"\t\t...\n" +
+										"\t\tL: label x y color font;]\n" +
+										"\t{LOOPS\n" +
+										"\t\tnode-id node-id...,\n" +
+										"\t\t...\n" +
+										"\t\tnode-id node-id;]\n" +
+										"END;\n";
 
     public String getSyntax() {
         return SYNTAX;
@@ -120,8 +120,8 @@ public class ViewerNexusInput extends NexusIOBase {
         }
 
         np.matchIgnoreCase("FORMAT type=");
-        final ViewerBlock.Type type = Basic.valueOfIgnoreCase(ViewerBlock.Type.class, np.getWordMatchesIgnoringCase(Basic.toString(ViewerBlock.Type.values(), " ")));
-        boolean alignLeafLabels;
+		final ViewerBlock.Type type = StringUtils.valueOfIgnoreCase(ViewerBlock.Type.class, np.getWordMatchesIgnoringCase(StringUtils.toString(ViewerBlock.Type.values(), " ")));
+		boolean alignLeafLabels;
         if (np.peekMatchIgnoreCase("alignLeafLabels")) {
             np.matchIgnoreCase("alignLeafLabels");
             alignLeafLabels = true;

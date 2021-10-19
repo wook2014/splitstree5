@@ -30,8 +30,8 @@ import jloda.fx.shapes.NodeShape;
 import jloda.fx.util.FontUtils;
 import jloda.graph.Node;
 import jloda.phylo.PhyloGraph;
-import jloda.util.Basic;
 import jloda.util.IOExceptionWithLineNumber;
+import jloda.util.StringUtils;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.gui.graphtab.base.Graph2DTab;
 import splitstree5.gui.graphtab.base.NodeView2D;
@@ -52,27 +52,27 @@ public class NodeViewIO {
      */
     public static String toOutputString(NodeView2D nv) {
         final StringBuilder buf = new StringBuilder();
-        buf.append(String.format("N: %d %s %sf", nv.getNode().getId(), Basic.toString(nv.getLocation().getX(), 4), Basic.toString(nv.getLocation().getY(), 4)));
+		buf.append(String.format("N: %d %s %sf", nv.getNode().getId(), StringUtils.toString(nv.getLocation().getX(), 4), StringUtils.toString(nv.getLocation().getY(), 4)));
         final Shape shape = nv.getShape();
         if (shape != null) {
             buf.append(String.format(" S: %s %s %s %s %s %s", NodeShape.valueOf(shape),
-                    Basic.toString(nv.getShapeGroup().getTranslateX(), 4),
-                    Basic.toString(nv.getShapeGroup().getTranslateY(), 4),
-                    Basic.toString(shape instanceof ISized ? ((ISized) shape).getWidth() : shape.getLayoutBounds().getWidth(), 4),
-                    Basic.toString(shape instanceof ISized ? ((ISized) shape).getHeight() : shape.getLayoutBounds().getHeight(), 4),
-                    shape.getFill().toString()));
+					StringUtils.toString(nv.getShapeGroup().getTranslateX(), 4),
+					StringUtils.toString(nv.getShapeGroup().getTranslateY(), 4),
+					StringUtils.toString(shape instanceof ISized ? ((ISized) shape).getWidth() : shape.getLayoutBounds().getWidth(), 4),
+					StringUtils.toString(shape instanceof ISized ? ((ISized) shape).getHeight() : shape.getLayoutBounds().getHeight(), 4),
+					shape.getFill().toString()));
         }
         if (nv.getLabel() != null) {
-            final RichTextLabel label = nv.getLabel();
+			final RichTextLabel label = nv.getLabel();
 
 
-            buf.append(String.format(" L: '%s' %s %s", Basic.protectBackSlashes(label.getText()),
-                    Basic.toString(label.getTranslateX(), 4),
-                    Basic.toString(label.getTranslateY(), 4)));
-            buf.append(String.format(" %s '%s'", label.getTextFill().toString(), FontUtils.toString(label.getFont())));
-        }
+			buf.append(String.format(" L: '%s' %s %s", StringUtils.protectBackSlashes(label.getText()),
+					StringUtils.toString(label.getTranslateX(), 4),
+					StringUtils.toString(label.getTranslateY(), 4)));
+			buf.append(String.format(" %s '%s'", label.getTextFill().toString(), FontUtils.toString(label.getFont())));
+		}
         if (nv.getNumberOfWorkingTaxonIds() > 0) {
-            buf.append(String.format(" T: %s", Basic.toString(nv.getWorkingTaxa(), " ")));
+			buf.append(String.format(" T: %s", StringUtils.toString(nv.getWorkingTaxa(), " ")));
         }
         return buf.toString();
     }
@@ -97,8 +97,8 @@ public class NodeViewIO {
         final double sh;
         final Color shapeColor;
         if (np.peekMatchIgnoreCase("S:")) {
-            np.matchIgnoreCase("S:");
-            shape = Basic.valueOfIgnoreCase(NodeShape.class, np.getWordRespectCase());
+			np.matchIgnoreCase("S:");
+			shape = StringUtils.valueOfIgnoreCase(NodeShape.class, np.getWordRespectCase());
 
             sx = np.getDouble();
             sy = np.getDouble();

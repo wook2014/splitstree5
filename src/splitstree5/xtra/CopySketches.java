@@ -19,7 +19,7 @@
 
 package splitstree5.xtra;
 
-import jloda.util.Basic;
+import jloda.util.StringUtils;
 import splitstree5.dialogs.analyzegenomes.AccessReferenceDatabase;
 
 import java.io.BufferedWriter;
@@ -47,7 +47,7 @@ public class CopySketches {
 
 
         try (var srcDB = new AccessReferenceDatabase(srcFile, 1)) {
-            var srcQuery = "select taxon_id, mash_sketch from mash_sketches where taxon_id in (" + Basic.toString(taxa, ",") + ");";
+			var srcQuery = "select taxon_id, mash_sketch from mash_sketches where taxon_id in (" + StringUtils.toString(taxa, ",") + ");";
             System.err.println("Running: " + srcQuery.substring(0, 40) + "...");
             final ResultSet rs = srcDB.getConnection().createStatement().executeQuery(srcQuery);
 

@@ -27,8 +27,8 @@ import java.util.List;
  * Daniel Huson, 3.2018
  */
 public class ViewerNexusFormat implements INexusFormat {
-    @Override
-    public List<String> listOptions() {
-        return null;
-    }
+	@Override
+	public List<String> listOptions() {
+		return null;
+	}
 }

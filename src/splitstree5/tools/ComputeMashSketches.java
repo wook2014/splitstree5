@@ -25,6 +25,7 @@ import jloda.fx.util.ProgramExecutorService;
 import jloda.kmers.mash.MashSketch;
 import jloda.thirdparty.HexUtils;
 import jloda.util.*;
+import jloda.util.progress.ProgressPercentage;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -91,36 +92,36 @@ public class ComputeMashSketches {
 
         final ArrayList<String> inputFiles = new ArrayList<>();
         for (String name : input) {
-            if (Basic.fileExistsAndIsNonEmpty(name))
-                inputFiles.add(name);
-            else if (Basic.isDirectory(name)) {
-                inputFiles.addAll(Basic.getAllFilesInDirectory(name, true, ".fasta", ".fna", ".faa", ".fasta.gz", ".fna.gz", ".faa.gz"));
-            }
+			if (FileUtils.fileExistsAndIsNonEmpty(name))
+				inputFiles.add(name);
+			else if (FileUtils.isDirectory(name)) {
+				inputFiles.addAll(FileUtils.getAllFilesInDirectory(name, true, ".fasta", ".fna", ".faa", ".fasta.gz", ".fna.gz", ".faa.gz"));
+			}
         }
 
         if (inputFiles.size() == 0)
             throw new UsageException("No input files");
 
         for (String name : inputFiles) {
-            Basic.checkFileReadableNonEmpty(name);
+			FileUtils.checkFileReadableNonEmpty(name);
         }
 
         final ArrayList<String> outputFiles = new ArrayList<>();
         if (output.length == 0) {
             for (String file : inputFiles) {
-                outputFiles.add(Basic.replaceFileSuffix(file, ".msketch"));
+				outputFiles.add(FileUtils.replaceFileSuffix(file, ".msketch"));
             }
         } else if (output.length == 1) {
-            if (output[0].equals("stdout")) {
-                outputFiles.add("stdout");
-            } else if (Basic.isDirectory(output[0])) {
-                for (String file : inputFiles) {
-                    outputFiles.add(new File(output[0], Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(file), ".msketch")).getPath());
-                }
-            } else if (inputFiles.size() == 1) {
-                outputFiles.add(output[0]);
-            } else
-                throw new UsageException("Input and output files don't match");
+			if (output[0].equals("stdout")) {
+				outputFiles.add("stdout");
+			} else if (FileUtils.isDirectory(output[0])) {
+				for (String file : inputFiles) {
+					outputFiles.add(new File(output[0], FileUtils.replaceFileSuffix(FileUtils.getFileNameWithoutPath(file), ".msketch")).getPath());
+				}
+			} else if (inputFiles.size() == 1) {
+				outputFiles.add(output[0]);
+			} else
+				throw new UsageException("Input and output files don't match");
         } else if (output.length == inputFiles.size()) {
             outputFiles.addAll(Arrays.asList(output));
         } else
@@ -132,8 +133,8 @@ public class ComputeMashSketches {
             inputOutputPairs.add(new Pair<>(inputFiles.get(i), outputFiles.get(outputFiles.size() == 1 ? 0 : i)));
         }
 
-        if (Basic.isDirectory(output[0]))
-            System.err.println("Writing to directory: " + output[0]);
+		if (FileUtils.isDirectory(output[0]))
+			System.err.println("Writing to directory: " + output[0]);
 
         try (final ProgressPercentage progress = new ProgressPercentage("Sketching...", inputOutputPairs.size())) {
             final Single<IOException> exception = new Single<>();
@@ -148,9 +149,9 @@ public class ComputeMashSketches {
                             saveSketch(inputOutputPair.getSecond(), sketch, outputFormat);
 
                             if (createKMerFiles) {
-                                try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(Basic.getOutputStreamPossiblyZIPorGZIP(Basic.replaceFileSuffixKeepGZ(inputOutputPair.getSecond(), ".kmers"))))) {
-                                    w.write(sketch.getKMersString());
-                                }
+								try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(FileUtils.getOutputStreamPossiblyZIPorGZIP(FileUtils.replaceFileSuffixKeepGZ(inputOutputPair.getSecond(), ".kmers"))))) {
+									w.write(sketch.getKMersString());
+								}
                             }
                             progress.checkForCancel();
                         } catch (IOException ex) {
@@ -175,17 +176,17 @@ public class ComputeMashSketches {
     }
 
     private void saveSketch(String outputFile, MashSketch sketch, String outputFormat) throws IOException {
-        try (OutputStream outs = Basic.getOutputStreamPossiblyZIPorGZIP(outputFile)) {
-            switch (outputFormat) {
-                case "text":
-                    try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(outs))) {
-                        w.write(sketch.getString() + "\n");
-                    }
-                    break;
-                case "hex":
-                    try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(outs))) {
-                        w.write(HexUtils.encodeHexString(sketch.getBytes()) + "\n");
-                    }
+		try (OutputStream outs = FileUtils.getOutputStreamPossiblyZIPorGZIP(outputFile)) {
+			switch (outputFormat) {
+				case "text":
+					try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(outs))) {
+						w.write(sketch.getString() + "\n");
+					}
+					break;
+				case "hex":
+					try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(outs))) {
+						w.write(HexUtils.encodeHexString(sketch.getBytes()) + "\n");
+					}
                     break;
                 case "binary":
                     try (BufferedOutputStream w = new BufferedOutputStream(outs)) {

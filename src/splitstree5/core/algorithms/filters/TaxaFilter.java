@@ -24,7 +24,8 @@ import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import jloda.util.Basic;
-import jloda.util.ProgressListener;
+import jloda.util.progress.ProgressListener;
+import jloda.util.StringUtils;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTaxa;
 import splitstree5.core.algorithms.interfaces.IToTaxa;
@@ -98,7 +99,7 @@ public class TaxaFilter extends Algorithm<TaxaBlock, TaxaBlock> implements IFrom
         }
 
         if (numberEnabledTaxa() == 0 && numberDisabledTaxa() == 0)
-            setShortDescription(Basic.fromCamelCase(Basic.getShortName(this.getClass())));
+			setShortDescription(StringUtils.fromCamelCase(Basic.getShortName(this.getClass())));
         else if (numberDisabledTaxa() == 0)
             setShortDescription("using all " + numberEnabledTaxa() + " taxa");
         else

@@ -23,8 +23,8 @@ package splitstree5.io.nexus;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloGraph;
-import jloda.util.Basic;
 import jloda.util.IOExceptionWithLineNumber;
+import jloda.util.StringUtils;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.NetworkBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -40,26 +40,26 @@ import java.util.TreeMap;
  * Daniel Huson, 2.2018
  */
 public class NetworkNexusInput extends NexusIOBase implements INexusInput<NetworkBlock> {
-    public static final String SYNTAX = "BEGIN " + NetworkBlock.BLOCK_NAME + ";\n" +
-            "\t[TITLE {title};]\n" +
-            "\t[LINK {type} = {title};]\n" +
-            "\t[DIMENSIONS [NNODES=number-of-nodes] [NEDGES=number-of-edges];]\n" +
-            "\t\t[NETWORK={" + Basic.toString(NetworkBlock.Type.values(), "|") + "};]\n" +
-            "\t[FORMAT\n" +
-            "\t;]\n" +
-            "\t[PROPERTIES\n" +
-            "\t;]\n" +
-            "\tNODES\n" +
-            "\t\tID=number [LABEL=label] [x=number] [y=number] [key=value ...],\n" +
-            "\t\t...\n" +
-            "\t\tID=number [LABEL=label] [x=number] [y=number] [key=value ...]\n" +
-            "\t;\n" +
-            "\tEDGES\n" +
-            "\t\tID=number SID=number TID=number [LABEL=label] [key=value ...],\n" +
-            "\t\t...\n" +
-            "\t\tID=number SID=number TID=number [LABEL=label] [key=value ...]\n" +
-            "\t;\n" +
-            "END;\n";
+	public static final String SYNTAX = "BEGIN " + NetworkBlock.BLOCK_NAME + ";\n" +
+										"\t[TITLE {title};]\n" +
+										"\t[LINK {type} = {title};]\n" +
+										"\t[DIMENSIONS [NNODES=number-of-nodes] [NEDGES=number-of-edges];]\n" +
+										"\t\t[NETWORK={" + StringUtils.toString(NetworkBlock.Type.values(), "|") + "};]\n" +
+										"\t[FORMAT\n" +
+										"\t;]\n" +
+										"\t[PROPERTIES\n" +
+										"\t;]\n" +
+										"\tNODES\n" +
+										"\t\tID=number [LABEL=label] [x=number] [y=number] [key=value ...],\n" +
+										"\t\t...\n" +
+										"\t\tID=number [LABEL=label] [x=number] [y=number] [key=value ...]\n" +
+										"\t;\n" +
+										"\tEDGES\n" +
+										"\t\tID=number SID=number TID=number [LABEL=label] [key=value ...],\n" +
+										"\t\t...\n" +
+										"\t\tID=number SID=number TID=number [LABEL=label] [key=value ...]\n" +
+										"\t;\n" +
+										"END;\n";
 
     @Override
     public String getSyntax() {
@@ -92,8 +92,8 @@ public class NetworkNexusInput extends NexusIOBase implements INexusInput<Networ
 
         if (np.peekMatchIgnoreCase("TYPE")) {
             np.matchIgnoreCase("TYPE=");
-            String typeString = np.getWordRespectCase().toUpperCase();
-            NetworkBlock.Type type = Basic.valueOfIgnoreCase(NetworkBlock.Type.class, typeString);
+			String typeString = np.getWordRespectCase().toUpperCase();
+			NetworkBlock.Type type = StringUtils.valueOfIgnoreCase(NetworkBlock.Type.class, typeString);
             if (type == null)
                 throw new IOExceptionWithLineNumber("Unknown network type: " + typeString, np.lineno());
             networkBlock.setNetworkType(type);

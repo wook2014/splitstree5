@@ -24,6 +24,7 @@ import jloda.fx.util.ArgsOptions;
 import jloda.kmers.bloomfilter.BloomFilter;
 import jloda.thirdparty.HexUtils;
 import jloda.util.*;
+import jloda.util.progress.ProgressPercentage;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -124,17 +125,17 @@ public class BloomFilterTool {
                 final Single<IOException> exception = new Single<>(null);
                 try {
                     inputFiles.forEach(fileName -> {
-                        if (Basic.fileExistsAndIsNonEmpty(fileName)) {
-                            service.submit(() -> {
-                                if (exception.isNull()) {
-                                    try (FileLineIterator it = new FileLineIterator(fileName)) {
-                                        while (it.hasNext()) {
-                                            final String line = it.next();
-                                            if (line.trim().length() > 0)
-                                                numberOfLines.increment();
-                                        }
-                                    } catch (IOException e) {
-                                        exception.setIfCurrentValueIsNull(e);
+						if (FileUtils.fileExistsAndIsNonEmpty(fileName)) {
+							service.submit(() -> {
+								if (exception.isNull()) {
+									try (FileLineIterator it = new FileLineIterator(fileName)) {
+										while (it.hasNext()) {
+											final String line = it.next();
+											if (line.trim().length() > 0)
+												numberOfLines.increment();
+										}
+									} catch (IOException e) {
+										exception.setIfCurrentValueIsNull(e);
                                     } finally {
                                         synchronized (progress) {
                                             progress.incrementProgress();
@@ -160,17 +161,17 @@ public class BloomFilterTool {
                 final Single<IOException> exception = new Single<>(null);
                 try {
                     inputFiles.forEach(fileName -> {
-                        if (Basic.fileExistsAndIsNonEmpty(fileName)) {
-                            service.submit(() -> {
-                                if (exception.isNull()) {
-                                    try (FileLineIterator it = new FileLineIterator(fileName)) {
-                                        final ArrayList<byte[]> list = new ArrayList<>();
-                                        while (it.hasNext()) {
-                                            final byte[] bytes = it.next().trim().getBytes();
-                                            if (bytes.length > 0) {
-                                                list.add(bytes);
-                                            }
-                                        }
+						if (FileUtils.fileExistsAndIsNonEmpty(fileName)) {
+							service.submit(() -> {
+								if (exception.isNull()) {
+									try (FileLineIterator it = new FileLineIterator(fileName)) {
+										final ArrayList<byte[]> list = new ArrayList<>();
+										while (it.hasNext()) {
+											final byte[] bytes = it.next().trim().getBytes();
+											if (bytes.length > 0) {
+												list.add(bytes);
+											}
+										}
                                         synchronized (allKMersBloomFilter) {
                                             allKMersBloomFilter.addAll(list);
                                         }
@@ -196,13 +197,13 @@ public class BloomFilterTool {
 
             System.err.println("Writing Bloom filter to file: " + output);
             if (useHexEncoding) {
-                try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(Basic.getOutputStreamPossiblyZIPorGZIP(output)))) {
-                    w.write(HexUtils.encodeHexString(allKMersBloomFilter.getBytes()) + "\n");
-                }
+				try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(FileUtils.getOutputStreamPossiblyZIPorGZIP(output)))) {
+					w.write(HexUtils.encodeHexString(allKMersBloomFilter.getBytes()) + "\n");
+				}
             } else {
-                try (OutputStream outs = Basic.getOutputStreamPossiblyZIPorGZIP(output)) {
-                    outs.write(allKMersBloomFilter.getBytes());
-                }
+				try (OutputStream outs = FileUtils.getOutputStreamPossiblyZIPorGZIP(output)) {
+					outs.write(allKMersBloomFilter.getBytes());
+				}
             }
             System.err.println("Total file size: " + Basic.getMemorySizeString((new File(output)).length()));
         } else if (command.equals("contains")) {
@@ -214,17 +215,17 @@ public class BloomFilterTool {
                 final Single<IOException> exception = new Single<>(null);
                 try {
                     bloomFilterFiles.forEach(fileName -> {
-                        if (Basic.fileExistsAndIsNonEmpty(fileName)) {
-                            service.submit(() -> {
-                                if (exception.isNull()) {
-                                    try {
-                                        final byte[] bytes;
-                                        if (useHexEncoding)
-                                            bytes = HexUtils.decodeHexString(Files.readString((new File(fileName).toPath())).trim());
-                                        else
-                                            bytes = Files.readAllBytes((new File(fileName).toPath()));
-                                        final BloomFilter bloomFilter = BloomFilter.parseBytes(bytes);
-                                        synchronized (bloomFilters) {
+						if (FileUtils.fileExistsAndIsNonEmpty(fileName)) {
+							service.submit(() -> {
+								if (exception.isNull()) {
+									try {
+										final byte[] bytes;
+										if (useHexEncoding)
+											bytes = HexUtils.decodeHexString(Files.readString((new File(fileName).toPath())).trim());
+										else
+											bytes = Files.readAllBytes((new File(fileName).toPath()));
+										final BloomFilter bloomFilter = BloomFilter.parseBytes(bytes);
+										synchronized (bloomFilters) {
                                             bloomFilters.put(fileName, bloomFilter);
                                         }
                                     } catch (IOException e) {
@@ -246,17 +247,17 @@ public class BloomFilterTool {
                     throw exception.get();
             }
 
-            try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(Basic.getOutputStreamPossiblyZIPorGZIP(output)))) {
-                if (bloomFilterFiles.size() > 1)
-                    w.write("#Table\t" + Basic.toString(bloomFilterFiles, "\t") + "\n");
-                for (String inputFile : inputFiles) {
-                    final List<String> kmers = Files.lines((new File(inputFile)).toPath()).collect(Collectors.toList());
-                    w.write(inputFile);
-                    for (String bloomFilterFile : bloomFilterFiles) {
-                        final BloomFilter bloomFilter = bloomFilters.get(bloomFilterFile);
-                        w.write(" " + bloomFilter.countContainedProbably(kmers));
-                    }
-                    w.write("\n");
+			try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(FileUtils.getOutputStreamPossiblyZIPorGZIP(output)))) {
+				if (bloomFilterFiles.size() > 1)
+					w.write("#Table\t" + StringUtils.toString(bloomFilterFiles, "\t") + "\n");
+				for (String inputFile : inputFiles) {
+					final List<String> kmers = Files.lines((new File(inputFile)).toPath()).collect(Collectors.toList());
+					w.write(inputFile);
+					for (String bloomFilterFile : bloomFilterFiles) {
+						final BloomFilter bloomFilter = bloomFilters.get(bloomFilterFile);
+						w.write(" " + bloomFilter.countContainedProbably(kmers));
+					}
+					w.write("\n");
                 }
             }
         }
@@ -265,17 +266,17 @@ public class BloomFilterTool {
     public static ArrayList<String> getInputFiles(String[] input, String... suffixes) throws UsageException, IOException {
         final ArrayList<String> result = new ArrayList<>();
         for (String name : input) {
-            if (Basic.fileExistsAndIsNonEmpty(name))
-                result.add(name);
-            else if (Basic.isDirectory(name)) {
-                result.addAll(Basic.getAllFilesInDirectory(name, true, suffixes));
-            }
+			if (FileUtils.fileExistsAndIsNonEmpty(name))
+				result.add(name);
+			else if (FileUtils.isDirectory(name)) {
+				result.addAll(FileUtils.getAllFilesInDirectory(name, true, suffixes));
+			}
         }
         if (result.size() == 0)
             throw new UsageException("No input files");
 
         for (String name : result) {
-            Basic.checkFileReadableNonEmpty(name);
+			FileUtils.checkFileReadableNonEmpty(name);
         }
         return result;
     }

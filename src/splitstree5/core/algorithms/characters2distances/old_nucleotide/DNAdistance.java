@@ -23,7 +23,7 @@ package splitstree5.core.algorithms.characters2distances.old_nucleotide;
 import javafx.beans.property.*;
 import jloda.fx.window.NotificationManager;
 import jloda.util.CanceledException;
-import jloda.util.ProgressListener;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.characters2distances.utils.PairwiseCompare;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;

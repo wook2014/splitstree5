@@ -22,6 +22,7 @@ package splitstree5.xtra;
 
 import jloda.fx.util.ArgsOptions;
 import jloda.util.*;
+import jloda.util.progress.ProgressSilent;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.imports.PhylipDistancesImporter;
@@ -105,13 +106,13 @@ public class CompareDistances {
             }
         }
 
-        System.err.println("Comparing files " + Basic.getFileNameWithoutPath(inputFiles[0]) + " and " + Basic.getFileNameWithoutPath(inputFiles[1]) + ":");
+		System.err.println("Comparing files " + FileUtils.getFileNameWithoutPath(inputFiles[0]) + " and " + FileUtils.getFileNameWithoutPath(inputFiles[1]) + ":");
 
         if (unused1.size() > 0)
-            System.err.println("Unique to first file: " + Basic.toString(unused1, " ,"));
+			System.err.println("Unique to first file: " + StringUtils.toString(unused1, " ,"));
 
         if (unused2.size() > 0)
-            System.err.println("Unique to second file: " + Basic.toString(unused2, " ,"));
+			System.err.println("Unique to second file: " + StringUtils.toString(unused2, " ,"));
 
         int bothZero = 0;
         int bothSame = 0;

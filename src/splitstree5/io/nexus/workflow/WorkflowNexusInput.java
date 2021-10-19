@@ -29,6 +29,7 @@ import jloda.fx.util.TaskWithProgressListener;
 import jloda.fx.window.NotificationManager;
 import jloda.util.*;
 import jloda.util.parse.NexusStreamParser;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.filters.TaxaFilter;
@@ -72,10 +73,10 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
         service.setOnFailed((e) -> NotificationManager.showError("Open file failed:\n" + (service.getException().getMessage())));
         service.setOnRunning((e) -> parentWindow.getMainWindowController().getBottomPane().getChildren().add(new ProgressPane(service)));
         service.setOnSucceeded((e) -> {
-            final Workflow workflow = service.getValue().getWorkflow();
-            NotificationManager.showInformation("Opened file: " + Basic.getFileNameWithoutPath(fileName)
-                    + "\nLoaded workflow containing " + workflow.getNumberOfDataNodes() + " data nodes and " + workflow.getNumberOfConnectorNodes() + " algorithms");
-        });
+			final Workflow workflow = service.getValue().getWorkflow();
+			NotificationManager.showInformation("Opened file: " + FileUtils.getFileNameWithoutPath(fileName)
+												+ "\nLoaded workflow containing " + workflow.getNumberOfDataNodes() + " data nodes and " + workflow.getNumberOfConnectorNodes() + " algorithms");
+		});
         service.start();
         return service;
     }
@@ -98,7 +99,7 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
      */
     public MainWindow call() throws Exception {
         final ProgressListener progress = getProgressListener();
-        progress.setTasks("Loading file", Basic.getFileNameWithoutPath(fileName));
+		progress.setTasks("Loading file", FileUtils.getFileNameWithoutPath(fileName));
 
         final MainWindow mainWindow;
         final boolean usingNewWindow;
@@ -172,11 +173,11 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
      * @throws CanceledException
      */
     public static void input(ProgressListener progress, Workflow workflow, ArrayList<ViewerBlock> viewerBlocks, String fileName) throws IOException, CanceledException {
-        try (Reader reader = Basic.getReaderPossiblyZIPorGZIP(fileName)) {
-            progress.setMaximum((new File(fileName).length() / (Basic.isZIPorGZIPFile(fileName) ? 100 : 20)));
-            input(progress, workflow, viewerBlocks, reader);
-        }
-    }
+		try (Reader reader = FileUtils.getReaderPossiblyZIPorGZIP(fileName)) {
+			progress.setMaximum((new File(fileName).length() / (FileUtils.isZIPorGZIPFile(fileName) ? 100 : 20)));
+			input(progress, workflow, viewerBlocks, reader);
+		}
+	}
 
     /**
      * inpurt a work flow from a reader
@@ -210,7 +211,7 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
                 if (np.peekMatchBeginBlock("algorithm")) {
                     final AlgorithmNexusInput algorithmInput = new AlgorithmNexusInput();
                     final Algorithm algorithm = algorithmInput.parse(np);
-                    title2algorithmAndLink.put(algorithmInput.getTitle(), new Pair<>(algorithm, Basic.toString(algorithmInput.getLink(), " ")));
+					title2algorithmAndLink.put(algorithmInput.getTitle(), new Pair<>(algorithm, StringUtils.toString(algorithmInput.getLink(), " ")));
                 } else if (np.peekMatchBeginBlock("taxa")) {
                     final TaxaNexusInput taxaInput = new TaxaNexusInput();
                     final TaxaBlock dataBlock = new TaxaBlock();

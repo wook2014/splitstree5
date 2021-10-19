@@ -21,7 +21,7 @@
 package splitstree5.core.algorithms.trees2trees;
 
 import javafx.beans.property.SimpleObjectProperty;
-import jloda.util.ProgressListener;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToTrees;

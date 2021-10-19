@@ -21,10 +21,9 @@ package splitstree5.untested.dashing;
 
 import jloda.kmers.bloomfilter.BloomFilter;
 import jloda.thirdparty.MurmurHash;
-import jloda.util.Basic;
-import jloda.util.CanceledException;
-import jloda.util.ProgressListener;
-import jloda.util.SequenceUtils;
+import jloda.util.*;
+import jloda.seq.SequenceUtils;
+import jloda.util.progress.ProgressListener;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -113,7 +112,7 @@ public class DashingSketch {
 
                 final int top = sequence.length - kMerSize + 1;
                 for (int offset = 0; offset < top; offset++) {
-                    final int ambiguousPos = Basic.lastIndexOf(sequence, offset, kMerSize, 'N'); // don't use k-mers with ambiguity letters
+					final int ambiguousPos = StringUtils.lastIndexOf(sequence, offset, kMerSize, 'N'); // don't use k-mers with ambiguity letters
                     if (ambiguousPos != -1) {
                         offset = ambiguousPos; // skip to last ambiguous so that increment will move past
                         continue;

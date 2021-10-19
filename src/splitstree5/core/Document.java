@@ -25,7 +25,8 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
 import javafx.collections.ListChangeListener;
 import jloda.fx.control.ItemSelectionModel;
-import jloda.util.Basic;
+import jloda.util.FileUtils;
+import jloda.util.StringUtils;
 import splitstree5.core.misc.Taxon;
 import splitstree5.core.workflow.Workflow;
 import splitstree5.info.MethodsTextGenerator;
@@ -66,8 +67,8 @@ public class Document {
 
         fileName.addListener((c, o, n) -> {
             Platform.runLater(() -> {
-                name.set(Basic.getFileNameWithoutPath(fileName.get()));
-                tmpFile.set(n.endsWith(".tmp"));
+				name.set(FileUtils.getFileNameWithoutPath(fileName.get()));
+				tmpFile.set(n.endsWith(".tmp"));
             });
         });
 
@@ -87,8 +88,8 @@ public class Document {
 
         // for debugging:
         if (false) {
-            taxaSelectionModel.getSelectedItems().addListener((ListChangeListener<Taxon>) c -> System.err.println("Taxa selection is: " +
-                    Basic.toString(taxaSelectionModel.getSelectedItems(), ",")));
+			taxaSelectionModel.getSelectedItems().addListener((ListChangeListener<Taxon>) c -> System.err.println("Taxa selection is: " +
+																												  StringUtils.toString(taxaSelectionModel.getSelectedItems(), ",")));
         }
     }
 

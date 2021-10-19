@@ -25,8 +25,8 @@ import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import jloda.phylo.PhyloTree;
-import jloda.util.Basic;
-import jloda.util.ProgressListener;
+import jloda.util.progress.ProgressListener;
+import jloda.util.StringUtils;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToTrees;
@@ -80,11 +80,11 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
         final int[] lower;
 
         if (isOptionUseAllTraits()) {
-            upper = computeLeastUpperBound(taxaBlock.getNtax(), traitsBlock);
-            System.err.println("Upper: " + Basic.toString(upper, " "));
-            lower = computeGreatestLowerBound(taxaBlock.getNtax(), traitsBlock);
-            System.err.println("Lower: " + Basic.toString(lower, " "));
-            System.err.println(String.format("Species definitions based on all %d traits", traitsBlock.getNTraits()));
+			upper = computeLeastUpperBound(taxaBlock.getNtax(), traitsBlock);
+			System.err.println("Upper: " + StringUtils.toString(upper, " "));
+			lower = computeGreatestLowerBound(taxaBlock.getNtax(), traitsBlock);
+			System.err.println("Lower: " + StringUtils.toString(lower, " "));
+			System.err.println(String.format("Species definitions based on all %d traits", traitsBlock.getNTraits()));
         } else {
             upper = lower = computeTax2ValueForTrait(taxaBlock.getNtax(), getOptionTraitNumber(), traitsBlock);
             System.err.println(String.format("Species definitions based on trait: [%d] %s", getOptionTraitNumber(), traitsBlock.getTraitLabel(getOptionTraitNumber())));
@@ -111,7 +111,7 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
             {
                 int count = 0;
                 for (BitSet set : looseSpecies) {
-                    System.err.println(String.format("[%d] %s", ++count, Basic.toString(set, " ")));
+					System.err.println(String.format("[%d] %s", ++count, StringUtils.toString(set, " ")));
                 }
             }
 
@@ -135,7 +135,7 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
             {
                 int count = 0;
                 for (BitSet set : lacySpecies) {
-                    System.err.println(String.format("[%d] %s", ++count, Basic.toString(set, " ")));
+					System.err.println(String.format("[%d] %s", ++count, StringUtils.toString(set, " ")));
                 }
             }
             child.getTrees().add(lacyTree);

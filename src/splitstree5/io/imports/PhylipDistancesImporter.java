@@ -21,6 +21,7 @@
 package splitstree5.io.imports;
 
 import jloda.util.*;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -120,7 +121,7 @@ public class PhylipDistancesImporter implements IToDistances, IImportDistances {
 
     @Override
     public boolean isApplicable(String fileName) throws IOException {
-        String line = Basic.getFirstLineFromFile(new File(fileName));
+		String line = FileUtils.getFirstLineFromFile(new File(fileName));
         if (line == null) return false;
 
         final StringTokenizer tokens = new StringTokenizer(line);

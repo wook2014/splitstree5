@@ -21,8 +21,8 @@
 package splitstree5.io.nexus;
 
 import jloda.fx.window.NotificationManager;
-import jloda.util.Basic;
 import jloda.util.IOExceptionWithLineNumber;
+import jloda.util.StringUtils;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -133,7 +133,7 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
         if (np.peekMatchIgnoreCase("FORMAT")) {
             final List<String> formatTokens = np.getTokensLowerCase("FORMAT", ";");
             {
-                final String dataType = np.findIgnoreCase(formatTokens, "dataType=", Basic.toString(CharactersType.values(), " ") + " nucleotide", CharactersType.Unknown.toString());
+				final String dataType = np.findIgnoreCase(formatTokens, "dataType=", StringUtils.toString(CharactersType.values(), " ") + " nucleotide", CharactersType.Unknown.toString());
                 charactersBlock.setDataType(dataType.equalsIgnoreCase("nucleotide") ? CharactersType.DNA : CharactersType.valueOfIgnoreCase(dataType));
             }
 
@@ -202,7 +202,7 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
             }
 
             if (formatTokens.size() != 0)
-                throw new IOExceptionWithLineNumber("Unexpected in FORMAT: '" + Basic.toString(formatTokens, " ") + "'", np.lineno());
+				throw new IOExceptionWithLineNumber("Unexpected in FORMAT: '" + StringUtils.toString(formatTokens, " ") + "'", np.lineno());
         }
 
         if (np.peekMatchIgnoreCase("CharWeights")) {
@@ -238,7 +238,7 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
             np.matchIgnoreCase(";");
 
             if (charactersBlock.getSymbols() == null || charactersBlock.getSymbols().length() == 0)
-                charactersBlock.setSymbols(Basic.toString(charactersBlock.getCharLabeler().keySet(), ""));
+				charactersBlock.setSymbols(StringUtils.toString(charactersBlock.getCharLabeler().keySet(), ""));
         }
 
         ArrayList<String> taxonNamesFound;
@@ -261,10 +261,10 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
         np.matchEndBlock();
 
         if (unknownStates.size() > 0)  // warn that stuff has been replaced!
-        {
-            NotificationManager.showWarning("Unknown states encountered in matrix:\n" + Basic.toString(unknownStates, " ") + "\n"
-                    + "All replaced by the gap-char '" + charactersBlock.getGapCharacter() + "'");
-        }
+		{
+			NotificationManager.showWarning("Unknown states encountered in matrix:\n" + StringUtils.toString(unknownStates, " ") + "\n"
+											+ "All replaced by the gap-char '" + charactersBlock.getGapCharacter() + "'");
+		}
 
         return taxonNamesFound;
     }

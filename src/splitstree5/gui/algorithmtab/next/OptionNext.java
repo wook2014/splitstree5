@@ -22,6 +22,7 @@ package splitstree5.gui.algorithmtab.next;
 
 import javafx.beans.property.Property;
 import jloda.util.Basic;
+import jloda.util.StringUtils;
 import splitstree5.core.algorithms.Algorithm;
 
 import java.lang.reflect.InvocationTargetException;
@@ -38,7 +39,6 @@ public class OptionNext<T> {
     private String toolTipText;
     private final ArrayList<String> legalValues;
 
-
     /**
      * constructs an option
      *
@@ -52,7 +52,7 @@ public class OptionNext<T> {
         if (toolTipText != null && toolTipText.length() > 0)
             this.toolTipText = toolTipText;
         else
-            this.toolTipText = Basic.fromCamelCase(name);
+			this.toolTipText = StringUtils.fromCamelCase(name);
 
         if (property.getValue() != null && property.getValue().getClass().isEnum()) {
             legalValues = new ArrayList<>();
@@ -61,27 +61,6 @@ public class OptionNext<T> {
             }
         } else
             legalValues = null;
-    }
-
-
-    public Property<T> getProperty() {
-        return property;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getToolTipText() {
-        return toolTipText;
-    }
-
-    public void setToolTipText(String toolTipText) {
-        this.toolTipText = toolTipText;
-    }
-
-    public ArrayList<String> getLegalValues() {
-        return legalValues;
     }
 
     public Object getEnumValueForName(String name) {
@@ -183,13 +162,32 @@ public class OptionNext<T> {
         return name2options;
     }
 
-    /**
-     * gets the type of this option
-     *
-     * @return option value type
-     */
-    public OptionValueType getOptionValueType() {
-        return OptionValueType.getValueType(property.getValue());
-    }
+	/**
+	 * gets the type of this option
+	 *
+	 * @return option value type
+	 */
+	public OptionValueType getOptionValueType() {
+		return OptionValueType.getValueType(property.getValue());
+	}
 
+	public Property<T> getProperty() {
+		return property;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getToolTipText() {
+		return toolTipText;
+	}
+
+	public void setToolTipText(String toolTipText) {
+		this.toolTipText = toolTipText;
+	}
+
+	public ArrayList<String> getLegalValues() {
+		return legalValues;
+	}
 }

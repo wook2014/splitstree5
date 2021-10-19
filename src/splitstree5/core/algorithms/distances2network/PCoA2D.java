@@ -26,8 +26,8 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import jloda.graph.Node;
 import jloda.phylo.PhyloGraph;
-import jloda.util.Basic;
-import jloda.util.ProgressListener;
+import jloda.util.progress.ProgressListener;
+import jloda.util.StringUtils;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromDistances;
 import splitstree5.core.algorithms.interfaces.IToNetwork;
@@ -138,8 +138,8 @@ public class PCoA2D extends Algorithm<DistancesBlock, NetworkBlock> implements I
         for (int j = 0; j < numberOfPositiveEigenValues; j++) {
             eigenValues[j] = positiveEigenValues.get(indices[j], indices[j]);
         }
-        System.err.println("Positive eigenvalues:");
-        System.err.println(Basic.toString("%.6f", eigenValues, ", "));
+		System.err.println("Positive eigenvalues:");
+		System.err.println(StringUtils.toString("%.6f", eigenValues, ", "));
 
         progress.incrementProgress();
 

@@ -21,6 +21,7 @@
 package splitstree5.io.imports;
 
 import jloda.util.*;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IToCharacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -100,8 +101,8 @@ public class SingleLineSequencesImporter extends CharactersFormat implements ITo
 
     @Override
     public boolean isApplicable(String fileName) throws IOException {
-        String firstLine = Basic.getFirstLineFromFile(new File(fileName));
-        int lineLength;
+		String firstLine = FileUtils.getFirstLineFromFile(new File(fileName));
+		int lineLength;
         if (firstLine == null)
             return false;
         else

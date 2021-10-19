@@ -22,7 +22,7 @@ package splitstree5.core.algorithms.characters2distances.old_nucleotide;
 
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
-import jloda.util.ProgressListener;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.algorithms.characters2distances.utils.SaturatedDistancesException;
 import splitstree5.core.algorithms.interfaces.IFromCharacters;
 import splitstree5.core.algorithms.interfaces.IToDistances;

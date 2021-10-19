@@ -26,6 +26,9 @@ import jloda.fx.util.AService;
 import jloda.fx.window.MainWindowManager;
 import jloda.fx.window.NotificationManager;
 import jloda.util.*;
+import jloda.seq.FastAFileIterator;
+import jloda.seq.IFastAIterator;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.data.Genome;
 import splitstree5.core.datablocks.GenomesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -179,10 +182,10 @@ public class GenomesAnalyzer {
                                 }
                                 if (!queryFilesFinished && fastaIterator != null) {
                                     final Pair<String, String> pair = fastaIterator.next();
-                                    countInFile++;
-                                    next = new InputRecord(Basic.swallowLeadingGreaterSign(pair.getFirst()), pair.getSecond().toUpperCase().getBytes(), fastaIterator.getFileName(), fastaIterator.getPosition());
+									countInFile++;
+									next = new InputRecord(StringUtils.swallowLeadingGreaterSign(pair.getFirst()), pair.getSecond().toUpperCase().getBytes(), fastaIterator.getFileName(), fastaIterator.getPosition());
                                     if (useFileName)
-                                        next.setName(Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(fastaIterator.getFileName()), "") + ":" + countInFile);
+										next.setName(FileUtils.replaceFileSuffix(FileUtils.getFileNameWithoutPath(fastaIterator.getFileName()), "") + ":" + countInFile);
 
                                     System.err.println(next.getName() + ": " + next.getSequence().length);
 
@@ -220,16 +223,16 @@ public class GenomesAnalyzer {
     private InputRecord getDataFromAFile(String fileName, boolean useFileName) {
         final String name;
         if (useFileName)
-            name = Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(fileName), "");
+			name = FileUtils.replaceFileSuffix(FileUtils.getFileNameWithoutPath(fileName), "");
         else {
-            final String line = Basic.getFirstLineFromFile(new File(fileName));
+			final String line = FileUtils.getFirstLineFromFile(new File(fileName));
             if (line != null) {
                 if (line.startsWith(">") || line.startsWith("@"))
                     name = line.substring(1).trim();
                 else
                     name = line;
             } else
-                name = Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(fileName), "");
+				name = FileUtils.replaceFileSuffix(FileUtils.getFileNameWithoutPath(fileName), "");
         }
 
         try (IFastAIterator it = FastAFileIterator.getFastAOrFastQAsFastAIterator(fileName)) {

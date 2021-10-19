@@ -22,7 +22,7 @@ package splitstree5.io.nexus;
 
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
-import jloda.util.Basic;
+import jloda.util.StringUtils;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
 
@@ -88,7 +88,7 @@ public class TreesNexusOutput extends NexusIOBase implements INexusOutput<TreesB
         return v -> {
             final PhyloTree tree = (PhyloTree) v.getOwner();
             if (tree.getNumberOfTaxa(v) > 0)
-                return Basic.toString(tree.getTaxa(v), ",");
+				return StringUtils.toString(tree.getTaxa(v), ",");
             else
                 return null;
         };

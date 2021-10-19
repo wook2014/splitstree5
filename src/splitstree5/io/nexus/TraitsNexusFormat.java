@@ -20,7 +20,7 @@
 
 package splitstree5.io.nexus;
 
-import jloda.util.Basic;
+import jloda.util.StringUtils;
 
 import java.util.List;
 
@@ -64,7 +64,7 @@ public class TraitsNexusFormat implements INexusFormat {
     }
 
     public void setOptionSeparator(String optionSeparator) {
-        this.optionSeparator = Basic.valueOfIgnoreCase(Separator.class, optionSeparator);
+		this.optionSeparator = StringUtils.valueOfIgnoreCase(Separator.class, optionSeparator);
     }
 
     public void setSeparator(Separator separator) {
@@ -89,7 +89,6 @@ public class TraitsNexusFormat implements INexusFormat {
     public void setOptionMissingCharacter(char optionMissingCharacter) {
         this.optionMissingCharacter = optionMissingCharacter;
     }
-
 
     @Override
     public List<String> listOptions() {

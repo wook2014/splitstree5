@@ -20,7 +20,7 @@
 
 package splitstree5.core.datablocks.characters;
 
-import jloda.util.Basic;
+import jloda.util.StringUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -73,7 +73,7 @@ public enum CharactersType {
     }
 
     public static CharactersType guessType(Set<Character> set) {
-        var alphabet = Basic.toString(set, "").toLowerCase();
+		var alphabet = StringUtils.toString(set, "").toLowerCase();
 
         var result = Unknown;
         var best = 0.0;

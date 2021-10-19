@@ -32,6 +32,7 @@ import javafx.util.converter.FloatStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import jloda.fx.undo.UndoManager;
 import jloda.util.Basic;
+import jloda.util.StringUtils;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.utils.Option;
@@ -75,8 +76,8 @@ public class GenericDatablockFormatToolBar extends ToolBar {
     public void setup() {
         try {
             for (final Option option : options) {
-                final String text = Basic.fromCamelCase(option.getName());
-                final Label label = new Label(text);
+				final String text = StringUtils.fromCamelCase(option.getName());
+				final Label label = new Label(text);
                 label.setTooltip(new Tooltip(text));
                 getItems().add(label);
                 switch (option.getType().getTypeName()) {

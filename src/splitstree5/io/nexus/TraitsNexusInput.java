@@ -22,6 +22,7 @@ package splitstree5.io.nexus;
 
 import jloda.util.Basic;
 import jloda.util.IOExceptionWithLineNumber;
+import jloda.util.StringUtils;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TraitsBlock;
@@ -99,7 +100,7 @@ public class TraitsNexusInput extends NexusIOBase implements INexusInput<TraitsB
             if (ntax == 0 && !format.isOptionLabel())
                 throw new IOExceptionWithLineNumber("Format 'no labels' invalid because no taxLabels given in TAXA block", np.lineno());
 
-            final String separator = np.findIgnoreCase(formatTokens, "separator=", Basic.toString(TraitsNexusFormat.Separator.values(), " "), "");
+			final String separator = np.findIgnoreCase(formatTokens, "separator=", StringUtils.toString(TraitsNexusFormat.Separator.values(), " "), "");
             if (separator.length() > 0) {
                 format.setOptionSeparator(separator);
             }
@@ -107,7 +108,7 @@ public class TraitsNexusInput extends NexusIOBase implements INexusInput<TraitsB
             format.setOptionMissingCharacter(Character.toLowerCase(np.findIgnoreCase(formatTokens, "missing=", null, '?')));
 
             if (formatTokens.size() != 0)
-                throw new IOExceptionWithLineNumber("Unexpected in FORMAT: '" + Basic.toString(formatTokens, " ") + "'", np.lineno());
+				throw new IOExceptionWithLineNumber("Unexpected in FORMAT: '" + StringUtils.toString(formatTokens, " ") + "'", np.lineno());
         }
 
         if (np.peekMatchIgnoreCase("TRAITLATITUDE")) {

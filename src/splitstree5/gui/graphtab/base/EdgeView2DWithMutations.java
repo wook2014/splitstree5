@@ -27,7 +27,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import jloda.fx.util.GeometryUtilsFX;
 import jloda.graph.Edge;
-import jloda.util.Basic;
+import jloda.util.StringUtils;
 import splitstree5.core.algorithms.views.NetworkEmbedder;
 
 /**
@@ -117,7 +117,7 @@ public class EdgeView2DWithMutations extends EdgeView2D {
                     if (label == null) {
                         label = new Label();
                     }
-                    setLabel(Basic.toString(mutations, ", "));
+					setLabel(StringUtils.toString(mutations, ", "));
                     break;
                 case Count:
                     if (label == null) {

@@ -50,31 +50,31 @@ import java.util.Optional;
  * Daniel Huson, 1.2018
  */
 public class EditTextViewTab extends ViewerTab {
-    //private final TextArea textArea;
-    //private final TextAreaSearcher textAreaSearcher;
+	//private final TextArea textArea;
+	//private final TextAreaSearcher textAreaSearcher;
 
-    private final VirtualizedScrollPane<CodeArea> codeArea = new VirtualizedScrollPane<>(new CodeArea());
-    ;
-    private final CodeAreaSearcher codeAreaSearcher;
-    BooleanBinding emptyProperty = new BooleanBinding() {
-        {
-            super.bind(codeArea.getContent().lengthProperty());
-        }
+	private final CodeArea codeArea = new CodeArea();
+	private final VirtualizedScrollPane<CodeArea> scrollPane = new VirtualizedScrollPane<>(codeArea);
 
-        @Override
-        protected boolean computeValue() {
-            return codeArea.getContent().getLength() == 0;
-        }
+	BooleanBinding emptyProperty = new BooleanBinding() {
+		{
+			super.bind(codeArea.lengthProperty());
+		}
+
+		@Override
+		protected boolean computeValue() {
+			return codeArea.getLength() == 0;
+		}
     };
 
     BooleanBinding selectionEmpty = new BooleanBinding() {
         {
-            super.bind(codeArea.getContent().selectionProperty());
+			super.bind(codeArea.selectionProperty());
         }
 
         @Override
         protected boolean computeValue() {
-            return codeArea.getContent().getSelection().getLength() == 0;
+			return codeArea.getSelection().getLength() == 0;
         }
     };
 
@@ -101,37 +101,35 @@ public class EditTextViewTab extends ViewerTab {
         setText("");
         //codeArea = new VirtualizedScrollPane<>(new CodeArea());
         //CodeArea codeArea = vsp.getContent();
-        codeArea.getContent().setParagraphGraphicFactory(LineNumberFactory.get(codeArea.getContent()));
+		codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         //codeArea.getContent().setParagraphGraphicFactory(LineNumberFactoryWithCollapsing.get(codeArea.getContent()));
         ////
         //new VirtualizedScrollPane<>(new CodeArea());
 
         String css = this.getClass().getResource("/splitstree5/resources/css/styles.css").toExternalForm();
-        codeArea.getStylesheets().add(css);
+		scrollPane.getStylesheets().add(css);
         //textArea.setFont(Font.font("Courier New")); // gets set by style file
-        codeArea.getContent().setEditable(false);
+		codeArea.setEditable(false);
 
         // bind to textProperty
         if (textProperty != null)
-            bindToCodeArea(textProperty);
+			bindToCodeArea(textProperty);
 
-        codeArea.getContent().textProperty().addListener((InvalidationListener) -> getUndoManager().clear());
+		codeArea.textProperty().addListener((InvalidationListener) -> getUndoManager().clear());
 
-        codeArea.getContent().selectionProperty().addListener((c, o, n) -> {
-            MainWindowManager.getPreviousSelection().clear();
-            MainWindowManager.getPreviousSelection().add(codeArea.getContent().getText(n.getStart(), n.getEnd()));
-        });
+		codeArea.selectionProperty().addListener((c, o, n) -> {
+			MainWindowManager.getPreviousSelection().clear();
+			MainWindowManager.getPreviousSelection().add(codeArea.getText(n.getStart(), n.getEnd()));
+		});
 
-        {
-            codeAreaSearcher = new CodeAreaSearcher("Text", codeArea.getContent());
-            findToolBar = new FindToolBar(null, codeAreaSearcher);
-        }
 
-        final BorderPane borderPane = new BorderPane(codeArea);
-        borderPane.setTop(findToolBar);
-        setContent(borderPane);
-        setClosable(true);
-    }
+		findToolBar = new FindToolBar(null, new CodeAreaSearcher("Text", codeArea));
+
+		final BorderPane borderPane = new BorderPane(scrollPane);
+		borderPane.setTop(findToolBar);
+		setContent(borderPane);
+		setClosable(true);
+	}
 
     /**
      * go to given line and given col
@@ -146,8 +144,8 @@ public class EditTextViewTab extends ViewerTab {
             col--; // because col is 1-based
 
         lineNumber = Math.max(1, lineNumber);
-        final String text = codeArea.getContent().getText();
-        int start = 0;
+		final String text = codeArea.getText();
+		int start = 0;
         for (int i = 1; i < lineNumber; i++) {
             start = text.indexOf('\n', start + 1);
             if (start == -1) {
@@ -157,14 +155,14 @@ public class EditTextViewTab extends ViewerTab {
         }
         start++;
         if (start < text.length()) {
-            int end = text.indexOf('\n', start);
-            if (end == -1)
-                end = text.length();
-            if (start + col < end)
-                start = start + col;
-            codeArea.requestFocus();
-            codeArea.getContent().selectRange(start, end);
-        }
+			int end = text.indexOf('\n', start);
+			if (end == -1)
+				end = text.length();
+			if (start + col < end)
+				start = start + col;
+			scrollPane.requestFocus();
+			codeArea.selectRange(start, end);
+		}
     }
 
     /**
@@ -209,8 +207,8 @@ public class EditTextViewTab extends ViewerTab {
             }
         });
 
-        controller.getPageSetupMenuItem().setOnAction((e) -> Print.showPageLayout(getMainWindow().getStage()));
-        controller.getPrintMenuitem().setOnAction((e) -> Print.print(getMainWindow().getStage(), codeArea));
+		controller.getPageSetupMenuItem().setOnAction((e) -> Print.showPageLayout(getMainWindow().getStage()));
+		controller.getPrintMenuitem().setOnAction((e) -> Print.print(getMainWindow().getStage(), scrollPane));
 
         if (getUndoManager() != null) {
             controller.getUndoMenuItem().setOnAction((e) -> {
@@ -227,18 +225,18 @@ public class EditTextViewTab extends ViewerTab {
         }
 
         controller.getCopyMenuItem().setOnAction((e) -> {
-            e.consume();
-            codeArea.getContent().copy();
+			e.consume();
+			codeArea.copy();
         });
 
         //controller.getCopyMenuItem().disableProperty().bind(codeArea.selectedTextProperty().isEmpty());
 
-        controller.getSelectAllMenuItem().setOnAction((e) -> codeArea.getContent().selectAll());
+		controller.getSelectAllMenuItem().setOnAction((e) -> codeArea.selectAll());
         //controller.getSelectNoneMenuItem().setOnAction((e) -> codeArea.selectHome());
         //controller.getSelectNoneMenuItem().disableProperty().bind(codeArea.selectedTextProperty().isEmpty());
 
-        controller.getSelectBracketsMenuItem().setOnAction((e) -> selectBrackets(codeArea.getContent()));
-        controller.getSelectBracketsMenuItem().disableProperty().bind(emptyProperty);
+		controller.getSelectBracketsMenuItem().setOnAction((e) -> selectBrackets(codeArea));
+		controller.getSelectBracketsMenuItem().disableProperty().bind(emptyProperty);
         //(Val.map(codeArea.getContent().lengthProperty(), n -> n == 0));
 
         controller.getFindMenuItem().setOnAction((e) -> findToolBar.setShowFindToolBar(true));
@@ -267,16 +265,16 @@ public class EditTextViewTab extends ViewerTab {
                 codeArea.setStyle(String.format("-fx-font-size: %.0f;", (textArea.getFont().getSize() - 2)));
         });*/
 
-        controller.getResetMenuItem().setOnAction((x) -> codeArea.setStyle("-fx-font-size: 12;"));
+		controller.getResetMenuItem().setOnAction((x) -> scrollPane.setStyle("-fx-font-size: 12;"));
 
-        controller.getWrapTextMenuItem().selectedProperty().unbind();
-        controller.getWrapTextMenuItem().setSelected(codeArea.getContent().isWrapText());
-        controller.getWrapTextMenuItem().selectedProperty().bindBidirectional(codeArea.getContent().wrapTextProperty());
-        controller.getWrapTextMenuItem().disableProperty().bind(new SimpleBooleanProperty(false));
-    }
+		controller.getWrapTextMenuItem().selectedProperty().unbind();
+		controller.getWrapTextMenuItem().setSelected(codeArea.isWrapText());
+		controller.getWrapTextMenuItem().selectedProperty().bindBidirectional(codeArea.wrapTextProperty());
+		controller.getWrapTextMenuItem().disableProperty().bind(new SimpleBooleanProperty(false));
+	}
 
     public CodeArea getCodeArea() {
-        return codeArea.getContent();
+		return codeArea;
     }
 
     // replaces bind function for two properties

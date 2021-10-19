@@ -23,10 +23,7 @@ package splitstree5.xtra;
 import jloda.fx.util.ArgsOptions;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
-import jloda.util.Basic;
-import jloda.util.FileLineIterator;
-import jloda.util.PeakMemoryUsageMonitor;
-import jloda.util.ProgramProperties;
+import jloda.util.*;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -91,17 +88,17 @@ public class TaxonomyTool {
             tree.parseBracketNotation(newickStr, true);
             if (tree.getRoot() == null)
                 throw new IOException("No tree found");
-            try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(Basic.getOutputStreamPossiblyZIPorGZIP(outputFile)))) {
-                System.err.println("Writing to: " + outputFile);
-                int count = 0;
-                final Queue<Node> queue = new LinkedList<>();
-                queue.add(tree.getRoot());
-                while (queue.size() > 0) {
-                    final Node v = queue.poll();
-                    final Node p = v.getParent();
-                    w.write(tree.getLabel(v) + "\t" + (p == null ? 0 : tree.getLabel(p)) + "\n");
-                    queue.addAll(Basic.asList(v.children()));
-                    count++;
+			try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(FileUtils.getOutputStreamPossiblyZIPorGZIP(outputFile)))) {
+				System.err.println("Writing to: " + outputFile);
+				int count = 0;
+				final Queue<Node> queue = new LinkedList<>();
+				queue.add(tree.getRoot());
+				while (queue.size() > 0) {
+					final Node v = queue.poll();
+					final Node p = v.getParent();
+					w.write(tree.getLabel(v) + "\t" + (p == null ? 0 : tree.getLabel(p)) + "\n");
+					queue.addAll(IteratorUtils.asList(v.children()));
+					count++;
                 }
                 System.err.printf("Lines: %,d%n", count);
             }

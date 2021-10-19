@@ -28,6 +28,7 @@ import jloda.fx.util.TaskWithProgressListener;
 import jloda.fx.window.NotificationManager;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
+import jloda.util.StringUtils;
 import splitstree5.core.datablocks.DataBlock;
 
 /**
@@ -77,9 +78,9 @@ public class ConnectorService<P extends DataBlock, C extends DataBlock> extends 
                     throw ex;
                 } finally {
                     if (verbose)
-                        System.err.println("--- Compute " + getMethodName() + " done ("
-                                + Basic.removeTrailingZerosAfterDot("" + ((System.currentTimeMillis() - start) / 1000.0))
-                                + "s)");
+						System.err.println("--- Compute " + getMethodName() + " done ("
+										   + StringUtils.removeTrailingZerosAfterDot("" + ((System.currentTimeMillis() - start) / 1000.0))
+										   + "s)");
                 }
                 return true;
             }

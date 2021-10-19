@@ -23,7 +23,7 @@ package splitstree5.io.imports;
 import jloda.util.CanceledException;
 import jloda.util.FileLineIterator;
 import jloda.util.IOExceptionWithLineNumber;
-import jloda.util.ProgressListener;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IToSplits;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;

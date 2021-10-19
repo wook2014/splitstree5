@@ -23,7 +23,7 @@ package splitstree5.core.topfilters;
 
 import jloda.util.Basic;
 import jloda.util.CanceledException;
-import jloda.util.ProgressListener;
+import jloda.util.progress.ProgressListener;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.CharactersBlock;
@@ -53,17 +53,17 @@ public class CharactersTopFilter extends ATopFilter<CharactersBlock> {
     public CharactersTopFilter(DataNode<TaxaBlock> originalTaxaNode, DataNode<TaxaBlock> modifiedTaxaNode, DataNode<CharactersBlock> parentNode, DataNode<CharactersBlock> childNode) {
         super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parentNode, childNode);
 
-        setAlgorithm(new Algorithm<CharactersBlock, CharactersBlock>("TopFilter") {
-            {
-                setShortDescription("Characters top filter");
-            }
+		setAlgorithm(new Algorithm<>("TopFilter") {
+			{
+				setShortDescription("Characters top filter");
+			}
 
-            public void compute(ProgressListener progress, TaxaBlock modifiedTaxaBlock, CharactersBlock parent, CharactersBlock child) throws CanceledException {
-                // todo: implement direct copy?
-                {
-                    progress.setMaximum(modifiedTaxaBlock.size());
-                    final StringWriter w = new StringWriter();
-                    try {
+			public void compute(ProgressListener progress, TaxaBlock modifiedTaxaBlock, CharactersBlock parent, CharactersBlock child) throws CanceledException {
+				// todo: implement direct copy?
+				{
+					progress.setMaximum(modifiedTaxaBlock.size());
+					final StringWriter w = new StringWriter();
+					try {
                         final CharactersNexusOutput charactersNexusOutput = new CharactersNexusOutput();
                         charactersNexusOutput.setIgnoreMatrix(true);
                         charactersNexusOutput.write(w, originalTaxaNode.getDataBlock(), parent);

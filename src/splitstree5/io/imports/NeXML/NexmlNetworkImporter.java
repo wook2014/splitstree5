@@ -20,9 +20,9 @@
 
 package splitstree5.io.imports.NeXML;
 
-import jloda.util.Basic;
 import jloda.util.CanceledException;
-import jloda.util.ProgressListener;
+import jloda.util.FileUtils;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.datablocks.NetworkBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.io.imports.NeXML.handlers.NexmlNetworkHandler;
@@ -70,20 +70,20 @@ public class NexmlNetworkImporter { //  implements IToNetwork, IImportNetwork {
     }
 
     public boolean isApplicable(String fileName) throws IOException {
-        String firstLine = Basic.getFirstLineFromFile(new File(fileName));
+		String firstLine = FileUtils.getFirstLineFromFile(new File(fileName));
         if (firstLine == null || !firstLine.equals("<nex:nexml") && !firstLine.startsWith("<?xml version="))
             return false;
 
-        try (BufferedReader ins =
-                     new BufferedReader(new InputStreamReader(Basic.getInputStreamPossiblyZIPorGZIP(fileName)))) {
-            String aLine;
-            while ((aLine = ins.readLine()) != null) {
-                if (aLine.contains("<network"))
-                    return true;
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+		try (BufferedReader ins =
+					 new BufferedReader(new InputStreamReader(FileUtils.getInputStreamPossiblyZIPorGZIP(fileName)))) {
+			String aLine;
+			while ((aLine = ins.readLine()) != null) {
+				if (aLine.contains("<network"))
+					return true;
+			}
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
 
         return false;
     }

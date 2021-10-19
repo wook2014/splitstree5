@@ -22,7 +22,7 @@ package splitstree5.core.analysis;
 
 
 import jloda.util.CanceledException;
-import jloda.util.ProgressListener;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.datablocks.CharactersBlock;
 
 import java.util.Arrays;

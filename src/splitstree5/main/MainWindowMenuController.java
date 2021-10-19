@@ -31,11 +31,8 @@ import jloda.fx.util.RecentFilesManager;
 import jloda.fx.window.MainWindowManager;
 import jloda.fx.window.NotificationManager;
 import jloda.fx.window.WindowGeometry;
-import jloda.swing.util.BasicSwing;
-import jloda.util.Basic;
-import jloda.util.Pair;
-import jloda.util.ProgramProperties;
-import jloda.util.ProgressPercentage;
+import jloda.util.*;
+import jloda.util.progress.ProgressPercentage;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.characters2distances.GeneContentDistance;
 import splitstree5.core.algorithms.characters2distances.LogDet;
@@ -82,7 +79,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -256,8 +252,8 @@ public class MainWindowMenuController {
                     final String inputFormat = ImporterManager.getInstance().getFileFormat(selectedFile.getPath());
 
                     try {
-                        ProgramProperties.put("InputDir", selectedFile.getParent());
-                        document.setFileName(Basic.replaceFileSuffix(document.getFileName(), ".splt5"));
+						ProgramProperties.put("InputDir", selectedFile.getParent());
+						document.setFileName(FileUtils.replaceFileSuffix(document.getFileName(), ".splt5"));
                         if (mainWindow.getInputTab() != null)
                             mainWindow.getInputTab().loadFile(selectedFile.getPath());
                         /*if (mainWindow.getEditedInputTab() != null)
@@ -278,14 +274,6 @@ public class MainWindowMenuController {
         });
 
         controller.getShowWorkflowMenuItem().setOnAction(e -> mainWindow.showWorkflow());
-
-        controller.getCommunityWebsiteMenuItem().setOnAction(e -> {
-            try {
-                BasicSwing.openWebPage(new URL("http://splitstree.informatik.uni-tuebingen.de"));
-            } catch (IOException ex) {
-                Basic.caught(ex);
-            }
-        });
     }
 
     public static boolean askOkToOverwrite() {

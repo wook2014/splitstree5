@@ -23,7 +23,7 @@ package splitstree5.dialogs;
 import javafx.stage.FileChooser;
 import jloda.fx.util.RecentFilesManager;
 import jloda.fx.window.NotificationManager;
-import jloda.util.Basic;
+import jloda.util.FileUtils;
 import jloda.util.ProgramProperties;
 import splitstree5.core.Document;
 import splitstree5.io.nexus.workflow.WorkflowNexusOutput;
@@ -50,11 +50,11 @@ public class SaveDialog {
             fileChooser.setInitialDirectory((new File(mainWindow.getDocument().getFileName()).getParentFile()));
 
         if (!asWorkflowOnly) {
-            fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("SplitsTree5 Files", "*.stree5", "*.nxs", "*.nex"));
-            fileChooser.setInitialFileName(Basic.getFileNameWithoutPath(Basic.replaceFileSuffix(mainWindow.getDocument().getFileName(), ".stree5")));
+			fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("SplitsTree5 Files", "*.stree5", "*.nxs", "*.nex"));
+			fileChooser.setInitialFileName(FileUtils.getFileNameWithoutPath(FileUtils.replaceFileSuffix(mainWindow.getDocument().getFileName(), ".stree5")));
         } else {
-            fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("SplitsTree5 Workflow Files", "*.wflow5"));
-            fileChooser.setInitialFileName(Basic.getFileNameWithoutPath(Basic.replaceFileSuffix(mainWindow.getDocument().getFileName(), ".wflow5")));
+			fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("SplitsTree5 Workflow Files", "*.wflow5"));
+			fileChooser.setInitialFileName(FileUtils.getFileNameWithoutPath(FileUtils.replaceFileSuffix(mainWindow.getDocument().getFileName(), ".wflow5")));
         }
 
         final File selectedFile = fileChooser.showSaveDialog(mainWindow.getStage());

@@ -27,6 +27,8 @@ import jloda.kmers.GenomeDistanceType;
 import jloda.kmers.mash.MashDistance;
 import jloda.kmers.mash.MashSketch;
 import jloda.util.*;
+import jloda.util.progress.ProgressListener;
+import jloda.util.progress.ProgressSilent;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromGenomes;
 import splitstree5.core.algorithms.interfaces.IToDistances;
@@ -91,7 +93,7 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
                             try {
                                 progress.checkForCancel();
                                 final var genome = genomesBlock.getGenome(g + 1);
-                                sketches[g] = MashSketch.compute(genome.getName(), Basic.asList(genome.parts()), isNucleotideData, getOptionSketchSize(), getOptionKMerSize(), getOptionHashSeed(), isOptionIgnoreUniqueKMers(), progress);
+								sketches[g] = MashSketch.compute(genome.getName(), IteratorUtils.asList(genome.parts()), isNucleotideData, getOptionSketchSize(), getOptionKMerSize(), getOptionHashSeed(), isOptionIgnoreUniqueKMers(), progress);
                             } catch (Exception ex) {
                                 exception.setIfCurrentValueIsNull(ex);
                             }
@@ -228,8 +230,8 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
         final String file1 = "/Users/canerbagci/work/outline-paper/bins/B13.fasta";
         final String file2 = "/Users/canerbagci/work/splitstree/cache/GCF_900169565.1_NSJP_Ch1_genomic.fna.gz";
 
-        final String name1 = Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(file1), "");
-        final String seq1;
+		final String name1 = FileUtils.replaceFileSuffix(FileUtils.getFileNameWithoutPath(file1), "");
+		final String seq1;
         try (FileLineIterator it = new FileLineIterator(file1)) {
             final StringBuilder buf = new StringBuilder();
             it.stream().filter(s -> !s.startsWith(">")).collect(Collectors.toList()).forEach(s ->
@@ -237,8 +239,8 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
             seq1 = buf.toString();
         }
 
-        final String name2 = Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(file2), "");
-        final String seq2;
+		final String name2 = FileUtils.replaceFileSuffix(FileUtils.getFileNameWithoutPath(file2), "");
+		final String seq2;
         try (FileLineIterator it = new FileLineIterator(file2)) {
             final StringBuilder buf = new StringBuilder();
             it.stream().filter(s -> !s.startsWith(">")).collect(Collectors.toList()).forEach(s ->

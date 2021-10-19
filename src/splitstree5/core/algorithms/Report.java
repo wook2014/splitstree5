@@ -21,7 +21,7 @@
 package splitstree5.core.algorithms;
 
 import jloda.util.Basic;
-import jloda.util.ProgressListener;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.algorithms.interfaces.*;
 import splitstree5.core.datablocks.AnalysisBlock;
 import splitstree5.core.datablocks.DataBlock;

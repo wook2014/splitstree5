@@ -20,6 +20,7 @@
 
 package splitstree5.io.exports;
 
+import jloda.seq.FastA;
 import splitstree5.core.algorithms.interfaces.IFromCharacters;
 import splitstree5.core.algorithms.interfaces.IFromSplits;
 import splitstree5.core.datablocks.CharactersBlock;
@@ -38,7 +39,7 @@ public class FastaExporter implements IFromCharacters, IExportCharacters, IFromS
     @Override
     public void export(Writer w, TaxaBlock taxa, CharactersBlock characters) throws IOException {
 
-        jloda.util.FastA fasta = new jloda.util.FastA();
+		FastA fasta = new FastA();
 
         int ntax = taxa.getNtax();
         int nchar = characters.getNchar();
@@ -56,7 +57,7 @@ public class FastaExporter implements IFromCharacters, IExportCharacters, IFromS
     @Override
     public void export(Writer w, TaxaBlock taxa, SplitsBlock splits) throws IOException {
 
-        jloda.util.FastA fasta = new jloda.util.FastA();
+		FastA fasta = new FastA();
         for (int t = 1; t <= taxa.getNtax(); t++) {
             char[] seq = new char[splits.getNsplits()];
             for (int s = 1; s <= splits.getNsplits(); s++) {

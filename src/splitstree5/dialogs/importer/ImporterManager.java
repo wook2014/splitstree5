@@ -23,6 +23,7 @@ package splitstree5.dialogs.importer;
 import javafx.stage.FileChooser;
 import jloda.util.Basic;
 import jloda.util.PluginClassLoader;
+import jloda.util.StringUtils;
 import splitstree5.core.datablocks.*;
 import splitstree5.io.imports.interfaces.*;
 
@@ -59,8 +60,8 @@ public class ImporterManager {
         }
         for (DataType dataType : dataType2Extensions.keySet()) {
             extensionFilters.add(new FileChooser.ExtensionFilter(dataType + ": "
-                    + Basic.toString(completeExtensions(dataType2Extensions.get(dataType), false), " "),
-                    completeExtensions(dataType2Extensions.get(dataType), true)));
+																 + StringUtils.toString(completeExtensions(dataType2Extensions.get(dataType), false), " "),
+					completeExtensions(dataType2Extensions.get(dataType), true)));
         }
         extensionFilters.sort(Comparator.comparing(FileChooser.ExtensionFilter::getDescription));
         extensionFilters.add(0, new FileChooser.ExtensionFilter("All files: *.* *.gz", "*.*", "*.gz"));

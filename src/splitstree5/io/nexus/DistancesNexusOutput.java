@@ -20,7 +20,7 @@
 
 package splitstree5.io.nexus;
 
-import jloda.util.Basic;
+import jloda.util.StringUtils;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
@@ -91,7 +91,7 @@ public class DistancesNexusOutput extends NexusIOBase implements INexusOutput<Di
                         default:
                         case Both:
                     }
-                    buf.append(Basic.removeTrailingZerosAfterDot(String.format(" %.6f", distancesBlock.get(s, t))));
+					buf.append(StringUtils.removeTrailingZerosAfterDot(String.format(" %.6f", distancesBlock.get(s, t))));
                 }
                 w.write(buf.toString() + "\n");
             }
@@ -131,7 +131,7 @@ public class DistancesNexusOutput extends NexusIOBase implements INexusOutput<Di
                 }
 
                 for (int q = left; q <= right; q++) {
-                    w.write(Basic.removeTrailingZerosAfterDot(String.format(" %.6f", distancesBlock.getVariance(t, q))));
+					w.write(StringUtils.removeTrailingZerosAfterDot(String.format(" %.6f", distancesBlock.getVariance(t, q))));
                 }
                 w.write("\n");
             }

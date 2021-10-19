@@ -46,7 +46,6 @@ public class TreesNexusFormat implements INexusFormat {
         this.optionWeights = optionWeights;
     }
 
-
     @Override
     public List<String> listOptions() {
         return null;

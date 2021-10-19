@@ -20,7 +20,7 @@
 
 package splitstree5.io.nexus;
 
-import jloda.util.Basic;
+import jloda.util.StringUtils;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
@@ -112,14 +112,14 @@ public class CharactersNexusOutput extends NexusIOBase implements INexusOutput<C
                     w.write("\t" + i + " ");
                     String label = characters.getCharLabeler().get(i);
                     if (label != null) {
-                        w.write("" + Basic.quoteIfNecessary(label) + "");
+						w.write("" + StringUtils.quoteIfNecessary(label) + "");
                         if (first)
                             first = false;
                     }
                     if (characters.getStateLabeler().hasStates(i)) {
                         w.write("/");
                         for (String str : characters.getStateLabeler().getStates(i)) {
-                            w.write(" " + Basic.quoteIfNecessary(str));
+							w.write(" " + StringUtils.quoteIfNecessary(str));
                         }
                         if (first)
                             first = false;
@@ -324,7 +324,7 @@ public class CharactersNexusOutput extends NexusIOBase implements INexusOutput<C
      * @return String of given length, or longer if the label + quotes exceed the length.
      */
     public static String padLabel(String label, int length) {
-        label = Basic.quoteIfNecessary(label);
+		label = StringUtils.quoteIfNecessary(label);
         if (label.length() >= length)
             return label;
         char[] padding = new char[length - label.length()];
@@ -342,7 +342,7 @@ public class CharactersNexusOutput extends NexusIOBase implements INexusOutput<C
     public static int maxLabelLength(TaxaBlock taxa) {
         int maxLength = 0;
         for (int i = 1; i <= taxa.getNtax(); i++) {
-            maxLength = Math.max(maxLength, Basic.quoteIfNecessary(taxa.getLabel(i)).length());
+			maxLength = Math.max(maxLength, StringUtils.quoteIfNecessary(taxa.getLabel(i)).length());
         }
         return maxLength;
     }

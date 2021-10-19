@@ -36,6 +36,7 @@ import jloda.graph.Node;
 import jloda.graph.NodeArray;
 import jloda.phylo.PhyloSplitsGraph;
 import jloda.util.*;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromSplits;
 import splitstree5.core.algorithms.interfaces.IToViewer;
@@ -173,7 +174,7 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
                 else
                     text = graph.getLabel(v);
             } else if (graph.getNumberOfTaxa(v) > 0)
-                text = Basic.toString(taxaBlock.getLabels(graph.getTaxa(v)), ",");
+				text = StringUtils.toString(taxaBlock.getLabels(graph.getTaxa(v)), ",");
             else text = null;
 
             final NodeViewBase nodeView = viewTab.createNodeView(v, graph.getTaxa(v), node2point.get(v), text);

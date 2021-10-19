@@ -24,7 +24,7 @@ import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloGraph;
 import jloda.phylo.PhyloTree;
-import jloda.util.Basic;
+import jloda.util.StringUtils;
 import splitstree5.core.algorithms.interfaces.IFromTaxa;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.datablocks.*;
@@ -378,10 +378,10 @@ public class NeXMLExporter implements IFromTaxa, IExportTaxa, IFromTrees, IExpor
                 final int externalId = (++nodesCounter);
                 nodeId2externalId.put(v.getId(), externalId);
                 xmlWriter.writeAttribute("id", "n" + externalId);
-                if (Basic.notBlank(tree.getLabel(v)))
-                    xmlWriter.writeAttribute("label", tree.getLabel(v));
-                if (tree.getRoot() != null && tree.getRoot().equals(v))
-                    xmlWriter.writeAttribute("root", "true");
+				if (StringUtils.notBlank(tree.getLabel(v)))
+					xmlWriter.writeAttribute("label", tree.getLabel(v));
+				if (tree.getRoot() != null && tree.getRoot().equals(v))
+					xmlWriter.writeAttribute("root", "true");
                 if (v.isLeaf()) {
                     final int taxonId = tree.getTaxa(v).iterator().next();
                     xmlWriter.writeAttribute("otu", "otu" + taxonId);

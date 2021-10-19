@@ -24,10 +24,8 @@ import javafx.beans.property.*;
 import jloda.fx.util.ProgramExecutorService;
 import jloda.fx.window.NotificationManager;
 import jloda.kmers.GenomeDistanceType;
-import jloda.util.Basic;
-import jloda.util.ExecuteInParallel;
-import jloda.util.ProgressListener;
-import jloda.util.Triplet;
+import jloda.util.*;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromGenomes;
 import splitstree5.core.algorithms.interfaces.IToDistances;
@@ -77,8 +75,8 @@ public class DashingUntested extends Algorithm<GenomesBlock, DistancesBlock> imp
 
         progress.setSubtask("Sketching");
         ExecuteInParallel.apply(genomesBlock.getGenomes(), g ->
-                        Collections.singleton(DashingSketch.compute(g.getName(), Basic.asList(g.parts()), getOptionKMerSize(), getOptionPrefixSize(), getOptionHashSeed(), isOptionIgnoreUniqueKMers(), progress)),
-                sketches, ProgramExecutorService.getNumberOfCoresToUse(), progress);
+						Collections.singleton(DashingSketch.compute(g.getName(), IteratorUtils.asList(g.parts()), getOptionKMerSize(), getOptionPrefixSize(), getOptionHashSeed(), isOptionIgnoreUniqueKMers(), progress)),
+				sketches, ProgramExecutorService.getNumberOfCoresToUse(), progress);
         progress.reportTaskCompleted();
 
         if (sketches.size() < 4) {

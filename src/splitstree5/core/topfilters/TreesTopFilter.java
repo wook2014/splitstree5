@@ -21,10 +21,8 @@
 package splitstree5.core.topfilters;
 
 import jloda.phylo.PhyloTree;
-import jloda.util.Basic;
-import jloda.util.BitSetUtils;
-import jloda.util.CanceledException;
-import jloda.util.ProgressListener;
+import jloda.util.*;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
@@ -72,10 +70,10 @@ public class TreesTopFilter extends ATopFilter<TreesBlock> {
                         if (inducedTree != null) {
                             child.getTrees().add(inducedTree);
                             if (false && !BitSetUtils.contains(modifiedTaxaBlock.getTaxaSet(), TreesUtilities.getTaxa(inducedTree))) {
-                                System.err.println("taxa:" + Basic.toString(modifiedTaxaBlock.getTaxaSet()));
-                                System.err.println("tree:" + Basic.toString(TreesUtilities.getTaxa(inducedTree)));
-                                throw new RuntimeException("Induce tree failed");
-                            }
+								System.err.println("taxa:" + StringUtils.toString(modifiedTaxaBlock.getTaxaSet()));
+								System.err.println("tree:" + StringUtils.toString(TreesUtilities.getTaxa(inducedTree)));
+								throw new RuntimeException("Induce tree failed");
+							}
                         }
                         progress.incrementProgress();
                     }

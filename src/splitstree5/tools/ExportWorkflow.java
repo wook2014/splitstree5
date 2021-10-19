@@ -28,6 +28,8 @@ import jloda.fx.util.ProgramExecutorService;
 import jloda.fx.util.ResourceManagerFX;
 import jloda.fx.window.NotificationManager;
 import jloda.util.*;
+import jloda.util.progress.ProgressListener;
+import jloda.util.progress.ProgressPercentage;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.Workflow;
@@ -132,7 +134,7 @@ public class ExportWorkflow extends Application {
                     outputFiles = new String[nodeNames.length];
                     for (int i = 0; i < nodeNames.length; i++) {
                         final String suffix = ExportManager.getInstance().getExporterByName(exportFormats[i]).getExtensions().get(0);
-                        outputFiles[i] = Basic.replaceFileSuffix(inputWorkflowFile.getPath(), "-" + nodeNames[i] + "." + suffix);
+						outputFiles[i] = FileUtils.replaceFileSuffix(inputWorkflowFile.getPath(), "-" + nodeNames[i] + "." + suffix);
                     }
                 } else if (nodeNames.length > 1 && !outputFiles[0].equals("stdout")) {
                     throw new IOException("Too few output files specified");

@@ -21,7 +21,7 @@
 package splitstree5.core.algorithms.distances2splits;
 
 import jloda.util.CanceledException;
-import jloda.util.ProgressPercentage;
+import jloda.util.progress.ProgressPercentage;
 import jloda.util.parse.NexusStreamParser;
 import org.junit.Test;
 import splitstree5.core.datablocks.DistancesBlock;

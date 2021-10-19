@@ -20,7 +20,7 @@
 
 package splitstree5.core.analysis;
 
-import jloda.util.ProgressListener;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.AnalysisBlock;
 import splitstree5.core.datablocks.TaxaBlock;

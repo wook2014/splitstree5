@@ -20,10 +20,8 @@
 
 package splitstree5.io.imports;
 
-import jloda.util.Basic;
-import jloda.util.FileLineIterator;
-import jloda.util.IOExceptionWithLineNumber;
-import jloda.util.ProgressListener;
+import jloda.util.*;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IToCharacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -145,7 +143,7 @@ public class ClustalImporter extends CharactersFormat implements IToCharacters, 
 
     @Override
     public boolean isApplicable(String fileName) throws IOException {
-        String line = Basic.getFirstLineFromFile(new File(fileName));
+		String line = FileUtils.getFirstLineFromFile(new File(fileName));
         return line != null && line.toUpperCase().startsWith("CLUSTAL");
     }
 }

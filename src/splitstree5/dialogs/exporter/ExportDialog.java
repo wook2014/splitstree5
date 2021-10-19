@@ -28,6 +28,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import jloda.fx.util.ExtendedFXMLLoader;
 import jloda.util.Basic;
+import jloda.util.FileUtils;
 import jloda.util.ProgramProperties;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -97,7 +98,7 @@ public class ExportDialog {
                 if (previousDir.isDirectory())
                     fileChooser.setInitialDirectory(previousDir);
                 if (!workingTaxa.getDocument().getFileName().isBlank())
-                    fileChooser.setInitialFileName(Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(workingTaxa.getDocument().getFileName()), ""));
+					fileChooser.setInitialFileName(FileUtils.replaceFileSuffix(FileUtils.getFileNameWithoutPath(workingTaxa.getDocument().getFileName()), ""));
                 fileChooser.setTitle("Export File");
                 File selectedFile = fileChooser.showSaveDialog(stage);
                 if (selectedFile != null) {

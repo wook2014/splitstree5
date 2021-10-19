@@ -29,6 +29,8 @@ import jloda.fx.util.ProgramExecutorService;
 import jloda.fx.util.ResourceManagerFX;
 import jloda.fx.window.NotificationManager;
 import jloda.util.*;
+import jloda.util.progress.ProgressListener;
+import jloda.util.progress.ProgressPercentage;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.Workflow;
@@ -141,7 +143,7 @@ RunWorkflow extends Application {
         if (inputFiles.length == 1) {
             final File input = new File(inputFiles[0]);
             if (input.isDirectory()) {
-                final ArrayList<File> inputList = Basic.getAllFilesInDirectory(input, inputRecursively, inputFileExtension);
+				final ArrayList<File> inputList = FileUtils.getAllFilesInDirectory(input, inputRecursively, inputFileExtension);
                 inputFiles = new String[inputList.size()];
                 for (int i = 0; i < inputList.size(); i++) {
                     inputFiles[i] = inputList.get(i).getPath();
@@ -171,8 +173,8 @@ RunWorkflow extends Application {
 
                     outputFiles = new String[inputFiles.length];
                     for (int i = 0; i < inputFiles.length; i++) {
-                        final File input = new File(inputFiles[i]);
-                        String name = Basic.replaceFileSuffix(input.getName(), "-out" + extension);
+						final File input = new File(inputFiles[i]);
+						String name = FileUtils.replaceFileSuffix(input.getName(), "-out" + extension);
                         outputFiles[i] = (new File(output.getPath(), name)).getPath();
                     }
                 } else if (inputFiles.length > 1 && !outputFiles[0].equals("stdout")) {

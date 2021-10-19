@@ -20,8 +20,8 @@
 
 package splitstree5.core.algorithms.trees2splits;
 
-import jloda.util.ProgressListener;
-import jloda.util.ProgressPercentage;
+import jloda.util.progress.ProgressListener;
+import jloda.util.progress.ProgressPercentage;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.distances2splits.NeighborNet;
 import splitstree5.core.algorithms.interfaces.IFromTrees;

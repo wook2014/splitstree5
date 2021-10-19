@@ -23,6 +23,7 @@ package splitstree5.dialogs.exporter;
 import jloda.fx.util.RecentFilesManager;
 import jloda.fx.window.NotificationManager;
 import jloda.util.Basic;
+import jloda.util.FileUtils;
 import jloda.util.PluginClassLoader;
 import splitstree5.core.datablocks.*;
 import splitstree5.io.exports.interfaces.*;
@@ -88,11 +89,11 @@ public class ExportManager {
      * @return file with suffix added, if necessary
      */
     public File ensureFileSuffix(File selectedFile, String exporterName) {
-        String suffix = Basic.getFileSuffix(selectedFile.getName());
+		String suffix = FileUtils.getFileSuffix(selectedFile.getName());
         if (suffix == null) {
             IExporter exporter = getExporterByName(exporterName);
             if (exporter != null && exporter.getExtensions().size() > 0) {
-                return Basic.replaceFileSuffix(selectedFile, "." + exporter.getExtensions().get(0));
+				return FileUtils.replaceFileSuffix(selectedFile, "." + exporter.getExtensions().get(0));
             }
         }
         return selectedFile;

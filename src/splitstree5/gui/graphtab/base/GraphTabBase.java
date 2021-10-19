@@ -56,6 +56,7 @@ import jloda.graph.NodeArray;
 import jloda.phylo.PhyloGraph;
 import jloda.util.Basic;
 import jloda.util.Single;
+import jloda.util.StringUtils;
 import splitstree5.core.Document;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.Taxon;
@@ -184,7 +185,7 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
             if (verbose) {
                 System.err.println("Node selection for " + Basic.getShortName(this.getClass()) + "(" + this + "):");
                 for (Node v : graph.nodes()) {
-                    System.err.println("node " + v + " id: " + v.getId() + " label: " + graph.getLabel(v) + " taxa: " + Basic.toString(graph.getTaxa(v), " "));
+					System.err.println("node " + v + " id: " + v.getId() + " label: " + graph.getLabel(v) + " taxa: " + StringUtils.toString(graph.getTaxa(v), " "));
                 }
             }
             while (c.next()) {
@@ -638,8 +639,8 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
             if (set.size() > 0) {
                 final Clipboard clipboard = Clipboard.getSystemClipboard();
                 final ClipboardContent content = new ClipboardContent();
-                content.putString(Basic.toString(set, "\n"));
-                clipboard.setContent(content);
+				content.putString(StringUtils.toString(set, "\n"));
+				clipboard.setContent(content);
             }
         });
         controller.getCopyMenuItem().disableProperty().bind(Bindings.isEmpty(nodeSelectionModel.getSelectedItems()).and(Bindings.isEmpty(edgeSelectionModel.getSelectedItems())));

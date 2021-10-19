@@ -33,6 +33,7 @@ import jloda.fx.window.MainWindowManager;
 import jloda.fx.window.NotificationManager;
 import jloda.util.Basic;
 import jloda.util.ProgramProperties;
+import jloda.util.StringUtils;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -243,11 +244,11 @@ public class MessageWindow {
 
 
             public void println(char[] x) {
-                lines.add(Basic.toString(x) + "\n");
+				lines.add(StringUtils.toString(x) + "\n");
             }
 
             public void print(char[] x) {
-                lines.add(Basic.toString(x));
+				lines.add(StringUtils.toString(x));
             }
 
             public void write(byte[] buf, int off, int len) {

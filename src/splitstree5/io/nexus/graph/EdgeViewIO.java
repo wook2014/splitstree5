@@ -31,6 +31,7 @@ import jloda.graph.Node;
 import jloda.phylo.PhyloGraph;
 import jloda.util.Basic;
 import jloda.util.IOExceptionWithLineNumber;
+import jloda.util.StringUtils;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.gui.graphtab.base.EdgeView2D;
 import splitstree5.gui.graphtab.base.Graph2DTab;
@@ -57,11 +58,11 @@ public class EdgeViewIO {
         if (ev.getShape() instanceof Line) {
             final Line line = (Line) ev.getShape();
 
-            buf.append(String.format(" S: 'M %s %s L %s %s'",
-                    Basic.toString(line.getStartX(), 4),
-                    Basic.toString(line.getStartY(), 4),
-                    Basic.toString(line.getEndX(), 4),
-                    Basic.toString(line.getEndY(), 4)));
+			buf.append(String.format(" S: 'M %s %s L %s %s'",
+					StringUtils.toString(line.getStartX(), 4),
+					StringUtils.toString(line.getStartY(), 4),
+					StringUtils.toString(line.getEndX(), 4),
+					StringUtils.toString(line.getEndY(), 4)));
         } else if (ev.getShape() instanceof Path) {
             final Path path = (Path) ev.getShape();
 
@@ -75,57 +76,57 @@ public class EdgeViewIO {
                     buf.append(" ");
                 if (element instanceof MoveTo) {
                     final MoveTo to = (MoveTo) element;
-                    buf.append(String.format("M %s %s",
-                            Basic.toString(to.getX(), 4),
-                            Basic.toString(to.getY(), 4)));
+					buf.append(String.format("M %s %s",
+							StringUtils.toString(to.getX(), 4),
+							StringUtils.toString(to.getY(), 4)));
                 } else if (element instanceof LineTo) {
                     final LineTo to = (LineTo) element;
-                    buf.append(String.format("L %s %s",
-                            Basic.toString(to.getX(), 4),
-                            Basic.toString(to.getY(), 4)));
+					buf.append(String.format("L %s %s",
+							StringUtils.toString(to.getX(), 4),
+							StringUtils.toString(to.getY(), 4)));
                 } else if (element instanceof ArcTo) {
                     // rx, ry, x-axis-rotation, large-arc-flag, sweep-flag, x, y
                     final ArcTo to = (ArcTo) element;
                     buf.append(String.format("A %s %s %s %s %s %s %s",
-                            Basic.toString(to.getRadiusX(), 4),
-                            Basic.toString(to.getRadiusY(), 4),
-                            Basic.toString(to.getXAxisRotation(), 4),
-                            Basic.toString(to.getX(), 4),
-                            Basic.toString(to.getY(), 4),
-                            to.isLargeArcFlag(), to.isSweepFlag()));
+							StringUtils.toString(to.getRadiusX(), 4),
+							StringUtils.toString(to.getRadiusY(), 4),
+							StringUtils.toString(to.getXAxisRotation(), 4),
+							StringUtils.toString(to.getX(), 4),
+							StringUtils.toString(to.getY(), 4),
+							to.isLargeArcFlag(), to.isSweepFlag()));
                 } else if (element instanceof QuadCurveTo) {
                     final QuadCurveTo to = (QuadCurveTo) element;
-                    buf.append(String.format("Q %s %s %s %s",
-                            Basic.toString(to.getControlX(), 4),
-                            Basic.toString(to.getControlY(), 4),
-                            Basic.toString(to.getX(), 4),
-                            Basic.toString(to.getY(), 4)));
+					buf.append(String.format("Q %s %s %s %s",
+							StringUtils.toString(to.getControlX(), 4),
+							StringUtils.toString(to.getControlY(), 4),
+							StringUtils.toString(to.getX(), 4),
+							StringUtils.toString(to.getY(), 4)));
 
                 } else if (element instanceof CubicCurveTo) {
                     final CubicCurveTo to = (CubicCurveTo) element;
-                    buf.append(String.format("C %s %s %s %s %s %s",
-                            Basic.toString(to.getControlX1(), 4),
-                            Basic.toString(to.getControlY1(), 4),
-                            Basic.toString(to.getControlX2(), 4),
-                            Basic.toString(to.getControlY2(), 4),
-                            Basic.toString(to.getX(), 4),
-                            Basic.toString(to.getY(), 4)));
+					buf.append(String.format("C %s %s %s %s %s %s",
+							StringUtils.toString(to.getControlX1(), 4),
+							StringUtils.toString(to.getControlY1(), 4),
+							StringUtils.toString(to.getControlX2(), 4),
+							StringUtils.toString(to.getControlY2(), 4),
+							StringUtils.toString(to.getX(), 4),
+							StringUtils.toString(to.getY(), 4)));
                 }
             }
             if (!first)
                 buf.append("'");
         }
-        buf.append(String.format(" %s %s", Basic.toString(ev.getStrokeWidth(), 2), ((Color) ev.getStroke()).toString()));
+		buf.append(String.format(" %s %s", StringUtils.toString(ev.getStrokeWidth(), 2), ((Color) ev.getStroke()).toString()));
 
         if (ev.getLabel() != null && ev.getLabel().getText().length() > 0) {
             final Labeled label = ev.getLabel();
 
-            buf.append(String.format(" L: '%s' %s %s", label.getText(),
-                    Basic.toString(label.getTranslateX(), 4),
-                    Basic.toString(label.getTranslateY(), 4)));
-            buf.append(String.format(" %s '%s'",
-                    ((Color) label.getTextFill()).toString(),
-                    FontUtils.toString(label.getFont())));
+			buf.append(String.format(" L: '%s' %s %s", label.getText(),
+					StringUtils.toString(label.getTranslateX(), 4),
+					StringUtils.toString(label.getTranslateY(), 4)));
+			buf.append(String.format(" %s '%s'",
+					((Color) label.getTextFill()).toString(),
+					FontUtils.toString(label.getFont())));
         }
         return buf.toString();
     }

@@ -28,7 +28,7 @@ import javafx.stage.Stage;
 import jloda.fx.util.RecentFilesManager;
 import jloda.fx.window.MainWindowManager;
 import jloda.fx.window.NotificationManager;
-import jloda.util.Basic;
+import jloda.util.FileUtils;
 import splitstree5.core.Document;
 import splitstree5.core.algorithms.characters2distances.HammingDistances;
 import splitstree5.core.algorithms.distances2splits.NeighborNet;
@@ -74,7 +74,7 @@ public class DataLoader {
                     if (!fileName.endsWith(".tmp"))
                         RecentFilesManager.getInstance().insertRecentFile(fileName);
                     final String shortDescription = workflow.getTopTaxaNode() != null ? workflow.getTopDataNode().getShortDescription() : "null";
-                    NotificationManager.showInformation("Opened file: " + Basic.getFileNameWithoutPath(fileName) + (shortDescription.length() > 0 ? "\nLoaded " + shortDescription : ""));
+					NotificationManager.showInformation("Opened file: " + FileUtils.getFileNameWithoutPath(fileName) + (shortDescription.length() > 0 ? "\nLoaded " + shortDescription : ""));
                 });
                 return;
             } else if (workflow.getWorkingDataNode() != null && workflow.getWorkingDataNode().getDataBlock() != null) {
@@ -95,7 +95,7 @@ public class DataLoader {
         }
         final Document document = mainWindow.getDocument();
 
-        document.setFileName(Basic.replaceFileSuffix(fileName, ".stree5"));
+		document.setFileName(FileUtils.replaceFileSuffix(fileName, ".stree5"));
 
         final Workflow workflow = mainWindow.getWorkflow();
 
@@ -171,7 +171,7 @@ public class DataLoader {
                 mainWindow.show(new Stage(), refWindow.getX() + 50, refWindow.getY() + 50, refWindow.getWidth(), refWindow.getHeight());
             }
             final String shortDescription = workflow.getTopTaxaNode() != null ? workflow.getTopDataNode().getShortDescription() : "null";
-            NotificationManager.showInformation("Opened file: " + Basic.getFileNameWithoutPath(fileName) + (shortDescription.length() > 0 ? "\nLoaded " + shortDescription : ""));
+			NotificationManager.showInformation("Opened file: " + FileUtils.getFileNameWithoutPath(fileName) + (shortDescription.length() > 0 ? "\nLoaded " + shortDescription : ""));
         });
 
         Platform.runLater(() -> {

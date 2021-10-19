@@ -30,7 +30,7 @@ import jloda.fx.window.NotificationManager;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
 import jloda.util.Pair;
-import jloda.util.ProgressListener;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.datablocks.*;
 import splitstree5.io.imports.interfaces.*;
 import splitstree5.io.imports.nexus.TraitsNexusImporter;

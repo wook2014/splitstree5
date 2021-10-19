@@ -21,7 +21,7 @@
 package splitstree5.core.datablocks;
 
 import javafx.collections.FXCollections;
-import jloda.util.Basic;
+import jloda.util.StringUtils;
 import splitstree5.core.algorithms.interfaces.IFromSplits;
 import splitstree5.core.algorithms.interfaces.IToSplits;
 import splitstree5.core.misc.ASplit;
@@ -240,7 +240,7 @@ public class SplitsBlock extends DataBlock {
 
     @Override
     public String getInfo() {
-        return getNsplits() + " splits" + (compatibility != Compatibility.unknown ? ", " + Basic.fromCamelCase(compatibility.toString()).toLowerCase() : "");
+		return getNsplits() + " splits" + (compatibility != Compatibility.unknown ? ", " + StringUtils.fromCamelCase(compatibility.toString()).toLowerCase() : "");
     }
 
     @Override

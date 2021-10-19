@@ -106,6 +106,4 @@ public class SplitsNexusFormat implements INexusFormat {
     public List<String> listOptions() {
         return null;
     }
-
-
 }

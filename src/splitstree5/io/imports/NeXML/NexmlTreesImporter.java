@@ -25,7 +25,8 @@ import jloda.graph.Node;
 import jloda.graph.algorithms.IsTree;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
-import jloda.util.ProgressListener;
+import jloda.util.FileUtils;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IToTrees;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
@@ -121,19 +122,19 @@ public class NexmlTreesImporter implements IToTrees, IImportTrees {
     @Override
     public boolean isApplicable(String fileName) throws IOException {
 
-        String firstLine = Basic.getFirstLineFromFile(new File(fileName));
+		String firstLine = FileUtils.getFirstLineFromFile(new File(fileName));
         if (firstLine == null || !firstLine.equals("<nex:nexml") && !firstLine.startsWith("<?xml version="))
             return false;
 
-        try (BufferedReader ins = new BufferedReader(new InputStreamReader(Basic.getInputStreamPossiblyZIPorGZIP(fileName)))) {
-            String aLine;
-            while ((aLine = ins.readLine()) != null) {
-                if (aLine.contains("<tree"))
-                    return true;
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+		try (BufferedReader ins = new BufferedReader(new InputStreamReader(FileUtils.getInputStreamPossiblyZIPorGZIP(fileName)))) {
+			String aLine;
+			while ((aLine = ins.readLine()) != null) {
+				if (aLine.contains("<tree"))
+					return true;
+			}
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
 
         return false;
     }

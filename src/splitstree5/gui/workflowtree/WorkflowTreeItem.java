@@ -144,15 +144,8 @@ public class WorkflowTreeItem extends TreeItem<String> {
                 });
                 duplicate.setDisable(!(workflowNode instanceof Connector));
 
-
                 label.setContextMenu(new ContextMenu(show, new SeparatorMenuItem(), export, new SeparatorMenuItem(), duplicate));
             }
-            label.setOnMouseClicked((e) -> {
-                if (e.getClickCount() == 2) {
-                    showView();
-                    e.consume();
-                }
-            });
             label.setOnMouseClicked((e) -> {
                 if (e.getClickCount() == 2) {
                     showView();

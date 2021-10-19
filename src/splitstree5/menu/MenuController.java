@@ -390,9 +390,6 @@ public class MenuController {
     private MenuItem showMessageWindowMenuItem;
 
     @FXML
-    private MenuItem communityWebsiteMenuItem;
-
-    @FXML
     private MenuItem checkForUpdatesMenuItem;
 
     private MainWindow mainWindow;
@@ -852,10 +849,6 @@ public class MenuController {
 
     public MenuItem getShowMessageWindowMenuItem() {
         return showMessageWindowMenuItem;
-    }
-
-    public MenuItem getCommunityWebsiteMenuItem() {
-        return communityWebsiteMenuItem;
     }
 
     public MenuItem getCheckForUpdatesMenuItem() {

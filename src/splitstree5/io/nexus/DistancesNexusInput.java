@@ -20,8 +20,8 @@
 
 package splitstree5.io.nexus;
 
-import jloda.util.Basic;
 import jloda.util.IOExceptionWithLineNumber;
+import jloda.util.StringUtils;
 import jloda.util.parse.NexusStreamParser;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -96,7 +96,7 @@ public class DistancesNexusInput extends NexusIOBase implements INexusInput<Dist
                 format.setOptionDiagonal(np.findIgnoreCase(tokens, "diagonal=no", false, format.isOptionDiagonal()));
                 format.setOptionDiagonal(np.findIgnoreCase(tokens, "diagonal=yes", true, format.isOptionDiagonal()));
 
-                format.setOptionTriangleByLabel(np.findIgnoreCase(tokens, "triangle=", Basic.toString(DistancesNexusFormat.Triangle.values(), " "), format.getOptionTriangle().toString()));
+				format.setOptionTriangleByLabel(np.findIgnoreCase(tokens, "triangle=", StringUtils.toString(DistancesNexusFormat.Triangle.values(), " "), format.getOptionTriangle().toString()));
 
                 // backward compatibility:
                 format.setOptionLabels(np.findIgnoreCase(tokens, "no labels", false, format.isOptionLabels()));

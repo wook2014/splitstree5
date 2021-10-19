@@ -25,7 +25,8 @@ import jloda.graph.Node;
 import jloda.phylo.PhyloGraph;
 import jloda.util.Basic;
 import jloda.util.CanceledException;
-import jloda.util.ProgressListener;
+import jloda.util.progress.ProgressListener;
+import jloda.util.StringUtils;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.NetworkBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -90,7 +91,7 @@ public abstract class QuasiMedianBase {
             System.err.println();
             System.err.println("Condensed to orig:");
             for (int t = 0; t < condensed2OrigPos.length; t++) {
-                System.err.println(t + ": " + Basic.toString(condensed2OrigPos[t]));
+				System.err.println(t + ": " + StringUtils.toString(condensed2OrigPos[t]));
             }
         }
 

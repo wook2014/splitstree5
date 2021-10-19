@@ -23,7 +23,7 @@ package splitstree5.io.nexus.utils;
 import jloda.graph.Edge;
 import jloda.graph.Node;
 import jloda.phylo.PhyloSplitsGraph;
-import jloda.util.Basic;
+import jloda.util.StringUtils;
 import jloda.util.parse.NexusStreamParser;
 
 import java.io.IOException;
@@ -55,7 +55,7 @@ public class UnrootedNetworkNexusIO {
             w.write("{" + v.getId());
             if (saveTaxonIds) {
                 if (graph.hasTaxa(v)) {
-                    w.write(" t=" + Basic.toString(graph.getTaxa(v), " "));
+					w.write(" t=" + StringUtils.toString(graph.getTaxa(v), " "));
                 }
             }
             if (node2attributes != null) {

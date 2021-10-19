@@ -23,7 +23,8 @@ package splitstree5.core.algorithms;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import jloda.util.Basic;
-import jloda.util.ProgressListener;
+import jloda.util.progress.ProgressListener;
+import jloda.util.StringUtils;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.workflow.Connector;
@@ -58,9 +59,9 @@ abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extend
      * @param name
      */
     public Algorithm(String name) {
-        this(name, name.endsWith("Filter") ?
-                Basic.fromCamelCase(name).replaceAll("Filter", "filter") :
-                Basic.fromCamelCase(name) + " algorithm");
+		this(name, name.endsWith("Filter") ?
+				StringUtils.fromCamelCase(name).replaceAll("Filter", "filter") :
+				StringUtils.fromCamelCase(name) + " algorithm");
     }
 
     /**

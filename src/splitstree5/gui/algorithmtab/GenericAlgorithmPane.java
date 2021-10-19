@@ -32,6 +32,7 @@ import javafx.util.converter.FloatStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import jloda.fx.undo.UndoManager;
 import jloda.util.Basic;
+import jloda.util.StringUtils;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.workflow.Connector;
@@ -97,8 +98,8 @@ public class GenericAlgorithmPane<P extends DataBlock, C extends DataBlock> exte
         int row = 1;
         try {
             for (final Option option : options) {
-                final String text = Basic.fromCamelCase(option.getName());
-                final Label label = new Label(text);
+				final String text = StringUtils.fromCamelCase(option.getName());
+				final Label label = new Label(text);
                 label.setTooltip(new Tooltip(text));
                 grid.add(label, 0, row);
                 switch (option.getType().getTypeName()) {

@@ -31,7 +31,7 @@ import jloda.graph.NodeDoubleArray;
 import jloda.phylo.PhyloGraph;
 import jloda.phylo.PhyloSplitsGraph;
 import jloda.util.CanceledException;
-import jloda.util.ProgressListener;
+import jloda.util.progress.ProgressListener;
 
 import java.util.ArrayList;
 import java.util.BitSet;

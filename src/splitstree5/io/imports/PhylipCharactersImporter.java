@@ -20,9 +20,8 @@
 
 package splitstree5.io.imports;
 
-import jloda.util.Basic;
-import jloda.util.FileLineIterator;
-import jloda.util.ProgressListener;
+import jloda.util.*;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IToCharacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -107,9 +106,9 @@ public class PhylipCharactersImporter extends CharactersFormat implements IToCha
                             }
                         } else {
                             if (taxonName == null) {
-                                taxonName = line.substring(0, 10).trim();
-                                taxonName = Basic.getUniqueName(taxonName, taxaSet);
-                                taxaSet.add(taxonName);
+								taxonName = line.substring(0, 10).trim();
+								taxonName = StringUtils.getUniqueName(taxonName, taxaSet);
+								taxaSet.add(taxonName);
                                 sequence.setLength(0);
                                 sequence.append(line.substring(10).replaceAll("\\s+", ""));
                             } else
@@ -179,8 +178,8 @@ public class PhylipCharactersImporter extends CharactersFormat implements IToCha
                             continue;
                         } else if (taxonNames.size() < nTax) {
                             var name = line.substring(0, 10).trim();
-                            name = Basic.getUniqueName(name, taxaSet);
-                            taxaSet.add(name);
+							name = StringUtils.getUniqueName(name, taxaSet);
+							taxaSet.add(name);
                             taxonNames.add(name);
                             sequenceBuffers.add(new StringBuilder());
                             sequenceBuffers.get(which).append(line.substring(10).replaceAll("\\s+", ""));
@@ -220,7 +219,7 @@ public class PhylipCharactersImporter extends CharactersFormat implements IToCha
 
     @Override
     public boolean isApplicable(String fileName) throws IOException {
-        var line = Basic.getFirstLineFromFile(new File(fileName));
+		var line = FileUtils.getFirstLineFromFile(new File(fileName));
         if (line == null)
             return false;
         var tokens = line.trim().split("\\s+");

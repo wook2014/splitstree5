@@ -20,7 +20,7 @@
 
 package splitstree5.io.nexus;
 
-import jloda.util.Basic;
+import jloda.util.StringUtils;
 import splitstree5.core.datablocks.AnalysisBlock;
 
 import java.io.IOException;
@@ -40,9 +40,9 @@ public class AnalysisNexusOutput extends NexusIOBase {
      */
     public void write(Writer w, AnalysisBlock block) throws IOException {
         w.write("\nBEGIN " + AnalysisBlock.BLOCK_NAME + ";\n");
-        writeTitleAndLink(w);
-        w.write("DIMENSIONS nlines=" + Basic.countOccurrences(block.getShortDescription(), '\n') + ";\n");
-        w.write("RESULT;\n");
+		writeTitleAndLink(w);
+		w.write("DIMENSIONS nlines=" + StringUtils.countOccurrences(block.getShortDescription(), '\n') + ";\n");
+		w.write("RESULT;\n");
         w.write(block.getShortDescription());
         if (!block.getShortDescription().endsWith("\n"))
             w.write("\n");

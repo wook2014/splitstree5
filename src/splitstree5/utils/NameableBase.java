@@ -24,6 +24,7 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import jloda.util.Basic;
+import jloda.util.StringUtils;
 
 import java.util.List;
 
@@ -79,7 +80,7 @@ public class NameableBase {
 
     public StringProperty shortDescriptionProperty() {
         if (shortDescription == null)
-            shortDescription = new SimpleStringProperty(Basic.fromCamelCase(Basic.getShortName(this.getClass())));
+			shortDescription = new SimpleStringProperty(StringUtils.fromCamelCase(Basic.getShortName(this.getClass())));
         return shortDescription;
     }
 
@@ -99,7 +100,7 @@ public class NameableBase {
      */
     public void setShortDescription(String shortDescription) {
         if (shortDescription == null)
-            shortDescription = Basic.fromCamelCase(Basic.getShortName(this.getClass()));
+			shortDescription = StringUtils.fromCamelCase(Basic.getShortName(this.getClass()));
         shortDescriptionProperty().set(shortDescription);
     }
 
@@ -131,8 +132,8 @@ public class NameableBase {
      * clear title and links
      */
     public void clear() {
-        title = null;
-        Platform.runLater(() -> setShortDescription(Basic.fromCamelCase(Basic.getShortName(this.getClass()))));
+		title = null;
+		Platform.runLater(() -> setShortDescription(StringUtils.fromCamelCase(Basic.getShortName(this.getClass()))));
     }
 
     /**

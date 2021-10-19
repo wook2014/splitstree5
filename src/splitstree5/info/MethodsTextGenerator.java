@@ -20,8 +20,8 @@
 
 package splitstree5.info;
 
-import jloda.util.Basic;
 import jloda.util.Pair;
+import jloda.util.StringUtils;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.filters.IFilter;
 import splitstree5.core.workflow.Connector;
@@ -103,8 +103,8 @@ public class MethodsTextGenerator {
 
                         if (algorithm instanceof IFilter) {
                             if (((IFilter) algorithm).isActive()) {
-                                final String name = Basic.fromCamelCase(algorithm.getName());
-                                final String optionsReport = algorithm.getOptionsReport();
+								final String name = StringUtils.fromCamelCase(algorithm.getName());
+								final String optionsReport = algorithm.getOptionsReport();
                                 final String line = String.format(filterTemplate, name, optionsReport.length() > 0 ? " (" + optionsReport + ")" : "", algorithm.getShortDescription());
                                 if (!set.contains(line)) {
                                     buf.append(line);
@@ -117,7 +117,7 @@ public class MethodsTextGenerator {
                                 final Collection<Pair<String, String>> keysAndPapers = getKeysAndPapers(algorithm);
                                 if (keysAndPapers != null)
                                     allKeysAndPapers.addAll(keysAndPapers);
-                                final String name = Basic.fromCamelCase(algorithm.getName());
+								final String name = StringUtils.fromCamelCase(algorithm.getName());
 
                                 final String optionsReport = algorithm.getOptionsReport();
                                 final String line;
@@ -159,8 +159,8 @@ public class MethodsTextGenerator {
         if (algorithm.getCitation() == null || algorithm.getCitation().length() < 2)
             return "";
         else {
-            final String[] tokens = Basic.split(algorithm.getCitation(), ';');
-            final StringBuilder buf = new StringBuilder();
+			final String[] tokens = StringUtils.split(algorithm.getCitation(), ';');
+			final StringBuilder buf = new StringBuilder();
             buf.append(" (");
             for (int i = 0; i < tokens.length; i += 2) {
                 if (i > 0)
@@ -183,8 +183,8 @@ public class MethodsTextGenerator {
         if (algorithm.getCitation() == null || algorithm.getCitation().length() < 2)
             return null;
         else {
-            Set<Pair<String, String>> set = new TreeSet<>();
-            final String[] tokens = Basic.split(algorithm.getCitation(), ';');
+			Set<Pair<String, String>> set = new TreeSet<>();
+			final String[] tokens = StringUtils.split(algorithm.getCitation(), ';');
             if (tokens.length % 2 == 1)
                 System.err.println("Internal error: Citation string has odd number of tokens: " + algorithm.getCitation());
             for (int i = 0; i < tokens.length - 1; i += 2) {
@@ -199,8 +199,8 @@ public class MethodsTextGenerator {
     }
 
     public static Collection<Pair<String, String>> getSplitsTreeKeysAndPapers() {
-        return Arrays.asList(new Pair<>("Huson and Bryant 2006",
-                "D.H. Huson and D. Bryant. Application of phylogenetic networks in evolutionary studies. Molecular Biology and Evolution, 23:254–267, 2006."));
+		return List.of(new Pair<>("Huson and Bryant 2006",
+				"D.H. Huson and D. Bryant. Application of phylogenetic networks in evolutionary studies. Molecular Biology and Evolution, 23:254–267, 2006."));
     }
 
 

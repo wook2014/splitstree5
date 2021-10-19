@@ -21,6 +21,7 @@
 package splitstree5.io.imports;
 
 import jloda.util.*;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IToCharacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -136,7 +137,7 @@ public class MSFImporter extends CharactersFormat implements IToCharacters, IImp
 
     @Override
     public boolean isApplicable(String fileName) throws IOException {
-        String line = Basic.getFirstLineFromFile(new File(fileName));
+		String line = FileUtils.getFirstLineFromFile(new File(fileName));
         return line != null &&
                 (line.toUpperCase().equals("!!NA_MULTIPLE_ALIGNMENT 1.0")
                         || line.toUpperCase().equals("!!AA_MULTIPLE_ALIGNMENT 1.0")

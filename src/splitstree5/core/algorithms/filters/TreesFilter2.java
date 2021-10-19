@@ -25,7 +25,7 @@ import jloda.graph.Edge;
 import jloda.phylo.PhyloTree;
 import jloda.phylo.PhyloTreeUtils;
 import jloda.util.CanceledException;
-import jloda.util.ProgressListener;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToTrees;

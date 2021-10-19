@@ -35,7 +35,8 @@ import jloda.graph.NodeArray;
 import jloda.graph.fmm.FastMultiLayerMethodLayout;
 import jloda.phylo.PhyloGraph;
 import jloda.util.Basic;
-import jloda.util.ProgressListener;
+import jloda.util.progress.ProgressListener;
+import jloda.util.StringUtils;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromNetwork;
 import splitstree5.core.algorithms.interfaces.IToViewer;
@@ -142,7 +143,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
                 final StringBuilder buf = new StringBuilder();
                 if (label.startsWith("{") && label.endsWith("}")) // multi-labeled node //todo: differentiate between multi label and html?
                 {
-                    final String[] tokens = Basic.split(label.substring(1, label.length() - 1), ',');
+					final String[] tokens = StringUtils.split(label.substring(1, label.length() - 1), ',');
                     for (String token : tokens) {
                         if (Basic.isInteger(token)) {
                             if (buf.length() > 0)
@@ -227,19 +228,19 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
             }
         }
         for (Edge e : graph.edges()) {
-            final EdgeViewBase edgeView;
+			final EdgeViewBase edgeView;
 
-            if (Basic.isArrayOfIntegers(edge2data.get(e).get("sites"))) {
-                final int[] mutations = Basic.parseArrayOfIntegers(edge2data.get(e).get("sites"));
-                edgeView = viewTab.createEdgeView(e, node2point.get(e.getSource()), node2point.get(e.getTarget()), mutations, getOptionShowMutations());
-            } else
-                edgeView = viewTab.createEdgeView(e, node2point.get(e.getSource()), node2point.get(e.getTarget()), null);
+			if (StringUtils.isArrayOfIntegers(edge2data.get(e).get("sites"))) {
+				final int[] mutations = StringUtils.parseArrayOfIntegers(edge2data.get(e).get("sites"));
+				edgeView = viewTab.createEdgeView(e, node2point.get(e.getSource()), node2point.get(e.getTarget()), mutations, getOptionShowMutations());
+			} else
+				edgeView = viewTab.createEdgeView(e, node2point.get(e.getSource()), node2point.get(e.getTarget()), null);
 
-            viewTab.getEdge2view().put(e, edgeView);
-            viewTab.getEdgesGroup().getChildren().add(edgeView.getShapeGroup());
-            if (edgeView.getLabel() != null)
-                viewTab.getEdgeLabelsGroup().getChildren().add(edgeView.getLabel());
-        }
+			viewTab.getEdge2view().put(e, edgeView);
+			viewTab.getEdgesGroup().getChildren().add(edgeView.getShapeGroup());
+			if (edgeView.getLabel() != null)
+				viewTab.getEdgeLabelsGroup().getChildren().add(edgeView.getLabel());
+		}
         Platform.runLater(() -> viewTab.updateSelectionModels(graph, taxaBlock, child.getDocument()));
         child.show();
 

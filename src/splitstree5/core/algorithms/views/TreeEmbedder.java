@@ -36,9 +36,9 @@ import javafx.scene.text.Font;
 import jloda.fx.util.GeometryUtilsFX;
 import jloda.graph.*;
 import jloda.phylo.PhyloTree;
-import jloda.util.Basic;
 import jloda.util.ProgramProperties;
-import jloda.util.ProgressListener;
+import jloda.util.progress.ProgressListener;
+import jloda.util.StringUtils;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.algorithms.interfaces.IFromTrees;
 import splitstree5.core.algorithms.interfaces.IToViewer;
@@ -199,7 +199,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
                         else
                             text = tree.getLabel(v);
                     } else if (tree.getNumberOfTaxa(v) > 0)
-                        text = Basic.toString(taxaBlock.getLabels(tree.getTaxa(v)), ",");
+						text = StringUtils.toString(taxaBlock.getLabels(tree.getTaxa(v)), ",");
                     else text = null;
 
                     final NodeView2D nodeView = viewTab.createNodeView(v, tree.getTaxa(v), node2point.get(v), text);

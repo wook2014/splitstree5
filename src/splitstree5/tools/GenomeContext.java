@@ -42,6 +42,9 @@ import jloda.fx.util.ArgsOptions;
 import jloda.fx.util.ProgramExecutorService;
 import jloda.kmers.mash.MashDistance;
 import jloda.util.*;
+import jloda.seq.FastAFileIterator;
+import jloda.util.progress.ProgressPercentage;
+import jloda.util.progress.ProgressSilent;
 import splitstree5.dialogs.analyzegenomes.AccessReferenceDatabase;
 
 import java.io.IOException;
@@ -99,40 +102,40 @@ public class GenomeContext {
         options.comment("Reporting:");
         final boolean useFastAHeaders = options.getOption("-fh", "useFastaHeader", "Use FastA headers for query sequences", false);
         final boolean reportName = options.getOption("-rn", "reportNames", "Report reference names", true);
-        final boolean reportId = options.getOption("-ri", "reportIds", "Report reference ids", false);
-        final boolean reportFile = options.getOption("-rf", "reportFiles", "Report reference files", false);
-        final boolean reportDistance = options.getOption("-rd", "reportMashDistances", "Report mash distances", true);
-        final boolean reportLCA = options.getOption("-rlca", "reportLCA", "Report LCA of references", true);
-        final boolean includeStrains = options.getOption("-is", "includeStrains", "Include the genomes of strains for the detected species", false);
+		final boolean reportId = options.getOption("-ri", "reportIds", "Report reference ids", false);
+		final boolean reportFile = options.getOption("-rf", "reportFiles", "Report reference files", false);
+		final boolean reportDistance = options.getOption("-rd", "reportMashDistances", "Report mash distances", true);
+		final boolean reportLCA = options.getOption("-rlca", "reportLCA", "Report LCA of references", true);
+		final boolean includeStrains = options.getOption("-is", "includeStrains", "Include the genomes of strains for the detected species", false);
 
-        options.comment(ArgsOptions.OTHER);
-        ProgramExecutorService.setNumberOfCoresToUse(options.getOption("-t", "threads", "Number of threads to use", Runtime.getRuntime().availableProcessors()));
-        options.done();
+		options.comment(ArgsOptions.OTHER);
+		ProgramExecutorService.setNumberOfCoresToUse(options.getOption("-t", "threads", "Number of threads to use", Runtime.getRuntime().availableProcessors()));
+		options.done();
 
-        Basic.checkFileReadableNonEmpty(databaseFile);
-        Basic.checkFileWritable(outputFile, true);
+		FileUtils.checkFileReadableNonEmpty(databaseFile);
+		FileUtils.checkFileWritable(outputFile, true);
 
-        if (inputFiles.size() == 1) {
-            final String name = inputFiles.get(0);
-            if (!name.equals("stdin") && !Basic.fileExistsAndIsNonEmpty(name)) {
-                inputFiles.clear();
-                inputFiles.addAll(Basic.getAllFilesInDirectory(name, true, ".fa", ".fna", ".fasta", ".fa.gz", ".fna.gz", ".fasta.gz"));
-                if (inputFiles.size() == 0)
-                    throw new IOException("No FastA files found in directory: " + name);
-            }
-        }
+		if (inputFiles.size() == 1) {
+			final String name = inputFiles.get(0);
+			if (!name.equals("stdin") && !FileUtils.fileExistsAndIsNonEmpty(name)) {
+				inputFiles.clear();
+				inputFiles.addAll(FileUtils.getAllFilesInDirectory(name, true, ".fa", ".fna", ".fasta", ".fa.gz", ".fna.gz", ".fasta.gz"));
+				if (inputFiles.size() == 0)
+					throw new IOException("No FastA files found in directory: " + name);
+			}
+		}
 
-        try (Writer w = new OutputStreamWriter(Basic.getOutputStreamPossiblyZIPorGZIP(outputFile))) {
-            final AccessReferenceDatabase database = new AccessReferenceDatabase(databaseFile, 2 * ProgramExecutorService.getNumberOfCoresToUse());
-            // todo: update minSketchIntersection from maxDistance
-            if (maxDistance < 1)
-                minSketchIntersection = Math.max(minSketchIntersection, computeMinSketchIntersection(maxDistance, database.getMashK(), database.getMashS()));
+		try (Writer w = new OutputStreamWriter(FileUtils.getOutputStreamPossiblyZIPorGZIP(outputFile))) {
+			final AccessReferenceDatabase database = new AccessReferenceDatabase(databaseFile, 2 * ProgramExecutorService.getNumberOfCoresToUse());
+			// todo: update minSketchIntersection from maxDistance
+			if (maxDistance < 1)
+				minSketchIntersection = Math.max(minSketchIntersection, computeMinSketchIntersection(maxDistance, database.getMashK(), database.getMashS()));
 
 
-            try (final ProgressPercentage progress = new ProgressPercentage("Processing input files (" + inputFiles.size() + "):", inputFiles.size())) {
-                for (var fileName : inputFiles) {
-                    final List<Pair<String, String>> pairs = new ArrayList<>();
-                    try (var it = new FastAFileIterator(fileName)) {
+			try (final ProgressPercentage progress = new ProgressPercentage("Processing input files (" + inputFiles.size() + "):", inputFiles.size())) {
+				for (var fileName : inputFiles) {
+					final List<Pair<String, String>> pairs = new ArrayList<>();
+					try (var it = new FastAFileIterator(fileName)) {
                         while (it.hasNext()) {
                             pairs.add(it.next());
                         }
@@ -140,17 +143,17 @@ public class GenomeContext {
 
                     if (perFastARecord) {
                         if (!useFastAHeaders) {
-                            final var name = Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(fileName), "");
-                            int count = 0;
+							final var name = FileUtils.replaceFileSuffix(FileUtils.getFileNameWithoutPath(fileName), "");
+							int count = 0;
                             for (var pair : pairs) {
                                 pair.setFirst(name + (++count));
                             }
                         }
                     } else { // per file
-                        final List<String> sequences = pairs.stream().map(Pair::getSecond).collect(Collectors.toList());
-                        final var name = (useFastAHeaders ? pairs.get(0).getFirst() : Basic.replaceFileSuffix(Basic.getFileNameWithoutPath(fileName), ""));
-                        pairs.clear();
-                        pairs.add(new Pair<>(name, Basic.toString(sequences, "").replaceAll("\\s", "")));
+						final List<String> sequences = pairs.stream().map(Pair::getSecond).collect(Collectors.toList());
+						final var name = (useFastAHeaders ? pairs.get(0).getFirst() : FileUtils.replaceFileSuffix(FileUtils.getFileNameWithoutPath(fileName), ""));
+						pairs.clear();
+						pairs.add(new Pair<>(name, StringUtils.toString(sequences, "").replaceAll("\\s", "")));
                     }
 
                     for (var pair : pairs) {

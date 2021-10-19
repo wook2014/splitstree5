@@ -20,7 +20,8 @@
 package splitstree5.core.data;
 
 import jloda.fx.window.NotificationManager;
-import jloda.util.Basic;
+import jloda.util.FileUtils;
+import jloda.util.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -134,8 +135,8 @@ public class Genome {
 
     public Optional<String> getMissingFile() {
         for (var part : getParts()) {
-            if (part.getSequence() == null && !Basic.fileExistsAndIsNonEmpty(part.getFile()))
-                return Optional.of(part.getFile());
+			if (part.getSequence() == null && !FileUtils.fileExistsAndIsNonEmpty(part.getFile()))
+				return Optional.of(part.getFile());
         }
         return Optional.empty();
     }
@@ -189,16 +190,16 @@ public class Genome {
                 return sequence;
             else {
                 if (file != null) {
-                    try (BufferedReader ins = new BufferedReader(new InputStreamReader(Basic.getInputStreamPossiblyZIPorGZIP(file)))) {
-                        long toSkip = offset;
-                        while (toSkip > 0) {
-                            toSkip -= ins.skip(toSkip);
-                            if (!ins.ready())
-                                break;
-                        }
-                        String line = ins.readLine();
-                        if (line != null && line.startsWith(">"))
-                            line = ins.readLine();
+					try (BufferedReader ins = new BufferedReader(new InputStreamReader(FileUtils.getInputStreamPossiblyZIPorGZIP(file)))) {
+						long toSkip = offset;
+						while (toSkip > 0) {
+							toSkip -= ins.skip(toSkip);
+							if (!ins.ready())
+								break;
+						}
+						String line = ins.readLine();
+						if (line != null && line.startsWith(">"))
+							line = ins.readLine();
 
                         if (line != null) {
                             int length = 0;
@@ -214,13 +215,13 @@ public class Genome {
                                 } while (line != null && line.startsWith(">"));
                             }
                             while (line != null);
-                            return Basic.concatenate(lines);
+							return StringUtils.concatenate(lines);
                         }
                     } catch (IOException e) {
                         NotificationManager.showError("Read file failed: " + e);
                         if (e.getMessage().contains("Unexpected end")) {
-                            System.err.println("Appears to be a corrupted file, deleting: " + file);
-                            Basic.deleteFileIfExists(file);
+							System.err.println("Appears to be a corrupted file, deleting: " + file);
+							FileUtils.deleteFileIfExists(file);
                         }
                         return null;
                     }

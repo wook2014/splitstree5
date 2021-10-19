@@ -20,8 +20,8 @@
 
 package splitstree5.io.exports;
 
-import jloda.util.ProgressListener;
-import jloda.util.ProgressPercentage;
+import jloda.util.progress.ProgressListener;
+import jloda.util.progress.ProgressPercentage;
 import jloda.util.parse.NexusStreamParser;
 import org.junit.Test;
 import splitstree5.core.algorithms.characters2distances.Uncorrected_P;

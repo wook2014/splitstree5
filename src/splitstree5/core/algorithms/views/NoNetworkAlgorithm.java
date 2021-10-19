@@ -22,7 +22,7 @@ package splitstree5.core.algorithms.views;
 
 import javafx.application.Platform;
 import jloda.phylo.PhyloSplitsGraph;
-import jloda.util.ProgressListener;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;

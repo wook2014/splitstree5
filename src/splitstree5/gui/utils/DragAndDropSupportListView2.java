@@ -26,7 +26,7 @@ import javafx.scene.input.*;
 import javafx.scene.text.Text;
 import jloda.fx.undo.UndoManager;
 import jloda.fx.undo.UndoableChangeListViews2;
-import jloda.util.Basic;
+import jloda.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,17 +62,17 @@ public class DragAndDropSupportListView2<T> {
             fromList = listViewA;
             final Dragboard dragBoard = listViewA.startDragAndDrop(TransferMode.MOVE);
             final ClipboardContent content = new ClipboardContent();
-            content.put(dataFormat, new ArrayList<T>(listViewA.getSelectionModel().getSelectedItems()));
-            content.putString(Basic.toString(listViewA.getSelectionModel().getSelectedItems(), "\n"));
-            dragBoard.setContent(content);
+			content.put(dataFormat, new ArrayList<T>(listViewA.getSelectionModel().getSelectedItems()));
+			content.putString(StringUtils.toString(listViewA.getSelectionModel().getSelectedItems(), "\n"));
+			dragBoard.setContent(content);
         });
 
         listViewB.setOnDragDetected(event -> {
             fromList = listViewB;
             final Dragboard dragBoard = listViewA.startDragAndDrop(TransferMode.MOVE);
             final ClipboardContent content = new ClipboardContent();
-            content.put(dataFormat, new ArrayList<T>(listViewB.getSelectionModel().getSelectedItems()));
-            content.putString(Basic.toString(listViewB.getSelectionModel().getSelectedItems(), "\n"));
+			content.put(dataFormat, new ArrayList<T>(listViewB.getSelectionModel().getSelectedItems()));
+			content.putString(StringUtils.toString(listViewB.getSelectionModel().getSelectedItems(), "\n"));
 
             dragBoard.setContent(content);
         });

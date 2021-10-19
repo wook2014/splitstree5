@@ -31,6 +31,7 @@ import jloda.kmers.mash.MashSketch;
 import jloda.phylo.PhyloTree;
 import jloda.thirdparty.HexUtils;
 import jloda.util.*;
+import jloda.util.progress.ProgressListener;
 import org.sqlite.SQLiteConfig;
 import splitstree5.dialogs.UrlUtilities;
 
@@ -101,11 +102,11 @@ public class AccessReferenceDatabase implements Closeable {
         for (int i = 0; i < copiesForSearching.length; i++)
             copiesForSearching[i] = new AccessReferenceDatabase(dbFile, 0);
 
-        if (!Basic.fileExistsAndIsNonEmpty(dbFile))
-            throw new IOException("File not found or unreadable: " + dbFile);
+		if (!FileUtils.fileExistsAndIsNonEmpty(dbFile))
+			throw new IOException("File not found or unreadable: " + dbFile);
 
-        if (!Basic.fileExistsAndIsNonEmpty(dbFile))
-            throw new IOException("File not found or empty: " + dbFile);
+		if (!FileUtils.fileExistsAndIsNonEmpty(dbFile))
+			throw new IOException("File not found or empty: " + dbFile);
 
         final SQLiteConfig config = new SQLiteConfig();
         config.setCacheSize(10000);
@@ -132,7 +133,7 @@ public class AccessReferenceDatabase implements Closeable {
     }
 
     public static boolean isDatabaseFile(String fileName) {
-        return Basic.fileExistsAndIsNonEmpty(fileName) && (fileName.endsWith(".db") || fileName.endsWith(".st5db"));
+		return FileUtils.fileExistsAndIsNonEmpty(fileName) && (fileName.endsWith(".db") || fileName.endsWith(".st5db"));
     }
 
     /**
@@ -182,7 +183,7 @@ public class AccessReferenceDatabase implements Closeable {
     }
 
     public ArrayList<Pair<Integer, MashSketch>> getMashSketches(Collection<Integer> taxonIds) throws SQLException, IOException {
-        final String query = String.format("select taxon_id,mash_sketch from mash_sketches where taxon_id in('%s');", Basic.toString(taxonIds, "','"));
+		final String query = String.format("select taxon_id,mash_sketch from mash_sketches where taxon_id in('%s');", StringUtils.toString(taxonIds, "','"));
 
         final ResultSet rs = connection.createStatement().executeQuery(query);
         final int columnCount = rs.getMetaData().getColumnCount();
@@ -200,7 +201,7 @@ public class AccessReferenceDatabase implements Closeable {
     }
 
     public ArrayList<Pair<Integer, BloomFilter>> getBloomFilters(Collection<Integer> taxonIds) throws SQLException, IOException {
-        final String query = String.format("SELECT taxon_id,bloom_filter FROM bloom_filters WHERE taxon_id IN('%s');", Basic.toString(taxonIds, "','"));
+		final String query = String.format("SELECT taxon_id,bloom_filter FROM bloom_filters WHERE taxon_id IN('%s');", StringUtils.toString(taxonIds, "','"));
 
         final ResultSet rs = connection.createStatement().executeQuery(query);
 
@@ -215,7 +216,7 @@ public class AccessReferenceDatabase implements Closeable {
     }
 
     public Map<Integer, String> getNames(Collection<Integer> taxonIds) throws SQLException {
-        final String query = String.format("SELECT taxon_id,taxon_name FROM taxa WHERE taxon_id IN('%s');", Basic.toString(taxonIds, "','"));
+		final String query = String.format("SELECT taxon_id,taxon_name FROM taxa WHERE taxon_id IN('%s');", StringUtils.toString(taxonIds, "','"));
 
         final ResultSet rs = connection.createStatement().executeQuery(query);
 
@@ -300,7 +301,7 @@ public class AccessReferenceDatabase implements Closeable {
     }
 
     public Map<Integer, String> getFiles(Collection<Integer> taxonIds) throws SQLException, IOException {
-        final String query = String.format("SELECT taxon_id,fasta_url FROM genomes WHERE taxon_id IN('%s');", Basic.toString(taxonIds, "','"));
+		final String query = String.format("SELECT taxon_id,fasta_url FROM genomes WHERE taxon_id IN('%s');", StringUtils.toString(taxonIds, "','"));
 
         final ResultSet rs = connection.createStatement().executeQuery(query);
 
@@ -382,20 +383,20 @@ public class AccessReferenceDatabase implements Closeable {
             if (!id2file.containsKey(taxonId)) {
                 continue;
             }
-            final String fName = (File.separatorChar != '/' ? id2file.get(taxonId).replace("/", "\\") : id2file.get(taxonId));
-            final File cacheFile = new File(fileCacheDirectory, Basic.getFileNameWithoutPath(fName));
+			final String fName = (File.separatorChar != '/' ? id2file.get(taxonId).replace("/", "\\") : id2file.get(taxonId));
+			final File cacheFile = new File(fileCacheDirectory, FileUtils.getFileNameWithoutPath(fName));
 
-            if (!Basic.fileExistsAndIsNonEmpty(cacheFile)) {
-                System.err.println("Caching file: " + id2file.get(taxonId));
+			if (!FileUtils.fileExistsAndIsNonEmpty(cacheFile)) {
+				System.err.println("Caching file: " + id2file.get(taxonId));
 
-                final File tmpFile = File.createTempFile("download", ".tmp", cacheFile.getParentFile());
+				final File tmpFile = File.createTempFile("download", ".tmp", cacheFile.getParentFile());
 
-                if (tmpFile.exists() && !tmpFile.delete())
-                    NotificationManager.showWarning("Failed to delete existing tmp file: " + tmpFile);
+				if (tmpFile.exists() && !tmpFile.delete())
+					NotificationManager.showWarning("Failed to delete existing tmp file: " + tmpFile);
 
-                boolean ok = false;
-                try (InputStream ins = (new URL(id2file.get(taxonId)).openStream()); OutputStream outs = new FileOutputStream(tmpFile)) {
-                    ins.transferTo(outs);
+				boolean ok = false;
+				try (InputStream ins = (new URL(id2file.get(taxonId)).openStream()); OutputStream outs = new FileOutputStream(tmpFile)) {
+					ins.transferTo(outs);
                     ok = true;
                 } catch (IOException ex) {
                     NotificationManager.showError("Failed to cache file: " + id2file.get(taxonId));
@@ -441,7 +442,7 @@ public class AccessReferenceDatabase implements Closeable {
         final Set<String> kmers = new HashSet<>();
         for (MashSketch sketch : querySketches) {
             for (byte[] kmer : sketch.getKmers()) {
-                kmers.add(Basic.toString(kmer));
+				kmers.add(StringUtils.toString(kmer));
             }
         }
 
@@ -573,7 +574,7 @@ public class AccessReferenceDatabase implements Closeable {
 
         var children = db.getTaxonomyChildren(bacteria_id);
 
-        System.err.println("Children: " + Basic.toString(children, " "));
+		System.err.println("Children: " + StringUtils.toString(children, " "));
 
         ArrayList<Pair<Integer, MashSketch>> sketches = db.getMashSketches(children);
 

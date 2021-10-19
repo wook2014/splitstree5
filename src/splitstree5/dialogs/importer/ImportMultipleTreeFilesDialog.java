@@ -29,6 +29,7 @@ import jloda.fx.window.NotificationManager;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
 import jloda.util.Basic;
+import jloda.util.FileUtils;
 import jloda.util.Pair;
 import jloda.util.ProgramProperties;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -93,10 +94,10 @@ public class ImportMultipleTreeFilesDialog {
 
                                     // name trees after the file that contains them:
                                     if (treesBlock.getNTrees() == 1)
-                                        treesBlock.getTree(1).setName(Basic.replaceFileSuffix(file.getName(), ""));
+										treesBlock.getTree(1).setName(FileUtils.replaceFileSuffix(file.getName(), ""));
                                     else if (treesBlock.getNTrees() > 1) {
                                         for (int t = 1; t <= treesBlock.getNTrees(); t++) {
-                                            treesBlock.getTree(t).setName(Basic.replaceFileSuffix(file.getName(), "-" + t));
+											treesBlock.getTree(t).setName(FileUtils.replaceFileSuffix(file.getName(), "-" + t));
                                         }
                                     }
 

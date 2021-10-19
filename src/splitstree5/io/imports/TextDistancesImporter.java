@@ -22,6 +22,7 @@ package splitstree5.io.imports;
 
 import jloda.fx.window.NotificationManager;
 import jloda.util.*;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IToDistances;
 import splitstree5.core.datablocks.DistancesBlock;
 import splitstree5.core.datablocks.TaxaBlock;

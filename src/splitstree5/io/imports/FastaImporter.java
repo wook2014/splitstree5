@@ -21,6 +21,7 @@
 package splitstree5.io.imports;
 
 import jloda.util.*;
+import jloda.util.progress.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IToCharacters;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -188,7 +189,7 @@ public class FastaImporter extends CharactersFormat implements IToCharacters, II
 
     @Override
     public boolean isApplicable(String fileName) throws IOException {
-        String line = Basic.getFirstLineFromFileIgnoreEmptyLines(new File(fileName), ";", 20);
+		String line = FileUtils.getFirstLineFromFileIgnoreEmptyLines(new File(fileName), ";", 20);
         return line != null && line.startsWith(">");
     }
 

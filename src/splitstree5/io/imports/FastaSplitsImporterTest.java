@@ -20,9 +20,9 @@
 
 package splitstree5.io.imports;
 
-import jloda.util.Basic;
-import jloda.util.ProgressListener;
-import jloda.util.ProgressPercentage;
+import jloda.util.FileUtils;
+import jloda.util.progress.ProgressListener;
+import jloda.util.progress.ProgressPercentage;
 import org.junit.Test;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
@@ -102,7 +102,7 @@ public class FastaSplitsImporterTest {
         if (directoryListing != null) {
             for (File file : directoryListing) {
                 if (fastaSplitsImporter.isApplicable(file.getPath()))
-                    applicableFiles.add(Basic.getFileNameWithoutPath(file.getName()));
+					applicableFiles.add(FileUtils.getFileNameWithoutPath(file.getName()));
             }
         }
         System.err.println(applicableFiles);

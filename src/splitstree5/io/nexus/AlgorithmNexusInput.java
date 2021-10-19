@@ -70,7 +70,7 @@ public class AlgorithmNexusInput extends NexusIOBase {
 
         final Algorithm algorithm = createAlgorithmFromName(algorithmName);
         if (algorithm == null)
-            throw new IOExceptionWithLineNumber("Unknown algorithmm: " + algorithmName, np.lineno());
+            throw new IOExceptionWithLineNumber("Unknown algorithm: " + algorithmName, np.lineno());
 
         if (np.peekMatchIgnoreCase("OPTIONS")) {
             np.matchIgnoreCase("OPTIONS");

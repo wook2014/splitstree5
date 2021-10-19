@@ -20,7 +20,7 @@
 
 package splitstree5.io.nexus;
 
-import jloda.util.Basic;
+import jloda.util.StringUtils;
 import splitstree5.core.datablocks.SplitsBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.misc.ASplit;
@@ -122,9 +122,9 @@ public class SplitsNexusOutput extends NexusIOBase implements INexusOutput<Split
             if (format.isOptionConfidences()) {
                 w.write(" " + split.getConfidence() + " \t");
             }
-            w.write(" " + Basic.toString(split.getA(), " "));
+			w.write(" " + StringUtils.toString(split.getA(), " "));
             if (format.isOptionShowBothSides())
-                w.write(" | " + Basic.toString(split.getB(), " "));
+				w.write(" | " + StringUtils.toString(split.getB(), " "));
             w.write(",\n");
         }
         w.write(";\n");
