@@ -31,10 +31,13 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.Region;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.converter.DoubleStringConverter;
+import javafx.util.converter.IntegerStringConverter;
 import jloda.fx.control.RichTextLabel;
 import jloda.fx.util.*;
 import jloda.fx.window.NotificationManager;
@@ -140,7 +143,7 @@ public class AnalyzeGenomesDialog {
 
         controller.getMinLengthTextField().setText(ProgramProperties.get("MinLength", "10000"));
         controller.getMinLengthTextField().textProperty().addListener((c, o, n) -> ProgramProperties.put("MinLength", n));
-        BasicFX.ensureAcceptsIntegersOnly(controller.getMinLengthTextField());
+        controller.getMinLengthTextField().setTextFormatter(new TextFormatter<>(new IntegerStringConverter()));
 
         controller.getTaxaChoiceBox().getItems().addAll(TaxonIdentification.values());
         controller.getTaxaChoiceBox().setValue(TaxonIdentification.PerFastARecord);
@@ -336,8 +339,8 @@ public class AnalyzeGenomesDialog {
         });
         controller.getAddReferencesButton().disableProperty().bind(Bindings.isEmpty(references).or(database.isNull()).or(running));
         controller.getMashDistancesChart().disableProperty().bind(controller.getAddReferencesButton().disabledProperty());
+        controller.getMaxDistToSearchTextField().setTextFormatter(new TextFormatter<>(new DoubleStringConverter()));
 
-        BasicFX.ensureAcceptsDoubleOnly(controller.getMaxDistToSearchTextField());
         controller.getMaxDistToSearchTextField().textProperty().addListener((c, o, n) -> {
             if (NumberUtils.isDouble(n) && NumberUtils.parseDouble(n) > 0.0 && NumberUtils.parseDouble(n) < 1)
                 controller.getMaxDistanceSlider().setMax(NumberUtils.parseDouble(n) + 0.01);
