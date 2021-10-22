@@ -37,11 +37,7 @@ import jloda.fx.undo.UndoManager;
 import jloda.fx.undo.UndoableRedoableCommand;
 import jloda.fx.window.NotificationManager;
 import jloda.seq.FastAFileIterator;
-import jloda.seq.IFastAIterator;
-import jloda.util.CollectionUtils;
-import jloda.util.FileUtils;
-import jloda.util.Pair;
-import jloda.util.StringUtils;
+import jloda.util.*;
 
 import java.io.File;
 import java.io.IOException;
