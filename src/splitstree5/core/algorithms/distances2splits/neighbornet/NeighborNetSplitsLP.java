@@ -44,7 +44,7 @@ public class NeighborNetSplitsLP {
      * @param cutoff    min split weight
      * @param progress  progress listener
      * @return weighted splits
-     * @throws CanceledException
+     * @throws CanceledException   User cancelled calculation.
      */
     static public ArrayList<ASplit> compute(int nTax, int[] cycle, double[][] distances, double cutoff, ProgressListener progress) throws IOException {
         //Handle n=1,2 separately.

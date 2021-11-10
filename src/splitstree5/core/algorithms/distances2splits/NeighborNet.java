@@ -50,9 +50,9 @@ import java.util.List;
  */
 public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implements IFromDistances, IToSplits {
     // public enum WeightsAlgorithm {NNet2004, NNet2021, LP}
-    public enum WeightsAlgorithm {NNet2004, NNet2021}
+    //public enum WeightsAlgorithm {NNet2004, NNet2021}
 
-    private final ObjectProperty<WeightsAlgorithm> optionWeights = new SimpleObjectProperty<>(WeightsAlgorithm.NNet2004);
+    //private final ObjectProperty<WeightsAlgorithm> optionWeights = new SimpleObjectProperty<>(WeightsAlgorithm.NNet2004);
 
     public enum InferenceAlgorithm {ActiveSet, BlockPivot}
 
@@ -77,6 +77,8 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, DistancesBlock distancesBlock, SplitsBlock splitsBlock) throws InterruptedException, IOException {
 
+        double optionThreshold = 1e-6; //TODO This should be a parameter, or maybe just set to zero and use the splits filter.
+
         if (SplitsUtilities.computeSplitsForLessThan4Taxa(taxaBlock, distancesBlock, splitsBlock))
             return;
 
@@ -90,13 +92,10 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
 
         final long start = System.currentTimeMillis();
 
+        boolean useBlockPivot = (getOptionInferenceAlgorithm()==InferenceAlgorithm.BlockPivot);
+        boolean useDualDCG = isOptionUsePreconditioner();
+        splits = NeighborNetSplits.compute(cycle, distancesBlock.getDistances(), optionThreshold,useBlockPivot,useDualDCG,progress);
 
-        //  if (getOptionWeights().equals(WeightsAlgorithm.LP))
-        //      splits = NeighborNetSplitsLP.compute(taxaBlock.getNtax(), cycle, distancesBlock.getDistances(), 0.000001, progress);
-        //  else
-        splits = NeighborNetSplits.compute(getOptionWeights().equals(WeightsAlgorithm.NNet2021),
-                taxaBlock.getNtax(), cycle, distancesBlock.getDistances(), distancesBlock.getVariances(), 0.000001, NeighborNetSplits.LeastSquares.ols, NeighborNetSplits.Regularization.nnls, 1,
-                progress);
 
         if (Compatibility.isCompatible(splits))
             splitsBlock.setCompatibility(Compatibility.compatible);
@@ -115,7 +114,7 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
         return parent.getNtax() > 0;
     }
 
-    public WeightsAlgorithm getOptionWeights() {
+    /* public WeightsAlgorithm getOptionWeights() {
         return optionWeights.get();
     }
 
@@ -126,6 +125,7 @@ public class NeighborNet extends Algorithm<DistancesBlock, SplitsBlock> implemen
     public void setOptionWeights(WeightsAlgorithm optionWeights) {
         this.optionWeights.set(optionWeights);
     }
+    */
 
     public InferenceAlgorithm getOptionInferenceAlgorithm() {
         return optionInferenceAlgorithm.get();

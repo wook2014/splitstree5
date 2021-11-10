@@ -163,6 +163,137 @@ public class BlockXMatrix {
     }
 
     /**
+     * Converts a vector single 1..npairs arrays into separate
+     * vectors for each block.
+     * @param n number of taxa
+     * @param v double vector, size n(n-1)/2
+     * @param G   boolean vector, size n(n-1)/2, indicating blocks
+     * @return array of double arrays, one for each block.
+     */
+    public static double[][] vector2blocks(int n, double[] v, boolean[] G) {
+        //TODO: Make this simpler using a map from pairs to blocks.
+
+        double[][] vcell = new double[n][];
+
+        int countlast = 0; //Number of elements in block n-1
+        double[] vlast = new double[n]; //Elements in block n-1
+
+        int index=1;
+        double[] vi = new double[n];
+        for(int i=1;i<=n-1;i++) {
+            Arrays.fill(vi, 0.0);
+            int counti = 0;
+
+            for (int j = i + 1; j <= n - 1; j++) {
+                if (G[index]) {
+                    counti++;
+                    vi[counti] = v[index];
+                }
+                index++;
+            }
+            if (counti > 0)
+                vcell[i] = Arrays.copyOfRange(vi, 0, counti+1);
+
+            if (G[index]) {
+                countlast++;
+                vlast[countlast] = v[index];
+            }
+            index++;
+        }
+        if (countlast>0) {
+            vcell[n-1] = Arrays.copyOfRange(vlast,0,countlast+1);
+        }
+        return vcell;
+    }
+
+    /**
+     * Takes two block vectors x,y with the same sizes, and computes x + alpha*y
+     * @param x block vector
+     * @param alpha  double
+     * @param y block vector
+     * @return block vector
+     */
+    private static double[][] blockvectorAdd(double[][] x, double alpha, double[][] y) {
+        double[][] z = new double[x.length][];
+
+        for (int i=1;i<x.length;i++) {
+            if (x[i]!=null) {
+                z[i] = new double[x[i].length];
+                for (int j = 1; j < x[i].length; j++)
+                    z[i][j] = x[i][j] + alpha * y[i][j];
+            }
+        }
+        return z;
+    }
+
+    /**
+     * Computes dot product of two block vectors
+     * @param x block vector
+     * @param y block vector
+     * @return block vector
+     */
+    private static double blockvectorDot(double[][] x, double[][] y) {
+        double xty = 0.0;
+
+        for (int i=1;i<x.length;i++) {
+            if (x[i]!=null) {
+                for (int j = 1; j < x[i].length; j++)
+                    xty += x[i][j] * y[i][j];
+            }
+        }
+        return xty;
+    }
+
+    /**
+     * Clone a block array.
+     * @param x double[][]
+     * @return clone of x
+     */
+    private static double[][] blockclone(double[][] x) {
+        double[][] y = new double[x.length][];
+        for(int i=0;i<x.length;i++) {
+            if (x[i] != null)
+                y[i] = x[i].clone();
+        }
+        return y;
+    }
+
+    /**
+     * Converts a vector stored as blocks into a single vector.
+     * @param n number of taxa
+     * @param vcell vector of blocks
+     * @param G boolean vector indicating which rows are kept
+     * @return vector
+     */
+    public static double[] blocks2vector(int n, double[][] vcell, boolean[] G) {
+        double[] v = new double[n*(n-1)/2+1];
+        int countlast = 0;
+        int index=1;
+        int counti;
+
+        for(int i=1;i<=n-1;i++) {
+            counti = 0;
+            for(int j=(i+1);j<=n-1;j++) {
+                if (G[index]) {
+                    counti++;
+                    v[index] = vcell[i][counti];
+                }
+                index++;
+            }
+            if (G[index]) {
+                countlast++;
+                v[index] = vcell[n - 1][countlast];
+            }
+            index++;
+        }
+        return v;
+    }
+
+
+
+
+
+    /**
      * Constructs a JAMA matrix version of the matrix X. Note this matrix is indexed 0,1,2...
      * This method is for debugging only.
      *
@@ -289,7 +420,7 @@ public class BlockXMatrix {
         }
         //Arrays.fill(G, true);
 
-        boolean[][] gcell = NeighborNetBlockPivot.mask2blockmask(n, G);
+        boolean[][] gcell = DualPCG.mask2blockmask(n, G);
         BlockXMatrix X = new BlockXMatrix(n, gcell);
         Matrix XX = X.toMatrix();
 

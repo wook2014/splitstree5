@@ -2,6 +2,8 @@ package splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG;
 
 import Jama.Matrix;
 
+import static splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG.BlockXMatrix.blocks2vector;
+import static splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG.BlockXMatrix.vector2blocks;
 import static splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG.TridiagonalMatrix.multiplyLU;
 import static splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG.VectorUtilities.minus;
 
@@ -204,6 +206,16 @@ public class Preconditioner {
         }
         return nu;
     }
+
+    public double[] solve(double[] yvec, boolean[] G) {
+        int n=X.n;
+        double[][] y,x;
+        y = vector2blocks(n,yvec,G);
+        x = solve(y);
+        return blocks2vector(n,x,G);
+    }
+
+
     public Matrix[] toMatrix() {
         int[] m = X.m;
         int n = X.n;

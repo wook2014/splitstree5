@@ -186,6 +186,8 @@ public class NeighborNetCycle {
                         Dpq = (D[p.id][q.id] + D[p.id][q.nbr.id] + D[p.nbr.id][q.id] + D[p.nbr.id][q.nbr.id]) / 4.0;
                     Qpq = ((double) num_clusters - 2.0) * Dpq - p.Sx - q.Sx;
 
+                    //System.out.println("\t"+"["+p.id+","+q.id+"] \t = \t "+Qpq);
+
                     /* Check if this is the best so far */
                     if ((Cx == null || (Qpq < best)) && (p.nbr != q)) {
                         Cx = p;
@@ -277,6 +279,7 @@ public class NeighborNetCycle {
     static private void join2way(NetNode x, NetNode y) {
         x.nbr = y;
         y.nbr = x;
+        //System.err.println("2way:\t"+x.id+"\t"+y.id); //**
     }
 
     /**
@@ -338,6 +341,7 @@ public class NeighborNetCycle {
             mat[v.id][p.id] = mat[p.id][v.id] = (2.0 / 3.0) * mat[z.id][p.id] + mat[y.id][p.id] / 3.0;
         }
         mat[u.id][u.id] = mat[v.id][v.id] = 0.0;
+        //System.err.println("Agg 3way\t("+x.id+", "+y.id+", "+z.id+")->("+u.id+", "+v.id+")");
 
         joins.push(u);
 
