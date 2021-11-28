@@ -113,7 +113,7 @@ public class Workflow {
                 final Connector connector = change.getElementAdded();
                 final String name = connector.getName();
                 synchronized (name2count) {
-                    final int count = name2count.merge(name, 1, (a, b) -> a + b);
+                    final int count = name2count.merge(name, 1, Integer::sum);
                     if (count == 1)
                         connector.setTitle(name);
                     else

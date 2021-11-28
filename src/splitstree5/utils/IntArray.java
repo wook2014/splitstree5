@@ -20,6 +20,8 @@
 
 package splitstree5.utils;
 
+import java.util.Arrays;
+
 /**
  * dynamic int array
  * Daniel Huson, 10.2017
@@ -36,8 +38,7 @@ public class IntArray {
     }
 
     public void clear() {
-        for (int i = 0; i < array.length; i++)
-            array[i] = 0;
+        Arrays.fill(array, 0);
     }
 
     public int get(int index) {
@@ -48,7 +49,7 @@ public class IntArray {
 
     public void set(int index, int value) {
         if (index >= array.length) {
-            int[] tmp = new int[2 * Math.max(array.length, index)];
+            var tmp = new int[2 * index];
             System.arraycopy(array, 0, tmp, 0, array.length);
             array = tmp;
         }

@@ -43,7 +43,6 @@ public class WorkflowEdgeView extends Group {
         line1 = new Line();
         line2 = new Line();
 
-
         line1.startXProperty().bind(source.xProperty().add(source.widthProperty().divide(2)));
         line1.startYProperty().bind(source.yProperty().add(source.heightProperty().divide(2)));
         line1.endXProperty().bind(line1.startXProperty());
