@@ -30,9 +30,9 @@ public class NeighborNetSplits {
 
         public int maxOuterIterations = 1000; //Maximum number of iterations for the outer algorithm
         public int maxPCGIterations = 1000; //Maximum number of iterations for the conjugate gradient algorithm
-        public double pcgTol = 1e-6; //Tolerance for pcg: will stop when residual has norm less than this. default  1e-7 //TODO rename to PCG_EPSILON
-        public double finalTol = 1e-8; //Tolerance for the final 'tidy up' call to least squares.
-        public double vectorCutoff = 1e-8; //Cutoff - values in block pivot with value smaller than this are set to zero.
+        public double pcgTol = 1e-4; //Tolerance for pcg: will stop when residual has norm less than this. default  1e-7 //TODO rename to PCG_EPSILON
+        public double finalTol = 1e-4; //Tolerance for the final 'tidy up' call to least squares.
+        public double vectorCutoff = 1e-5; //Cutoff - values in block pivot with value smaller than this are set to zero.
         public boolean usePreconditioner = false; //True if the conjugate gradient makes use of preconditioner.
         public int preconditionerBands = 10; //Number of bands used when computing Y,Z submatrices in the preconditioner.
         // Note that alot of the calculations for preconditioning are done even if this is false, so use this flag only to assess #iterations.
@@ -419,16 +419,7 @@ public class NeighborNetSplits {
             CircularConjugateGradient.circularConjugateGrads(n, d, G, z, params);
         }
         else if (params.leastSquaresAlgorithm==NNLSParams.DUAL_PCG) {
-
-            CircularConjugateGradient.circularConjugateGrads(n, d, G, z, params);
-            DualPCG.dualPCG(n,d,G,zold,params);
-
-            for(int i=1;i<=npairs;i++) {
-                if (G[i])
-                    diff1 += (z[i] - zold[i])*(z[i]-zold[i]);
-                else
-                    diff2 += (z[i] - zold[i])*(z[i]-zold[i]);
-            }
+            DualPCG.dualPCG(n,d,G,z,params);
         }
 
         //DEBUGGING CODE.
