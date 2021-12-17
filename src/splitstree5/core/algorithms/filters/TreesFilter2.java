@@ -23,7 +23,6 @@ package splitstree5.core.algorithms.filters;
 import javafx.beans.property.*;
 import jloda.graph.Edge;
 import jloda.phylo.PhyloTree;
-import jloda.phylo.PhyloTreeUtils;
 import jloda.util.CanceledException;
 import jloda.util.progress.ProgressListener;
 import splitstree5.core.algorithms.Algorithm;
@@ -84,7 +83,7 @@ public class TreesFilter2 extends Algorithm<TreesBlock, TreesBlock> implements I
                 if (tree.getNumberOfTaxa() < getOptionMinNumberOfTaxa())
                     continue;
                 if (getOptionMinTotalTreeLength() > 0) {
-                    final double treeLength = PhyloTreeUtils.computeTotalWeight(tree);
+                    final var treeLength = tree.computeTotalWeight();
                     if (treeLength < getOptionMinTotalTreeLength())
                         continue;
                 }
