@@ -23,7 +23,9 @@ package splitstree5.treebased;
 import jloda.graph.EdgeSet;
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;
-import jloda.util.*;
+import jloda.util.FileLineIterator;
+import jloda.util.StringUtils;
+import jloda.util.UsageException;
 import jloda.util.progress.ProgressPercentage;
 
 import java.io.File;
@@ -64,12 +66,12 @@ public class TreeBasedTest {
                     tree.read(new StringReader(line), true);
 
                     if (count == 0) {
-						System.err.println("Special edges " + tree.getNumberSpecialEdges() + ": "
-										   + StringUtils.toString(tree.edgeStream().filter(tree::isSpecial).map(e -> "(" + e.getSource().getId() + "," + e.getTarget().getId() + ")").collect(Collectors.toList()), ","));
+                        System.err.println("Special edges " + tree.getNumberReticulateEdges() + ": "
+                                           + StringUtils.toString(tree.edgeStream().filter(tree::isReticulatedEdge).map(e -> "(" + e.getSource().getId() + "," + e.getTarget().getId() + ")").collect(Collectors.toList()), ","));
                         for (Node v : tree.nodes()) {
-							System.err.println("node: " + v.getId() + " children: "
-											   + StringUtils.toString(StreamSupport.stream(v.children().spliterator(), false).map(Node::getId).collect(Collectors.toList()), ",")
-											   + (tree.getLabel(v) != null ? " label: " + tree.getLabel(v) : ""));
+                            System.err.println("node: " + v.getId() + " children: "
+                                               + StringUtils.toString(StreamSupport.stream(v.children().spliterator(), false).map(Node::getId).collect(Collectors.toList()), ",")
+                                               + (tree.getLabel(v) != null ? " label: " + tree.getLabel(v) : ""));
                         }
                         System.err.println(tree.toBracketString(false));
                     }
