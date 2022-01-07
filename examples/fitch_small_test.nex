@@ -1,0 +1,109 @@
+#nexus
+[!Data from Fitch and Margoliash, 1967, Table 3, bottom triangle
+Processed by SplitsTree4]
+
+BEGIN Taxa;
+DIMENSIONS ntax=6;
+TAXLABELS
+[1] 'Man'
+[2] 'Monkey'
+[3] 'Dog'
+[4] 'Horse'
+[5] 'Donkey'
+[6] 'Pig'
+;
+END; [Taxa]
+
+BEGIN Distances;
+DIMENSIONS ntax=6;
+FORMAT labels=no no diagonal triangle=lower;
+MATRIX
+
+ 1.0
+ 13.0 12.0
+ 17.0 16.0 10.0
+ 16.0 15.0 8.0 1.0
+ 13.0 12.0 4.0 5.0 4.0
+;
+END; [Distances]
+
+BEGIN Splits;
+DIMENSIONS ntax=6 nsplits=9;
+FORMAT labels=no weights=yes confidences=no intervals=no;
+PROPERTIES fit=99.97 leastsquares cyclic;
+CYCLE 1 4 5 6 3 2;
+MATRIX
+[1, size=1] 	 0.004158403 	  1 3 4 5 6,
+[2, size=1] 	 1.0063903 	  1,
+[3, size=1] 	 1.1268007 	  1 2 3 5 6,
+[4, size=2] 	 3.4980545 	  1 2 3 6,
+[5, size=3] 	 2.1277478 	  1 2 3,
+[6, size=2] 	 9.242045 	  1 2,
+[7, size=3] 	 0.12378158 	  1 2 4,
+[8, size=2] 	 0.49976903 	  1 2 4 5,
+[9, size=1] 	 2.127298 	  1 2 4 5 6,
+;
+END; [Splits]
+
+BEGIN Network;
+DIMENSIONS ntax=6 nvertices=13 nedges=15;
+DRAW to_scale;
+TRANSLATE
+2 'Man',
+3 'Horse',
+4 'Dog',
+5 'Monkey',
+11 'Donkey',
+12 'Pig',
+;
+VERTICES
+1 -1.0063903 0.0 s=n,
+2 0.0 0.0 s=n,
+3 -9.51071 10.937599 s=n,
+4 -10.63048 2.5288439 s=n,
+5 -1.0043111 -0.0036012824 s=n,
+6 -9.010237 4.6210227 s=n,
+7 -10.07411 6.4637065 s=n,
+8 -10.197892 6.4637065 s=n,
+9 -9.134018 4.6210227 s=n,
+10 -10.07411 9.9617605 s=n,
+11 -10.197892 9.9617605 s=n,
+12 -10.630705 6.213822 s=n,
+13 -9.566831 4.371138 s=n,
+;
+VLABELS
+2 'Man' x=12 y=6 f='Dialog-PLAIN-10',
+3 'Horse' x=-8 y=21,
+4 'Dog' x=-15 y=-14,
+5 'Monkey' x=12 y=6,
+11 'Donkey' x=-18 y=23,
+12 'Pig' x=-15 y=20,
+;
+EDGES
+1 1 2 s=2 w=1.0063903,
+2 1 5 s=1 w=0.004158403,
+3 6 1 s=6 w=9.242045,
+4 7 6 s=5 w=2.1277478,
+5 8 7 s=7 w=0.12378158,
+6 9 6 s=7 w=0.12378158,
+7 9 8 s=5 w=2.1277478,
+8 10 7 s=4 w=3.4980545,
+9 10 3 s=3 w=1.1268007,
+10 11 8 s=4 w=3.4980545,
+11 11 10 s=7 w=0.12378158,
+12 12 8 s=8 w=0.49976903,
+13 13 9 s=8 w=0.49976903,
+14 13 12 s=5 w=2.1277478,
+15 13 4 s=9 w=2.127298,
+;
+END; [Network]
+
+BEGIN st_Assumptions;
+uptodate;
+extaxa= 'Rabbit' 'Kangaroo' 'Pekin_duck' 'Pigeon' 'Chicken' 'King_penguin' 'Snapping_turtle' 'Rattlesnake' 'Tuna' 'Screwworm_fly' 'Moth' 'Neurospora' 'Saccharomyces' 'Candida';
+disttransform=NeighborNet;
+splitstransform=EqualAngle;
+SplitsPostProcess filter=dimension value=4;
+ exclude  no missing;
+autolayoutnodelabels;
+END; [st_Assumptions]
