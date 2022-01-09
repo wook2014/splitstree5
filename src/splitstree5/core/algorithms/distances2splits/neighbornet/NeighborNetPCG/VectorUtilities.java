@@ -156,6 +156,8 @@ public class VectorUtilities {
      * @return dot product
      */
     static public double dotProduct(double[] x, double[] y) {
+        if (x.length != y.length)
+            throw new IllegalArgumentException("dotProduct called with vectors of different lengths");
         double xty = 0.0;
         for(int i=1;i<x.length;i++)
             xty += x[i]*y[i];

@@ -54,7 +54,7 @@ public class DualPCG {
         calculateBtx(n,r,G,rt);
         double[] z = new double[nG+1];
         if (params.usePreconditioner)
-            z = M.solve(rt,G);
+            M.solve(rt,z,G);
         else
             System.arraycopy(rt,1,z,1,nG);
         double[] p = new double[nG+1];
@@ -74,7 +74,7 @@ public class DualPCG {
 
             calculateBtx(n,r,G,rt);
             if (params.usePreconditioner)
-                z = M.solve(rt,G);
+                M.solve(rt,z,G);
             else
                 System.arraycopy(rt,1,z,1,nG);
             double zrt_new = dotProduct(z,rt);

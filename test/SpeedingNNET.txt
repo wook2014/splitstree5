@@ -1,0 +1,37 @@
+This file is just a record of profiling/speedups underway on the NNET least squares code.
+
+We are opening
+
+nucleic_M2573_346x897_2006_edit.phy
+
+and constructing a NeighborNet.
+
+On my MacBook Air (9/1/22) nnls computation took 36681 ms.
+
+Profiler indicated that distances2splits.neighbornet.NeighborNetPCG.VectorUtilities.normSquared is a bottleneck.
+
+* Replaced x[i]*x[i] with xi*xi (No effect, so left as is)
+* Replaced with IntelliJ refactor: double ss= IntStream.range(1, x.length).mapToDouble(i -> x[i] * x[i]).sum();  (Doubled the time, so left as is)
+
+Suspect that normSquared is highlighted just because it appears twice in the CG loop.
+
+Added output of iterations and number of negative indices to block pivot. It requires 20 calls to CircularLeastSquares with 
+
+public double pcgTol = 1e-4; 
+public double finalTol = 1e-4; 
+public double vectorCutoff = 1e-5;
+	
+Reduced vectorCutoff to 1e-3, and it crashed network drawing (too many splits?)
+
+Tightened bounds 
+
+public double pcgTol = 1e-6; //Tol
+public double finalTol = 1e-6; //T
+public double vectorCutoff = 1e-7;
+
+with very little impact on total running time. However noticed that least squares (DualPCG) becomes a lot slower when the active set gets larger - range from 50ms to 2.8s.  Checked the effect of turning off preconditioning, and saw that there was none! So turned it on. Algorithm failed.
+
+
+
+
+

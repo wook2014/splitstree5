@@ -164,41 +164,44 @@ public class BlockXMatrix {
 
     /**
      * Converts a vector single 1..npairs arrays into separate
-     * vectors for each block.
+     * vectors for each block. The blocks are given by B_i = \{ij:i<j<n \} and B_n = \{in:i<n\} restricted to pairs
+     * with the corresponding index in G.
      * @param n number of taxa
-     * @param v double vector, size n(n-1)/2
-     * @param G   boolean vector, size n(n-1)/2, indicating blocks
+     * @param v double vector, indexed 1..|G|
+     * @param G   boolean vector, size n(n-1)/2, indicating the indices of the active pairs
      * @return array of double arrays, one for each block.
      */
     public static double[][] vector2blocks(int n, double[] v, boolean[] G) {
-        //TODO: Make this simpler using a map from pairs to blocks.
+        //TODO: Make this simpler (and faster?) using a map from pairs to blocks.
 
         double[][] vcell = new double[n][];
 
         int countlast = 0; //Number of elements in block n-1
         double[] vlast = new double[n]; //Elements in block n-1
 
-        int index=1;
+        int indexG=1, indexv=0;
         double[] vi = new double[n];
         for(int i=1;i<=n-1;i++) {
             Arrays.fill(vi, 0.0);
             int counti = 0;
 
             for (int j = i + 1; j <= n - 1; j++) {
-                if (G[index]) {
+                if (G[indexG]) {
                     counti++;
-                    vi[counti] = v[index];
+                    indexv++;
+                    vi[counti] = v[indexv];
                 }
-                index++;
+                indexG++;
             }
             if (counti > 0)
                 vcell[i] = Arrays.copyOfRange(vi, 0, counti+1);
 
-            if (G[index]) {
+            if (G[indexG]) {
                 countlast++;
-                vlast[countlast] = v[index];
+                indexv++;
+                vlast[countlast] = v[indexv];
             }
-            index++;
+            indexG++;
         }
         if (countlast>0) {
             vcell[n-1] = Arrays.copyOfRange(vlast,0,countlast+1);
@@ -263,30 +266,30 @@ public class BlockXMatrix {
      * @param n number of taxa
      * @param vcell vector of blocks
      * @param G boolean vector indicating which rows are kept
-     * @return vector
+     * @param v vector overwritten with result (assumed allocated)
      */
-    public static double[] blocks2vector(int n, double[][] vcell, boolean[] G) {
-        double[] v = new double[n*(n-1)/2+1];
+    public static void blocks2vector(int n, double[][] vcell, boolean[] G, double[] v ) {
         int countlast = 0;
-        int index=1;
+        int indexG=1,indexv=0;
         int counti;
 
         for(int i=1;i<=n-1;i++) {
             counti = 0;
             for(int j=(i+1);j<=n-1;j++) {
-                if (G[index]) {
+                if (G[indexG]) {
                     counti++;
-                    v[index] = vcell[i][counti];
+                    indexv++;
+                    v[indexv] = vcell[i][counti];
                 }
-                index++;
+                indexG++;
             }
-            if (G[index]) {
+            if (G[indexG]) {
                 countlast++;
-                v[index] = vcell[n - 1][countlast];
+                indexv++;
+                v[indexv] = vcell[n - 1][countlast];
             }
-            index++;
+            indexG++;
         }
-        return v;
     }
 
 

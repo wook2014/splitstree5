@@ -253,23 +253,6 @@ public class CircularSplitAlgorithms {
             Ax[i]-=d[i];
         CircularSplitAlgorithms.circularAtx(n,Ax,g);
 
-        //DEBUG: Check that Ax, Atx are calculated right
-//        double[] x1 = new double[npairs+1];
-//        Random random = new Random();
-//        for(int i=1;i<=npairs;i++) {
-//            x1[i] = random.nextDouble();
-//        }
-//        double[] x2 = new double[npairs+1];
-//        double[] x3 = new double[npairs+1];
-//        CircularSplitAlgorithms.circularAx(n,x1,x2);
-//        CircularSplitAlgorithms.circularSolve(n,x2,x3);
-//        double diff = 0.0;
-//        for(int i=1;i<=npairs;i++)
-//            diff+=(x3[i]-x1[i])*(x3[i]-x1[i]);
-//        System.err.println("Check Ax and solve. Error = "+diff);
-//DEBUG TO HERE
-
-
         double norm2 = 0.0;
         for(int i=1;i<=npairs;i++) {
             if (!G[i])
@@ -294,24 +277,25 @@ public class CircularSplitAlgorithms {
             Ax[i]-=d[i];
         CircularSplitAlgorithms.circularAtx(n,Ax,g);
 
-        double dsum = 0.0;
-        double xsum = 0.0;
-        for (int i=1;i<=npairs;i++) {
-            dsum+=d[i];
-            xsum+=x[i];
-        }
-        System.err.println("dsum = "+dsum+"\txsum = "+xsum);
+
 
 
 
 
         double norm1 = 0.0, norm2 = 0.0;
+        int count1 = 0, count2=0;
         for(int i=1;i<=npairs;i++) {
-            if (x[i]>0)
+            if (x[i]>0) {
                 norm1 += g[i] * g[i];
-            else
-                norm2 += Math.min(g[i],0.0) * Math.min(g[i],0.0);
+                count1++;
+            }
+            else {
+                if (g[i] < 0)
+                    norm2 += g[i] * g[i];
+            }
         }
+        count2 = npairs - count1;
+        System.err.println("norm inactive = "+norm1+"\tnorm active = "+norm2+"\tcounts = "+count1+", "+count2);
         return norm1+norm2;
     }
 

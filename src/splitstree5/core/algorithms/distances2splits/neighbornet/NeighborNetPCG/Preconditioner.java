@@ -207,12 +207,12 @@ public class Preconditioner {
         return nu;
     }
 
-    public double[] solve(double[] yvec, boolean[] G) {
+    public void solve(double[] yvec, double[] xvec,boolean[] G) {
         int n=X.n;
         double[][] y,x;
         y = vector2blocks(n,yvec,G);
         x = solve(y);
-        return blocks2vector(n,x,G);
+        blocks2vector(n,x,G,xvec);
     }
 
 
