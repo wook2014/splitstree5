@@ -5,6 +5,8 @@ import Jama.Matrix;
 import java.util.Arrays;
 import java.util.Random;
 
+import static splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG.VectorUtilities.vectorIsFinite;
+
 public class TridiagonalMatrix {
     //a,b,c store the diagonal, lower diagonal and upper diagonal.
     //b or c equals null in the case that this is a bidigaonal matrix.
@@ -54,6 +56,11 @@ public class TridiagonalMatrix {
         assert c==null : "Applying solveL to a matrix which is not bidiagonal";
         double[] x = new double[n+1];
 
+        //Check matrix is valid **
+        for(int i=1;i<=n;i++)
+            if (a[i]==0)
+                throw new ArithmeticException("Trying to solve lower triangular system that is singular");
+
         x[1] = y[1]/a[1];
         for (int i=2;i<=n;i++)
             x[i] = (y[i] - b[i-1]*x[i-1])/a[i];
@@ -69,6 +76,10 @@ public class TridiagonalMatrix {
     public double[] solveU(double[] y) {
         assert b==null : "Applying solveU to a matrix which is not bidiagonal";
         double[] x = new double[n+1];
+
+        for(int i=1;i<=n;i++)
+            if (a[i]==0)
+                throw new ArithmeticException("Trying to solve upper triangular system that is singular");
 
         x[n] = y[n]/a[n];
         for (int i=n-1;i>=1;i--)
@@ -141,10 +152,11 @@ public class TridiagonalMatrix {
 
         U.a[1] = a[1];
         for (int i=2;i<=n;i++) {
+            if (U.a[i-1]==0)
+                throw new ArithmeticException("Trying to compute LU decomposition of singular tridiagonal matrix");
             L.b[i-1] = b[i-1]/U.a[i-1];
             U.a[i] = a[i] - L.b[i-1]*U.c[i-1];
         }
-
         return new TridiagonalMatrix[]{L,U};
     }
 
@@ -192,7 +204,7 @@ public class TridiagonalMatrix {
     }
 
     /**
-     * Multiple two bidigaonal matrices
+     * Multiple a lower bidiagonal matrix with an upper bidiagonal matrix
      * @param L Lower bidiagonal matrix
      * @param U Upper bidigaonal matrix
      * @return Product L*U
@@ -221,12 +233,14 @@ public class TridiagonalMatrix {
 
 
     /**
-     * Compute data structures which enable constant time querying of inverse matrix.
+     * Compute data structures which enable constant time querying of inverse of the tridiagonal matrix.
      */
    public void preprocessInverse() {
 
        if (n == 1) {
            d = new double[2];
+           if (a[1]==0)
+               throw new ArithmeticException("Trying to compute inverse of singular tridiagonal matrix (i)");
            d[1] = 1.0 / a[1];
            return;
        }
@@ -234,14 +248,20 @@ public class TridiagonalMatrix {
        //ttheta[i] = det(M(1:i,1:i))/det(M(1:i-1,1:i-1), with ttheta[1] = a[1]
        double[] ttheta = new double[n + 1];
        ttheta[1] = a[1];
-       for (int i = 2; i <= n; i++)
+       for (int i = 2; i <= n; i++) {
+           if (ttheta[i-1]==0)
+               throw new ArithmeticException("Trying to compute inverse of singular tridiagonal matrix (ii)");
            ttheta[i] = a[i] - b[i - 1] * c[i - 1] / ttheta[i - 1];
+       }
 
        //tphi[i] = det(M(i:n,i:n))/det(M(i+1:n,i+1:n)
        double[] tphi = new double[n + 1];
        tphi[n] = a[n];
-       for (int i = n - 1; i >= 1; i--)
+       for (int i = n - 1; i >= 1; i--) {
+           if (tphi[i+1]==0)
+               throw new ArithmeticException("Trying to compute inverse of singular tridiagonal matrix (iii)");
            tphi[i] = a[i] - b[i] * c[i] / tphi[i + 1];
+       }
 
        //s[j] gives min value of i<j such that (T^{-1})_{ij} is non-zero.
        //t[i] gives min value of j<i such that (T^{-1})_{ij} is non-zero.
@@ -257,6 +277,9 @@ public class TridiagonalMatrix {
            else
                t[k] = t[k - 1];
        }
+
+       if (ttheta[n]==0 || tphi[1]==0)
+           throw new ArithmeticException("Trying to compute inverse of singular tridiagonal matrix (iv)");
 
        //Evaluate diagonal of T^{-1} directly from Usmani's formula.
        d = new double[n + 1];
@@ -282,14 +305,18 @@ public class TridiagonalMatrix {
    }
 
    public double getTinv(int i, int j) {
+       double inv_ij=0;
        if (i==j)
-           return d[i];
+           inv_ij = d[i];
        else if (i<j && i>= s[j])
-           return d[i]*v[j]/v[i];
+           inv_ij = d[i]*v[j]/v[i];
        else if (i>j && j>= t[i])
-           return d[j]*w[i]/w[j];
+           inv_ij = d[j]*w[i]/w[j];
        else
-           return 0.0;
+           inv_ij = 0.0;
+       if (Double.isNaN(inv_ij))
+           throw new ArithmeticException("Problem with fancy tri-diagonal inversion");
+       return inv_ij;
    }
 
     /**
@@ -310,6 +337,14 @@ public class TridiagonalMatrix {
     }
 
 
+
+    /**
+     * Check that there are no NAN values in the tridiagonal matrix.
+     * @return boolean false if there are NAN values.
+     */
+    public boolean isValid() {
+        return vectorIsFinite(a)&&vectorIsFinite(b)&&vectorIsFinite(c);
+    }
 
     public static void test(int n) {
        //Run a collection of tests on randomly generated tridiagonal matrices with n rows and columns

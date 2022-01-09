@@ -53,8 +53,29 @@ public class DualPCG {
         double[] rt = new double[nG+1];  //tilde{r} = B' r
         calculateBtx(n,r,G,rt);
         double[] z = new double[nG+1];
-        if (params.usePreconditioner)
-            M.solve(rt,z,G);
+        if (params.usePreconditioner) {
+                M.solve(rt, z, G);
+
+            if (params.verboseProfiling) {
+                double[][] zblock = BlockXMatrix.vector2blocks(n,z,G);
+                double[][] rtblock = X.multiply(zblock);
+                double[] rtvec = new double[nG+1];
+                BlockXMatrix.blocks2vector(n,rtblock,G,rtvec);
+                double err=0.0;
+
+                for(int i=1;i<=nG;i++) {
+                    err += (rt[i] - rtvec[i])*(rt[i] - rtvec[i]);
+                }
+                System.err.println("\tTesting preconditioner err = "+err);
+                if (!Double.isFinite(err)) {
+                    for(int i=1;i<=nG;i++)
+                        System.err.println("\t\t"+rt[i]+"\t"+rtvec[i]);
+                    System.err.println();
+                }
+
+            }
+        }
+
         else
             System.arraycopy(rt,1,z,1,nG);
         double[] p = new double[nG+1];

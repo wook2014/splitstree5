@@ -192,5 +192,17 @@ public class SparseRowMatrix {
         return M;
     }
 
+    public boolean isValid() {
+        for (int i = 1; i <= m; i++) {
+            for (int k = 1; k <= N; k++) {
+                if (ind[i][k] != 0) {
+                    if (Double.isFinite(val[i][k]))
+                        return false;
+                }
+            }
+        }
+
+        return true;
+    }
 
 }

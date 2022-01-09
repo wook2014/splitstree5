@@ -163,4 +163,19 @@ public class VectorUtilities {
             xty += x[i]*y[i];
         return xty;
     }
+
+    /**
+     * Check that all the entries of x are finite.
+     * @param x array  of doubles (0 entry ignored)
+     * @return true if all entries are finite, false otherwise.
+     */
+    static public boolean vectorIsFinite(double[] x) {
+        if (x==null)
+            return true;
+        for(int i=1;i<x.length;i++) {
+            if (!Double.isFinite(x[i]))
+                return false;
+        }
+        return true;
+    }
 }
