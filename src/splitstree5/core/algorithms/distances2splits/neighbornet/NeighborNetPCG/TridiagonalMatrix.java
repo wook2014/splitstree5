@@ -2,6 +2,7 @@ package splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG;
 
 import Jama.Matrix;
 
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -16,10 +17,13 @@ public class TridiagonalMatrix {
     public double[] c;
 
     //additional arrays allowing constant time access to inverse elements
-    //TODO These could be made private?
+    //TODO These could/should be made private?
     public double[] d;
     public int[] s,t;
     public double[] v,w;
+    public int[] vpow,wpow; //Used to control underflow in calculation of v,w.
+    public int vwstep = 30;
+
 
     public TridiagonalMatrix clone() {
         TridiagonalMatrix T = new TridiagonalMatrix();
@@ -39,8 +43,14 @@ public class TridiagonalMatrix {
             T.t = t.clone();
         if (v!=null)
             T.v = v.clone();
+        if (vpow!=null)
+            T.vpow = vpow.clone();
         if (w!=null)
             T.w=w.clone();
+        if (wpow!=null)
+            T.wpow = wpow.clone();
+        T.vwstep = vwstep;
+
         return T;
     }
 
@@ -249,7 +259,7 @@ public class TridiagonalMatrix {
        double[] ttheta = new double[n + 1];
        ttheta[1] = a[1];
        for (int i = 2; i <= n; i++) {
-           if (ttheta[i-1]==0)
+           if (ttheta[i-1]==0) //TODO this test isn't working
                throw new ArithmeticException("Trying to compute inverse of singular tridiagonal matrix (ii)");
            ttheta[i] = a[i] - b[i - 1] * c[i - 1] / ttheta[i - 1];
        }
@@ -287,20 +297,43 @@ public class TridiagonalMatrix {
        for (int i = (n - 1); i >= 1; i--)
            d[i] = tphi[i + 1] * d[i + 1] / ttheta[i];
 
-       //v and w are used in the inverse formula.
+       //v and w are used in the inverse formula. With larger n these calculations suffer from underflow, causing
+       //problems later, so we maintain an exponent factor.
+       //TODO Make this faster using << and >>
+       double cutoff = Math.exp(-vwstep);
+       double scale = Math.exp(vwstep);
+
        v = new double[n + 1];
+       vpow = new int[n+1];   //v_i = v[i] * exp(vpow[i])
        for (int k = 1; k <= n; k++) {
-           if (k == 1 || c[k - 1] == 0)
+           if (k == 1 || c[k - 1] == 0) {
                v[k] = 1;
-           else
+               vpow[k]=0;
+           }
+           else {
                v[k] = -c[k - 1] * v[k - 1] / tphi[k];
+               vpow[k] = vpow[k-1];
+               while (Math.abs(v[k])<cutoff) {
+                   v[k] *= scale;
+                   vpow[k] -= vwstep;
+               }
+           }
        }
        w = new double[n + 1];
+       wpow = new int[n+1];
        for (int k = 1; k <= n; k++) {
-           if (k == 1 || b[k - 1] == 0)
+           if (k == 1 || b[k - 1] == 0) {
                w[k] = 1;
-           else
+               wpow[k]=0;
+           }
+           else {
                w[k] = -b[k - 1] * w[k - 1] / tphi[k];
+               wpow[k] = wpow[k-1];
+               while (Math.abs(w[k])<cutoff) {
+                   w[k]*=scale;
+                   wpow[k] -= vwstep;
+               }
+           }
        }
    }
 
@@ -309,13 +342,15 @@ public class TridiagonalMatrix {
        if (i==j)
            inv_ij = d[i];
        else if (i<j && i>= s[j])
-           inv_ij = d[i]*v[j]/v[i];
+           inv_ij = (d[i]*v[j]/v[i]) * Math.exp(vpow[j]-vpow[i]);
        else if (i>j && j>= t[i])
-           inv_ij = d[j]*w[i]/w[j];
+           inv_ij = (d[j]*w[i]/w[j])* Math.exp(wpow[i]-wpow[j]);
        else
            inv_ij = 0.0;
-       if (Double.isNaN(inv_ij))
+       if (!Double.isFinite(inv_ij)) {
+            debugToMatlab(System.err,"T");
            throw new ArithmeticException("Problem with fancy tri-diagonal inversion");
+       }
        return inv_ij;
    }
 
@@ -336,8 +371,36 @@ public class TridiagonalMatrix {
        return M;
     }
 
+    /**
+     * Output the vectors a,b,c in a format that can be copy and pasted to Matlab.
+     * @param out
+     */
+    public void debugToMatlab(PrintStream out,String matrix)
+    {
+        out.print(matrix+".a=[");
+        for(int i=1;i<n;i++)
+            out.println(a[i]);
+        out.println(a[n]+"];");
 
+        if (b!=null) {
+            out.print(matrix+".b=[");
+            for (int i = 1; i < n - 1; i++)
+                out.println(b[i]);
+            out.println(b[n - 1] + "];");
+        } else {
+            out.println(matrix+".b = zeros("+(n-1)+",1);");
+        }
 
+        if (c!=null) {
+            out.print(matrix+".c=[");
+            for (int i = 1; i < n - 1; i++)
+                out.println(c[i]);
+            out.println(c[n - 1] + "];");
+        } else{
+            out.println(matrix+".c = zeros("+(n-1)+",1);");
+        }
+        out.println(matrix+".M=diag("+matrix+".a) + diag("+matrix+".b,1)+diag("+matrix+".c,-1);");
+    }
     /**
      * Check that there are no NAN values in the tridiagonal matrix.
      * @return boolean false if there are NAN values.
@@ -347,6 +410,7 @@ public class TridiagonalMatrix {
     }
 
     public static void test(int n) {
+
        //Run a collection of tests on randomly generated tridiagonal matrices with n rows and columns
 
         //Generate a random tridiagonal matrix. Note: test will fail if this happens to be non-singular

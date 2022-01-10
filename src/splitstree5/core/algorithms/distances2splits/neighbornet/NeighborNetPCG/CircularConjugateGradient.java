@@ -22,7 +22,7 @@ public class CircularConjugateGradient {
      * @param x      the x matrix
      * @param params Parameters used in the search.
      */
-    static public void circularConjugateGrads(int nTax, double[] d, boolean[] G, double[] x, NeighborNetSplits.NNLSParams params) {
+    static public int circularConjugateGrads(int nTax, double[] d, boolean[] G, double[] x, NeighborNetSplits.NNLSParams params) {
         // min 1/2 ||Ax - d|| -> (A'A) x =A'd
         // WE use the CGNR algorithm on pg 236 of Saad.
 
@@ -78,9 +78,12 @@ public class CircularConjugateGradient {
         for(int i=1;i<=npairs;i++)
             w[i] -= d[i];
         circularAtx(nTax,w,z);
-        for(int i=1;i<=npairs;i++)
+        for(int i=1;i<=npairs;i++) {
             if (G[i])
                 x[i] = z[i];
+        }
+        return k; //NUmber of iterations
+
 
     }
 

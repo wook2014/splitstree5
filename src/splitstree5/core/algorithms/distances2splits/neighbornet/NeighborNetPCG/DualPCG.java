@@ -11,7 +11,7 @@ import static splitstree5.core.algorithms.distances2splits.neighbornet.NeighborN
 
 public class DualPCG {
 
-    public static void dualPCG(int n, double[] d, boolean[] G, double[] zvec, NeighborNetSplits.NNLSParams params) {
+    public static int dualPCG(int n, double[] d, boolean[] G, double[] zvec, NeighborNetSplits.NNLSParams params) {
 
 
         int nG = count(G);  //Count the number of equality constraints
@@ -56,7 +56,7 @@ public class DualPCG {
         if (params.usePreconditioner) {
                 M.solve(rt, z, G);
 
-            if (params.verboseProfiling) {
+            if (false && params.verboseProfiling) {  //DEBUG
                 double[][] zblock = BlockXMatrix.vector2blocks(n,z,G);
                 double[][] rtblock = X.multiply(zblock);
                 double[] rtvec = new double[nG+1];
@@ -169,6 +169,7 @@ public class DualPCG {
             else
                 zvec[i] = x[i];
         }
+        return k; //DEBUG - return number of iterations
     }
 
 

@@ -42,6 +42,7 @@ public class Preconditioner {
             if (m[i]>0) {
                 if (m[i-1]>0) {
                     TridiagonalMatrix T = TridiagonalMatrix.multiplyLU(L[i-1],U[i-1]);
+
                     T.preprocessInverse();
                     TridiagonalMatrix T2 = tri_X_Tinv_Y(X.B[i-1],T,X.B[i-1]);
                     TridiagonalMatrix[] LU = TridiagonalMatrix.minus(X.A[i],T2).trilu();

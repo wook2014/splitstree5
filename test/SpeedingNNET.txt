@@ -31,6 +31,17 @@ public double vectorCutoff = 1e-7;
 
 with very little impact on total running time. However noticed that least squares (DualPCG) becomes a lot slower when the active set gets larger - range from 50ms to 2.8s.  Checked the effect of turning off preconditioning, and saw that there was none! So turned it on. Algorithm failed.
 
+Turns out the problem is a numerical round-off problem with the inversion of the tridiagonal matrices. This is likely to be an issue with all large problem sizes. Exploring the problem in Matlab, but suspect that it makes sense to replace X with X + \lambda I for some regularisation term \lambda. 
+
+It turns out that the problem lies with underflow in the calculation of the v and w vectors when doing the fancy tridiagonal inverse. Fixing this using the underflow hack of maintaining a separate exponential factor. I've done this with exp( ), whereas some efficiency could be gained using powers of two.
+
+Tested this with the TriDiagonalMatrix.test() and seems to be working, however the preconditioner still isn't. 
+
+Plan from here:
+	Turn off the preconditioner for now
+	Explore use of dual and primal CG 
+	Noticed that dual CG seems to be maxing out. Why?
+
 
 
 

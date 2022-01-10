@@ -30,9 +30,9 @@ public class NeighborNetSplits {
 
         public int maxOuterIterations = 1000; //Maximum number of iterations for the outer algorithm
         public int maxPCGIterations = 1000; //Maximum number of iterations for the conjugate gradient algorithm
-        public double pcgTol = 1e-6; //Tolerance for pcg: will stop when residual has norm less than this. default  1e-7 //TODO rename to PCG_EPSILON
-        public double finalTol = 1e-6; //Tolerance for the final 'tidy up' call to least squares in block pivot.
-        public double vectorCutoff = 1e-7; //Cutoff - values in block pivot with value smaller than this are set to zero.
+        public double pcgTol = 1e-4; //Tolerance for pcg: will stop when residual has norm less than this. default  1e-7 //TODO rename to PCG_EPSILON
+        public double finalTol = 1e-4; //Tolerance for the final 'tidy up' call to least squares in block pivot.
+        public double vectorCutoff = 1e-5; //Cutoff - values in block pivot with value smaller than this are set to zero.
         public boolean usePreconditioner = false; //True if the conjugate gradient makes use of preconditioner.
         public int preconditionerBands = 10; //Number of bands used when computing Y,Z submatrices in the preconditioner.
         // Note that alot of the calculations for preconditioning are done even if this is false, so use this flag only to assess #iterations.
@@ -43,7 +43,7 @@ public class NeighborNetSplits {
         //public double pgBound = 0.0; //Terminate if the l_infinity of the projected gradient is smaller that this.
         public double propKept = 0.6; //Proportion of negative splits to keep in the first iteration of the active set method.
         public int leastSquaresAlgorithm = CG;
-        public boolean verboseProfiling = false; //Set to true for debuggin and profiling output.
+        public boolean verboseProfiling = false; //Set to true for debugging and profiling output.
     }
 
     /**
@@ -404,7 +404,7 @@ public class NeighborNetSplits {
             //z[~G] = x[~G] and z[G] = y[G]  where x mininizes ||Ax - d||  such that x[G] = 0 and
             // y = A'(Ax - d).
             long clsStart = System.currentTimeMillis();
-            circularLeastSquares(n, G, d, z, params);
+            int numIterations = circularLeastSquares(n, G, d, z, params);
             long clsEnd = System.currentTimeMillis();
 
             cutoff(z,params.vectorCutoff);  //Set small entries of x and y to zero.
@@ -412,7 +412,7 @@ public class NeighborNetSplits {
             if (params.verboseProfiling) {
                 //Compute the square of the projected conjugate gradient.
 
-                System.err.println("\t"+iter+"\t"+ninf+"\tLS time:"+(clsEnd-clsStart));
+                System.err.println("\t"+iter+"\t"+ninf+"\t"+(npairs-count(G))+"\tLS time:"+(clsEnd-clsStart)+"\tIterations = "+numIterations);
             }
 
             iter++;
@@ -440,17 +440,18 @@ public class NeighborNetSplits {
      * Let x be the optimal vector, and y =A'(Ax-d) the corresponding gradient vector. These are returned by overwriting the
      *   vector z, so that z[~G] = x[~G] and z[G] = y[~G]
      */
-    private static void circularLeastSquares(int n, boolean[] G, double[] d, double[] z, NeighborNetSplits.NNLSParams params) {
+    private static int circularLeastSquares(int n, boolean[] G, double[] d, double[] z, NeighborNetSplits.NNLSParams params) {
         double diff1 = 0.0, diff2=0.0;
         int npairs = n*(n-1)/2;
         double[] zold = new double[npairs+1];
+        int numIterations=0;
 
         if (params.leastSquaresAlgorithm==NNLSParams.CG) {
             //Use conjugate gradient on Primal
-            CircularConjugateGradient.circularConjugateGrads(n, d, G, z, params);
+            numIterations = CircularConjugateGradient.circularConjugateGrads(n, d, G, z, params);
         }
         else if (params.leastSquaresAlgorithm==NNLSParams.DUAL_PCG) {
-            DualPCG.dualPCG(n,d,G,z,params);
+            numIterations = DualPCG.dualPCG(n,d,G,z,params);
         }
 
         //DEBUGGING CODE.
@@ -484,6 +485,7 @@ public class NeighborNetSplits {
         System.err.println("diff1 = "+diff1+"\t diff2 = "+diff2);
 
          */
+        return numIterations;
     }
 
     /**
