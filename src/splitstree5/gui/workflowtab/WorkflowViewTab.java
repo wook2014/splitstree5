@@ -37,8 +37,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import jloda.fx.control.ItemSelectionModel;
 import jloda.fx.control.ZoomableScrollPane;
-import jloda.fx.undo.UndoableChangeList;
 import jloda.fx.undo.UndoableRedoableCommand;
+import jloda.fx.undo.UndoableRedoableCommandList;
 import jloda.fx.util.Print;
 import jloda.fx.util.ResourceManagerFX;
 import jloda.fx.util.SelectionEffect;
@@ -427,7 +427,7 @@ public class WorkflowViewTab extends ViewerTab {
             }
 
             selectionModel.clearSelection(toDelete);
-            getUndoManager().doAndAdd(new UndoableChangeList("Delete", list));
+            getUndoManager().doAndAdd(new UndoableRedoableCommandList("Delete", list));
 
             /*
             getUndoManager().doAndAdd(new UndoableRedoableCommand("Delete") {

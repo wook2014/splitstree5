@@ -25,8 +25,8 @@ import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import jloda.fx.control.ItemSelectionModel;
-import jloda.fx.undo.UndoableChangeList;
 import jloda.fx.undo.UndoableChangePropertyPair;
+import jloda.fx.undo.UndoableRedoableCommandList;
 import jloda.util.Basic;
 import splitstree5.core.workflow.DataNode;
 import splitstree5.core.workflow.WorkflowNode;
@@ -116,8 +116,7 @@ public class WorkflowViewMouseHandler {
                         final WorkflowNodeView selectedNodeView = workflowView.getNodeView(node);
                         if (selectedNodeView != null) {
                             if (setupUndo) {
-                                node2change.put(node,
-                                        new UndoableChangePropertyPair("", selectedNodeView.xProperty(), selectedNodeView.getX(), null, selectedNodeView.yProperty(), selectedNodeView.getY(), null));
+								node2change.put(node, new UndoableChangePropertyPair("", selectedNodeView.xProperty(), selectedNodeView.getX(), null, selectedNodeView.yProperty(), selectedNodeView.getY(), null));
                             }
                             selectedNodeView.xProperty().set(selectedNodeView.xProperty().get() + (point.getX() - mouseDownX));
                             selectedNodeView.yProperty().set(selectedNodeView.yProperty().get() + (point.getY() - mouseDownY));
@@ -142,13 +141,13 @@ public class WorkflowViewMouseHandler {
                             if (!controlDown) {
                                 final ItemSelectionModel<WorkflowNode> selectionModel = workflowView.getWorkflow().getNodeSelectionModel();
                                 for (WorkflowNode node : selectionModel.getSelectedItems()) {
-                                    final WorkflowNodeView selectedNodeView = workflowView.getNodeView(node);
-                                    UndoableChangePropertyPair pair = node2change.get(node);
+									final WorkflowNodeView selectedNodeView = workflowView.getNodeView(node);
+									var pair = node2change.get(node);
                                     if (pair != null) {
                                         pair.setNewValue1(selectedNodeView.getX());
                                         pair.setNewValue2(selectedNodeView.getY());
                                     }
-                                    workflowView.getUndoManager().add(new UndoableChangeList("Move", node2change.values()));
+									workflowView.getUndoManager().add(new UndoableRedoableCommandList("Move", node2change.values()));
                                 }
                             }
                         } else {
