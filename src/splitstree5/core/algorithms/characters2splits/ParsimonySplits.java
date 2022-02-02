@@ -126,8 +126,8 @@ public class ParsimonySplits extends Algorithm<CharactersBlock, SplitsBlock> imp
         }
 
         splitsBlock.getSplits().addAll(previousSplits);
-        splitsBlock.setCompatibility(Compatibility.compute(taxaBlock.getNtax(), splitsBlock.getSplits()));
         splitsBlock.setCycle(SplitsUtilities.computeCycle(taxaBlock.getNtax(), previousSplits));
+        splitsBlock.setCompatibility(Compatibility.compute(taxaBlock.getNtax(), splitsBlock.getSplits(), splitsBlock.getCycle()));
     }
 
 
