@@ -88,9 +88,7 @@ public class MSFExporter implements IExportCharacters {
             w.write("\t" + startIndex);
 
             //space between numbers at block beginning
-            int last_line_offset = 0;
-            if ((nchar - i * optionLineLength) < 0)
-                last_line_offset = (nchar - i * optionLineLength);
+            var last_line_offset = Math.min((nchar - i * optionLineLength), 0);
             writeSpaces(w, optionLineLength - (startIndex + "").length() - (stopIndex + "").length() + last_line_offset);
             w.write(stopIndex + "\n");
 

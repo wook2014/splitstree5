@@ -33,8 +33,7 @@ import splitstree5.io.nexus.DistancesNexusInput;
 import java.io.FileReader;
 import java.util.List;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * Created on 05.03.2017.
@@ -56,7 +55,7 @@ public class DiceTest {
         taxaBlock1.addTaxaByNames(taxonNames1);
         DistancesBlock distancesBlock1 = new DistancesBlock();
 
-        assertEquals(false, dice.isApplicable(taxaBlock1, charactersBlock1));
+        assertFalse(dice.isApplicable(taxaBlock1, charactersBlock1));
 
         String inputFile2 = "test//characters//algae_rna_interleave.nex";
         TaxaBlock taxaBlock2 = new TaxaBlock();
@@ -66,7 +65,7 @@ public class DiceTest {
         taxaBlock2.addTaxaByNames(taxonNames2);
         DistancesBlock distancesBlock2 = new DistancesBlock();
 
-        assertEquals(false, dice.isApplicable(taxaBlock2, charactersBlock2));
+        assertFalse(dice.isApplicable(taxaBlock2, charactersBlock2));
 
         String inputFile3 = "test//characters//dolphins_binary.nex";
         TaxaBlock taxaBlock3 = new TaxaBlock();
@@ -76,7 +75,7 @@ public class DiceTest {
         taxaBlock3.addTaxaByNames(taxonNames3);
         DistancesBlock distancesBlock3 = new DistancesBlock();
 
-        assertEquals(true, dice.isApplicable(taxaBlock3, charactersBlock3));
+        assertTrue(dice.isApplicable(taxaBlock3, charactersBlock3));
 
         String inputFile4 = "test//characters//myosin_aa.nex";
         TaxaBlock taxaBlock4 = new TaxaBlock();
@@ -86,7 +85,7 @@ public class DiceTest {
         taxaBlock4.addTaxaByNames(taxonNames4);
         DistancesBlock distancesBlock4 = new DistancesBlock();
 
-        assertEquals(false, dice.isApplicable(taxaBlock4, charactersBlock4));
+        assertFalse(dice.isApplicable(taxaBlock4, charactersBlock4));
 
     }
 

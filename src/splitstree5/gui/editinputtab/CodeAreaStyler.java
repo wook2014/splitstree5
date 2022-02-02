@@ -63,10 +63,10 @@ public class CodeAreaStyler {
     }
 
     private static String returnFirstLine(String s) {
-        if (s.length() == 0 || !s.contains("\\n"))
-            return s;
-        else
-            return s.substring(0, s.indexOf("\\n"));
+        if (!s.contains("\\n"))
+			return s;
+		else
+			return s.substring(0, s.indexOf("\\n"));
     }
 
     public Highlighter getHighlighter() {
